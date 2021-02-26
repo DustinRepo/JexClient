@@ -26,12 +26,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
@@ -188,10 +186,6 @@ public class Killaura extends Module {
                     unblock();
                 }
                 Wrapper.INSTANCE.getInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), target);
-                NetworkHelper.INSTANCE.sendPacket(new PlayerInteractEntityC2SPacket(target, Wrapper.INSTANCE.getLocalPlayer().isSneaking()));
-                if (Wrapper.INSTANCE.getInteractionManager().getCurrentGameMode() != GameMode.SPECTATOR) {
-                    Wrapper.INSTANCE.getLocalPlayer().resetLastAttackedTicks();
-                }
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 if (autoBlock && reblock) {
                     block();
