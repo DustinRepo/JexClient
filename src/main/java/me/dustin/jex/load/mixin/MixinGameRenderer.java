@@ -1,0 +1,97 @@
+package me.dustin.jex.load.mixin;
+
+import me.dustin.jex.event.render.*;
+import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.Render3DHelper;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix4f;
+import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(GameRenderer.class)
+public abstract class MixinGameRenderer {
+
+    @Shadow
+    private int ticks;
+    @Shadow
+    @Final
+    private Camera camera;
+    @Shadow
+    @Final
+    private MinecraftClient client;
+
+    @Shadow
+    public abstract void loadProjectionMatrix(Matrix4f matrix4f);
+
+    @Shadow
+    protected abstract void bobView(MatrixStack matrixStack, float f);
+
+    @Shadow
+    public abstract Matrix4f getBasicProjectionMatrix(Camera camera, float f, boolean bl);
+
+    @Shadow
+    protected abstract void bobViewWhenHurt(MatrixStack matrixStack, float f);
+
+    @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", at = @At(value = "INVOKE", target = "com/mojang/blaze3d/systems/RenderSystem.clear(IZ)V"))
+    private void onRenderWorld(float partialTicks, long finishTimeNano, MatrixStack matrixStack1, CallbackInfo ci) {
+        if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null)
+            return;
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(camera, partialTicks, true));
+        loadProjectionMatrix(matrixStack.peek().getModel());
+        GL11.glDisable(GL11.GL_LIGHTING);
+
+        Render3DHelper.INSTANCE.applyCameraRots();
+
+        this.bobViewWhenHurt(matrixStack, partialTicks);
+
+        loadProjectionMatrix(matrixStack.peek().getModel());
+
+        new EventRender3D.EventRender3DNoBob(matrixStack, partialTicks).run();
+
+        if (this.client.options.bobView) {
+            bobView(matrixStack, partialTicks);
+        }
+        loadProjectionMatrix(matrixStack.peek().getModel());
+
+
+        new EventRender3D(matrixStack, matrixStack1, partialTicks).run();
+        GL11.glColor4f(1, 1, 1, 1);
+
+
+        Render3DHelper.INSTANCE.fixCameraRots();
+    }
+
+    @Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)
+    public void renderHand(MatrixStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
+        EventRenderHand eventRenderHand = new EventRenderHand().run();
+        if (eventRenderHand.isCancelled())
+            ci.cancel();
+    }
+
+    @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
+    public void bobView1(MatrixStack matrixStack, float f, CallbackInfo ci) {
+        EventBobView eventBobView = new EventBobView().run();
+        if (eventBobView.isCancelled())
+            ci.cancel();
+    }
+
+    @Inject(method = "bobViewWhenHurt", at = @At(value = "HEAD"), cancellable = true)
+    public void bobViewWhenHurt1(MatrixStack matrixStack, float float_1, CallbackInfo ci) {
+        if (((EventHurtCam) new EventHurtCam().run()).isCancelled()) ci.cancel();
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V"))
+    public void renderForEvent(float float_1, long long_1, boolean boolean_1, CallbackInfo ci) {
+        new EventRender2DNoScale().run();
+    }
+
+}

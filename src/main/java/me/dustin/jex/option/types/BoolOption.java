@@ -1,0 +1,31 @@
+package me.dustin.jex.option.types;
+
+
+import me.dustin.jex.option.Option;
+
+import java.lang.reflect.Field;
+
+
+public class BoolOption extends Option {
+    public BoolOption(String name, String fieldName) {
+        this.name = name;
+        this.setFieldName(fieldName);
+    }
+
+    public boolean getValue() {
+        try {
+            for (Field f : this.getModule().getClass().getDeclaredFields()) {
+                if (f.getName().equalsIgnoreCase(this.getFieldName())) {
+                    return f.getBoolean(this.getModule());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
+}

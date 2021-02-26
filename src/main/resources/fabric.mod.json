@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "jex",
+  "version": "${version}",
+  "name": "Jex Client",
+  "description": "Jex Utility Client",
+  "authors": [
+    "Untrusted"
+  ],
+  "contact": {
+    "homepage": "https://jexclient.com",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/jex/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.dustin.jex.load.JexLoad"
+    ]
+  },
+  "mixins": [
+    "jex.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.16.4"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

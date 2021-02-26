@@ -1,0 +1,63 @@
+package me.dustin.jex.load.mixin;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+import me.dustin.jex.event.render.EventRender2D;
+import me.dustin.jex.event.render.EventRenderCrosshair;
+import me.dustin.jex.event.render.EventRenderEffects;
+import me.dustin.jex.event.render.EventRenderOverlay;
+import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(InGameHud.class)
+public class MixinInGameHud {
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/scoreboard/Scoreboard.getObjectiveForSlot(I)Lnet/minecraft/scoreboard/ScoreboardObjective;"))
+    public void draw(MatrixStack matrixStack, float float_1, CallbackInfo ci) {
+        try {
+            new EventRender2D(matrixStack).run();
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
+    public void renderCrosshair(MatrixStack matrixStack, CallbackInfo ci) {
+        EventRenderCrosshair eventRenderCrosshair = new EventRenderCrosshair(matrixStack).run();
+        if (eventRenderCrosshair.isCancelled())
+            ci.cancel();
+    }
+
+    @Inject(method = "renderStatusEffectOverlay", at = @At("HEAD"), cancellable = true)
+    public void renderStatusEffectOverlay(MatrixStack matrixStack, CallbackInfo ci) {
+        EventRenderEffects eventRenderEffects = new EventRenderEffects().run();
+        if (eventRenderEffects.isCancelled())
+            ci.cancel();
+    }
+
+    @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
+    public void renderPumpkin(CallbackInfo ci) {
+        EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.PUMPKIN).run();
+        if (eventRenderOverlay.isCancelled())
+            ci.cancel();
+    }
+
+    @Inject(method = "renderVignetteOverlay", at = @At("HEAD"), cancellable = true)
+    public void renderVignetteOverlay(Entity entity, CallbackInfo ci) {
+        EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.VIGNETTE).run();
+        if (eventRenderOverlay.isCancelled())
+            ci.cancel();
+    }
+
+    @Inject(method = "renderPortalOverlay", at = @At("HEAD"), cancellable = true)
+    public void renderPumpkin(float s, CallbackInfo ci) {
+        EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.PORTAL).run();
+        if (eventRenderOverlay.isCancelled())
+            ci.cancel();
+    }
+}

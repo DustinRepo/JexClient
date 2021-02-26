@@ -1,0 +1,150 @@
+package me.dustin.jex.module.impl.world;
+
+import me.dustin.events.core.Event;
+import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.packet.EventPacketReceive;
+import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.world.WorldHelper;
+import me.dustin.jex.module.core.Module;
+import me.dustin.jex.module.core.annotate.ModClass;
+import me.dustin.jex.module.core.enums.ModCategory;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.chunk.Chunk;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+@ModClass(name = "BedrockObfuscator", category = ModCategory.WORLD, description = "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.")
+public class BedrockObfuscator extends Module {
+
+    private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<Chunk> obfuscatedChunks = new ConcurrentLinkedQueue<>();
+    private Random random = new Random();
+
+    public BedrockObfuscator() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    if (this.getState() && Wrapper.INSTANCE.getWorld() != null) {
+                        for (Chunk chunk : chunksToUpdate) {
+                            searchChunk(chunk);
+                        }
+                    }
+                    Thread.sleep(10);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @EventListener(events = {EventPacketReceive.class})
+    private void runMethod(Event event) {
+        if (event instanceof EventPacketReceive) {
+            if (Wrapper.INSTANCE.getWorld() == null)
+                return;
+            Chunk emptyChunk = null;
+
+            Packet packet = ((EventPacketReceive) event).getPacket();
+
+            if (packet instanceof ChunkDeltaUpdateS2CPacket) {
+                ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket = (ChunkDeltaUpdateS2CPacket) packet;
+
+                ArrayList<BlockPos> changeBlocks = new ArrayList<>();
+                chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> {
+                    changeBlocks.add(pos);
+                });
+                if (changeBlocks.isEmpty())
+                    return;
+                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(changeBlocks.get(0));
+            } else if (packet instanceof BlockUpdateS2CPacket) {
+                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(((BlockUpdateS2CPacket) packet).getPos());
+            } else if (packet instanceof ChunkDataS2CPacket) {
+                ChunkDataS2CPacket chunkDataS2CPacket = (ChunkDataS2CPacket) packet;
+                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(chunkDataS2CPacket.getX(), chunkDataS2CPacket.getZ());
+            }
+
+            if (emptyChunk != null) {
+                for (Chunk chunk : obfuscatedChunks) {
+                    assert Wrapper.INSTANCE.getWorld() != null;
+                    if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
+                        obfuscatedChunks.remove(chunk);
+                }
+                int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+                if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
+                    for (int i = -distance; i < distance; i++) {
+                        for (int j = -distance; j < distance; j++) {
+                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX + i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
+                            if (chunk != null && !chunksToUpdate.contains(chunk) && !obfuscatedChunks.contains(chunk) && Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z)) {
+                                chunksToUpdate.offer(chunk);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onEnable() {
+        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
+            for (int i = -distance; i < distance; i++) {
+                for (int j = -distance; j < distance; j++) {
+                    Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX+ i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
+                    if (chunk != null && !chunksToUpdate.contains(chunk))
+                        chunksToUpdate.offer(chunk);
+                }
+            }
+        }
+        super.onEnable();
+    }
+
+    private void searchChunk(Chunk chunk) {
+        if (obfuscatedChunks.contains(chunk))
+            return;
+        boolean isNether = WorldHelper.INSTANCE.getDimensionID() != null && WorldHelper.INSTANCE.getDimensionID().getPath().contains("nether");
+        BlockState replaceState = isNether ? Blocks.NETHERRACK.getDefaultState() : Blocks.STONE.getDefaultState();
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                for (int y = 0; y < 5; y++) {
+                    BlockPos blockPos = new BlockPos(x + (chunk.getPos().x * 16), y, z + (chunk.getPos().z * 16));
+                    Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+                    if (block == Blocks.BEDROCK || block == Blocks.STONE || block == Blocks.NETHERRACK) {
+                        Wrapper.INSTANCE.getWorld().setBlockState(blockPos, random.nextBoolean() ? Blocks.BEDROCK.getDefaultState() : replaceState);
+                    }
+                }
+            }
+        }
+        if (isNether) {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    for (int y = 123; y < 127; y++) {
+                        BlockPos blockPos = new BlockPos(x + (chunk.getPos().x * 16), y, z + (chunk.getPos().z * 16));
+                        Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+                        if (block == Blocks.BEDROCK || block == Blocks.STONE || block == Blocks.NETHERRACK) {
+                            Wrapper.INSTANCE.getWorld().setBlockState(blockPos, random.nextBoolean() ? Blocks.BEDROCK.getDefaultState() : replaceState);
+                        }
+                    }
+                }
+            }
+        }
+        chunksToUpdate.remove(chunk);
+        obfuscatedChunks.offer(chunk);
+    }
+
+    @Override
+    public void onDisable() {
+        this.chunksToUpdate.clear();
+        this.obfuscatedChunks.clear();
+        super.onDisable();
+    }
+}
