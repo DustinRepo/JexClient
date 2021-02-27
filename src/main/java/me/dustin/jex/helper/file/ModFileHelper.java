@@ -30,6 +30,10 @@ public enum ModFileHelper {
         XrayFile.read();
     }
 
+    public void closeGame() {
+        ClientSettingsFile.write();
+    }
+
     public File getJexDirectory() {
         return new File(Wrapper.INSTANCE.getMinecraft().runDirectory, PATH_NAME);
     }

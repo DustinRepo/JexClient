@@ -1,9 +1,11 @@
 package me.dustin.jex;
 
 import me.dustin.events.api.EventAPI;
+import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.command.CommandManager;
 import me.dustin.jex.event.misc.EventKeyPressed;
+import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.file.ModuleFile;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -17,6 +19,7 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.ModuleManager;
 import me.dustin.jex.module.impl.combat.Killaura;
+import me.dustin.jex.module.impl.misc.Discord;
 import me.dustin.jex.module.impl.player.Freecam;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.update.UpdateManager;
@@ -50,27 +53,32 @@ public enum JexClient {
         System.out.println("Load finished");
     }
 
-    @EventListener(events = {EventKeyPressed.class})
-    public void keyPress(EventKeyPressed eventKeyPressed) {
-        if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {
-            ModuleManager.INSTANCE.getModules().values().forEach(module -> {
-                if (module.getKey() == eventKeyPressed.getKey()) {
-                    module.toggleState();
-                    if (JexClient.INSTANCE.isAutoSaveEnabled())
-                        ModuleFile.write();
-                }
-            });
-        }
-    }
-
-    @EventListener(events = {EventTick.class})
-    public void tick(EventTick eventTick) {
-        Wrapper.INSTANCE.getWindow().setTitle("Jex Client " + getVersion());
-        if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-            if (Module.get(Killaura.class).getState())
-                Module.get(Killaura.class).setState(false);
-            if (Module.get(Freecam.class).getState())
-                Module.get(Freecam.class).setState(false);
+    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class})
+    public void keyPress(Event event) {
+        if (event instanceof EventKeyPressed) {
+            EventKeyPressed eventKeyPressed = (EventKeyPressed)event;
+            if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {
+                ModuleManager.INSTANCE.getModules().values().forEach(module -> {
+                    if (module.getKey() == eventKeyPressed.getKey()) {
+                        module.toggleState();
+                        if (JexClient.INSTANCE.isAutoSaveEnabled())
+                            ModuleFile.write();
+                    }
+                });
+            }
+        } else if (event instanceof EventTick) {
+            Wrapper.INSTANCE.getWindow().setTitle("Jex Client " + getVersion());
+            if (Wrapper.INSTANCE.getLocalPlayer() == null) {
+                if (Module.get(Killaura.class).getState())
+                    Module.get(Killaura.class).setState(false);
+                if (Module.get(Freecam.class).getState())
+                    Module.get(Freecam.class).setState(false);
+            }
+        } else if (event instanceof EventScheduleStop) {
+            if (Module.get(Discord.class).getState()) {
+                Module.get(Discord.class).setState(false);
+            }
+            ModFileHelper.INSTANCE.closeGame();
         }
     }
 

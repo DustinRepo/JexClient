@@ -2,6 +2,7 @@ package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.event.misc.EventDisplayScreen;
 import me.dustin.jex.event.misc.EventJoinWorld;
+import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.load.impl.IMinecraft;
 import me.dustin.jex.module.impl.render.esp.ESP;
@@ -90,6 +91,11 @@ public class MixinMinecraftClient implements IMinecraft {
         if (ESP.spoofOutline) {
             cir.setReturnValue(true);
         }
+    }
+
+    @Inject(method = "scheduleStop", at = @At("HEAD"))
+    public void scheduleStop1(CallbackInfo ci) {
+        new EventScheduleStop().run();
     }
 
 }

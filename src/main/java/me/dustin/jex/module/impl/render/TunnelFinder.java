@@ -114,6 +114,7 @@ public class TunnelFinder extends Module {
 
             }
         } else if (event instanceof EventJoinWorld) {
+            positions.clear();
             int distance = Wrapper.INSTANCE.getOptions().viewDistance;
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
@@ -156,6 +157,7 @@ public class TunnelFinder extends Module {
 
     @Override
     public void onDisable() {
+        positions.clear();
         if (thread != null && !thread.isInterrupted()) {
             thread.interrupt();
         }
