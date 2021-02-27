@@ -23,7 +23,7 @@ import me.dustin.jex.update.UpdateManager;
 
 public enum JexClient {
     INSTANCE;
-    private String version = "0.1.5";
+    private String version = "0.1.5.1";
     private boolean autoSaveModules = false;
 
     public void initializeClient() {

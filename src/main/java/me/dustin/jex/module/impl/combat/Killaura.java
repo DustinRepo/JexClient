@@ -133,7 +133,7 @@ public class Killaura extends Module {
                 doAttack();
         }
         if (event1 instanceof EventRender3D) {
-            if (target != null) {
+            if (target != null && showTarget) {
                 Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(target, ((EventRender3D) event1).getPartialTicks());
                 Render3DHelper.INSTANCE.drawEntityBox(target, vec.x, vec.y, vec.z, targetColor);
             }

@@ -28,23 +28,7 @@ public class BedrockObfuscator extends Module {
     private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<Chunk> obfuscatedChunks = new ConcurrentLinkedQueue<>();
     private Random random = new Random();
-
-    public BedrockObfuscator() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    if (this.getState() && Wrapper.INSTANCE.getWorld() != null) {
-                        for (Chunk chunk : chunksToUpdate) {
-                            searchChunk(chunk);
-                        }
-                    }
-                    Thread.sleep(10);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
+    private Thread thread;
 
     @EventListener(events = {EventPacketReceive.class})
     private void runMethod(Event event) {
@@ -95,6 +79,18 @@ public class BedrockObfuscator extends Module {
 
     @Override
     public void onEnable() {
+        (thread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                if (this.getState() && Wrapper.INSTANCE.getWorld() != null)
+                    for (Chunk chunk : chunksToUpdate) {
+                        searchChunk(chunk);
+                    }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                }
+            }
+        })).start();
         int distance = Wrapper.INSTANCE.getOptions().viewDistance;
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
@@ -143,6 +139,9 @@ public class BedrockObfuscator extends Module {
 
     @Override
     public void onDisable() {
+        if (thread != null && !thread.isInterrupted()) {
+            thread.interrupt();
+        }
         this.chunksToUpdate.clear();
         this.obfuscatedChunks.clear();
         super.onDisable();

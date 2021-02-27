@@ -40,20 +40,7 @@ public class TunnelFinder extends Module {
     private ConcurrentLinkedQueue<BlockPos> positions = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
 
-    public TunnelFinder() {
-        new Thread(() -> {
-            while (true) {
-                if (this.getState() && Wrapper.INSTANCE.getWorld() != null)
-                    for (Chunk chunk : chunksToUpdate) {
-                        searchChunk(chunk);
-                    }
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                }
-            }
-        }).start();
-    }
+    private Thread thread;
 
     @EventListener(events = {EventPacketReceive.class, EventRender3D.class, EventJoinWorld.class})
     private void runMethod(Event event) {
@@ -142,6 +129,18 @@ public class TunnelFinder extends Module {
 
     @Override
     public void onEnable() {
+        (thread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                if (this.getState() && Wrapper.INSTANCE.getWorld() != null)
+                    for (Chunk chunk : chunksToUpdate) {
+                        searchChunk(chunk);
+                    }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                }
+            }
+        })).start();
         int distance = Wrapper.INSTANCE.getOptions().viewDistance;
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
@@ -153,6 +152,14 @@ public class TunnelFinder extends Module {
             }
         }
         super.onEnable();
+    }
+
+    @Override
+    public void onDisable() {
+        if (thread != null && !thread.isInterrupted()) {
+            thread.interrupt();
+        }
+        super.onDisable();
     }
 
     public void searchChunk(Chunk chunk) {

@@ -44,6 +44,8 @@ public class Search extends Module {
     private static ConcurrentMap<BlockPos, Block> worldBlocks = Maps.newConcurrentMap();
     @Op(name = "Tracers")
     public boolean tracers;
+
+    private Thread thread;
     me.dustin.jex.helper.misc.Timer timer = new me.dustin.jex.helper.misc.Timer();
     private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
     public Search() {
@@ -53,8 +55,16 @@ public class Search extends Module {
             blocks.put(Blocks.NETHER_PORTAL, new Color(106, 0, 255).getRGB());
             SearchFile.write();
         }
-        new Thread(() -> {
-            while (true) {
+    }
+
+    public static ConcurrentMap<Block, Integer> getBlocks() {
+        return blocks;
+    }
+
+    @Override
+    public void onEnable() {
+        (thread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
                 if (this.getState() && Wrapper.INSTANCE.getWorld() != null)
                     for (Chunk chunk : chunksToUpdate) {
                         searchChunk(chunk);
@@ -64,15 +74,7 @@ public class Search extends Module {
                 } catch (InterruptedException e) {
                 }
             }
-        }).start();
-    }
-
-    public static ConcurrentMap<Block, Integer> getBlocks() {
-        return blocks;
-    }
-
-    @Override
-    public void onEnable() {
+        })).start();
         if (Wrapper.INSTANCE.getWorld() != null) {
             int distance = Wrapper.INSTANCE.getOptions().viewDistance;
             if (Wrapper.INSTANCE.getLocalPlayer() != null) {
@@ -213,6 +215,9 @@ public class Search extends Module {
 
     @Override
     public void onDisable() {
+        if (thread != null && !thread.isInterrupted()) {
+            thread.interrupt();
+        }
         this.chunksToUpdate.clear();
         worldBlocks.clear();
         super.onDisable();
