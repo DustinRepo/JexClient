@@ -24,7 +24,7 @@ public enum Update {
         new Thread(() -> {
             try {
                 progressText = "Downloading client";
-                FileUtils.copyURLToFile(new URL(downloadURL), new File(mcLoc + File.separator + "mods", "JexClient.jar"));
+                FileUtils.copyURLToFile(new URL(downloadURL), new File(mcLoc + File.separator + "mods", "JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar")));
                 progressText = "Update complete. Closing Minecraft...";
                 try {
                     Thread.sleep(3000);
