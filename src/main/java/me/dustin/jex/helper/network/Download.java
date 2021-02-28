@@ -36,7 +36,7 @@ public class Download extends Observable implements Runnable {
         this.output = output;
 
         // Begin the download.
-        download();
+        //download();
     }
 
     // Get this download's URL.

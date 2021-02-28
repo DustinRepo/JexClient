@@ -1,11 +1,11 @@
 package me.dustin.jex.update;
 
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.Download;
 import net.minecraft.SharedConstants;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public enum Update {
@@ -22,19 +22,31 @@ public enum Update {
         String mcLoc = Wrapper.INSTANCE.getMinecraft().runDirectory.getAbsolutePath();
 
         new Thread(() -> {
-            try {
                 progressText = "Downloading client";
-                FileUtils.copyURLToFile(new URL(downloadURL), new File(mcLoc + File.separator + "mods", "JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar")));
-                progressText = "Update complete. Closing Minecraft...";
-                try {
-                    Thread.sleep(3000);
-                    Wrapper.INSTANCE.getMinecraft().scheduleStop();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            Download download = null;
+            try {
+                download = new Download(new URL(downloadURL), new File(mcLoc + File.separator + "mods", "JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar")));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            if (download == null) {
+                progressText = "Error updating.";
+                return;
+            }
+
+            try {
+                while (download.getStatus() == Download.DOWNLOADING) {
+                    download.run();
+                    progress = download.getProgress() / 100;//idk why this doesn't work even though I have SetEnv no-gzip dont-vary set in .htaccess
                 }
-
-            } catch (IOException e) {
-
+                if (download.getStatus() == Download.COMPLETE)
+                    progressText = "Update complete. Closing Minecraft...";
+                if (download.getStatus() == Download.ERROR)
+                    progressText = "Error updating.";
+                Thread.sleep(3000);
+                Wrapper.INSTANCE.getMinecraft().scheduleStop();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }).start();
     }
