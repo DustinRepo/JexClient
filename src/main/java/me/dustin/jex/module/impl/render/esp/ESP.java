@@ -61,10 +61,10 @@ public class ESP extends Module {
     public static boolean spoofOutline;
 
     public ESP() {
-        ShaderESP shaderESP = new ShaderESP();
-        BoxESP boxESP = new BoxESP();
-        OutlineBox outlineBox = new OutlineBox();
-        TwoDeeESP twoDeeESP = new TwoDeeESP();
+        new ShaderESP();
+        new BoxESP();
+        new OutlineBox();
+        new TwoDeeESP();
     }
 
     @EventListener(events = {EventRender3D.class, EventRender2D.class, EventOutlineColor.class, EventJoinWorld.class}, priority = 1)

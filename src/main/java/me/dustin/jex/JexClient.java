@@ -26,7 +26,7 @@ import me.dustin.jex.update.UpdateManager;
 
 public enum JexClient {
     INSTANCE;
-    private String version = "0.1.5.1";
+    private String version = "0.1.5.5";
     private boolean autoSaveModules = false;
 
     public void initializeClient() {
@@ -54,7 +54,7 @@ public enum JexClient {
     }
 
     @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class})
-    public void keyPress(Event event) {
+    public void runMethod(Event event) {
         if (event instanceof EventKeyPressed) {
             EventKeyPressed eventKeyPressed = (EventKeyPressed)event;
             if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {

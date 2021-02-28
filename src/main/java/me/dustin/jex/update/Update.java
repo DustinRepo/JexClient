@@ -1,6 +1,7 @@
 package me.dustin.jex.update;
 
 import me.dustin.jex.helper.misc.Wrapper;
+import net.minecraft.SharedConstants;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -13,7 +14,11 @@ public enum Update {
     private float progress;
 
     public void update(String jexVer) {
-        String downloadURL = "https://jexclient.com/download/JexClient.jar";
+        if (SharedConstants.getGameVersion().getName().contains("w") && (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_MC || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH)) {
+            progressText = "Error. New version for another snapshot, and can not run on this Fabric version";
+            return;
+        }
+        String downloadURL = "https://jexclient.com/download/JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar");
         String mcLoc = Wrapper.INSTANCE.getMinecraft().runDirectory.getAbsolutePath();
 
         new Thread(() -> {

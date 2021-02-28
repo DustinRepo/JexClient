@@ -14,30 +14,22 @@ public enum UpdateManager {
     private Status status;
     private String latestVersion;
     private String latestMCVersion;
+    private String latestSnapshotVersion;
 
     public void checkForUpdate() {
         try {
 
-            URL url = new URL("https://jexclient.com/includes/version.php");
+            URL url = new URL("https://jexclient.com/includes/version.inc.php");
             String response = WebHelper.INSTANCE.readURL(url);
 
             JsonObject updateResponse = new Gson().fromJson(response, JsonObject.class);
             latestMCVersion = updateResponse.get("mcVersion").getAsString();
             latestVersion = updateResponse.get("version").getAsString();
+            latestSnapshotVersion = updateResponse.get("snapVersion").getAsString();
 
             boolean isCurrentlySnapshot = SharedConstants.getGameVersion().getName().contains("w");
-            boolean isLatestSnapshot = latestMCVersion.contains("w");
-            if (!isCurrentlySnapshot && isLatestSnapshot) {
-                url = new URL("https://jexclient.com/includes/get-versions.php?version=" + SharedConstants.getGameVersion().getName());
-                response = WebHelper.INSTANCE.readURL(url);
-                latestMCVersion = SharedConstants.getGameVersion().getName();
-                if (response.contains(","))
-                    latestVersion = response.split(",")[0];
-                else
-                    latestVersion = response;
-            }
             boolean isVersionSame = JexClient.INSTANCE.getVersion().equalsIgnoreCase(latestVersion);
-            boolean isMCVersionSame = SharedConstants.getGameVersion().getName().equalsIgnoreCase(latestMCVersion);
+            boolean isMCVersionSame = SharedConstants.getGameVersion().getName().equalsIgnoreCase(isCurrentlySnapshot ? latestSnapshotVersion : latestMCVersion);
             if (isVersionSame && isMCVersionSame)
                 status = Status.UP_TO_DATE;
             if (isVersionSame && !isMCVersionSame)
