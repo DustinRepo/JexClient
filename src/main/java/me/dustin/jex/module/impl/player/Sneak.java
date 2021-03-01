@@ -27,7 +27,8 @@ public class Sneak extends Module {
 
     @Override
     public void onDisable() {
-        NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
+        if (Wrapper.INSTANCE.getLocalPlayer() != null)
+            NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
         super.onDisable();
     }
 }

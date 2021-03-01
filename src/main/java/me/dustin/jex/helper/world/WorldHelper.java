@@ -85,15 +85,14 @@ public enum WorldHelper {
             return false;
         }
         Box par1AxisAlignedBB = entity.getBoundingBox();
-        par1AxisAlignedBB = par1AxisAlignedBB.expand(-0, -0.081D, -0.081D);
+        par1AxisAlignedBB = par1AxisAlignedBB.expand(-0, -0.081D, 0);
         int var4 = MathHelper.floor(par1AxisAlignedBB.minX);
         int var5 = MathHelper.floor(par1AxisAlignedBB.maxX + 1.0D);
         int var6 = MathHelper.floor(par1AxisAlignedBB.minY);
         int var7 = MathHelper.floor(par1AxisAlignedBB.maxY + 0.8D);
         int var8 = MathHelper.floor(par1AxisAlignedBB.minZ);
         int var9 = MathHelper.floor(par1AxisAlignedBB.maxZ + 1.0D);
-        if (Wrapper.INSTANCE.getWorld().getChunk(
-                new BlockPos(entity.getX(), entity.getY(), entity.getZ())) == null) {
+        if (Wrapper.INSTANCE.getWorld().getChunk(new BlockPos(entity.getX(), entity.getY(), entity.getZ())) == null) {
             return false;
         }
         for (int var12 = var4; var12 < var5; var12++) {
