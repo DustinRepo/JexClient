@@ -17,7 +17,6 @@ import net.minecraft.item.FoodComponents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -29,13 +28,12 @@ public class AutoEat extends Module {
     public static boolean isEating;
     @Op(name = "Mode", all = {"Saturation", "Hunger"})
     public String mode = "Saturation";
+    @Op(name = "Press Key")
+    public boolean pressKey;
     @Op(name = "Eat Negative Foods")
     public boolean negativeFoods;
     @Op(name = "Eat To Regen")
     public boolean eatToRegen;
-    @Op(name = "Silent")
-    public boolean silent;
-    boolean sendPacket = false;
     private int savedSlot = 0;
     private int lastFood;
 
@@ -52,44 +50,38 @@ public class AutoEat extends Module {
         }
         if (event instanceof EventPlayerUpdates) {
             if (((EventPlayerUpdates) event).getMode() == EventPlayerUpdates.Mode.PRE) {
-                sendPacket = false;
                 if (getBestFood().slot != -1 && getBestFood().itemStack != null && needsToEat(getBestFood())) {
                     if (!isEating) {
                         savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         if (BaritoneHelper.INSTANCE.baritoneExists())
                             BaritoneHelper.INSTANCE.pause();
-                        if (!silent)
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = getBestFood().slot;
 
-                        NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(getBestFood().slot));
-                        sendPacket = true;
+                        InventoryHelper.INSTANCE.getInventory().selectedSlot = getBestFood().slot;
                         lastFood = Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel();
                         isEating = true;
                     }
                     if (lastFood != Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
+                        if (lastFood < Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
+                            isEating = false;
+                            if (pressKey)
+                            Wrapper.INSTANCE.getOptions().keyUse.setPressed(false);
+                            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
+                            InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+                        }
                         lastFood = Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel();
-                        sendPacket = true;
-                    }
-                    if (!silent)
-                        InventoryHelper.INSTANCE.getInventory().selectedSlot = getBestFood().slot;
-                }
-            } else {
-                //if (sendPacket) {
-                if (isEating) {
-                    if (!(getBestFood().slot != -1 && getBestFood().itemStack != null && needsToEat(getBestFood()))) {
                         if (BaritoneHelper.INSTANCE.baritoneExists())
                             BaritoneHelper.INSTANCE.resume();
-                        isEating = false;
-                        if (!silent)
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
-                        NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
-                        NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot));
-                    } else {
-                        if (Wrapper.INSTANCE.getLocalPlayer().age % 20 == 0)
-                            NetworkHelper.INSTANCE.sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND));
                     }
+                    if (isEating) {
+                        if (pressKey)
+                        Wrapper.INSTANCE.getOptions().keyUse.setPressed(true);
+                        Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
+                    }
+                } else if (isEating) {
+                    isEating = false;
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
+                    InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
                 }
-                //}
             }
         }
         if (event instanceof EventPacketSent) {
