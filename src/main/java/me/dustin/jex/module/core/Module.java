@@ -106,6 +106,10 @@ public class Module {
     }
 
     public void setSuffix(String suffix) {
+        if (suffix.isEmpty()) {
+            this.setDisplayName(this.getName());
+            return;
+        }
         this.setDisplayName(this.getName() + "\2477: \2478" + suffix);
     }
 

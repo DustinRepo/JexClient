@@ -16,7 +16,7 @@ import net.minecraft.util.hit.HitResult;
 public enum EntityHelper {
     INSTANCE;
 
-    public static boolean isAuraBlocking() {
+    public boolean isAuraBlocking() {
         Killaura killaura = (Killaura) Module.get(Killaura.class);
         if (Module.get(Killaura.class).getState()) {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {

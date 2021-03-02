@@ -42,6 +42,21 @@ public enum PlayerHelper {
         return nameMap.get(uuid);
     }
 
+    public void setVelocityX(float x) {
+        Vec3d velo = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
+        Wrapper.INSTANCE.getLocalPlayer().setVelocity(x, velo.y, velo.z);
+    }
+
+    public void setVelocityY(float y) {
+        Vec3d velo = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
+        Wrapper.INSTANCE.getLocalPlayer().setVelocity(velo.x, y, velo.z);
+    }
+
+    public void setVelocityZ(float z) {
+        Vec3d velo = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
+        Wrapper.INSTANCE.getLocalPlayer().setVelocity(velo.x, velo.y, z);
+    }
+
     public float[] getRotations(Entity entityIn, Entity ent2) {
         double var4 = entityIn.getX() - ent2.getX();
         double var8 = entityIn.getZ() - ent2.getZ();
