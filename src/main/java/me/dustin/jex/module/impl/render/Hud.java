@@ -13,7 +13,6 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.misc.Lagometer;
-import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.FontHelper;
@@ -49,6 +48,8 @@ public class Hud extends Module {
     public String colorMode = "Client Color";
     @OpChild(name = "Rainbow Speed", parent = "Color", min = 1, max = 20, dependency = "Rainbow")
     public int rainbowSpeed = 3;
+    @OpChild(name = "Start Pos", all = {"Top", "Bottom"}, parent = "Array List")
+    public String arrayListStartPos = "Top";
     @OpChild(name = "Rainbow Saturation", parent = "Color", dependency = "Rainbow", inc = 0.1f)
     public float rainbowSaturation = 1;
     @Op(name = "Potion Effects")
@@ -99,15 +100,16 @@ public class Hud extends Module {
     public String distanceMode = "Blocks";
     @OpChild(name = "Per", parent = " ", all = {"Second", "Tick", "Minute", "Hour", "Day"})
     public String timeMode = "Second";
-    int num;
-    int spriteCount = 0;
-    int infoCount = 0;
-    int rainbowScroll = 0;
-    private Timer timer = new Timer();
+
+    private int num;
+    private int spriteCount = 0;
+    private int infoCount = 0;
+    private int rainbowScroll = 0;
+    private int rot = 0;
+
     private float lagOMeterY = -11;
     private float coordsY = -999;
     private ArrayList<Module> mods = new ArrayList<>();
-    private Timer colorTimer = new Timer();
 
     public Hud() {
         this.setState(true);
@@ -129,7 +131,7 @@ public class Hud extends Module {
             drawInfo(eventRender2D);
         if (tabGui) {
             TabGui.INSTANCE.setHoverBar(hoverBar);
-            TabGui.INSTANCE.draw(eventRender2D.getMatrixStack(), 2, 11 + (10 * infoCount), tabGuiWidth, buttonHeight);
+            TabGui.INSTANCE.draw(eventRender2D.getMatrixStack(), 2, 35 + (10 * infoCount), tabGuiWidth, buttonHeight);
         }
     }
 
@@ -149,6 +151,9 @@ public class Hud extends Module {
 
     @EventListener(events = {EventTick.class})
     private void updatePositions(EventTick eventTick) {
+        rot++;
+        if (rot > 360)
+            rot -= 360;
         rainbowScroll += rainbowSpeed;
 
         float shouldBeY = Lagometer.INSTANCE.isServerLagging() ? 2 : -11;
@@ -181,7 +186,21 @@ public class Hud extends Module {
     }
 
     public void drawWatermark(EventRender2D eventRender2D) {
-        FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), "JexClient b" + JexClient.INSTANCE.getVersion(), 2, 2, ColorHelper.INSTANCE.getClientColor());
+        int x = 17;
+        int y = 17;
+        GL11.glTranslatef(x, y, 0);
+        GL11.glRotatef(rot, 0, 0, 1);
+        GL11.glTranslatef(-x, -y, 0);
+
+        Render2DHelper.INSTANCE.drawFullCircle(x, y, 15, 0x80252525);
+        Render2DHelper.INSTANCE.drawArc(x, y, 15, ColorHelper.INSTANCE.getClientColor(), 0, 360, 1);
+        FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), "Jex", x, y - 9, ColorHelper.INSTANCE.getClientColor());
+        GL11.glScalef(0.75f, 0.75f, 1);
+        FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), JexClient.INSTANCE.getVersion(), x / 0.75f, y / 0.75f + 1, ColorHelper.INSTANCE.getClientColor());
+        GL11.glScalef(1 / 0.75f, 1 / 0.75f, 1);
+        GL11.glTranslatef(x, y, 0);
+        GL11.glRotatef(-rot, 0, 0, 1);
+        GL11.glTranslatef(-x, -y, 0);
     }
 
     public void drawLagometer(EventRender2D eventRender2D) {
@@ -203,7 +222,7 @@ public class Hud extends Module {
             });
             for (Module mod : mods) {
                 float x = Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(mod.getDisplayName()) - 2;
-                float y = 2;
+                float y = arrayListStartPos.equalsIgnoreCase("Top") ? 2 : coordsY - (bottomRightCount * 10);
 
                 int color = getRainbowColor(count, num);
                 if (colorMode.equalsIgnoreCase("Category"))
@@ -211,7 +230,7 @@ public class Hud extends Module {
                 if (colorMode.equalsIgnoreCase("Client Color"))
                     color = ColorHelper.INSTANCE.getClientColor();
                 if (mod.isVisible() && mod.getState()) {
-                    FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), mod.getDisplayName(), x, y + (11 * count), color);
+                    FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), mod.getDisplayName(), x, y + (arrayListStartPos.equalsIgnoreCase("Top") ? (11 * count) : -(11 * count)), color);
                     count++;
                 }
             }
@@ -269,30 +288,31 @@ public class Hud extends Module {
         return "";
     }
 
+    int bottomRightCount = 0;
     public void drawPotionEffectsAndCoordinates(EventRender2D eventRender2D) {
-        int count = 0;
+        bottomRightCount = 0;
         if (coords) {
             if (netherCoords) {
                 double coordScale = Wrapper.INSTANCE.getLocalPlayer().clientWorld.getDimension().getCoordinateScale();
                 if (coordScale != 1.0D) {
                     String coordString = String.format("Overworld\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", Wrapper.INSTANCE.getLocalPlayer().getX() * coordScale, Wrapper.INSTANCE.getLocalPlayer().getBoundingBox().minY, Wrapper.INSTANCE.getLocalPlayer().getZ() * coordScale);
-                    FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), coordString, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(coordString) - 2, coordsY - (count * 10), ColorHelper.INSTANCE.getClientColor());
+                    FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), coordString, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(coordString) - 2, coordsY - (bottomRightCount * 10), ColorHelper.INSTANCE.getClientColor());
                 } else {
                     String coordString = String.format("Nether\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", Wrapper.INSTANCE.getLocalPlayer().getX() / 8, Wrapper.INSTANCE.getLocalPlayer().getBoundingBox().minY, Wrapper.INSTANCE.getLocalPlayer().getZ() / 8);
-                    FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), coordString, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(coordString) - 2, coordsY - (count * 10), ColorHelper.INSTANCE.getClientColor());
+                    FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), coordString, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(coordString) - 2, coordsY - (bottomRightCount * 10), ColorHelper.INSTANCE.getClientColor());
                 }
-                count++;
+                bottomRightCount++;
             }
             String coordString = String.format("XYZ\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getBoundingBox().minY, Wrapper.INSTANCE.getLocalPlayer().getZ());
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), coordString, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(coordString) - 2, coordsY - (count * 10), ColorHelper.INSTANCE.getClientColor());
-            count++;
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), coordString, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(coordString) - 2, coordsY - (bottomRightCount * 10), ColorHelper.INSTANCE.getClientColor());
+            bottomRightCount++;
         }
-        spriteCount = count;
+        spriteCount = bottomRightCount;
         if (potionEffects) {
             List<Runnable> list_1 = Lists.newArrayListWithExpectedSize(Wrapper.INSTANCE.getLocalPlayer().getActiveStatusEffects().size());
             for (StatusEffectInstance effect : Wrapper.INSTANCE.getLocalPlayer().getActiveStatusEffects().values()) {
                 String effectString = String.format("%s %s§f: §7%s", effect.getEffectType().getName().getString(), getAmpString(effect), StatusEffectUtil.durationToString(effect, 1.0F));
-                FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), effectString, Render2DHelper.INSTANCE.getScaledWidth() - Wrapper.INSTANCE.getTextRenderer().getWidth(effectString) - (icons ? 11 : 2), coordsY - (count * 10), effect.getEffectType().getColor());
+                FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), effectString, Render2DHelper.INSTANCE.getScaledWidth() - Wrapper.INSTANCE.getTextRenderer().getWidth(effectString) - (icons ? 11 : 2), coordsY - (bottomRightCount * 10), effect.getEffectType().getColor());
 
                 if (icons) {
                     Sprite sprite_1 = Wrapper.INSTANCE.getMinecraft().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
@@ -303,7 +323,7 @@ public class Hud extends Module {
                         spriteCount++;
                     });
                 }
-                count++;
+                bottomRightCount++;
             }
             list_1.forEach(Runnable::run);
         }
@@ -311,7 +331,7 @@ public class Hud extends Module {
 
     private void drawInfo(EventRender2D eventRender2D) {
         infoCount = 0;
-        float startY = 11;
+        float startY = 35;
         if (!info)
             return;
         if (serverName) {
