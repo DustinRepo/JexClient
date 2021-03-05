@@ -33,7 +33,6 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -64,7 +63,6 @@ public class JexTitleScreen extends Screen {
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
     private static final Logger field_23775 = LogManager.getLogger();
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
-    private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier JEX_TITLE_TEXTURE = new Identifier("jex", "gui/mc/jex-logo.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
@@ -75,7 +73,6 @@ public class JexTitleScreen extends Screen {
     private final boolean doBackgroundFade;
     @Nullable
     private String splashText;
-    private ButtonWidget buttonResetDemo;
     private boolean realmsNotificationsInitialized;
     private Screen realmsNotificationGui;
     private int copyrightTextWidth;
@@ -85,7 +82,6 @@ public class JexTitleScreen extends Screen {
 
     private CustomMainMenu customMainMenu;
     private Timer timer = new Timer();
-    private Timer timer1 = new Timer();
     private boolean isDonator;
 
     public JexTitleScreen() {
@@ -273,10 +269,7 @@ public class JexTitleScreen extends Screen {
             }
             timer.reset();
         }
-        if (timer1.hasPassed(2000)) {
-            isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
-            timer1.reset();
-        }
+        isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
         int midX = Render2DHelper.INSTANCE.getScaledWidth() / 2;
         float f = this.doBackgroundFade ? (float) (Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
         fill(matrices, 0, 0, this.width, this.height, -1);

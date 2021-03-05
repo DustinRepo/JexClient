@@ -2,6 +2,7 @@ package me.dustin.jex.module.impl.movement;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.misc.EventRenderTick;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventStep;
@@ -11,6 +12,7 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
+import me.dustin.jex.module.impl.world.Timer;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
@@ -29,7 +31,8 @@ public class Step extends Module {
 
     private int cancelPackets;
     private int stepsTillCancel = 2;
-    @EventListener(events = {EventPlayerPackets.class, EventStep.class, EventPacketSent.class})
+    private boolean slow;
+    @EventListener(events = {EventPlayerPackets.class, EventStep.class, EventPacketSent.class, EventRenderTick.class})
     private void runMethod(Event event) {
         if (event instanceof EventPlayerPackets) {
             EventPlayerPackets eventPlayerPackets = (EventPlayerPackets)event;
@@ -45,7 +48,7 @@ public class Step extends Module {
             EventStep eventStep = (EventStep)event;
             switch (eventStep.getMode()) {
                 case PRE:
-                    Wrapper.INSTANCE.getIRenderTickCounter().setTimeScale(1000f / (20f * 0.3f));
+                    slow = true;
                     break;
                 case MID:
                     NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.42399999499321, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
@@ -60,7 +63,7 @@ public class Step extends Module {
                     }
                 break;
                 case END:
-                    Wrapper.INSTANCE.getIRenderTickCounter().setTimeScale(1000f / 20f);
+                    slow = false;
                         if (stepsTillCancel == 0) {
                             cancelPackets = 1;
                             stepsTillCancel = new Random().nextBoolean() ? 2 : 1;
@@ -71,7 +74,7 @@ public class Step extends Module {
                         }
                     break;
                 case POST:
-                    Wrapper.INSTANCE.getIRenderTickCounter().setTimeScale(1000f / 20f);
+                    slow = false;
                     break;
             }
         } else if (event instanceof EventPacketSent) {
@@ -85,6 +88,11 @@ public class Step extends Module {
                     cancelPackets--;
                 }
             }
+        } else if (event instanceof EventRenderTick) {
+            if (slow) {
+                ((EventRenderTick) event).timeScale = 1000f / (20f * 0.3f);
+            } else if (!Module.get(Timer.class).getState())
+                ((EventRenderTick) event).timeScale = 1000 / 20;
         }
     }
 
