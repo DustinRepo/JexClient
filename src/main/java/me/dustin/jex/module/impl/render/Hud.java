@@ -340,12 +340,12 @@ public class Hud extends Module {
         }
         if (tps) {
             String tpsString = instantTPS ? String.format("TPS\247f: \2477%.2f \247rInstant\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS(), TPSHelper.INSTANCE.getTPS(2)) : String.format("TPS\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS());
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), tpsString, 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
-            infoCount++;
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), tpsString, 40, 10, ColorHelper.INSTANCE.getClientColor());
+            //infoCount++;
         }
         if (fps) {
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("FPS\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().fpsDebugString.split(" ")[0]), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
-            infoCount++;
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("FPS\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().fpsDebugString.split(" ")[0]), 40, 20, ColorHelper.INSTANCE.getClientColor());
+            //infoCount++;
         }
         if (yawAndPitch) {
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Look\247f: \2477%s \2477%s", ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(Wrapper.INSTANCE.getLocalPlayer().yaw), 1), ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(Wrapper.INSTANCE.getLocalPlayer().pitch), 1)), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());

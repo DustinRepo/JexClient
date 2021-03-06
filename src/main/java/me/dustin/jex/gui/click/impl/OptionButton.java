@@ -2,11 +2,15 @@ package me.dustin.jex.gui.click.impl;
 
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.events.api.EventAPI;
+import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
+import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.file.ModuleFile;
 import me.dustin.jex.gui.click.ClickGui;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -15,17 +19,19 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.option.Option;
 import me.dustin.jex.option.enums.OpType;
 import me.dustin.jex.option.types.*;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -40,7 +46,6 @@ public class OptionButton extends Button {
     private boolean isSliding;
     private OptionButton masterButton;
     private OptionButton parentButton;
-    private TextFieldWidget textField;
     private Identifier colorSlider = new Identifier("jex", "gui/click/colorslider.png");
     private int buttonsHeight;
 
@@ -52,13 +57,7 @@ public class OptionButton extends Button {
     @Override
     public void draw(MatrixStack matrixStack) {
         updateOnOff();
-        if (textField == null) {
-            if (this.getOption().getType() == OpType.STRING)
-                textField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) this.getX(), (int) this.getY(), (int) this.getWidth(), (int) this.getHeight(), new LiteralText(((StringOption) this.getOption()).getValue()));
-        }
-
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x60000000);
-
 
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
@@ -72,14 +71,10 @@ public class OptionButton extends Button {
                 break;
             case STRING:
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getOption().getName(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
-                if (textField.isFocused())
-                    Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY() + 12, this.getX() + this.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor(), 0x00ffffff, 1);
-                textField.x = (int) this.getX();
-                textField.y = (int) this.getY() + 7;
-                textField.setHasBorder(false);
-                textField.setVisible(true);
-                textField.setEditable(true);
-                textField.render(matrixStack, MouseHelper.INSTANCE.getMouseX(), MouseHelper.INSTANCE.getMouseY(), Wrapper.INSTANCE.getMinecraft().getTickDelta());
+                FontHelper.INSTANCE.drawCenteredString(matrixStack, ((StringOption)option).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 14, 0xffaaaaaa);
+                if (EventAPI.getInstance().alreadyRegistered(this)) {
+                    Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor(), 0x00ffffff, 1);
+                }
                 break;
             case COLOR:
             case INT:
@@ -119,9 +114,8 @@ public class OptionButton extends Button {
                         Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 }
                 if (this.getOption() instanceof StringOption) {
-                    textField.changeFocus(true);
-                    textField.mouseClicked((int) double_1, (int) double_2, int_1);
-                    textField.changeFocus(true);
+                    if (!EventAPI.getInstance().alreadyRegistered(this))
+                        EventAPI.getInstance().register(this);
                     if (ClickGui.doesPlayClickSound())
                         Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 }
@@ -141,11 +135,8 @@ public class OptionButton extends Button {
             }
         } else {
             if (this.getOption() instanceof StringOption) {
-                if (textField != null) {
-                    textField.changeFocus(false);
-                    textField.mouseClicked((int) double_1, (int) double_2, int_1);
-                    textField.changeFocus(false);
-                }
+                while (EventAPI.getInstance().alreadyRegistered(this))
+                    EventAPI.getInstance().unregister(this);
             }
         }
         getChildren().forEach(button -> {
@@ -155,12 +146,6 @@ public class OptionButton extends Button {
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
-        if (textField != null)
-            textField.charTyped(typedChar, keyCode);
-        if (this.getOption().getType() == OpType.STRING && textField != null) {
-            ((StringOption) this.getOption()).setValue(textField.getText());
-        }
-
         for (Button button : this.getChildren()) {
             if (button != this)
                 button.keyTyped(typedChar, keyCode);
@@ -283,6 +268,83 @@ public class OptionButton extends Button {
                 }
             }
         }
+    }
+
+    @EventListener(events = {EventKeyPressed.class})
+    private void handleKeys(EventKeyPressed eventKeyPressed) {
+        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui)) {
+            while (EventAPI.getInstance().alreadyRegistered(this))
+                EventAPI.getInstance().unregister(this);
+            return;
+        }
+        int keyCode = eventKeyPressed.getKey();
+        StringOption stringOption = (StringOption)option;
+        if (Screen.isPaste(keyCode)) {
+            stringOption.setValue(stringOption + MinecraftClient.getInstance().keyboard.getClipboard());
+            return;
+        }
+        switch (keyCode) {
+            case GLFW.GLFW_KEY_ENTER:
+            case GLFW.GLFW_KEY_ESCAPE:
+                while (EventAPI.getInstance().alreadyRegistered(this))
+                    EventAPI.getInstance().unregister(this);
+                break;
+            case GLFW.GLFW_KEY_SPACE:
+                stringOption.setValue(stringOption.getValue() + " ");
+                break;
+            case GLFW.GLFW_KEY_BACKSPACE:
+                if (stringOption.getValue().isEmpty())
+                    break;
+                String str = stringOption.getValue().substring(0, stringOption.getValue().length() - 1);
+                stringOption.setValue(str);
+                break;
+            default:
+                String keyName = InputUtil.fromKeyCode(keyCode, eventKeyPressed.getScancode()).getTranslationKey().replace("key.keyboard.", "");
+                if (keyName.length() == 1) {
+                    if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
+                        keyName = keyName.toUpperCase();
+                        if (isInt(keyName))
+                            keyName = getFromNumKey(Integer.parseInt(keyName));
+                    }
+                    stringOption.setValue(stringOption.getValue() + keyName);
+                }
+                break;
+        }
+    }
+
+    private boolean isInt(String intStr) {
+        try {
+            Integer.parseInt(intStr);
+            return true;
+        }catch (Exception e) {
+            return false;
+        }
+    }
+
+    private String getFromNumKey(int i) {
+        switch (i) {
+            case 1:
+                return "!";
+            case 2:
+                return "@";
+            case 3:
+                return "#";
+            case 4:
+                return "$";
+            case 5:
+                return "%";
+            case 6:
+                return "^";
+            case 7:
+                return "&";
+            case 8:
+                return "*";
+            case 9:
+                return "(";
+            case 0:
+                return ")";
+        }
+        return String.valueOf(i);
     }
 
     public void drawSliders(Option property, MatrixStack matrixStack) {
