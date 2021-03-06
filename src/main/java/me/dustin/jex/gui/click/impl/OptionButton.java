@@ -280,7 +280,7 @@ public class OptionButton extends Button {
         int keyCode = eventKeyPressed.getKey();
         StringOption stringOption = (StringOption)option;
         if (Screen.isPaste(keyCode)) {
-            stringOption.setValue(stringOption + MinecraftClient.getInstance().keyboard.getClipboard());
+            stringOption.setValue(stringOption.getValue() + MinecraftClient.getInstance().keyboard.getClipboard());
             return;
         }
         switch (keyCode) {
