@@ -6,6 +6,7 @@ import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventClickBlock;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -64,10 +65,10 @@ public class AutoBreak extends Module {
         if (event.equals(EventPlayerPackets.class) && ((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE && pos != null) {
             Block block = WorldHelper.INSTANCE.getBlock(pos);
             if (block != Blocks.AIR && getDistance(pos, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ()) <= mineDistance) {
-                float[] rot = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
-                ((EventPlayerPackets) event).setYaw(rot[0]);
-                ((EventPlayerPackets) event).setPitch(rot[1]);
-                Direction facing = Direction.fromRotation(-rot[0]);
+                RotationVector rot = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
+                ((EventPlayerPackets) event).setRotation(rot);
+                rot.normalize();
+                Direction facing = Direction.fromRotation(-rot.getYaw());
                 Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(pos, facing);
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             }

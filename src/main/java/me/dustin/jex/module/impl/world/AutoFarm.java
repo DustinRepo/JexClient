@@ -6,6 +6,7 @@ import me.dustin.jex.command.CommandManager;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.BaritoneHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Timer;
@@ -87,9 +88,8 @@ public class AutoFarm extends Module {
                         } else {
                             //break the bitch
                             if (ClientMathHelper.INSTANCE.getDistance(PlayerHelper.INSTANCE.getPlayerVec(), blockVec) <= 2) {
-                                float[] rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), blockVec);
-                                eventPlayerPackets.setYaw(rotation[0]);
-                                eventPlayerPackets.setPitch(rotation[1]);
+                                RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), blockVec);
+                                eventPlayerPackets.setRotation(rotation);
                                 breakCrop = true;
                             }
                         }
@@ -111,9 +111,8 @@ public class AutoFarm extends Module {
                                 if (ClientMathHelper.INSTANCE.getDistance(PlayerHelper.INSTANCE.getPlayerVec(), blockVec) <= 2) {
                                     if (InventoryHelper.INSTANCE.getInventory().selectedSlot != getSeeds())
                                         InventoryHelper.INSTANCE.getInventory().selectedSlot = getSeeds();
-                                    float[] rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), blockVec);
-                                    eventPlayerPackets.setYaw(rotation[0]);
-                                    eventPlayerPackets.setPitch(rotation[1]);
+                                    RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), blockVec);
+                                    eventPlayerPackets.setRotation(rotation);
                                     plantCrop = true;
                                 }
                             }
@@ -138,13 +137,13 @@ public class AutoFarm extends Module {
                 if (breakCrop) {
                     BlockPos breakPos = cropsToBreak.get(0);
                     Vec3d blockVec = new Vec3d(breakPos.getX() + 0.5, breakPos.getY() + 0.1, breakPos.getZ() + 0.5);
-                    float[] rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), blockVec);
-                    float[] savedRotation = {Wrapper.INSTANCE.getLocalPlayer().yaw, Wrapper.INSTANCE.getLocalPlayer().pitch};
-                    Wrapper.INSTANCE.getLocalPlayer().yaw = rotation[0];
-                    Wrapper.INSTANCE.getLocalPlayer().pitch = rotation[1];
+                    RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), blockVec);
+                    RotationVector savedRotation = RotationVector.fromPlayer();
+                    Wrapper.INSTANCE.getLocalPlayer().yaw = rotation.getYaw();
+                    Wrapper.INSTANCE.getLocalPlayer().pitch = rotation.getPitch();
                     HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(3.5f, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
-                    Wrapper.INSTANCE.getLocalPlayer().yaw = savedRotation[0];
-                    Wrapper.INSTANCE.getLocalPlayer().pitch = savedRotation[1];
+                    Wrapper.INSTANCE.getLocalPlayer().yaw = savedRotation.getYaw();
+                    Wrapper.INSTANCE.getLocalPlayer().pitch = savedRotation.getPitch();
                     if (hitResult instanceof BlockHitResult) {
                         if (breakTimer.hasPassed(breakDelay)) {
                             BlockHitResult blockHitResult = (BlockHitResult) hitResult;
@@ -158,13 +157,13 @@ public class AutoFarm extends Module {
                 } else if (plantCrop) {
                     BlockPos plantPos = cropsToReplant.get(0);
                     Vec3d blockVec = new Vec3d(plantPos.getX() + 0.5, plantPos.getY() + 0.1, plantPos.getZ() + 0.5);
-                    float[] rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), blockVec);
-                    float[] savedRotation = {Wrapper.INSTANCE.getLocalPlayer().yaw, Wrapper.INSTANCE.getLocalPlayer().pitch};
-                    Wrapper.INSTANCE.getLocalPlayer().yaw = rotation[0];
-                    Wrapper.INSTANCE.getLocalPlayer().pitch = rotation[1];
+                    RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), blockVec);
+                    RotationVector savedRotation = RotationVector.fromPlayer();
+                    Wrapper.INSTANCE.getLocalPlayer().yaw = rotation.getYaw();
+                    Wrapper.INSTANCE.getLocalPlayer().pitch = rotation.getPitch();
                     HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(3.5f, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
-                    Wrapper.INSTANCE.getLocalPlayer().yaw = savedRotation[0];
-                    Wrapper.INSTANCE.getLocalPlayer().pitch = savedRotation[1];
+                    Wrapper.INSTANCE.getLocalPlayer().yaw = savedRotation.getYaw();
+                    Wrapper.INSTANCE.getLocalPlayer().pitch = savedRotation.getPitch();
 
                     if (hitResult instanceof BlockHitResult) {
                         BlockHitResult sentResult = new BlockHitResult(blockVec.add(0, -1.1f, 0), Direction.UP, plantPos.add(0, -1, 0), false);

@@ -3,6 +3,7 @@ package me.dustin.jex.module.impl.movement;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -134,8 +135,8 @@ public class Scaffold extends Module {
         if (blockInfo == null)
             return;
         BlockPos lookAtPos = blockInfo.blockPos;
-        float[] rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(lookAtPos.getX(), lookAtPos.getY(), lookAtPos.getZ()));
-        event.setYaw(rotation[0]);
+        RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(lookAtPos.getX(), lookAtPos.getY(), lookAtPos.getZ()));
+        event.setYaw(rotation.getYaw());
         event.setPitch(80);
 
         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();

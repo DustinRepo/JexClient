@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.events.core.enums.EventPriority;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -57,7 +58,7 @@ public enum PlayerHelper {
         Wrapper.INSTANCE.getLocalPlayer().setVelocity(velo.x, velo.y, z);
     }
 
-    public float[] getRotations(Entity entityIn, Entity ent2) {
+    public RotationVector getRotations(Entity entityIn, Entity ent2) {
         double var4 = entityIn.getX() - ent2.getX();
         double var8 = entityIn.getZ() - ent2.getZ();
         double var6;
@@ -74,10 +75,10 @@ public enum PlayerHelper {
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
         float pitch = updateRotation(ent2.pitch, var13, Float.MAX_VALUE);
         float yaw = updateRotation(ent2.yaw, var12, Float.MAX_VALUE);
-        return new float[]{yaw - 180, -pitch};
+        return new RotationVector(yaw - 180, -pitch);
     }
 
-    public float[] getRotations(Entity entityIn, Vec3d vec3d) {
+    public RotationVector getRotations(Entity entityIn, Vec3d vec3d) {
         double var4 = entityIn.getX() - vec3d.x;
         double var8 = entityIn.getZ() - vec3d.z;
         double var6;
@@ -88,10 +89,10 @@ public enum PlayerHelper {
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
         float pitch = updateRotation(Wrapper.INSTANCE.getLocalPlayer().pitch, var13, Float.MAX_VALUE);
         float yaw = updateRotation(Wrapper.INSTANCE.getLocalPlayer().yaw, var12, Float.MAX_VALUE);
-        return new float[]{yaw - 180, -pitch};
+        return new RotationVector(yaw - 180, -pitch);
     }
 
-    public float[] getRotations(Entity ent2, float sideOffset, float heightOffset) {
+    public RotationVector getRotations(Entity ent2, float sideOffset, float heightOffset) {
         ClientPlayerEntity entityIn = Wrapper.INSTANCE.getLocalPlayer();
         Random random = new Random();
         sideOffset = ent2.getWidth() * sideOffset;
@@ -107,7 +108,7 @@ public enum PlayerHelper {
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
         float pitch = updateRotation(ent2.pitch, var13, Float.MAX_VALUE);
         float yaw = updateRotation(ent2.yaw, var12, Float.MAX_VALUE);
-        return new float[]{yaw - 180, -pitch};
+        return new RotationVector(yaw - 180, -pitch);
     }
 
     /**
@@ -127,12 +128,12 @@ public enum PlayerHelper {
         return angle + f;
     }
 
-    public Entity getCrosshairEntity(float tickDelta, float[] rots, float reach) {
+    public Entity getCrosshairEntity(float tickDelta, RotationVector rots, float reach) {
         Entity entity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
         if (entity != null) {
             if (Wrapper.INSTANCE.getMinecraft().world != null) {
                 Vec3d vec3d = entity.getCameraPosVec(tickDelta);
-                Vec3d vec3d2 = getRotationVector(rots[1], rots[0]);
+                Vec3d vec3d2 = getRotationVector(rots.getPitch(), rots.getYaw());
                 Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
 
                 Box box = entity.getBoundingBox().stretch(vec3d2.multiply(reach)).expand(1.0D, 1.0D, 1.0D);

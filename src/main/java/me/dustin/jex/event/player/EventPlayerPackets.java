@@ -1,6 +1,7 @@
 package me.dustin.jex.event.player;
 
 import me.dustin.events.core.Event;
+import me.dustin.jex.helper.math.RotationVector;
 
 public class EventPlayerPackets extends Event {
 
@@ -35,6 +36,15 @@ public class EventPlayerPackets extends Event {
 
     public void setPitch(float pitch) {
         this.pitch = pitch;
+    }
+
+    public void setRotation(RotationVector rotation) {
+        this.yaw = rotation.getYaw();
+        this.pitch = rotation.getPitch();
+    }
+
+    public RotationVector getRotation() {
+        return new RotationVector(yaw, pitch);
     }
 
     public boolean isOnGround() {

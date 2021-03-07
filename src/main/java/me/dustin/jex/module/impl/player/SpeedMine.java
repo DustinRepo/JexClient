@@ -32,6 +32,7 @@ public class SpeedMine extends Module {
                     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
                 if (Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() > progress)
                     Wrapper.INSTANCE.getIInteractionManager().setBlockBreakProgress(1);
+                givenHaste = false;
                 break;
             case "Haste":
                 givenHaste = true;

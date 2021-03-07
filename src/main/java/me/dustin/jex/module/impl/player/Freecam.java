@@ -9,6 +9,7 @@ import me.dustin.jex.event.player.EventPushOutOfBlocks;
 import me.dustin.jex.event.render.EventMarkChunkClosed;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -22,7 +23,6 @@ import me.dustin.jex.option.annotate.Op;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 @ModClass(name = "Freecam", category = ModCategory.PLAYER, description = "Take a look around like a ghost.")
@@ -36,7 +36,7 @@ public class Freecam extends Module {
     public float speed = 0.5f;
 
     private Vec3d savedCoords = Vec3d.ZERO;
-    private Vec2f lookVec = Vec2f.ZERO;
+    private RotationVector lookVec = new RotationVector(0, 0);
 
     @EventListener(events = {EventPacketSent.class, EventMove.class, EventPlayerUpdates.class, EventPushOutOfBlocks.class, EventRender3D.class, EventMarkChunkClosed.class})
     public void runEvent(Event event) {
@@ -52,8 +52,8 @@ public class Freecam extends Module {
                 iPlayerMoveC2SPacket.setX(savedCoords.getX());
                 iPlayerMoveC2SPacket.setY(savedCoords.getY());
                 iPlayerMoveC2SPacket.setZ(savedCoords.getZ());
-                iPlayerMoveC2SPacket.setYaw(lookVec.x);
-                iPlayerMoveC2SPacket.setPitch(lookVec.y);
+                iPlayerMoveC2SPacket.setYaw(lookVec.getYaw());
+                iPlayerMoveC2SPacket.setPitch(lookVec.getPitch());
             }
         }
         if (event instanceof EventMove) {
@@ -88,7 +88,7 @@ public class Freecam extends Module {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             Wrapper.INSTANCE.getMinecraft().gameRenderer.reset();
             savedCoords = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
-            lookVec = new Vec2f(Wrapper.INSTANCE.getLocalPlayer().yaw, Wrapper.INSTANCE.getLocalPlayer().pitch);
+            lookVec = new RotationVector(Wrapper.INSTANCE.getLocalPlayer());
         }
         super.onEnable();
     }
@@ -103,8 +103,8 @@ public class Freecam extends Module {
             Wrapper.INSTANCE.getLocalPlayer().setPos(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ());
             NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), false));
             NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(savedCoords.getX(), -1337.0, savedCoords.getZ(), true));
-            Wrapper.INSTANCE.getLocalPlayer().yaw = lookVec.x;
-            Wrapper.INSTANCE.getLocalPlayer().pitch = lookVec.y;
+            Wrapper.INSTANCE.getLocalPlayer().yaw = lookVec.getYaw();
+            Wrapper.INSTANCE.getLocalPlayer().pitch = lookVec.getPitch();
         }
     }
 }

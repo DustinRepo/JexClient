@@ -4,6 +4,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.friend.Friend;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -71,9 +72,8 @@ public class CrystalAura extends Module {
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
             this.setSuffix(mode);
             if (placePos != null) {
-                float[] rots = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
-                event.setYaw(rots[0]);
-                event.setPitch(rots[1]);
+                RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
+                event.setRotation(rotation);
             }
 
             if (timer.hasPassed(delay))
@@ -85,9 +85,8 @@ public class CrystalAura extends Module {
                             if (placingPos != null) {
                                 EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
                                 if (entityPlayer.distanceTo(crystal) <= 6 && Wrapper.INSTANCE.getLocalPlayer().distanceTo(crystal) <= 6 && !Friend.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldAttack(crystal)) {
-                                    float[] rots = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
-                                    event.setYaw(rots[0]);
-                                    event.setPitch(rots[1]);
+                                    RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
+                                    event.setRotation(rotation);
                                     placePos = placingPos.down();
                                     timer.reset();
                                     return;
@@ -100,9 +99,8 @@ public class CrystalAura extends Module {
                 if (entity instanceof EndCrystalEntity) {
                     EndCrystalEntity enderCrystalEntity = (EndCrystalEntity) entity;
                     if (shouldAttack(enderCrystalEntity)) {
-                        float[] rots = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
-                        event.setYaw(rots[0]);
-                        event.setPitch(rots[1]);
+                        RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
+                        event.setRotation(rotation);
                         Wrapper.INSTANCE.getInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
                         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND.MAIN_HAND);
                     }

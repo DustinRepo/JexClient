@@ -3,6 +3,7 @@ package me.dustin.jex.module.impl.player;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.events.core.enums.EventPriority;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.module.core.Module;
@@ -29,9 +30,8 @@ public class Enderman extends Module {
                 case "look at":
                     EndermanEntity lookat = getEnderman();
                     if (lookat != null) {
-                        float[] rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), lookat);
-                        eventPlayerPackets.setYaw(rotation[0]);
-                        eventPlayerPackets.setPitch(rotation[1]);
+                        RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), lookat);
+                        eventPlayerPackets.setRotation(rotation);
                     }
                     break;
                 case "look away":

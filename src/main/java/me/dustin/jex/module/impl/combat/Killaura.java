@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.BaritoneHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -112,12 +113,11 @@ public class Killaura extends Module {
 
                 if (target != null) {
                     if (rotate) {
-                        float[] rotations = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), target);
+                        RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), target);
                         if (randomize) {
-                            rotations = PlayerHelper.INSTANCE.getRotations(target, randomWidth, randomHeight);
+                            rotationVector = PlayerHelper.INSTANCE.getRotations(target, randomWidth, randomHeight);
                         }
-                        event.setYaw((float) rotations[0]);
-                        event.setPitch((float) rotations[1]);
+                        event.setRotation(rotationVector);
                         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
                         Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
                         if (lockview) {

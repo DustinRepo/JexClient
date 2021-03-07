@@ -2,6 +2,7 @@ package me.dustin.jex.module.impl.combat;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.module.core.Module;
@@ -30,9 +31,8 @@ public class AntiFireball extends Module {
                     FireballEntity fireballEntity = (FireballEntity) entity;
                     if (fireballEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= range) {
                         if (rotate) {
-                            float[] rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), fireballEntity);
-                            event.setYaw(rotation[0]);
-                            event.setYaw(rotation[1]);
+                            RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), fireballEntity);
+                            event.setRotation(rotation);
                         }
                         if (swing) {
                             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);

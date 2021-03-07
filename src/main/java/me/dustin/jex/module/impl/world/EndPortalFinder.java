@@ -37,7 +37,7 @@ public class EndPortalFinder extends Module {
                     if (firstPos == null) {
                         firstPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
                     }
-                    firstYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye)[0];
+                    firstYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye).getYaw();
                 }
                 if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getEntityId()) == null) {
                     if (firstPos != null) {
@@ -52,7 +52,7 @@ public class EndPortalFinder extends Module {
                     if (secondPos == null) {
                         secondPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
                     }
-                    secondYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye)[0];
+                    secondYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye).getYaw();
                 }
                 if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getEntityId()) == null) {
                     if (firstPos != null && secondPos != null) {

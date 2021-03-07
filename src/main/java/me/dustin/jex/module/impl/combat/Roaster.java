@@ -4,6 +4,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -69,9 +70,8 @@ public class Roaster extends Module {
                         if (footBlock == Blocks.AIR) {
                             blockPos = livingEntity.getBlockPos().down();
                             if (rotate) {
-                                float[] rotations = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-                                eventPlayerPackets.setYaw(rotations[0]);
-                                eventPlayerPackets.setPitch(rotations[1]);
+                                RotationVector rotations = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                                eventPlayerPackets.setRotation(rotations);
                             }
                         }
                     }
