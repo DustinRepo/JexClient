@@ -1,6 +1,8 @@
 package me.dustin.jex.module.impl.render;
 
+import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.render.EventBlockOutlineColor;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -31,26 +33,30 @@ public class BlockOverlay extends Module {
     @OpChild(name = "Progress Based Color", parent = "Overlay Color")
     public boolean progressColor = false;
 
-    @EventListener(events = {EventRender3D.class})
-    private void runMethod(EventRender3D eventRender3D) {
-        HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), eventRender3D.getPartialTicks(), false);
-        if (result instanceof BlockHitResult) {
-            BlockHitResult blockHitResult = (BlockHitResult)result;
-            if (WorldHelper.INSTANCE.getBlock(((BlockHitResult) result).getBlockPos()) instanceof AirBlock)
-                return;
-            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
-            Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-            Render3DHelper.INSTANCE.drawBoxOutline(box, outlineColor);
-
-            if (Wrapper.INSTANCE.getInteractionManager().isBreakingBlock() && progressOverlay) {
-                float breakProgress = Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() / 2;
-                box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
-                Render3DHelper.INSTANCE.drawBoxInside(box, progressColor ? getColor(breakProgress * 2).getRGB() : overlayColor);
+    @EventListener(events = {EventRender3D.class, EventBlockOutlineColor.class})
+    private void runMethod(Event event) {
+        if (event instanceof EventRender3D) {
+            EventRender3D eventRender3D = (EventRender3D)event;
+            HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), eventRender3D.getPartialTicks(), false);
+            if (result instanceof BlockHitResult) {
+                BlockHitResult blockHitResult = (BlockHitResult) result;
+                if (WorldHelper.INSTANCE.getBlock(((BlockHitResult) result).getBlockPos()) instanceof AirBlock)
+                    return;
+                Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
+                if (Wrapper.INSTANCE.getInteractionManager().isBreakingBlock() && progressOverlay) {
+                    float breakProgress = Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() / 2;
+                    Box box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
+                    Render3DHelper.INSTANCE.drawBoxInside(box, progressColor ? getColor(1 - (breakProgress * 2)).getRGB() : overlayColor);
+                }
             }
+        } else if (event instanceof EventBlockOutlineColor) {
+            EventBlockOutlineColor eventBlockOutlineColor = (EventBlockOutlineColor)event;
+            eventBlockOutlineColor.setColor(outlineColor);
+            eventBlockOutlineColor.cancel();
         }
     }
     public Color getColor(double power) {
-        double H = power * 0.4; // Hue (note 0.4 = Green, see huge chart below)
+        double H = power * 0.35; // Hue (note 0.4 = Green, see huge chart below)
         double S = 0.9; // Saturation
         double B = 0.9; // Brightness
 
