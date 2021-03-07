@@ -345,7 +345,7 @@ public enum Render2DHelper {
                 float h = Math.max(0.0F, (g - f) / g);
                 int i = Math.round(13.0F - f * 13.0F / g);
                 int j = MathHelper.hsvToRgb(h / 3.0F, 1.0F, 1.0F);
-                //this.renderGuiQuad(bufferBuilder, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
+                this.renderGuiQuad(bufferBuilder, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
                 this.renderGuiQuad(bufferBuilder, x + 2, y + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
                 RenderSystem.enableBlend();
                 RenderSystem.enableAlphaTest();

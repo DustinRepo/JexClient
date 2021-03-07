@@ -114,6 +114,19 @@ public enum InventoryHelper {
         return stacks;
     }
 
+    public HashMap<Integer, ItemStack> getStacksFromInventory(boolean hotbar) {
+        HashMap<Integer, ItemStack> stacks = Maps.newHashMap();
+        if (hotbar) {
+            for (int i = 0; i < 9; i++) {
+                stacks.put(i + 36, getInventory().getStack(i));
+            }
+        }
+        for (int i = 9; i < 44; i++) {
+            stacks.put(i - 9, getInventory().getStack(i));
+        }
+        return stacks;
+    }
+
     public int getDepthStriderLevel() {
         ItemStack boots = getInventory().getArmorStack(0);
         if (boots.hasEnchantments()) {
