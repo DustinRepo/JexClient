@@ -30,7 +30,7 @@ public class InventoryView extends Module {
 
     @EventListener(events = {EventRender2D.class})
     private void runMethod(EventRender2D eventRender2D) {
-        float y = location.equalsIgnoreCase("Top") ? -10 : Render2DHelper.INSTANCE.getScaledHeight() - 130;
+        float y = location.equalsIgnoreCase("Top") ? -10 : Render2DHelper.INSTANCE.getScaledHeight() - 140;
         float x = (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 95;
 
         HashMap<Integer, ItemStack> stacks = InventoryHelper.INSTANCE.getStacksFromInventory(false);
