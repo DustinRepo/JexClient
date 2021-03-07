@@ -102,7 +102,7 @@ public class AutoEat extends Module {
         if (!eatToRegen) {
             return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger();
         } else {
-            return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger() || (Wrapper.INSTANCE.getLocalPlayer().getHealth() < 20 && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() < 17);
+            return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger() || (Wrapper.INSTANCE.getLocalPlayer().getHealth() < 20 && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() < 18);
         }
     }
 
