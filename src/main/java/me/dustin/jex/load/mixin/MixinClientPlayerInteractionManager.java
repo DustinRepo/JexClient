@@ -4,19 +4,25 @@ import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.world.EventBreakBlock;
 import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.helper.world.WorldHelper;
+import me.dustin.jex.load.impl.IClientPlayerInteractionManager;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientPlayerInteractionManager.class)
-public class MixinClientPlayerInteractionManager {
+public class MixinClientPlayerInteractionManager implements IClientPlayerInteractionManager {
+
+    @Shadow private float currentBreakingProgress;
+
+    @Shadow private int blockBreakingCooldown;
 
     @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
     public void attackBlock(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
@@ -36,5 +42,21 @@ public class MixinClientPlayerInteractionManager {
         if (eventAttackEntity.isCancelled()) {
             ci.cancel();
         }
+    }
+
+    @Override
+    public void setBlockBreakProgress(float progress) {
+        this.currentBreakingProgress = progress;
+    }
+
+
+    @Override
+    public void setBlockBreakingCooldown(int cooldown) {
+        this.blockBreakingCooldown = cooldown;
+    }
+
+    @Override
+    public float getBlockBreakProgress() {
+        return this.currentBreakingProgress;
     }
 }

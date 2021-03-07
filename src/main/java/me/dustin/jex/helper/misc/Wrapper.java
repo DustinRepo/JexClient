@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.misc;
 
+import me.dustin.jex.load.impl.IClientPlayerInteractionManager;
 import me.dustin.jex.load.impl.IMinecraft;
 import me.dustin.jex.load.impl.IPlayerEntity;
 import me.dustin.jex.load.impl.IRenderTickCounter;
@@ -42,6 +43,8 @@ public enum Wrapper {
     public ClientPlayerInteractionManager getInteractionManager() {
         return getMinecraft().interactionManager;
     }
+
+    public IClientPlayerInteractionManager getIInteractionManager() { return (IClientPlayerInteractionManager)getMinecraft().interactionManager; }
 
     public Window getWindow() {
         return getMinecraft().getWindow();

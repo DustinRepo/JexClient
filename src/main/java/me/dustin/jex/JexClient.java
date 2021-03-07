@@ -20,6 +20,7 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.ModuleManager;
 import me.dustin.jex.module.impl.combat.Killaura;
 import me.dustin.jex.module.impl.misc.Discord;
+import me.dustin.jex.module.impl.misc.Fakelag;
 import me.dustin.jex.module.impl.player.Freecam;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.update.UpdateManager;
@@ -73,6 +74,8 @@ public enum JexClient {
                     Module.get(Killaura.class).setState(false);
                 if (Module.get(Freecam.class).getState())
                     Module.get(Freecam.class).setState(false);
+                if (Module.get(Fakelag.class).getState())
+                    Module.get(Fakelag.class).setState(false);
             }
         } else if (event instanceof EventScheduleStop) {
             if (Module.get(Discord.class).getState()) {
