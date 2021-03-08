@@ -5,9 +5,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Timer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.util.Identifier;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -21,6 +30,7 @@ public enum MCAPIHelper {
     private HashMap<UUID, String> uuidMap = Maps.newHashMap();
     private HashMap<String, UUID> nameMap = Maps.newHashMap();
     private HashMap<APIServer, APIStatus> serverStatusMap = Maps.newHashMap();
+    private ArrayList<String> avatarsRequested = new ArrayList<>();
     private Timer timer = new Timer();
 
     public String getNameFromUUID(UUID uuid) {
@@ -70,6 +80,29 @@ public enum MCAPIHelper {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public void registerAvatarFace(UUID uuid) {
+        if (avatarsRequested.contains(uuid.toString().replace("-", "")))
+            return;
+        String avatarURL = "https://crafatar.com/avatars/" + uuid.toString().replace("-", "") + "?size=64&overlay";
+        try {
+            BufferedImage image = ImageIO.read(new URL(avatarURL));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", bos);
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(bos.toByteArray());
+
+            NativeImage nativeImage = NativeImage.read(bais);
+            applyTexture(new Identifier("jex", "avatar/" + uuid.toString().replace("-", "")), nativeImage);
+            avatarsRequested.add(uuid.toString().replace("-", ""));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void applyTexture(Identifier identifier, NativeImage nativeImage) {
+        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(nativeImage)));
     }
 
     public APIStatus getStatus(APIServer server) {
