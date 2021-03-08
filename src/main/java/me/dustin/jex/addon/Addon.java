@@ -76,7 +76,7 @@ public class Addon {
         return requestedUUIds.contains(uuid);
     }
 
-    private static AddonResponse getResponse(String uuid) {
+    public static AddonResponse getResponse(String uuid) {
         if (!requestedUUIds.contains(uuid)) {
             loadAddons(uuid);
             return null;

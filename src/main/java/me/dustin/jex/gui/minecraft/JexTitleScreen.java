@@ -18,6 +18,7 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.module.core.Module;
@@ -66,6 +67,7 @@ public class JexTitleScreen extends Screen {
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier JEX_TITLE_TEXTURE = new Identifier("jex", "gui/mc/jex-logo.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
+    private Identifier id;
     public static int background = 0;
     private static ArrayList<Background> backgrounds = new ArrayList<>();
     private final boolean isMinceraft;
@@ -94,6 +96,9 @@ public class JexTitleScreen extends Screen {
         this.doBackgroundFade = doBackgroundFade;
         this.isMinceraft = (double) (new Random()).nextFloat() < 1.0E-4D;
         customMainMenu = (CustomMainMenu) Module.get(CustomMainMenu.class);
+
+        MCAPIHelper.INSTANCE.registerAvatarFace(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
+        id = new Identifier("jex", "avatar/" + Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId().toString().replace("-", ""));
     }
 
     public static CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
@@ -335,8 +340,22 @@ public class JexTitleScreen extends Screen {
             float left = -1;
             float right = 205;
 
-            FontHelper.INSTANCE.drawWithShadow(matrices, "\247fUsername: " + (isDonator ? "\247r" : (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")) ? "\247a" : "\2477")) + Wrapper.INSTANCE.getMinecraft().getSession().getUsername(), 2, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
-
+            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
+            DrawableHelper.drawTexture(matrices, 2, (int)bottom + 2, 0, 0, 32, 32, 32, 32);
+            FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Welcome, " + (isDonator ? "\247r" : (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")) ? "\247a" : "\247f")) + Wrapper.INSTANCE.getMinecraft().getSession().getUsername(), 37, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
+            if (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
+                FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Jex Utility Client", 37, bottom + 12, -1);
+                Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+                if (response.getCape() != null && !response.getCape().isEmpty() && !response.getCape().equalsIgnoreCase("null")) {
+                    Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")));
+                } else {
+                    Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "cape/jex_cape.png"));
+                }
+                DrawableHelper.drawTexture(matrices, 2, (int)bottom + 35, 2.5f, 4, 32, 64, 198, 128);
+            } else {
+                FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Account not linked. You can link your account for a free Jex Cape", 37, bottom + 12, -1);
+                FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Also join the Discord!", 37, bottom + 22, -1);
+            }
             Render2DHelper.INSTANCE.fillAndBorder(matrices, left, top, right, bottom, ColorHelper.INSTANCE.getClientColor(), 0x40000000, 1);
 
             this.customButtons.forEach(button -> {
