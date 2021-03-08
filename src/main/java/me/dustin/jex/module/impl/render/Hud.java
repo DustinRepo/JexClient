@@ -46,7 +46,7 @@ import java.util.List;
 
 @ModClass(name = "HUD", category = ModCategory.VISUAL, description = "Renders an in-game HUD")
 public class Hud extends Module {
-    @Op(name = "Watermark", all = {"Static", "Spin", "Flip"})
+    @Op(name = "Jex Effect", all = {"Static", "Spin", "Flip", "SpinFlip"})
     public String watermarkMode = "Static";
     @Op(name = "Draw Face")
     public boolean drawFace = true;
@@ -172,6 +172,7 @@ public class Hud extends Module {
         switch (watermarkMode) {
             case "Static":
                 break;
+            case "SpinFlip":
             case "Spin":
                 rot+=2;
                 if (rot > 360)
@@ -224,6 +225,7 @@ public class Hud extends Module {
     public void drawWatermark(EventRender2D eventRender2D) {
         int x = 17;
         int y = 17;
+        GL11.glPushMatrix();
         GL11.glTranslatef(x, y, 0);
         switch (watermarkMode) {
             case "Static":
@@ -233,6 +235,9 @@ public class Hud extends Module {
                 break;
             case "Flip":
                 GL11.glRotatef(rot, 0, 1, 0);
+                break;
+            case "SpinFlip":
+                GL11.glRotatef(rot, 0, 1, 1);
                 break;
         }
         GL11.glTranslatef(-x, -y, 0);
@@ -254,6 +259,9 @@ public class Hud extends Module {
             case "Flip":
                 GL11.glRotatef(-rot, 0, 1, 0);
                 break;
+            case "SpinFlip":
+                GL11.glRotatef(-rot, 0, 1, 1);
+                break;
         }
         GL11.glTranslatef(-x, -y, 0);
 
@@ -266,6 +274,7 @@ public class Hud extends Module {
                 DrawableHelper.drawTexture(eventRender2D.getMatrixStack(), 35, 2, 0, 0, 32, 32, 32, 32);
             }catch (Exception e) {}
         }
+        GL11.glPopMatrix();
     }
 
     public void drawLagometer(EventRender2D eventRender2D) {
