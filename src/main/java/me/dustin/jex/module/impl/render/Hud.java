@@ -46,6 +46,8 @@ import java.util.List;
 
 @ModClass(name = "HUD", category = ModCategory.VISUAL, description = "Renders an in-game HUD")
 public class Hud extends Module {
+    @Op(name = "Watermark", all = {"Static", "Spin", "Flip"})
+    public String watermarkMode = "Static";
     @Op(name = "Draw Face")
     public boolean drawFace = true;
     @Op(name = "Array List")
@@ -119,6 +121,7 @@ public class Hud extends Module {
     private int spriteCount = 0;
     private int infoCount = 0;
     private int rainbowScroll = 0;
+    private boolean flipRot;
     private int rot = 0;
 
     private float lagOMeterY = -11;
@@ -165,9 +168,28 @@ public class Hud extends Module {
 
     @EventListener(events = {EventTick.class})
     private void updatePositions(EventTick eventTick) {
-        rot++;
-        if (rot > 360)
-            rot -= 360;
+
+        switch (watermarkMode) {
+            case "Static":
+                break;
+            case "Spin":
+                rot+=2;
+                if (rot > 360)
+                    rot -= 360;
+                break;
+            case "Flip":
+                if (flipRot) {
+                    rot-=2;
+                    if (rot <= 0)
+                        flipRot = false;
+                } else {
+                    rot+=2;
+                    if (rot >= 90)
+                        flipRot = true;
+                }
+                break;
+        }
+
         rainbowScroll += rainbowSpeed;
 
         float shouldBeY = Lagometer.INSTANCE.isServerLagging() ? 2 : -11;
@@ -203,17 +225,36 @@ public class Hud extends Module {
         int x = 17;
         int y = 17;
         GL11.glTranslatef(x, y, 0);
-        GL11.glRotatef(rot, 0, 0, 1);
+        switch (watermarkMode) {
+            case "Static":
+                break;
+            case "Spin":
+                GL11.glRotatef(rot, 0, 0, 1);
+                break;
+            case "Flip":
+                GL11.glRotatef(rot, 0, 1, 0);
+                break;
+        }
         GL11.glTranslatef(-x, -y, 0);
-
+        float newX = x - (FontHelper.INSTANCE.getStringWidth("Jex") / 2);
         Render2DHelper.INSTANCE.drawFullCircle(x, y, 15, 0x80252525);
         Render2DHelper.INSTANCE.drawArc(x, y, 15, ColorHelper.INSTANCE.getClientColor(), 0, 360, 1);
-        FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), "Jex", x, y - 9, ColorHelper.INSTANCE.getClientColor());
+        FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), "Jex", newX, y - 9, ColorHelper.INSTANCE.getClientColor());
         GL11.glScalef(0.75f, 0.75f, 1);
-        FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), JexClient.INSTANCE.getVersion(), x / 0.75f, y / 0.75f + 1, ColorHelper.INSTANCE.getClientColor());
+        float newX1 = x - (FontHelper.INSTANCE.getStringWidth(JexClient.INSTANCE.getVersion()) / (2 / 0.75f));
+        FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), JexClient.INSTANCE.getVersion(), newX1 / 0.75f, y / 0.75f + 1, ColorHelper.INSTANCE.getClientColor());
         GL11.glScalef(1 / 0.75f, 1 / 0.75f, 1);
         GL11.glTranslatef(x, y, 0);
-        GL11.glRotatef(-rot, 0, 0, 1);
+        switch (watermarkMode) {
+            case "Static":
+                break;
+            case "Spin":
+                GL11.glRotatef(-rot, 0, 0, 1);
+                break;
+            case "Flip":
+                GL11.glRotatef(-rot, 0, 1, 0);
+                break;
+        }
         GL11.glTranslatef(-x, -y, 0);
 
         if (drawFace) {
