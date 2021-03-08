@@ -46,7 +46,7 @@ import java.util.List;
 
 @ModClass(name = "HUD", category = ModCategory.VISUAL, description = "Renders an in-game HUD")
 public class Hud extends Module {
-    @Op(name = "Jex Effect", all = {"Static", "Spin", "Flip", "SpinFlip"})
+    @Op(name = "Jex Effect", all = {"Static", "Spin Only", "Flip Only", "SpinFlip"})
     public String watermarkMode = "Static";
     @Op(name = "Draw Face")
     public boolean drawFace = true;
@@ -173,12 +173,12 @@ public class Hud extends Module {
             case "Static":
                 break;
             case "SpinFlip":
-            case "Spin":
+            case "Spin Only":
                 rot+=2;
                 if (rot > 360)
                     rot -= 360;
                 break;
-            case "Flip":
+            case "Flip Only":
                 if (flipRot) {
                     rot-=2;
                     if (rot <= 0)
@@ -230,10 +230,10 @@ public class Hud extends Module {
         switch (watermarkMode) {
             case "Static":
                 break;
-            case "Spin":
+            case "Spin Only":
                 GL11.glRotatef(rot, 0, 0, 1);
                 break;
-            case "Flip":
+            case "Flip Only":
                 GL11.glRotatef(rot, 0, 1, 0);
                 break;
             case "SpinFlip":
@@ -253,10 +253,10 @@ public class Hud extends Module {
         switch (watermarkMode) {
             case "Static":
                 break;
-            case "Spin":
+            case "Spin Only":
                 GL11.glRotatef(-rot, 0, 0, 1);
                 break;
-            case "Flip":
+            case "Flip Only":
                 GL11.glRotatef(-rot, 0, 1, 0);
                 break;
             case "SpinFlip":

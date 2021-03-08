@@ -107,8 +107,10 @@ public class Option {
                     Timer timer = new Timer();
                     while (!castOption.getValue().equalsIgnoreCase(value)) {
                         castOption.inc();
-                        if (timer.hasPassed(1000))
+                        if (timer.hasPassed(1000)) {
+                            castOption.setValue(value);
                             break;
+                        }
                     }
                 }
             }
