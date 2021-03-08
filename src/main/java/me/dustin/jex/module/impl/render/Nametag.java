@@ -158,7 +158,7 @@ public class Nametag extends Module {
         Vec3d vec = positions.get(playerEntity);
         if (isOnScreen(vec)) {
             float x = (float) vec.x;
-            float y = (float) vec.y - (showPlayerFace ? 18 : 0);
+            float y = (float) vec.y - (showPlayerFace && playerEntity instanceof PlayerEntity ? 18 : 0);
             String nameString = getNameString(playerEntity);
             float length = FontHelper.INSTANCE.getStringWidth(nameString);
 
@@ -185,7 +185,7 @@ public class Nametag extends Module {
         Vec3d vec = positions.get(playerEntity);
         if (isOnScreen(vec)) {
             float x = (float) vec.x;
-            float y = (float) vec.y - (showPlayerFace ? 18 : 0);
+            float y = (float) vec.y - (showPlayerFace && playerEntity instanceof PlayerEntity ? 18 : 0);
             if (showInv)
                 drawInv(playerEntity, x, y, eventRender2D);
         }
