@@ -14,6 +14,7 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -30,6 +31,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -44,6 +46,8 @@ import java.util.List;
 
 @ModClass(name = "HUD", category = ModCategory.VISUAL, description = "Renders an in-game HUD")
 public class Hud extends Module {
+    @Op(name = "Draw Face")
+    public boolean drawFace = true;
     @Op(name = "Array List")
     public boolean showArrayList = true;
     @OpChild(name = "Color", parent = "Array List", all = {"Client Color", "Rainbow", "Category"})
@@ -82,6 +86,8 @@ public class Hud extends Module {
     public float tabGuiWidth = 75;
     @OpChild(name = "Button Height", parent = "TabGui", min = 10, max = 25)
     public float buttonHeight = 12;
+    @OpChild(name = "Show Username", parent = "Info")
+    public boolean showUsername = true;
     @OpChild(name = "Server", parent = "Info")
     public boolean serverName = true;
     @OpChild(name = "Ping", parent = "Info")
@@ -209,6 +215,14 @@ public class Hud extends Module {
         GL11.glTranslatef(x, y, 0);
         GL11.glRotatef(-rot, 0, 0, 1);
         GL11.glTranslatef(-x, -y, 0);
+
+        if (drawFace) {
+            MCAPIHelper.INSTANCE.registerAvatarFace(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
+            Identifier id = new Identifier("jex", "avatar/" + Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId().toString().replace("-", ""));
+
+            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
+            DrawableHelper.drawTexture(eventRender2D.getMatrixStack(), 35, 2, 0, 0, 32, 32, 32, 32);
+        }
     }
 
     public void drawLagometer(EventRender2D eventRender2D) {
@@ -339,6 +353,20 @@ public class Hud extends Module {
 
     private void drawInfo(EventRender2D eventRender2D) {
         infoCount = 0;
+        if (showUsername) {
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Username\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().getSession().getUsername()), drawFace ? 70 : 35, 2 + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            infoCount++;
+        }
+        if (tps) {
+            String tpsString = instantTPS ? String.format("TPS\247f: \2477%.2f \247rInstant\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS(), TPSHelper.INSTANCE.getTPS(2)) : String.format("TPS\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS());
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), tpsString, drawFace ? 70 : 35, 2 + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            infoCount++;
+        }
+        if (fps) {
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("FPS\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().fpsDebugString.split(" ")[0]), drawFace ? 70 : 35, 2 + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            infoCount++;
+        }
+        infoCount = 0;
         float startY = 35;
         if (!info)
             return;
@@ -349,13 +377,6 @@ public class Hud extends Module {
         if (ping) {
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Ping\247f: \2477%d", Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()) == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()).getLatency()), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
-        }
-        if (tps) {
-            String tpsString = instantTPS ? String.format("TPS\247f: \2477%.2f \247rInstant\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS(), TPSHelper.INSTANCE.getTPS(2)) : String.format("TPS\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS());
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), tpsString, 40, 10, ColorHelper.INSTANCE.getClientColor());
-        }
-        if (fps) {
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("FPS\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().fpsDebugString.split(" ")[0]), 40, 20, ColorHelper.INSTANCE.getClientColor());
         }
         if (yawAndPitch) {
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Look\247f: \2477%s \2477%s", ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(Wrapper.INSTANCE.getLocalPlayer().yaw), 1), ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(Wrapper.INSTANCE.getLocalPlayer().pitch), 1)), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
