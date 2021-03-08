@@ -47,9 +47,13 @@ public class AccountButton {
                 MCAPIHelper.INSTANCE.registerAvatarFace(uuid);
                 id = new Identifier("jex", "avatar/" + uuid.toString().replace("-",""));
             }
-        } else if (id != null){
-            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
-            DrawableHelper.drawTexture(matrixStack, (int)this.getX() + 4, (int)this.getY() + 4, 0, 0, 32, 32, 32, 32);
+        } else if (id != null) {
+            try {
+                Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
+                DrawableHelper.drawTexture(matrixStack, (int) this.getX() + 4, (int) this.getY() + 4, 0, 0, 32, 32, 32, 32);
+            } catch (Exception e) {
+
+            }
         }
     }
 

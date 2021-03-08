@@ -86,19 +86,21 @@ public enum MCAPIHelper {
         if (avatarsRequested.contains(uuid.toString().replace("-", "")))
             return;
         String avatarURL = "https://crafatar.com/avatars/" + uuid.toString().replace("-", "") + "?size=64&overlay";
-        try {
-            BufferedImage image = ImageIO.read(new URL(avatarURL));
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", bos);
+        new Thread(() -> {
+            try {
+                BufferedImage image = ImageIO.read(new URL(avatarURL));
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", bos);
 
-            ByteArrayInputStream bais = new ByteArrayInputStream(bos.toByteArray());
+                ByteArrayInputStream bais = new ByteArrayInputStream(bos.toByteArray());
 
-            NativeImage nativeImage = NativeImage.read(bais);
-            applyTexture(new Identifier("jex", "avatar/" + uuid.toString().replace("-", "")), nativeImage);
-            avatarsRequested.add(uuid.toString().replace("-", ""));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                NativeImage nativeImage = NativeImage.read(bais);
+                applyTexture(new Identifier("jex", "avatar/" + uuid.toString().replace("-", "")), nativeImage);
+                avatarsRequested.add(uuid.toString().replace("-", ""));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private static void applyTexture(Identifier identifier, NativeImage nativeImage) {

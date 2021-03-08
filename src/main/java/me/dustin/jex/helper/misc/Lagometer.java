@@ -2,7 +2,7 @@ package me.dustin.jex.helper.misc;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketReceive;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 
 public enum Lagometer {
     INSTANCE;
@@ -11,7 +11,7 @@ public enum Lagometer {
 
     @EventListener(events = {EventPacketReceive.class})
     public void run(EventPacketReceive eventPacketReceive) {
-        if (!(eventPacketReceive.getPacket() instanceof ChatMessageC2SPacket))
+        if (!(eventPacketReceive.getPacket() instanceof GameMessageS2CPacket))
             lagTimer.reset();
     }
 

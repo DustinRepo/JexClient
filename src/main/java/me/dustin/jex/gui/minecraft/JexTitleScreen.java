@@ -346,12 +346,14 @@ public class JexTitleScreen extends Screen {
             if (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
                 FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Jex Utility Client", 37, bottom + 12, -1);
                 Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
-                if (response.getCape() != null && !response.getCape().isEmpty() && !response.getCape().equalsIgnoreCase("null")) {
-                    Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")));
-                } else {
-                    Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "cape/jex_cape.png"));
-                }
-                DrawableHelper.drawTexture(matrices, 2, (int)bottom + 35, 2.5f, 4, 32, 64, 198, 128);
+                try {
+                    if (response.getCape() != null && !response.getCape().isEmpty() && !response.getCape().equalsIgnoreCase("null")) {
+                        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")));
+                    } else {
+                        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "cape/jex_cape.png"));
+                    }
+                    DrawableHelper.drawTexture(matrices, 2, (int) bottom + 35, 2.5f, 4, 32, 64, 198, 128);
+                }catch (Exception e) {}
             } else {
                 FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Account not linked. You can link your account for a free Jex Cape", 37, bottom + 12, -1);
                 FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Also join the Discord!", 37, bottom + 22, -1);

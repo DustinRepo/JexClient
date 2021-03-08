@@ -220,8 +220,10 @@ public class Hud extends Module {
             MCAPIHelper.INSTANCE.registerAvatarFace(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
             Identifier id = new Identifier("jex", "avatar/" + Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId().toString().replace("-", ""));
 
-            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
-            DrawableHelper.drawTexture(eventRender2D.getMatrixStack(), 35, 2, 0, 0, 32, 32, 32, 32);
+            try {
+                Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
+                DrawableHelper.drawTexture(eventRender2D.getMatrixStack(), 35, 2, 0, 0, 32, 32, 32, 32);
+            }catch (Exception e) {}
         }
     }
 

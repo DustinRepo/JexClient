@@ -12,6 +12,7 @@ import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.module.core.Module;
@@ -30,6 +31,7 @@ import net.minecraft.item.AirBlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
 
@@ -42,6 +44,8 @@ public class Nametag extends Module {
 
     @Op(name = "Players")
     public boolean players = true;
+    @OpChild(name = "Show Face", parent = "Players")
+    public boolean showPlayerFace = true;
     @Op(name = "Hostiles")
     public boolean hostiles = false;
     @Op(name = "Passives")
@@ -154,9 +158,18 @@ public class Nametag extends Module {
         Vec3d vec = positions.get(playerEntity);
         if (isOnScreen(vec)) {
             float x = (float) vec.x;
-            float y = (float) vec.y;
+            float y = (float) vec.y - (showPlayerFace ? 18 : 0);
             String nameString = getNameString(playerEntity);
             float length = FontHelper.INSTANCE.getStringWidth(nameString);
+
+            if (showPlayerFace && playerEntity instanceof PlayerEntity) {
+                MCAPIHelper.INSTANCE.registerAvatarFace(playerEntity.getUuid());
+                Identifier id = new Identifier("jex", "avatar/" + playerEntity.getUuid().toString().replace("-", ""));
+                try {
+                    Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
+                    Render2DHelper.INSTANCE.drawTexture(eventRender2D.getMatrixStack(), x - 8, y + 2, 0, 0, 16, 16, 16, 16);
+                }catch (Exception e) {}
+            }
 
             if (health && healthMode.equalsIgnoreCase("Bar") && playerEntity instanceof LivingEntity) {
                 float percent = ((LivingEntity) playerEntity).getHealth() / ((LivingEntity) playerEntity).getMaxHealth();
@@ -172,7 +185,7 @@ public class Nametag extends Module {
         Vec3d vec = positions.get(playerEntity);
         if (isOnScreen(vec)) {
             float x = (float) vec.x;
-            float y = (float) vec.y;
+            float y = (float) vec.y - (showPlayerFace ? 18 : 0);
             if (showInv)
                 drawInv(playerEntity, x, y, eventRender2D);
         }
