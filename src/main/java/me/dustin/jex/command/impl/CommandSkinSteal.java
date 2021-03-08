@@ -20,7 +20,6 @@ public class CommandSkinSteal extends Command {
         }
         String name = args[1];
         ChatHelper.INSTANCE.addClientMessage("Downloading skin of " + name + "...");
-        long time = System.currentTimeMillis();
         new Thread(() -> {
             UUID uuid = MCAPIHelper.INSTANCE.getUUIDFromName(name);
             if (uuid == null) {
