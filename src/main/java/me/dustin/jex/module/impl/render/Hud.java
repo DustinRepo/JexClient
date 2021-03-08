@@ -33,6 +33,8 @@ import net.minecraft.item.Items;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -82,12 +84,18 @@ public class Hud extends Module {
     public float buttonHeight = 12;
     @OpChild(name = "Server", parent = "Info")
     public boolean serverName = true;
+    @OpChild(name = "Ping", parent = "Info")
+    public boolean ping = true;
     @OpChild(name = "TPS", parent = "Info")
     public boolean tps = true;
     @OpChild(name = "Show Instant", parent = "TPS")
     public boolean instantTPS = false;
     @OpChild(name = "FPS", parent = "Info")
     public boolean fps = true;
+    @OpChild(name = "Biome", parent = "Info")
+    public boolean biome = true;
+    @OpChild(name = "Player Count", parent = "Info")
+    public boolean playerCount = true;
     @OpChild(name = "Yaw/Pitch", parent = "Info")
     public boolean yawAndPitch = true;
     @OpChild(name = "Direction", parent = "Info")
@@ -338,17 +346,25 @@ public class Hud extends Module {
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Server\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SinglePlayer" : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address + " " + Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().version.getString()), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
+        if (ping) {
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Ping\247f: \2477%d", Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()) == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()).getLatency()), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            infoCount++;
+        }
         if (tps) {
             String tpsString = instantTPS ? String.format("TPS\247f: \2477%.2f \247rInstant\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS(), TPSHelper.INSTANCE.getTPS(2)) : String.format("TPS\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS());
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), tpsString, 40, 10, ColorHelper.INSTANCE.getClientColor());
-            //infoCount++;
         }
         if (fps) {
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("FPS\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().fpsDebugString.split(" ")[0]), 40, 20, ColorHelper.INSTANCE.getClientColor());
-            //infoCount++;
         }
         if (yawAndPitch) {
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Look\247f: \2477%s \2477%s", ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(Wrapper.INSTANCE.getLocalPlayer().yaw), 1), ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(Wrapper.INSTANCE.getLocalPlayer().pitch), 1)), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            infoCount++;
+        }
+        if (biome) {
+            String str = Wrapper.INSTANCE.getWorld().getRegistryManager().get(Registry.BIOME_KEY).getId(Wrapper.INSTANCE.getWorld().getBiome(Wrapper.INSTANCE.getLocalPlayer().getBlockPos())).getPath().replace("_", " ");
+            str = WordUtils.capitalizeFully(str);
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Biome\247f: \2477%s", str), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
         if (speed) {
@@ -379,6 +395,11 @@ public class Hud extends Module {
         }
         if (saturation) {
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Saturation\247f: \2477%s", Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getSaturationLevel()), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            infoCount++;
+        }
+        if (playerCount) {
+            String str = String.format("Player Count\247f: \2477%d", Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList() == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList().size());
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), str, 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
     }
