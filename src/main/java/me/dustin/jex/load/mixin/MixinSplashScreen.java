@@ -1,6 +1,7 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.JexClient;
+import me.dustin.jex.event.misc.EventGameFinishedLoading;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.SplashScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,5 +16,11 @@ public class MixinSplashScreen {
     private static void initClient(MinecraftClient client, CallbackInfo ci) {
         JexClient.INSTANCE.initializeClient();
     }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;init(Lnet/minecraft/client/MinecraftClient;II)V"))
+    public void resourcesFinishedLoading(CallbackInfo ci) {
+        new EventGameFinishedLoading().run();
+    }
+
 
 }

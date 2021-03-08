@@ -25,6 +25,7 @@ public class ClientSettingsFile {
         jsonObject.addProperty("main-menu-bg", JexTitleScreen.background);
         jsonObject.addProperty("auto-save", JexClient.INSTANCE.isAutoSaveEnabled());
         jsonObject.addProperty("gui-click-sounds", ClickGui.doesPlayClickSound());
+        jsonObject.addProperty("launch-sound", JexClient.INSTANCE.playSoundOnLaunch());
 
         ArrayList<String> stringList = new ArrayList<>();
         for (String s : JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")) {
@@ -52,6 +53,7 @@ public class ClientSettingsFile {
             JexTitleScreen.background = object.get("main-menu-bg").getAsInt();
             JexClient.INSTANCE.setAutoSave(object.get("auto-save").getAsBoolean());
             ClickGui.setDoesPlayClickSound(object.get("gui-click-sounds").getAsBoolean());
+            JexClient.INSTANCE.setPlaySoundOnLaunch(object.get("launch-sound").getAsBoolean());
         } catch (Exception e) {
 
         }

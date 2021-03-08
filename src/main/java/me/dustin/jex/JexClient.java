@@ -4,6 +4,7 @@ import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.command.CommandManager;
+import me.dustin.jex.event.misc.EventGameFinishedLoading;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
@@ -24,11 +25,14 @@ import me.dustin.jex.module.impl.misc.Fakelag;
 import me.dustin.jex.module.impl.player.Freecam;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.update.UpdateManager;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.sound.SoundEvents;
 
 public enum JexClient {
     INSTANCE;
     private String version = "0.1.7";
     private boolean autoSaveModules = false;
+    private boolean soundOnLaunch = true;
 
     public void initializeClient() {
         System.out.println("Loading Jex Client");
@@ -54,7 +58,7 @@ public enum JexClient {
         System.out.println("Load finished");
     }
 
-    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class})
+    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class})
     public void runMethod(Event event) {
         if (event instanceof EventKeyPressed) {
             EventKeyPressed eventKeyPressed = (EventKeyPressed)event;
@@ -82,6 +86,8 @@ public enum JexClient {
                 Module.get(Discord.class).setState(false);
             }
             ModFileHelper.INSTANCE.closeGame();
+        } else if (event instanceof EventGameFinishedLoading && playSoundOnLaunch()) {
+            Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F));
         }
     }
 
@@ -95,5 +101,13 @@ public enum JexClient {
 
     public void setAutoSave(boolean autoSave) {
         this.autoSaveModules = autoSave;
+    }
+
+    public boolean playSoundOnLaunch() {
+        return soundOnLaunch;
+    }
+
+    public void setPlaySoundOnLaunch(boolean soundOnLaunch) {
+        this.soundOnLaunch = soundOnLaunch;
     }
 }

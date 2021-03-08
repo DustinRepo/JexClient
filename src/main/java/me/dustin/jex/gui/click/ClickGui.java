@@ -9,10 +9,13 @@ import me.dustin.jex.gui.click.impl.Button;
 import me.dustin.jex.gui.click.impl.ModuleButton;
 import me.dustin.jex.gui.click.impl.Window;
 import me.dustin.jex.gui.click.listener.ButtonListener;
+import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
+import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
 import me.dustin.jex.gui.particle.ParticleManager2D;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.module.core.Module;
@@ -30,6 +33,7 @@ public class ClickGui extends Screen {
     private static boolean playClickSounds = false;
     private Timer timer = new Timer();
     private Button autoSaveButton = null;
+    private Button launchSoundButton = null;
     private Button clickSoundButton = null;
     private ButtonListener save = new ButtonListener() {
         @Override
@@ -51,12 +55,32 @@ public class ClickGui extends Screen {
             ClientSettingsFile.write();
         }
     };
+    private ButtonListener launchSoundListener = new ButtonListener() {
+        @Override
+        public void invoke() {
+            JexClient.INSTANCE.setPlaySoundOnLaunch(!JexClient.INSTANCE.playSoundOnLaunch());
+            launchSoundButton.setName("Game Launch Alert: " + (JexClient.INSTANCE.playSoundOnLaunch() ? "\247aON" : "\247cOFF"));
+            ClientSettingsFile.write();
+        }
+    };
     private ButtonListener clickSoundListener = new ButtonListener() {
         @Override
         public void invoke() {
             playClickSounds = !playClickSounds;
             clickSoundButton.setName("Play Click Sounds: " + (playClickSounds ? "\247aON" : "\247cOFF"));
             ClientSettingsFile.write();
+        }
+    };
+    private ButtonListener xrayButtonListener = new ButtonListener() {
+        @Override
+        public void invoke() {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new XraySelectScreen());
+        }
+    };
+    private ButtonListener searchButtonListener = new ButtonListener() {
+        @Override
+        public void invoke() {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new SearchSelectScreen());
         }
     };
 
@@ -95,6 +119,12 @@ public class ClickGui extends Screen {
             configWindow.getButtons().add(autoSaveButton = new Button(configWindow, "Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? "\247aON" : "\247cOFF"), configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, autoSaveListener));
             childCount++;
             configWindow.getButtons().add(clickSoundButton = new Button(configWindow, "Play Click Sounds: " + (playClickSounds ? "\247aON" : "\247cOFF"), configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, clickSoundListener));
+            childCount++;
+            configWindow.getButtons().add(launchSoundButton = new Button(configWindow, "Game Launch Alert: " + (JexClient.INSTANCE.playSoundOnLaunch() ? "\247aON" : "\247cOFF"), configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, launchSoundListener));
+            childCount++;
+            configWindow.getButtons().add(new Button(configWindow, "Xray Block Select", configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, xrayButtonListener));
+            childCount++;
+            configWindow.getButtons().add(new Button(configWindow, "Search Block Select", configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, searchButtonListener));
             childCount++;
 
             windows.forEach(window -> {
