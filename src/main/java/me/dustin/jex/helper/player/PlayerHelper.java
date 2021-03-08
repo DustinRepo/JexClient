@@ -31,16 +31,32 @@ public enum PlayerHelper {
     INSTANCE;
 
     private ArrayList<UUID> requestedUUIDs = new ArrayList<>();
+    private ArrayList<String> requestedNames = new ArrayList<>();
     private HashMap<UUID, String> nameMap = Maps.newHashMap();
+    private HashMap<String, UUID> uuidMap = Maps.newHashMap();
     private float yaw;
     private float pitch;
 
     public String getName(UUID uuid) {
         if (!requestedUUIDs.contains(uuid)) {
-            new Thread(() -> nameMap.put(uuid, MCAPIHelper.INSTANCE.getNameFromUUID(uuid))).start();
-            requestedUUIDs.add(uuid);
+            new Thread(() -> {
+                String name = MCAPIHelper.INSTANCE.getNameFromUUID(uuid);
+                nameMap.put(uuid, name);
+                requestedUUIDs.add(uuid);
+            }).start();
         }
         return nameMap.get(uuid);
+    }
+
+    public UUID getUUID(String name) {
+        if (!requestedNames.contains(name.toLowerCase())) {
+            new Thread(() -> {
+                UUID uuid = MCAPIHelper.INSTANCE.getUUIDFromName(name);
+                uuidMap.put(name.toLowerCase(), uuid);
+                requestedNames.add(name.toLowerCase());
+            }).start();
+        }
+        return uuidMap.get(name.toLowerCase());
     }
 
     public void setVelocityX(float x) {

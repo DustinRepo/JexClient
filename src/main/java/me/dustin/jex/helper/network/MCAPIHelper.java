@@ -57,16 +57,18 @@ public enum MCAPIHelper {
             try {
                 result = WebHelper.INSTANCE.readURL(new URL(String.format(NAME_API_URL, name)));
             } catch (IOException e) {
+                e.printStackTrace();
             }
             if (result == null)
                 return null;
-
-            JsonArray nameArray = JsonHelper.INSTANCE.gson.fromJson(result, JsonArray.class);
-            JsonObject object = nameArray.get(0).getAsJsonObject();
-            UUID uuid = UUID.fromString(object.get("id").getAsString());
+            JsonObject object =  JsonHelper.INSTANCE.gson.fromJson(result, JsonObject.class);
+            UUID uuid = UUID.fromString(object.get("id").getAsString().replaceFirst(
+                    "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"
+            ));
             nameMap.putIfAbsent(name, uuid);
             return uuid;
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
