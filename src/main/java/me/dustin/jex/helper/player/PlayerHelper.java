@@ -42,8 +42,8 @@ public enum PlayerHelper {
             new Thread(() -> {
                 String name = MCAPIHelper.INSTANCE.getNameFromUUID(uuid);
                 nameMap.put(uuid, name);
-                requestedUUIDs.add(uuid);
             }).start();
+            requestedUUIDs.add(uuid);
         }
         return nameMap.get(uuid);
     }
@@ -53,8 +53,8 @@ public enum PlayerHelper {
             new Thread(() -> {
                 UUID uuid = MCAPIHelper.INSTANCE.getUUIDFromName(name);
                 uuidMap.put(name.toLowerCase(), uuid);
-                requestedNames.add(name.toLowerCase());
             }).start();
+            requestedNames.add(name.toLowerCase());
         }
         return uuidMap.get(name.toLowerCase());
     }

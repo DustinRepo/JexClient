@@ -42,8 +42,8 @@ public class Cape {
     private static NativeImage readTexture(String textureBase64) {
         try {
             byte[] imgBytes = Base64.decodeBase64(textureBase64);
-            ByteArrayInputStream bias = new ByteArrayInputStream(imgBytes);
-            return NativeImage.read(bias);
+            ByteArrayInputStream bais = new ByteArrayInputStream(imgBytes);
+            return NativeImage.read(bais);
         } catch (IOException e) {
             e.printStackTrace();
 

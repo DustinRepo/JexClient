@@ -71,6 +71,7 @@ public class AccountManager extends Screen {
             MinecraftAccountManager.INSTANCE.getAccounts().remove(getSelected().getAccount());
             accountButtons.remove(getSelected());
             loadAccountButtons(searchTextField.getText());
+            AltFile.write();
         });
         randomButton = new ButtonWidget((int) (midX + 3), (height / 2) - 12, 150, 20, new LiteralText("Random"), button -> {
             Random rand = new Random();

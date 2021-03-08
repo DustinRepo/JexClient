@@ -68,7 +68,6 @@ public enum MCAPIHelper {
             nameMap.putIfAbsent(name, uuid);
             return uuid;
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
