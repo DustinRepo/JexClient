@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
+import org.apache.commons.codec.binary.Base64;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -16,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -25,9 +27,13 @@ public enum MCAPIHelper {
 
     private final String NAME_API_URL = "https://api.mojang.com/users/profiles/minecraft/%s";
     private final String UUID_API_URL = "https://api.mojang.com/user/profiles/%s/names";
+    private final String PROFILE_REQUEST_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
     private final String STATUS_URL = "https://status.mojang.com/check";
 
+    private static final Identifier STEVE_SKIN = new Identifier("textures/entity/steve.png");
+
     private HashMap<UUID, String> uuidMap = Maps.newHashMap();
+    private HashMap<UUID, Identifier> playerSkins = Maps.newHashMap();
     private HashMap<String, UUID> nameMap = Maps.newHashMap();
     private HashMap<APIServer, APIStatus> serverStatusMap = Maps.newHashMap();
     private ArrayList<String> avatarsRequested = new ArrayList<>();
@@ -82,25 +88,53 @@ public enum MCAPIHelper {
         }
     }
 
-    public void registerAvatarFace(UUID uuid) {
+    public void downloadPlayerSkin(UUID uuid) {
         if (avatarsRequested.contains(uuid.toString().replace("-", "")))
             return;
-        String avatarURL = "https://crafatar.com/avatars/" + uuid.toString().replace("-", "") + "?size=64&overlay";
         new Thread(() -> {
             try {
-                BufferedImage image = ImageIO.read(new URL(avatarURL));
+                //going to explain what happens so I don't forget
+                //request their minecraft profile, all so we can get a base64 encoded string that contains ANOTHER json that then has the skin URL
+                String profileResponse = WebHelper.INSTANCE.readURL(new URL(String.format(PROFILE_REQUEST_URL, uuid.toString().replace("-", ""))));
+
+                JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(profileResponse, JsonObject.class);
+                //Get the properties array which has what we need
+                JsonArray array = object.getAsJsonArray("properties");
+                JsonObject property = array.get(0).getAsJsonObject();
+                //value is what we grab but it's encoded so we have to decode it
+                String base64String = property.get("value").getAsString();
+                byte[] bs = Base64.decodeBase64(base64String);
+                //Convert the response to json and pull the skin url from there
+                String secondResponse = new String(bs, StandardCharsets.UTF_8);
+                JsonObject finalResponseObject = JsonHelper.INSTANCE.prettyGson.fromJson(secondResponse, JsonObject.class);
+                JsonObject texturesObject = finalResponseObject.getAsJsonObject("textures");
+                JsonObject skinObj = texturesObject.getAsJsonObject("SKIN");
+                String skinURL = skinObj.get("url").getAsString();
+                BufferedImage image = ImageIO.read(new URL(skinURL));
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 ImageIO.write(image, "png", bos);
 
                 ByteArrayInputStream bais = new ByteArrayInputStream(bos.toByteArray());
 
                 NativeImage nativeImage = NativeImage.read(bais);
-                applyTexture(new Identifier("jex", "avatar/" + uuid.toString().replace("-", "")), nativeImage);
+                Identifier id = new Identifier("jex", "skins/" + uuid.toString().replace("-", ""));
+                applyTexture(id, nativeImage);
                 avatarsRequested.add(uuid.toString().replace("-", ""));
-            } catch (IOException e) {
+                playerSkins.put(uuid, id);
+            } catch (Exception e) {
                 e.printStackTrace();
+                avatarsRequested.add(uuid.toString().replace("-", ""));
             }
         }).start();
+    }
+
+    public Identifier getPlayerSkin(UUID uuid) {
+        if (playerSkins.containsKey(uuid)) {
+            return playerSkins.get(uuid);
+        } else {
+            downloadPlayerSkin(uuid);
+        }
+        return STEVE_SKIN;
     }
 
     private static void applyTexture(Identifier identifier, NativeImage nativeImage) {

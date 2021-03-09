@@ -2,14 +2,11 @@ package me.dustin.jex.gui.account.impl;
 
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 
@@ -20,7 +17,6 @@ public class AccountButton {
     private boolean isSelected;
 
     private UUID uuid;
-    private Identifier id;
 
     public AccountButton(MinecraftAccount account, float x, float y) {
         this.account = account;
@@ -28,6 +24,7 @@ public class AccountButton {
         this.y = y;
         this.width = 148;
         this.height = 40;
+        uuid = PlayerHelper.INSTANCE.getUUID(account.getUsername());
     }
 
     public void draw(MatrixStack matrixStack) {
@@ -41,19 +38,8 @@ public class AccountButton {
             pword += "*";
         }
         FontHelper.INSTANCE.drawWithShadow(matrixStack, pword, getX() + 40, getY() + 25, 0xff676767);
-        if (uuid == null) {
-            uuid = PlayerHelper.INSTANCE.getUUID(account.getUsername());
-            if (uuid != null) {
-                MCAPIHelper.INSTANCE.registerAvatarFace(uuid);
-                id = new Identifier("jex", "avatar/" + uuid.toString().replace("-",""));
-            }
-        } else if (id != null) {
-            try {
-                Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
-                DrawableHelper.drawTexture(matrixStack, (int) this.getX() + 4, (int) this.getY() + 4, 0, 0, 32, 32, 32, 32);
-            } catch (Exception e) {
-
-            }
+        if (uuid != null) {
+            Render2DHelper.INSTANCE.drawFace(matrixStack, this.getX() + 4, this.getY() + 4, 4, MCAPIHelper.INSTANCE.getPlayerSkin(uuid));
         }
     }
 

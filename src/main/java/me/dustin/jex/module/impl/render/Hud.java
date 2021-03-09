@@ -31,7 +31,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -266,12 +265,9 @@ public class Hud extends Module {
         GL11.glTranslatef(-x, -y, 0);
 
         if (drawFace) {
-            MCAPIHelper.INSTANCE.registerAvatarFace(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
-            Identifier id = new Identifier("jex", "avatar/" + Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId().toString().replace("-", ""));
-
             try {
-                Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
-                DrawableHelper.drawTexture(eventRender2D.getMatrixStack(), 35, 2, 0, 0, 32, 32, 32, 32);
+                Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()));
+                Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), 35, 2, 4, MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()));
             }catch (Exception e) {}
         }
         GL11.glPopMatrix();

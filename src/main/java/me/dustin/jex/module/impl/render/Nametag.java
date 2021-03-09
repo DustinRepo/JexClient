@@ -12,7 +12,6 @@ import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.module.core.Module;
@@ -21,6 +20,7 @@ import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.module.impl.render.esp.ESP;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.options.Perspective;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -31,7 +31,6 @@ import net.minecraft.item.AirBlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
 
@@ -163,12 +162,8 @@ public class Nametag extends Module {
             float length = FontHelper.INSTANCE.getStringWidth(nameString);
 
             if (showPlayerFace && playerEntity instanceof PlayerEntity) {
-                MCAPIHelper.INSTANCE.registerAvatarFace(playerEntity.getUuid());
-                Identifier id = new Identifier("jex", "avatar/" + playerEntity.getUuid().toString().replace("-", ""));
-                try {
-                    Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
-                    Render2DHelper.INSTANCE.drawTexture(eventRender2D.getMatrixStack(), x - 8, y + 2, 0, 0, 16, 16, 16, 16);
-                }catch (Exception e) {}
+                PlayerListEntry playerListEntry = Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(playerEntity.getUuid());
+                Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), x - 8, y + 2, 2, playerListEntry.getSkinTexture());
             }
 
             if (health && healthMode.equalsIgnoreCase("Bar") && playerEntity instanceof LivingEntity) {

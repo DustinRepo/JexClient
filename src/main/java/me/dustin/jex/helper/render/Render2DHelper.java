@@ -171,6 +171,12 @@ public enum Render2DHelper {
         return c;
     }
 
+    public void drawFace(MatrixStack matrixStack, float x, float y, int renderScale, Identifier id) {
+        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
+        drawTexture(matrixStack, x, y, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 64 * renderScale, 64 * renderScale);
+        drawTexture(matrixStack, x, y, 8 * renderScale, 8 * renderScale, 40 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 64 * renderScale, 64 * renderScale);
+    }
+
     public void fillAndBorder(MatrixStack matrixStack, float left, float top, float right, float bottom, int bcolor, int icolor, float f) {
         fill(matrixStack, left + f, top + f, right - f, bottom - f, icolor);
         fill(matrixStack, left, top, left + f, bottom, bcolor);

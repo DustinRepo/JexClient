@@ -67,7 +67,6 @@ public class JexTitleScreen extends Screen {
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier JEX_TITLE_TEXTURE = new Identifier("jex", "gui/mc/jex-logo.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
-    private Identifier id;
     public static int background = 0;
     private static ArrayList<Background> backgrounds = new ArrayList<>();
     private final boolean isMinceraft;
@@ -97,8 +96,7 @@ public class JexTitleScreen extends Screen {
         this.isMinceraft = (double) (new Random()).nextFloat() < 1.0E-4D;
         customMainMenu = (CustomMainMenu) Module.get(CustomMainMenu.class);
 
-        MCAPIHelper.INSTANCE.registerAvatarFace(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
-        id = new Identifier("jex", "avatar/" + Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId().toString().replace("-", ""));
+        MCAPIHelper.INSTANCE.downloadPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
     }
 
     public static CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
@@ -340,8 +338,7 @@ public class JexTitleScreen extends Screen {
             float left = -1;
             float right = 205;
 
-            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
-            DrawableHelper.drawTexture(matrices, 2, (int)bottom + 2, 0, 0, 32, 32, 32, 32);
+            Render2DHelper.INSTANCE.drawFace(matrices, 2, (int)bottom + 2, 4, MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()));
             FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Welcome, " + (isDonator ? "\247r" : (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")) ? "\247a" : "\247f")) + Wrapper.INSTANCE.getMinecraft().getSession().getUsername(), 37, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
             if (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
                 FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Jex Utility Client", 37, bottom + 12, -1);
