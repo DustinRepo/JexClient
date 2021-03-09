@@ -14,7 +14,6 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -265,10 +264,7 @@ public class Hud extends Module {
         GL11.glTranslatef(-x, -y, 0);
 
         if (drawFace) {
-            try {
-                Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()));
-                Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), 35, 2, 4, MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()));
-            }catch (Exception e) {}
+            Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), 35, 2, 4, Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()).getSkinTexture());
         }
         GL11.glPopMatrix();
     }

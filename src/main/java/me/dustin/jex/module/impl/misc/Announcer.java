@@ -25,7 +25,7 @@ import java.util.ArrayList;
 @ModClass(name = "Announcer", category = ModCategory.MISC, description = "Fastest way to get muted! Fully customizable with files in the Jex folder")
 public class Announcer extends Module {
 
-    @Op(name = "Message Delay (MS)", min = 50, max = 5000, inc = 10)
+    @Op(name = "Message Delay", min = 50, max = 5000, inc = 10)
     public int messageDelay = 1000;
 
     private File announcerFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "announcer.json");
@@ -85,6 +85,7 @@ public class Announcer extends Module {
     @Override
     public void onEnable() {
         loadFiles();
+        copyPlayerNames();
         super.onEnable();
     }
 
