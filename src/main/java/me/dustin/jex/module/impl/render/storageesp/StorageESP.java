@@ -6,6 +6,7 @@ import me.dustin.jex.event.render.EventOutlineColor;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.extension.ModuleExtension;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
@@ -14,6 +15,7 @@ import me.dustin.jex.module.impl.render.storageesp.impl.OutlineStorageESP;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.entity.*;
+import net.minecraft.world.chunk.Chunk;
 
 import java.awt.*;
 
@@ -78,6 +80,9 @@ public class StorageESP extends Module {
     }
 
     public boolean isValid(BlockEntity blockEntity) {
+        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(blockEntity.getPos());
+        if (blockEntity == null || !Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
+            return false;
         if (blockEntity instanceof ChestBlockEntity)
             return chest;
         if (blockEntity instanceof EnderChestBlockEntity)
