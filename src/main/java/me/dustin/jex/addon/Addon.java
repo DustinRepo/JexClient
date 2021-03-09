@@ -82,7 +82,7 @@ public class Addon {
             return null;
         }
         for (AddonResponse response : responses) {
-            if (response.getUuid().equalsIgnoreCase(uuid))
+            if (response.getUuid() != null && response.getUuid().equalsIgnoreCase(uuid))
                 return response;
         }
         return null;

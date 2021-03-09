@@ -37,10 +37,10 @@ public class AccountButton {
         for (int i = 0; i < getAccount().getPassword().length(); i++) {
             pword += "*";
         }
+        if (uuid == null)
+            uuid = PlayerHelper.INSTANCE.getUUID(account.getUsername());
         FontHelper.INSTANCE.drawWithShadow(matrixStack, pword, getX() + 40, getY() + 25, 0xff676767);
-        if (uuid != null) {
-            Render2DHelper.INSTANCE.drawFace(matrixStack, this.getX() + 4, this.getY() + 4, 4, MCAPIHelper.INSTANCE.getPlayerSkin(uuid));
-        }
+        Render2DHelper.INSTANCE.drawFace(matrixStack, this.getX() + 4, this.getY() + 4, 4, MCAPIHelper.INSTANCE.getPlayerSkin(uuid));
     }
 
     public boolean isHovered() {

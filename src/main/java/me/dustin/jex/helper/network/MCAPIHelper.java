@@ -89,7 +89,7 @@ public enum MCAPIHelper {
     }
 
     public void downloadPlayerSkin(UUID uuid) {
-        if (avatarsRequested.contains(uuid.toString().replace("-", "")))
+        if (uuid == null || avatarsRequested.contains(uuid.toString().replace("-", "")))
             return;
         new Thread(() -> {
             try {
