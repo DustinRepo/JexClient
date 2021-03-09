@@ -6,12 +6,14 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
+import me.dustin.jex.option.annotate.Op;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
@@ -25,6 +27,8 @@ import java.util.UUID;
 @ModClass(name = "MobOwners", category = ModCategory.VISUAL, description = "Show the names of the owners of tamed mobs")
 public class OwnerTags extends Module {
 
+    @Op(name = "Draw Faces")
+    public boolean drawFaces = true;
     private HashMap<LivingEntity, Vec3d> positions = Maps.newHashMap();
 
     @EventListener(events = {EventRender3D.class, EventRender2D.class})
@@ -50,13 +54,18 @@ public class OwnerTags extends Module {
                     if (nametagModule.getState() && nametagModule.passives) {
                         y -= 12;
                     }
-                    String nameString = PlayerHelper.INSTANCE.getName(getUUID(livingEntity));
+                    UUID uuid = getUUID(livingEntity);
+                    String nameString = PlayerHelper.INSTANCE.getName(uuid);
                     if (nameString == null)
-                        nameString = Objects.requireNonNull(getUUID(livingEntity)).toString();
+                        nameString = Objects.requireNonNull(uuid).toString();
                     nameString = "\247o" + nameString.trim();
                     float length = FontHelper.INSTANCE.getStringWidth(nameString);
                     Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), x - (length / 2) - 2, y - 12, x + (length / 2) + 2, y - 1, 0x35000000);
                     FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), nameString, x, y - 10, -1);
+
+                    if (drawFaces) {
+                        Render2DHelper.INSTANCE.drawFace(((EventRender2D) event).getMatrixStack(), x - 8, y - 30, 2, MCAPIHelper.INSTANCE.getPlayerSkin(uuid));
+                    }
                 }
             });
         }
