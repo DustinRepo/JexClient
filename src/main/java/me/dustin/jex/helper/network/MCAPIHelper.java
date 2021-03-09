@@ -3,21 +3,17 @@ package me.dustin.jex.helper.network;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Timer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
-import org.apache.commons.codec.binary.Base64;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -91,41 +87,15 @@ public enum MCAPIHelper {
     public void downloadPlayerSkin(UUID uuid) {
         if (uuid == null || avatarsRequested.contains(uuid.toString().replace("-", "")))
             return;
-        new Thread(() -> {
-            try {
-                //going to explain what happens so I don't forget
-                //request their minecraft profile, all so we can get a base64 encoded string that contains ANOTHER json that then has the skin URL
-                String profileResponse = WebHelper.INSTANCE.readURL(new URL(String.format(PROFILE_REQUEST_URL, uuid.toString().replace("-", ""))));
-
-                JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(profileResponse, JsonObject.class);
-                //Get the properties array which has what we need
-                JsonArray array = object.getAsJsonArray("properties");
-                JsonObject property = array.get(0).getAsJsonObject();
-                //value is what we grab but it's encoded so we have to decode it
-                String base64String = property.get("value").getAsString();
-                byte[] bs = Base64.decodeBase64(base64String);
-                //Convert the response to json and pull the skin url from there
-                String secondResponse = new String(bs, StandardCharsets.UTF_8);
-                JsonObject finalResponseObject = JsonHelper.INSTANCE.prettyGson.fromJson(secondResponse, JsonObject.class);
-                JsonObject texturesObject = finalResponseObject.getAsJsonObject("textures");
-                JsonObject skinObj = texturesObject.getAsJsonObject("SKIN");
-                String skinURL = skinObj.get("url").getAsString();
-                BufferedImage image = ImageIO.read(new URL(skinURL));
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ImageIO.write(image, "png", bos);
-
-                ByteArrayInputStream bais = new ByteArrayInputStream(bos.toByteArray());
-
-                NativeImage nativeImage = NativeImage.read(bais);
-                Identifier id = new Identifier("jex", "skins/" + uuid.toString().replace("-", ""));
-                applyTexture(id, nativeImage);
-                avatarsRequested.add(uuid.toString().replace("-", ""));
-                playerSkins.put(uuid, id);
-            } catch (Exception e) {
-                e.printStackTrace();
-                avatarsRequested.add(uuid.toString().replace("-", ""));
+        GameProfile gameProfile = new GameProfile(uuid, "skindl");//name doesn't matter because the url uses the uuid
+        avatarsRequested.add(uuid.toString().replace("-", ""));
+        //using the handy dandy method Minecraft uses because it actually lets you do something with it rather than just automatically storing them
+        MinecraftClient.getInstance().getSkinProvider().loadSkin(gameProfile, (type, identifier, minecraftProfileTexture) -> {
+            if (type == MinecraftProfileTexture.Type.SKIN) {
+                playerSkins.put(uuid, identifier);
             }
-        }).start();
+
+        }, true);
     }
 
     public Identifier getPlayerSkin(UUID uuid) {
