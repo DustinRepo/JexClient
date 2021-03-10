@@ -74,6 +74,8 @@ public class Announcer extends Module {
     }
 
     private void copyPlayerNames() {
+        if (Wrapper.INSTANCE.getMinecraft().getNetworkHandler() == null)
+            return;
         playerNames.clear();
         for (PlayerListEntry playerListEntry : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList()) {
             if (playerListEntry == null || playerListEntry.getProfile() == null || playerListEntry.getProfile() == Wrapper.INSTANCE.getLocalPlayer().getGameProfile())

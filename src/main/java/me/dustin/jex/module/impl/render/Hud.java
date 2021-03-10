@@ -264,6 +264,7 @@ public class Hud extends Module {
         GL11.glTranslatef(-x, -y, 0);
 
         if (drawFace) {
+            if (Wrapper.INSTANCE.getMinecraft().getNetworkHandler() != null)
             Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), 35, 2, 4, Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()).getSkinTexture());
         }
         GL11.glPopMatrix();
