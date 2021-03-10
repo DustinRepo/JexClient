@@ -27,16 +27,20 @@ public class Module {
     }
 
     public static Module get(Class<? extends Module> clazz) {
-        return ModuleManager.INSTANCE.getModules().get(clazz);
+        for (Module module : ModuleManager.INSTANCE.getModules()) {
+            if (module.getClass() == clazz)
+                return module;
+        }
+        return null;
     }
 
     public static Module get(String name) {
-        return ModuleManager.INSTANCE.getModules().values().stream().filter(module -> module.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+        return ModuleManager.INSTANCE.getModules().stream().filter(module -> module.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
     public static ArrayList<Module> getModules(ModCategory category) {
         ArrayList<Module> modules = new ArrayList<>();
-        ModuleManager.INSTANCE.getModules().values().forEach(module ->
+        ModuleManager.INSTANCE.getModules().forEach(module ->
         {
             if (module.getModCategory() == category)
                 modules.add(module);

@@ -277,7 +277,7 @@ public class Hud extends Module {
 
     public void drawArrayList(EventRender2D eventRender2D) {
         if (mods.isEmpty())
-            mods.addAll(ModuleManager.INSTANCE.getModules().values());
+            mods.addAll(ModuleManager.INSTANCE.getModules());
 
         int count = 0;
         if (showArrayList) {

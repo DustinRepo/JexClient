@@ -22,7 +22,7 @@ public class ModuleFile {
 
     public static void write() {
         JsonArray jsonArray = new JsonArray();
-        for (Module module : ModuleManager.INSTANCE.getModules().values()) {
+        for (Module module : ModuleManager.INSTANCE.getModules()) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("name", module.getName());
             jsonObject.addProperty("key", module.getKey());

@@ -33,7 +33,7 @@ public enum CommandManager {
     private int overlayAlpha = 0;
     private boolean overlayOn = false;
     public void init() {
-        Reflections reflections = new Reflections("me.dustin.jex", new org.reflections.scanners.Scanner[0]);
+        Reflections reflections = new Reflections("me.dustin.jex.command", new org.reflections.scanners.Scanner[0]);
 
         Set<Class<? extends Command>> allClasses = reflections.getSubTypesOf(Command.class);
         allClasses.forEach(clazz -> {

@@ -63,7 +63,7 @@ public enum JexClient {
         if (event instanceof EventKeyPressed) {
             EventKeyPressed eventKeyPressed = (EventKeyPressed)event;
             if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {
-                ModuleManager.INSTANCE.getModules().values().forEach(module -> {
+                ModuleManager.INSTANCE.getModules().forEach(module -> {
                     if (module.getKey() == eventKeyPressed.getKey()) {
                         module.toggleState();
                         if (JexClient.INSTANCE.isAutoSaveEnabled())

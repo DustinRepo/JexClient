@@ -27,7 +27,7 @@ public enum OptionManager {
 
     public void initializeOptionManager() {
         ConcurrentMap<Field, Module> parentNotFound = Maps.newConcurrentMap();
-        ModuleManager.INSTANCE.getModules().values().forEach(mod ->
+        ModuleManager.INSTANCE.getModules().forEach(mod ->
         {
             for (Field field : mod.getClass().getDeclaredFields()) {
                 if (!field.isAccessible())

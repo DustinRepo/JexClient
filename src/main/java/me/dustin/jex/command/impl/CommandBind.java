@@ -17,7 +17,7 @@ public class CommandBind extends Command {
             String action = args[1];
             if (action.equalsIgnoreCase("list")) {
                 ChatHelper.INSTANCE.addClientMessage("Listing keybinds.");
-                for (Module module : ModuleManager.INSTANCE.getModules().values()) {
+                for (Module module : ModuleManager.INSTANCE.getModules()) {
                     if (module.getKey() != 0) {
                         ChatHelper.INSTANCE.addClientMessage("\247b" + module.getName() + "\247f: \2477" + KeyboardHelper.INSTANCE.getKeyName(module.getKey()));
                     }
