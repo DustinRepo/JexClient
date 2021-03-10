@@ -9,6 +9,8 @@ import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.module.core.Module;
+import me.dustin.jex.module.impl.movement.Sprint;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -191,6 +193,24 @@ public enum PlayerHelper {
                 speed = 4.32 / 20;
                 break;
         }
+        return speed;
+    }
+
+    public double getWaterSpeed(int depthStriderLevel, boolean accountSprint) {
+        double speed = 1.96 / 20;
+        switch (depthStriderLevel) {
+            case 1:
+                speed = 3.21 / 20;
+                break;
+            case 2:
+                speed = 3.89 / 20;
+                break;
+            case 3:
+                speed = 4.32 / 20;
+                break;
+        }
+        if ((Wrapper.INSTANCE.getLocalPlayer().isSprinting() || (Module.get(Sprint.class).getState() && isMoving())) && accountSprint)
+            speed += (speed * 0.3);
         return speed;
     }
 
