@@ -4,7 +4,6 @@ import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.extension.ModuleExtension;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.Stencil;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -12,7 +11,6 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.impl.render.storageesp.StorageESP;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.Box;
 import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.GL_LINE_SMOOTH;
@@ -65,12 +63,10 @@ public class OutlineStorageESP extends ModuleExtension {
         double x = blockEntity.getPos().getX() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().getX();
         double y = blockEntity.getPos().getY() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().getY();
         double z = blockEntity.getPos().getZ() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().getZ();
-        Box box = new Box(x, y, z, x + 1, y + 1, z + 1);
         BlockState blockState = blockEntity.getCachedState();
-        Render2DHelper.INSTANCE.glColor(esp.getColor(blockEntity));
 
         blockState.getOutlineShape(Wrapper.INSTANCE.getWorld(), blockEntity.getPos()).getBoundingBoxes().forEach(bb -> {
-            Render3DHelper.INSTANCE.drawFilledBox(bb.offset(Render3DHelper.INSTANCE.getRenderPosition(blockEntity.getPos().getX(), blockEntity.getPos().getY(), blockEntity.getPos().getZ(), eventRender3D.getPartialTicks())));
+            Render3DHelper.INSTANCE.drawFilledBox(bb.offset(Render3DHelper.INSTANCE.getRenderPosition(blockEntity.getPos().getX(), blockEntity.getPos().getY(), blockEntity.getPos().getZ(), eventRender3D.getPartialTicks())), esp.getColor(blockEntity));
         });
     }
 

@@ -8,7 +8,6 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -47,27 +46,23 @@ public abstract class MixinGameRenderer {
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(camera, partialTicks, true));
         loadProjectionMatrix(matrixStack.peek().getModel());
-        GL11.glDisable(GL11.GL_LIGHTING);
 
         Render3DHelper.INSTANCE.applyCameraRots();
-
         this.bobViewWhenHurt(matrixStack, partialTicks);
-
         loadProjectionMatrix(matrixStack.peek().getModel());
-
         new EventRender3D.EventRender3DNoBob(matrixStack, partialTicks).run();
-
         if (this.client.options.bobView) {
             bobView(matrixStack, partialTicks);
         }
         loadProjectionMatrix(matrixStack.peek().getModel());
 
-
         new EventRender3D(matrixStack, matrixStack1, partialTicks).run();
-        GL11.glColor4f(1, 1, 1, 1);
-
 
         Render3DHelper.INSTANCE.fixCameraRots();
+    }
+
+    @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "net/minecraft/util/profiler/Profiler.pop()V"))
+    public void renderWorldBottom(float tickDelta, long limitTime, MatrixStack matrix, CallbackInfo ci) {
     }
 
     @Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)

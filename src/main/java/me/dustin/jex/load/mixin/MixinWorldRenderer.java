@@ -1,15 +1,13 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.event.render.EventBlockOutlineColor;
+import me.dustin.jex.event.render.EventWorldRender;
 import me.dustin.jex.event.render.EventRenderRain;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IWorldRenderer;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.impl.render.esp.ESP;
-import net.minecraft.client.render.BufferBuilderStorage;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
@@ -32,13 +30,23 @@ public class MixinWorldRenderer implements IWorldRenderer {
     private BufferBuilderStorage bufferBuilders;
 
     private Identifier my_outline = new Identifier("jex", "shaders/entity_outline.json");
+    private Identifier mojang_outline = new Identifier("shaders/post/entity_outline.json");
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/render/BufferBuilderStorage.getEntityVertexConsumers()Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;"))
+    public void render1(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+        new EventWorldRender(matrices, tickDelta).run();
+    }
 
     @Redirect(method = "loadEntityOutlineShader", at = @At(value = "NEW", target = "net/minecraft/util/Identifier"))
     public Identifier getIDForOutline(String id) {
-        if (Module.get(ESP.class).getState() && ((ESP) Module.get(ESP.class)).mode.equalsIgnoreCase("Shader")) {
-            return my_outline;
+        try {
+            if (Module.get(ESP.class).getState() && ((ESP) Module.get(ESP.class)).mode.equalsIgnoreCase("Shader")) {
+                return my_outline;
+            }
+        } catch (Exception e) {
+            return mojang_outline;
         }
-        return new Identifier("shaders/post/entity_outline.json");
+        return mojang_outline;
     }
 
     @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)

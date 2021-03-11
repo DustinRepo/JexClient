@@ -3,7 +3,6 @@ package me.dustin.jex.module.impl.render;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.module.core.Module;
@@ -19,8 +18,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
-
-import static org.lwjgl.opengl.GL11.*;
 
 @ModClass(name = "SpawnHighlighter", category = ModCategory.VISUAL, description = "Show all blocks near you that mobs can spawn on.")
 public class SpawnHighlighter extends Module {
@@ -50,27 +47,7 @@ public class SpawnHighlighter extends Module {
                         BlockPos abovePos = blockPos.add(0, 1, 0);
                         Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(abovePos.getX(), abovePos.getY(), abovePos.getZ()));
                         Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
-                        glPushMatrix();
-                        glEnable(GL_LINE_SMOOTH);
-                        glDisable(GL_TEXTURE_2D);
-                        glEnable(GL_CULL_FACE);
-                        glDisable(GL_LIGHTING);
-                        glEnable(GL_BLEND);
-                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-                        Render2DHelper.INSTANCE.glColor(color & 0x50ffffff);
-
-                        glEnable(GL_DEPTH_TEST);
-                        Render3DHelper.INSTANCE.drawFilledBox(box);
-
-                        Render2DHelper.INSTANCE.glColor(color);
-                        glLineWidth(1);
-                        Render3DHelper.INSTANCE.drawOutlineBox(box);
-
-                        glColor4f(1, 1, 1, 1);
-                        glEnable(GL_TEXTURE_2D);
-                        glDisable(GL_LINE_SMOOTH);
-                        glPopMatrix();
+                        Render3DHelper.INSTANCE.drawBox(box, color);
                     }
                 }
             }
@@ -82,7 +59,6 @@ public class SpawnHighlighter extends Module {
         Block thisBlock = WorldHelper.INSTANCE.getBlock(blockPos);
         Block aboveBlock = WorldHelper.INSTANCE.getBlock(above);
         BlockState thisState = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
-        BlockState aboveState = Wrapper.INSTANCE.getWorld().getBlockState(above);
         if (thisBlock == Blocks.AIR)
             return false;
         if (checkIsSpawnable)

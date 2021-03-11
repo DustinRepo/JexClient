@@ -11,7 +11,6 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.module.impl.render.storageesp.impl.BoxStorageESP;
-import me.dustin.jex.module.impl.render.storageesp.impl.OutlineStorageESP;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.entity.*;
@@ -22,8 +21,8 @@ import java.awt.*;
 @ModClass(name = "StorageESP", category = ModCategory.VISUAL, description = "Show storage blocks through walls")
 public class StorageESP extends Module {
 
-    @Op(name = "Mode", all = {"Outline", "Box"})
-    public String mode = "Outline";
+    //@Op(name = "Mode", all = {"Outline", "Box"})
+    public String mode = "Box";
     @Op(name = "Chest")
     public boolean chest = true;
     @Op(name = "Ender Chest")
@@ -52,7 +51,7 @@ public class StorageESP extends Module {
     private String lastMode;
 
     public StorageESP() {
-        OutlineStorageESP outlineStorageESP = new OutlineStorageESP();
+        //OutlineStorageESP outlineStorageESP = new OutlineStorageESP();
         BoxStorageESP boxStorageESP = new BoxStorageESP();
     }
 

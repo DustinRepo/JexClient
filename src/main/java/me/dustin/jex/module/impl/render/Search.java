@@ -1,6 +1,7 @@
 package me.dustin.jex.module.impl.render;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
@@ -9,7 +10,6 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.file.SearchFile;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.module.core.Module;
@@ -18,6 +18,10 @@ import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -27,15 +31,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
-
-import static org.lwjgl.opengl.GL11.*;
 
 @ModClass(name = "Search", category = ModCategory.VISUAL, description = "Search for a specific block. use \".help search\"")
 public class Search extends Module {
@@ -146,25 +147,26 @@ public class Search extends Module {
                 boolean bobView = Wrapper.INSTANCE.getOptions().bobView;
                 float lastNauseaStrength = Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength;
                 float nextNauseStrength = Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength;
-                glPushMatrix();
-                glDisable(GL_LINE_SMOOTH);
-                glDisable(GL_BLEND);
-                glDisable(GL_TEXTURE_2D);
-                glDisable(GL_DEPTH_TEST);
-                GL11.glDisable(GL11.GL_LIGHTING);
-                glLineWidth(1.2f);
-                Render2DHelper.INSTANCE.glColor(blocks.get(block));
+                float red = (blocks.get(block) >> 16 & 0xFF) / 255.0F;
+                float green = (blocks.get(block) >> 8 & 0xFF) / 255.0F;
+                float blue = (blocks.get(block) & 0xFF) / 255.0F;
+
+                RenderSystem.disableTexture();
+                RenderSystem.disableDepthTest();
+                RenderSystem.lineWidth(1.2f);
+
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
-                glBegin(GL_LINES);
-                glVertex3d(eyes.x, eyes.y, eyes.z);
-                glVertex3d(entityPos.x, entityPos.y, entityPos.z);
-                glEnd();
-                glDisable(GL_BLEND);
-                glEnable(GL_TEXTURE_2D);
-                glEnable(GL_DEPTH_TEST);
-                glDisable(GL_LINE_SMOOTH);
-                glDisable(GL_BLEND);
-                glPopMatrix();
+
+                BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+                bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(red, green, blue, 1).next();
+                bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(red, green, blue, 1).next();
+                bufferBuilder.end();
+                BufferRenderer.draw(bufferBuilder);
+
+                RenderSystem.enableDepthTest();
+                RenderSystem.enableTexture();
+
                 Wrapper.INSTANCE.getOptions().bobView = bobView;
                 Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength = lastNauseaStrength;
                 Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength = nextNauseStrength;

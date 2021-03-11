@@ -14,10 +14,10 @@ import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 
@@ -60,8 +60,9 @@ public class SignReader extends Module {
             }
         }
         if (event instanceof EventRender2D) {
-            GL11.glPushMatrix();
-            GL11.glScalef(scale, scale,1);
+            MatrixStack matrixStack = ((EventRender2D) event).getMatrixStack();
+            matrixStack.push();
+            matrixStack.scale(scale, scale,1);
             positions.forEach((signBlockEntity, vec3d) -> {
                 if (Render2DHelper.INSTANCE.isOnScreen(vec3d)) {
                     float x = (float)vec3d.x / scale;
@@ -80,7 +81,8 @@ public class SignReader extends Module {
                     }
                 }
             });
-            GL11.glPopMatrix();
+            matrixStack.scale(1 / scale, 1 / scale,1);
+            matrixStack.pop();
         }
     }
 

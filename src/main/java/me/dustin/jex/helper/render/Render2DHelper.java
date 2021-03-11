@@ -30,26 +30,6 @@ public enum Render2DHelper {
     INSTANCE;
     protected Identifier cog = new Identifier("jex", "gui/click/cog.png");
 
-    public static void enableGL2D() {
-        GL11.glDisable(2929);
-        GL11.glEnable(3042);
-        GL11.glDisable(3553);
-        GL11.glBlendFunc(770, 771);
-        GL11.glDepthMask(true);
-        GL11.glEnable(2848);
-        GL11.glHint(3154, 4354);
-        GL11.glHint(3155, 4354);
-    }
-
-    public static void disableGL2D() {
-        GL11.glEnable(3553);
-        GL11.glDisable(3042);
-        GL11.glEnable(2929);
-        GL11.glDisable(2848);
-        GL11.glHint(3154, 4352);
-        GL11.glHint(3155, 4352);
-    }
-
     public double getScaleFactor() {
         return Wrapper.INSTANCE.getWindow().getScaleFactor();
     }
@@ -120,40 +100,6 @@ public enum Render2DHelper {
         RenderSystem.disableBlend();
     }
 
-    public void drawRect(float x, float y, float x2, float y2, int color) {
-        float j;
-        if (x < x2) {
-            j = x;
-            x = x2;
-            x2 = j;
-        }
-
-        if (y < y2) {
-            j = y;
-            y = y2;
-            y2 = j;
-        }
-
-        GL11.glPushMatrix();
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-
-        GL11.glBegin(GL11.GL_QUADS);
-        glColor(color);
-        GL11.glVertex2d(x, y);
-        GL11.glVertex2d(x2, y2);
-        GL11.glEnd();
-
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glPopMatrix();
-    }
-
     public Color hexToColor(String value) {
         String digits;
         if (value.startsWith("#")) {
@@ -173,7 +119,7 @@ public enum Render2DHelper {
 
     public void drawFace(MatrixStack matrixStack, float x, float y, int renderScale, Identifier id) {
         try {
-            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(id);
+            bindTexture(id);
             drawTexture(matrixStack, x, y, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 64 * renderScale, 64 * renderScale);
             drawTexture(matrixStack, x, y, 8 * renderScale, 8 * renderScale, 40 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 64 * renderScale, 64 * renderScale);
         }catch (Exception e){}
@@ -198,75 +144,72 @@ public enum Render2DHelper {
         float f6 = (float) (col2 >> 8 & 0xFF) / 255F;
         float f7 = (float) (col2 & 0xFF) / 255F;
 
-        GL11.glPushMatrix();
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glShadeModel(GL11.GL_SMOOTH);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glColor4f(f1, f2, f3, f);
-        GL11.glVertex2d(x2, y);
-        GL11.glVertex2d(x, y);
+        bufferBuilder.vertex(x2, y, 0).color(f1, f2, f3, f).next();
+        bufferBuilder.vertex(x, y, 0).color(f1, f2, f3, f).next();
 
-        GL11.glColor4f(f5, f6, f7, f4);
-        GL11.glVertex2d(x, y2);
-        GL11.glVertex2d(x2, y2);
-        GL11.glEnd();
+        bufferBuilder.vertex(x, y2, 0).color(f5, f6, f7, f4).next();
+        bufferBuilder.vertex(x2, y2, 0).color(f5, f6, f7, f4).next();
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glShadeModel(GL11.GL_FLAT);
-        GL11.glPopMatrix();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 
-    public void drawFullCircle(int cx, int cy, double r, int c) {
-        r *= 2.0D;
-        cx *= 2;
-        cy *= 2;
+    public void drawFullCircle(int cx, int cy, double r, int c, MatrixStack matrixStack) {
         float f = (c >> 24 & 0xFF) / 255.0F;
         float f1 = (c >> 16 & 0xFF) / 255.0F;
         float f2 = (c >> 8 & 0xFF) / 255.0F;
         float f3 = (c & 0xFF) / 255.0F;
-        enableGL2D();
-        GL11.glScalef(0.5F, 0.5F, 0.5F);
-        GL11.glColor4f(f1, f2, f3, f);
-        GL11.glBegin(6);
+
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
         for (int i = 0; i <= 360; i++) {
             double x = Math.sin(i * 3.141592653589793D / 180.0D) * r;
             double y = Math.cos(i * 3.141592653589793D / 180.0D) * r;
-            GL11.glVertex2d(cx + x, cy + y);
+            bufferBuilder.vertex(cx + x, cy + y, -64).color(f1, f2, f3, f).next();
         }
-        GL11.glEnd();
-        GL11.glScalef(2.0F, 2.0F, 2.0F);
-        disableGL2D();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.defaultBlendFunc();
     }
 
-    public void drawArc(float cx, float cy, double r, int c, int startpoint, double arc, int linewidth) {
-        r *= 2.0D;
-        cx *= 2;
-        cy *= 2;
+    public void drawArc(float cx, float cy, double r, int c, int startpoint, double arc, int linewidth, MatrixStack matrixStack) {
         float f = (c >> 24 & 0xFF) / 255.0F;
         float f1 = (c >> 16 & 0xFF) / 255.0F;
         float f2 = (c >> 8 & 0xFF) / 255.0F;
         float f3 = (c & 0xFF) / 255.0F;
-        enableGL2D();
-        GL11.glScalef(0.5F, 0.5F, 0.5F);
-        GL11.glLineWidth(linewidth);
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glColor4f(f1, f2, f3, f);
-        GL11.glBegin(GL11.GL_LINE_STRIP);
+        RenderSystem.lineWidth(linewidth);
+
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(0, VertexFormats.POSITION_COLOR);
+
         for (int i = (int) startpoint; i <= arc; i += 1) {
             double x = Math.sin(i * 3.141592653589793D / 180.0D) * r;
             double y = Math.cos(i * 3.141592653589793D / 180.0D) * r;
-            GL11.glVertex2d(cx + x, cy + y);
+            bufferBuilder.vertex(cx + x, cy + y, 0).color(f1, f2, f3, f).next();
         }
-        GL11.glEnd();
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glScalef(2.0F, 2.0F, 2.0F);
-        disableGL2D();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.defaultBlendFunc();
     }
 
     public void drawHLine(MatrixStack matrixStack, float par1, float par2, float par3, int par4) {
@@ -320,31 +263,6 @@ public enum Render2DHelper {
                 return true;
         }
         return false;
-    }
-
-    public void drawCheck(float x, float y, int color) {
-        GL11.glPushMatrix();
-        GL11.glScaled(1.1, 1.1, 1.1);
-        x /= 1.1;
-        y /= 1.1;
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        glColor(color);
-        GL11.glLineWidth(2);
-        GL11.glBegin(GL11.GL_LINES);
-        GL11.glVertex2d(x + 1, y + 1);
-        GL11.glVertex2d(x + 3, y + 4);
-        GL11.glEnd();
-        GL11.glBegin(GL11.GL_LINES);
-        GL11.glVertex2d(x + 3, y + 4);
-        GL11.glVertex2d(x + 6, y - 3);
-        GL11.glEnd();
-        GL11.glColor4f(1, 1, 1, 1);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glPopMatrix();
     }
 
     public void drawItem(ItemStack stack, float xPosition, float yPosition) {
@@ -464,44 +382,11 @@ public enum Render2DHelper {
 
     public void drawArrow(MatrixStack matrixStack, float x, float y, boolean open, int color) {
         glColor(color);
-        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(cog);
+        bindTexture(cog);
         DrawableHelper.drawTexture(matrixStack, (int) x - 5, (int) y - 5, 0, 0, 10, 10, 10, 10);
-        GL11.glColor4f(1, 1, 1, 1);
-        /*GL11.glPushMatrix();
-        GL11.glScaled(1.3, 1.3, 1.3);
-        if (open) {
-            y -= 1.5f;
-            x += 2;
-        }
-        x /= 1.3;
-        y /= 1.3;
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        glColor(color);
-        GL11.glLineWidth(2);
-        if (open) {
-            GL11.glBegin(GL11.GL_LINES);
-            GL11.glVertex2d(x, y);
-            GL11.glVertex2d(x + 4, y + 3);
-            GL11.glEnd();
-            GL11.glBegin(GL11.GL_LINES);
-            GL11.glVertex2d(x + 4, y + 3);
-            GL11.glVertex2d(x, y + 6);
-            GL11.glEnd();
-        } else {
-            GL11.glBegin(GL11.GL_LINES);
-            GL11.glVertex2d(x, y);
-            GL11.glVertex2d(x + 3, y + 4);
-            GL11.glEnd();
-            GL11.glBegin(GL11.GL_LINES);
-            GL11.glVertex2d(x + 3, y + 4);
-            GL11.glVertex2d(x + 6, y);
-            GL11.glEnd();
-        }
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glPopMatrix();*/
+    }
+
+    public void bindTexture(Identifier identifier) {
+        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(identifier);
     }
 }

@@ -1,5 +1,6 @@
 package me.dustin.jex.module.impl.combat;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.events.core.enums.EventPriority;
@@ -21,6 +22,8 @@ import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.module.impl.player.AutoEat;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,6 +33,7 @@ import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
@@ -138,25 +142,22 @@ public class Killaura extends Module {
                 Render3DHelper.INSTANCE.drawEntityBox(target, vec.x, vec.y, vec.z, targetColor);
             }
             if (reachCircle) {
-                GL11.glPushMatrix();
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
-                GL11.glEnable(GL11.GL_LINE_SMOOTH);
-                //GL11.glDisable(GL11.GL_DEPTH_TEST);
-                GL11.glLineWidth(1);
+                MatrixStack matrixStack = ((EventRender3D) event1).getMatrixStack();
+                matrixStack.push();
+                RenderSystem.disableTexture();
+                RenderSystem.lineWidth(1);
                 Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(Wrapper.INSTANCE.getLocalPlayer(), ((EventRender3D) event1).getPartialTicks()).add(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0);
-                GL11.glTranslated(renderPos.x, renderPos.y, renderPos.z);
+                matrixStack.translate(renderPos.x, renderPos.y, renderPos.z);
                 Render2DHelper.INSTANCE.glColor(reachCircleColor);
                 GL11.glPointSize(3f);
-                GL11.glRotated(90, 1, 0, 0);
+                matrixStack.multiply(new Quaternion(new Vector3f(1F, 0F, 0F), 90, true));
                 Sphere sphere = new Sphere();
                 sphere.setDrawStyle(GLU.GLU_SILHOUETTE);
                 sphere.setNormals(GLU.GLU_SMOOTH);
                 sphere.draw(reach, (int)30, 20);
-                GL11.glTranslated(-renderPos.x, -renderPos.y, -renderPos.z);
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
-                GL11.glDisable(GL11.GL_LINE_SMOOTH);
-                //GL11.glEnable(GL11.GL_DEPTH_TEST);
-                GL11.glPopMatrix();
+                matrixStack.translate(-renderPos.x, -renderPos.y, -renderPos.z);
+                RenderSystem.enableTexture();
+                matrixStack.pop();
             }
         }
     }

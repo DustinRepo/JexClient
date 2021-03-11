@@ -22,6 +22,7 @@ import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.options.Perspective;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -32,7 +33,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -120,8 +120,9 @@ public class Nametag extends Module {
                 Render2DHelper.INSTANCE.drawItem(itemStack, newX, posY);
                 if (itemStack.hasEnchantments()) {
                     float scale = 0.5f;
-                    GL11.glPushMatrix();
-                    GL11.glScalef(scale, scale, 1);
+                    MatrixStack matrixStack = eventRender2D.getMatrixStack();
+                    matrixStack.push();
+                    matrixStack.scale(scale, scale, 1);
                     int enchCount = 1;
                     for (Tag tag : itemStack.getEnchantments()) {
                         CompoundTag compoundTag = (CompoundTag) tag;
@@ -133,7 +134,7 @@ public class Nametag extends Module {
                         FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX, newY, enchantColor);
                         enchCount++;
                     }
-                    GL11.glPopMatrix();
+                    matrixStack.pop();
                 }
                 count++;
             }

@@ -1,6 +1,7 @@
 package me.dustin.jex.helper.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IFrameBuffer;
 import net.minecraft.client.MinecraftClient;
@@ -14,17 +15,17 @@ public enum Stencil {
 
     public void write() {
         checkSetupFBO();
-        GL11.glClearStencil(0);
+        RenderSystem.clearStencil(0);
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
         GL11.glEnable(GL11.GL_STENCIL_TEST);
-        GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 0xFFFF);
-        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 1, 0xFFFF);
+        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
         GlStateManager.colorMask(false, false, false, false);
     }
 
     public void erase() {
-        GL11.glStencilFunc(GL11.GL_NOTEQUAL, 1, 0xFFFF);
-        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+        RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 1, 0xFFFF);
+        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
         GlStateManager.colorMask(true, true, true, true);
     }
 

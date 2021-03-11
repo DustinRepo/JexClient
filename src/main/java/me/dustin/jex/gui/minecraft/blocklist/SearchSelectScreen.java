@@ -256,7 +256,7 @@ public class SearchSelectScreen extends Screen {
         float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 + 2;
         float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
         float buttonWidth = 198;
-        float buttonHeight = 40;
+        float buttonHeight = 20;
 
         for (Block block : Registry.BLOCK) {
             if (block == Blocks.AIR || block == Hat.cowboyHat || block == Hat.halo || block == Hat.topHat || block == Hat.crown || block == Hat.propeller)
@@ -284,7 +284,7 @@ public class SearchSelectScreen extends Screen {
         float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 + 2;
         float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
         float buttonWidth = 198;
-        float buttonHeight = 40;
+        float buttonHeight = 20;
 
         for (Block block : Registry.BLOCK) {
             if (block == Blocks.AIR || block == Hat.cowboyHat || block == Hat.halo || block == Hat.topHat || block == Hat.crown || block == Hat.propeller)

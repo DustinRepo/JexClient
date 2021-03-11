@@ -28,9 +28,11 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -83,11 +85,11 @@ public class OptionButton extends Button {
                 break;
         }
         if (hasChild()) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(this.getX() + this.getWidth() - 7, this.getY() + 7.5f, 0);
-            GL11.glRotated(cogSpin, 0, 0, 1);
+            matrixStack.push();
+            matrixStack.translate(this.getX() + this.getWidth() - 7, this.getY() + 7.5f, 0);
+            matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 0.0F, 1.0F), cogSpin, true));
             Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : ColorHelper.INSTANCE.getClientColor());
-            GL11.glPopMatrix();
+            matrixStack.pop();
         }
         if (isOpen())
             this.getChildren().forEach(button -> {
@@ -397,15 +399,16 @@ public class OptionButton extends Button {
 
 
             handleSliders(v);
-            Render2DHelper.INSTANCE.drawGradientRect(this.getX() + 5, this.getY() + 15, this.getX() + 85, this.getY() + 95, -1, 0xff000000);
+            //Render2DHelper.INSTANCE.drawGradientRect(this.getX() + 5, this.getY() + 15, this.getX() + 85, this.getY() + 95, -1, 0xff000000);
             drawGradientRect(matrixStack, this.getX() + 5, this.getY() + 15, this.getX() + 85, this.getY() + 95, ColorHelper.INSTANCE.getColorViaHue(v.getH()).getRGB(), 0xff000000);
-            Render2DHelper.INSTANCE.drawGradientRect(this.getX() + 5, this.getY() + 15, this.getX() + 85, this.getY() + 95, 0x20000000, 0xff000000);
+            //Render2DHelper.INSTANCE.drawGradientRect(this.getX() + 5, this.getY() + 15, this.getX() + 85, this.getY() + 95, 0x20000000, 0xff000000);
             //color cursor
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + 5 + satpos - 1, this.getY() + 15 + brightpos - 1, this.getX() + 5 + satpos + 1, this.getY() + 15 + brightpos + 1, -1);
 
             GL11.glColor4f(1, 1, 1, 1);
+
             //hue slider
-            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(colorSlider);
+            Render2DHelper.INSTANCE.bindTexture(colorSlider);
             DrawableHelper.drawTexture(matrixStack, (int) this.getX() + (int) this.getWidth() - 10, (int) this.getY() + 15, 0, 0, 5, 80, 10, 80);
             //hue cursor
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 10, this.getY() + 15 + huepos - 1, (this.getX() + this.getWidth() - 10) + 5, this.getY() + 15 + huepos + 1, -1);

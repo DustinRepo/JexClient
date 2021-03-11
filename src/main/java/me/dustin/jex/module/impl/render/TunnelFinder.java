@@ -7,14 +7,12 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
@@ -27,8 +25,6 @@ import net.minecraft.world.chunk.Chunk;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import static org.lwjgl.opengl.GL11.*;
 
 @ModClass(name = "TunnelFinder", category = ModCategory.VISUAL, description = "Find tunnels in the nether that might lead to bases.")
 public class TunnelFinder extends Module {
@@ -87,31 +83,9 @@ public class TunnelFinder extends Module {
                     positions.remove(pos);
                     continue;
                 }
-
-                Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
-                assert cameraEntity != null;
-                Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
-
-                Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 2, entityPos.z + 1 - 0.5f);
-
-                glPushMatrix();
-                glEnable(GL_LINE_SMOOTH);
-                glDisable(GL_TEXTURE_2D);
-                glEnable(GL_CULL_FACE);
-                glDisable(GL_DEPTH_TEST);
-                glDisable(GL_LIGHTING);
-                glEnable(GL_BLEND);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                Render2DHelper.INSTANCE.glColor(color);
-                glLineWidth(1);
-                Render3DHelper.INSTANCE.drawOutlineBox(box);
-
-                glColor4f(1, 1, 1, 1);
-                glEnable(GL_DEPTH_TEST);
-                glEnable(GL_TEXTURE_2D);
-                glDisable(GL_LINE_SMOOTH);
-                glPopMatrix();
-
+                Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
+                Box box = new Box(entityPos.x, entityPos.y, entityPos.z, entityPos.x + 1, entityPos.y + 2, entityPos.z + 1);
+                Render3DHelper.INSTANCE.drawBoxOutline(box, color);
             }
         } else if (event instanceof EventJoinWorld) {
             positions.clear();

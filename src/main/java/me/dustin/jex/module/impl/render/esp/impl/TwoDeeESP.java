@@ -85,7 +85,7 @@ public class TwoDeeESP extends ModuleExtension {
             float pos = percent * distance;
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack,x2 - 1, y2 + pos, x2 + 2, y2, 0xff000000, color, 1);
         }
-        int color = esp.getColor(entity) & 0x40ffffff;
+        int color = esp.getColor(entity) & 0x25ffffff;
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y, x2, y2, 0xff000000, color, 1);
     }
 

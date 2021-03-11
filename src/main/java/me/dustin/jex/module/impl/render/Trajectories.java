@@ -1,9 +1,9 @@
 package me.dustin.jex.module.impl.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.load.impl.IPersistentProjectileEntity;
 import me.dustin.jex.load.impl.IProjectileEntity;
@@ -11,6 +11,8 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -31,8 +33,6 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 import java.util.ArrayList;
-
-import static org.lwjgl.opengl.GL11.*;
 
 @ModClass(name = "Trajectories", category = ModCategory.VISUAL, description = "Show a trajectory line for things like bows and snowballs")
 public class Trajectories extends Module {
@@ -170,13 +170,18 @@ public class Trajectories extends Module {
                 }
             }
 
-            if (!positions.isEmpty())
+            if (!positions.isEmpty()) {
                 for (int i = 0; i < positions.size(); i++) {
                     if (i != positions.size() - 1) {
 
+                        int color = hitEntity == null ? missColor : hitColor;
+                        float alpha = (color >> 24 & 0xFF) / 255.0F;
+                        float red = (color >> 16 & 0xFF) / 255.0F;
+                        float green = (color >> 8 & 0xFF) / 255.0F;
+                        float blue = (color & 0xFF) / 255.0F;
+
                         Vec3d vec = positions.get(i);
                         Vec3d vec1 = positions.get(i + 1);
-
                         double x = vec.x - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
                         double y = vec.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
                         double z = vec.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
@@ -185,24 +190,24 @@ public class Trajectories extends Module {
                         double y1 = vec1.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
                         double z1 = vec1.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
 
-                        glPushMatrix();
-                        glDisable(GL_LINE_SMOOTH);
-                        glDisable(GL_BLEND);
-                        glDisable(GL_TEXTURE_2D);
-                        glDisable(GL_DEPTH_TEST);
-                        glLineWidth(1.2f);
-                        Render2DHelper.INSTANCE.glColor(hitEntity == null ? missColor : hitColor);
-                        glBegin(GL_LINES);
-                        glVertex3d(x, y, z);
-                        glVertex3d(x1, y1, z1);
-                        glEnd();
-                        glDisable(GL_BLEND);
-                        glEnable(GL_TEXTURE_2D);
-                        glEnable(GL_DEPTH_TEST);
-                        glDisable(GL_LINE_SMOOTH);
-                        glDisable(GL_BLEND);
-                        glPopMatrix();
+                        RenderSystem.disableTexture();
+                        RenderSystem.enableBlend();
+                        RenderSystem.defaultBlendFunc();
+                        RenderSystem.disableDepthTest();
+                        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
+                        RenderSystem.enableCull();
 
+                        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+                        bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+                        bufferBuilder.vertex(x, y, z).color(red, green, blue, alpha).next();
+                        bufferBuilder.vertex(x1, y1, z1).color(red, green, blue, alpha).next();
+                        bufferBuilder.end();
+                        BufferRenderer.draw(bufferBuilder);
+                        RenderSystem.enableTexture();
+                        RenderSystem.disableCull();
+                        RenderSystem.disableBlend();
+                        RenderSystem.enableDepthTest();
+                        RenderSystem.depthMask(true);
                     } else {
                         Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z, eventRender3D.getPartialTicks());
                         if (hitEntity != null) {
@@ -214,6 +219,7 @@ public class Trajectories extends Module {
                         }
                     }
                 }
+            }
         }
     }
 

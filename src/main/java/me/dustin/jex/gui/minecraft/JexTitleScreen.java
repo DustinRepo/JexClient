@@ -278,7 +278,7 @@ public class JexTitleScreen extends Screen {
         fill(matrices, 0, 0, this.width, this.height, -1);
         this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0F, 1.0F));
         int j = this.width / 2 - 137;
-        this.client.getTextureManager().bindTexture(PANORAMA_OVERLAY);
+        Render2DHelper.INSTANCE.bindTexture(PANORAMA_OVERLAY);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
@@ -288,12 +288,13 @@ public class JexTitleScreen extends Screen {
 
         if (!this.backgrounds.isEmpty() && customMainMenu.customBackground) {
             Background currentBackground = backgrounds.get(background);
-            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(currentBackground.identifier);
+            Render2DHelper.INSTANCE.bindTexture(currentBackground.identifier);
+            Render2DHelper.INSTANCE.bindTexture(currentBackground.identifier);
             DrawableHelper.drawTexture(matrices, (int) 0, (int) 0, 0, 0, width, height, width, height);
         }
 
         if ((l & -67108864) != 0) {
-            this.client.getTextureManager().bindTexture(JEX_TITLE_TEXTURE);
+            Render2DHelper.INSTANCE.bindTexture(JEX_TITLE_TEXTURE);
 
             int j1 = this.height / 4 - 10;
             RenderSystem.pushMatrix();
@@ -345,9 +346,9 @@ public class JexTitleScreen extends Screen {
                 Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
                 try {
                     if (response.getCape() != null && !response.getCape().isEmpty() && !response.getCape().equalsIgnoreCase("null")) {
-                        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")));
+                        Render2DHelper.INSTANCE.bindTexture(new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")));
                     } else {
-                        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "cape/jex_cape.png"));
+                        Render2DHelper.INSTANCE.bindTexture(new Identifier("jex", "cape/jex_cape.png"));
                     }
                     DrawableHelper.drawTexture(matrices, 2, (int) bottom + 35, 2.5f, 4, 32, 64, 198, 128);
                 }catch (Exception e) {}

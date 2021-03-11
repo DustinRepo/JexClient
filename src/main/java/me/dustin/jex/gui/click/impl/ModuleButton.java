@@ -20,9 +20,10 @@ import me.dustin.jex.option.types.StringOption;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.Quaternion;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 public class ModuleButton extends Button {
 
@@ -49,12 +50,11 @@ public class ModuleButton extends Button {
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(this.getX() + this.getWidth() - 7, this.getY() + 7.5f, 0);
-        GL11.glRotated(cogSpin, 0, 0, 1);
+        matrixStack.push();
+        matrixStack.translate(this.getX() + this.getWidth() - 7, this.getY() + 7.5f, 0);
+        matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 0.0F, 1.0F), cogSpin, true));
         Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : ColorHelper.INSTANCE.getClientColor());
-        GL11.glPopMatrix();
-
+        matrixStack.pop();
         this.getChildren().forEach(button -> {
             button.draw(matrixStack);
             Render2DHelper.INSTANCE.drawVLine(matrixStack, button.getX() - 1, button.getY() - 1, button.getY() + button.getHeight(), ColorHelper.INSTANCE.getClientColor());
@@ -152,8 +152,11 @@ public class ModuleButton extends Button {
 
             @EventListener(events = {EventKeyPressed.class})
             public void runEvent(EventKeyPressed event) {
-                if (event.getType() == EventKeyPressed.PressType.IN_GAME)
+                if (event.getType() == EventKeyPressed.PressType.IN_GAME) {
+                    while (EventAPI.getInstance().alreadyRegistered(this))
+                        EventAPI.getInstance().unregister(this);
                     return;
+                }
                 ModuleButton moduleButton = (ModuleButton) this.button;
                 Button thisButton = this.button.getChildren().get(this.button.getChildren().size() - 2);
 
@@ -164,7 +167,8 @@ public class ModuleButton extends Button {
                     moduleButton.getModule().setKey(event.getKey());
                     thisButton.setName("Key: " + (GLFW.glfwGetKeyName(event.getKey(), event.getScancode()) == null ? InputUtil.fromKeyCode(event.getKey(), event.getScancode()).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(event.getKey(), event.getScancode()).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_"));
                 }
-                EventAPI.getInstance().unregister(this);
+                while (EventAPI.getInstance().alreadyRegistered(this))
+                    EventAPI.getInstance().unregister(this);
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
                     ModuleFile.write();
             }
