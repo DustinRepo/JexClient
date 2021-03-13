@@ -1,11 +1,10 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.event.render.EventBlockOutlineColor;
-import me.dustin.jex.event.render.EventWorldRender;
 import me.dustin.jex.event.render.EventRenderRain;
+import me.dustin.jex.event.render.EventWorldRender;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IWorldRenderer;
-import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.impl.render.esp.ESP;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -40,7 +39,7 @@ public class MixinWorldRenderer implements IWorldRenderer {
     @Redirect(method = "loadEntityOutlineShader", at = @At(value = "NEW", target = "net/minecraft/util/Identifier"))
     public Identifier getIDForOutline(String id) {
         try {
-            if (Module.get(ESP.class).getState() && ((ESP) Module.get(ESP.class)).mode.equalsIgnoreCase("Shader")) {
+            if (ESP.INSTANCE.getState() && ESP.INSTANCE.mode.equalsIgnoreCase("Shader")) {
                 return my_outline;
             }
         } catch (Exception e) {

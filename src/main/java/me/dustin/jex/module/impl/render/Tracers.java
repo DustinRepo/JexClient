@@ -96,7 +96,7 @@ public class Tracers extends Module {
                 return getColor(ent.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 128).getRGB();
             }
         }
-        return ((ESP) Module.get(ESP.class)).getColor(ent);
+        return ESP.INSTANCE.getColor(ent);
     }
 
     public Color getColor(double power) {

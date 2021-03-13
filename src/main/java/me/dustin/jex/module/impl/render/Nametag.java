@@ -225,11 +225,11 @@ public class Nametag extends Module {
 
     private int getColor(Entity player) {
         if ((player instanceof ItemEntity))
-            return ((ESP) Module.get(ESP.class)).itemColor;
+            return ESP.INSTANCE.itemColor;
         if (EntityHelper.INSTANCE.isHostileMob(player))
-            return ((ESP) Module.get(ESP.class)).hostileColor;
+            return ESP.INSTANCE.hostileColor;
         if (EntityHelper.INSTANCE.isPassiveMob(player))
-            return ((ESP) Module.get(ESP.class)).passiveColor;
+            return ESP.INSTANCE.passiveColor;
         if (player instanceof PlayerEntity) {
             if (Friend.isFriend(player.getName().asString()))
                 return ColorHelper.INSTANCE.getClientColor();

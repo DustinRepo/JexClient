@@ -26,7 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 
 @ModClass(name = "ESP", category = ModCategory.VISUAL, description = "Mark entities/players through walls")
 public class ESP extends Module {
-
+    public static ESP INSTANCE;
     @Op(name = "Mode", all = {"Shader", "2D", "Box"})
     public String mode = "Shader";
 
@@ -64,6 +64,7 @@ public class ESP extends Module {
         new BoxESP();
         //new OutlineBox();
         new TwoDeeESP();
+        INSTANCE = this;
     }
 
     @EventListener(events = {EventRender3D.class, EventRender2D.class, EventOutlineColor.class, EventJoinWorld.class}, priority = 1)
