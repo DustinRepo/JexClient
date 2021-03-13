@@ -27,6 +27,12 @@ public class Zoom extends Module {
         super.onEnable();
     }
 
+    @Override
+    public void onDisable() {
+        if (Wrapper.INSTANCE.getOptions() == null)
+            super.onDisable();
+    }
+
     @EventListener(events = {EventPlayerPackets.class})
     private void runMethod(EventPlayerPackets eventPlayerPackets) {
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
@@ -46,11 +52,13 @@ public class Zoom extends Module {
             }
             else
             {
-                if(!resetFOV)
-                    if(Wrapper.INSTANCE.getOptions().fov < savedFOV) {
+                if(!resetFOV || !getState()) {
+                    if (Wrapper.INSTANCE.getOptions().fov < savedFOV) {
                         Wrapper.INSTANCE.getOptions().fov = savedFOV;
                     }
-                    else
+                    if (!getState())
+                        super.onDisable();
+                } else
                         this.resetFOV = true;
             }
         }
