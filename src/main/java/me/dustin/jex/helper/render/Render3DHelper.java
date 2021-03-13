@@ -2,6 +2,7 @@ package me.dustin.jex.helper.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
@@ -14,6 +15,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 
 public enum Render3DHelper {
@@ -146,61 +149,54 @@ public enum Render3DHelper {
     }
 
     public void drawFilledBox(Box bb, int color) {
-        float alpha = (color >> 24 & 0xFF) / 255.0F;
-        float red = (color >> 16 & 0xFF) / 255.0F;
-        float green = (color >> 8 & 0xFF) / 255.0F;
-        float blue = (color & 0xFF) / 255.0F;
+        Color color1 = ColorHelper.INSTANCE.getColor(color);
 
-        RenderSystem.blendColor(red, green, blue, alpha);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(7/*QUADS*/, VertexFormats.POSITION_COLOR);
 
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.minZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.minZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.maxZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.maxZ).color(red, green, blue, alpha).next();
+        bufferBuilder.vertex(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.minX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.minZ).color(red, green, blue, alpha).next();
+        bufferBuilder.vertex(bb.minX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.minX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.minZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.minZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.minZ).color(red, green, blue, alpha).next();
+        bufferBuilder.vertex(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.minX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.minZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.minZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.maxZ).color(red, green, blue, alpha).next();
+        bufferBuilder.vertex(bb.maxX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.maxZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.maxZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).next();
+        bufferBuilder.vertex(bb.minX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.minX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.minZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.maxZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.maxZ).color(red, green, blue, alpha).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.minZ).color(red, green, blue, alpha).next();
+        bufferBuilder.vertex(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.minX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.minX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(bb.minX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
     }
 
     public void drawOutlineBox(Box bb, int color) {
-        float alpha = (color >> 24 & 0xFF) / 255.0F;
-        float red = (color >> 16 & 0xFF) / 255.0F;
-        float green = (color >> 8 & 0xFF) / 255.0F;
-        float blue = (color & 0xFF) / 255.0F;
+        Color color1 = ColorHelper.INSTANCE.getColor(color);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(1/*LINES*/, VertexFormats.POSITION_COLOR);
 
         VoxelShape shape = VoxelShapes.cuboid(bb);
         shape.forEachEdge((x1, y1, z1, x2, y2, z2) -> {
-            bufferBuilder.vertex(x1, y1, z1).color(red, green, blue, 1).next();
-            bufferBuilder.vertex(x2, y2, z2).color(red, green, blue, 1).next();
+            bufferBuilder.vertex(x1, y1, z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+            bufferBuilder.vertex(x2, y2, z2).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         });
 
         bufferBuilder.end();

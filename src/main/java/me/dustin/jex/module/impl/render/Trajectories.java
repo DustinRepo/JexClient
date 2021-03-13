@@ -3,6 +3,7 @@ package me.dustin.jex.module.impl.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.load.impl.IPersistentProjectileEntity;
@@ -12,7 +13,10 @@ import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -175,10 +179,7 @@ public class Trajectories extends Module {
                     if (i != positions.size() - 1) {
 
                         int color = hitEntity == null ? missColor : hitColor;
-                        float alpha = (color >> 24 & 0xFF) / 255.0F;
-                        float red = (color >> 16 & 0xFF) / 255.0F;
-                        float green = (color >> 8 & 0xFF) / 255.0F;
-                        float blue = (color & 0xFF) / 255.0F;
+                        Color color1 = ColorHelper.INSTANCE.getColor(color);
 
                         Vec3d vec = positions.get(i);
                         Vec3d vec1 = positions.get(i + 1);
@@ -199,8 +200,8 @@ public class Trajectories extends Module {
 
                         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                         bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
-                        bufferBuilder.vertex(x, y, z).color(red, green, blue, alpha).next();
-                        bufferBuilder.vertex(x1, y1, z1).color(red, green, blue, alpha).next();
+                        bufferBuilder.vertex(x, y, z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                        bufferBuilder.vertex(x1, y1, z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                         bufferBuilder.end();
                         BufferRenderer.draw(bufferBuilder);
                         RenderSystem.enableTexture();

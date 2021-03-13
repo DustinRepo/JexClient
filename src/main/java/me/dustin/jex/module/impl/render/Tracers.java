@@ -6,6 +6,7 @@ import me.dustin.jex.event.render.EventBobView;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.module.core.Module;
@@ -48,12 +49,7 @@ public class Tracers extends Module {
                 LivingEntity living = (LivingEntity) entity;
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
-                boolean bobView = Wrapper.INSTANCE.getOptions().bobView;
-                float lastNauseaStrength = Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength;
-                float nextNauseStrength = Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength;
-                float red = (getColor(entity) >> 16 & 0xFF) / 255.0F;
-                float green = (getColor(entity) >> 8 & 0xFF) / 255.0F;
-                float blue = (getColor(entity) & 0xFF) / 255.0F;
+                Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
                 Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, eventRender3D.getPartialTicks());
 
                 RenderSystem.disableTexture();
@@ -64,21 +60,17 @@ public class Tracers extends Module {
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
-                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(red, green, blue, 1).next();
-                bufferBuilder.vertex(vec.x, vec.y, vec.z).color(red, green, blue, 1).next();
+                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 if (spine) {
-                    bufferBuilder.vertex(vec.x, vec.y, vec.z).color(red, green, blue, 1).next();
-                    bufferBuilder.vertex(vec.x, vec.y + entity.getEyeHeight(entity.getPose()), vec.z).color(red, green, blue, 1).next();
+                    bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                    bufferBuilder.vertex(vec.x, vec.y + entity.getEyeHeight(entity.getPose()), vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 }
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
 
                 RenderSystem.enableDepthTest();
                 RenderSystem.enableTexture();
-
-                Wrapper.INSTANCE.getOptions().bobView = bobView;
-                Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength = lastNauseaStrength;
-                Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength = nextNauseStrength;
             }
         });
     }

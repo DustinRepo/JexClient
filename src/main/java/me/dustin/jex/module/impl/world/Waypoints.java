@@ -29,6 +29,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -130,12 +131,8 @@ public class Waypoints extends Module {
                 assert cameraEntity != null;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
 
-                boolean bobView = Wrapper.INSTANCE.getOptions().bobView;
-                float lastNauseaStrength = Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength;
-                float nextNauseStrength = Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength;
-                float red = (waypoint.getColor() >> 16 & 0xFF) / 255.0F;
-                float green = (waypoint.getColor() >> 8 & 0xFF) / 255.0F;
-                float blue = (waypoint.getColor() & 0xFF) / 255.0F;
+
+                Color color1 = ColorHelper.INSTANCE.getColor(waypoint.getColor());
 
                 RenderSystem.disableTexture();
                 RenderSystem.disableDepthTest();
@@ -145,17 +142,13 @@ public class Waypoints extends Module {
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
-                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(red, green, blue, 1).next();
-                bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(red, green, blue, 1).next();
+                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
 
                 RenderSystem.enableDepthTest();
                 RenderSystem.enableTexture();
-
-                Wrapper.INSTANCE.getOptions().bobView = bobView;
-                Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength = lastNauseaStrength;
-                Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength = nextNauseStrength;
             }
         }
         if (event instanceof EventRender2D) {

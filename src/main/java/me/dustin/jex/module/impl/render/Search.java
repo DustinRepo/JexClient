@@ -9,6 +9,7 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.file.SearchFile;
 import me.dustin.jex.helper.file.ModFileHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -144,12 +145,7 @@ public class Search extends Module {
                 assert cameraEntity != null;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
 
-                boolean bobView = Wrapper.INSTANCE.getOptions().bobView;
-                float lastNauseaStrength = Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength;
-                float nextNauseStrength = Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength;
-                float red = (blocks.get(block) >> 16 & 0xFF) / 255.0F;
-                float green = (blocks.get(block) >> 8 & 0xFF) / 255.0F;
-                float blue = (blocks.get(block) & 0xFF) / 255.0F;
+                Color color1 = ColorHelper.INSTANCE.getColor(blocks.get(block));
 
                 RenderSystem.disableTexture();
                 RenderSystem.disableDepthTest();
@@ -159,18 +155,13 @@ public class Search extends Module {
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
-                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(red, green, blue, 1).next();
-                bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(red, green, blue, 1).next();
+                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
 
                 RenderSystem.enableDepthTest();
                 RenderSystem.enableTexture();
-
-                Wrapper.INSTANCE.getOptions().bobView = bobView;
-                Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength = lastNauseaStrength;
-                Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength = nextNauseStrength;
-
             }
         } else if (event instanceof EventRender3D) {
             for (BlockPos pos : worldBlocks.keySet()) {
