@@ -190,7 +190,6 @@ public enum Render2DHelper {
         float f1 = (c >> 16 & 0xFF) / 255.0F;
         float f2 = (c >> 8 & 0xFF) / 255.0F;
         float f3 = (c & 0xFF) / 255.0F;
-        RenderSystem.lineWidth(linewidth);
 
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
@@ -198,6 +197,7 @@ public enum Render2DHelper {
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(0, VertexFormats.POSITION_COLOR);
+        RenderSystem.lineWidth(linewidth);
 
         for (int i = (int) startpoint; i <= arc; i += 1) {
             double x = Math.sin(i * 3.141592653589793D / 180.0D) * r;

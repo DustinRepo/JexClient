@@ -80,7 +80,7 @@ public enum EntityHelper {
     }
 
     public boolean canBreed(AnimalEntity entity) {
-        return !entity.isBaby() && entity.canEat() && (entity instanceof CowEntity || entity instanceof SheepEntity || entity instanceof ChickenEntity || entity instanceof PigEntity);
+        return !entity.isBaby() && entity.canEat() && entity.isBreedingItem(Wrapper.INSTANCE.getLocalPlayer().getMainHandStack());
     }
 
     public boolean canPlayerSprint() {

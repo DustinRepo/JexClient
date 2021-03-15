@@ -2,6 +2,7 @@ package me.dustin.jex.command.impl;
 
 import me.dustin.jex.command.core.Command;
 import me.dustin.jex.command.core.annotate.Cmd;
+import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.module.impl.world.AutoFarm;
 
@@ -13,10 +14,13 @@ public class CommandAutoFarm extends Command {
             String pos = args[1];
             if (pos.equalsIgnoreCase("pos1")) {
                 AutoFarm.pos1 = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
-            }
+                ChatHelper.INSTANCE.addClientMessage("Pos 1 set to current position");
+            }else
             if (pos.equalsIgnoreCase("pos2")) {
                 AutoFarm.pos2 = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
-            }
+                ChatHelper.INSTANCE.addClientMessage("Pos 2 set to current position");
+            }else
+                giveSyntaxMessage();
         } catch (Exception e) {
             giveSyntaxMessage();
         }
