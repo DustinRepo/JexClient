@@ -36,6 +36,7 @@
     "MixinKeyboard",
     "MixinLlamaEntity",
     "MixinMinecraftClient",
+    "MixinMouse",
     "MixinMultiplayerScreen",
     "MixinOptionsScreen",
     "MixinPersistentProjectileEntity",
