@@ -125,7 +125,7 @@ public class CrystalAura extends Module {
                     BlockPos placingPos = getOpenBlockPos(entityPlayer);
                     if (placingPos != null && !Friend.isFriend(entityPlayer.getDisplayName().asString())) {
                         EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
-                        Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ(), event.getPartialTicks());
+                        Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());
                         Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
                         Render3DHelper.INSTANCE.drawBox(box, shouldAttack(crystal) ? placingColor : thinkingColor);
                     }

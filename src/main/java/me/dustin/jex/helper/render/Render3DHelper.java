@@ -29,7 +29,7 @@ public enum Render3DHelper {
         return new Vec3d(x, y, z);
     }
 
-    public Vec3d getRenderPosition(double x, double y, double z, double partial) {
+    public Vec3d getRenderPosition(double x, double y, double z) {
         double minX = x - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
         double minY = y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
         double minZ = z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
@@ -60,6 +60,35 @@ public enum Render3DHelper {
         Camera camera = Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera;
         GL11.glRotated(MathHelper.wrapDegrees(camera.getPitch()), 1.0D, 0.0D, 0.0D);
         GL11.glRotated(MathHelper.wrapDegrees(camera.getYaw() + 180.0D), 0.0D, 1.0D, 0.0D);
+    }
+
+    public void drawSphere(float radius, int gradation, int color, boolean testDepth, Vec3d pos) {
+        Color color1 = ColorHelper.INSTANCE.getColor(color);
+        final float PI = 3.141592f;
+        float x, y, z, alpha, beta;
+        if (!testDepth)
+            RenderSystem.disableDepthTest();
+        RenderSystem.disableTexture();
+        for (alpha = 0.0f; alpha < Math.PI; alpha += PI / gradation) {
+            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+            bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+            for (beta = 0.0f; beta < 2.01f * Math.PI; beta += PI / gradation) {
+                x = (float) (pos.getX() +  (radius * Math.cos(beta) * Math.sin(alpha)));
+                y = (float) (pos.getY() +  (radius * Math.sin(beta) * Math.sin(alpha)));
+                z = (float) (pos.getZ() +  (radius * Math.cos(alpha)));
+                Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(x, y, z);
+                bufferBuilder.vertex(renderPos.x, renderPos.y, renderPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                x = (float) (pos.getX() +  (radius * Math.cos(beta) * Math.sin(alpha + PI / gradation)));
+                y = (float) (pos.getY() +  (radius * Math.sin(beta) * Math.sin(alpha + PI / gradation)));
+                z = (float) (pos.getZ() +  (radius * Math.cos(alpha + PI / gradation)));
+                renderPos = Render3DHelper.INSTANCE.getRenderPosition(x, y, z);
+                bufferBuilder.vertex(renderPos.x, renderPos.y, renderPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+            }
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+        }
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableTexture();
     }
 
     public void drawBox(Box bb, int color) {

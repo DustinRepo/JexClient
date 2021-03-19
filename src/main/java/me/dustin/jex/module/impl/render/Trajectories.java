@@ -210,7 +210,7 @@ public class Trajectories extends Module {
                         RenderSystem.enableDepthTest();
                         RenderSystem.depthMask(true);
                     } else {
-                        Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z, eventRender3D.getPartialTicks());
+                        Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z);
                         if (hitEntity != null) {
                             Vec3d vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, eventRender3D.getPartialTicks());
                             Render3DHelper.INSTANCE.drawEntityBox(hitEntity, vec2.x, vec2.y, vec2.z, hitColor);

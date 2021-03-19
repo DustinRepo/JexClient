@@ -50,7 +50,7 @@ public class AutoBreak extends Module {
         if (event.equals(EventJoinWorld.class))
             pos = null;
         if (event.equals(EventRender3D.class) && pos != null && showPosition) {
-            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(pos.getX(), pos.getY(), pos.getZ(), ((EventRender3D) event).getPartialTicks());
+            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(pos.getX(), pos.getY(), pos.getZ());
             Block block = WorldHelper.INSTANCE.getBlock(pos);
 
             int color = emptyColor;

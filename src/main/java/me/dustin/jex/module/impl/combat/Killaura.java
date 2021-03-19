@@ -14,7 +14,6 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
@@ -23,7 +22,6 @@ import me.dustin.jex.module.impl.player.AutoEat;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,11 +31,7 @@ import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
-import org.lwjgl.util.glu.Sphere;
 
 @ModClass(name = "Aura", category = ModCategory.COMBAT, description = "Attack entities around you.")
 public class Killaura extends Module {
@@ -146,16 +140,10 @@ public class Killaura extends Module {
                 matrixStack.push();
                 RenderSystem.disableTexture();
                 RenderSystem.lineWidth(1);
-                Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(Wrapper.INSTANCE.getLocalPlayer(), ((EventRender3D) event1).getPartialTicks()).add(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0);
-                matrixStack.translate(renderPos.x, renderPos.y, renderPos.z);
-                Render2DHelper.INSTANCE.glColor(reachCircleColor);
-                GL11.glPointSize(3f);
-                matrixStack.multiply(new Quaternion(new Vector3f(1F, 0F, 0F), 90, true));
-                Sphere sphere = new Sphere();
-                sphere.setDrawStyle(GLU.GLU_SILHOUETTE);
-                sphere.setNormals(GLU.GLU_SMOOTH);
-                sphere.draw(reach, (int)30, 20);
-                matrixStack.translate(-renderPos.x, -renderPos.y, -renderPos.z);
+                double x = Wrapper.INSTANCE.getLocalPlayer().prevX + ((Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX) * ((EventRender3D) event1).getPartialTicks());
+                double y = Wrapper.INSTANCE.getLocalPlayer().prevY + ((Wrapper.INSTANCE.getLocalPlayer().getY() - Wrapper.INSTANCE.getLocalPlayer().prevY) * ((EventRender3D) event1).getPartialTicks());
+                double z = Wrapper.INSTANCE.getLocalPlayer().prevZ + ((Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ) * ((EventRender3D) event1).getPartialTicks());
+                Render3DHelper.INSTANCE.drawSphere(reach, 25, reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
                 RenderSystem.enableTexture();
                 matrixStack.pop();
             }
