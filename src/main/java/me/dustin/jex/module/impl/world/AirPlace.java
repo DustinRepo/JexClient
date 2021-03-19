@@ -30,7 +30,7 @@ public class AirPlace extends Module {
     private void runMethod(Event event) {
         if (event instanceof EventMouseButton) {
             EventMouseButton eventMouseButton = (EventMouseButton)event;
-            if (eventMouseButton.getButton() == 1 && eventMouseButton.getClickType() == EventMouseButton.ClickType.IN_GAME) {
+            if (eventMouseButton.getButton() == 1 && eventMouseButton.getClickType() == EventMouseButton.ClickType.IN_GAME && Wrapper.INSTANCE.getMinecraft().crosshairTarget == null) {
                 HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
                 if (hitResult instanceof BlockHitResult) {
                     BlockHitResult blockHitResult = (BlockHitResult)hitResult;
@@ -43,7 +43,7 @@ public class AirPlace extends Module {
             }
         } else if (event instanceof EventRender3D) {
             HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
-            if (hitResult instanceof BlockHitResult) {
+            if (hitResult instanceof BlockHitResult && Wrapper.INSTANCE.getMinecraft().crosshairTarget == null) {
                 BlockHitResult blockHitResult = (BlockHitResult)hitResult;
                 if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) == Blocks.AIR) {
                     Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
