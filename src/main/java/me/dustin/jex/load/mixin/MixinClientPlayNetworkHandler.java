@@ -22,7 +22,7 @@ public class MixinClientPlayNetworkHandler {
         explosion.affectWorld(true);
         EventExplosionVelocity eventExplosionVelocity = new EventExplosionVelocity().run();
         if (!eventExplosionVelocity.isCancelled())
-            Wrapper.INSTANCE.getLocalPlayer().setVelocity(Wrapper.INSTANCE.getLocalPlayer().getVelocity().add((double) packet.getPlayerVelocityX(), (double) packet.getPlayerVelocityY(), (double) packet.getPlayerVelocityZ()));
+            Wrapper.INSTANCE.getLocalPlayer().setVelocity(Wrapper.INSTANCE.getLocalPlayer().getVelocity().add((double) packet.getPlayerVelocityX() * eventExplosionVelocity.getMultX(), (double) packet.getPlayerVelocityY() * eventExplosionVelocity.getMultY(), (double) packet.getPlayerVelocityZ() * eventExplosionVelocity.getMultZ()));
         ci.cancel();
     }
 

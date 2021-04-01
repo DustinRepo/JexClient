@@ -21,6 +21,7 @@
     "MixinEntity",
     "MixinEntityRenderDispatcher",
     "MixinEntityRenderer",
+    "MixinEntityVelocityUpdateS2CPacket",
     "MixinFluidBlock",
     "MixinFluidRenderer",
     "MixinFluidState",
