@@ -4,6 +4,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRenderBlockEntity;
 import me.dustin.jex.event.render.EventRenderEntity;
+import me.dustin.jex.event.world.EventRenderFirework;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
@@ -18,6 +19,8 @@ public class NoRender extends Module {
 
     @Op(name = "Items")
     public boolean item = true;
+    @Op(name = "Fireworks")
+    public boolean fireworks = true;
     @Op(name = "Withers")
     public boolean withers = true;
     @Op(name = "Falling Blocks")
@@ -37,7 +40,7 @@ public class NoRender extends Module {
     @Op(name = "Campfires")
     public boolean campfires = true;
 
-    @EventListener(events = {EventRenderEntity.class, EventRenderBlockEntity.class})
+    @EventListener(events = {EventRenderEntity.class, EventRenderBlockEntity.class, EventRenderFirework.class})
     private void runMethod(Event event) {
         if (event instanceof EventRenderEntity) {
             EventRenderEntity eventRenderEntity = (EventRenderEntity) event;
@@ -62,6 +65,9 @@ public class NoRender extends Module {
             if (eventRenderBlockEntity.blockEntity instanceof HopperBlockEntity && hoppers)
                 event.cancel();
             if (eventRenderBlockEntity.blockEntity instanceof CampfireBlockEntity && campfires)
+                event.cancel();
+        } else if (event instanceof EventRenderFirework) {
+            if (fireworks)
                 event.cancel();
         }
     }

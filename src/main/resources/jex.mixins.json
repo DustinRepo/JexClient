@@ -23,6 +23,7 @@
     "MixinEntityRenderDispatcher",
     "MixinEntityRenderer",
     "MixinEntityVelocityUpdateS2CPacket",
+    "MixinFireworksSparkParticleFireworkParticle",
     "MixinFluidBlock",
     "MixinFluidRenderer",
     "MixinFluidState",
