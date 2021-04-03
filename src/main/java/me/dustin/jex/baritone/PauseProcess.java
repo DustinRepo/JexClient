@@ -1,19 +1,13 @@
 package me.dustin.jex.baritone;
 
-import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.process.IBaritoneProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
-import baritone.utils.BaritoneProcessHelper;
 
-public class PauseProcess extends BaritoneProcessHelper implements IBaritoneProcess {
+public class PauseProcess implements IBaritoneProcess {
 
     boolean pause = false;
-
-    public PauseProcess(Baritone baritone) {
-        super(baritone);
-    }
 
     @Override
     public boolean isActive() {

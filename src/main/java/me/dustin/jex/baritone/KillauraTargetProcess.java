@@ -1,6 +1,4 @@
 package me.dustin.jex.baritone;
-
-import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalNear;
@@ -8,18 +6,13 @@ import baritone.api.pathing.goals.GoalRunAway;
 import baritone.api.process.IBaritoneProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
-import baritone.utils.BaritoneProcessHelper;
 import me.dustin.jex.module.impl.combat.Killaura;
 import net.minecraft.entity.LivingEntity;
 
-public class KillauraTargetProcess extends BaritoneProcessHelper implements IBaritoneProcess {
+public class KillauraTargetProcess implements IBaritoneProcess {
 
     private LivingEntity target;
     private Killaura killaura;
-
-    public KillauraTargetProcess(Baritone baritone) {
-        super(baritone);
-    }
 
     public void followUntilDead(LivingEntity target, Killaura killaura) {
         this.target = target;
@@ -40,6 +33,7 @@ public class KillauraTargetProcess extends BaritoneProcessHelper implements IBar
         Goal goal;
 
         float dist = killaura.bMinDist;
+
         if (!BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player().canSee(target))
             dist = 1;
 

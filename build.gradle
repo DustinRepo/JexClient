@@ -29,6 +29,7 @@ dependencies {
 
     compile files('lib/eventmanager-1.0.1.jar')
     compile files('lib/baritone-1.6.1-dev.jar')
+
 }
 
 processResources {
@@ -41,10 +42,12 @@ processResources {
 
 repositories {
     mavenCentral()
-
     maven {
-        url = 'https://jexclient.com/maven/'
+        name = 'spongepowered-repo'
+        url = 'https://repo.spongepowered.org/maven'
     }
+    maven { url = 'https://jexclient.com/maven/' }
+    maven { url = 'https://jitpack.io' }
 }
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is
