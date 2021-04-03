@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventControlLlama;
 import me.dustin.jex.event.misc.EventHorseIsSaddled;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IHorseBaseEntity;
 import me.dustin.jex.module.core.Module;
@@ -15,6 +16,9 @@ import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.*;
+import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.util.math.Vec3d;
+import org.lwjgl.glfw.GLFW;
 
 @ModClass(name = "EntityRider", category = ModCategory.WORLD, description = "Change how ridable entities work.")
 public class EntityRider extends Module {
@@ -43,6 +47,15 @@ public class EntityRider extends Module {
     @OpChild(name = "Llama Jump", min = 0.1f, max = 2, inc = 0.05f, parent = "Llama")
     public float llamaJump = 1;
 
+    @Op(name = "Boat")
+    public boolean boat = true;
+    @OpChild(name = "Allow Jump/Fly", parent = "Boat")
+    public boolean allowBoatFly = true;
+    @OpChild(name = "Boat Speed", min = 0.1f, max = 2, inc = 0.05f, parent = "Boat")
+    public float boatSpeed = 1;
+    @OpChild(name = "Boat Jump", min = 0.1f, max = 2, inc = 0.05f, parent = "Boat")
+    public float boatJump = 1;
+
     @EventListener(events = {EventPlayerPackets.class, EventHorseIsSaddled.class, EventControlLlama.class})
     private void runMethod(Event event) {
         if (event instanceof EventPlayerPackets) {
@@ -64,6 +77,16 @@ public class EntityRider extends Module {
                 iHorseBaseEntity.setSpeed(llamaSpeed);
                 if (llamaInstantJump)
                     iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? 1 : 0);
+            }
+            if (boat && vehicle instanceof BoatEntity) {
+                BoatEntity boatEntity = (BoatEntity)vehicle;
+                boatEntity.updateVelocity(boatSpeed / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));
+                if (allowBoatFly)
+                if (Wrapper.INSTANCE.getOptions().keyJump.isPressed()) {
+                    boatEntity.addVelocity(0, boatJump / 10.0f, 0);
+                } else if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_INSERT)) {
+                    boatEntity.addVelocity(0, -boatJump / 10.0f, 0);
+                }
             }
         }
         if (event instanceof EventHorseIsSaddled) {
