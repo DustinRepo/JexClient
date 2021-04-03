@@ -37,7 +37,6 @@ public class Velocity extends Module {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         }
