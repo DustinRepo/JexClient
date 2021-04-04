@@ -1,11 +1,11 @@
 package me.dustin.jex.baritone;
-import baritone.api.BaritoneAPI;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalNear;
 import baritone.api.pathing.goals.GoalRunAway;
 import baritone.api.process.IBaritoneProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.module.impl.combat.Killaura;
 import net.minecraft.entity.LivingEntity;
 
@@ -33,11 +33,12 @@ public class KillauraTargetProcess implements IBaritoneProcess {
         Goal goal;
 
         float dist = killaura.bMinDist;
-
-        if (!BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player().canSee(target))
+        //had to comment out the original ones because the official baritone jar either builds with already yarn mapped code or running the "jar" gradle command builds with forge mappings even using the baritone.fabric_build property
+        //since I'm not doing any fancy stuff with multiple baritones I don't really have to worry too much though
+        if (!/*BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player()*/Wrapper.INSTANCE.getLocalPlayer().canSee(target))
             dist = 1;
 
-        if (BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player().distanceTo(target) > dist)
+        if (/*BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player()*/Wrapper.INSTANCE.getLocalPlayer().distanceTo(target) > dist)
             goal = new GoalNear(target.getBlockPos(), (int) killaura.reach);
         else
             goal = new GoalRunAway(dist, target.getBlockPos());

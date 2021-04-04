@@ -28,7 +28,7 @@ dependencies {
     compile group: 'org.joml', name: 'joml', version: '1.10.0'
 
     compile files('lib/eventmanager-1.0.1.jar')
-    compile files('lib/baritone-1.6.1-dev.jar')
+    compile files('lib/baritone-1.6.3-dev.jar')
 
 }
 
