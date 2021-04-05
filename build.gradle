@@ -25,10 +25,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.reflections/reflections
     compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
     // https://mvnrepository.com/artifact/org.joml/joml
-    compile group: 'org.joml', name: 'joml', version: '1.10.0'
+    compile group: 'org.joml', name: 'joml', version: '1.10.1'
 
     compile files('lib/eventmanager-1.0.1.jar')
-    compile files('lib/baritone-1.6.1-dev.jar')
+    compile files('lib/baritone-1.6.3-dev.jar')
 }
 
 processResources {

@@ -3,6 +3,7 @@ package me.dustin.jex.module.impl.movement;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.event.player.EventWalkOffBlock;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -47,7 +48,7 @@ public class Scaffold extends Module {
         invalidPlacingBlocks.add(Blocks.GRASS);
     }
 
-    @EventListener(events = {EventPlayerPackets.class})
+    @EventListener(events = {EventPlayerPackets.class, EventWalkOffBlock.class})
     private void runMethod(Event event) {
         if (AutoEat.isEating)
             return;
@@ -90,6 +91,8 @@ public class Scaffold extends Module {
 
                 timer.reset();
             }
+        } else if (event instanceof EventWalkOffBlock) {
+            event.cancel();
         }
     }
 

@@ -46,7 +46,7 @@ public class AutoSign extends Module {
                     signBlockEntity.setTextOnRow(i, new LiteralText(signText[i].getString().replaceAll("(?i)\u00a7|&([0-9A-FK-OR])", "\u00a7\u00a7$1$1")));
                 }
                 if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getWorld() != null)
-                    NetworkHelper.INSTANCE.sendPacket(new UpdateSignC2SPacket(signBlockEntity.getPos(), signBlockEntity.getTextOnRow(0).asString(), signBlockEntity.getTextOnRow(1).asString(), signBlockEntity.getTextOnRow(2).asString(), signBlockEntity.getTextOnRow(3).asString()));
+                    NetworkHelper.INSTANCE.sendPacket(new UpdateSignC2SPacket(signBlockEntity.getPos(), signBlockEntity.getTextOnRow(0, false).asString(), signBlockEntity.getTextOnRow(1, false).asString(), signBlockEntity.getTextOnRow(2, false).asString(), signBlockEntity.getTextOnRow(3, false).asString()));
                 signBlockEntity.markDirty();
                 event.cancel();
             }

@@ -1,9 +1,10 @@
 package me.dustin.jex.module.impl.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.load.impl.IPersistentProjectileEntity;
 import me.dustin.jex.load.impl.IProjectileEntity;
@@ -11,7 +12,8 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -22,17 +24,16 @@ import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 import java.awt.*;
 import java.util.ArrayList;
-
-import static org.lwjgl.opengl.GL11.*;
 
 @ModClass(name = "Trajectories", category = ModCategory.VISUAL, description = "Show a trajectory line for things like bows and snowballs")
 public class Trajectories extends Module {
@@ -47,7 +48,7 @@ public class Trajectories extends Module {
     }
 
     public static boolean isCharged(ItemStack stack) {
-        CompoundTag compoundTag = stack.getTag();
+        NbtCompound compoundTag = stack.getTag();
         return compoundTag != null && compoundTag.getBoolean("Charged");
     }
 
@@ -82,9 +83,9 @@ public class Trajectories extends Module {
                     PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(Wrapper.INSTANCE.getWorld(), itemStack, Wrapper.INSTANCE.getLocalPlayer());
 
                     Vec3d vec3d = Wrapper.INSTANCE.getLocalPlayer().getOppositeRotationVector(1.0F);
-                    Quaternion quaternion = new Quaternion(new Vector3f(vec3d), 0, true);
+                    Quaternion quaternion = new Quaternion(new Vec3f(vec3d), 0, true);
                     Vec3d vec3d2 = Wrapper.INSTANCE.getLocalPlayer().getRotationVec(1.0F);
-                    Vector3f vector3f = new Vector3f(vec3d2);
+                    Vec3f vector3f = new Vec3f(vec3d2);
                     vector3f.rotate(quaternion);
                     ((ProjectileEntity) persistentProjectileEntity).setVelocity((double) vector3f.getX(), (double) vector3f.getY(), (double) vector3f.getZ(), getSpeed(mainStack), 0);
                     for (int j = 0; j < 200; j++) {
@@ -170,13 +171,15 @@ public class Trajectories extends Module {
                 }
             }
 
-            if (!positions.isEmpty())
+            if (!positions.isEmpty()) {
                 for (int i = 0; i < positions.size(); i++) {
                     if (i != positions.size() - 1) {
 
+                        int color = hitEntity == null ? missColor : hitColor;
+                        Color color1 = ColorHelper.INSTANCE.getColor(color);
+
                         Vec3d vec = positions.get(i);
                         Vec3d vec1 = positions.get(i + 1);
-
                         double x = vec.x - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
                         double y = vec.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
                         double z = vec.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
@@ -185,26 +188,27 @@ public class Trajectories extends Module {
                         double y1 = vec1.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
                         double z1 = vec1.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
 
-                        glPushMatrix();
-                        glDisable(GL_LINE_SMOOTH);
-                        glDisable(GL_BLEND);
-                        glDisable(GL_TEXTURE_2D);
-                        glDisable(GL_DEPTH_TEST);
-                        glLineWidth(1.2f);
-                        Render2DHelper.INSTANCE.glColor(hitEntity == null ? missColor : hitColor);
-                        glBegin(GL_LINES);
-                        glVertex3d(x, y, z);
-                        glVertex3d(x1, y1, z1);
-                        glEnd();
-                        glDisable(GL_BLEND);
-                        glEnable(GL_TEXTURE_2D);
-                        glEnable(GL_DEPTH_TEST);
-                        glDisable(GL_LINE_SMOOTH);
-                        glDisable(GL_BLEND);
-                        glPopMatrix();
+                        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+                        RenderSystem.disableTexture();
+                        RenderSystem.enableBlend();
+                        RenderSystem.defaultBlendFunc();
+                        RenderSystem.disableDepthTest();
+                        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
+                        RenderSystem.enableCull();
 
+                        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+                        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+                        bufferBuilder.vertex(x, y, z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                        bufferBuilder.vertex(x1, y1, z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                        bufferBuilder.end();
+                        BufferRenderer.draw(bufferBuilder);
+                        RenderSystem.enableTexture();
+                        RenderSystem.disableCull();
+                        RenderSystem.disableBlend();
+                        RenderSystem.enableDepthTest();
+                        RenderSystem.depthMask(true);
                     } else {
-                        Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z, eventRender3D.getPartialTicks());
+                        Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z);
                         if (hitEntity != null) {
                             Vec3d vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, eventRender3D.getPartialTicks());
                             Render3DHelper.INSTANCE.drawEntityBox(hitEntity, vec2.x, vec2.y, vec2.z, hitColor);
@@ -214,6 +218,7 @@ public class Trajectories extends Module {
                         }
                     }
                 }
+            }
         }
     }
 

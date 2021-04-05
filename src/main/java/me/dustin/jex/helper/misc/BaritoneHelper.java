@@ -104,9 +104,4 @@ public enum BaritoneHelper {
         if (baritoneExists())
             UnsafeBaritoneHelper.pathTo(x, z);
     }
-
-    public void killBaritoneProcess() {
-        if (baritoneExists())
-            UnsafeBaritoneHelper.killBaritoneProcess();
-    }
 }

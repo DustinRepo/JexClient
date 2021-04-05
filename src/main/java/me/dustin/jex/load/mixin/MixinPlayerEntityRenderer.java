@@ -1,7 +1,7 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.addon.hat.HatFeatureRenderer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -16,13 +16,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<PlayerEntity, PlayerEntityModel<PlayerEntity>> {
 
 
-    public MixinPlayerEntityRenderer(EntityRenderDispatcher dispatcher, PlayerEntityModel<PlayerEntity> model, float shadowRadius) {
-        super(dispatcher, model, shadowRadius);
+    public MixinPlayerEntityRenderer(EntityRendererFactory.Context ctx, PlayerEntityModel<PlayerEntity> model, float shadowRadius) {
+        super(ctx, model, shadowRadius);
     }
 
-    @Inject(method = {"<init>(Lnet/minecraft/client/render/entity/EntityRenderDispatcher;Z)V"}, at = {@At("RETURN")})
-    private void construct(EntityRenderDispatcher entityRenderDispatcher, boolean bl, CallbackInfo ci) {
-        addFeature(new HatFeatureRenderer((FeatureRendererContext<PlayerEntity, PlayerEntityModel<PlayerEntity>>) (Object) this));
+    @Inject(method = {"<init>"}, at = {@At("RETURN")})
+    private void construct(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
+        addFeature(new HatFeatureRenderer((FeatureRendererContext<PlayerEntity, PlayerEntityModel<PlayerEntity>>) (Object)this));
     }
 
 }

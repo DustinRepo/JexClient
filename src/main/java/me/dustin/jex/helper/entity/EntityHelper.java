@@ -2,6 +2,7 @@ package me.dustin.jex.helper.entity;
 
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.impl.combat.Killaura;
 import net.minecraft.client.network.PlayerListEntry;
@@ -43,7 +44,7 @@ public enum EntityHelper {
 
     public boolean doesPlayerOwn(Entity entity) {
         if (entity instanceof TameableEntity) {
-            return ((TameableEntity) entity).getOwner() == Wrapper.INSTANCE.getLocalPlayer();
+            return ((TameableEntity) entity).getOwnerUuid() == Wrapper.INSTANCE.getLocalPlayer().getGameProfile().getId();
         }
         if (entity instanceof HorseBaseEntity) {
             HorseBaseEntity base = (HorseBaseEntity) entity;
@@ -59,7 +60,7 @@ public enum EntityHelper {
 
     public boolean doesPlayerOwn(Entity entity, PlayerEntity playerEntity) {
         if (entity instanceof TameableEntity) {
-            return ((TameableEntity) entity).getOwner() == playerEntity;
+            return ((TameableEntity) entity).getOwnerUuid() == playerEntity.getGameProfile().getId();
         }
         if (entity instanceof HorseBaseEntity) {
             HorseBaseEntity base = (HorseBaseEntity) entity;
@@ -80,7 +81,7 @@ public enum EntityHelper {
     }
 
     public boolean canBreed(AnimalEntity entity) {
-        return !entity.isBaby() && entity.canEat() && (entity instanceof CowEntity || entity instanceof SheepEntity || entity instanceof ChickenEntity || entity instanceof PigEntity);
+        return !entity.isBaby() && entity.canEat() && entity.isBreedingItem(Wrapper.INSTANCE.getLocalPlayer().getMainHandStack());
     }
 
     public boolean canPlayerSprint() {
@@ -96,8 +97,8 @@ public enum EntityHelper {
             }
         }
         if (armor) {
-            ItemStack player_1Armor = player_1.inventory.getArmorStack(3);
-            ItemStack player_2Armor = player_2.inventory.getArmorStack(3);
+            ItemStack player_1Armor = InventoryHelper.INSTANCE.getInventory(player_1).getArmorStack(3);
+            ItemStack player_2Armor = InventoryHelper.INSTANCE.getInventory(player_2).getArmorStack(3);
             if (player_1Armor != null && player_1Armor.getItem() instanceof ArmorItem && player_2Armor != null && player_2Armor.getItem() instanceof ArmorItem) {
                 ArmorItem armorItemP1 = (ArmorItem) player_1Armor.getItem();
                 ArmorItem armorItemP2 = (ArmorItem) player_2Armor.getItem();

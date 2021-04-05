@@ -8,16 +8,17 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 
@@ -50,7 +51,7 @@ public class SignReader extends Module {
                     }
                 }
             } else {
-                for (BlockEntity blockEntity : Wrapper.INSTANCE.getWorld().blockEntities) {
+                for (BlockEntity blockEntity : WorldHelper.INSTANCE.getBlockEntities()) {
                     if (blockEntity instanceof SignBlockEntity) {
                         SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
                         Vec3d pos = new Vec3d(signBlockEntity.getPos().getX(), signBlockEntity.getPos().getY(), signBlockEntity.getPos().getZ());
@@ -60,15 +61,16 @@ public class SignReader extends Module {
             }
         }
         if (event instanceof EventRender2D) {
-            GL11.glPushMatrix();
-            GL11.glScalef(scale, scale,1);
+            MatrixStack matrixStack = ((EventRender2D) event).getMatrixStack();
+            matrixStack.push();
+            matrixStack.scale(scale, scale,1);
             positions.forEach((signBlockEntity, vec3d) -> {
                 if (Render2DHelper.INSTANCE.isOnScreen(vec3d)) {
                     float x = (float)vec3d.x / scale;
                     float y = (float)vec3d.y / scale;
                     int count = 0;
                     for (int i = 0; i < 4; i++) {
-                        String text = signBlockEntity.getTextOnRow(3 - i).getString().trim();
+                        String text = signBlockEntity.getTextOnRow(3 - i, false).getString().trim();
                         float strWidth = FontHelper.INSTANCE.getStringWidth(text);
                         if (!text.isEmpty()) {
                             if (backgrounds)
@@ -80,7 +82,8 @@ public class SignReader extends Module {
                     }
                 }
             });
-            GL11.glPopMatrix();
+            matrixStack.scale(1 / scale, 1 / scale,1);
+            matrixStack.pop();
         }
     }
 

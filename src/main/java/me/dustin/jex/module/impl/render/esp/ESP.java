@@ -14,7 +14,6 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.module.impl.render.esp.impl.BoxESP;
-import me.dustin.jex.module.impl.render.esp.impl.OutlineBox;
 import me.dustin.jex.module.impl.render.esp.impl.ShaderESP;
 import me.dustin.jex.module.impl.render.esp.impl.TwoDeeESP;
 import me.dustin.jex.option.annotate.Op;
@@ -27,8 +26,8 @@ import net.minecraft.entity.player.PlayerEntity;
 
 @ModClass(name = "ESP", category = ModCategory.VISUAL, description = "Mark entities/players through walls")
 public class ESP extends Module {
-
-    @Op(name = "Mode", all = {"Shader", "2D", "Box Outline", "Box"})
+    public static ESP INSTANCE;
+    @Op(name = "Mode", all = {"Shader", "2D", "Box"})
     public String mode = "Shader";
 
     @OpChild(name = "Line Width", min = 1, max = 10, inc = 0.1f, parent = "Mode", dependency = "Box Outline")
@@ -63,8 +62,9 @@ public class ESP extends Module {
     public ESP() {
         new ShaderESP();
         new BoxESP();
-        new OutlineBox();
+        //new OutlineBox();
         new TwoDeeESP();
+        INSTANCE = this;
     }
 
     @EventListener(events = {EventRender3D.class, EventRender2D.class, EventOutlineColor.class, EventJoinWorld.class}, priority = 1)

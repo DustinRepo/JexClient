@@ -2,8 +2,6 @@ package me.dustin.jex.gui.account.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager.LogicOp;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -13,9 +11,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -28,7 +24,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-@Environment(EnvType.CLIENT)
 public class GuiPasswordField extends AbstractButtonWidget implements Drawable, Element {
     private final TextRenderer textRenderer;
     private String text;
@@ -463,15 +458,16 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.color4f(0.0F, 0.0F, 255.0F, 255.0F);
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+        RenderSystem.setShaderColor(0.0F, 0.0F, 255.0F, 255.0F);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(LogicOp.OR_REVERSE);
-        bufferBuilder.begin(7, VertexFormats.POSITION);
-        bufferBuilder.vertex((double) x1, (double) y2, 0.0D).next();
-        bufferBuilder.vertex((double) x2, (double) y2, 0.0D).next();
-        bufferBuilder.vertex((double) x2, (double) y1, 0.0D).next();
-        bufferBuilder.vertex((double) x1, (double) y1, 0.0D).next();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+        bufferBuilder.vertex((double)x1, (double)y2, 0.0D).next();
+        bufferBuilder.vertex((double)x2, (double)y2, 0.0D).next();
+        bufferBuilder.vertex((double)x2, (double)y1, 0.0D).next();
+        bufferBuilder.vertex((double)x1, (double)y1, 0.0D).next();
         tessellator.draw();
         RenderSystem.disableColorLogicOp();
         RenderSystem.enableTexture();

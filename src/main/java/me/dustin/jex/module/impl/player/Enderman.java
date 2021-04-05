@@ -5,6 +5,7 @@ import me.dustin.events.core.enums.EventPriority;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
@@ -53,7 +54,7 @@ public class Enderman extends Module {
     }
 
     private boolean isPlayerStaring(PlayerEntity player, EndermanEntity endermanEntity) {
-        ItemStack itemStack = (ItemStack) player.inventory.armor.get(3);
+        ItemStack itemStack = (ItemStack) InventoryHelper.INSTANCE.getInventory(player).armor.get(3);
         if (itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
             return false;
         } else {
@@ -62,7 +63,7 @@ public class Enderman extends Module {
             double d = vec3d2.length();
             vec3d2 = vec3d2.normalize();
             double e = vec3d.dotProduct(vec3d2);
-            return e > 1.0D - 0.025D / d ? player.canSee(endermanEntity) : false;
+            return e > 1.0D - 0.025D / d && player.canSee(endermanEntity);
         }
     }
 

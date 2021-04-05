@@ -39,7 +39,7 @@ public class EndPortalFinder extends Module {
                     }
                     firstYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye).getYaw();
                 }
-                if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getEntityId()) == null) {
+                if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
                     if (firstPos != null) {
                         pearl = 1;
                         secondPos = null;
@@ -54,7 +54,7 @@ public class EndPortalFinder extends Module {
                     }
                     secondYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye).getYaw();
                 }
-                if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getEntityId()) == null) {
+                if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
                     if (firstPos != null && secondPos != null) {
                         portalPos = getPortalPosition();
                     }

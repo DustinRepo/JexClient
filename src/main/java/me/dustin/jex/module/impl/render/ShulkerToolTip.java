@@ -15,10 +15,10 @@ import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 
@@ -48,12 +48,13 @@ public class ShulkerToolTip extends Module {
                 if (y + (20 * 3) > Render2DHelper.INSTANCE.getScaledHeight())
                     y -= 20 * 3;
 
-                GL11.glPushMatrix();
-                GL11.glDisable(GL11.GL_DEPTH_TEST);
-                Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(SHULKER_GUI);
-                GL11.glColor4f(1, 1, 1, 1);
+                MatrixStack matrixStack = eventGuiDrawScreen.getMatrixStack();
+                matrixStack.push();
+
+                RenderSystem.disableDepthTest();
+                Render2DHelper.INSTANCE.bindTexture(SHULKER_GUI);
                 Scissor.INSTANCE.cut((int) x, (int) y, 285, 85);
-                RenderSystem.translatef(0.0F, 0.0F, 32.0F);
+                matrixStack.translate(0.0F, 0.0F, 32.0F);
                 DrawableHelper.drawTexture(eventGuiDrawScreen.getMatrixStack(), (int) x, (int) y, 0, 0, 285, 285, 285, 285);
                 Scissor.INSTANCE.seal();
                 FontHelper.INSTANCE.draw(eventGuiDrawScreen.getMatrixStack(), shulker.getName().getString(), x + 9, y + 7, 0xff202020);
@@ -76,10 +77,10 @@ public class ShulkerToolTip extends Module {
                         yCount++;
                     }
                 }
-                RenderSystem.translatef(0.0F, 0.0F, -32.0F);
+                matrixStack.translate(0.0F, 0.0F, -32.0F);
 
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
-                GL11.glPopMatrix();
+                RenderSystem.enableDepthTest();
+                matrixStack.pop();
             }
         }
     }

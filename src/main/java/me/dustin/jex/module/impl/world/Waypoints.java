@@ -1,6 +1,7 @@
 package me.dustin.jex.module.impl.world;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventTick;
@@ -19,17 +20,16 @@ import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
+import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
-
-import static org.lwjgl.opengl.GL11.*;
 
 @ModClass(name = "Waypoints", category = ModCategory.WORLD, description = "Display Waypoints to mark areas.")
 public class Waypoints extends Module {
@@ -101,7 +101,7 @@ public class Waypoints extends Module {
                     waypointPositions.put(waypoint, screenPos);
                     if (beacon && distance < 270) {
                         Box box = new Box(renderPos.x - 0.2f, renderPos.y, renderPos.z - 0.2f, renderPos.x + 0.2f, (256 - waypoint.y), renderPos.z + 0.2f);
-                        drawBox(box, waypoint.getColor());
+                        Render3DHelper.INSTANCE.drawBox(box, waypoint.getColor());
                     }
                 }
             }
@@ -128,31 +128,23 @@ public class Waypoints extends Module {
                 assert cameraEntity != null;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
 
-                boolean bobView = Wrapper.INSTANCE.getOptions().bobView;
-                float lastNauseaStrength = Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength;
-                float nextNauseStrength = Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength;
-                glPushMatrix();
-                glDisable(GL_LINE_SMOOTH);
-                glDisable(GL_BLEND);
-                glDisable(GL_TEXTURE_2D);
-                glDisable(GL_DEPTH_TEST);
-                GL11.glDisable(GL11.GL_LIGHTING);
-                glLineWidth(1.2f);
-                Render2DHelper.INSTANCE.glColor(waypoint.getColor());
+                Color color1 = ColorHelper.INSTANCE.getColor(waypoint.getColor());
+
+                RenderSystem.disableTexture();
+                RenderSystem.disableDepthTest();
+                RenderSystem.lineWidth(1.2f);
+
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
-                glBegin(GL_LINES);
-                glVertex3d(eyes.x, eyes.y, eyes.z);
-                glVertex3d(entityPos.x, entityPos.y, entityPos.z);
-                glEnd();
-                glDisable(GL_BLEND);
-                glEnable(GL_TEXTURE_2D);
-                glEnable(GL_DEPTH_TEST);
-                glDisable(GL_LINE_SMOOTH);
-                glDisable(GL_BLEND);
-                glPopMatrix();
-                Wrapper.INSTANCE.getOptions().bobView = bobView;
-                Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength = lastNauseaStrength;
-                Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength = nextNauseStrength;
+
+                BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+                bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR);
+                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                bufferBuilder.end();
+                BufferRenderer.draw(bufferBuilder);
+
+                RenderSystem.enableDepthTest();
+                RenderSystem.enableTexture();
             }
         }
         if (event instanceof EventRender2D) {
@@ -179,44 +171,6 @@ public class Waypoints extends Module {
 
     public boolean shouldRender(Vec3d pos) {
         return pos != null && (pos.getZ() > -1 && pos.getZ() < 1);
-    }
-
-    public void drawBox(Box bb, int color) {
-        GL11.glPushMatrix();
-        double x = bb.minX + 0.2;
-        double y = bb.minY;
-        double z = bb.minZ + 0.2;
-        GL11.glTranslated(x, y, z);
-        GL11.glRotatef(-spin, 0, 1, 0);
-        GL11.glTranslated(-x, -y, -z);
-
-        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-        Render2DHelper.INSTANCE.glColor(color & 0x30ffffff);
-
-        Render3DHelper.INSTANCE.drawFilledBox(bb);
-
-        Render2DHelper.INSTANCE.glColor(color);
-        GL11.glLineWidth(1);
-        Render3DHelper.INSTANCE.drawOutlineBox(bb);
-
-        GL11.glTranslated(x, y, z);
-        GL11.glRotatef(spin, 0, 1, 0);
-        GL11.glTranslated(-x, -y, -z);
-
-        GL11.glColor4f(1, 1, 1, 1);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-
-        GL11.glDisable(GL11.GL_LINE_SMOOTH);
-        GL11.glPopMatrix();
     }
 
     public static class Waypoint {

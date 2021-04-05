@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;
+import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,11 +20,15 @@ public class Addon {
     public static ArrayList<String> requestedUUIds = new ArrayList<>();
 
     public static void loadAddons(AbstractClientPlayerEntity player) {
+        if (EntityHelper.INSTANCE.isNPC(player))
+            return;
         String s = player.getGameProfile().getId().toString().replace("-", "");
         loadAddons(s);
     }
 
     public static void loadAddons(PlayerEntity player) {
+        if (EntityHelper.INSTANCE.isNPC(player))
+            return;
         String s = player.getGameProfile().getId().toString().replace("-", "");
         loadAddons(s);
     }
@@ -82,7 +87,7 @@ public class Addon {
             return null;
         }
         for (AddonResponse response : responses) {
-            if (response.getUuid() != null && response.getUuid().equalsIgnoreCase(uuid))
+            if (response != null && response.getUuid() != null && response.getUuid().equalsIgnoreCase(uuid))
                 return response;
         }
         return null;

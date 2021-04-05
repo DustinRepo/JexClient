@@ -28,7 +28,7 @@ public class MixinInGameOverlayRenderer {
     }
 
     @Inject(method = "renderInWallOverlay", at = @At("HEAD"), cancellable = true)
-    private static void renderInWall(MinecraftClient minecraftClient, Sprite sprite, MatrixStack matrixStack, CallbackInfo ci) {
+    private static void renderInWall(Sprite sprite, MatrixStack matrixStack, CallbackInfo ci) {
         EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.IN_WALL).run();
         if (eventRenderOverlay.isCancelled())
             ci.cancel();

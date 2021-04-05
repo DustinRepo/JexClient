@@ -1,6 +1,5 @@
 package me.dustin.jex.module.impl.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -11,10 +10,8 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 
@@ -35,12 +32,10 @@ public class InventoryView extends Module {
 
         HashMap<Integer, ItemStack> stacks = InventoryHelper.INSTANCE.getStacksFromInventory(false);
 
-        GL11.glPushMatrix();
         if (drawBackground) {
-            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(SHULKER_GUI);
-            GL11.glColor4f(1, 1, 1, 1);
+            Render2DHelper.INSTANCE.bindTexture(SHULKER_GUI);
             Scissor.INSTANCE.cut((int) x + 5, (int) y + 18, 185, 62);
-            DrawableHelper.drawTexture(eventRender2D.getMatrixStack(), (int) x, (int) y, 0, 0, 285, 285, 285, 285);
+            Render2DHelper.INSTANCE.drawTexture(eventRender2D.getMatrixStack(), (int) x, (int) y, 0, 0, 285, 285, 285, 285);
             Scissor.INSTANCE.seal();
         }
         int xCount = 0;
@@ -61,8 +56,5 @@ public class InventoryView extends Module {
                 yCount++;
             }
         }
-        RenderSystem.translatef(0.0F, 0.0F, -32.0F);
-
-        GL11.glPopMatrix();
     }
 }

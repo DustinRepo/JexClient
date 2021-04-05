@@ -31,10 +31,11 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.options.OptionsScreen;
+import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -278,36 +279,34 @@ public class JexTitleScreen extends Screen {
         fill(matrices, 0, 0, this.width, this.height, -1);
         this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0F, 1.0F));
         int j = this.width / 2 - 137;
-        this.client.getTextureManager().bindTexture(PANORAMA_OVERLAY);
-        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
+        RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
         drawTexture(matrices, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
         float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
         int l = MathHelper.ceil(g * 255.0F) << 24;
 
         if (!this.backgrounds.isEmpty() && customMainMenu.customBackground) {
             Background currentBackground = backgrounds.get(background);
-            Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(currentBackground.identifier);
+            Render2DHelper.INSTANCE.bindTexture(currentBackground.identifier);
             DrawableHelper.drawTexture(matrices, (int) 0, (int) 0, 0, 0, width, height, width, height);
         }
 
         if ((l & -67108864) != 0) {
-            this.client.getTextureManager().bindTexture(JEX_TITLE_TEXTURE);
-
+            RenderSystem.setShaderTexture(0, JEX_TITLE_TEXTURE);
             int j1 = this.height / 4 - 10;
-            RenderSystem.pushMatrix();
-            Render2DHelper.INSTANCE.glColor(ColorHelper.INSTANCE.getClientColor());
+            Render2DHelper.INSTANCE.shaderColor(ColorHelper.INSTANCE.getClientColor());
             drawTexture(matrices, 2, (int) j1, 0.0F, 0.0F, 250, 50, 250, 50);
-            RenderSystem.popMatrix();
 
-            RenderSystem.pushMatrix();
             this.splashText = isMinceraft ? "Minceraft" : "Build " + JexClient.INSTANCE.getVersion() + " for MC" + SharedConstants.getGameVersion().getName();
-            float h = 1.8F - MathHelper.abs(MathHelper.sin((float) (Util.getMeasuringTimeMs() % 1000L) / 1000.0F * 6.2831855F) * 0.1F);
-            h = h * 100.0F / (float) (this.textRenderer.getWidth(this.splashText) + 32);
-            RenderSystem.scalef(h, h, h);
+            matrices.push();
+            float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * 6.2831855F) * 0.1F);
+            h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
+            matrices.scale(h, h, h);
             FontHelper.INSTANCE.drawWithShadow(matrices, splashText, 2 / h, (j1 + 44) / h, ColorHelper.INSTANCE.getClientColor());
-            RenderSystem.popMatrix();
+            matrices.pop();
+
 
             if (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH) {
                 String updateString = "Jex Client is outdated. You can open the Jex Options screen in Options to update to Build " + UpdateManager.INSTANCE.getLatestVersion();
@@ -345,9 +344,9 @@ public class JexTitleScreen extends Screen {
                 Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
                 try {
                     if (response.getCape() != null && !response.getCape().isEmpty() && !response.getCape().equalsIgnoreCase("null")) {
-                        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")));
+                        Render2DHelper.INSTANCE.bindTexture(new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")));
                     } else {
-                        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(new Identifier("jex", "cape/jex_cape.png"));
+                        Render2DHelper.INSTANCE.bindTexture(new Identifier("jex", "cape/jex_cape.png"));
                     }
                     DrawableHelper.drawTexture(matrices, 2, (int) bottom + 35, 2.5f, 4, 32, 64, 198, 128);
                 }catch (Exception e) {}

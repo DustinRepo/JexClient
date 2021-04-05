@@ -30,7 +30,7 @@ import net.minecraft.sound.SoundEvents;
 
 public enum JexClient {
     INSTANCE;
-    private String version = "0.1.8";
+    private String version = "0.2.2";
     private boolean autoSaveModules = false;
     private boolean soundOnLaunch = true;
 

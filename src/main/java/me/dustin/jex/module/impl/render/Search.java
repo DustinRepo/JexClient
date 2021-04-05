@@ -1,6 +1,7 @@
 package me.dustin.jex.module.impl.render;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
@@ -8,8 +9,8 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.file.SearchFile;
 import me.dustin.jex.helper.file.ModFileHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.module.core.Module;
@@ -18,6 +19,7 @@ import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -27,15 +29,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
-
-import static org.lwjgl.opengl.GL11.*;
 
 @ModClass(name = "Search", category = ModCategory.VISUAL, description = "Search for a specific block. use \".help search\"")
 public class Search extends Module {
@@ -65,7 +64,7 @@ public class Search extends Module {
     public void onEnable() {
         (thread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                if (this.getState() && Wrapper.INSTANCE.getWorld() != null)
+                if (Wrapper.INSTANCE.getWorld() != null)
                     for (Chunk chunk : chunksToUpdate) {
                         searchChunk(chunk);
                     }
@@ -80,9 +79,10 @@ public class Search extends Module {
             if (Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
-                        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX + i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
-                        if (chunk != null && !chunksToUpdate.contains(chunk))
+                        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
+                        if (chunk != null && !chunksToUpdate.contains(chunk)) {
                             chunksToUpdate.offer(chunk);
+                        }
                     }
                 }
             }
@@ -122,7 +122,7 @@ public class Search extends Module {
                 if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                     for (int i = -distance; i < distance; i++) {
                         for (int j = -distance; j < distance; j++) {
-                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX + i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
+                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
                             if (chunk != null && !chunksToUpdate.contains(chunk))
                                 chunksToUpdate.offer(chunk);
                         }
@@ -143,32 +143,24 @@ public class Search extends Module {
                 assert cameraEntity != null;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
 
-                boolean bobView = Wrapper.INSTANCE.getOptions().bobView;
-                float lastNauseaStrength = Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength;
-                float nextNauseStrength = Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength;
-                glPushMatrix();
-                glDisable(GL_LINE_SMOOTH);
-                glDisable(GL_BLEND);
-                glDisable(GL_TEXTURE_2D);
-                glDisable(GL_DEPTH_TEST);
-                GL11.glDisable(GL11.GL_LIGHTING);
-                glLineWidth(1.2f);
-                Render2DHelper.INSTANCE.glColor(blocks.get(block));
-                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
-                glBegin(GL_LINES);
-                glVertex3d(eyes.x, eyes.y, eyes.z);
-                glVertex3d(entityPos.x, entityPos.y, entityPos.z);
-                glEnd();
-                glDisable(GL_BLEND);
-                glEnable(GL_TEXTURE_2D);
-                glEnable(GL_DEPTH_TEST);
-                glDisable(GL_LINE_SMOOTH);
-                glDisable(GL_BLEND);
-                glPopMatrix();
-                Wrapper.INSTANCE.getOptions().bobView = bobView;
-                Wrapper.INSTANCE.getLocalPlayer().lastNauseaStrength = lastNauseaStrength;
-                Wrapper.INSTANCE.getLocalPlayer().nextNauseaStrength = nextNauseStrength;
+                Color color1 = ColorHelper.INSTANCE.getColor(blocks.get(block));
 
+                RenderSystem.setShader(GameRenderer::getPositionColorShader);
+                RenderSystem.disableTexture();
+                RenderSystem.disableDepthTest();
+                RenderSystem.lineWidth(1.2f);
+
+                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
+
+                BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+                bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                bufferBuilder.end();
+                BufferRenderer.draw(bufferBuilder);
+
+                RenderSystem.enableDepthTest();
+                RenderSystem.enableTexture();
             }
         } else if (event instanceof EventRender3D) {
             for (BlockPos pos : worldBlocks.keySet()) {
@@ -180,7 +172,6 @@ public class Search extends Module {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
-
                 Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 1, entityPos.z + 1 - 0.5f);
                 Render3DHelper.INSTANCE.drawBox(box, blocks.get(block));
             }
@@ -189,7 +180,7 @@ public class Search extends Module {
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
-                        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX + i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
+                        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
                         if (chunk != null && !chunksToUpdate.contains(chunk))
                             chunksToUpdate.offer(chunk);
                     }
@@ -199,17 +190,19 @@ public class Search extends Module {
     }
 
     public void searchChunk(Chunk chunk) {
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < chunk.getHighestNonEmptySectionYOffset() + 16; y++) {
-                    BlockPos blockPos = new BlockPos(x + (chunk.getPos().x * 16), y, z + (chunk.getPos().z * 16));
-                    Block block = WorldHelper.INSTANCE.getBlock(blockPos);
-                    if (block != null && blocks != null && blocks.containsKey(block)) {
-                        worldBlocks.put(blockPos, block);
-                    } else worldBlocks.remove(blockPos);
+        try {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    for (int y = chunk.getBottomY(); y < chunk.getHighestNonEmptySectionYOffset() + 16; y++) {
+                        BlockPos blockPos = new BlockPos(x + (chunk.getPos().x * 16), y, z + (chunk.getPos().z * 16));
+                        Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+                        if (block != null && blocks != null && blocks.containsKey(block)) {
+                            worldBlocks.put(blockPos, block);
+                        } else worldBlocks.remove(blockPos);
+                    }
                 }
             }
-        }
+        }catch (Exception e){}
         chunksToUpdate.remove(chunk);
     }
 

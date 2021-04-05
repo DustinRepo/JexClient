@@ -1,6 +1,5 @@
 package me.dustin.jex.helper.misc;
 
-import baritone.Baritone;
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.event.events.ChatEvent;
@@ -8,7 +7,6 @@ import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalBlock;
 import baritone.api.pathing.goals.GoalXZ;
 import baritone.api.utils.input.Input;
-import me.dustin.jex.baritone.KillProcess;
 import me.dustin.jex.baritone.KillauraTargetProcess;
 import me.dustin.jex.baritone.PauseProcess;
 import net.minecraft.util.math.BlockPos;
@@ -17,13 +15,10 @@ public class UnsafeBaritoneHelper {
 
     protected static PauseProcess pauseProcess;
     protected static KillauraTargetProcess killauraTargetProcess;
-    protected static KillProcess killProcess;
 
     protected static void initBaritoneProcesses() {
-        BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().registerProcess(killauraTargetProcess = new KillauraTargetProcess((Baritone) BaritoneAPI.getProvider().getPrimaryBaritone()));
-        BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().registerProcess(pauseProcess = new PauseProcess((Baritone) BaritoneAPI.getProvider().getPrimaryBaritone()));
-        BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().registerProcess(killProcess = new KillProcess((Baritone) BaritoneAPI.getProvider().getPrimaryBaritone()));
-
+        BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().registerProcess(killauraTargetProcess = new KillauraTargetProcess());
+        BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().registerProcess(pauseProcess = new PauseProcess());
         BaritoneAPI.getSettings().prefix.value = "*&";
         BaritoneAPI.getSettings().chatControl.value = false;
     }
@@ -39,7 +34,7 @@ public class UnsafeBaritoneHelper {
     protected static void sendCommand(String command) {
         BaritoneAPI.getSettings().prefix.value = "*&";
         ChatEvent event = new ChatEvent(command);
-        IBaritone baritone = BaritoneAPI.getProvider().getBaritoneForPlayer(Wrapper.INSTANCE.getLocalPlayer());
+        IBaritone baritone = BaritoneAPI.getProvider().getPrimaryBaritone();
         ChatHelper.INSTANCE.addClientMessage("Sending command to Baritone.");
         if (baritone != null) {
             baritone.getGameEventHandler().onSendChatMessage(event);
@@ -77,9 +72,5 @@ public class UnsafeBaritoneHelper {
     protected static void pathTo(int x, int z) {
         Goal goal = new GoalXZ(x, z);
         BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(goal);
-    }
-
-    protected static void killBaritoneProcess() {
-        killProcess.kill();
     }
 }

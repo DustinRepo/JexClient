@@ -18,7 +18,7 @@ public class Nofall extends Module {
     private void runEvent(EventPlayerPackets eventPlayerPackets) {
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
             if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > 2.5f) {
-                NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket(true));
+                NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(true));
             }
         }
     }

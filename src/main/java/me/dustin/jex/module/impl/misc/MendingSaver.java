@@ -12,7 +12,7 @@ import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.slot.SlotActionType;
 
 @ModClass(name = "MendingSaver", category = ModCategory.MISC, description = "Save your mending tools from breaking by putting them away automatically.")
@@ -26,7 +26,7 @@ public class MendingSaver extends Module {
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
             ItemStack currentStack = Wrapper.INSTANCE.getLocalPlayer().getMainHandStack();
             if (currentStack != null && currentStack.hasEnchantments()) {
-                for (Tag tag : currentStack.getEnchantments()) {
+                for (NbtElement tag : currentStack.getEnchantments()) {
                     JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(tag.toString(), JsonObject.class);
                     if (jsonObject.get("id").getAsString().contains("mending")) {
                         if (currentStack.isDamageable() && currentStack.getDamage() > currentStack.getMaxDamage() - 10) {

@@ -92,6 +92,10 @@ public class CropBuster extends Module {
             Block belowBlock = WorldHelper.INSTANCE.getBlock(blockPos.down());
             if (belowBlock == Blocks.SUGAR_CANE)
                 return true;
+        } else if (block == Blocks.BAMBOO) {
+            Block belowBlock = WorldHelper.INSTANCE.getBlock(blockPos.down());
+            if (belowBlock == Blocks.BAMBOO)
+                return true;
         }
         return false;
     }

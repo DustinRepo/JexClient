@@ -42,6 +42,14 @@ public enum ColorHelper {
         return guiModule.rainbowClientColor ? getRainbowColor() : guiModule.clientColor;
     }
 
+    public Color getColor(int color) {
+        float alpha = (color >> 24 & 0xFF) / 255.0F;
+        float red = (color >> 16 & 0xFF) / 255.0F;
+        float green = (color >> 8 & 0xFF) / 255.0F;
+        float blue = (color & 0xFF) / 255.0F;
+        return new Color(red, green, blue, alpha);
+    }
+
     public void setClientColor(int clientColor) {
         this.clientColor = clientColor;
     }

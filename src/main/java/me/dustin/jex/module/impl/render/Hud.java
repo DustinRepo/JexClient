@@ -1,7 +1,7 @@
 package me.dustin.jex.module.impl.render;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
@@ -26,16 +26,14 @@ import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.text.WordUtils;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -223,52 +221,52 @@ public class Hud extends Module {
     public void drawWatermark(EventRender2D eventRender2D) {
         int x = 17;
         int y = 17;
-        GL11.glPushMatrix();
-        GL11.glTranslatef(x, y, 0);
+        MatrixStack matrixStack = eventRender2D.getMatrixStack();
+        matrixStack.push();
+        matrixStack.translate(x, y, 0);
         switch (watermarkMode) {
             case "Static":
                 break;
             case "Spin Only":
-                GL11.glRotatef(rot, 0, 0, 1);
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), rot, true));
                 break;
             case "Flip Only":
-                GL11.glRotatef(rot, 0, 1, 0);
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 1F, 0F), rot, true));
                 break;
             case "SpinFlip":
-                GL11.glRotatef(rot, 0, 1, 1);
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.5f, 1F), rot, true));
                 break;
         }
-        GL11.glTranslatef(-x, -y, 0);
+
+        matrixStack.translate(-x, -y, 0);
         float newX = x - (FontHelper.INSTANCE.getStringWidth("Jex") / 2);
-        Render2DHelper.INSTANCE.drawFullCircle(x, y, 15, 0x80252525);
-        Render2DHelper.INSTANCE.drawArc(x, y, 15, ColorHelper.INSTANCE.getClientColor(), 0, 360, 1);
+        Render2DHelper.INSTANCE.drawFullCircle(x, y, 15, 0x80252525, matrixStack);
+        Render2DHelper.INSTANCE.drawArc(x, y, 15, ColorHelper.INSTANCE.getClientColor(), 0, 360, 1, matrixStack);
         FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), "Jex", newX, y - 9, ColorHelper.INSTANCE.getClientColor());
-        GL11.glScalef(0.75f, 0.75f, 1);
+        matrixStack.scale(0.75f, 0.75f, 1);
         float newX1 = x - (FontHelper.INSTANCE.getStringWidth(JexClient.INSTANCE.getVersion()) / (2 / 0.75f));
         FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), JexClient.INSTANCE.getVersion(), newX1 / 0.75f, y / 0.75f + 1, ColorHelper.INSTANCE.getClientColor());
-        GL11.glScalef(1 / 0.75f, 1 / 0.75f, 1);
-        GL11.glTranslatef(x, y, 0);
+        matrixStack.scale(1 / 0.75f, 1 / 0.75f, 1);
+        matrixStack.translate(x, y, 0);
+
         switch (watermarkMode) {
             case "Static":
                 break;
             case "Spin Only":
-                GL11.glRotatef(-rot, 0, 0, 1);
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, -1.0F), rot, true));
                 break;
             case "Flip Only":
-                GL11.glRotatef(-rot, 0, 1, 0);
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, -1F, 0F), rot, true));
                 break;
             case "SpinFlip":
-                GL11.glRotatef(-rot, 0, 1, 1);
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, -0.5f, -1F), rot, true));
                 break;
         }
-        GL11.glTranslatef(-x, -y, 0);
+        matrixStack.pop();
 
         if (drawFace) {
-            try {
-                Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), 35, 2, 4, Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()).getSkinTexture());
-            } catch (Exception e){}
+            Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), 35, 2, 4, Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()).getSkinTexture());
         }
-        GL11.glPopMatrix();
     }
 
     public void drawLagometer(EventRender2D eventRender2D) {
@@ -327,11 +325,11 @@ public class Hud extends Module {
                 if (damageMode.equalsIgnoreCase("Text") && armorItem.isDamageable()) {
                     float xOffset = drawMode.equalsIgnoreCase("cube") ? 0 : 15;
                     if (drawMode.equalsIgnoreCase("cube")) {
-                        GL11.glPushMatrix();
-                        GL11.glScalef(0.75f, 0.75f, 1);
+                        MatrixStack matrixStack = eventRender2D.getMatrixStack();
+                        matrixStack.push();
+                        matrixStack.scale(0.75f, 0.75f, 1);
                         FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), getDamageText(armorItem), (x + 8) / 0.75f, (y + 8) / 0.75f, -1);
-                        GL11.glScalef(1.25f, 1.25f, 1);
-                        GL11.glPopMatrix();
+                        matrixStack.pop();
                     } else {
                         float percent = (((float) armorItem.getMaxDamage() - (float) armorItem.getDamage()) / (float) armorItem.getMaxDamage()) * 100;
                         FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), getDamageText(armorItem), x + xOffset, y + (drawMode.equalsIgnoreCase("cube") ? 8 : 5), Render2DHelper.INSTANCE.getPercentColor(percent));
@@ -385,8 +383,8 @@ public class Hud extends Module {
                 if (icons) {
                     Sprite sprite_1 = Wrapper.INSTANCE.getMinecraft().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
                     list_1.add(() -> {
-                        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(sprite_1.getAtlas().getId());
-                        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1);
+                        Render2DHelper.INSTANCE.bindTexture(sprite_1.getAtlas().getId());
+                        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
                         DrawableHelper.drawSprite(eventRender2D.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() - 10, (int) coordsY - 1 - (spriteCount * 10), 50, 9, 9, sprite_1);
                         spriteCount++;
                     });

@@ -40,7 +40,6 @@ public class AutoPot extends Module {
         if (event instanceof EventPlayerPackets) {
             this.setSuffix(getPotions() + "");
             EventPlayerPackets playerPacketEvent = (EventPlayerPackets) event;
-            short short_1 = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getNextActionId(InventoryHelper.INSTANCE.getInventory());
             if (playerPacketEvent.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (throwing) {
                     playerPacketEvent.setPitch(90);

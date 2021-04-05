@@ -8,7 +8,6 @@ import me.dustin.jex.extension.ModuleExtension;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.impl.render.esp.ESP;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -19,7 +18,6 @@ import net.minecraft.util.math.Vec3d;
 import java.util.HashMap;
 
 public class TwoDeeESP extends ModuleExtension {
-    private ESP esp;
     public TwoDeeESP() {
         super("2D", ESP.class);
     }
@@ -30,15 +28,12 @@ public class TwoDeeESP extends ModuleExtension {
 
     @Override
     public void pass(Event event) {
-        if (esp == null) {
-            esp = (ESP) Module.get(ESP.class);
-        }
         if (event instanceof EventRender3D) {
             EventRender3D eventRender3D = (EventRender3D)event;
             headPos.clear();
             footPos.clear();
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                if (esp.isValid(entity)) {
+                if (ESP.INSTANCE.isValid(entity)) {
                     headPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, entity.getHeight() + 0.2f, eventRender3D.getPartialTicks()));
                     footPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, -0.2f, eventRender3D.getPartialTicks()));
                 }
@@ -85,7 +80,7 @@ public class TwoDeeESP extends ModuleExtension {
             float pos = percent * distance;
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack,x2 - 1, y2 + pos, x2 + 2, y2, 0xff000000, color, 1);
         }
-        int color = esp.getColor(entity) & 0x40ffffff;
+        int color = ESP.INSTANCE.getColor(entity) & 0x35ffffff;
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y, x2, y2, 0xff000000, color, 1);
     }
 

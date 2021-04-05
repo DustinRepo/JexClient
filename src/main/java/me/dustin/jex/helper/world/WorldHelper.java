@@ -1,6 +1,8 @@
 package me.dustin.jex.helper.world;
 
 import com.google.common.collect.Maps;
+import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -13,6 +15,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentMap;
 
 public enum WorldHelper {
@@ -53,8 +56,30 @@ public enum WorldHelper {
         return getBlockBelowEntity(entity, 0.5f);
     }
 
+    public void removeBlockEntity(BlockPos pos) {
+        blockEntities.remove(pos);
+    }
+
+    public ConcurrentMap<BlockPos, BlockEntity> getBlockEntityList() {
+        return blockEntities;
+    }
+
+    @EventListener(events={EventTick.class})
+    private void runMethod(EventTick eventTick) {
+        if (Wrapper.INSTANCE.getWorld() == null)
+            blockEntities.clear();
+        else {
+            Iterator<BlockEntity> it = blockEntities.values().iterator();
+            while (it.hasNext()) {
+                BlockEntity blockEntity = it.next();
+                if (Wrapper.INSTANCE.getWorld().getBlockEntity(blockEntity.getPos()) == null)
+                    removeBlockEntity(blockEntity.getPos());
+            }
+        }
+    }
+
     public Collection<BlockEntity> getBlockEntities() {
-        return Wrapper.INSTANCE.getWorld().blockEntities;
+        return blockEntities.values();
     }
 
     public boolean isOnLiquid(Entity entity) {
@@ -85,14 +110,15 @@ public enum WorldHelper {
             return false;
         }
         Box par1AxisAlignedBB = entity.getBoundingBox();
-        par1AxisAlignedBB = par1AxisAlignedBB.expand(-0, -0.081D, 0);
+        par1AxisAlignedBB = par1AxisAlignedBB.expand(-0, -0.081D, -0.081D);
         int var4 = MathHelper.floor(par1AxisAlignedBB.minX);
         int var5 = MathHelper.floor(par1AxisAlignedBB.maxX + 1.0D);
         int var6 = MathHelper.floor(par1AxisAlignedBB.minY);
         int var7 = MathHelper.floor(par1AxisAlignedBB.maxY + 0.8D);
         int var8 = MathHelper.floor(par1AxisAlignedBB.minZ);
         int var9 = MathHelper.floor(par1AxisAlignedBB.maxZ + 1.0D);
-        if (Wrapper.INSTANCE.getWorld().getChunk(new BlockPos(entity.getX(), entity.getY(), entity.getZ())) == null) {
+        if (Wrapper.INSTANCE.getWorld().getChunk(
+                new BlockPos(entity.getX(), entity.getY(), entity.getZ())) == null) {
             return false;
         }
         for (int var12 = var4; var12 < var5; var12++) {
@@ -107,5 +133,4 @@ public enum WorldHelper {
         }
         return false;
     }
-
 }

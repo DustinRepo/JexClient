@@ -1,9 +1,8 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.event.player.EventAttackCooldownPerTick;
+import me.dustin.jex.event.player.EventWalkOffBlock;
 import me.dustin.jex.load.impl.IPlayerEntity;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.movement.Scaffold;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,6 +34,7 @@ public class MixinPlayerEntity implements IPlayerEntity {
 
     @Inject(method = "clipAtLedge", at = @At("HEAD"), cancellable = true)
     public void clipAtLedge(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(((PlayerEntity) (Object) this).isSneaking() || Module.get(Scaffold.class).getState());
+        EventWalkOffBlock eventWalkOffBlock = new EventWalkOffBlock().run();
+        cir.setReturnValue(((PlayerEntity) (Object) this).isSneaking() || eventWalkOffBlock.isCancelled());
     }
 }

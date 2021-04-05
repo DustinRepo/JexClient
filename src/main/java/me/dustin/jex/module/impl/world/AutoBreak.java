@@ -45,12 +45,12 @@ public class AutoBreak extends Module {
     public void run(Event event) {
         if (event.equals(EventClickBlock.class)) {
             EventClickBlock click = (EventClickBlock) event;
-            pos = click.getBlockPos().add(0.5, 0, 0.5);
+            pos = click.getBlockPos().method_35849(0.5, 0, 0.5);
         }
         if (event.equals(EventJoinWorld.class))
             pos = null;
         if (event.equals(EventRender3D.class) && pos != null && showPosition) {
-            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(pos.getX(), pos.getY(), pos.getZ(), ((EventRender3D) event).getPartialTicks());
+            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(pos.getX(), pos.getY(), pos.getZ());
             Block block = WorldHelper.INSTANCE.getBlock(pos);
 
             int color = emptyColor;

@@ -1,7 +1,7 @@
 package me.dustin.jex.helper.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.misc.Wrapper;
-import org.lwjgl.opengl.GL11;
 
 public enum Scissor {
 
@@ -11,12 +11,11 @@ public enum Scissor {
         double factor = Render2DHelper.INSTANCE.getScaleFactor();
         int factor2 = Render2DHelper.INSTANCE.getScaledWidth();
         int factor3 = Render2DHelper.INSTANCE.getScaledHeight();
-        GL11.glScissor((int) (x * factor), (int) ((Wrapper.INSTANCE.getWindow().getHeight() - (y * factor) - height * factor)), (int) (width * factor), (int) (height * factor));
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        RenderSystem.enableScissor((int) (x * factor), (int) ((Wrapper.INSTANCE.getWindow().getHeight() - (y * factor) - height * factor)), (int) (width * factor), (int) (height * factor));
     }
 
     public void seal() {
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        RenderSystem.disableScissor();
     }
 
 }

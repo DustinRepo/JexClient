@@ -35,6 +35,8 @@ public class AutoTool extends Module {
 
     @EventListener(events = {EventClickBlock.class, EventAttackEntity.class})
     public void run(Event event) {
+        if (AutoEat.isEating)
+            return;
         if (event instanceof EventClickBlock && !Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
             int slot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
             BlockState blockState = Wrapper.INSTANCE.getWorld().getBlockState(((EventClickBlock) event).getBlockPos());

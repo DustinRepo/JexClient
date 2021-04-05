@@ -101,8 +101,8 @@ public class Freecam extends Module {
             Wrapper.INSTANCE.getLocalPlayer().noClip = false;
             Wrapper.INSTANCE.getMinecraft().gameRenderer.reset();
             Wrapper.INSTANCE.getLocalPlayer().setPos(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ());
-            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), false));
-            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(savedCoords.getX(), -1337.0, savedCoords.getZ(), true));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), false));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(savedCoords.getX(), -1337.0, savedCoords.getZ(), true));
             Wrapper.INSTANCE.getLocalPlayer().yaw = lookVec.getYaw();
             Wrapper.INSTANCE.getLocalPlayer().pitch = lookVec.getPitch();
         }

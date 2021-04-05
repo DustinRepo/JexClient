@@ -8,10 +8,7 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.impl.render.storageesp.StorageESP;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-
-import java.util.ArrayList;
 
 public class BoxStorageESP extends ModuleExtension {
     private StorageESP storageESP;
@@ -26,9 +23,8 @@ public class BoxStorageESP extends ModuleExtension {
         }
         if (event instanceof EventRender3D) {
             EventRender3D eventRender3D = (EventRender3D)event;
-            ArrayList<BlockPos> removePos = new ArrayList<>();
             WorldHelper.INSTANCE.getBlockEntities().forEach(blockEntity -> {
-                if (storageESP.isValid(blockEntity) && !removePos.contains(blockEntity.getPos())) {
+                if (storageESP.isValid(blockEntity)) {
                     double x = blockEntity.getPos().getX() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().getX();
                     double y = blockEntity.getPos().getY() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().getY();
                     double z = blockEntity.getPos().getZ() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().getZ();
@@ -75,7 +71,6 @@ public class BoxStorageESP extends ModuleExtension {
                             }
                         }
                     }*/
-
                     Render3DHelper.INSTANCE.drawBox(box, storageESP.getColor(blockEntity));
                 }
             });

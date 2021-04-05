@@ -18,9 +18,12 @@
     "MixinClientPlayerEntity",
     "MixinClientPlayerInteractionManager",
     "MixinClientPlayNetworkHandler",
+    "MixinClientWorld",
     "MixinEntity",
     "MixinEntityRenderDispatcher",
     "MixinEntityRenderer",
+    "MixinEntityVelocityUpdateS2CPacket",
+    "MixinFireworksSparkParticleFireworkParticle",
     "MixinFluidBlock",
     "MixinFluidRenderer",
     "MixinFluidState",
@@ -36,6 +39,7 @@
     "MixinKeyboard",
     "MixinLlamaEntity",
     "MixinMinecraftClient",
+    "MixinMouse",
     "MixinMultiplayerScreen",
     "MixinOptionsScreen",
     "MixinPersistentProjectileEntity",
@@ -49,6 +53,7 @@
     "MixinSignEditScreen",
     "MixinSplashScreen",
     "MixinTerrainRenderContext",
+    "MixinWorldChunk",
     "MixinWorldRenderer"
   ],
   "injectors": {

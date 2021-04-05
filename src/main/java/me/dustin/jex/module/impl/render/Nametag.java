@@ -21,7 +21,8 @@ import me.dustin.jex.module.impl.render.esp.ESP;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.options.Perspective;
+import net.minecraft.client.option.Perspective;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -29,10 +30,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AirBlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -92,16 +92,19 @@ public class Nametag extends Module {
         } else if (event instanceof EventRender3D) {
             this.positions.clear();
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                float offset = entity.getHeight() + 0.2f;
-                if (entity instanceof PlayerEntity) {
-                    if (Hat.hasHat((PlayerEntity)entity)) {
-                        if (Hat.getType((PlayerEntity)entity) == Hat.HatType.TOP_HAT)
-                            offset = entity.getHeight() + 0.7f;
-                        else
-                            offset = entity.getHeight() + 0.4f;
+                if (isValid(entity)) {
+                    float offset = entity.getHeight() + 0.2f;
+                    if (entity instanceof PlayerEntity) {
+                        if (Hat.hasHat((PlayerEntity) entity)) {
+                            if (Hat.getType((PlayerEntity) entity) == Hat.HatType.TOP_HAT)
+                                offset = entity.getHeight() + 0.7f;
+                            else
+                                offset = entity.getHeight() + 0.4f;
+                        }
                     }
+                    Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, ((EventRender3D) event).getPartialTicks());
+                    this.positions.put(entity, vec);
                 }
-                this.positions.put(entity, Render2DHelper.INSTANCE.getPos(entity, offset, ((EventRender3D) event).getPartialTicks()));
             });
         }
     }
@@ -120,11 +123,12 @@ public class Nametag extends Module {
                 Render2DHelper.INSTANCE.drawItem(itemStack, newX, posY);
                 if (itemStack.hasEnchantments()) {
                     float scale = 0.5f;
-                    GL11.glPushMatrix();
-                    GL11.glScalef(scale, scale, 1);
+                    MatrixStack matrixStack = eventRender2D.getMatrixStack();
+                    matrixStack.push();
+                    matrixStack.scale(scale, scale, 1);
                     int enchCount = 1;
-                    for (Tag tag : itemStack.getEnchantments()) {
-                        CompoundTag compoundTag = (CompoundTag) tag;
+                    for (NbtElement tag : itemStack.getEnchantments()) {
+                        NbtCompound compoundTag = (NbtCompound) tag;
                         float newY = ((posY - ((10 * scale) * enchCount) + 0.5f) / scale);
                         float newerX = (newX / scale);
                         String name = getEnchantName(compoundTag);
@@ -133,14 +137,14 @@ public class Nametag extends Module {
                         FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX, newY, enchantColor);
                         enchCount++;
                     }
-                    GL11.glPopMatrix();
+                    matrixStack.pop();
                 }
                 count++;
             }
         }
     }
 
-    private String getEnchantName(CompoundTag compoundTag) {
+    private String getEnchantName(NbtCompound compoundTag) {
         int level = compoundTag.getShort("lvl");
         String name = compoundTag.getString("id").split(":")[1];
         if (name.contains("_")) {
@@ -224,11 +228,11 @@ public class Nametag extends Module {
 
     private int getColor(Entity player) {
         if ((player instanceof ItemEntity))
-            return ((ESP) Module.get(ESP.class)).itemColor;
+            return ESP.INSTANCE.itemColor;
         if (EntityHelper.INSTANCE.isHostileMob(player))
-            return ((ESP) Module.get(ESP.class)).hostileColor;
+            return ESP.INSTANCE.hostileColor;
         if (EntityHelper.INSTANCE.isPassiveMob(player))
-            return ((ESP) Module.get(ESP.class)).passiveColor;
+            return ESP.INSTANCE.passiveColor;
         if (player instanceof PlayerEntity) {
             if (Friend.isFriend(player.getName().asString()))
                 return ColorHelper.INSTANCE.getClientColor();

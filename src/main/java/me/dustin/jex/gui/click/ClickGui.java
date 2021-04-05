@@ -13,6 +13,7 @@ import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
 import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
 import me.dustin.jex.gui.particle.ParticleManager2D;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -175,7 +176,7 @@ public class ClickGui extends Screen {
             float x = MouseHelper.INSTANCE.getMouseX() + FontHelper.INSTANCE.getStringWidth(description) > Render2DHelper.INSTANCE.getScaledWidth() ? Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(description) - 2 : MouseHelper.INSTANCE.getMouseX();
             float y = MouseHelper.INSTANCE.getMouseY() + 10;
 
-            Render2DHelper.INSTANCE.fill(matrixStack, x, y, x + FontHelper.INSTANCE.getStringWidth(description) + 2, y + 13, 0xa0000000);
+            Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y, x + FontHelper.INSTANCE.getStringWidth(description) + 3, y + 13, ColorHelper.INSTANCE.getClientColor(), 0xa0000000, 1);
             FontHelper.INSTANCE.drawWithShadow(matrixStack, description, x + 2, y + 2, -1);
         }
 

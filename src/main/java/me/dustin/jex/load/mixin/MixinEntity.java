@@ -1,6 +1,7 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.event.misc.EventEntityHitbox;
+import me.dustin.jex.event.player.EventPushAwayFromEntity;
 import me.dustin.jex.event.player.EventSlowdown;
 import me.dustin.jex.event.player.EventStep;
 import me.dustin.jex.event.render.EventNametagShouldRender;
@@ -148,6 +149,13 @@ public abstract class MixinEntity {
     @Shadow public abstract void move(MovementType type, Vec3d movement);
 
     @Shadow private Box entityBounds;
+
+    @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
+    public void push(Entity entity, CallbackInfo ci) {
+        EventPushAwayFromEntity eventPushAwayFromEntity = new EventPushAwayFromEntity().run();
+        if (eventPushAwayFromEntity.isCancelled())
+            return;
+    }
 
     @Inject(method = "getBoundingBox", at = @At("HEAD"), cancellable = true)
     public void getBoundBox1(CallbackInfoReturnable<Box> cir) {

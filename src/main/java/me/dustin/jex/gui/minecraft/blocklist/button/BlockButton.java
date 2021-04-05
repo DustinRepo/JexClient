@@ -1,10 +1,8 @@
 package me.dustin.jex.gui.minecraft.blocklist.button;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.gui.click.impl.Button;
 import me.dustin.jex.gui.click.listener.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.block.Block;
@@ -29,10 +27,7 @@ public class BlockButton extends Button {
         }
         FontHelper.INSTANCE.drawCenteredString(matrixStack, new TranslatableText(block.getTranslationKey()), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 4, isEnabled() ? 0xffaaaaaa : 0xff676767);
 
-        RenderSystem.pushMatrix();
-        RenderSystem.scaled(2, 2, 2);
-        Wrapper.INSTANCE.getMinecraft().getItemRenderer().renderInGui(new ItemStack(block.asItem()), (int) (getX() + 2) / 2, (int) (getY() + 5) / 2);
-        RenderSystem.popMatrix();
+        Render2DHelper.INSTANCE.drawItem(new ItemStack(block.asItem()), (int) (getX() + 2), (int) (getY() + 2));
         if (isHovered() && isEnabled())
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
         this.getChildren().forEach(button -> {

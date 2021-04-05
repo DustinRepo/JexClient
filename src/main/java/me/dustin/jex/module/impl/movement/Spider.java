@@ -26,8 +26,8 @@ public class Spider extends Module {
                     Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), 0.3, orig.getZ());
                 } else {
                     Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), 0, orig.getZ());
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.Both(Wrapper.INSTANCE.getLocalPlayer().getX() + orig.getX() * 2, Wrapper.INSTANCE.getLocalPlayer().getY() + (Wrapper.INSTANCE.getOptions().keySneak.isPressed() ? 0 : 0.0624), Wrapper.INSTANCE.getLocalPlayer().getZ() + orig.getZ() * 2, Wrapper.INSTANCE.getLocalPlayer().yaw, Wrapper.INSTANCE.getLocalPlayer().pitch, false));
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.Both(Wrapper.INSTANCE.getLocalPlayer().getX() + orig.getX(), -1337 + Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ() + orig.getZ(), Wrapper.INSTANCE.getLocalPlayer().yaw, Wrapper.INSTANCE.getLocalPlayer().pitch, true));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.Full(Wrapper.INSTANCE.getLocalPlayer().getX() + orig.getX() * 2, Wrapper.INSTANCE.getLocalPlayer().getY() + (Wrapper.INSTANCE.getOptions().keySneak.isPressed() ? 0 : 0.0624), Wrapper.INSTANCE.getLocalPlayer().getZ() + orig.getZ() * 2, Wrapper.INSTANCE.getLocalPlayer().yaw, Wrapper.INSTANCE.getLocalPlayer().pitch, false));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.Full(Wrapper.INSTANCE.getLocalPlayer().getX() + orig.getX(), -1337 + Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ() + orig.getZ(), Wrapper.INSTANCE.getLocalPlayer().yaw, Wrapper.INSTANCE.getLocalPlayer().pitch, true));
                 }
             }
         }
