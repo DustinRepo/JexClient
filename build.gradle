@@ -26,6 +26,8 @@ dependencies {
     compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
     // https://mvnrepository.com/artifact/org.joml/joml
     compile group: 'org.joml', name: 'joml', version: '1.10.1'
+    // https://mvnrepository.com/artifact/club.minnced/java-discord-rpc
+    compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.2'
 
     compile files('lib/eventmanager-1.0.1.jar')
     compile files('lib/baritone-1.6.3-dev.jar')
@@ -42,9 +44,7 @@ processResources {
 repositories {
     mavenCentral()
 
-    maven {
-        url = 'https://jexclient.com/maven/'
-    }
+    maven { url = 'https://jexclient.com/maven/' }
 }
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is
