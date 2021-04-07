@@ -43,22 +43,22 @@ public class ModuleButton extends Button {
     public void draw(MatrixStack matrixStack) {
         updateOnOff();
         Gui.clickgui.setZOffset(-200);
-        Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x80000000);
+        Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), module.getState() ? ColorHelper.INSTANCE.getColor(getWindow().getColor()).darker().darker().getRGB() : 0x80000000);
         Gui.clickgui.setZOffset(0);
 
-        FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getModule().getName(), this.getX() + (this.getWidth() / 2), (this.getY() + (this.getHeight() / 2)) - (Wrapper.INSTANCE.getTextRenderer().fontHeight / 2), !this.getModule().getState() ? 0xff999999 : ColorHelper.INSTANCE.getClientColor());
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getModule().getName(), this.getX() + 3, (this.getY() + (this.getHeight() / 2)) - (Wrapper.INSTANCE.getTextRenderer().fontHeight / 2), -1);
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
 
         matrixStack.push();
         matrixStack.translate(this.getX() + this.getWidth() - 7, this.getY() + 7.5f, 0);
         matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 0.0F, 1.0F), cogSpin, true));
-        Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : ColorHelper.INSTANCE.getClientColor());
+        Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : getWindow().getColor());
         matrixStack.pop();
         this.getChildren().forEach(button -> {
             button.draw(matrixStack);
-            Render2DHelper.INSTANCE.drawVLine(matrixStack, button.getX() - 1, button.getY() - 1, button.getY() + button.getHeight(), ColorHelper.INSTANCE.getClientColor());
-            Render2DHelper.INSTANCE.drawVLine(matrixStack, button.getX() + button.getWidth(), button.getY() - 1, button.getY() + button.getHeight(), ColorHelper.INSTANCE.getClientColor());
+            Render2DHelper.INSTANCE.drawVLine(matrixStack, button.getX() - 1, button.getY() - 1, button.getY() + button.getHeight(), getWindow().getColor());
+            Render2DHelper.INSTANCE.drawVLine(matrixStack, button.getX() + button.getWidth(), button.getY() - 1, button.getY() + button.getHeight(), getWindow().getColor());
         });
     }
 

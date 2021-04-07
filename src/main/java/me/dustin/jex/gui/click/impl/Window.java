@@ -9,6 +9,7 @@ import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.module.impl.render.Gui;
+import me.dustin.jex.module.impl.render.Hud;
 import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class Window {
     private float maxHeight = 300;
     private float xDif, yDif;
     private boolean pinned;
+    private int color = ColorHelper.INSTANCE.getClientColor();
     private ArrayList<Button> buttons = new ArrayList<>();
 
 
@@ -34,15 +36,19 @@ public class Window {
         this.y = y;
         this.width = width;
         this.height = height;
+        if (getCategory(this) != null)
+            this.color = Hud.getCategoryColor(getCategory(this));
         gui = (Gui) Module.get(Gui.class);
     }
 
     public void draw(MatrixStack matrixStack) {
         String dispName = this.getName().substring(0, 1) + this.getName().substring(1).toLowerCase();
-        maxHeight = Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 20 > 0 ? Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 20 : 250;
+        maxHeight = Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 > 0 ? Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 : 250;
 
         if (isOpen()) {
             Scissor.INSTANCE.cut((int) x, (int) y + (int) height, (int) width, (int) maxHeight);
+            if (this.getVeryBottomButton() != null)
+                Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getVeryBottomButton().getY() + this.getVeryBottomButton().getHeight() + 1,  color, 0xff101010, 1);
             this.getButtons().forEach(button -> {
                 if (button.isVisible())
                     button.draw(matrixStack);
@@ -50,7 +56,7 @@ public class Window {
             Scissor.INSTANCE.seal();
         }
 
-        Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor());
+        Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), color);
         FontHelper.INSTANCE.drawCenteredString(matrixStack, dispName, this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 5, -1);
 
         if (this.isDragging) {
@@ -81,11 +87,16 @@ public class Window {
     public Button getVeryBottomButton() {
         if (getButtons().size() == 0)
             return null;
-        Button button = getButtons().get(getButtons().size() - 1);
-        while (button.hasChildren() && button.isOpen()) {
-            button = button.getChildren().get(button.getChildren().size() - 1);
+        Button b = null;
+        for (Button button : getButtons()) {
+            if (button.isVisible()) {
+                b = button;
+                while (b.hasChildren() && b.isOpen()) {
+                    b = button.getChildren().get(b.getChildren().size() - 1);
+                }
+            }
         }
-        return button;
+        return b;
     }
 
     public void click(double double_1, double double_2, int int_1) {
@@ -101,7 +112,7 @@ public class Window {
                 this.setOpen(!this.isOpen);
                 return;
             }
-        }
+        } else
         if (this.isOpen())
             this.getButtons().forEach(button -> {
                 if (button.isVisible())
@@ -117,7 +128,7 @@ public class Window {
         try {
             ModCategory category = ModCategory.valueOf(this.getName());
             Module.getModules(category).forEach(module -> {
-                this.getButtons().add(new ModuleButton(this, module, this.getX(), (this.getY() + this.getHeight()) + (this.getHeight() * childCount), this.getWidth(), this.getHeight()));
+                this.getButtons().add(new ModuleButton(this, module, this.getX() + 1, (this.getY() + this.getHeight()) + ((this.getHeight() + 1) * childCount), this.getWidth() - 2, this.getHeight()));
                 childCount++;
             });
         } catch (Exception e) {
@@ -225,6 +236,22 @@ public class Window {
                     moduleButton = (ModuleButton) button;
             }
         return moduleButton;
+    }
+
+    public static ModCategory getCategory(Window window) {
+        for (ModCategory category : ModCategory.values()) {
+            if (category.toString().toLowerCase().equalsIgnoreCase(window.getName().toLowerCase()))
+                return category;
+        }
+        return null;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 
     public boolean isHovered() {

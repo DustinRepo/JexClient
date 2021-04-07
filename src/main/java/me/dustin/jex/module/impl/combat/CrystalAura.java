@@ -40,10 +40,10 @@ public class CrystalAura extends Module {
     @Op(name = "Mode", all = {"Suicidal", "Risky", "Safe"})
     public String mode = "Suicidal";
 
-    @Op(name = "Attack Mode", all = {"Any", "Near Target"})
+    @Op(name = "Attack", all = {"Any", "Near Target"})
     public String attackMode = "Any";
 
-    @OpChild(name = "Max Attack Distance", min = 1, max = 6, inc = 0.1f, parent = "Attack Mode")
+    @OpChild(name = "Max Attack Distance", min = 1, max = 6, inc = 0.1f, parent = "Attack")
     public float attackDistance = 4;
 
     @Op(name = "Auto Place")

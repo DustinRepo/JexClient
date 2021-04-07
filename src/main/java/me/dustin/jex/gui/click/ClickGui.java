@@ -22,6 +22,7 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.module.impl.render.Gui;
+import me.dustin.jex.option.types.ColorOption;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -40,6 +41,8 @@ public class ClickGui extends Screen {
     private Button clickSoundButton = null;
     private TextFieldWidget searchField;
     private String lastSearch = "";
+    private Gui guiModule;
+    Window configWindow;
     private ButtonListener save = new ButtonListener() {
         @Override
         public void invoke() {
@@ -104,6 +107,7 @@ public class ClickGui extends Screen {
     @Override
     public void init() {
         if (windows.isEmpty()) {
+            guiModule = (Gui)Module.get(Gui.class);
             int count = 0;
             float windowWidth = 120;
             float windowHeight = 15;
@@ -111,25 +115,25 @@ public class ClickGui extends Screen {
                 windows.add(new Window(category.name(), 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
                 count++;
             }
-            Window configWindow = new Window("Config", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight);
+            configWindow = new Window("Config", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight);
             windows.add(configWindow);
             GuiFile.read();
 
             int childCount = 0;
             configWindow.setOpen(true);
-            configWindow.getButtons().add(new Button(configWindow, "Save", configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, save));
+            configWindow.getButtons().add(new Button(configWindow, "Save", configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, save));
             childCount++;
-            configWindow.getButtons().add(new Button(configWindow, "Load", configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, load));
+            configWindow.getButtons().add(new Button(configWindow, "Load", configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, load));
             childCount++;
-            configWindow.getButtons().add(autoSaveButton = new Button(configWindow, "Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? "\247aON" : "\247cOFF"), configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, autoSaveListener));
+            configWindow.getButtons().add(autoSaveButton = new Button(configWindow, "Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? "\247aON" : "\247cOFF"), configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, autoSaveListener));
             childCount++;
-            configWindow.getButtons().add(clickSoundButton = new Button(configWindow, "Play Click Sounds: " + (playClickSounds ? "\247aON" : "\247cOFF"), configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, clickSoundListener));
+            configWindow.getButtons().add(clickSoundButton = new Button(configWindow, "Play Click Sounds: " + (playClickSounds ? "\247aON" : "\247cOFF"), configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, clickSoundListener));
             childCount++;
-            configWindow.getButtons().add(launchSoundButton = new Button(configWindow, "Game Launch Alert: " + (JexClient.INSTANCE.playSoundOnLaunch() ? "\247aON" : "\247cOFF"), configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, launchSoundListener));
+            configWindow.getButtons().add(launchSoundButton = new Button(configWindow, "Game Launch Alert: " + (JexClient.INSTANCE.playSoundOnLaunch() ? "\247aON" : "\247cOFF"), configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, launchSoundListener));
             childCount++;
-            configWindow.getButtons().add(new Button(configWindow, "Xray Block Select", configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, xrayButtonListener));
+            configWindow.getButtons().add(new Button(configWindow, "Xray Block Select", configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, xrayButtonListener));
             childCount++;
-            configWindow.getButtons().add(new Button(configWindow, "Search Block Select", configWindow.getX(), (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth, windowHeight, searchButtonListener));
+            configWindow.getButtons().add(new Button(configWindow, "Search Block Select", configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, searchButtonListener));
             childCount++;
 
             windows.forEach(window -> {
@@ -185,7 +189,7 @@ public class ClickGui extends Screen {
                         float y = button.getY();
                         button.move(0, (window.getY() + window.getHeight() + height) - y);
                         window.moveAll(button, 0, (window.getY() + window.getHeight() + height) - y);
-                        height += button.getFullHeight(button);
+                        height += button.getFullHeight(button) + 1;
                     }
                 }
             }
@@ -197,6 +201,8 @@ public class ClickGui extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int int_1, int int_2, float float_1) {
         renderBackground(matrixStack);
+        updateWindowColors();
+        configWindow.setColor(ColorHelper.INSTANCE.getClientColor());
         if (timer.hasPassed(100)) {
             ParticleManager2D.INSTANCE.update();
         }
@@ -221,8 +227,9 @@ public class ClickGui extends Screen {
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y, x + FontHelper.INSTANCE.getStringWidth(description) + 3, y + 13, ColorHelper.INSTANCE.getClientColor(), 0xa0000000, 1);
             FontHelper.INSTANCE.drawWithShadow(matrixStack, description, x + 2, y + 2, -1);
         }
-        Render2DHelper.INSTANCE.fill(matrixStack, 0, Render2DHelper.INSTANCE.getScaledHeight() - 15, Render2DHelper.INSTANCE.getScaledWidth(), Render2DHelper.INSTANCE.getScaledHeight(), !searchField.getText().isEmpty() ? ColorHelper.INSTANCE.getClientColor() & 0x30ffffff : 0x30000000);
         searchField.render(matrixStack, int_1, int_2, float_1);
+        if (!searchField.getText().isEmpty())
+            Render2DHelper.INSTANCE.fillAndBorder(matrixStack, searchField.x - 1, searchField.y - 1, searchField.x + searchField.getWidth() + 1, searchField.y + searchField.getHeight() + 1, ColorHelper.INSTANCE.getClientColor(), 0x00ffffff, 1);
         super.render(matrixStack, int_1, int_2, float_1);
     }
 
@@ -237,6 +244,23 @@ public class ClickGui extends Screen {
     public boolean charTyped(char typedChar, int keyCode) {
         windows.forEach(window -> window.keyTyped(typedChar, keyCode));
         return super.charTyped(typedChar, keyCode);
+    }
+
+    private void updateWindowColors() {
+        if (guiModule.colorScheme.equalsIgnoreCase("Customize")) {
+            guiModule.getOptions().forEach(option -> {
+                if (option.getName().equalsIgnoreCase("Colors"))
+                    return;
+                Window window = getWindow(option.getName());
+                if (window != null) {
+                    window.setColor(((ColorOption)option).getValue());
+                }
+            });
+        } else {
+            windows.forEach(window -> {
+                window.setColor(ColorHelper.INSTANCE.getClientColor());
+            });
+        }
     }
 
     private ModuleButton getHovered() {

@@ -39,6 +39,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,6 +47,10 @@ import java.util.List;
 
 @ModClass(name = "HUD", category = ModCategory.VISUAL, description = "Renders an in-game HUD")
 public class Hud extends Module {
+    @Op(name = "Client Color", isColor = true)
+    public int clientColor = 0xff00a1ff;
+    @OpChild(name = "Rainbow", parent = "Client Color")
+    public boolean rainbowClientColor;
     @Op(name = "Jex Effect", all = {"Static", "Spin Only", "Flip Only", "SpinFlip"})
     public String watermarkMode = "Static";
     @Op(name = "Draw Face")
@@ -174,17 +179,17 @@ public class Hud extends Module {
                 break;
             case "SpinFlip":
             case "Spin Only":
-                rot+=2;
+                rot += 2;
                 if (rot > 360)
                     rot -= 360;
                 break;
             case "Flip Only":
                 if (flipRot) {
-                    rot-=2;
+                    rot -= 2;
                     if (rot <= 0)
                         flipRot = false;
                 } else {
-                    rot+=2;
+                    rot += 2;
                     if (rot >= 90)
                         flipRot = true;
                 }
@@ -359,6 +364,7 @@ public class Hud extends Module {
     }
 
     int bottomRightCount = 0;
+
     public void drawPotionEffectsAndCoordinates(EventRender2D eventRender2D) {
         bottomRightCount = 0;
         if (coords) {
@@ -509,20 +515,20 @@ public class Hud extends Module {
         return ColorHelper.INSTANCE.getColorViaHue(hue % 270, rainbowSaturation).getRGB();
     }
 
-    public int getCategoryColor(ModCategory category) {
+    public static int getCategoryColor(ModCategory category) {
         switch (category) {
             case MOVEMENT:
-                return 0xffff00;
+                return new Color(141, 95, 255).getRGB();
             case VISUAL:
-                return 0xff800080;
+                return new Color(255, 92, 252).getRGB();
             case PLAYER:
-                return 0xff00ff00;
+                return new Color(64, 255, 83).getRGB();
             case MISC:
-                return 0xff0000ff;
+                return new Color(247, 255, 65).getRGB();
             case WORLD:
-                return 0xffd98324;
+                return new Color(74, 84, 255).getRGB();
             case COMBAT:
-                return 0xffff0000;
+                return new Color(255, 61, 56).getRGB();
         }
         return -1;
     }
