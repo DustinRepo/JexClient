@@ -23,7 +23,9 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.module.impl.render.Gui;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ public class ClickGui extends Screen {
     private Button autoSaveButton = null;
     private Button launchSoundButton = null;
     private Button clickSoundButton = null;
+    private TextFieldWidget searchField;
+    private String lastSearch = "";
     private ButtonListener save = new ButtonListener() {
         @Override
         public void invoke() {
@@ -137,6 +141,7 @@ public class ClickGui extends Screen {
         for (int i = 0; i < 50; i++) {
             ParticleManager2D.INSTANCE.add(ClientMathHelper.INSTANCE.getRandom(Render2DHelper.INSTANCE.getScaledWidth()), ClientMathHelper.INSTANCE.getRandom(Render2DHelper.INSTANCE.getScaledHeight()));
         }
+        this.children.add(searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 150, Render2DHelper.INSTANCE.getScaledHeight() - 14, 300, 12, new LiteralText("")));
         super.init();
     }
 
@@ -150,6 +155,43 @@ public class ClickGui extends Screen {
     public void onClose() {
         GuiFile.write();
         super.onClose();
+    }
+
+    @Override
+    public void tick() {
+        searchField.tick();
+        if (searchField.isFocused() && lastSearch != searchField.getText()) {
+            String search = searchField.getText().toLowerCase();
+            for (Window window : windows) {
+                if (window.getName().equalsIgnoreCase("Config"))
+                    continue;
+                if (search.isEmpty()) {
+                    for (Button button : window.getButtons()) {
+                        button.setVisible(true);
+                    }
+                } else {
+                    for (Button button : window.getButtons()) {
+                        button.setVisible(button.getName().toLowerCase().contains(search));
+                    }
+                }
+                int height = 0;
+                for (Button button : window.getButtons()) {
+                    if (button instanceof ModuleButton) {
+                        ModuleButton moduleButton = (ModuleButton)button;
+                        moduleButton.close();
+                    }
+                    button.setOpen(false);
+                    if (button.isVisible()) {
+                        float y = button.getY();
+                        button.move(0, (window.getY() + window.getHeight() + height) - y);
+                        window.moveAll(button, 0, (window.getY() + window.getHeight() + height) - y);
+                        height += button.getFullHeight(button);
+                    }
+                }
+            }
+        }
+        lastSearch = searchField.getText();
+        super.tick();
     }
 
     @Override
@@ -179,13 +221,15 @@ public class ClickGui extends Screen {
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y, x + FontHelper.INSTANCE.getStringWidth(description) + 3, y + 13, ColorHelper.INSTANCE.getClientColor(), 0xa0000000, 1);
             FontHelper.INSTANCE.drawWithShadow(matrixStack, description, x + 2, y + 2, -1);
         }
-
+        Render2DHelper.INSTANCE.fill(matrixStack, 0, Render2DHelper.INSTANCE.getScaledHeight() - 15, Render2DHelper.INSTANCE.getScaledWidth(), Render2DHelper.INSTANCE.getScaledHeight(), !searchField.getText().isEmpty() ? ColorHelper.INSTANCE.getClientColor() & 0x30ffffff : 0x30000000);
+        searchField.render(matrixStack, int_1, int_2, float_1);
         super.render(matrixStack, int_1, int_2, float_1);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        windows.forEach(window -> window.click(mouseX, mouseY, button));
+        if (!Render2DHelper.INSTANCE.isHovered(0, Render2DHelper.INSTANCE.getScaledHeight() - 15, Render2DHelper.INSTANCE.getScaledWidth(), 15))
+            windows.forEach(window -> window.click(mouseX, mouseY, button));
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -199,7 +243,7 @@ public class ClickGui extends Screen {
         for (Window window : windows) {
             if (window.isOpen())
                 for (Button button : window.getButtons()) {
-                    if (button instanceof ModuleButton && button.isHovered())
+                    if (button instanceof ModuleButton && button.isHovered() && button.isVisible())
                         return (ModuleButton) button;
                 }
         }

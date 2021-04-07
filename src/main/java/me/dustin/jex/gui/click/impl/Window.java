@@ -23,8 +23,8 @@ public class Window {
     private boolean isOpen;
     private boolean isDragging;
     private float maxHeight = 300;
-    private int scrolled = 0;
     private float xDif, yDif;
+    private boolean pinned;
     private ArrayList<Button> buttons = new ArrayList<>();
 
 
@@ -44,7 +44,8 @@ public class Window {
         if (isOpen()) {
             Scissor.INSTANCE.cut((int) x, (int) y + (int) height, (int) width, (int) maxHeight);
             this.getButtons().forEach(button -> {
-                button.draw(matrixStack);
+                if (button.isVisible())
+                    button.draw(matrixStack);
             });
             Scissor.INSTANCE.seal();
         }
@@ -103,7 +104,8 @@ public class Window {
         }
         if (this.isOpen())
             this.getButtons().forEach(button -> {
-                button.click(double_1, double_2, int_1);
+                if (button.isVisible())
+                    button.click(double_1, double_2, int_1);
             });
     }
 
@@ -137,7 +139,6 @@ public class Window {
                                     button.move(0, 1);
                                     moveAll(button, 0, 1);
                                 });
-                            scrolled++;
                         }
                     }
             } else if (double_3 < 0) {
@@ -150,7 +151,6 @@ public class Window {
                                     button.move(0, -1);
                                     moveAll(button, 0, -1);
                                 }
-                            scrolled--;
                         }
                     }
             }
@@ -207,6 +207,14 @@ public class Window {
 
     public ArrayList<Button> getButtons() {
         return buttons;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
     }
 
     public ModuleButton get(Module module) {
