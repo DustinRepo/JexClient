@@ -56,23 +56,23 @@ public class OptionButton extends Button {
     @Override
     public void draw(MatrixStack matrixStack) {
         updateOnOff();
-        Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x60000000);
+        //Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x60000000);
 
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
 
         switch (this.getOption().getType()) {
             case BOOL:
-                FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getOption().getName(), this.getX() + (this.getWidth() / 2), this.getY() + 4, ((BoolOption) option).getValue() ? ColorHelper.INSTANCE.getClientColor() : 0xffaaaaaa);
+                FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName(), this.getX() + 3, this.getY() + 4, ((BoolOption) option).getValue() ? getWindow().getColor() : 0xffaaaaaa);
                 break;
             case STRINGARRAY:
-                FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getOption().getName() + ": \247f" + ((StringArrayOption) this.getOption()).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 4, 0xffaaaaaa);
+                FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName() + ": \247f" + ((StringArrayOption) this.getOption()).getValue(), this.getX() + 3, this.getY() + 4, 0xffaaaaaa);
                 break;
             case STRING:
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getOption().getName(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, ((StringOption)option).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 14, 0xffaaaaaa);
                 if (EventAPI.getInstance().alreadyRegistered(this)) {
-                    Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor(), 0x00ffffff, 1);
+                    Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), getWindow().getColor(), 0x00ffffff, 1);
                 }
                 break;
             case COLOR:
@@ -85,14 +85,14 @@ public class OptionButton extends Button {
             matrixStack.push();
             matrixStack.translate(this.getX() + this.getWidth() - 7, this.getY() + 7.5f, 0);
             matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), cogSpin, true));
-            Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : ColorHelper.INSTANCE.getClientColor());
+            Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : getWindow().getColor());
             matrixStack.pop();
         }
         if (isOpen())
             this.getChildren().forEach(button -> {
                 button.draw(matrixStack);
-                Render2DHelper.INSTANCE.drawVLine(matrixStack, button.getX() - 1, button.getY() - 1, button.getY() + button.getHeight(), ColorHelper.INSTANCE.getClientColor());
-                Render2DHelper.INSTANCE.drawVLine(matrixStack, button.getX() + button.getWidth(), button.getY() - 1, button.getY() + button.getHeight(), ColorHelper.INSTANCE.getClientColor());
+                Render2DHelper.INSTANCE.fill(matrixStack, getWindow().getX(), button.getY(), button.getX(), button.getY() + button.getHeight(), 0xff252525);
+                Render2DHelper.INSTANCE.fill(matrixStack, button.getX() + button.getWidth(), button.getY(), getWindow().getX() + getWindow().getWidth(), button.getY() + button.getHeight(), 0xff252525);
             });
     }
 
@@ -362,7 +362,7 @@ public class OptionButton extends Button {
 
             handleSliders(v);
 
-            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(ColorHelper.INSTANCE.getClientColor())).darker().getRGB());
+            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(getWindow().getColor())).darker().getRGB());
             FontHelper.INSTANCE.drawCenteredString(matrixStack, property.getName() + ": " + ((FloatOption) property).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
         }
         if (property instanceof IntOption) {
@@ -378,7 +378,7 @@ public class OptionButton extends Button {
 
             handleSliders(v);
 
-            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Color.decode("0x" + Integer.toHexString(ColorHelper.INSTANCE.getClientColor()).substring(2)).darker().getRGB());
+            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Color.decode("0x" + Integer.toHexString(getWindow().getColor()).substring(2)).darker().getRGB());
             FontHelper.INSTANCE.drawCenteredString(matrixStack, property.getName() + ": " + ((IntOption) property).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
         }
 
@@ -408,7 +408,7 @@ public class OptionButton extends Button {
             //hue cursor
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 10, this.getY() + 15 + huepos - 1, (this.getX() + this.getWidth() - 10) + 5, this.getY() + 15 + huepos + 1, -1);
 
-            FontHelper.INSTANCE.drawWithShadow(matrixStack, property.getName(), this.getX() + 1, this.getY() + 3, v.getValue());
+            FontHelper.INSTANCE.drawWithShadow(matrixStack, property.getName(), this.getX() + 3, this.getY() + 3, v.getValue());
         }
     }
 

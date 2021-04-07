@@ -15,10 +15,21 @@ public class Gui extends Module {
 
     public static ClickGui clickgui = new ClickGui(new LiteralText("Click Gui"));
 
-    @Op(name = "Client Color", isColor = true)
-    public int clientColor = 0xff00a1ff;
-    @OpChild(name = "Rainbow", parent = "Client Color")
-    public boolean rainbowClientColor;
+    @Op(name = "Colors", all = {"Customize", "Client"})
+    public String colorScheme = "Customize";
+
+    @OpChild(name = "Combat", parent = "Colors", dependency = "Customize", isColor = true)
+    public int combatColor = Hud.getCategoryColor(ModCategory.COMBAT);
+    @OpChild(name = "Player", parent = "Colors", dependency = "Customize", isColor = true)
+    public int playerColor = Hud.getCategoryColor(ModCategory.PLAYER);
+    @OpChild(name = "Movement", parent = "Colors", dependency = "Customize", isColor = true)
+    public int movementColor = Hud.getCategoryColor(ModCategory.MOVEMENT);
+    @OpChild(name = "Visual", parent = "Colors", dependency = "Customize", isColor = true)
+    public int visualColor = Hud.getCategoryColor(ModCategory.VISUAL);
+    @OpChild(name = "World", parent = "Colors", dependency = "Customize", isColor = true)
+    public int worldColor = Hud.getCategoryColor(ModCategory.WORLD);
+    @OpChild(name = "Misc", parent = "Colors", dependency = "Customize", isColor = true)
+    public int miscColor = Hud.getCategoryColor(ModCategory.MISC);
 
     @Op(name = "Particles")
     public boolean particles;
