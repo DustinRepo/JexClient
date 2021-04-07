@@ -30,15 +30,15 @@ public enum ModuleManager {
                 int mod1s = 0;
                 int mod2s = 0;
                 String alph = "abcdefghijklmnopqrstuvwxyz";
-                for(int i = 0; i < alph.length(); i++){
-                    if((alph.charAt(i) + "").equalsIgnoreCase(mod.getName().substring(0, 1))){
+                for (int i = 0; i < alph.length(); i++) {
+                    if ((alph.charAt(i) + "").equalsIgnoreCase(mod.getName().substring(0, 1))) {
                         mod1s = i;
                     }
-                    if((alph.charAt(i) + "").equalsIgnoreCase(mod1.getName().substring(0, 1))){
+                    if ((alph.charAt(i) + "").equalsIgnoreCase(mod1.getName().substring(0, 1))) {
                         mod2s = i;
                     }
                 }
-                if (mod1s > mod2s) {
+                if (mod1s >= mod2s) {
                     return 1;
                 }
                 if (mod1s < mod2s) {
