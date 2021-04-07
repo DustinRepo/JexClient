@@ -31,11 +31,19 @@ public class Friend {
     }
 
     public static Friend getFriendViaName(String name) {
-        return friendsList.stream().filter(friend -> friend.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+        for (Friend friend : friendsList) {
+            if (friend.getName().equalsIgnoreCase(name))
+                return friend;
+        }
+        return null;
     }
 
     public static Friend getFriendViaAlias(String alias) {
-        return friendsList.stream().filter(friend -> friend.getAlias().equalsIgnoreCase(alias)).findFirst().orElse(null);
+        for (Friend friend : friendsList) {
+            if (friend.getAlias().equalsIgnoreCase(alias))
+                return friend;
+        }
+        return null;
     }
 
     public static ArrayList<Friend> getFriendsList() {

@@ -22,6 +22,7 @@ public class Button {
     private ButtonListener listener;
     private boolean isOpen;
     private boolean isEnabled;
+    private boolean isVisible = true;
     private ArrayList<Button> children = new ArrayList<>();
 
     public Button(Window window, String name, float x, float y, float width, float height, ButtonListener listener) {
@@ -42,7 +43,8 @@ public class Button {
         if (isHovered() && isEnabled)
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
         this.getChildren().forEach(button -> {
-            button.draw(matrixStack);
+            if (button.isVisible())
+                button.draw(matrixStack);
         });
     }
 
@@ -134,15 +136,34 @@ public class Button {
         return window;
     }
 
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
+
     public void move(float x, float y) {
         this.setX(this.getX() + x);
         this.setY(this.getY() + y);
     }
 
+    public float getFullHeight(Button b) {
+        float height = b.getHeight();
+        if (b.isOpen())
+        for (Button button : b.getChildren()) {
+            height += button.getHeight();
+            if (button.hasChildren() && button.isOpen())
+                height += getFullHeight(button);
+        }
+        return height;
+    }
+
     public ArrayList<Button> allButtonsAfter() {
         ArrayList<Button> buttons = new ArrayList<>();
         for (Button button : getWindow().getButtons()) {
-            if (getWindow().getButtons().indexOf(button) > getWindow().getButtons().indexOf(this)) {
+            if (getWindow().getButtons().indexOf(button) > getWindow().getButtons().indexOf(this) && button.isVisible()) {
                 buttons.add(button);
                 buttons = addAllChildren(buttons, button);
             }
@@ -153,7 +174,7 @@ public class Button {
     public ArrayList<Button> allButtonsAfter(Button button1) {
         ArrayList<Button> buttons = new ArrayList<>();
         for (Button button : getWindow().getButtons()) {
-            if (getWindow().getButtons().indexOf(button) > getWindow().getButtons().indexOf(button1)) {
+            if (getWindow().getButtons().indexOf(button) > getWindow().getButtons().indexOf(button1) && button.isVisible()) {
                 buttons.add(button);
                 buttons = addAllChildren(buttons, button);
             }
