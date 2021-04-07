@@ -54,7 +54,7 @@ public class BucketCatch extends Module {
                     if (rotate)
                         Wrapper.INSTANCE.getLocalPlayer().pitch = 90;
                     eventPlayerPackets.setPitch(90);
-                    BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().method_35849(0, -3f, 0);
+                    BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(0, -3f, 0);
                     if (WorldHelper.INSTANCE.getBlock(pos) != Blocks.AIR) {
                         click = true;
                         placedBucket = true;

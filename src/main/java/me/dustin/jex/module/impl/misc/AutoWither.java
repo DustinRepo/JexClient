@@ -40,29 +40,29 @@ public class AutoWither extends Module {
                     if (packet.getBlockHitResult().getSide() == Direction.UP || packet.getBlockHitResult().getSide() == Direction.DOWN)
                         originPos = originPos.up();
                     if (packet.getBlockHitResult().getSide() == Direction.NORTH)
-                        originPos = originPos.method_35861();//north
+                        originPos = originPos.north();//north
                     if (packet.getBlockHitResult().getSide() == Direction.SOUTH)
-                        originPos = originPos.method_35859();//south
+                        originPos = originPos.south();//south
                     if (packet.getBlockHitResult().getSide() == Direction.WEST)
-                        originPos = originPos.method_35857();//west
+                        originPos = originPos.west();//west
                     if (packet.getBlockHitResult().getSide() == Direction.EAST)
-                        originPos = originPos.method_35855();//east
+                        originPos = originPos.east();//east
 
                     Vec3d originVec = new Vec3d(originPos.getX(), originPos.getY(), originPos.getZ());
                     boolean northSouth = Direction.fromRotation((double) Wrapper.INSTANCE.getLocalPlayer().yaw) == Direction.NORTH || Direction.fromRotation((double) Wrapper.INSTANCE.getLocalPlayer().yaw) == Direction.SOUTH;
                     int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                     BlockHitResult blockHitResult = new BlockHitResult(originVec.add(0, 1, 0), Direction.DOWN, originPos.up(), false);
                     NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    blockHitResult = new BlockHitResult(originVec.add(1, 1, 0), northSouth ? Direction.EAST : Direction.SOUTH, northSouth ? originPos.up().method_35855() : originPos.up().method_35861(), false);
+                    blockHitResult = new BlockHitResult(originVec.add(1, 1, 0), northSouth ? Direction.EAST : Direction.SOUTH, northSouth ? originPos.up().east() : originPos.up().north(), false);
                     NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    blockHitResult = new BlockHitResult(originVec.add(-1, 1, 0), northSouth ? Direction.WEST : Direction.NORTH, northSouth ? originPos.up().method_35857() : originPos.up().method_35859(), false);
+                    blockHitResult = new BlockHitResult(originVec.add(-1, 1, 0), northSouth ? Direction.WEST : Direction.NORTH, northSouth ? originPos.up().west() : originPos.up().south(), false);
                     NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
                     NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(getSkulls()));
                     blockHitResult = new BlockHitResult(originVec.add(0, 1, 0), Direction.UP, originPos.up(2), false);
                     NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    blockHitResult = new BlockHitResult(originVec.add(1, 1, 0), Direction.UP, northSouth ? originPos.up().method_35855() : originPos.up().method_35861(), false);
+                    blockHitResult = new BlockHitResult(originVec.add(1, 1, 0), Direction.UP, northSouth ? originPos.up().east() : originPos.up().north(), false);
                     NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    blockHitResult = new BlockHitResult(originVec.add(-1, 1, 0), Direction.UP, northSouth ? originPos.up().method_35857() : originPos.up().method_35859(), false);
+                    blockHitResult = new BlockHitResult(originVec.add(-1, 1, 0), Direction.UP, northSouth ? originPos.up().west() : originPos.up().south(), false);
                     NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
                     NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(savedSlot));
                     creatingWither = false;

@@ -45,7 +45,7 @@ public class AutoBreak extends Module {
     public void run(Event event) {
         if (event.equals(EventClickBlock.class)) {
             EventClickBlock click = (EventClickBlock) event;
-            pos = click.getBlockPos().method_35849(0.5, 0, 0.5);
+            pos = click.getBlockPos().add(0.5, 0, 0.5);
         }
         if (event.equals(EventJoinWorld.class))
             pos = null;
