@@ -124,7 +124,7 @@ public class Killaura extends Module {
                         }
                     }
                 }
-                if ((isBlocking() || EntityHelper.INSTANCE.isAuraBlocking()) && PlayerHelper.INSTANCE.isMoving())
+                if ((EntityHelper.INSTANCE.isAuraBlocking()) && PlayerHelper.INSTANCE.isMoving())
                     unblock();
             }
             if (attackMode.equalsIgnoreCase(event.getMode().toString()))
@@ -170,7 +170,7 @@ public class Killaura extends Module {
                 block();
 
             if (canSwing()) {
-                if (EntityHelper.INSTANCE.isAuraBlocking() || isBlocking()) {
+                if (EntityHelper.INSTANCE.isAuraBlocking()) {
                     reblock = true;
                     unblock();
                 }
@@ -208,13 +208,13 @@ public class Killaura extends Module {
 
     public void block() {
         if (ignoreNewCombat) {
-            if (Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() instanceof SwordItem)
-                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND.MAIN_HAND);
-            Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.OFF_HAND);
+            if (Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() instanceof SwordItem) {
+                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
+                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.OFF_HAND);
+            }
         } else {
             if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem)
-                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
-            Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.OFF_HAND);
+                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.OFF_HAND);
         }
     }
 
@@ -229,14 +229,6 @@ public class Killaura extends Module {
                 return true;
             }
         }
-        return false;
-    }
-
-    public boolean isBlocking() {
-        if (Wrapper.INSTANCE.getLocalPlayer().isUsingItem())
-            if (Wrapper.INSTANCE.getLocalPlayer().getActiveItem() != null && Wrapper.INSTANCE.getLocalPlayer().getActiveItem().getItem() instanceof ShieldItem)
-                return true;
-
         return false;
     }
 
