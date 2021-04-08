@@ -42,13 +42,13 @@ public abstract class MixinItemRenderer implements IItemRenderer {
 
     @Inject(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;)V", at = @At("HEAD"), cancellable = true)
     public void preRenderItem(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model, CallbackInfo ci) {
-        if (((EventRenderItem)new EventRenderItem(matrices, stack, renderMode, EventRenderItem.RenderTime.PRE).run()).isCancelled())
+        if (((EventRenderItem)new EventRenderItem(matrices, stack, renderMode, EventRenderItem.RenderTime.PRE, leftHanded).run()).isCancelled())
             ci.cancel();
     }
 
     @Inject(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformation$Mode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;)V", at = @At("RETURN"), cancellable = true)
     public void postRenderItem(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model, CallbackInfo ci) {
-        if (((EventRenderItem)new EventRenderItem(matrices, stack, renderMode, EventRenderItem.RenderTime.POST).run()).isCancelled())
+        if (((EventRenderItem)new EventRenderItem(matrices, stack, renderMode, EventRenderItem.RenderTime.POST, leftHanded).run()).isCancelled())
             ci.cancel();
     }
 
