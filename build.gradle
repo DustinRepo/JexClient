@@ -29,7 +29,7 @@ dependencies {
     // https://mvnrepository.com/artifact/club.minnced/java-discord-rpc
     compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.2'
 
-    compile files('lib/eventmanager-1.0.1.jar')
+    compile files('lib/eventmanager-1.0.2.jar')
     compile files('lib/baritone-1.6.3-dev.jar')
 
 }
