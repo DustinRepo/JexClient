@@ -26,9 +26,9 @@ public enum EntityHelper {
                 }
             }
         }
-        if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem) {
-            return Wrapper.INSTANCE.getLocalPlayer().getItemUseTime() > 0;
-        }
+        if (Wrapper.INSTANCE.getLocalPlayer().isUsingItem())
+            if (Wrapper.INSTANCE.getLocalPlayer().getActiveItem() != null && Wrapper.INSTANCE.getLocalPlayer().getActiveItem().getItem() instanceof ShieldItem)
+                return true;
         return false;
     }
 
