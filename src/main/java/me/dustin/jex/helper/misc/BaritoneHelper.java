@@ -1,6 +1,6 @@
 package me.dustin.jex.helper.misc;
 
-import me.dustin.jex.module.impl.combat.Killaura;
+import me.dustin.jex.module.impl.combat.killaura.Killaura;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;

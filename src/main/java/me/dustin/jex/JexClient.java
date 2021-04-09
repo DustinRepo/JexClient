@@ -19,7 +19,7 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.ModuleManager;
-import me.dustin.jex.module.impl.combat.Killaura;
+import me.dustin.jex.module.impl.combat.killaura.Killaura;
 import me.dustin.jex.module.impl.misc.Discord;
 import me.dustin.jex.module.impl.misc.Fakelag;
 import me.dustin.jex.module.impl.player.Freecam;

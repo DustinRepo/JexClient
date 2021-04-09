@@ -3,7 +3,7 @@ package me.dustin.jex.helper.entity;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.combat.Killaura;
+import me.dustin.jex.module.impl.combat.killaura.Killaura;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -21,9 +21,9 @@ public enum EntityHelper {
 
     public boolean isAuraBlocking() {
         Killaura killaura = (Killaura) Module.get(Killaura.class);
-        if (Module.get(Killaura.class).getState()) {
+        if (killaura.getState()) {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                if (killaura.isValid(entity, false)) {
+                if (killaura.isValid(entity, false) && (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.autoblockDistance || Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.reach)) {
                     return killaura.autoBlock && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem;
                 }
             }
