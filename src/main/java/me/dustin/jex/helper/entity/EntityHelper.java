@@ -6,12 +6,15 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.impl.combat.Killaura;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.hit.HitResult;
+
+import java.util.UUID;
 
 public enum EntityHelper {
     INSTANCE;
@@ -42,35 +45,27 @@ public enum EntityHelper {
     }
 
     public boolean doesPlayerOwn(Entity entity) {
-        if (entity instanceof TameableEntity) {
-            return ((TameableEntity) entity).getOwner() == Wrapper.INSTANCE.getLocalPlayer();
-        }
-        if (entity instanceof HorseBaseEntity) {
-            HorseBaseEntity base = (HorseBaseEntity) entity;
-            return base.getOwnerUuid() == Wrapper.INSTANCE.getLocalPlayer().getUuid();
-        }
-
-        if (entity instanceof AbstractDonkeyEntity) {
-            AbstractDonkeyEntity base = (AbstractDonkeyEntity) entity;
-            return base.getOwnerUuid() == Wrapper.INSTANCE.getLocalPlayer().getUuid();
-        }
-        return false;
+        return doesPlayerOwn(entity, Wrapper.INSTANCE.getLocalPlayer());
     }
 
     public boolean doesPlayerOwn(Entity entity, PlayerEntity playerEntity) {
-        if (entity instanceof TameableEntity) {
-            return ((TameableEntity) entity).getOwner() == playerEntity;
-        }
-        if (entity instanceof HorseBaseEntity) {
-            HorseBaseEntity base = (HorseBaseEntity) entity;
-            return base.getOwnerUuid() == playerEntity.getUuid();
-        }
-
-        if (entity instanceof AbstractDonkeyEntity) {
-            AbstractDonkeyEntity base = (AbstractDonkeyEntity) entity;
-            return base.getOwnerUuid() == playerEntity.getUuid();
-        }
+        if (entity instanceof LivingEntity)
+            return getOwnerUUID((LivingEntity)entity) != null && getOwnerUUID((LivingEntity)entity).toString().equals(playerEntity.getUuid().toString());
         return false;
+    }
+
+    public UUID getOwnerUUID(LivingEntity livingEntity) {
+        if (livingEntity instanceof TameableEntity) {
+            TameableEntity tameableEntity = (TameableEntity) livingEntity;
+            if (tameableEntity.isTamed()) {
+                return tameableEntity.getOwnerUuid();
+            }
+        }
+        if (livingEntity instanceof HorseBaseEntity) {
+            HorseBaseEntity horseBaseEntity = (HorseBaseEntity) livingEntity;
+            return horseBaseEntity.getOwnerUuid();
+        }
+        return null;
     }
 
     public boolean isHostileMob(Entity entity) {
@@ -152,7 +147,7 @@ public enum EntityHelper {
             return true;
         if (entity instanceof IronGolemEntity && (((IronGolemEntity) entity).getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (((IronGolemEntity) entity).getAngryAt() == null && ((IronGolemEntity) entity).isAttacking())))
             return true;
-        if (entity instanceof WolfEntity && ((WolfEntity) entity).isAttacking() && !((WolfEntity) entity).isOwner(Wrapper.INSTANCE.getLocalPlayer()))
+        if (entity instanceof WolfEntity && ((WolfEntity) entity).isAttacking() && !doesPlayerOwn(entity))
             return true;
         return false;
     }
