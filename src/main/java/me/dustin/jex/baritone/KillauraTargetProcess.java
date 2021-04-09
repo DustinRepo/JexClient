@@ -6,7 +6,7 @@ import baritone.api.process.IBaritoneProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.module.impl.combat.Killaura;
+import me.dustin.jex.module.impl.combat.killaura.Killaura;
 import net.minecraft.entity.LivingEntity;
 
 public class KillauraTargetProcess implements IBaritoneProcess {
