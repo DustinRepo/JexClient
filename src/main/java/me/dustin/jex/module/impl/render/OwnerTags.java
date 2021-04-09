@@ -5,6 +5,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -16,8 +17,6 @@ import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.HashMap;
@@ -38,7 +37,7 @@ public class OwnerTags extends Module {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                 if (entity instanceof LivingEntity) {
                     LivingEntity tameableEntity = (LivingEntity) entity;
-                    if (getUUID(tameableEntity) != null) {
+                    if (EntityHelper.INSTANCE.getOwnerUUID(tameableEntity) != null) {
                         positions.put(tameableEntity, Render2DHelper.INSTANCE.getHeadPos(entity, ((EventRender3D) event).getPartialTicks()));
                     }
                 }
@@ -54,7 +53,7 @@ public class OwnerTags extends Module {
                     if (nametagModule.getState() && nametagModule.passives) {
                         y -= 12;
                     }
-                    UUID uuid = getUUID(livingEntity);
+                    UUID uuid = EntityHelper.INSTANCE.getOwnerUUID(livingEntity);
                     String nameString = PlayerHelper.INSTANCE.getName(uuid);
                     if (nameString == null)
                         nameString = Objects.requireNonNull(uuid).toString();
@@ -73,19 +72,5 @@ public class OwnerTags extends Module {
 
     public boolean isOnScreen(Vec3d pos) {
         return pos != null && (pos.z > -1 && pos.z < 1);
-    }
-
-    private UUID getUUID(LivingEntity livingEntity) {
-        if (livingEntity instanceof TameableEntity) {
-            TameableEntity tameableEntity = (TameableEntity) livingEntity;
-            if (tameableEntity.isTamed()) {
-                return tameableEntity.getOwnerUuid();
-            }
-        }
-        if (livingEntity instanceof HorseBaseEntity) {
-            HorseBaseEntity horseBaseEntity = (HorseBaseEntity) livingEntity;
-            return horseBaseEntity.getOwnerUuid();
-        }
-        return null;
     }
 }
