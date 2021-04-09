@@ -17,10 +17,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.MiningToolItem;
-import net.minecraft.item.SwordItem;
+import net.minecraft.item.*;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 
 import java.util.Map;
@@ -30,8 +27,8 @@ public class AutoTool extends Module {
 
     @Op(name = "Attack")
     public boolean swords = true;
-    @OpChild(name = "Allow All Tools", parent = "Attack")
-    public boolean allTools = false;
+    @OpChild(name = "Mode", all = {"Sword", "Sword&Axe", "All Tools"}, parent = "Attack")
+    public String mode = "Sword";
 
     @EventListener(events = {EventClickBlock.class, EventAttackEntity.class})
     public void run(Event event) {
@@ -77,11 +74,9 @@ public class AutoTool extends Module {
             ItemStack stack = null;
             for (int i = 0; i < 9; i++) {
                 ItemStack stackInSlot = InventoryHelper.INSTANCE.getInventory().getStack(i);
-                if (stackInSlot != null && (stackInSlot.getItem() instanceof SwordItem || stackInSlot.getItem() instanceof MiningToolItem)) {
-                    if (!allTools && stackInSlot.getItem() instanceof MiningToolItem) {
-                        if (!(stackInSlot.getItem() instanceof AxeItem))
-                            continue;
-                    }
+                if (stackInSlot != null) {
+                    if (!isGoodItem(stackInSlot.getItem()))
+                        continue;
                     float damage = getAdjustedDamage(stackInSlot);
 
                     if (damage > str) {
@@ -104,6 +99,18 @@ public class AutoTool extends Module {
                 InventoryHelper.INSTANCE.getInventory().selectedSlot = slot;
             }
         }
+    }
+
+    private boolean isGoodItem(Item item) {
+        switch (mode.toLowerCase()) {
+            case "sword":
+                return item instanceof SwordItem;
+            case "sword&axe":
+                return item instanceof SwordItem || item instanceof AxeItem;
+            case "all tools":
+                return item instanceof ToolItem;
+        }
+        return false;
     }
 
     private float getAdjustedDamage(ItemStack itemStack) {
