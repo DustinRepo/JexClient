@@ -19,6 +19,8 @@ public class Messages extends Module {
     @EventListener(events = {EventPacketSent.class})
     private void runMethod(EventPacketSent eventPacketSent) {
         if (eventPacketSent.getPacket() instanceof ChatMessageC2SPacket) {
+            if (((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage().startsWith("/"))
+                return;
             switch (mode) {
                 case "Upside-Down":
                     eventPacketSent.setPacket(new ChatMessageC2SPacket(upsideDown(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage())));
