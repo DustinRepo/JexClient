@@ -154,7 +154,7 @@ public abstract class MixinEntity {
     public void push(Entity entity, CallbackInfo ci) {
         EventPushAwayFromEntity eventPushAwayFromEntity = new EventPushAwayFromEntity().run();
         if (eventPushAwayFromEntity.isCancelled())
-            return;
+            ci.cancel();
     }
 
     @Inject(method = "getBoundingBox", at = @At("HEAD"), cancellable = true)
