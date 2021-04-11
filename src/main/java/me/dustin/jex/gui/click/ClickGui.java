@@ -36,11 +36,11 @@ public class ClickGui extends Screen {
     public static ArrayList<Window> windows = new ArrayList<>();
     private static boolean playClickSounds = false;
     private Timer timer = new Timer();
+    private TextFieldWidget searchField;
+    private String lastSearch = "";
     private Button autoSaveButton = null;
     private Button launchSoundButton = null;
     private Button clickSoundButton = null;
-    private TextFieldWidget searchField;
-    private String lastSearch = "";
     private Gui guiModule;
     Window configWindow;
     private ButtonListener save = new ButtonListener() {
@@ -115,8 +115,8 @@ public class ClickGui extends Screen {
                 windows.add(new Window(category.name(), 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
                 count++;
             }
-            configWindow = new Window("Config", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight);
-            windows.add(configWindow);
+            windows.add(configWindow = new Window("Config", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
+            count++;
             GuiFile.read();
 
             int childCount = 0;

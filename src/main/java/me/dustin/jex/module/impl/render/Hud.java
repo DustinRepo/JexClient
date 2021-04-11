@@ -8,6 +8,8 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderEffects;
+import me.dustin.jex.gui.click.ClickGui;
+import me.dustin.jex.gui.click.impl.Window;
 import me.dustin.jex.gui.tab.TabGui;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -154,6 +156,11 @@ public class Hud extends Module {
         if (tabGui) {
             TabGui.INSTANCE.setHoverBar(hoverBar);
             TabGui.INSTANCE.draw(eventRender2D.getMatrixStack(), 2, 35 + (10 * infoCount), tabGuiWidth, buttonHeight);
+        }
+        for (Window window : ClickGui.windows) {
+            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui)) {
+                window.draw(eventRender2D.getMatrixStack());
+            }
         }
     }
 
