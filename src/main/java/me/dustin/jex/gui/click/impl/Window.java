@@ -3,6 +3,7 @@ package me.dustin.jex.gui.click.impl;
 
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
@@ -10,7 +11,11 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.module.impl.render.Gui;
 import me.dustin.jex.module.impl.render.Hud;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 
@@ -29,6 +34,8 @@ public class Window {
     private int color = ColorHelper.INSTANCE.getClientColor();
     private ArrayList<Button> buttons = new ArrayList<>();
 
+    private Identifier pin = new Identifier("jex", "gui/click/pin.png");
+    private Identifier eye = new Identifier("jex", "gui/click/visible.png");
 
     public Window(String name, float x, float y, float width, float height) {
         this.name = name;
@@ -56,7 +63,25 @@ public class Window {
             Scissor.INSTANCE.seal();
         }
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), color);
-        FontHelper.INSTANCE.drawCenteredString(matrixStack, dispName, this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 5, -1);
+        Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + 1, this.getY() + 1, this.getX() + this.getWidth() - 33, this.getY() + this.getHeight() - 1, 0x75252525);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, dispName, this.getX() + 3, this.getY() + (this.getHeight() / 2) - 4, -1);
+
+        boolean isHoveredPin = Render2DHelper.INSTANCE.isHovered((int) (this.getX() + this.getWidth() - 15), (int) (this.getY()), 15, 15);
+        boolean isHoveredEye = Render2DHelper.INSTANCE.isHovered((int) (this.getX() + this.getWidth() - 32), (int) (this.getY()), 15, 15);
+
+        Render2DHelper.INSTANCE.bindTexture(pin);
+        Render2DHelper.INSTANCE.shaderColor(0xff000000);
+        DrawableHelper.drawTexture(matrixStack, (int) (this.getX() + this.getWidth() - 14), (int) (this.getY() + 1), 0, 0, 15, 15, 15, 15);
+        Render2DHelper.INSTANCE.shaderColor(isHoveredPin ? -1 : isPinned() ? ColorHelper.INSTANCE.getColor(color).darker().getRGB() : ColorHelper.INSTANCE.getColor(color).darker().darker().darker().getRGB());
+        DrawableHelper.drawTexture(matrixStack, (int) (this.getX() + this.getWidth() - 15), (int) (this.getY()), 0, 0, 15, 15, 15, 15);
+        Render2DHelper.INSTANCE.shaderColor(-1);
+
+        Render2DHelper.INSTANCE.bindTexture(eye);
+        Render2DHelper.INSTANCE.shaderColor(0xff000000);
+        DrawableHelper.drawTexture(matrixStack, (int) (this.getX() + this.getWidth() - 31), (int) (this.getY() + 1), 0, 0, 15, 15, 15, 15);
+        Render2DHelper.INSTANCE.shaderColor(isHoveredEye ? -1 : isOpen() ? ColorHelper.INSTANCE.getColor(color).darker().getRGB() : ColorHelper.INSTANCE.getColor(color).darker().darker().darker().getRGB());
+        DrawableHelper.drawTexture(matrixStack, (int) (this.getX() + this.getWidth() - 32), (int) (this.getY()), 0, 0, 15, 15, 15, 15);
+        Render2DHelper.INSTANCE.shaderColor(-1);
 
         if (this.isDragging) {
             if (!MouseHelper.INSTANCE.isMouseButtonDown(0)) {
@@ -101,15 +126,22 @@ public class Window {
     public void click(double double_1, double double_2, int int_1) {
         if (isHovered()) {
             if (int_1 == 0) {
+                boolean isHoveredPin = Render2DHelper.INSTANCE.isHovered((int) (this.getX() + this.getWidth() - 15), (int) (this.getY()), 15, 15);
+                boolean isHoveredEye = Render2DHelper.INSTANCE.isHovered((int) (this.getX() + this.getWidth() - 32), (int) (this.getY()), 15, 15);
+                if (isHoveredEye) {
+                    this.setOpen(!this.isOpen());
+                    Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.5F));
+                    return;
+                } else if (isHoveredPin) {
+                    this.setPinned(!this.isPinned());
+                    Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.5F));
+                    return;
+                }
                 this.isDragging = true;
                 xDif = x - MouseHelper.INSTANCE.getMouseX();
                 yDif = y - MouseHelper.INSTANCE.getMouseY();
                 prevX = x;
                 prevY = y;
-            }
-            if (int_1 == 1) {
-                this.setOpen(!this.isOpen);
-                return;
             }
         } else
         if (this.isOpen())

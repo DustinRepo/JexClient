@@ -115,8 +115,8 @@ public class ClickGui extends Screen {
                 windows.add(new Window(category.name(), 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
                 count++;
             }
-            configWindow = new Window("Config", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight);
-            windows.add(configWindow);
+            windows.add(configWindow = new Window("Config", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
+            count++;
             GuiFile.read();
 
             int childCount = 0;
