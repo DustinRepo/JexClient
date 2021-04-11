@@ -155,7 +155,7 @@ public class Hud extends Module {
             TabGui.INSTANCE.draw(eventRender2D.getMatrixStack(), 2, 35 + (10 * infoCount), tabGuiWidth, buttonHeight);
         }
         for (Window window : ClickGui.windows) {
-            if (window.isPinned()) {
+            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui)) {
                 window.draw(eventRender2D.getMatrixStack());
             }
         }

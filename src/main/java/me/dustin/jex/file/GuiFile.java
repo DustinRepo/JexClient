@@ -26,6 +26,7 @@ public class GuiFile {
             jsonObject.addProperty("X", window.getX());
             jsonObject.addProperty("Y", window.getY());
             jsonObject.addProperty("Open", window.isOpen());
+            jsonObject.addProperty("Pinned", window.isPinned());
             jsonArray.add(jsonObject);
 
             ArrayList<String> stringList = new ArrayList<>();
@@ -61,6 +62,7 @@ public class GuiFile {
                 float x = object.get("X").getAsFloat();
                 float y = object.get("Y").getAsFloat();
                 boolean isOpen = object.get("Open").getAsBoolean();
+                boolean isPinned = object.get("Pinned").getAsBoolean();
                 Window window = ClickGui.getWindow(name);
                 if (window != null) {
                     float moveX = x - window.getX();
@@ -69,9 +71,9 @@ public class GuiFile {
                     window.setY(y);
                     window.getButtons().forEach(button -> {
                         window.moveAll(button, moveX, moveY);
-                        System.out.println(button.getName() + " " + moveX + " " + moveY);
                     });
                     window.setOpen(isOpen);
+                    window.setPinned(isPinned);
                 }
             }
         } catch (Exception e) {
