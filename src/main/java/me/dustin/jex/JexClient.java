@@ -23,6 +23,7 @@ import me.dustin.jex.module.impl.combat.killaura.Killaura;
 import me.dustin.jex.module.impl.misc.Discord;
 import me.dustin.jex.module.impl.misc.Fakelag;
 import me.dustin.jex.module.impl.player.Freecam;
+import me.dustin.jex.module.impl.render.Gui;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.update.UpdateManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -30,7 +31,7 @@ import net.minecraft.sound.SoundEvents;
 
 public enum JexClient {
     INSTANCE;
-    private String version = "0.2.3";
+    private String version = "0.2.4";
     private boolean autoSaveModules = false;
     private boolean soundOnLaunch = true;
 
@@ -80,6 +81,8 @@ public enum JexClient {
                     Module.get(Freecam.class).setState(false);
                 if (Module.get(Fakelag.class).getState())
                     Module.get(Fakelag.class).setState(false);
+            } else if (Gui.clickgui.guiModule == null) {
+                Gui.clickgui.init();
             }
         } else if (event instanceof EventScheduleStop) {
             if (Module.get(Discord.class).getState()) {
