@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.MerchantScreen;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.AirBlockItem;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
@@ -33,42 +34,50 @@ public class AutoArmor extends Module {
             if (timer.hasPassed(delay)) {
                 int stackToMove = -1;
                 ArmorItem equipped = null;
-                ArmorItem armorItem = null;
-                ItemStack itemStack = null;
                 if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof InventoryScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof MerchantScreen)
                     return;
-                for (int i = 0; i < 36; i++) {
-                    itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
-                    if (itemStack != null && itemStack.getItem() instanceof ArmorItem) {
-                        armorItem = (ArmorItem) itemStack.getItem();
-                        ItemStack equippedStack = Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(armorItem.getSlotType());
-
-                        if (equippedStack == null || Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(armorItem.getSlotType()).getItem() instanceof AirBlockItem) {
-                            stackToMove = i;
-                            continue;
-                        }
-                        if (equippedStack.getItem() == Items.ELYTRA)
-                            continue;
-                        try {
-                            equipped = (ArmorItem) Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(armorItem.getSlotType()).getItem();
-                            if (equipped.getMaterial().getProtectionAmount(armorItem.getSlotType()) < armorItem.getMaterial().getProtectionAmount(armorItem.getSlotType())) {
-                                stackToMove = i;
+                int armorSlot = 0;
+                for (; armorSlot < 4; armorSlot++) {
+                    int bestItem = -1;
+                    ItemStack equippedStack = InventoryHelper.INSTANCE.getInventory().getStack(36 + armorSlot);
+                    if (equippedStack.getItem() == Items.ELYTRA)
+                        continue;
+                    for (int i = 0; i < 36; i++) {
+                        if (bestItem != -1)
+                            equippedStack = InventoryHelper.INSTANCE.getInventory().getStack(bestItem);
+                        ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
+                        if (itemStack != null && itemStack.getItem() instanceof ArmorItem) {
+                            ArmorItem armorItem = (ArmorItem) itemStack.getItem();
+                            if (equippedStack.getItem() instanceof AirBlockItem) {
+                                if (armorItem.getSlotType().getType() != EquipmentSlot.Type.HAND && armorItem.getSlotType().getEntitySlotId() == armorSlot)
+                                    bestItem = i;
+                                continue;
                             }
-                            if (equipped.getMaterial().getProtectionAmount(armorItem.getSlotType()) == armorItem.getMaterial().getProtectionAmount(armorItem.getSlotType())) {
-                                if (InventoryHelper.INSTANCE.compareEnchants(equippedStack, itemStack, Enchantments.PROTECTION)) {
-                                    stackToMove = i;
-
-                                }
+                            equipped = (ArmorItem) equippedStack.getItem();
+                            if (armorItem.getSlotType() != equipped.getSlotType())
+                                continue;
+                            if (equipped.getMaterial().getProtectionAmount(equipped.getSlotType()) < armorItem.getMaterial().getProtectionAmount(armorItem.getSlotType())) {
+                                bestItem = i;
+                            } else if (equipped.getMaterial().getProtectionAmount(equipped.getSlotType()) == armorItem.getMaterial().getProtectionAmount(armorItem.getSlotType()) && equipped.getMaterial().getToughness() < armorItem.getMaterial().getToughness()) {
+                                bestItem = i;
+                            } else if (equipped.getMaterial().getToughness() == armorItem.getMaterial().getToughness() && InventoryHelper.INSTANCE.compareEnchants(equippedStack, itemStack, Enchantments.PROTECTION)) {
+                                bestItem = i;
                             }
-                        } catch (Exception e) {
                         }
+                    }
+                    if (bestItem != -1) {
+                        stackToMove = bestItem;
+                        break;
                     }
                 }
                 if (stackToMove != -1) {
-                    if (equipped != null)
-                        Wrapper.INSTANCE.getInteractionManager().clickSlot(0, getArmorSlot(equipped), 0, SlotActionType.THROW, Wrapper.INSTANCE.getLocalPlayer());
+                    if (equipped != null) {
+                        if (InventoryHelper.INSTANCE.isInventoryFull())
+                            Wrapper.INSTANCE.getInteractionManager().clickSlot(0, 8 - armorSlot, 0, SlotActionType.THROW, Wrapper.INSTANCE.getLocalPlayer());
+                        else
+                            Wrapper.INSTANCE.getInteractionManager().clickSlot(0, 8 - armorSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
+                    }
 
-                    //Wrapper.INSTANCE.getInteractionManager().clickSlot(0, stackToMove < 9 ? stackToMove + 36 : stackToMove, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
                     InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, stackToMove < 9 ? stackToMove + 36 : stackToMove, SlotActionType.QUICK_MOVE);
                     timer.reset();
                 }
