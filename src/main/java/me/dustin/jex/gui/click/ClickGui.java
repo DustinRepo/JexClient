@@ -7,6 +7,7 @@ import me.dustin.jex.file.GuiFile;
 import me.dustin.jex.file.ModuleFile;
 import me.dustin.jex.gui.click.impl.Button;
 import me.dustin.jex.gui.click.impl.ModuleButton;
+import me.dustin.jex.gui.click.impl.RadarWindow;
 import me.dustin.jex.gui.click.impl.Window;
 import me.dustin.jex.gui.click.listener.ButtonListener;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
@@ -41,8 +42,9 @@ public class ClickGui extends Screen {
     private Button autoSaveButton = null;
     private Button launchSoundButton = null;
     private Button clickSoundButton = null;
-    private Gui guiModule;
+    public Gui guiModule;
     Window configWindow;
+    RadarWindow radarWindow;
     private ButtonListener save = new ButtonListener() {
         @Override
         public void invoke() {
@@ -117,6 +119,8 @@ public class ClickGui extends Screen {
             }
             windows.add(configWindow = new Window("Config", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
             count++;
+            windows.add(radarWindow = new RadarWindow("Radar", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
+            count++;
             GuiFile.read();
 
             int childCount = 0;
@@ -167,7 +171,7 @@ public class ClickGui extends Screen {
         if (searchField.isFocused() && lastSearch != searchField.getText()) {
             String search = searchField.getText().toLowerCase();
             for (Window window : windows) {
-                if (window.getName().equalsIgnoreCase("Config"))
+                if (window.getName().equalsIgnoreCase("Config") || window.getName().equalsIgnoreCase("Radar"))
                     continue;
                 if (search.isEmpty()) {
                     for (Button button : window.getButtons()) {
