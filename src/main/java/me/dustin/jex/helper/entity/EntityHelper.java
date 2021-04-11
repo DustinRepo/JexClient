@@ -4,6 +4,7 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.impl.combat.killaura.Killaura;
+import me.dustin.jex.module.impl.player.AutoEat;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -20,6 +21,8 @@ public enum EntityHelper {
     INSTANCE;
 
     public boolean isAuraBlocking() {
+        if (AutoEat.isEating)
+            return false;
         Killaura killaura = (Killaura) Module.get(Killaura.class);
         if (killaura.getState()) {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
