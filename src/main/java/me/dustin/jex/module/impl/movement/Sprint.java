@@ -10,12 +10,17 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
+import org.lwjgl.glfw.GLFW;
 
 @ModClass(name = "Sprint", category = ModCategory.MOVEMENT, description = "Automatically sprint")
 public class Sprint extends Module {
 
     @Op(name = "Multi Dir")
     public boolean multiDir;
+
+    public Sprint() {
+        this.setKey(GLFW.GLFW_KEY_V);
+    }
 
     @EventListener(events = {EventPlayerPackets.class, EventSetSprint.class})
     private void runMethod(Event event) {

@@ -134,6 +134,7 @@ public class Hud extends Module {
 
     public Hud() {
         this.setState(true);
+        this.setVisible(false);
     }
 
     @EventListener(events = {EventRender2D.class})

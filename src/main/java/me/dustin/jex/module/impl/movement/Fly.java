@@ -4,7 +4,6 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.helper.misc.KeyboardHelper;
-import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.module.core.Module;
@@ -27,7 +26,10 @@ public class Fly extends Module {
     public boolean flyCheckGlide;
     @OpChild(name = "Glide Speed", min = 0.01f, max = 8, inc = 0.01f, parent = "Glide")
     public float glideSpeed = 0.034f;
-    Timer timer = new Timer();
+
+    public Fly() {
+        this.setKey(GLFW.GLFW_KEY_F);
+    }
 
     @EventListener(events = {EventMove.class})
     private void runMove(Event event) {
