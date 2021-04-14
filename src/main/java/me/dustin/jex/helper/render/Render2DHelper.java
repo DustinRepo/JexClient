@@ -355,8 +355,8 @@ public enum Render2DHelper {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer modelView = stack.mallocFloat(16);
             FloatBuffer projection = stack.mallocFloat(16);
-            RenderSystem.getModelViewMatrix().writeToBuffer(modelView);//glGetFloatV doesn't work for getting model or view matrix anymore but thankfully minecraft has handy-dandy methods to grab them
-            RenderSystem.getProjectionMatrix().writeToBuffer(projection);//and we write them to framebuffer so we can convert to JOML's matrix4f to do the math I don't fucking want to do
+            RenderSystem.getModelViewMatrix().write(modelView, false);//glGetFloatV doesn't work for getting model or view matrix anymore but thankfully minecraft has handy-dandy methods to grab them
+            RenderSystem.getProjectionMatrix().write(projection, false);//and we write them to framebuffer so we can convert to JOML's matrix4f to do the math I don't fucking want to do
             GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
             new org.joml.Matrix4f(projection).mul(new org.joml.Matrix4f(modelView)).project((float) x, (float) y, (float) z, viewport, screenCoords);
         }

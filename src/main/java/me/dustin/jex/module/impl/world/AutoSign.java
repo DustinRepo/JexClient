@@ -41,7 +41,7 @@ public class AutoSign extends Module {
                 if (signBlockEntity == null)
                     return;
                 signBlockEntity.setEditable(true);
-                signBlockEntity.setEditor(Wrapper.INSTANCE.getLocalPlayer());
+                signBlockEntity.setEditor(Wrapper.INSTANCE.getLocalPlayer().getUuid());
                 for (int i = 0; i < 4; i++) {
                     signBlockEntity.setTextOnRow(i, new LiteralText(signText[i].getString().replaceAll("(?i)\u00a7|&([0-9A-FK-OR])", "\u00a7\u00a7$1$1")));
                 }
