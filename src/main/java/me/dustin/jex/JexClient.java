@@ -1,5 +1,7 @@
 package me.dustin.jex;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
@@ -9,6 +11,8 @@ import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.file.ModuleFile;
+import me.dustin.jex.helper.file.FileHelper;
+import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.TPSHelper;
@@ -19,6 +23,7 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.ModuleManager;
+import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.module.impl.combat.killaura.Killaura;
 import me.dustin.jex.module.impl.misc.Discord;
 import me.dustin.jex.module.impl.misc.Fakelag;
@@ -27,7 +32,13 @@ import me.dustin.jex.module.impl.render.Gui;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.update.UpdateManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.sound.SoundEvents;
+import org.lwjgl.glfw.GLFW;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public enum JexClient {
     INSTANCE;
@@ -45,6 +56,8 @@ public enum JexClient {
 
         ModuleManager.INSTANCE.initializeModuleManager();
         OptionManager.INSTANCE.initializeOptionManager();
+
+        //createJson();
 
         ModFileHelper.INSTANCE.gameBootLoad();
         CommandManager.INSTANCE.init();
@@ -112,5 +125,30 @@ public enum JexClient {
 
     public void setPlaySoundOnLaunch(boolean soundOnLaunch) {
         this.soundOnLaunch = soundOnLaunch;
+    }
+
+    private void createJson() {
+        JsonObject jsonObject = new JsonObject();
+        for (ModCategory modCategory : ModCategory.values()) {
+            JsonArray categoryArray = new JsonArray();
+            for (Module module : Module.getModules(modCategory)) {
+                JsonObject object = new JsonObject();
+                object.addProperty("name", module.getName());
+                object.addProperty("description", module.getDescription());
+                object.addProperty("key", (GLFW.glfwGetKeyName(module.getKey(), 0) == null ? InputUtil.fromKeyCode(module.getKey(), 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(module.getKey(), 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_"));
+                object.addProperty("enabled", module.getState());
+                object.addProperty("visible", module.isVisible());
+                categoryArray.add(object);
+            }
+            jsonObject.add(modCategory.name(), categoryArray);
+        }
+
+        ArrayList<String> stringList = new ArrayList<>(Arrays.asList(JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")));
+
+        try {
+            FileHelper.INSTANCE.writeFile(ModFileHelper.INSTANCE.getJexDirectory(), "dev" + File.separator + "mods.json", stringList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

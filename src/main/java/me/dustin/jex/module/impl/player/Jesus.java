@@ -24,6 +24,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
+import org.lwjgl.glfw.GLFW;
 
 @ModClass(name = "Jesus", category = ModCategory.PLAYER, description = "Walk on water like Jesus.")
 public class Jesus extends Module {
@@ -33,6 +34,10 @@ public class Jesus extends Module {
     @OpChild(name = "Jump", parent = "Mode", dependency = "Dolphin")
     public boolean allowJump = true;
     private int ticks;
+
+    public Jesus() {
+        this.setKey(GLFW.GLFW_KEY_J);
+    }
 
     @EventListener(events = {EventPlayerPackets.class, EventFluidCollisionShape.class, EventMove.class, EventPacketSent.class}, priority = EventPriority.LOW)
     public void run(Event event) {

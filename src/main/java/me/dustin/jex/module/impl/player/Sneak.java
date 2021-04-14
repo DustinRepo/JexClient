@@ -8,9 +8,14 @@ import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import org.lwjgl.glfw.GLFW;
 
 @ModClass(name = "Sneak", category = ModCategory.PLAYER, description = "Sneak around to hide your nametag")
 public class Sneak extends Module {
+
+    public Sneak() {
+        this.setKey(GLFW.GLFW_KEY_Z);
+    }
 
     @EventListener(events = {EventPlayerPackets.class})
     private void runMethod(EventPlayerPackets eventPlayerPackets) {

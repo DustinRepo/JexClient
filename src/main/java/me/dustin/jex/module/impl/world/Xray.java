@@ -10,6 +10,7 @@ import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
@@ -26,6 +27,10 @@ public class Xray extends Module {
         blockList.add(Blocks.GOLD_ORE);
         blockList.add(Blocks.LAPIS_ORE);
         blockList.add(Blocks.NETHER_QUARTZ_ORE);
+    }
+
+    public Xray() {
+        this.setKey(GLFW.GLFW_KEY_X);
     }
 
     @EventListener(events = {EventShouldDrawSide.class, EventBlockBrightness.class, EventMarkChunkClosed.class, EventRenderBlockEntity.class, EventRenderBlock.class, EventRenderFluid.class})

@@ -24,6 +24,7 @@ public class CustomMainMenu extends Module {
     public int scrollDelay = 5;
     public CustomMainMenu() {
         this.setState(true);
+        this.setVisible(false);
     }
 
     @EventListener(events = {EventTick.class, EventDisplayScreen.class})

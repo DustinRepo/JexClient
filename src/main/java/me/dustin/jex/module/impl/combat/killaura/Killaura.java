@@ -21,6 +21,7 @@ import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import org.lwjgl.glfw.GLFW;
 
 @ModClass(name = "Aura", category = ModCategory.COMBAT, description = "Attack entities around you.")
 public class Killaura extends Module {
@@ -91,6 +92,7 @@ public class Killaura extends Module {
     public Killaura() {
         new SingleAura();
         new MultiAura();
+        this.setKey(GLFW.GLFW_KEY_R);
     }
 
     @EventListener(events = {EventPlayerPackets.class, EventRender3D.class}, priority = EventPriority.LOWEST)
