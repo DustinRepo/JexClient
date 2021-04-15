@@ -23,6 +23,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+
 @ModClass(name = "Aura", category = ModCategory.COMBAT, description = "Attack entities around you.")
 public class Killaura extends Module {
 
@@ -89,6 +91,9 @@ public class Killaura extends Module {
     private Timer timer = new Timer();
     private String lastMode;
 
+    public ArrayList<PlayerEntity> touchedGround = new ArrayList<>();
+    public ArrayList<PlayerEntity> swung = new ArrayList<>();
+
     public Killaura() {
         new SingleAura();
         new MultiAura();
@@ -97,6 +102,38 @@ public class Killaura extends Module {
 
     @EventListener(events = {EventPlayerPackets.class, EventRender3D.class}, priority = EventPriority.LOWEST)
     public void runEvent(Event event) {
+        if (event instanceof EventPlayerPackets) {
+            if (((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE) {
+                for(Entity entity : Wrapper.INSTANCE.getWorld().getEntities())
+                {
+                    if(entity instanceof PlayerEntity)
+                    {
+                        PlayerEntity playerEntity = (PlayerEntity)entity;
+                        if(playerEntity.isOnGround() && !touchedGround.contains(playerEntity))
+                            touchedGround.add(playerEntity);
+                        if(playerEntity.handSwingProgress > 0 && !swung.contains(playerEntity))
+                            swung.add(playerEntity);
+                    }
+                }
+                for(int i = 0; i < swung.size() - 1; i++)
+                {
+                    PlayerEntity playerEntity = swung.get(i);
+                    if(playerEntity == null)
+                    {
+                        swung.remove(i);
+                    }
+                }
+                for(int i = 0; i < touchedGround.size() - 1; i++)
+                {
+                    PlayerEntity playerEntity = touchedGround.get(i);
+                    if(playerEntity == null)
+                    {
+                        touchedGround.remove(i);
+                    }
+                }
+            }
+        }
+
         if (!mode.equalsIgnoreCase(lastMode) && lastMode != null) {
             ModuleExtension.get(lastMode, this).disable();
             ModuleExtension.get(mode, this).enable();
@@ -179,8 +216,7 @@ public class Killaura extends Module {
         if (EntityHelper.INSTANCE.isNPC(playerEntity)) {
             return true;
         } else {
-            //TODO: Add this shit back
-            return false;//(!playerEntity.swung && !playerEntity.touchedGround) || playerEntity.getGameProfile().getProperties().isEmpty();
+            return (!swung.contains(playerEntity) && !touchedGround.contains(playerEntity)) || playerEntity.getGameProfile().getProperties().isEmpty();
         }
     }
 
