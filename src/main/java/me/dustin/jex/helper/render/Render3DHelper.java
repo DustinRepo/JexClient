@@ -61,6 +61,25 @@ public enum Render3DHelper {
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
     }
 
+    public void setup3DRender() {
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.disableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
+        RenderSystem.enableCull();
+    }
+
+    public void end3DRender() {
+        RenderSystem.enableTexture();
+        RenderSystem.disableCull();
+        RenderSystem.disableBlend();
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
+    }
+
+
     public void drawSphere(float radius, int gradation, int color, boolean testDepth, Vec3d pos) {
         Color color1 = ColorHelper.INSTANCE.getColor(color);
         final float PI = 3.141592f;
