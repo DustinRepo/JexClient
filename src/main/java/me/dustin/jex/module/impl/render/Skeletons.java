@@ -14,13 +14,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 
 import java.awt.*;
 
@@ -47,8 +45,20 @@ public class Skeletons extends Module {//it looks cool as fuck but seriously fuc
                 RenderSystem.enableCull();
 
                 Vec3d footPos = Render3DHelper.INSTANCE.getEntityRenderPosition(playerEntity, eventRender3D.getPartialTicks());
-                PlayerEntityModel playerEntityModel = (PlayerEntityModel)((LivingEntityRenderer)Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().getRenderer(playerEntity)).getModel();
+                PlayerEntityRenderer livingEntityRenderer = (PlayerEntityRenderer)(LivingEntityRenderer) Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().getRenderer(playerEntity);
+                PlayerEntityModel playerEntityModel = (PlayerEntityModel)livingEntityRenderer.getModel();
+                float g = eventRender3D.getPartialTicks();
 
+                float h = MathHelper.lerpAngleDegrees(g, playerEntity.prevBodyYaw, playerEntity.bodyYaw);
+                float j = MathHelper.lerpAngleDegrees(g, playerEntity.prevHeadYaw, playerEntity.headYaw);
+
+                float q = playerEntity.limbAngle - playerEntity.limbDistance * (1.0F - g);
+                float p = MathHelper.lerp(g, playerEntity.lastLimbDistance, playerEntity.limbDistance);
+                float o = (float)playerEntity.age + g;
+                float k = j - h;
+                float m = MathHelper.lerp(g, playerEntity.prevPitch, playerEntity.pitch);
+
+                playerEntityModel.setAngles(playerEntity, q, p, o, k, m);
                 boolean sneaking = playerEntity.isSneaking();
 
                 ModelPart head = playerEntityModel.head;
