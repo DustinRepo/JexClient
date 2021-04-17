@@ -61,12 +61,13 @@ public enum Render3DHelper {
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
     }
 
-    public void setup3DRender() {
+    public void setup3DRender(boolean disableDepth) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
+        if (disableDepth)
+            RenderSystem.disableDepthTest();
         RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
         RenderSystem.enableCull();
     }

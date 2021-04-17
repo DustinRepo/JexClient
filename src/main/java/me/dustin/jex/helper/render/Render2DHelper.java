@@ -30,6 +30,20 @@ public enum Render2DHelper {
     INSTANCE;
     protected Identifier cog = new Identifier("jex", "gui/click/cog.png");
 
+    public void setup2DRender(boolean disableDepth) {
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        if (disableDepth)
+            RenderSystem.disableDepthTest();
+    }
+
+    public void end2DRender() {
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.enableDepthTest();
+    }
+
     public double getScaleFactor() {
         return Wrapper.INSTANCE.getWindow().getScaleFactor();
     }

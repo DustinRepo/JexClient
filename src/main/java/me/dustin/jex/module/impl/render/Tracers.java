@@ -49,9 +49,8 @@ public class Tracers extends Module {
                 assert cameraEntity != null;
                 Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, eventRender3D.getPartialTicks());
                 Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
-                
-                RenderSystem.disableTexture();
-                RenderSystem.disableDepthTest();
+
+                Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
 
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
@@ -67,8 +66,7 @@ public class Tracers extends Module {
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
 
-                RenderSystem.enableDepthTest();
-                RenderSystem.enableTexture();
+                Render3DHelper.INSTANCE.end3DRender();
             }
         });
     }

@@ -28,11 +28,11 @@ public class SpawnSphere extends Module {
     private void runMethod(EventRender3D eventRender3D) {
         MatrixStack matrixStack = eventRender3D.getMatrixStack();
         matrixStack.push();
-        RenderSystem.disableTexture();
+        Render3DHelper.INSTANCE.setup3DRender(true);
         RenderSystem.lineWidth(1);
         Vec3d subtractable = Render3DHelper.INSTANCE.getEntityRenderPosition(Wrapper.INSTANCE.getLocalPlayer(), eventRender3D.getPartialTicks()).subtract(pos);
         Render3DHelper.INSTANCE.drawSphere(128, 25, sphereColor, !seethrough, Vec3d.ZERO.subtract(subtractable));
-        RenderSystem.enableTexture();
+        Render3DHelper.INSTANCE.end3DRender();
         matrixStack.pop();
     }
 

@@ -1,7 +1,6 @@
 package me.dustin.jex.module.impl.render;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
@@ -145,10 +144,7 @@ public class Search extends Module {
 
                 Color color1 = ColorHelper.INSTANCE.getColor(blocks.get(block));
 
-                RenderSystem.setShader(GameRenderer::getPositionColorShader);
-                RenderSystem.disableTexture();
-                RenderSystem.disableDepthTest();
-                RenderSystem.lineWidth(1.2f);
+                Render3DHelper.INSTANCE.setup3DRender(true);
 
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
 
@@ -159,8 +155,7 @@ public class Search extends Module {
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
 
-                RenderSystem.enableDepthTest();
-                RenderSystem.enableTexture();
+                Render3DHelper.INSTANCE.end3DRender();
             }
         } else if (event instanceof EventRender3D) {
             for (BlockPos pos : worldBlocks.keySet()) {

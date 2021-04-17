@@ -30,7 +30,7 @@ public class Skeletons extends Module {//it looks cool as fuck but seriously fuc
     private void runMethod(EventRender3D eventRender3D) {
         MatrixStack matrixStack = eventRender3D.getOrigStack();
         float g = eventRender3D.getPartialTicks();
-        Render3DHelper.INSTANCE.setup3DRender();
+        Render3DHelper.INSTANCE.setup3DRender(true);
         Render3DHelper.INSTANCE.fixCameraRots(matrixStack);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {

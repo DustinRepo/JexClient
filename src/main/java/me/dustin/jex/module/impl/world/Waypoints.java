@@ -130,8 +130,7 @@ public class Waypoints extends Module {
 
                 Color color1 = ColorHelper.INSTANCE.getColor(waypoint.getColor());
 
-                RenderSystem.disableTexture();
-                RenderSystem.disableDepthTest();
+                Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
 
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
@@ -143,8 +142,7 @@ public class Waypoints extends Module {
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
 
-                RenderSystem.enableDepthTest();
-                RenderSystem.enableTexture();
+                Render3DHelper.INSTANCE.end3DRender();
             }
         }
         if (event instanceof EventRender2D) {
