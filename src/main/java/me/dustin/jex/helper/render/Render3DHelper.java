@@ -150,7 +150,11 @@ public enum Render3DHelper {
     }
 
     public void drawEntityBox(MatrixStack matrixstack, Entity entity, double x, double y, double z, int color) {
+        float yaw = MathHelper.lerpAngleDegrees(Wrapper.INSTANCE.getMinecraft().getTickDelta(), entity.prevYaw, entity.yaw);
         setup3DRender(true);
+        matrixstack.translate(x, y, z);
+        matrixstack.multiply(new Quaternion(new Vec3f(0, -1, 0), yaw, true));
+        matrixstack.translate(-x, -y, -z);
 
         Box bb = new Box(x - entity.getWidth() + 0.25, y, z - entity.getWidth() + 0.25, x + entity.getWidth() - 0.25, y + entity.getHeight() + 0.1, z + entity.getWidth() - 0.25);
         if (entity instanceof ItemEntity)
@@ -161,6 +165,9 @@ public enum Render3DHelper {
         drawOutlineBox(matrixstack, bb, color);
 
         end3DRender();
+        matrixstack.translate(x, y, z);
+        matrixstack.multiply(new Quaternion(new Vec3f(0, 1, 0), yaw, true));
+        matrixstack.translate(-x, -y, -z);
     }
 
     public double interpolate(final double now, final double then, final double percent) {
