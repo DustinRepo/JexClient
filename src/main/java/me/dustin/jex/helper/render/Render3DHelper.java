@@ -7,6 +7,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.util.math.*;
@@ -132,7 +133,11 @@ public enum Render3DHelper {
     }
 
     public void drawEntityBox(MatrixStack matrixStack, Entity entity, double x, double y, double z, int color) {
+        float yaw = MathHelper.lerpAngleDegrees(Wrapper.INSTANCE.getMinecraft().getTickDelta(), entity.prevYaw, entity.yaw);
         setup3DRender(true);
+        matrixStack.translate(x, y, z);
+        matrixStack.multiply(new Quaternion(new Vector3f(0, -1, 0), yaw, true));
+        matrixStack.translate(-x, -y, -z);
 
         Box bb = new Box(x - entity.getWidth() + 0.25, y, z - entity.getWidth() + 0.25, x + entity.getWidth() - 0.25, y + entity.getHeight() + 0.1, z + entity.getWidth() - 0.25);
         if (entity instanceof ItemEntity)
@@ -143,6 +148,9 @@ public enum Render3DHelper {
         drawOutlineBox(matrixStack, bb, color);
 
         end3DRender();
+        matrixStack.translate(x, y, z);
+        matrixStack.multiply(new Quaternion(new Vector3f(0, 1, 0), yaw, true));
+        matrixStack.translate(-x, -y, -z);
     }
 
     public double interpolate(final double now, final double then, final double percent) {
