@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventWalkOffBlock;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -18,7 +19,9 @@ import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.item.BlockItem;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -34,13 +37,14 @@ public class Scaffold extends Module {
 
     @Op(name = "Delay", min = 0, max = 1000, inc = 10)
     public int delay = 50;
+    @Op(name = "Sneak on Place")
+    private boolean sneak = false;
     //@Op(name = "Range", min = 0, max = 4)
     public int range = 0;
     BlockHitResult blockHitResult;
     private Timer timer = new Timer();
     private ArrayList<Block> invalidPlacingBlocks = new ArrayList<>();
     private ConcurrentLinkedQueue<BlockInfo> emptyNearBlocks = new ConcurrentLinkedQueue<>();
-    private boolean sneak = false;
     public Scaffold() {
         invalidPlacingBlocks.add(Blocks.AIR);
         invalidPlacingBlocks.add(Blocks.LAVA);
@@ -56,7 +60,7 @@ public class Scaffold extends Module {
             if (((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE) {
                 blockHitResult = null;
                 BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
-                if (WorldHelper.INSTANCE.getBlock(below) instanceof AirBlock) {
+                if (isGoodBlock(WorldHelper.INSTANCE.getBlock(below))) {
                     if (AutoEat.isEating)
                         return;
                     if (emptyNearBlocks.isEmpty())
@@ -77,10 +81,8 @@ public class Scaffold extends Module {
                                 emptyNearBlocks.remove(blockInfo);
                                 return;
                             }
-                        } else {
                         }
                     }
-                } else {
                 }
             } else if (blockHitResult != null) {
                 if (!timer.hasPassed(delay)) {
@@ -88,7 +90,9 @@ public class Scaffold extends Module {
                 }
                 Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-
+                if (sneak) {
+                    NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
+                }
                 timer.reset();
             }
         } else if (event instanceof EventWalkOffBlock) {
@@ -137,6 +141,9 @@ public class Scaffold extends Module {
         }
         if (blockInfo == null)
             return;
+        if (sneak) {
+            NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
+        }
         BlockPos lookAtPos = blockInfo.blockPos;
         RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(lookAtPos.getX(), lookAtPos.getY(), lookAtPos.getZ()));
         event.setYaw(rotation.getYaw());
@@ -175,6 +182,10 @@ public class Scaffold extends Module {
         if (!blockItem.getBlock().getDefaultState().isFullCube(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN))
             return false;
         return true;
+    }
+
+    private boolean isGoodBlock(Block block) {
+        return block instanceof AirBlock || block instanceof FluidBlock || block == Blocks.GRASS || block == Blocks.TALL_GRASS || block == Blocks.FERN || block == Blocks.LARGE_FERN;
     }
 
     public class BlockInfo {
