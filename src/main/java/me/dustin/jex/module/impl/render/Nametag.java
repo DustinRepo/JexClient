@@ -5,7 +5,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.event.render.EventRenderNametags;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -67,7 +67,7 @@ public class Nametag extends Module {
     int count = 0;
     private HashMap<Entity, Vec3d> positions = Maps.newHashMap();
 
-    @EventListener(events = {EventRender2D.class, EventRenderNametags.class, EventRender3D.class})
+    @EventListener(events = {EventRender2D.class, EventRenderNametags.class, EventRenderGetPos.class})
     private void runMethod(Event event) {
         if (event instanceof EventRenderNametags) {
             EventRenderNametags eventRenderNametags = (EventRenderNametags) event;
@@ -89,7 +89,7 @@ public class Nametag extends Module {
                 drawNametags(Wrapper.INSTANCE.getLocalPlayer(), (EventRender2D) event);
                 drawNametagInv(Wrapper.INSTANCE.getLocalPlayer(), (EventRender2D) event);
             }
-        } else if (event instanceof EventRender3D) {
+        } else if (event instanceof EventRenderGetPos) {
             this.positions.clear();
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                 if (isValid(entity)) {
@@ -102,7 +102,7 @@ public class Nametag extends Module {
                                 offset = entity.getHeight() + 0.4f;
                         }
                     }
-                    Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, ((EventRender3D) event).getPartialTicks());
+                    Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, ((EventRenderGetPos) event).getPartialTicks());
                     this.positions.put(entity, vec);
                 }
             });

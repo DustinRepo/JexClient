@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
@@ -30,15 +30,15 @@ public class OwnerTags extends Module {
     public boolean drawFaces = true;
     private HashMap<LivingEntity, Vec3d> positions = Maps.newHashMap();
 
-    @EventListener(events = {EventRender3D.class, EventRender2D.class})
+    @EventListener(events = {EventRenderGetPos.class, EventRender2D.class})
     private void runMethod(Event event) {
-        if (event instanceof EventRender3D) {
+        if (event instanceof EventRenderGetPos) {
             positions.clear();
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                 if (entity instanceof LivingEntity) {
                     LivingEntity tameableEntity = (LivingEntity) entity;
                     if (EntityHelper.INSTANCE.getOwnerUUID(tameableEntity) != null) {
-                        positions.put(tameableEntity, Render2DHelper.INSTANCE.getHeadPos(entity, ((EventRender3D) event).getPartialTicks()));
+                        positions.put(tameableEntity, Render2DHelper.INSTANCE.getHeadPos(entity, ((EventRenderGetPos) event).getPartialTicks()));
                     }
                 }
             }

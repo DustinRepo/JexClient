@@ -57,7 +57,7 @@ public class CropBuster extends Module {
                         if (isCrop(blockPos)) {
                             Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
                             Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-                            Render3DHelper.INSTANCE.drawBoxOutline(box, 0xffff0000);
+                            Render3DHelper.INSTANCE.drawBoxOutline(((EventRender3D) event).getMatrixStack(), box, 0xffff0000);
                         }
                     }
                 }

@@ -61,7 +61,7 @@ public class AutoFish extends Module {
             if (hook != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.FISHING_ROD) {
                 Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(hook, eventRender3D.getPartialTicks());
                 Box box = new Box(renderPos.x - 0.2f, renderPos.y - 0.2f, renderPos.z - 0.2f, renderPos.x + 0.2f, renderPos.y + 0.2f, renderPos.z + 0.2f);
-                Render3DHelper.INSTANCE.drawBox(box, isOpenOrWaterAround(hook.getBlockPos()) ? 0xff0000ff : 0xffff0000);
+                Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, isOpenOrWaterAround(hook.getBlockPos()) ? 0xff0000ff : 0xffff0000);
             }
         }
         if (AutoEat.isEating && recast) {

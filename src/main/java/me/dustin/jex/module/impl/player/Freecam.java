@@ -79,7 +79,7 @@ public class Freecam extends Module {
         }
         if (event instanceof EventRender3D) {
             Vec3d renderVec = Render3DHelper.INSTANCE.getRenderPosition(savedCoords);
-            Render3DHelper.INSTANCE.drawEntityBox(Wrapper.INSTANCE.getLocalPlayer(), renderVec.getX(), renderVec.getY(), renderVec.getZ(), ColorHelper.INSTANCE.getClientColor());
+            Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event).getMatrixStack(), Wrapper.INSTANCE.getLocalPlayer(), renderVec.getX(), renderVec.getY(), renderVec.getZ(), ColorHelper.INSTANCE.getClientColor());
         }
     }
 

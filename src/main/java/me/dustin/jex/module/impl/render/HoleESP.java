@@ -53,7 +53,7 @@ public class HoleESP extends Module {
         for (BlockPos blockPos : holes) {
             Vec3d vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
             Box box = new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1, vec3d.y + 1, vec3d.z + 1);
-            Render3DHelper.INSTANCE.drawBox(box, WorldHelper.INSTANCE.getBlock(blockPos.down()) == Blocks.BEDROCK ? bedrockColor : obsidianColor);
+            Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, WorldHelper.INSTANCE.getBlock(blockPos.down()) == Blocks.BEDROCK ? bedrockColor : obsidianColor);
         }
     }
 

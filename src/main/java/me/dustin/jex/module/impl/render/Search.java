@@ -168,7 +168,7 @@ public class Search extends Module {
                 assert cameraEntity != null;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
                 Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 1, entityPos.z + 1 - 0.5f);
-                Render3DHelper.INSTANCE.drawBox(box, blocks.get(block));
+                Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, blocks.get(block));
             }
         } else if (event instanceof EventJoinWorld) {
             int distance = Wrapper.INSTANCE.getOptions().viewDistance;

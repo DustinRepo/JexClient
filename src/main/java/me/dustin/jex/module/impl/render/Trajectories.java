@@ -199,10 +199,10 @@ public class Trajectories extends Module {
                         Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z);
                         if (hitEntity != null) {
                             Vec3d vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, eventRender3D.getPartialTicks());
-                            Render3DHelper.INSTANCE.drawEntityBox(hitEntity, vec2.x, vec2.y, vec2.z, hitColor);
+                            Render3DHelper.INSTANCE.drawEntityBox(eventRender3D.getMatrixStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColor);
                         } else {
                             Box bb1 = new Box(vec.x - 0.2f, vec.y - 0.2f, vec.z - 0.2f, vec.x + 0.2f, vec.y + 0.2f, vec.z + 0.2f);
-                            Render3DHelper.INSTANCE.drawBox(bb1, missColor);
+                            Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), bb1, missColor);
                         }
                     }
                 }

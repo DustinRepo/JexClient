@@ -1,6 +1,5 @@
 package me.dustin.jex.helper.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -9,10 +8,7 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
@@ -81,7 +77,8 @@ public enum Render3DHelper {
     }
 
 
-    public void drawSphere(float radius, int gradation, int color, boolean testDepth, Vec3d pos) {
+    public void drawSphere(MatrixStack matrixStack, float radius, int gradation, int color, boolean testDepth, Vec3d pos) {
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         Color color1 = ColorHelper.INSTANCE.getColor(color);
         final float PI = 3.141592f;
         float x, y, z, alpha, beta;
@@ -96,12 +93,12 @@ public enum Render3DHelper {
                 y = (float) (pos.getY() +  (radius * Math.sin(beta) * Math.sin(alpha)));
                 z = (float) (pos.getZ() +  (radius * Math.cos(alpha)));
                 Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(x, y, z);
-                bufferBuilder.vertex(renderPos.x, renderPos.y, renderPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                bufferBuilder.vertex(matrix4f, (float)renderPos.x, (float)renderPos.y, (float)renderPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 x = (float) (pos.getX() +  (radius * Math.cos(beta) * Math.sin(alpha + PI / gradation)));
                 y = (float) (pos.getY() +  (radius * Math.sin(beta) * Math.sin(alpha + PI / gradation)));
                 z = (float) (pos.getZ() +  (radius * Math.cos(alpha + PI / gradation)));
                 renderPos = Render3DHelper.INSTANCE.getRenderPosition(x, y, z);
-                bufferBuilder.vertex(renderPos.x, renderPos.y, renderPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                bufferBuilder.vertex(matrix4f, (float)renderPos.x, (float)renderPos.y, (float)renderPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             }
             bufferBuilder.end();
             BufferRenderer.draw(bufferBuilder);
@@ -110,163 +107,123 @@ public enum Render3DHelper {
         RenderSystem.disableTexture();
     }
 
-    public void drawBoxWithDepthTest(Box bb, int color) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-        RenderSystem.enableCull();
+    public void drawBoxWithDepthTest(MatrixStack matrixstack, Box bb, int color) {
+        setup3DRender(false);
 
-        drawFilledBox(bb, color & 0x70ffffff);
+        drawFilledBox(matrixstack, bb, color & 0x70ffffff);
         RenderSystem.lineWidth(1);
-        drawOutlineBox(bb, color);
+        drawOutlineBox(matrixstack, bb, color);
 
-        RenderSystem.enableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.depthMask(true);
+        end3DRender();
     }
 
-    public void drawBox(Box bb, int color) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-        RenderSystem.enableCull();
+    public void drawBox(MatrixStack matrixstack, Box bb, int color) {
+        setup3DRender(true);
 
-        drawFilledBox(bb, color & 0x70ffffff);
+        drawFilledBox(matrixstack, bb, color & 0x70ffffff);
         RenderSystem.lineWidth(1);
-        drawOutlineBox(bb, color);
+        drawOutlineBox(matrixstack, bb, color);
 
-        RenderSystem.enableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
+        end3DRender();
     }
 
-    public void drawBoxOutline(Box bb, int color) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-        RenderSystem.enableCull();
+    public void drawBoxOutline(MatrixStack matrixstack, Box bb, int color) {
+        setup3DRender(true);
 
         RenderSystem.lineWidth(1);
-        drawOutlineBox(bb, color);
+        drawOutlineBox(matrixstack, bb, color);
 
-        RenderSystem.enableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
+        end3DRender();
     }
 
-    public void drawBoxInside(Box bb, int color) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-        RenderSystem.enableCull();
+    public void drawBoxInside(MatrixStack matrixstack, Box bb, int color) {
+        setup3DRender(true);
 
-        drawFilledBox(bb, color & 0x70ffffff);
+        drawFilledBox(matrixstack, bb, color & 0x70ffffff);
 
-        RenderSystem.enableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
+        end3DRender();
     }
 
-    public void drawEntityBox(Entity entity, float partialTicks, int color) {
+    public void drawEntityBox(MatrixStack matrixstack, Entity entity, float partialTicks, int color) {
         Vec3d renderPos = getEntityRenderPosition(entity, partialTicks);
-        drawEntityBox(entity, renderPos.x, renderPos.y, renderPos.z, color);
+        drawEntityBox(matrixstack, entity, renderPos.x, renderPos.y, renderPos.z, color);
     }
 
-    public void drawEntityBox(Entity entity, double x, double y, double z, int color) {
-        //POSITION_COLOR, comes from field_29352 in GameRenderer. Needed otherwise the rendering will break because we're doing POSITION_COLOR on most of it
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-        RenderSystem.enableCull();
+    public void drawEntityBox(MatrixStack matrixstack, Entity entity, double x, double y, double z, int color) {
+        setup3DRender(true);
 
         Box bb = new Box(x - entity.getWidth() + 0.25, y, z - entity.getWidth() + 0.25, x + entity.getWidth() - 0.25, y + entity.getHeight() + 0.1, z + entity.getWidth() - 0.25);
         if (entity instanceof ItemEntity)
             bb = new Box(x - 0.15, y + 0.1f, z - 0.15, x + 0.15, y + 0.5, z + 0.15);
 
-        drawFilledBox(bb, color & 0x60ffffff);
+        drawFilledBox(matrixstack, bb, color & 0x60ffffff);
         RenderSystem.lineWidth(1.5f);
-        drawOutlineBox(bb, color);
+        drawOutlineBox(matrixstack, bb, color);
 
-        RenderSystem.enableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
+        end3DRender();
     }
 
     public double interpolate(final double now, final double then, final double percent) {
         return (then + (now - then) * percent);
     }
 
-    public void drawFilledBox(Box bb, int color) {
+    public void drawFilledBox(MatrixStack matrixStack, Box bb, int color) {
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         Color color1 = ColorHelper.INSTANCE.getColor(color);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS/*QUADS*/, VertexFormats.POSITION_COLOR);
+        float minX = (float)bb.minX;
+        float minY = (float)bb.minY;
+        float minZ = (float)bb.minZ;
+        float maxX = (float)bb.maxX;
+        float maxY = (float)bb.maxY;
+        float maxZ = (float)bb.maxZ;
 
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, minY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, minY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, minY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, minY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, minY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.maxX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.minX, bb.minY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.vertex(bb.minX, bb.maxY, bb.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, minY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
     }
 
-    public void drawOutlineBox(Box bb, int color) {
+    public void drawOutlineBox(MatrixStack matrixStack, Box bb, int color) {
         Color color1 = ColorHelper.INSTANCE.getColor(color);
+        Matrix4f matrix4f = matrixStack.peek().getModel();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES/*LINES*/, VertexFormats.POSITION_COLOR);//LINES just doesn't fucking work for some reason??
-        VoxelShape voxelShape = VoxelShapes.cuboid(bb);
-        voxelShape.forEachEdge((k, l, m, n, o, p) -> {
-            bufferBuilder.vertex(k, l, m).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-            bufferBuilder.vertex(n, o, p).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES/*LINES*/, VertexFormats.POSITION_COLOR);
+
+        VoxelShape shape = VoxelShapes.cuboid(bb);
+        shape.forEachEdge((x1, y1, z1, x2, y2, z2) -> {
+            bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+            bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z2).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         });
 
         bufferBuilder.end();
