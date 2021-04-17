@@ -11,6 +11,7 @@ import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
@@ -38,7 +39,9 @@ public class OwnerTags extends Module {
                 if (entity instanceof LivingEntity) {
                     LivingEntity tameableEntity = (LivingEntity) entity;
                     if (EntityHelper.INSTANCE.getOwnerUUID(tameableEntity) != null) {
+                        Render3DHelper.INSTANCE.applyCameraRots();
                         positions.put(tameableEntity, Render2DHelper.INSTANCE.getHeadPos(entity, ((EventRender3D) event).getPartialTicks()));
+                        Render3DHelper.INSTANCE.fixCameraRots();
                     }
                 }
             }

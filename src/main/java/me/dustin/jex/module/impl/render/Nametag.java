@@ -14,6 +14,7 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.module.core.Module;
 import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
@@ -101,7 +102,9 @@ public class Nametag extends Module {
                             offset = entity.getHeight() + 0.4f;
                     }
                 }
+                Render3DHelper.INSTANCE.applyCameraRots();
                 this.positions.put(entity, Render2DHelper.INSTANCE.getPos(entity, offset, ((EventRender3D) event).getPartialTicks()));
+                Render3DHelper.INSTANCE.fixCameraRots();
             });
         }
     }

@@ -46,7 +46,7 @@ public class NewChunks extends Module {
                     return;
                 Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(chunk.getPos().x * 16, 0, chunk.getPos().z * 16);
                 Box bb = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 16, renderPos.y + 0.1f, renderPos.z + 16);
-                Render3DHelper.INSTANCE.drawBox(bb, chunkColor);
+                Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), bb, chunkColor);
             });
         }
     }

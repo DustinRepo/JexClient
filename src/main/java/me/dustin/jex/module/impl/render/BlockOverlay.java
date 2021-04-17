@@ -46,7 +46,7 @@ public class BlockOverlay extends Module {
                 if (Wrapper.INSTANCE.getInteractionManager().isBreakingBlock() && progressOverlay) {
                     float breakProgress = Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() / 2;
                     Box box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
-                    Render3DHelper.INSTANCE.drawBoxInside(box, progressColor ? getColor(1 - (breakProgress * 2)).getRGB() : overlayColor);
+                    Render3DHelper.INSTANCE.drawBoxInside(((EventRender3D) event).getMatrixStack(), box, progressColor ? getColor(1 - (breakProgress * 2)).getRGB() : overlayColor);
                 }
             }
         } else if (event instanceof EventBlockOutlineColor) {

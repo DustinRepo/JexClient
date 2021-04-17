@@ -69,7 +69,7 @@ public class SingleAura extends ModuleExtension {
         }
         if (event1 instanceof EventRender3D) {
             if (target != null && killaura.showTarget) {
-                Render3DHelper.INSTANCE.drawEntityBox(target, ((EventRender3D) event1).getPartialTicks(), killaura.targetColor);
+                Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getMatrixStack(), target, ((EventRender3D) event1).getPartialTicks(), killaura.targetColor);
             }
             if (killaura.reachCircle) {
                 MatrixStack matrixStack = ((EventRender3D) event1).getMatrixStack();
@@ -79,7 +79,7 @@ public class SingleAura extends ModuleExtension {
                 double x = Wrapper.INSTANCE.getLocalPlayer().prevX + ((Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX) * ((EventRender3D) event1).getPartialTicks());
                 double y = Wrapper.INSTANCE.getLocalPlayer().prevY + ((Wrapper.INSTANCE.getLocalPlayer().getY() - Wrapper.INSTANCE.getLocalPlayer().prevY) * ((EventRender3D) event1).getPartialTicks());
                 double z = Wrapper.INSTANCE.getLocalPlayer().prevZ + ((Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ) * ((EventRender3D) event1).getPartialTicks());
-                Render3DHelper.INSTANCE.drawSphere(killaura.reach, 25, killaura.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
+                Render3DHelper.INSTANCE.drawSphere(matrixStack, killaura.reach, 25, killaura.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
                 Render3DHelper.INSTANCE.end3DRender();
                 matrixStack.pop();
             }

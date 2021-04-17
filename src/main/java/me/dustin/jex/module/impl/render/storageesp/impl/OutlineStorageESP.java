@@ -66,7 +66,7 @@ public class OutlineStorageESP extends ModuleExtension {
         BlockState blockState = blockEntity.getCachedState();
 
         blockState.getOutlineShape(Wrapper.INSTANCE.getWorld(), blockEntity.getPos()).getBoundingBoxes().forEach(bb -> {
-            Render3DHelper.INSTANCE.drawFilledBox(bb.offset(Render3DHelper.INSTANCE.getRenderPosition(blockEntity.getPos().getX(), blockEntity.getPos().getY(), blockEntity.getPos().getZ())), esp.getColor(blockEntity));
+            Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getMatrixStack(), bb.offset(Render3DHelper.INSTANCE.getRenderPosition(blockEntity.getPos().getX(), blockEntity.getPos().getY(), blockEntity.getPos().getZ())), esp.getColor(blockEntity));
         });
     }
 

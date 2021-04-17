@@ -60,7 +60,7 @@ public class AutoBreak extends Module {
             if (block != Blocks.AIR && getDistance(pos, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ()) <= mineDistance)
                 color = miningColor;
             Box bb = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-            Render3DHelper.INSTANCE.drawBox(bb, color);
+            Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), bb, color);
         }
         if (event.equals(EventPlayerPackets.class) && ((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE && pos != null) {
             Block block = WorldHelper.INSTANCE.getBlock(pos);

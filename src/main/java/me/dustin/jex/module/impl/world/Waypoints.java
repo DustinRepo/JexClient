@@ -99,12 +99,14 @@ public class Waypoints extends Module {
                         x = (float) Wrapper.INSTANCE.getLocalPlayer().getX() + 250 * (float) Math.cos(Math.toRadians(yaw + 90));
                         z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ() + 250 * (float) Math.sin(Math.toRadians(yaw + 90));
                     }
+                    Render3DHelper.INSTANCE.applyCameraRots();
                     Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(x, waypoint.getY(), z));
                     Vec3d screenPos = Render2DHelper.INSTANCE.to2D(new Vec3d(x, waypoint.getY() + Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(EntityPose.STANDING), z));
                     waypointPositions.put(waypoint, screenPos);
+                    Render3DHelper.INSTANCE.fixCameraRots();
                     if (beacon && distance < 270) {
                         Box box = new Box(renderPos.x - 0.2f, renderPos.y, renderPos.z - 0.2f, renderPos.x + 0.2f, (256 - waypoint.y), renderPos.z + 0.2f);
-                        Render3DHelper.INSTANCE.drawBox(box, waypoint.getColor());
+                        Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, waypoint.getColor());
                     }
                 }
             }

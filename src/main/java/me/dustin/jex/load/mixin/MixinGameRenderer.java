@@ -56,9 +56,9 @@ public abstract class MixinGameRenderer {
         }
         loadProjectionMatrix(matrixStack.peek().getModel());
 
-        new EventRender3D(matrixStack, matrixStack1, partialTicks).run();
-
         Render3DHelper.INSTANCE.fixCameraRots();
+        new EventRender3D(matrixStack1, partialTicks).run();
+
     }
 
     @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "net/minecraft/util/profiler/Profiler.pop()V"))

@@ -182,14 +182,14 @@ public class AutoFarm extends Module {
                 for (BlockPos blockPos : cropsToBreak) {
                     Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
                     Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.1f, renderPos.z + 1);
-                    Render3DHelper.INSTANCE.drawBox(box, 0xffff0000);
+                    Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, 0xffff0000);
                 }
             }
             if (!cropsToReplant.isEmpty()) {
                 for (BlockPos blockPos : cropsToReplant) {
                     Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
                     Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.1f, renderPos.z + 1);
-                    Render3DHelper.INSTANCE.drawBox(box, 0xff00ff00);
+                    Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, 0xff00ff00);
                 }
             }
         }

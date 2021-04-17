@@ -85,7 +85,7 @@ public class TunnelFinder extends Module {
                 }
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
                 Box box = new Box(entityPos.x, entityPos.y, entityPos.z, entityPos.x + 1, entityPos.y + 2, entityPos.z + 1);
-                Render3DHelper.INSTANCE.drawBoxOutline(box, color);
+                Render3DHelper.INSTANCE.drawBoxOutline(((EventRender3D) event).getMatrixStack(), box, color);
             }
         } else if (event instanceof EventJoinWorld) {
             positions.clear();

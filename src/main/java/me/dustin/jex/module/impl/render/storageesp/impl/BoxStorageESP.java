@@ -76,7 +76,7 @@ public class BoxStorageESP extends ModuleExtension {
                         }
                     }*/
 
-                    Render3DHelper.INSTANCE.drawBox(box, storageESP.getColor(blockEntity));
+                    Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, storageESP.getColor(blockEntity));
                 }
             });
         }

@@ -43,7 +43,7 @@ public class OutlineBox extends ModuleExtension {
                     Box bb = new Box(vec.x - entity.getWidth() + 0.25, vec.y, vec.z - entity.getWidth() + 0.25, vec.x + entity.getWidth() - 0.25, vec.y + entity.getHeight() + 0.1, vec.z + entity.getWidth() - 0.25);
                     if (entity instanceof ItemEntity)
                         bb = new Box(vec.x - 0.15, vec.y + 0.1f, vec.z - 0.15, vec.x + 0.15, vec.y + 0.5, vec.z + 0.15);
-                    Render3DHelper.INSTANCE.drawFilledBox(bb, ESP.INSTANCE.getColor(entity));
+                    Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getMatrixStack(), bb, ESP.INSTANCE.getColor(entity));
                 }
             });
             RenderSystem.lineWidth(ESP.INSTANCE.lineWidth);
@@ -56,7 +56,7 @@ public class OutlineBox extends ModuleExtension {
                     Box bb = new Box(vec.x - entity.getWidth() + 0.25, vec.y, vec.z - entity.getWidth() + 0.25, vec.x + entity.getWidth() - 0.25, vec.y + entity.getHeight() + 0.1, vec.z + entity.getWidth() - 0.25);
                     if (entity instanceof ItemEntity)
                         bb = new Box(vec.x - 0.15, vec.y + 0.1f, vec.z - 0.15, vec.x + 0.15, vec.y + 0.5, vec.z + 0.15);
-                    Render3DHelper.INSTANCE.drawOutlineBox(bb, ESP.INSTANCE.getColor(entity));
+                    Render3DHelper.INSTANCE.drawOutlineBox(eventRender3D.getMatrixStack(), bb, ESP.INSTANCE.getColor(entity));
                 }
             });
 
