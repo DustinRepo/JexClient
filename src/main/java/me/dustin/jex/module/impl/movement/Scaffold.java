@@ -38,7 +38,7 @@ public class Scaffold extends Module {
     @Op(name = "Delay", min = 0, max = 1000, inc = 10)
     public int delay = 50;
     @Op(name = "Sneak on Place")
-    private boolean sneak = false;
+    public boolean sneak = false;
     //@Op(name = "Range", min = 0, max = 4)
     public int range = 0;
     BlockHitResult blockHitResult;

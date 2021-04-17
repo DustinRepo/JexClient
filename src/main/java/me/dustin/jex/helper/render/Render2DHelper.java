@@ -30,6 +30,20 @@ public enum Render2DHelper {
     INSTANCE;
     protected Identifier cog = new Identifier("jex", "gui/click/cog.png");
 
+    public void setup2DRender(boolean disableDepth) {
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        if (disableDepth)
+            RenderSystem.disableDepthTest();
+    }
+
+    public void end2DRender() {
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.enableDepthTest();
+    }
+
     public double getScaleFactor() {
         return Wrapper.INSTANCE.getWindow().getScaleFactor();
     }
@@ -86,9 +100,7 @@ public enum Render2DHelper {
         float h = (float) (color >> 8 & 255) / 255.0F;
         float k = (float) (color & 255) / 255.0F;
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
+        setup2DRender(false);
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(matrix, (float) x1, (float) y2, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, (float) x2, (float) y2, 0.0F).color(g, h, k, f).next();
@@ -96,8 +108,7 @@ public enum Render2DHelper {
         bufferBuilder.vertex(matrix, (float) x1, (float) y1, 0.0F).color(g, h, k, f).next();
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
+        end2DRender();
     }
 
     public Color hexToColor(String value) {
@@ -145,9 +156,7 @@ public enum Render2DHelper {
         float f7 = (float) (col2 & 0xFF) / 255F;
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
+        setup2DRender(false);
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 
         bufferBuilder.vertex(x2, y, 0).color(f1, f2, f3, f).next();
@@ -158,8 +167,7 @@ public enum Render2DHelper {
 
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
+        end2DRender();
     }
 
     public void drawFullCircle(int cx, int cy, double r, int c, MatrixStack matrixStack) {
@@ -168,9 +176,7 @@ public enum Render2DHelper {
         float f2 = (c >> 8 & 0xFF) / 255.0F;
         float f3 = (c & 0xFF) / 255.0F;
 
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
+        setup2DRender(false);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
         for (int i = 0; i <= 360; i++) {
@@ -180,9 +186,7 @@ public enum Render2DHelper {
         }
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
-        RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
-        RenderSystem.defaultBlendFunc();
+        end2DRender();
     }
 
     public void drawArc(float cx, float cy, double r, int c, int startpoint, double arc, int linewidth, MatrixStack matrixStack) {
@@ -191,9 +195,7 @@ public enum Render2DHelper {
         float f2 = (c >> 8 & 0xFF) / 255.0F;
         float f3 = (c & 0xFF) / 255.0F;
 
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
+        setup2DRender(false);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(0, VertexFormats.POSITION_COLOR);
@@ -207,9 +209,7 @@ public enum Render2DHelper {
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
 
-        RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
-        RenderSystem.defaultBlendFunc();
+        end2DRender();
     }
 
     public void drawHLine(MatrixStack matrixStack, float par1, float par2, float par3, int par4) {

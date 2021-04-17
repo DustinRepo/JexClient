@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.click.impl;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
@@ -63,9 +62,7 @@ public class RadarWindow extends Window{
         Matrix4f matrix4f = matrixStack.peek().getModel();
         Color color1 = ColorHelper.INSTANCE.getColor(ColorHelper.INSTANCE.getClientColor());
 
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
+        Render2DHelper.INSTANCE.setup2DRender(false);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
@@ -76,8 +73,7 @@ public class RadarWindow extends Window{
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
 
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
+        Render2DHelper.INSTANCE.end2DRender();
     }
 
     @Override

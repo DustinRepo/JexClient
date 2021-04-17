@@ -62,11 +62,12 @@ public enum Render3DHelper {
         GL11.glRotated(MathHelper.wrapDegrees(camera.getYaw() + 180.0D), 0.0D, 1.0D, 0.0D);
     }
 
-    public void setup3DRender() {
+    public void setup3DRender(boolean disableDepth) {
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
+        if (disableDepth)
+            RenderSystem.disableDepthTest();
         RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
         RenderSystem.enableCull();
     }
@@ -83,9 +84,7 @@ public enum Render3DHelper {
         Color color1 = ColorHelper.INSTANCE.getColor(color);
         final float PI = 3.141592f;
         float x, y, z, alpha, beta;
-        if (!testDepth)
-            RenderSystem.disableDepthTest();
-        RenderSystem.disableTexture();
+        setup3DRender(!testDepth);
         for (alpha = 0.0f; alpha < Math.PI; alpha += PI / gradation) {
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
             bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
@@ -104,62 +103,28 @@ public enum Render3DHelper {
             bufferBuilder.end();
             BufferRenderer.draw(bufferBuilder);
         }
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableTexture();
+        end3DRender();
     }
 
     public void drawBox(Box bb, int color) {
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-        RenderSystem.enableCull();
-
+        setup3DRender(true);
         drawFilledBox(bb, color & 0x70ffffff);
         RenderSystem.lineWidth(1);
         drawOutlineBox(bb, color);
-
-        RenderSystem.enableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
+        end3DRender();
     }
 
     public void drawBoxOutline(Box bb, int color) {
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-        RenderSystem.enableCull();
-
+        setup3DRender(true);
         RenderSystem.lineWidth(1);
         drawOutlineBox(bb, color);
-
-        RenderSystem.enableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
+        end3DRender();
     }
 
     public void drawBoxInside(Box bb, int color) {
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-        RenderSystem.enableCull();
-
+        setup3DRender(true);
         drawFilledBox(bb, color & 0x70ffffff);
-
-        RenderSystem.enableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
+        end3DRender();
     }
 
     public void drawEntityBox(Entity entity, float partialTicks, int color) {
@@ -168,12 +133,7 @@ public enum Render3DHelper {
     }
 
     public void drawEntityBox(Entity entity, double x, double y, double z, int color) {
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
-        RenderSystem.enableCull();
+        setup3DRender(true);
 
         Box bb = new Box(x - entity.getWidth() + 0.25, y, z - entity.getWidth() + 0.25, x + entity.getWidth() - 0.25, y + entity.getHeight() + 0.1, z + entity.getWidth() - 0.25);
         if (entity instanceof ItemEntity)
@@ -183,11 +143,7 @@ public enum Render3DHelper {
         RenderSystem.lineWidth(1);
         drawOutlineBox(bb, color);
 
-        RenderSystem.enableTexture();
-        RenderSystem.disableCull();
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
+        end3DRender();
     }
 
     public double interpolate(final double now, final double then, final double percent) {

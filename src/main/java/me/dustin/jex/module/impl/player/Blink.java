@@ -1,6 +1,5 @@
 package me.dustin.jex.module.impl.player;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
@@ -46,8 +45,7 @@ public class Blink extends Module {
         } else if (event instanceof EventRender3D) {
             if (packets.size() > 1) {
                 Color color = ColorHelper.INSTANCE.getColor(ColorHelper.INSTANCE.getClientColor());
-                RenderSystem.disableDepthTest();
-                RenderSystem.disableTexture();
+                Render3DHelper.INSTANCE.setup3DRender(true);
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
                 for (PlayerMoveC2SPacket packet : packets) {
@@ -56,8 +54,7 @@ public class Blink extends Module {
                 }
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
-                RenderSystem.enableDepthTest();
-                RenderSystem.enableTexture();
+                Render3DHelper.INSTANCE.end3DRender();
             }
             this.setSuffix(String.valueOf(packets.size()));
         }
