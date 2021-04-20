@@ -38,10 +38,8 @@ import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.*;
 
 @ModClass(name = "HUD", category = ModCategory.VISUAL, description = "Renders an in-game HUD")
 public class Hud extends Module {
@@ -278,8 +276,8 @@ public class Hud extends Module {
         }
         matrixStack.pop();
 
-        if (drawFace) {
-            Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), 35, 2, 4, Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()).getSkinTexture());
+        if (drawFace && Wrapper.INSTANCE.getMinecraft().getNetworkHandler() != null && Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()) != null) {
+            Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), 35, 2, 4, Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId())).getSkinTexture());
         }
     }
 
