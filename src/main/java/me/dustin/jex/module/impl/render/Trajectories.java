@@ -12,6 +12,7 @@ import me.dustin.jex.module.core.annotate.ModClass;
 import me.dustin.jex.module.core.enums.ModCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.render.*;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -25,10 +26,7 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -170,6 +168,8 @@ public class Trajectories extends Module {
             }
 
             if (!positions.isEmpty()) {
+                MatrixStack matrixStack = eventRender3D.getMatrixStack();
+                Matrix4f matrix4f = matrixStack.peek().getModel();
                 for (int i = 0; i < positions.size(); i++) {
                     if (i != positions.size() - 1) {
 
@@ -190,8 +190,8 @@ public class Trajectories extends Module {
 
                         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                         bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-                        bufferBuilder.vertex(x, y, z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                        bufferBuilder.vertex(x1, y1, z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                        bufferBuilder.vertex(matrix4f, (float)x, (float)y, (float)z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                        bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                         bufferBuilder.end();
                         BufferRenderer.draw(bufferBuilder);
                         Render3DHelper.INSTANCE.end3DRender();
