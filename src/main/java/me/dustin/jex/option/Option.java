@@ -2,7 +2,7 @@ package me.dustin.jex.option;
 
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.core.Module;
+import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.option.enums.OpType;
 import me.dustin.jex.option.types.*;
 
@@ -14,7 +14,7 @@ public class Option {
     protected String name;
     protected Field field;
     protected String fieldName;
-    protected Module module;
+    protected Feature feature;
     protected OpType type;
     protected Option parent;
     protected String dependency;
@@ -45,8 +45,8 @@ public class Option {
         this.type = type;
     }
 
-    public Module getModule() {
-        return module;
+    public Feature getFeature() {
+        return feature;
     }
 
     public String getFieldName() {
@@ -87,10 +87,10 @@ public class Option {
 
     public void setValue(Object value) {
         this.value = value;
-        for (Field f : this.getModule().getClass().getDeclaredFields()) {
+        for (Field f : this.getFeature().getClass().getDeclaredFields()) {
             if (f.getName().equalsIgnoreCase(this.getFieldName())) {
                 try {
-                    f.set(this.getModule(), value);
+                    f.set(this.getFeature(), value);
                 } catch (Exception e) {
                 }
             }
@@ -136,7 +136,7 @@ public class Option {
             }
         }catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Caused by " + this.module.getName() + " " + this.getName());
+            System.out.println("Caused by " + this.feature.getName() + " " + this.getName());
         }
     }
     private boolean contains(String[] values, String value)

@@ -2,8 +2,8 @@ package me.dustin.jex.option;
 
 import com.google.common.collect.Maps;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.core.ModuleManager;
+import me.dustin.jex.feature.core.FeatureManager;
+import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import me.dustin.jex.option.enums.OpType;
@@ -26,8 +26,8 @@ public enum OptionManager {
     }
 
     public void initializeOptionManager() {
-        ConcurrentMap<Field, Module> parentNotFound = Maps.newConcurrentMap();
-        ModuleManager.INSTANCE.getModules().forEach(mod ->
+        ConcurrentMap<Field, Feature> parentNotFound = Maps.newConcurrentMap();
+        FeatureManager.INSTANCE.getFeatures().forEach(mod ->
         {
             for (Field field : mod.getClass().getDeclaredFields()) {
                 if (!field.isAccessible())
@@ -46,7 +46,7 @@ public enum OptionManager {
                             floatOption.type = type;
                             floatOption.field = field;
                             floatOption.fieldName = field.getName();
-                            floatOption.module = mod;
+                            floatOption.feature = mod;
 
                             this.getOptions().add(floatOption);
                         } catch (IllegalArgumentException e) {
@@ -67,7 +67,7 @@ public enum OptionManager {
                                 intOption.type = type;
                                 intOption.field = field;
                                 intOption.fieldName = field.getName();
-                                intOption.module = mod;
+                                intOption.feature = mod;
                                 Color color = Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(intOption.getValue()));
                                 float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
 
@@ -83,7 +83,7 @@ public enum OptionManager {
                                 intOption.type = type;
                                 intOption.field = field;
                                 intOption.fieldName = field.getName();
-                                intOption.module = mod;
+                                intOption.feature = mod;
                                 this.getOptions().add(intOption);
                             }
 
@@ -102,7 +102,7 @@ public enum OptionManager {
                                 StringArrayOption stringArrayOption = new StringArrayOption(name, all);
                                 stringArrayOption.type = type;
                                 stringArrayOption.fieldName = field.getName();
-                                stringArrayOption.module = mod;
+                                stringArrayOption.feature = mod;
 
                                 this.getOptions().add(stringArrayOption);
                             } else {
@@ -111,7 +111,7 @@ public enum OptionManager {
                                 StringOption stringOption = new StringOption(name);
                                 stringOption.field = field;
                                 stringOption.type = type;
-                                stringOption.module = mod;
+                                stringOption.feature = mod;
                                 stringOption.fieldName = field.getName();
 
                                 this.getOptions().add(stringOption);
@@ -131,7 +131,7 @@ public enum OptionManager {
                             option.field = field;
                             option.setFieldName(field.getName());
                             option.type = type;
-                            option.module = mod;
+                            option.feature = mod;
 
                             this.getOptions().add(option);
                         } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -163,7 +163,7 @@ public enum OptionManager {
         reorder();
     }
 
-    public boolean loadChildren(Module mod, Field field) {
+    public boolean loadChildren(Feature mod, Field field) {
         if (field.isAnnotationPresent(OpChild.class)) {
             if (field.getType() == float.class) {
                 try {
@@ -178,7 +178,7 @@ public enum OptionManager {
                     floatOption.type = type;
                     floatOption.field = field;
                     floatOption.fieldName = field.getName();
-                    floatOption.module = mod;
+                    floatOption.feature = mod;
                     floatOption.dependency = anot.dependency();
                     if (getOption(anot.parent(), mod) != null) {
                         floatOption.parent = getOption(anot.parent(), mod);
@@ -203,7 +203,7 @@ public enum OptionManager {
                         intOption.type = type;
                         intOption.field = field;
                         intOption.fieldName = field.getName();
-                        intOption.module = mod;
+                        intOption.feature = mod;
                         intOption.dependency = anot.dependency();
                         Color color = Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(intOption.getValue()));
                         float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
@@ -229,7 +229,7 @@ public enum OptionManager {
                         intOption.type = type;
                         intOption.field = field;
                         intOption.fieldName = field.getName();
-                        intOption.module = mod;
+                        intOption.feature = mod;
                         intOption.dependency = anot.dependency();
 
                         if (getOption(anot.parent(), mod) != null) {
@@ -256,7 +256,7 @@ public enum OptionManager {
                         StringArrayOption stringArrayOption = new StringArrayOption(name, all);
                         stringArrayOption.type = type;
                         stringArrayOption.fieldName = field.getName();
-                        stringArrayOption.module = mod;
+                        stringArrayOption.feature = mod;
                         stringArrayOption.dependency = anot.dependency();
 
                         if (getOption(anot.parent(), mod) != null) {
@@ -271,7 +271,7 @@ public enum OptionManager {
                         StringOption stringOption = new StringOption(name);
                         stringOption.field = field;
                         stringOption.type = type;
-                        stringOption.module = mod;
+                        stringOption.feature = mod;
                         stringOption.fieldName = field.getName();
                         stringOption.dependency = anot.dependency();
                         if (!anot.parent().equals("") && getOption(anot.parent(), mod) != null) {
@@ -296,7 +296,7 @@ public enum OptionManager {
                     option.field = field;
                     option.setFieldName(field.getName());
                     option.type = type;
-                    option.module = mod;
+                    option.feature = mod;
                     option.dependency = anot.dependency();
                     if (getOption(anot.parent(), mod) != null) {
                         option.parent = getOption(anot.parent(), mod);
@@ -331,7 +331,7 @@ public enum OptionManager {
         options = newList;
     }
 
-    public boolean hasOption(Module mod) {
+    public boolean hasOption(Feature mod) {
         return !getOptions(mod).isEmpty();
     }
 
@@ -352,27 +352,27 @@ public enum OptionManager {
         return null;
     }
 
-    public Option getOption(String name, Module mod) {
+    public Option getOption(String name, Feature mod) {
         for (Option o : OptionManager.get().getOptions()) {
-            if (o.getName().equalsIgnoreCase(name) && o.getModule() == mod)
+            if (o.getName().equalsIgnoreCase(name) && o.getFeature() == mod)
                 return o;
         }
         return null;
     }
 
-    public ArrayList<Option> getOptions(Module mod) {
+    public ArrayList<Option> getOptions(Feature mod) {
         ArrayList<Option> options = new ArrayList<>();
         getOptions().forEach(option -> {
-            if (option.getModule() == mod)
+            if (option.getFeature() == mod)
                 options.add(option);
         });
         return options;
     }
 
-    public ArrayList<Option> getOptionsNoChild(Module mod) {
+    public ArrayList<Option> getOptionsNoChild(Feature mod) {
         ArrayList<Option> options = new ArrayList<>();
         getOptions().forEach(option -> {
-            if (option.getModule() == mod && !option.hasParent())
+            if (option.getFeature() == mod && !option.hasParent())
                 options.add(option);
         });
         return options;

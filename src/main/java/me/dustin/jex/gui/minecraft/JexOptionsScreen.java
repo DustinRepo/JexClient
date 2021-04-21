@@ -10,7 +10,7 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.impl.render.Gui;
+import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.update.Update;
 import me.dustin.jex.update.UpdateManager;
 import net.minecraft.client.gui.screen.Screen;

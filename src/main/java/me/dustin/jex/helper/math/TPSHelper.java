@@ -8,8 +8,8 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.combat.TPSSync;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.combat.TPSSync;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public enum TPSHelper {
             EventPacketReceive packetReceive = (EventPacketReceive) event;
             if (packetReceive.getPacket() instanceof WorldTimeUpdateS2CPacket) {
                 reports.add(System.currentTimeMillis());
-                while (reports.size() > ((TPSSync) Module.get(TPSSync.class)).sampleSize) {
+                while (reports.size() > ((TPSSync) Feature.get(TPSSync.class)).sampleSize) {
                     reports.remove(0);
                 }
             }

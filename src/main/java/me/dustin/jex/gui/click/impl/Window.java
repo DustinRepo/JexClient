@@ -7,10 +7,10 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.core.enums.ModCategory;
-import me.dustin.jex.module.impl.render.Gui;
-import me.dustin.jex.module.impl.render.Hud;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.feature.impl.render.Gui;
+import me.dustin.jex.feature.impl.render.Hud;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
@@ -45,7 +45,7 @@ public class Window {
         this.height = height;
         if (getCategory(this) != null)
             this.color = Hud.getCategoryColor(getCategory(this));
-        gui = (Gui) Module.get(Gui.class);
+        gui = (Gui) Feature.get(Gui.class);
     }
 
     public void draw(MatrixStack matrixStack) {
@@ -157,8 +157,8 @@ public class Window {
 
     public Window init() {
         try {
-            ModCategory category = ModCategory.valueOf(this.getName());
-            Module.getModules(category).forEach(module -> {
+            FeatureCategory category = FeatureCategory.valueOf(this.getName());
+            Feature.getModules(category).forEach(module -> {
                 this.getButtons().add(new ModuleButton(this, module, this.getX() + 1, (this.getY() + this.getHeight()) + ((this.getHeight() + 1) * childCount), this.getWidth() - 2, this.getHeight()));
                 childCount++;
             });
@@ -258,18 +258,18 @@ public class Window {
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
     }
-    public ModuleButton get(Module module) {
+    public ModuleButton get(Feature feature) {
         ModuleButton moduleButton = null;
         for (Button button : this.getButtons())
             if (button instanceof ModuleButton) {
-                if (((ModuleButton) button).getModule() == module)
+                if (((ModuleButton) button).getFeature() == feature)
                     moduleButton = (ModuleButton) button;
             }
         return moduleButton;
     }
 
-    public static ModCategory getCategory(Window window) {
-        for (ModCategory category : ModCategory.values()) {
+    public static FeatureCategory getCategory(Window window) {
+        for (FeatureCategory category : FeatureCategory.values()) {
             if (category.toString().toLowerCase().equalsIgnoreCase(window.getName().toLowerCase()))
                 return category;
         }

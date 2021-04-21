@@ -14,9 +14,9 @@ public class BoolOption extends Option {
 
     public boolean getValue() {
         try {
-            for (Field f : this.getModule().getClass().getDeclaredFields()) {
+            for (Field f : this.getFeature().getClass().getDeclaredFields()) {
                 if (f.getName().equalsIgnoreCase(this.getFieldName())) {
-                    return f.getBoolean(this.getModule());
+                    return f.getBoolean(this.getFeature());
                 }
             }
         } catch (Exception e) {

@@ -6,8 +6,8 @@ import me.dustin.jex.event.player.EventSlowdown;
 import me.dustin.jex.event.player.EventStep;
 import me.dustin.jex.event.render.EventNametagShouldRender;
 import me.dustin.jex.event.render.EventOutlineColor;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.movement.CompatSwim;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.movement.CompatSwim;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
@@ -193,14 +193,14 @@ public abstract class MixinEntity {
     @Inject(method = "isInSwimmingPose", at = @At("HEAD"), cancellable = true)
     public void isInSwimmingPose(CallbackInfoReturnable<Boolean> ci) {
         Entity me = (Entity) (Object) this;
-        if (Module.get(CompatSwim.class).getState()) {
+        if (Feature.get(CompatSwim.class).getState()) {
             ci.setReturnValue(false);
         }
     }
 
     @Inject(method = "getPose", at = @At("HEAD"), cancellable = true)
     public void getPose(CallbackInfoReturnable<EntityPose> ci) {
-        if (Module.get(CompatSwim.class).getState()) {
+        if (Feature.get(CompatSwim.class).getState()) {
             if (this.isSwimming()) {
                 ci.setReturnValue(this.isAlive() ? (this.isSneaking() ? EntityPose.CROUCHING : EntityPose.STANDING) : EntityPose.DYING);
             }

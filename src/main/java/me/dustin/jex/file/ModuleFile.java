@@ -5,8 +5,8 @@ import com.google.gson.JsonObject;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.core.ModuleManager;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.FeatureManager;
 import me.dustin.jex.option.Option;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.option.types.*;
@@ -22,16 +22,16 @@ public class ModuleFile {
 
     public static void write() {
         JsonArray jsonArray = new JsonArray();
-        for (Module module : ModuleManager.INSTANCE.getModules()) {
+        for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("name", module.getName());
-            jsonObject.addProperty("key", module.getKey());
-            jsonObject.addProperty("state", module.getState());
-            jsonObject.addProperty("visible", module.isVisible());
-            if (OptionManager.get().hasOption(module)) {
+            jsonObject.addProperty("name", feature.getName());
+            jsonObject.addProperty("key", feature.getKey());
+            jsonObject.addProperty("state", feature.getState());
+            jsonObject.addProperty("visible", feature.isVisible());
+            if (OptionManager.get().hasOption(feature)) {
                 JsonArray options = new JsonArray();
                 for (Option option : OptionManager.get().getOptions()) {
-                    if (option.getModule() == module) {
+                    if (option.getFeature() == feature) {
                         try {
                             JsonObject optionObject = new JsonObject();
                             optionObject.addProperty("name", option.getName());
@@ -56,7 +56,7 @@ public class ModuleFile {
                             }
                             options.add(optionObject);
                         } catch (Exception e) {
-                            System.out.println(module.getName() + " " + option.getName());
+                            System.out.println(feature.getName() + " " + option.getName());
                         }
                     }
                 }
@@ -89,18 +89,18 @@ public class ModuleFile {
                 for (int i = 0; i < array.size(); i++) {
                     JsonObject object = array.get(i).getAsJsonObject();
                     String name = object.get("name").getAsString();
-                    Module module = Module.get(name);
-                    if (module != null) {
-                        module.setKey(object.get("key").getAsInt());
-                        module.setVisible(object.get("visible").getAsBoolean());
-                        module.setState(object.get("state").getAsBoolean());
+                    Feature feature = Feature.get(name);
+                    if (feature != null) {
+                        feature.setKey(object.get("key").getAsInt());
+                        feature.setVisible(object.get("visible").getAsBoolean());
+                        feature.setState(object.get("state").getAsBoolean());
                     } else {
                         System.out.println("Could not find Module " + name);
                     }
                     JsonArray objectArray = null;
 
 
-                    if (OptionManager.get().hasOption(module) && object.has("Properties"))
+                    if (OptionManager.get().hasOption(feature) && object.has("Properties"))
                         objectArray = object.get("Properties").getAsJsonArray();
 
                     if (objectArray != null)
@@ -108,7 +108,7 @@ public class ModuleFile {
                             JsonObject newObject = objectArray.get(j).getAsJsonObject();
                             String opName = newObject.get("name").getAsString();
                             String valueString = newObject.get("value").getAsString();
-                            Option option = OptionManager.get().getOption(opName, module);
+                            Option option = OptionManager.get().getOption(opName, feature);
                             if (option != null) {
                                 option.parseValue(valueString);
                             }

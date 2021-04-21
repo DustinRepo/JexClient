@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
-import me.dustin.jex.module.impl.world.Xray;
+import me.dustin.jex.feature.impl.world.Xray;
 import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;

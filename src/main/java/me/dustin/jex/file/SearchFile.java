@@ -6,7 +6,7 @@ import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.impl.render.Search;
+import me.dustin.jex.feature.impl.render.Search;
 import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;

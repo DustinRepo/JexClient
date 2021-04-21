@@ -20,9 +20,9 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.core.enums.ModCategory;
-import me.dustin.jex.module.impl.render.Gui;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.option.types.ColorOption;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -109,11 +109,11 @@ public class ClickGui extends Screen {
     @Override
     public void init() {
         if (windows.isEmpty()) {
-            guiModule = (Gui)Module.get(Gui.class);
+            guiModule = (Gui) Feature.get(Gui.class);
             int count = 0;
             float windowWidth = 120;
             float windowHeight = 15;
-            for (ModCategory category : ModCategory.values()) {
+            for (FeatureCategory category : FeatureCategory.values()) {
                 windows.add(new Window(category.name(), 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
                 count++;
             }
@@ -211,7 +211,7 @@ public class ClickGui extends Screen {
             ParticleManager2D.INSTANCE.update();
         }
 
-        if (((Gui) Module.get(Gui.class)).particles) {
+        if (((Gui) Feature.get(Gui.class)).particles) {
             for (ParticleManager2D.Particle particle : ParticleManager2D.INSTANCE.getParticles()) {
                 particle.draw(matrixStack);
             }
@@ -222,7 +222,7 @@ public class ClickGui extends Screen {
         });
 
         if (getHovered() != null) {
-            String description = getHovered().getModule().getDescription();
+            String description = getHovered().getFeature().getDescription();
             if (!description.endsWith("."))
                 description += ".";
             float x = MouseHelper.INSTANCE.getMouseX() + FontHelper.INSTANCE.getStringWidth(description) > Render2DHelper.INSTANCE.getScaledWidth() ? Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(description) - 2 : MouseHelper.INSTANCE.getMouseX();

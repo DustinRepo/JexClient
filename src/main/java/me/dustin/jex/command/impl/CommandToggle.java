@@ -5,7 +5,7 @@ import me.dustin.jex.command.core.Command;
 import me.dustin.jex.command.core.annotate.Cmd;
 import me.dustin.jex.file.ModuleFile;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.module.core.Module;
+import me.dustin.jex.feature.core.Feature;
 
 @Cmd(name = "Toggle", syntax = ".toggle <mod>", description = "Toggle modules.", alias = {"t"})
 public class CommandToggle extends Command {
@@ -14,7 +14,7 @@ public class CommandToggle extends Command {
     public void runCommand(String command, String[] args) {
         try {
             String moduleName = args[1];
-            Module mod = Module.get(moduleName);
+            Feature mod = Feature.get(moduleName);
             if (mod != null) {
                 mod.toggleState();
                 if (JexClient.INSTANCE.isAutoSaveEnabled())

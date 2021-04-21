@@ -5,7 +5,7 @@ import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.load.impl.IMinecraft;
-import me.dustin.jex.module.impl.render.esp.ESP;
+import me.dustin.jex.feature.impl.render.esp.ESP;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.SocialInteractionsManager;

@@ -3,8 +3,8 @@ package me.dustin.jex.load.mixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.event.render.EventRenderOverlay;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.render.NoFog;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.NoFog;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
@@ -79,7 +79,7 @@ public class MixinBackgroundRenderer {
                 u = viewDistance * 0.75F;
                 x = viewDistance;
             }
-            if (entity == Wrapper.INSTANCE.getLocalPlayer() && Module.get(NoFog.class).getState()) {
+            if (entity == Wrapper.INSTANCE.getLocalPlayer() && Feature.get(NoFog.class).getState()) {
                 u = 0;
                 x = 10000;
             }

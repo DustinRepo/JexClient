@@ -1,8 +1,8 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.world.AutoSign;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.world.AutoSign;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
@@ -29,7 +29,7 @@ public class MixinSignEditScreen extends Screen {
 
     @Inject(method = "init", at = @At("RETURN"))
     public void init(CallbackInfo ci) {
-        AutoSign autoSign = (AutoSign) Module.get(AutoSign.class);
+        AutoSign autoSign = (AutoSign) Feature.get(AutoSign.class);
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 142, 200, 20, new LiteralText("Set AutoSign Text"), (buttonWidget_1) -> {
             autoSign.signText[0] = sign.getTextOnRow(0, false);
             autoSign.signText[1] = sign.getTextOnRow(1, false);

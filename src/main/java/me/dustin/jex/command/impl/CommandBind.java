@@ -5,8 +5,8 @@ import me.dustin.jex.command.core.annotate.Cmd;
 import me.dustin.jex.file.ModuleFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.core.ModuleManager;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.FeatureManager;
 
 @Cmd(name = "Bind", syntax = ".bind <add/remove/list> <module> <key>", description = "Modify keybinds with a command. List with bind list")
 public class CommandBind extends Command {
@@ -17,16 +17,16 @@ public class CommandBind extends Command {
             String action = args[1];
             if (action.equalsIgnoreCase("list")) {
                 ChatHelper.INSTANCE.addClientMessage("Listing keybinds.");
-                for (Module module : ModuleManager.INSTANCE.getModules()) {
-                    if (module.getKey() != 0) {
-                        ChatHelper.INSTANCE.addClientMessage("\247b" + module.getName() + "\247f: \2477" + KeyboardHelper.INSTANCE.getKeyName(module.getKey()));
+                for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
+                    if (feature.getKey() != 0) {
+                        ChatHelper.INSTANCE.addClientMessage("\247b" + feature.getName() + "\247f: \2477" + KeyboardHelper.INSTANCE.getKeyName(feature.getKey()));
                     }
                 }
                 return;
             } else {
                 String moduleName = args[2];
-                Module module = Module.get(moduleName);
-                if (module == null) {
+                Feature feature = Feature.get(moduleName);
+                if (feature == null) {
                     ChatHelper.INSTANCE.addClientMessage("Module not found.");
                     return;
                 }
@@ -37,12 +37,12 @@ public class CommandBind extends Command {
                         ChatHelper.INSTANCE.addClientMessage("Key not found.");
                         return;
                     }
-                    module.setKey(key);
-                    ChatHelper.INSTANCE.addClientMessage("\247b" + module.getName() + " \2477has been bound to \247b" + keyName);
+                    feature.setKey(key);
+                    ChatHelper.INSTANCE.addClientMessage("\247b" + feature.getName() + " \2477has been bound to \247b" + keyName);
                     ModuleFile.write();
                 } else if (isDeleteString(action)) {
-                    module.setKey(0);
-                    ChatHelper.INSTANCE.addClientMessage("\247b" + module.getName() + " \2477has been unbound");
+                    feature.setKey(0);
+                    ChatHelper.INSTANCE.addClientMessage("\247b" + feature.getName() + " \2477has been unbound");
                     ModuleFile.write();
                 } else {
                     giveSyntaxMessage();

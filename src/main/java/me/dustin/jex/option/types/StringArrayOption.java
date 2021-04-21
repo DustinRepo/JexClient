@@ -23,9 +23,9 @@ public class StringArrayOption extends Option {
 
     public String getValue() {
         try {
-            for (Field f : this.getModule().getClass().getDeclaredFields()) {
+            for (Field f : this.getFeature().getClass().getDeclaredFields()) {
                 if (f.getName().equalsIgnoreCase(this.getFieldName())) {
-                    return (String) f.get(this.getModule());
+                    return (String) f.get(this.getFeature());
                 }
             }
         } catch (Exception e) {

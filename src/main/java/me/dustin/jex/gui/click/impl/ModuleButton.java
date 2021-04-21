@@ -13,8 +13,8 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.render.Gui;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.option.types.ColorOption;
 import me.dustin.jex.option.types.StringOption;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -30,23 +30,23 @@ public class ModuleButton extends Button {
     Timer timer = new Timer();
     int togglePos = 0;
     int cogSpin = 0;
-    private Module module;
+    private Feature feature;
     private int childCount;
     private float buttonsHeight;
 
-    public ModuleButton(Window window, Module module, float x, float y, float width, float height) {
-        super(window, module.getName(), x, y, width, height, null);
-        this.module = module;
+    public ModuleButton(Window window, Feature feature, float x, float y, float width, float height) {
+        super(window, feature.getName(), x, y, width, height, null);
+        this.feature = feature;
     }
 
     @Override
     public void draw(MatrixStack matrixStack) {
         updateOnOff();
         Gui.clickgui.setZOffset(-200);
-        Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), module.getState() ? ColorHelper.INSTANCE.getColor(getWindow().getColor()).darker().darker().getRGB() : 0x80000000);
+        Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), feature.getState() ? ColorHelper.INSTANCE.getColor(getWindow().getColor()).darker().darker().getRGB() : 0x80000000);
         Gui.clickgui.setZOffset(0);
 
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getModule().getName(), this.getX() + 3, (this.getY() + (this.getHeight() / 2)) - (Wrapper.INSTANCE.getTextRenderer().fontHeight / 2), -1);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getFeature().getName(), this.getX() + 3, (this.getY() + (this.getHeight() / 2)) - (Wrapper.INSTANCE.getTextRenderer().fontHeight / 2), -1);
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
 
@@ -67,14 +67,14 @@ public class ModuleButton extends Button {
         if (isHovered()) {
             if (int_1 == 0) {
                 if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_SHIFT)) {
-                    this.getModule().setVisible(!this.getModule().isVisible());
+                    this.getFeature().setVisible(!this.getFeature().isVisible());
                     if (ClickGui.doesPlayClickSound())
                         Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.2F));
                     if (JexClient.INSTANCE.isAutoSaveEnabled())
                         ModuleFile.write();
                     return;
                 }
-                this.getModule().toggleState();
+                this.getFeature().toggleState();
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
                     ModuleFile.write();
                 if (ClickGui.doesPlayClickSound())
@@ -110,7 +110,7 @@ public class ModuleButton extends Button {
         	childCount++;
             buttonsHeight += button.getHeight();
         }*/
-        module.getOptions().forEach(option ->
+        feature.getOptions().forEach(option ->
         {
             if (!option.hasParent()) {
                 OptionButton optionButton = new OptionButton(this.getWindow(), option, this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight());
@@ -161,10 +161,10 @@ public class ModuleButton extends Button {
                 Button thisButton = this.button.getChildren().get(this.button.getChildren().size() - 2);
 
                 if (event.getKey() == GLFW.GLFW_KEY_ESCAPE || event.getKey() == GLFW.GLFW_KEY_ENTER) {
-                    moduleButton.getModule().setKey(0);
+                    moduleButton.getFeature().setKey(0);
                     thisButton.setName("Key: <>");
                 } else {
-                    moduleButton.getModule().setKey(event.getKey());
+                    moduleButton.getFeature().setKey(event.getKey());
                     thisButton.setName("Key: " + (GLFW.glfwGetKeyName(event.getKey(), event.getScancode()) == null ? InputUtil.fromKeyCode(event.getKey(), event.getScancode()).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(event.getKey(), event.getScancode()).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_"));
                 }
                 while (EventAPI.getInstance().alreadyRegistered(this))
@@ -182,20 +182,20 @@ public class ModuleButton extends Button {
 
 
         };
-        String keyString = module.getKey() == 0 ? "<>" : (GLFW.glfwGetKeyName(module.getKey(), 0) == null ? InputUtil.fromKeyCode(module.getKey(), 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(module.getKey(), 0).toUpperCase()).replace("key.keyboard.", "").replace(".", "_");
+        String keyString = feature.getKey() == 0 ? "<>" : (GLFW.glfwGetKeyName(feature.getKey(), 0) == null ? InputUtil.fromKeyCode(feature.getKey(), 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(feature.getKey(), 0).toUpperCase()).replace("key.keyboard.", "").replace(".", "_");
         this.getChildren().add(new Button(this.getWindow(), "Key: " + (keyString.equalsIgnoreCase("0") ? "<>" : keyString.toUpperCase()), this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), keybind));
         childCount++;
         buttonsHeight += this.getHeight();
         ButtonListener visible = new ButtonListener(this) {
             @Override
             public void invoke() {
-                ((ModuleButton) this.button).getModule().setVisible(!((ModuleButton) this.button).getModule().isVisible());
-                this.button.getChildren().get(this.button.getChildren().size() - 1).setName("Visible: " + ((ModuleButton) this.button).getModule().isVisible());
+                ((ModuleButton) this.button).getFeature().setVisible(!((ModuleButton) this.button).getFeature().isVisible());
+                this.button.getChildren().get(this.button.getChildren().size() - 1).setName("Visible: " + ((ModuleButton) this.button).getFeature().isVisible());
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
                     ModuleFile.write();
             }
         };
-        this.getChildren().add(new Button(this.getWindow(), "Visible: " + this.getModule().isVisible(), this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), visible));
+        this.getChildren().add(new Button(this.getWindow(), "Visible: " + this.getFeature().isVisible(), this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), visible));
         childCount++;
         buttonsHeight += this.getHeight();
     }
@@ -205,7 +205,7 @@ public class ModuleButton extends Button {
             return;
         timer.reset();
         for (int i = 0; i < 2; i++) {
-            if (this.getModule().getState()) {
+            if (this.getFeature().getState()) {
                 if (togglePos < 20) {
                     togglePos++;
                 }
@@ -238,10 +238,10 @@ public class ModuleButton extends Button {
     }
 
     public boolean hasOptions() {
-        return !module.getOptions().isEmpty();
+        return !feature.getOptions().isEmpty();
     }
 
-    public Module getModule() {
-        return module;
+    public Feature getFeature() {
+        return feature;
     }
 }
