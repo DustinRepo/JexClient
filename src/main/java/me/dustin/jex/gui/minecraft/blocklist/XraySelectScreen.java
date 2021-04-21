@@ -10,8 +10,8 @@ import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.world.Xray;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.world.Xray;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
@@ -65,7 +65,7 @@ public class XraySelectScreen extends Screen {
             else
                 loadBlocks(searchField.getText());
             XrayFile.write();
-            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Module.get(Xray.class).getState())
+            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Feature.get(Xray.class).getState())
                 Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
         });
         addXrayButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Add To Xray"), button -> {
@@ -79,7 +79,7 @@ public class XraySelectScreen extends Screen {
             else
                 loadBlocks(searchField.getText());
             XrayFile.write();
-            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Module.get(Xray.class).getState())
+            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Feature.get(Xray.class).getState())
                 Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
         });
 

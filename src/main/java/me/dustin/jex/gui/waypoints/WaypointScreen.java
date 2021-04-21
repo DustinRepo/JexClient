@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.waypoints;
 
 import me.dustin.jex.gui.click.impl.Button;
-import me.dustin.jex.module.impl.world.Waypoints;
+import me.dustin.jex.feature.impl.world.Waypoints;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.LiteralText;
 

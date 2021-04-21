@@ -5,8 +5,8 @@ import me.dustin.jex.gui.click.listener.ButtonListener;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.render.Gui;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.Gui;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
@@ -34,7 +34,7 @@ public class Button {
         this.height = height;
         this.listener = listener;
         this.isEnabled = true;
-        gui = (Gui) Module.get(Gui.class);
+        gui = (Gui) Feature.get(Gui.class);
     }
 
     public void draw(MatrixStack matrixStack) {

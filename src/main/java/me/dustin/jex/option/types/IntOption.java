@@ -19,10 +19,10 @@ public class IntOption extends Option {
 
     public int getValue() {
         try {
-            for (Field f : this.getModule().getClass().getDeclaredFields()) {
+            for (Field f : this.getFeature().getClass().getDeclaredFields()) {
                 f.setAccessible(true);
                 if (f.getName().equalsIgnoreCase(this.getFieldName())) {
-                    return f.getInt(this.getModule());
+                    return f.getInt(this.getFeature());
                 }
             }
         } catch (Exception e) {

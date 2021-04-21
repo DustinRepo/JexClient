@@ -20,10 +20,10 @@ public class FloatOption extends Option {
 
     public float getValue() {
         try {
-            for (Field f : this.getModule().getClass().getDeclaredFields()) {
+            for (Field f : this.getFeature().getClass().getDeclaredFields()) {
                 f.setAccessible(true);
                 if (f.getName().equalsIgnoreCase(this.getFieldName())) {
-                    return f.getFloat(this.getModule());
+                    return f.getFloat(this.getFeature());
                 }
             }
         } catch (Exception e) {

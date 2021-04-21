@@ -5,7 +5,7 @@ import me.dustin.jex.event.render.EventRenderRain;
 import me.dustin.jex.event.render.EventWorldRender;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IWorldRenderer;
-import me.dustin.jex.module.impl.render.esp.ESP;
+import me.dustin.jex.feature.impl.render.esp.ESP;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;

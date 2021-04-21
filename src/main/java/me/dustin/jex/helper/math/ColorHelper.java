@@ -2,8 +2,8 @@ package me.dustin.jex.helper.math;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventTick;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.render.Hud;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.Hud;
 
 import java.awt.*;
 
@@ -38,7 +38,7 @@ public enum ColorHelper {
     }
 
     public int getClientColor() {
-        Hud hud = (Hud) Module.get(Hud.class);
+        Hud hud = (Hud) Feature.get(Hud.class);
         return hud.rainbowClientColor ? getRainbowColor() : hud.clientColor;
     }
 

@@ -6,9 +6,9 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.core.enums.ModCategory;
-import me.dustin.jex.module.impl.render.Hud;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.feature.impl.render.Hud;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -27,10 +27,10 @@ public enum TabGui {
         int categoryCount = 0;
         spotHoverY = y + (categorySelect * buttonHeight);
         modSpotHoverY = y + (modSelect * buttonHeight);
-        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (ModCategory.values().length * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
-        for (ModCategory category : ModCategory.values()) {
+        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (FeatureCategory.values().length * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
+        for (FeatureCategory category : FeatureCategory.values()) {
             int offset = 1;
-            if (categoryCount != ModCategory.values().length - 1) {
+            if (categoryCount != FeatureCategory.values().length - 1) {
                 Render2DHelper.INSTANCE.drawHLine(matrixStack, x + 1, x + width - 2, y + (categoryCount * buttonHeight) + buttonHeight - 1, 0x50ffffff);
             }
             Render2DHelper.INSTANCE.fill(matrixStack, x + 1, y + (categoryCount * buttonHeight), x + width - 1, y + (categoryCount * buttonHeight) + buttonHeight - offset, 0x35000000);
@@ -42,7 +42,7 @@ public enum TabGui {
         else
             FontHelper.INSTANCE.drawWithShadow(matrixStack, ">", x + 5, hoverY + (buttonHeight / 2 - 4.5f), ColorHelper.INSTANCE.getClientColor());
 
-        for (ModCategory category : ModCategory.values()) {
+        for (FeatureCategory category : FeatureCategory.values()) {
             String catName = category.name().substring(0, 1).toUpperCase() + category.name().substring(1).toLowerCase();
             FontHelper.INSTANCE.drawWithShadow(matrixStack, catName, x + (categoryCount == categorySelect && !hoverBar ? 12 : 5), y + (categoryCount * buttonHeight) + (buttonHeight / 2 - 4.5f), categoryCount == categorySelect && !hoverBar ? ColorHelper.INSTANCE.getClientColor() : 0xffaaaaaa);
             categoryCount++;
@@ -52,10 +52,10 @@ public enum TabGui {
             x = x + width;
             width = getModWidth(width);
             int modCount = 0;
-            Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (Module.getModules(ModCategory.values()[categorySelect]).size() * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
-            for (Module category : Module.getModules(ModCategory.values()[categorySelect])) {
+            Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (Feature.getModules(FeatureCategory.values()[categorySelect]).size() * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
+            for (Feature category : Feature.getModules(FeatureCategory.values()[categorySelect])) {
                 int offset = 1;
-                if (modCount != Module.getModules(ModCategory.values()[categorySelect]).size() - 1) {
+                if (modCount != Feature.getModules(FeatureCategory.values()[categorySelect]).size() - 1) {
                     Render2DHelper.INSTANCE.drawHLine(matrixStack, x + 1, x + width - 2, y + (modCount * buttonHeight) + buttonHeight - 1, 0x50ffffff);
                 }
                 Render2DHelper.INSTANCE.fill(matrixStack, x + 1, y + (modCount * buttonHeight), x + width - 1, y + (modCount * buttonHeight) + buttonHeight - offset, 0x35000000);
@@ -67,8 +67,8 @@ public enum TabGui {
             else
                 FontHelper.INSTANCE.drawWithShadow(matrixStack, ">", x + 5, modHoverY + (buttonHeight / 2 - 4.5f), ColorHelper.INSTANCE.getClientColor());
 
-            for (Module module : Module.getModules(ModCategory.values()[categorySelect])) {
-                FontHelper.INSTANCE.drawWithShadow(matrixStack, module.getName(), x + (modCount == modSelect && !hoverBar ? 12 : 5), y + (modCount * buttonHeight) + (buttonHeight / 2 - 4.5f), module.getState() ? 0xffaaaaaa : 0xff555555);
+            for (Feature feature : Feature.getModules(FeatureCategory.values()[categorySelect])) {
+                FontHelper.INSTANCE.drawWithShadow(matrixStack, feature.getName(), x + (modCount == modSelect && !hoverBar ? 12 : 5), y + (modCount * buttonHeight) + (buttonHeight / 2 - 4.5f), feature.getState() ? 0xffaaaaaa : 0xff555555);
                 modCount++;
             }
         }
@@ -77,29 +77,29 @@ public enum TabGui {
 
     @EventListener(events = {EventKeyPressed.class})
     private void runKeys(EventKeyPressed eventKeyPressed) {
-        if (!((Hud) Module.get(Hud.class)).tabGui || eventKeyPressed.getType() != EventKeyPressed.PressType.IN_GAME)
+        if (!((Hud) Feature.get(Hud.class)).tabGui || eventKeyPressed.getType() != EventKeyPressed.PressType.IN_GAME)
             return;
         switch (eventKeyPressed.getKey()) {
             case GLFW.GLFW_KEY_UP:
                 if (!categoryOpen) {
                     categorySelect--;
                     if (categorySelect < 0)
-                        categorySelect = ModCategory.values().length - 1;
+                        categorySelect = FeatureCategory.values().length - 1;
                 } else {
                     modSelect--;
                     if (modSelect < 0) {
-                        modSelect = modListSize(ModCategory.values()[categorySelect]);
+                        modSelect = modListSize(FeatureCategory.values()[categorySelect]);
                     }
                 }
                 break;
             case GLFW.GLFW_KEY_DOWN:
                 if (!categoryOpen) {
                     categorySelect++;
-                    if (categorySelect > ModCategory.values().length - 1)
+                    if (categorySelect > FeatureCategory.values().length - 1)
                         categorySelect = 0;
                 } else {
                     modSelect++;
-                    if (modSelect > modListSize(ModCategory.values()[categorySelect])) {
+                    if (modSelect > modListSize(FeatureCategory.values()[categorySelect])) {
                         modSelect = 0;
                     }
                 }
@@ -123,21 +123,21 @@ public enum TabGui {
     }
 
     private float getModWidth(float origWidth) {
-        for (Module module : Module.getModules(ModCategory.values()[categorySelect])) {
+        for (Feature feature : Feature.getModules(FeatureCategory.values()[categorySelect])) {
             float offset = hoverBar ? 8 : 15;
-            if (FontHelper.INSTANCE.getStringWidth(module.getName()) + offset > origWidth) {
-                origWidth = FontHelper.INSTANCE.getStringWidth(module.getName()) + offset;
+            if (FontHelper.INSTANCE.getStringWidth(feature.getName()) + offset > origWidth) {
+                origWidth = FontHelper.INSTANCE.getStringWidth(feature.getName()) + offset;
             }
         }
         return origWidth;
     }
 
-    private Module getSelectedModule() {
-        return Module.getModules(ModCategory.values()[categorySelect]).get(modSelect);
+    private Feature getSelectedModule() {
+        return Feature.getModules(FeatureCategory.values()[categorySelect]).get(modSelect);
     }
 
-    private int modListSize(ModCategory category) {
-        return Module.getModules(category).size() - 1;
+    private int modListSize(FeatureCategory category) {
+        return Feature.getModules(category).size() - 1;
     }
 
     public void setHoverBar(boolean hoverBar) {

@@ -9,7 +9,7 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.impl.render.Search;
+import me.dustin.jex.feature.impl.render.Search;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;

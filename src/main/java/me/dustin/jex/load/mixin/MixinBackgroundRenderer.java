@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.event.render.EventRenderOverlay;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.render.NoFog;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.NoFog;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
@@ -45,7 +45,7 @@ public class MixinBackgroundRenderer {
             if (eventRenderOverlay.isCancelled()) {
                 RenderSystem.fogDensity(0);
             } else
-                RenderSystem.fogDensity(entity == Wrapper.INSTANCE.getLocalPlayer() && Module.get(NoFog.class).getState() ? 0 : s);
+                RenderSystem.fogDensity(entity == Wrapper.INSTANCE.getLocalPlayer() && Feature.get(NoFog.class).getState() ? 0 : s);
             RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
         } else {
             float v;
@@ -82,7 +82,7 @@ public class MixinBackgroundRenderer {
                 s = viewDistance * 0.75F;
                 v = viewDistance;
             }
-            if (entity == Wrapper.INSTANCE.getLocalPlayer() && Module.get(NoFog.class).getState()) {
+            if (entity == Wrapper.INSTANCE.getLocalPlayer() && Feature.get(NoFog.class).getState()) {
                 s = 0;
                 v = 10000;
             }

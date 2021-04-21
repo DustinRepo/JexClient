@@ -5,8 +5,8 @@ import me.dustin.jex.command.core.annotate.Cmd;
 import me.dustin.jex.file.XrayFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.world.Xray;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.world.Xray;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
@@ -33,7 +33,7 @@ public class CommandXray extends Command {
                 if (args[2] != null) {
                     if (!Xray.blockList.contains(block)) {
                         Xray.blockList.add(block);
-                        if (Module.get(Xray.class).getState()) {
+                        if (Feature.get(Xray.class).getState()) {
                             Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
                         }
                         ChatHelper.INSTANCE.addClientMessage("\247b" + block.getName().getString() + "\2477 has been added to Xray.");
@@ -44,7 +44,7 @@ public class CommandXray extends Command {
                 if (args[2] != null) {
                     if (Xray.blockList.contains(block)) {
                         Xray.blockList.remove(block);
-                        if (Module.get(Xray.class).getState()) {
+                        if (Feature.get(Xray.class).getState()) {
                             Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
                         }
                         ChatHelper.INSTANCE.addClientMessage("\247c" + block.getName().getString() + "\2477 has been removed from Xray.");

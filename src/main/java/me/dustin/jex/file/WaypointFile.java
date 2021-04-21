@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
-import me.dustin.jex.module.impl.world.Waypoints;
+import me.dustin.jex.feature.impl.world.Waypoints;
 
 import java.io.BufferedReader;
 import java.io.File;

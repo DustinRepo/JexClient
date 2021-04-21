@@ -21,8 +21,8 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.render.CustomMainMenu;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.CustomMainMenu;
 import me.dustin.jex.update.UpdateManager;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -94,7 +94,7 @@ public class JexTitleScreen extends Screen {
         this.backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
         this.doBackgroundFade = doBackgroundFade;
         this.isMinceraft = (double) (new Random()).nextFloat() < 1.0E-4D;
-        customMainMenu = (CustomMainMenu) Module.get(CustomMainMenu.class);
+        customMainMenu = (CustomMainMenu) Feature.get(CustomMainMenu.class);
 
         MCAPIHelper.INSTANCE.downloadPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
     }

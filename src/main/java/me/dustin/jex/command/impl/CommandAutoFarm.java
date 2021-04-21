@@ -4,7 +4,7 @@ import me.dustin.jex.command.core.Command;
 import me.dustin.jex.command.core.annotate.Cmd;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.module.impl.world.AutoFarm;
+import me.dustin.jex.feature.impl.world.AutoFarm;
 
 @Cmd(name = "AutoFarm", syntax = ".autofarm pos1/pos2", description = "Set AutoFarm positions")
 public class CommandAutoFarm extends Command {

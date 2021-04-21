@@ -210,20 +210,20 @@ public class OptionButton extends Button {
                 }
             });
 
-        getWindow().get(this.getOption().getModule()).getChildren().forEach(button -> {
+        getWindow().get(this.getOption().getFeature()).getChildren().forEach(button -> {
             if (this.masterButton == null) {
-                if (getWindow().get(this.getOption().getModule()).getChildren().indexOf(button) > getWindow().get(this.getOption().getModule()).getChildren().indexOf(this)) {
+                if (getWindow().get(this.getOption().getFeature()).getChildren().indexOf(button) > getWindow().get(this.getOption().getFeature()).getChildren().indexOf(this)) {
                     buttons.add(button);
                     addAllChildren(buttons, button);
                 }
             } else {
-                if (getWindow().get(this.getOption().getModule()).getChildren().indexOf(button) > getWindow().get(this.getOption().getModule()).getChildren().indexOf(masterButton)) {
+                if (getWindow().get(this.getOption().getFeature()).getChildren().indexOf(button) > getWindow().get(this.getOption().getFeature()).getChildren().indexOf(masterButton)) {
                     buttons.add(button);
                     addAllChildren(buttons, button);
                 }
             }
         });
-        buttons.addAll(super.allButtonsAfter(getWindow().get(this.getOption().getModule())));
+        buttons.addAll(super.allButtonsAfter(getWindow().get(this.getOption().getFeature())));
         return buttons;
     }
 

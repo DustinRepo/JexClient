@@ -9,8 +9,8 @@ import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import me.dustin.jex.module.core.Module;
-import me.dustin.jex.module.impl.movement.Sprint;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.movement.Sprint;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -228,7 +228,7 @@ public enum PlayerHelper {
                 speed = 4.32 / 20;
                 break;
         }
-        if ((Wrapper.INSTANCE.getLocalPlayer().isSprinting() || (Module.get(Sprint.class).getState() && isMoving())) && accountSprint)
+        if ((Wrapper.INSTANCE.getLocalPlayer().isSprinting() || (Feature.get(Sprint.class).getState() && isMoving())) && accountSprint)
             speed += (speed * 0.3);
         return speed;
     }

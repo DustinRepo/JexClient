@@ -7,7 +7,7 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.module.impl.world.Waypoints;
+import me.dustin.jex.feature.impl.world.Waypoints;
 
 @Cmd(name = "Waypoint", description = "Add or remove waypoints", syntax = ".waypoint <add/del> <name> <x/y/z/here>")
 public class CommandWaypoint extends Command {
