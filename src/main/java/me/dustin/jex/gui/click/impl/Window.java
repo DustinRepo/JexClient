@@ -53,7 +53,7 @@ public class Window {
         maxHeight = Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 > 0 ? Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 : 250;
 
         if (isOpen()) {
-            Scissor.INSTANCE.cut((int) x, (int) y + (int) height, (int) width, (int) maxHeight);
+            Scissor.INSTANCE.cut((int) this.getX(), (int) this.getY() + (int) this.getHeight(), (int) this.getWidth(), (int) maxHeight);
             if (this.getVeryBottomButton() != null)
                 Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getVeryBottomButton().getY() + this.getVeryBottomButton().getHeight() + 1,  color, 0xff101010, 1);
             this.getButtons().forEach(button -> {
