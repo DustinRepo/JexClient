@@ -35,7 +35,6 @@ public class UnsafeBaritoneHelper {
         BaritoneAPI.getSettings().prefix.value = "*&";
         ChatEvent event = new ChatEvent(command);
         IBaritone baritone = BaritoneAPI.getProvider().getPrimaryBaritone();
-        ChatHelper.INSTANCE.addClientMessage("Sending command to Baritone.");
         if (baritone != null) {
             baritone.getGameEventHandler().onSendChatMessage(event);
         }
