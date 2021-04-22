@@ -396,7 +396,7 @@ public class JexTitleScreen extends Screen {
             return;
         }
         for (File file : backgroundsFolder.listFiles()) {
-            if (backgroundExists(file.getName().replaceAll("-", "")))
+            if (backgroundExists(file.getName().replaceAll("-", "").replaceAll(" ", "").toLowerCase()))
                 continue;
             if (!file.isDirectory()) {
                 String fileString = "";
@@ -406,7 +406,7 @@ public class JexTitleScreen extends Screen {
                 byte[] fileContent = FileUtils.readFileToByteArray(file);
                 String encodedString = Base64.encodeBase64String(fileContent);
                 try {
-                    parseImage(encodedString, file.getName().replaceAll("-", ""));
+                    parseImage(encodedString, file.getName().replaceAll("-", "").replaceAll(" ", "").toLowerCase());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
