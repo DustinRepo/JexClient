@@ -42,7 +42,7 @@ import java.util.Arrays;
 
 public enum JexClient {
     INSTANCE;
-    private String version = "0.2.5b";
+    private String version = "0.2.6";
     private boolean autoSaveModules = false;
     private boolean soundOnLaunch = true;
 

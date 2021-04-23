@@ -1,12 +1,14 @@
 package me.dustin.jex.update;
 
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.Download;
 import net.minecraft.SharedConstants;
 
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 
 public enum Update {
     INSTANCE;
@@ -19,36 +21,64 @@ public enum Update {
             return;
         }
         String downloadURL = "https://jexclient.com/download/JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar");
-        String mcLoc = Wrapper.INSTANCE.getMinecraft().runDirectory.getAbsolutePath();
+        String modsFolder = Wrapper.INSTANCE.getMinecraft().runDirectory.getAbsolutePath() + File.separator + "mods";
 
         new Thread(() -> {
-                progressText = "Downloading client";
-            Download download = null;
+            progressText = "Downloading Jex";
             try {
-                download = new Download(new URL(downloadURL), new File(mcLoc + File.separator + "mods", "JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar")));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            if (download == null) {
-                progressText = "Error updating.";
-                return;
-            }
-
-            try {
-                while (download.getStatus() == Download.DOWNLOADING) {
-                    download.run();
-                    progress = download.getProgress() / 100;//idk why this doesn't work even though I have SetEnv no-gzip dont-vary set in .htaccess
-                }
-                if (download.getStatus() == Download.COMPLETE)
-                    progressText = "Update complete. Closing Minecraft...";
-                if (download.getStatus() == Download.ERROR)
-                    progressText = "Error updating.";
+                String name = "JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar");
+                download(downloadURL, modsFolder + File.separator + name);
+                progressText = "Update complete. Closing Minecraft...";
                 Thread.sleep(3000);
                 Wrapper.INSTANCE.getMinecraft().scheduleStop();
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
+                progressText = "Error while downloading.";
                 e.printStackTrace();
             }
         }).start();
+    }
+
+
+    public void download(String remotePath, String localPath) throws IOException {
+        BufferedInputStream in = null;
+        FileOutputStream out = null;
+
+        URL url = new URL(remotePath);
+        URLConnection conn = url.openConnection();
+        int size = conn.getContentLength();
+
+        if (size < 0) {
+            System.out.println("Could not get the file size");
+        } else {
+            System.out.println("File size: " + size);
+        }
+
+        in = new BufferedInputStream(url.openStream());
+        out = new FileOutputStream(localPath);
+        byte data[] = new byte[1024];
+        int count;
+        double sumCount = 0.0;
+
+        while ((count = in.read(data, 0, 1024)) != -1) {
+            out.write(data, 0, count);
+
+            sumCount += count;
+            if (size > 0) {
+                this.progress = (float) (sumCount / size);
+            }
+        }
+        if (in != null)
+            try {
+                in.close();
+            } catch (IOException e3) {
+                e3.printStackTrace();
+            }
+        if (out != null)
+            try {
+                out.close();
+            } catch (IOException e4) {
+                e4.printStackTrace();
+            }
     }
 
     public String getProgressText() {
