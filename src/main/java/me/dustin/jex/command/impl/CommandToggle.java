@@ -3,7 +3,7 @@ package me.dustin.jex.command.impl;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.command.core.Command;
 import me.dustin.jex.command.core.annotate.Cmd;
-import me.dustin.jex.file.ModuleFile;
+import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.feature.core.Feature;
 
@@ -18,7 +18,7 @@ public class CommandToggle extends Command {
             if (mod != null) {
                 mod.toggleState();
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    ModuleFile.write();
+                    FeatureFile.write();
                 ChatHelper.INSTANCE.addClientMessage(String.format("%s %s", moduleName, mod.getState() ? "\247a\247lON" : "\2474\247lOFF"));
             } else {
                 ChatHelper.INSTANCE.addClientMessage("That module does not exist!");

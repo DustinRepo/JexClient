@@ -15,9 +15,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ModuleFile {
+public class FeatureFile {
 
-    private static String fileName = "Modules.json";
+    private static String fileName = "Features.json";
     private static boolean firstLoad = true;
 
     public static void write() {
@@ -77,8 +77,16 @@ public class ModuleFile {
 
     public static void read() {
         try {
+            File file = new File(ModFileHelper.INSTANCE.getJexDirectory(), fileName);
+            boolean portedOldConfig = false;
+            if (!file.exists()) {
+                file = new File(ModFileHelper.INSTANCE.getJexDirectory(), "Modules.json");
+                if (!file.exists())
+                    return;
+                portedOldConfig = true;
+            }
             StringBuffer stringBuffer = new StringBuffer("");
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(ModFileHelper.INSTANCE.getJexDirectory(), fileName).getPath()), "UTF8"));
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file.getPath()), "UTF8"));
             String line = null;
             while ((line = in.readLine()) != null) {
                 stringBuffer.append(line);
@@ -114,6 +122,10 @@ public class ModuleFile {
                             }
                         }
                 }
+            if (portedOldConfig) {
+                file.delete();
+                write();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

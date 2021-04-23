@@ -2,7 +2,7 @@ package me.dustin.jex.command.impl;
 
 import me.dustin.jex.command.core.Command;
 import me.dustin.jex.command.core.annotate.Cmd;
-import me.dustin.jex.file.ModuleFile;
+import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.feature.core.Feature;
@@ -39,11 +39,11 @@ public class CommandBind extends Command {
                     }
                     feature.setKey(key);
                     ChatHelper.INSTANCE.addClientMessage("\247b" + feature.getName() + " \2477has been bound to \247b" + keyName);
-                    ModuleFile.write();
+                    FeatureFile.write();
                 } else if (isDeleteString(action)) {
                     feature.setKey(0);
                     ChatHelper.INSTANCE.addClientMessage("\247b" + feature.getName() + " \2477has been unbound");
-                    ModuleFile.write();
+                    FeatureFile.write();
                 } else {
                     giveSyntaxMessage();
                 }

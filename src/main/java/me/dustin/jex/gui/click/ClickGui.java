@@ -3,8 +3,8 @@ package me.dustin.jex.gui.click;
 
 import me.dustin.jex.JexClient;
 import me.dustin.jex.file.ClientSettingsFile;
+import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.file.GuiFile;
-import me.dustin.jex.file.ModuleFile;
 import me.dustin.jex.gui.click.impl.Button;
 import me.dustin.jex.gui.click.impl.ModuleButton;
 import me.dustin.jex.gui.click.impl.RadarWindow;
@@ -48,13 +48,13 @@ public class ClickGui extends Screen {
     private ButtonListener save = new ButtonListener() {
         @Override
         public void invoke() {
-            ModuleFile.write();
+            FeatureFile.write();
         }
     };
     private ButtonListener load = new ButtonListener() {
         @Override
         public void invoke() {
-            ModuleFile.read();
+            FeatureFile.read();
         }
     };
     private ButtonListener autoSaveListener = new ButtonListener() {

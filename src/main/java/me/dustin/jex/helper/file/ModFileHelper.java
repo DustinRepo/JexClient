@@ -23,7 +23,7 @@ public enum ModFileHelper {
             XrayFile.write();
         }
         ClientSettingsFile.read();
-        ModuleFile.read();
+        FeatureFile.read();
         FriendFile.read();
         SearchFile.read();
         WaypointFile.read();
