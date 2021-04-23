@@ -2,15 +2,16 @@ package me.dustin.jex.gui.minecraft;
 
 import me.dustin.jex.addon.Addon;
 import me.dustin.jex.command.CommandManager;
+import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.file.ClientSettingsFile;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
 import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
+import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.update.Update;
 import me.dustin.jex.update.UpdateManager;
 import net.minecraft.client.gui.screen.Screen;
@@ -105,11 +106,11 @@ public class JexOptionsScreen extends Screen {
         }
         if (updating) {
             int topY = (height / 2) - 100;
-            FontHelper.INSTANCE.drawCenteredString(matrices, Update.INSTANCE.getProgressText(), width / 2, topY - 20, ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawCenteredString(matrices, Update.INSTANCE.getProgressText() + " \247f" + ClientMathHelper.INSTANCE.roundToPlace(Update.INSTANCE.getProgress() * 100.0F, 2) + "%", width / 2, topY - 20, ColorHelper.INSTANCE.getClientColor());
             float leftX = (width / 2) - 100;
             float pos = 200 * Update.INSTANCE.getProgress();
             Render2DHelper.INSTANCE.fill(matrices, leftX, topY - 10, leftX + 200, topY - 8, 0xff000000);
-            Render2DHelper.INSTANCE.fill(matrices, leftX, topY - 10, leftX + pos, topY - 8, 0xff00ff50);
+            Render2DHelper.INSTANCE.fill(matrices, leftX, topY - 10, leftX + pos, topY - 8, ColorHelper.INSTANCE.getClientColor());
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
