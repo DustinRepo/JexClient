@@ -12,7 +12,7 @@ public enum FeatureManager {
     public void initializeFeatureManager() {
         this.getFeatures().clear();
 
-        Reflections reflections = new Reflections("me.dustin.jex.feature", new org.reflections.scanners.Scanner[0]);
+        Reflections reflections = new Reflections("me.dustin.jex.feature");
 
         Set<Class<? extends Feature>> allClasses = reflections.getSubTypesOf(Feature.class);
         allClasses.forEach(clazz -> {
