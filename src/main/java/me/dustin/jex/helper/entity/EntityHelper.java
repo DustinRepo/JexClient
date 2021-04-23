@@ -1,11 +1,11 @@
 package me.dustin.jex.helper.entity;
 
-import me.dustin.jex.helper.math.ClientMathHelper;
-import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.impl.combat.killaura.Killaura;
 import me.dustin.jex.feature.impl.player.AutoEat;
+import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -15,6 +15,9 @@ import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 
 import java.util.UUID;
 
@@ -109,6 +112,12 @@ public enum EntityHelper {
             }
         }
         return false;
+    }
+
+    public boolean canSee(Entity entity, BlockPos blockPos) {
+        Vec3d vec3d = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ());
+        Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY() + 0.5f, blockPos.getZ());
+        return Wrapper.INSTANCE.getWorld().raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS;
     }
 
     public float distanceFromGround(Entity entity) {
