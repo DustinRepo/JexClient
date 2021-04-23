@@ -3,8 +3,6 @@ package me.dustin.jex.feature.core;
 import org.reflections.Reflections;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Set;
 
 public enum FeatureManager {
@@ -25,28 +23,7 @@ public enum FeatureManager {
                 e.printStackTrace();
             }
         });
-        Collections.sort(features, new Comparator<Feature>() {
-            public int compare(Feature mod, Feature mod1) {
-                int mod1s = 0;
-                int mod2s = 0;
-                String alph = "abcdefghijklmnopqrstuvwxyz";
-                for (int i = 0; i < alph.length(); i++) {
-                    if ((alph.charAt(i) + "").equalsIgnoreCase(mod.getName().substring(0, 1))) {
-                        mod1s = i;
-                    }
-                    if ((alph.charAt(i) + "").equalsIgnoreCase(mod1.getName().substring(0, 1))) {
-                        mod2s = i;
-                    }
-                }
-                if (mod1s >= mod2s) {
-                    return 1;
-                }
-                if (mod1s < mod2s) {
-                    return -1;
-                }
-                return 1;
-            }
-        });
+        features.sort((f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName()));
     }
 
     public ArrayList<Feature> getFeatures() {
