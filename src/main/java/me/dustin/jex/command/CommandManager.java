@@ -33,7 +33,8 @@ public enum CommandManager {
     private int overlayAlpha = 0;
     private boolean overlayOn = false;
     public void init() {
-        Reflections reflections = new Reflections("me.dustin.jex.command", new org.reflections.scanners.Scanner[0]);
+        commands.clear();
+        Reflections reflections = new Reflections("me.dustin.jex.command");
 
         Set<Class<? extends Command>> allClasses = reflections.getSubTypesOf(Command.class);
         allClasses.forEach(clazz -> {
@@ -44,6 +45,7 @@ public enum CommandManager {
                 e.printStackTrace();
             }
         });
+        commands.sort((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()));
         EventAPI.getInstance().register(this);
     }
 
