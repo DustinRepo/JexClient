@@ -10,7 +10,7 @@ import me.dustin.jex.event.misc.EventGameFinishedLoading;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
-import me.dustin.jex.file.ModuleFile;
+import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -81,7 +81,7 @@ public enum JexClient {
                     if (module.getKey() == eventKeyPressed.getKey()) {
                         module.toggleState();
                         if (JexClient.INSTANCE.isAutoSaveEnabled())
-                            ModuleFile.write();
+                            FeatureFile.write();
                     }
                 });
             }

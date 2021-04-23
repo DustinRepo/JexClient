@@ -4,7 +4,7 @@ import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
-import me.dustin.jex.file.ModuleFile;
+import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.gui.click.ClickGui;
 import me.dustin.jex.gui.click.listener.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -71,12 +71,12 @@ public class ModuleButton extends Button {
                     if (ClickGui.doesPlayClickSound())
                         Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.2F));
                     if (JexClient.INSTANCE.isAutoSaveEnabled())
-                        ModuleFile.write();
+                        FeatureFile.write();
                     return;
                 }
                 this.getFeature().toggleState();
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    ModuleFile.write();
+                    FeatureFile.write();
                 if (ClickGui.doesPlayClickSound())
                     Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 return;
@@ -170,7 +170,7 @@ public class ModuleButton extends Button {
                 while (EventAPI.getInstance().alreadyRegistered(this))
                     EventAPI.getInstance().unregister(this);
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    ModuleFile.write();
+                    FeatureFile.write();
             }
 
             @Override
@@ -192,7 +192,7 @@ public class ModuleButton extends Button {
                 ((ModuleButton) this.button).getFeature().setVisible(!((ModuleButton) this.button).getFeature().isVisible());
                 this.button.getChildren().get(this.button.getChildren().size() - 1).setName("Visible: " + ((ModuleButton) this.button).getFeature().isVisible());
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    ModuleFile.write();
+                    FeatureFile.write();
             }
         };
         this.getChildren().add(new Button(this.getWindow(), "Visible: " + this.getFeature().isVisible(), this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), visible));
