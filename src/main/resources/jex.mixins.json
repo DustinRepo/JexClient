@@ -53,7 +53,10 @@
     "MixinSignEditScreen",
     "MixinSplashScreen",
     "MixinTerrainRenderContext",
-    "MixinWorldRenderer"
+    "MixinWorldRenderer",
+    "SodiumMixinBlockOcclusionCache",
+    "SodiumMixinBlockRenderer",
+    "SodiumMixinFluidRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
