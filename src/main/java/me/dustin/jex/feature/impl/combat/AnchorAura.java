@@ -87,7 +87,7 @@ public class AnchorAura extends Feature {
                         return;
                     }
                     BlockPos anchor = getAnchor(Wrapper.INSTANCE.getLocalPlayer());
-                    if (anchor != null && shouldExplode(anchor)) {
+                    if (anchor != null && shouldExplode(anchor) && !Wrapper.INSTANCE.getLocalPlayer().isSneaking()) {
                         int glowstone = InventoryHelper.INSTANCE.getFromHotbar(Items.GLOWSTONE);
                         if (glowstone != -1) {
                             int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
