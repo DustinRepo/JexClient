@@ -155,7 +155,7 @@ public class ClickGui extends Screen {
 
     @Override
     public boolean mouseScrolled(double double_1, double double_2, double double_3) {
-        windows.forEach(window -> window.scroll(double_1, double_2, double_3));
+        windows.forEach(window -> {if (!window.getButtons().isEmpty()) window.scroll(double_1, double_2, double_3);});
         return false;
     }
 
