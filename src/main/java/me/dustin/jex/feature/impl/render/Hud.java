@@ -51,7 +51,9 @@ public class Hud extends Feature {
     public int clientColor = 0xff00a1ff;
     @OpChild(name = "Rainbow", parent = "Client Color")
     public boolean rainbowClientColor;
-    @Op(name = "Jex Effect", all = {"Static", "Spin Only", "Flip Only", "SpinFlip"})
+    @Op(name = "Watermark")
+    public boolean watermark = true;
+    @OpChild(name = "Jex Effect", all = {"Static", "Spin Only", "Flip Only", "SpinFlip"}, parent = "Watermark")
     public String watermarkMode = "Static";
     @Op(name = "Draw Face")
     public boolean drawFace = true;
@@ -142,7 +144,11 @@ public class Hud extends Feature {
     private void runRenderMethod(EventRender2D eventRender2D) {
         if (Wrapper.INSTANCE.getOptions().debugEnabled)
             return;
-        drawWatermark(eventRender2D);
+        if (watermark)
+            drawWatermark(eventRender2D);
+        if (drawFace && Wrapper.INSTANCE.getMinecraft().getNetworkHandler() != null && Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()) != null) {
+            Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), watermark ? 35 : 2, 2, 4, Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId())).getSkinTexture());
+        }
         drawPotionEffectsAndCoordinates(eventRender2D);
         if (lagometer)
             drawLagometer(eventRender2D);
@@ -278,10 +284,6 @@ public class Hud extends Feature {
                 break;
         }
         matrixStack.pop();
-
-        if (drawFace && Wrapper.INSTANCE.getMinecraft().getNetworkHandler() != null && Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()) != null) {
-            Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), 35, 2, 4, Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId())).getSkinTexture());
-        }
     }
 
     public void drawLagometer(EventRender2D eventRender2D) {
@@ -413,17 +415,21 @@ public class Hud extends Feature {
 
     private void drawInfo(EventRender2D eventRender2D) {
         infoCount = 0;
+        float topX = drawFace ? 70 : 35;
+        if (!watermark) {
+            topX -= 33;
+        }
         if (showUsername) {
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Username\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().getSession().getUsername()), drawFace ? 70 : 35, 2 + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Username\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().getSession().getUsername()), topX, 2 + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
         if (tps) {
             String tpsString = instantTPS ? String.format("TPS\247f: \2477%.2f \247rInstant\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS(), TPSHelper.INSTANCE.getTPS(2)) : String.format("TPS\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS());
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), tpsString, drawFace ? 70 : 35, 2 + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), tpsString, topX, 2 + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
         if (fps) {
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("FPS\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().fpsDebugString.split(" ")[0]), drawFace ? 70 : 35, 2 + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("FPS\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().fpsDebugString.split(" ")[0]), topX, 2 + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
         infoCount = 0;
