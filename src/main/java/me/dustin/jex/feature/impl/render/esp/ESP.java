@@ -3,9 +3,7 @@ package me.dustin.jex.feature.impl.render.esp;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
-import me.dustin.jex.event.render.EventOutlineColor;
-import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.event.render.*;
 import me.dustin.jex.extension.FeatureExtension;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -67,7 +65,7 @@ public class ESP extends Feature {
         INSTANCE = this;
     }
 
-    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventOutlineColor.class, EventJoinWorld.class}, priority = 1)
+    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventOutlineColor.class, EventJoinWorld.class, EventRenderGetPos.class, EventHasOutline.class}, priority = 1)
     public void run(Event event) {
         if (lastMode != null && !mode.equalsIgnoreCase(lastMode)) {
             FeatureExtension.get(lastMode, this).disable();

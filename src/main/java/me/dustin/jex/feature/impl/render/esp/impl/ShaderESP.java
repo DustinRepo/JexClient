@@ -1,11 +1,11 @@
 package me.dustin.jex.feature.impl.render.esp.impl;
 
 import me.dustin.events.core.Event;
+import me.dustin.jex.event.render.EventHasOutline;
 import me.dustin.jex.event.render.EventOutlineColor;
-import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.extension.FeatureExtension;
-import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.impl.render.esp.ESP;
+import me.dustin.jex.helper.misc.Wrapper;
 
 public class ShaderESP extends FeatureExtension {
 
@@ -17,20 +17,14 @@ public class ShaderESP extends FeatureExtension {
 
     @Override
     public void pass(Event event) {
-        if (event instanceof EventRender3D) {
-            EventRender3D eventRender3D = (EventRender3D) event;
-            Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                entity.setGlowing(ESP.INSTANCE.isValid(entity));
-            });
+        if (event instanceof EventHasOutline) {
+            EventHasOutline eventHasOutline = (EventHasOutline)event;
+            eventHasOutline.setOutline(ESP.INSTANCE.isValid(eventHasOutline.getEntity()));
         }
         if (event instanceof EventOutlineColor) {
             EventOutlineColor eventOutlineColor = (EventOutlineColor) event;
             eventOutlineColor.setColor(ESP.INSTANCE.getColor(eventOutlineColor.getEntity()));
         }
-        /*if (event instanceof EventJoinWorld) {
-            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
-                Wrapper.INSTANCE.getMinecraft().worldRenderer.loadEntityOutlineShader();
-        }*/
     }
 
     @Override
@@ -46,10 +40,6 @@ public class ShaderESP extends FeatureExtension {
 
     @Override
     public void disable() {
-        if (Wrapper.INSTANCE.getWorld() != null)
-            Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                entity.setGlowing(false);
-            });
         if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
             Wrapper.INSTANCE.getMinecraft().worldRenderer.loadEntityOutlineShader();
 
