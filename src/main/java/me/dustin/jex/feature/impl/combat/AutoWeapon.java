@@ -2,16 +2,17 @@ package me.dustin.jex.feature.impl.combat;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventAttackEntity;
-import me.dustin.jex.helper.network.NetworkHelper;
-import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.player.AutoEat;
+import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 
@@ -20,6 +21,8 @@ import java.util.Map;
 @Feat(name = "AutoWeapon", category = FeatureCategory.COMBAT, description = "Automatically swap to the best weapon when attacking.")
 public class AutoWeapon extends Feature {
 
+    @Op(name = "Living Only")
+    public boolean livingOnly = true;
     @Op(name = "Mode", all = {"Sword", "Sword&Axe", "All Tools"})
     public String mode = "Sword";
 
@@ -27,6 +30,9 @@ public class AutoWeapon extends Feature {
     public void run(EventAttackEntity eventAttackEntity) {
         if (AutoEat.isEating)
             return;
+        if (livingOnly && !(eventAttackEntity.getEntity() instanceof LivingEntity))
+            return;
+
             int slot = -1;
             float str = 1;
             ItemStack stack = null;
