@@ -150,4 +150,8 @@ public enum ClientMathHelper {
     public Vec3d getVec(Entity entity) {
         return new Vec3d(entity.getX(), entity.getY(), entity.getZ());
     }
+
+    public Vec3d getVec(BlockPos blockPos) {
+        return new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+    }
 }

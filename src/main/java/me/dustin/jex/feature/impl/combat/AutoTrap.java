@@ -8,9 +8,12 @@ import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.friend.Friend;
+import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.entity.Entity;
@@ -23,9 +26,13 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
+
 @Feat(name = "AutoTrap", category = FeatureCategory.COMBAT, description = "Automatically trap people in boxes of obsidian")
 public class AutoTrap extends Feature {
 
+    @Op(name = "Rotate")
+    public boolean rotate = true;
     @Op(name = "Target Distance", min = 2, max = 6, inc = 0.1f)
     public float targetDistance = 6;
     @Op(name = "Place Delay (MS)", min = 0, max = 250)
@@ -54,129 +61,38 @@ public class AutoTrap extends Feature {
                 if (player != null) {
                     InventoryHelper.INSTANCE.getInventory().selectedSlot = obby;
 
-                    BlockPos above = player.getBlockPos().up().up();
-                    BlockPos north = player.getBlockPos().north();
-                    BlockPos east = player.getBlockPos().east();
-                    BlockPos south = player.getBlockPos().south();
-                    BlockPos west = player.getBlockPos().west();
-                    BlockPos northUP = player.getBlockPos().north().up();
-                    BlockPos eastUP = player.getBlockPos().east().up();
-                    BlockPos southUP = player.getBlockPos().south().up();
-                    BlockPos westUP = player.getBlockPos().west().up();
-
+                    ArrayList<BlockPos> placePos = new ArrayList<>();
+                    placePos.add(player.getBlockPos().north());
+                    placePos.add(player.getBlockPos().east());
+                    placePos.add(player.getBlockPos().south());
+                    placePos.add(player.getBlockPos().west());
+                    placePos.add(player.getBlockPos().north().up());
+                    placePos.add(player.getBlockPos().east().up());
+                    placePos.add(player.getBlockPos().south().up());
+                    placePos.add(player.getBlockPos().west().up());
+                    placePos.add(player.getBlockPos().up().up());
                     if (placeDelay != 0) {
-                        switch (stage) {
-                            case 0:
-                                if (Wrapper.INSTANCE.getWorld().getBlockState(north).getMaterial().isReplaceable()) {
-                                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(north.getX(), north.getY(), north.getZ()), Direction.UP, north, false));
-                                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                                    timer.reset();
-                                }
-                                stage++;
-                                break;
-                            case 1:
-                                if (Wrapper.INSTANCE.getWorld().getBlockState(east).getMaterial().isReplaceable()) {
-                                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(east.getX(), east.getY(), east.getZ()), Direction.UP, east, false));
-                                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                                    timer.reset();
-                                }
-                                stage++;
-                                break;
-                            case 2:
-                                if (Wrapper.INSTANCE.getWorld().getBlockState(south).getMaterial().isReplaceable()) {
-                                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(south.getX(), south.getY(), south.getZ()), Direction.UP, south, false));
-                                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                                    timer.reset();
-                                }
-                                stage++;
-                                break;
-                            case 3:
-                                if (Wrapper.INSTANCE.getWorld().getBlockState(west).getMaterial().isReplaceable()) {
-                                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(west.getX(), west.getY(), west.getZ()), Direction.UP, west, false));
-                                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                                    timer.reset();
-                                }
-                                stage++;
-                                break;
-                            case 4:
-                                if (Wrapper.INSTANCE.getWorld().getBlockState(northUP).getMaterial().isReplaceable()) {
-                                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(northUP.getX(), northUP.getY(), northUP.getZ()), Direction.UP, northUP, false));
-                                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                                    timer.reset();
-                                }
-                                stage++;
-                                break;
-                            case 5:
-                                if (Wrapper.INSTANCE.getWorld().getBlockState(eastUP).getMaterial().isReplaceable()) {
-                                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(eastUP.getX(), eastUP.getY(), eastUP.getZ()), Direction.UP, eastUP, false));
-                                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                                    timer.reset();
-                                }
-                                stage++;
-                                break;
-                            case 6:
-                                if (Wrapper.INSTANCE.getWorld().getBlockState(southUP).getMaterial().isReplaceable()) {
-                                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(southUP.getX(), southUP.getY(), southUP.getZ()), Direction.UP, southUP, false));
-                                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                                    timer.reset();
-                                }
-                                stage++;
-                                break;
-                            case 7:
-                                if (Wrapper.INSTANCE.getWorld().getBlockState(westUP).getMaterial().isReplaceable()) {
-                                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(westUP.getX(), westUP.getY(), westUP.getZ()), Direction.UP, westUP, false));
-                                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                                    timer.reset();
-                                }
-                                stage++;
-                                break;
-                            case 8:
-                                if (Wrapper.INSTANCE.getWorld().getBlockState(above).getMaterial().isReplaceable()) {
-                                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(above.getX(), above.getY(), above.getZ()), Direction.UP, above, false));
-                                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                                    timer.reset();
-                                }
-                                stage = 0;
-                                InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
-                                this.setState(false);
-                                break;
+                        BlockPos pos = placePos.get(stage);
+                        if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
+                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(pos.getX(), pos.getY(), pos.getZ()), Direction.UP, pos, false));
+                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                            RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), ClientMathHelper.INSTANCE.getVec(pos));
+                            if (rotate)
+                                ((EventPlayerPackets) event).setRotation(rotationVector);
+                            timer.reset();
+                        }
+                        stage++;
+                        if (stage == placePos.size())
+                        {
+                            InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+                            this.setState(false);
                         }
                     } else {
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(north).getMaterial().isReplaceable()) {
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(north.getX(), north.getY(), north.getZ()), Direction.UP, north, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                        }
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(east).getMaterial().isReplaceable()) {
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(east.getX(), east.getY(), east.getZ()), Direction.UP, east, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                        }
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(south).getMaterial().isReplaceable()) {
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(south.getX(), south.getY(), south.getZ()), Direction.UP, south, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                        }
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(west).getMaterial().isReplaceable()) {
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(west.getX(), west.getY(), west.getZ()), Direction.UP, west, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                        }
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(northUP).getMaterial().isReplaceable()) {
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(northUP.getX(), northUP.getY(), northUP.getZ()), Direction.UP, northUP, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                        }
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(eastUP).getMaterial().isReplaceable()) {
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(eastUP.getX(), eastUP.getY(), eastUP.getZ()), Direction.UP, eastUP, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                        }
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(southUP).getMaterial().isReplaceable()) {
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(southUP.getX(), southUP.getY(), southUP.getZ()), Direction.UP, southUP, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                        }
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(westUP).getMaterial().isReplaceable()) {
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(westUP.getX(), westUP.getY(), westUP.getZ()), Direction.UP, westUP, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                        }
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(above).getMaterial().isReplaceable()) {
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(above.getX(), above.getY(), above.getZ()), Direction.UP, above, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                        for (BlockPos pos : placePos) {
+                            if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
+                                Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(pos.getX(), pos.getY(), pos.getZ()), Direction.UP, pos, false));
+                                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                            }
                         }
                         InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
                         this.setState(false);
@@ -188,42 +104,22 @@ public class AutoTrap extends Feature {
         } else if (event instanceof EventRender3D) {
             PlayerEntity player = getPlayerToTrap();
             if (player == null)return;
-            BlockPos above = player.getBlockPos().up().up();
-            BlockPos north = player.getBlockPos().north();
-            BlockPos east = player.getBlockPos().east();
-            BlockPos south = player.getBlockPos().south();
-            BlockPos west = player.getBlockPos().west();
-            BlockPos northUP = player.getBlockPos().north().up();
-            BlockPos eastUP = player.getBlockPos().east().up();
-            BlockPos southUP = player.getBlockPos().south().up();
-            BlockPos westUP = player.getBlockPos().west().up();
+            ArrayList<BlockPos> placePos = new ArrayList<>();
+            placePos.add(player.getBlockPos().north());
+            placePos.add(player.getBlockPos().east());
+            placePos.add(player.getBlockPos().south());
+            placePos.add(player.getBlockPos().west());
+            placePos.add(player.getBlockPos().north().up());
+            placePos.add(player.getBlockPos().east().up());
+            placePos.add(player.getBlockPos().south().up());
+            placePos.add(player.getBlockPos().west().up());
+            placePos.add(player.getBlockPos().up().up());
             BlockPos blockPos = null;
-            if (Wrapper.INSTANCE.getWorld().getBlockState(north).getMaterial().isReplaceable()) {
-                blockPos = north;
-            } else
-            if (Wrapper.INSTANCE.getWorld().getBlockState(east).getMaterial().isReplaceable()) {
-                blockPos = east;
-            } else
-            if (Wrapper.INSTANCE.getWorld().getBlockState(south).getMaterial().isReplaceable()) {
-                blockPos = south;
-            } else
-            if (Wrapper.INSTANCE.getWorld().getBlockState(west).getMaterial().isReplaceable()) {
-                blockPos = west;
-            } else
-            if (Wrapper.INSTANCE.getWorld().getBlockState(northUP).getMaterial().isReplaceable()) {
-                blockPos = northUP;
-            } else
-            if (Wrapper.INSTANCE.getWorld().getBlockState(eastUP).getMaterial().isReplaceable()) {
-                blockPos = eastUP;
-            } else
-            if (Wrapper.INSTANCE.getWorld().getBlockState(southUP).getMaterial().isReplaceable()) {
-                blockPos = southUP;
-            } else
-            if (Wrapper.INSTANCE.getWorld().getBlockState(westUP).getMaterial().isReplaceable()) {
-                blockPos = westUP;
-            } else
-            if (Wrapper.INSTANCE.getWorld().getBlockState(above).getMaterial().isReplaceable()) {
-                blockPos = above;
+            for (BlockPos pos : placePos) {
+                if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
+                    blockPos = pos;
+                    break;
+                }
             }
             if (blockPos == null)
                 return;
@@ -247,4 +143,9 @@ public class AutoTrap extends Feature {
         return playerEntity;
     }
 
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        this.stage = 0;
+    }
 }
