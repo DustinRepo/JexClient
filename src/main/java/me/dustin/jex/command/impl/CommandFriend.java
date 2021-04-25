@@ -6,7 +6,7 @@ import me.dustin.jex.file.FriendFile;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.misc.ChatHelper;
 
-@Cmd(name = "Friend", syntax = ".friend <add/del> <name> (optional)<alias>", description = "Add or remove friends.")
+@Cmd(name = "Friend", syntax = ".friend <add/del/list> <name> (optional)<alias>", description = "Add or remove friends.")
 public class CommandFriend extends Command {
 
     @Override
@@ -34,7 +34,12 @@ public class CommandFriend extends Command {
                     ChatHelper.INSTANCE.addClientMessage("Removed \247c" + name);
                     FriendFile.write();
                 }
-            } else {
+            } else if (args[1].equalsIgnoreCase("list")) {
+                ChatHelper.INSTANCE.addClientMessage("Displaying friends list");
+                Friend.getFriendsList().forEach(friend -> {
+                    ChatHelper.INSTANCE.addClientMessage("\247b" + friend.getName() + " \247f-> \247b" + friend.getAlias());
+                });
+            }else {
                 giveSyntaxMessage();
             }
         } catch (Exception e) {
