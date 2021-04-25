@@ -13,7 +13,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 
-@Cmd(name = "Dupe", syntax = ".dupe", alias = {"d"}, description = "Relog. Put items you want to dupe in a chest. Hold a book and quill and run this command to reset your inventory.")
+@Cmd(name = "Dupe", alias = {"d"}, description = "Relog. Put items you want to dupe in a chest. Hold a book and quill and run this command to reset your inventory.")
 public class CommandDupe extends Command {
 
     private String firstPage = "";

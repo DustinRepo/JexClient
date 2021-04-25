@@ -11,11 +11,8 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Cmd {
 
     String name();
-
-    String syntax();
-
     String description();
-
+    String[] syntax() default {};
     String[] alias() default {};
 
 }

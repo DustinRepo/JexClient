@@ -9,7 +9,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.impl.world.Waypoints;
 
-@Cmd(name = "Waypoint", description = "Add or remove waypoints", syntax = ".waypoint <add/del> <name> <x/y/z/here>")
+@Cmd(name = "Waypoint", description = "Add or remove waypoints", syntax = {".waypoint add <name> <x/y/z/here>", ".waypoint del <name>"})
 public class CommandWaypoint extends Command {
 
     @Override

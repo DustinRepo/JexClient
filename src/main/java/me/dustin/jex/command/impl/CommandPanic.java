@@ -7,7 +7,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 
-@Cmd(name = "Panic", syntax = ".panic", description = "Disables all mods that are not visual incase an admin is nearby.")
+@Cmd(name = "Panic", description = "Disables all mods that are not visual incase an admin is nearby.")
 public class CommandPanic extends Command {
 
     @Override

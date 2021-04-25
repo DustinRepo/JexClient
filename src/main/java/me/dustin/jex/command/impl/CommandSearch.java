@@ -17,7 +17,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.Random;
 
-@Cmd(name = "Search", description = "Add or remove blocks from Search", syntax = ".search <list/add/del> <blockname> <hex color (f62d3e)/random>")
+@Cmd(name = "Search", description = "Add or remove blocks from Search", syntax = {".search add <blockname> <hex color (f62d3e)/random>", ".search del <blockname>", ".search list"})
 public class CommandSearch extends Command {
 
     @Override

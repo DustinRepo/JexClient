@@ -12,7 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-@Cmd(name = "Xray", description = "Add or remove blocks from Xray", syntax = ".xray <list/add/del> <blockname>")
+@Cmd(name = "Xray", description = "Add or remove blocks from Xray", syntax = {".xray add <blockname>", ".xray del <blockname>", ".xray list"})
 public class CommandXray extends Command {
 
     @Override

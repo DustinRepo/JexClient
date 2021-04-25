@@ -6,7 +6,7 @@ import me.dustin.jex.file.FriendFile;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.misc.ChatHelper;
 
-@Cmd(name = "Friend", syntax = ".friend <add/del/list> <name> (optional)<alias>", description = "Add or remove friends.")
+@Cmd(name = "Friend", syntax = {".friend add <name> (optional)<alias>", ".friend del <name>", ".friend list"}, description = "Add or remove friends.")
 public class CommandFriend extends Command {
 
     @Override

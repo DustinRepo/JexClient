@@ -11,7 +11,7 @@ import net.minecraft.screen.ShulkerBoxScreenHandler;
 
 import java.util.HashMap;
 
-@Cmd(name = "Peek", syntax = ".peek", description = "See inside of shulkers without placing them")
+@Cmd(name = "Peek", description = "See inside of shulkers without placing them")
 public class CommandPeek extends Command {
 
     @Override
