@@ -9,7 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.util.Hand;
 
-@Cmd(name = "Breed", syntax = ".breed", description = "Instantly make all animals around you breed with your current food in hand")
+@Cmd(name = "Breed", description = "Instantly make all animals around you breed with your current food in hand")
 public class CommandBreed extends Command {
     @Override
     public void runCommand(String command, String[] args) {

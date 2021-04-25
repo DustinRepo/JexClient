@@ -8,7 +8,7 @@ import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.FeatureManager;
 
-@Cmd(name = "Bind", syntax = ".bind <add/remove/list> <module> <key>", description = "Modify keybinds with a command. List with bind list")
+@Cmd(name = "Bind", syntax = {".bind add <module> <key>", ".bind remove <module>", ".bind list"}, description = "Modify keybinds with a command. List with bind list")
 public class CommandBind extends Command {
 
     @Override

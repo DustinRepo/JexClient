@@ -13,7 +13,7 @@ import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-@Cmd(name = "Enchant", syntax = ".enchant <enchantment/all> <level>", description = "Enchant the item in your hand at any level.")
+@Cmd(name = "Enchant", syntax = {".enchant <enchantment> <level>", ".enchant all <level>"}, description = "Enchant the item in your hand at any level.")
 public class CommandEnchant extends Command {
 
     @Override

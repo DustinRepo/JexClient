@@ -14,13 +14,13 @@ import java.util.List;
 
 public abstract class Command {
 
-    private String name, syntax, description;
-    private List<String> alias;
+    private String name, description;
+    private List<String> alias, syntax;
     private ArrayList<String[]> tabCompleteList;
 
     public Command() {
         this.name = this.getClass().getAnnotation(Cmd.class).name();
-        this.syntax = this.getClass().getAnnotation(Cmd.class).syntax();
+        this.syntax = Arrays.asList(this.getClass().getAnnotation(Cmd.class).syntax());
         this.description = this.getClass().getAnnotation(Cmd.class).description();
         this.alias = Arrays.asList(this.getClass().getAnnotation(Cmd.class).alias());
         this.tabCompleteList = new ArrayList<>();
@@ -32,8 +32,8 @@ public abstract class Command {
         return name;
     }
 
-    public String getSyntax() {
-        return syntax.replace(".", CommandManager.INSTANCE.getPrefix());
+    public List<String> getSyntax() {
+        return syntax;
     }
 
     public String getDescription() {
@@ -53,7 +53,10 @@ public abstract class Command {
     }
 
     protected void giveSyntaxMessage() {
-        ChatHelper.INSTANCE.addClientMessage("Invalid Syntax! " + this.getSyntax());
+        ChatHelper.INSTANCE.addClientMessage("Invalid Syntax!");
+        for (String s : syntax) {
+            ChatHelper.INSTANCE.addClientMessage(s.replace(".", CommandManager.INSTANCE.getPrefix()));
+        }
     }
 
     protected ArrayList<String[]> getTabCompleteList() {

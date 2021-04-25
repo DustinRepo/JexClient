@@ -12,7 +12,7 @@ import net.minecraft.nbt.ListTag;
 
 import java.util.Random;
 
-@Cmd(name = "Firework", description = "Create a hacked firework (Creative mode only)", syntax = ".firework")
+@Cmd(name = "Firework", description = "Create a hacked firework (Creative mode only)")
 public class CommandFirework extends Command {
 
     @Override

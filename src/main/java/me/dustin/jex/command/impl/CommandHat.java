@@ -9,7 +9,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 
-@Cmd(name = "Hat", description = "Put your current held item on your head (Creative only)", syntax = ".hat")
+@Cmd(name = "Hat", description = "Put your current held item on your head (Creative only)")
 public class CommandHat extends Command {
 
     @Override
