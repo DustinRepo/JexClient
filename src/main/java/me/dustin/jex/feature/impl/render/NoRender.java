@@ -4,12 +4,14 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRenderBlockEntity;
 import me.dustin.jex.event.render.EventRenderEntity;
-import me.dustin.jex.event.world.EventRenderFirework;
+import me.dustin.jex.event.world.EventTickParticle;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
+import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.entity.*;
+import net.minecraft.client.particle.*;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.boss.WitherEntity;
@@ -19,8 +21,16 @@ public class NoRender extends Feature {
 
     @Op(name = "Items")
     public boolean item = true;
-    @Op(name = "Fireworks")
+    @Op(name = "Particles")
+    public boolean particles = true;
+    @OpChild(name = "Fireworks", parent = "Particles")
     public boolean fireworks = true;
+    @OpChild(name = "Explosions", parent = "Particles")
+    public boolean explosions = true;
+    @OpChild(name = "Smoke", parent = "Particles")
+    public boolean smoke = true;
+    @OpChild(name = "Block Breaking", parent = "Particles")
+    public boolean blockBreak = true;
     @Op(name = "Withers")
     public boolean withers = true;
     @Op(name = "Falling Blocks")
@@ -40,7 +50,7 @@ public class NoRender extends Feature {
     @Op(name = "Campfires")
     public boolean campfires = true;
 
-    @EventListener(events = {EventRenderEntity.class, EventRenderBlockEntity.class, EventRenderFirework.class})
+    @EventListener(events = {EventRenderEntity.class, EventRenderBlockEntity.class, EventTickParticle.class})
     private void runMethod(Event event) {
         if (event instanceof EventRenderEntity) {
             EventRenderEntity eventRenderEntity = (EventRenderEntity) event;
@@ -66,9 +76,20 @@ public class NoRender extends Feature {
                 event.cancel();
             if (eventRenderBlockEntity.blockEntity instanceof CampfireBlockEntity && campfires)
                 event.cancel();
-        } else if (event instanceof EventRenderFirework) {
-            if (fireworks)
-                event.cancel();
+        } else if (event instanceof EventTickParticle && particles) {
+            EventTickParticle eventTickParticle = (EventTickParticle)event;
+            if (eventTickParticle.getParticle() instanceof ExplosionSmokeParticle || eventTickParticle.getParticle() instanceof FireSmokeParticle && smoke) {
+                eventTickParticle.cancel();
+            }
+            if (eventTickParticle.getParticle() instanceof ExplosionLargeParticle || eventTickParticle.getParticle() instanceof ExplosionEmitterParticle && explosions) {
+                eventTickParticle.cancel();
+            }
+            if (eventTickParticle.getParticle() instanceof FireworksSparkParticle.FireworkParticle || eventTickParticle.getParticle() instanceof FireworksSparkParticle.FireworkParticle && fireworks) {
+                eventTickParticle.cancel();
+            }
+            if (eventTickParticle.getParticle() instanceof BlockDustParticle && blockBreak) {
+                eventTickParticle.cancel();
+            }
         }
     }
 
