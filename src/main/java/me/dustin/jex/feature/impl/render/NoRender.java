@@ -78,7 +78,7 @@ public class NoRender extends Feature {
                 event.cancel();
         } else if (event instanceof EventTickParticle && particles) {
             EventTickParticle eventTickParticle = (EventTickParticle)event;
-            if (eventTickParticle.getParticle() instanceof ExplosionSmokeParticle || eventTickParticle.getParticle() instanceof FireSmokeParticle && smoke) {
+            if (eventTickParticle.getParticle() instanceof ExplosionSmokeParticle || eventTickParticle.getParticle() instanceof FireSmokeParticle || eventTickParticle.getParticle() instanceof CampfireSmokeParticle && smoke) {
                 eventTickParticle.cancel();
             }
             if (eventTickParticle.getParticle() instanceof ExplosionLargeParticle || eventTickParticle.getParticle() instanceof ExplosionEmitterParticle && explosions) {
