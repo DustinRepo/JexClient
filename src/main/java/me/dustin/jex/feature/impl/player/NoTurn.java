@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.load.impl.IPlayerPositionLookS2CPacket;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
@@ -26,8 +27,8 @@ public class NoTurn extends Feature {
                 }
                 PlayerPositionLookS2CPacket packet = (PlayerPositionLookS2CPacket) ((EventPacketReceive) event).getPacket();
                 if ((Wrapper.INSTANCE.getLocalPlayer() != null)) {
-                    ((IPlayerPositionLookS2CPacket) packet).setYaw(Wrapper.INSTANCE.getLocalPlayer().yaw);
-                    ((IPlayerPositionLookS2CPacket) packet).setPitch(Wrapper.INSTANCE.getLocalPlayer().pitch);
+                    ((IPlayerPositionLookS2CPacket) packet).setYaw(PlayerHelper.INSTANCE.getYaw());
+                    ((IPlayerPositionLookS2CPacket) packet).setPitch(PlayerHelper.INSTANCE.getPitch());
                 }
             }
         }

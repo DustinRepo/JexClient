@@ -2,14 +2,15 @@ package me.dustin.jex.feature.impl.render;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render3DHelper;
-import me.dustin.jex.load.impl.IPersistentProjectileEntity;
-import me.dustin.jex.load.impl.IProjectileEntity;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.PlayerHelper;
+import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.load.impl.IPersistentProjectileEntity;
+import me.dustin.jex.load.impl.IProjectileEntity;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -63,7 +64,7 @@ public class Trajectories extends Feature {
                 ItemStack itemStack = new ItemStack(Items.ARROW);
                 ArrowItem arrowItem = (ArrowItem) itemStack.getItem();
                 PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(Wrapper.INSTANCE.getWorld(), itemStack, Wrapper.INSTANCE.getLocalPlayer());
-                persistentProjectileEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getLocalPlayer().pitch, Wrapper.INSTANCE.getLocalPlayer().yaw, 0.0F, f * 3.0F, 0);
+                persistentProjectileEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, f * 3.0F, 0);
                 for (int j = 0; j < 200; j++) {
                     persistentProjectileEntity.tick();
                     positions.add(persistentProjectileEntity.getPos());
@@ -96,7 +97,7 @@ public class Trajectories extends Feature {
             } else if (mainStack.getItem() instanceof SnowballItem) {
                 SnowballEntity snowballEntity = new SnowballEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 snowballEntity.setItem(mainStack);
-                snowballEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getLocalPlayer().pitch, Wrapper.INSTANCE.getLocalPlayer().yaw, 0.0F, 1.5F, 0);
+                snowballEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
                 IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) snowballEntity;
                 for (int j = 0; j < 200; j++) {
                     snowballEntity.tick();
@@ -116,7 +117,7 @@ public class Trajectories extends Feature {
             } else if (mainStack.getItem() instanceof EnderPearlItem) {
                 EnderPearlEntity enderPearlEntity = new EnderPearlEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 enderPearlEntity.setItem(mainStack);
-                enderPearlEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getLocalPlayer().pitch, Wrapper.INSTANCE.getLocalPlayer().yaw, 0.0F, 1.5F, 0);
+                enderPearlEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
                 IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) enderPearlEntity;
                 for (int j = 0; j < 200; j++) {
                     enderPearlEntity.tick();
@@ -136,7 +137,7 @@ public class Trajectories extends Feature {
             } else if (mainStack.getItem() instanceof ThrowablePotionItem) {
                 PotionEntity potionEntity = new PotionEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 potionEntity.setItem(mainStack);
-                potionEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getLocalPlayer().pitch, Wrapper.INSTANCE.getLocalPlayer().yaw, -20.0F, 0.5F, 0);
+                potionEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), -20.0F, 0.5F, 0);
                 IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) potionEntity;
                 for (int j = 0; j < 200; j++) {
                     potionEntity.tick();
@@ -156,7 +157,7 @@ public class Trajectories extends Feature {
             } else if (mainStack.getItem() instanceof TridentItem) {
                 int j1 = EnchantmentHelper.getRiptide(mainStack);
                 TridentEntity tridentEntity = new TridentEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), mainStack);
-                tridentEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getLocalPlayer().pitch, Wrapper.INSTANCE.getLocalPlayer().yaw, 0.0F, 2.5F + (float) j1 * 0.5F, 0);
+                tridentEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 2.5F + (float) j1 * 0.5F, 0);
                 for (int j = 0; j < 200; j++) {
                     tridentEntity.tick();
                     positions.add(tridentEntity.getPos());

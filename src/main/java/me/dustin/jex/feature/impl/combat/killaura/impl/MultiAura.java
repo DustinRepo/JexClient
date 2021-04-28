@@ -60,7 +60,7 @@ public class MultiAura extends FeatureExtension {
                             BaritoneHelper.INSTANCE.followUntilDead(targets.get(0), killaura);
                     }
                     if (killaura.rotate) {
-                        RotationVector rotationVector = new RotationVector(Wrapper.INSTANCE.getLocalPlayer().yaw, 90);
+                        RotationVector rotationVector = new RotationVector(Wrapper.INSTANCE.getLocalPlayer().method_36454(), 90);
                         event.setRotation(rotationVector);
                     }
                 } else {

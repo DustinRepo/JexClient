@@ -96,7 +96,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.hasVehicle()Z"))
     public void tick(CallbackInfo ci) {
         ClientPlayerEntity me = (ClientPlayerEntity) (Object) this;
-        preEvent = new EventPlayerPackets(me.yaw, me.pitch, me.isOnGround()).run();
+        preEvent = new EventPlayerPackets(me.getYaw(1), me.getPitch(1), me.isOnGround()).run();
     }
 
     @Inject(method = "tick", at = @At(value = "RETURN"))
@@ -320,22 +320,22 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     }
 
 
-    @Redirect(method = "tick", at = @At(value = "FIELD", target = "net/minecraft/client/network/ClientPlayerEntity.yaw:F"))
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.method_36454()F"))
     public float ridingYaw(ClientPlayerEntity me) {
         return preEvent.getYaw();
     }
 
-    @Redirect(method = "tick", at = @At(value = "FIELD", target = "net/minecraft/client/network/ClientPlayerEntity.pitch:F"))
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.method_36455()F"))
     public float ridingPitch(ClientPlayerEntity me) {
         return preEvent.getPitch();
     }
 
-    @Redirect(method = "sendMovementPackets", at = @At(value = "FIELD", target = "net/minecraft/client/network/ClientPlayerEntity.yaw:F"))
+    @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.method_36454()F"))
     public float redirYaw(ClientPlayerEntity me) {
         return preEvent.getYaw();
     }
 
-    @Redirect(method = "sendMovementPackets", at = @At(value = "FIELD", target = "net/minecraft/client/network/ClientPlayerEntity.pitch:F"))
+    @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.method_36455()F"))
     public float redirPitch(ClientPlayerEntity me) {
         return preEvent.getPitch();
     }

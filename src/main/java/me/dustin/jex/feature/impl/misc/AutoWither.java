@@ -49,7 +49,7 @@ public class AutoWither extends Feature {
                         originPos = originPos.east();//east
 
                     Vec3d originVec = new Vec3d(originPos.getX(), originPos.getY(), originPos.getZ());
-                    boolean northSouth = Direction.fromRotation((double) Wrapper.INSTANCE.getLocalPlayer().yaw) == Direction.NORTH || Direction.fromRotation((double) Wrapper.INSTANCE.getLocalPlayer().yaw) == Direction.SOUTH;
+                    boolean northSouth = Direction.fromRotation((double) Wrapper.INSTANCE.getLocalPlayer().method_36454()) == Direction.NORTH || Direction.fromRotation((double) Wrapper.INSTANCE.getLocalPlayer().method_36454()) == Direction.SOUTH;
                     int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                     BlockHitResult blockHitResult = new BlockHitResult(originVec.add(0, 1, 0), Direction.DOWN, originPos.up(), false);
                     NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));

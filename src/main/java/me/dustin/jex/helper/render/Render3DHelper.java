@@ -1,6 +1,7 @@
 package me.dustin.jex.helper.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.MinecraftClient;
@@ -150,7 +151,7 @@ public enum Render3DHelper {
     }
 
     public void drawEntityBox(MatrixStack matrixstack, Entity entity, double x, double y, double z, int color) {
-        float yaw = MathHelper.lerpAngleDegrees(Wrapper.INSTANCE.getMinecraft().getTickDelta(), entity.prevYaw, entity.yaw);
+        float yaw = EntityHelper.INSTANCE.getYaw(entity);
         setup3DRender(true);
         matrixstack.translate(x, y, z);
         matrixstack.multiply(new Quaternion(new Vec3f(0, -1, 0), yaw, true));

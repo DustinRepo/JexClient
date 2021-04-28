@@ -10,6 +10,7 @@ import me.dustin.jex.file.SearchFile;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
@@ -146,7 +147,7 @@ public class Search extends Feature {
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
 
-                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
+                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);

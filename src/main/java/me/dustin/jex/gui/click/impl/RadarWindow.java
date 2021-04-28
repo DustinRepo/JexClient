@@ -2,6 +2,7 @@ package me.dustin.jex.gui.click.impl;
 
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.impl.render.esp.ESP;
@@ -46,7 +47,7 @@ public class RadarWindow extends Window{
         matrixStack.push();
         matrixStack.translate(this.getX() + midPos + 0.5, this.getY() + this.getHeight() + midPos + 0.5, 0);
         Render2DHelper.INSTANCE.fill(matrixStack,-0.5f, -0.5f, 0.5f, 0.5f, ColorHelper.INSTANCE.getClientColor());
-        matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), Wrapper.INSTANCE.getLocalPlayer().yaw + 180, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), PlayerHelper.INSTANCE.getYaw() + 180, true));
         drawPointer(matrixStack);
         matrixStack.pop();
         FontHelper.INSTANCE.drawCenteredString(matrixStack, "N",this.getX() + midPos + 1, this.getY() + this.getHeight() + 2, -1);

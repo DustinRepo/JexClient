@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.events.core.enums.EventPriority;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
@@ -80,6 +81,30 @@ public enum PlayerHelper {
         NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.DOWN));
     }
 
+    public float getYaw() {
+        return Wrapper.INSTANCE.getLocalPlayer().getYaw(Wrapper.INSTANCE.getMinecraft().getTickDelta());
+    }
+
+    public float getPitch() {
+        return Wrapper.INSTANCE.getLocalPlayer().getPitch(Wrapper.INSTANCE.getMinecraft().getTickDelta());
+    }
+
+    public void setYaw(float yaw) {
+        Wrapper.INSTANCE.getLocalPlayer().method_36456(yaw);
+    }
+
+    public void setPitch(float pitch) {
+        Wrapper.INSTANCE.getLocalPlayer().method_36457(pitch);
+    }
+
+    public void addYaw(float add) {
+        setYaw(getYaw() + add);
+    }
+
+    public void addPitch(float add) {
+        setPitch(getPitch() + add);
+    }
+
     public void setVelocityX(float x) {
         Vec3d velo = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
         Wrapper.INSTANCE.getLocalPlayer().setVelocity(x, velo.y, velo.z);
@@ -110,8 +135,8 @@ public enum PlayerHelper {
         double var141 = (double) MathHelper.sqrt(var4 * var4 + var8 * var8);
         float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(ent2.pitch, var13, Float.MAX_VALUE);
-        float yaw = updateRotation(ent2.yaw, var12, Float.MAX_VALUE);
+        float pitch = updateRotation(EntityHelper.INSTANCE.getPitch(ent2), var13, Float.MAX_VALUE);
+        float yaw = updateRotation(EntityHelper.INSTANCE.getYaw(ent2), var12, Float.MAX_VALUE);
         return new RotationVector(yaw - 180, -pitch);
     }
 
@@ -124,8 +149,8 @@ public enum PlayerHelper {
         double var141 = (double) MathHelper.sqrt(var4 * var4 + var8 * var8);
         float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(Wrapper.INSTANCE.getLocalPlayer().pitch, var13, Float.MAX_VALUE);
-        float yaw = updateRotation(Wrapper.INSTANCE.getLocalPlayer().yaw, var12, Float.MAX_VALUE);
+        float pitch = updateRotation(getPitch(), var13, Float.MAX_VALUE);
+        float yaw = updateRotation(getYaw(), var12, Float.MAX_VALUE);
         return new RotationVector(yaw - 180, -pitch);
     }
 
@@ -143,8 +168,8 @@ public enum PlayerHelper {
         double var141 = MathHelper.sqrt(var4 * var4 + var8 * var8);
         float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(ent2.pitch, var13, Float.MAX_VALUE);
-        float yaw = updateRotation(ent2.yaw, var12, Float.MAX_VALUE);
+        float pitch = updateRotation(EntityHelper.INSTANCE.getPitch(ent2), var13, Float.MAX_VALUE);
+        float yaw = updateRotation(EntityHelper.INSTANCE.getYaw(ent2), var12, Float.MAX_VALUE);
         return new RotationVector(yaw - 180, -pitch);
     }
 

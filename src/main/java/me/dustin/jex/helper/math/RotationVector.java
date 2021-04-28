@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.math;
 
+import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
@@ -9,8 +10,8 @@ public class RotationVector {
     private float yaw, pitch;
 
     public RotationVector(LivingEntity entity) {
-        this.yaw = entity.yaw;
-        this.pitch = entity.pitch;
+        this.yaw = EntityHelper.INSTANCE.getYaw(entity);
+        this.pitch = EntityHelper.INSTANCE.getPitch(entity);
     }
 
     public RotationVector(float yaw, float pitch) {

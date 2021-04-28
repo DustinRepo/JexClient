@@ -36,7 +36,7 @@ public class BucketCatch extends Feature {
                 if (bucket != -1) {
                     InventoryHelper.INSTANCE.getInventory().selectedSlot = bucket;
                     if (rotate)
-                        Wrapper.INSTANCE.getLocalPlayer().pitch = 90;
+                        Wrapper.INSTANCE.getLocalPlayer().method_36457(90);
                     eventPlayerPackets.setPitch(90);
                     if (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()) {
                         click = true;
@@ -52,7 +52,7 @@ public class BucketCatch extends Feature {
                 if (waterBucketSlot != -1) {
                     InventoryHelper.INSTANCE.getInventory().selectedSlot = waterBucketSlot;
                     if (rotate)
-                        Wrapper.INSTANCE.getLocalPlayer().pitch = 90;
+                        Wrapper.INSTANCE.getLocalPlayer().method_36457(90);
                     eventPlayerPackets.setPitch(90);
                     BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(0, -3f, 0);
                     if (WorldHelper.INSTANCE.getBlock(pos) != Blocks.AIR) {

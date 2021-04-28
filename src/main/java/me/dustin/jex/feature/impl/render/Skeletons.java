@@ -2,6 +2,7 @@ package me.dustin.jex.feature.impl.render;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -47,7 +48,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 float p = MathHelper.lerp(g, playerEntity.lastLimbDistance, playerEntity.limbDistance);
                 float o = (float)playerEntity.age + g;
                 float k = j - h;
-                float m = MathHelper.lerp(g, playerEntity.prevPitch, playerEntity.pitch);
+                float m = EntityHelper.INSTANCE.getPitch(playerEntity);
 
                 playerEntityModel.setAngles(playerEntity, q, p, o, k, m);
                 boolean sneaking = playerEntity.isSneaking();

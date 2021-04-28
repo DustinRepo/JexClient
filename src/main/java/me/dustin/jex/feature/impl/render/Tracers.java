@@ -8,6 +8,7 @@ import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
@@ -53,7 +54,7 @@ public class Tracers extends Feature {
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
 
-                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
+                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);//LINES doesn't fucking work for some reason so DEBUG_LINES yolo

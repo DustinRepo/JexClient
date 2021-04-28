@@ -144,7 +144,7 @@ public class Waypoints extends Feature {
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
 
-                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().yaw));
+                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR);

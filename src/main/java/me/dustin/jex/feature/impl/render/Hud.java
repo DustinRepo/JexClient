@@ -17,6 +17,7 @@ import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.core.Feature;
@@ -441,7 +442,7 @@ public class Hud extends Feature {
             infoCount++;
         }
         if (yawAndPitch) {
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Look\247f: \2477%s \2477%s", ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(Wrapper.INSTANCE.getLocalPlayer().yaw), 1), ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(Wrapper.INSTANCE.getLocalPlayer().pitch), 1)), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Look\247f: \2477%s \2477%s", ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(PlayerHelper.INSTANCE.getYaw()), 1), ClientMathHelper.INSTANCE.roundToPlace(MathHelper.wrapDegrees(PlayerHelper.INSTANCE.getPitch()), 1)), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
         if (biome) {

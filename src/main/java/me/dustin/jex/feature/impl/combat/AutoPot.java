@@ -51,7 +51,7 @@ public class AutoPot extends Feature {
                         throwing = true;
 
                         playerPacketEvent.setPitch(90);
-                        playerPacketEvent.setYaw(Wrapper.INSTANCE.getLocalPlayer().yaw);
+                        playerPacketEvent.setYaw(Wrapper.INSTANCE.getLocalPlayer().method_36454());
                         savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(getFirstPotion()));
                         InventoryHelper.INSTANCE.getInventory().selectedSlot = getFirstPotion();
@@ -59,7 +59,7 @@ public class AutoPot extends Feature {
                     } else {
                         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstPotion() < 9 ? getFirstPotion() + 36 : getFirstPotion(), SlotActionType.SWAP, 8);
                         playerPacketEvent.setPitch(90);
-                        playerPacketEvent.setYaw(Wrapper.INSTANCE.getLocalPlayer().yaw);
+                        playerPacketEvent.setYaw(Wrapper.INSTANCE.getLocalPlayer().method_36454());
                         savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(8));
                         InventoryHelper.INSTANCE.getInventory().selectedSlot = 8;

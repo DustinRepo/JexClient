@@ -122,12 +122,12 @@ public enum EntityHelper {
 
     public float distanceFromGround(Entity entity) {
         float dist = 9999;
-        float pitch = Wrapper.INSTANCE.getLocalPlayer().pitch;
-        Wrapper.INSTANCE.getLocalPlayer().pitch = 90;
+        float pitch = Wrapper.INSTANCE.getLocalPlayer().method_36455();//get pitch
+        Wrapper.INSTANCE.getLocalPlayer().method_36457(90);
         HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(256, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
         if (result != null)
             dist = ClientMathHelper.INSTANCE.getDistance(ClientMathHelper.INSTANCE.getVec(entity), result.getPos());
-        Wrapper.INSTANCE.getLocalPlayer().pitch = pitch;
+        Wrapper.INSTANCE.getLocalPlayer().method_36457(pitch);//oh boy I can't wait for method_36457 to change to setPitch next snapshot and I change this again
         if (dist > 256 || dist < 0)
             dist = 0;
         return dist;
@@ -163,6 +163,30 @@ public enum EntityHelper {
         if (entity instanceof WolfEntity && ((WolfEntity) entity).isAttacking() && !doesPlayerOwn(entity))
             return true;
         return false;
+    }
+
+    public float getYaw(Entity entity) {
+        return entity.getYaw(Wrapper.INSTANCE.getMinecraft().getTickDelta());
+    }
+
+    public float getPitch(Entity entity) {
+        return entity.getPitch(Wrapper.INSTANCE.getMinecraft().getTickDelta());
+    }
+
+    public void setYaw(Entity entity, float yaw) {
+        entity.method_36456(yaw);
+    }
+
+    public void setPitch(Entity entity, float pitch) {
+        entity.method_36457(pitch);
+    }
+
+    public void addYaw(Entity entity, float add) {
+        setYaw(entity, getYaw(entity) + add);
+    }
+
+    public void addPitch(Entity entity, float add) {
+        setPitch(entity,getPitch(entity) + add);
     }
 
 }
