@@ -38,7 +38,7 @@ public class Enderman extends Feature {
                     for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                         if (entity instanceof EndermanEntity) {
                             if (isPlayerStaring(Wrapper.INSTANCE.getLocalPlayer(), (EndermanEntity) entity)) {
-                                if (Wrapper.INSTANCE.getLocalPlayer().pitch > 85)
+                                if (PlayerHelper.INSTANCE.getPitch() > 85)
                                     eventPlayerPackets.setPitch(-90);
                                 else
                                     eventPlayerPackets.setPitch(90);

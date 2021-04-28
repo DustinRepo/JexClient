@@ -5,6 +5,7 @@ import me.dustin.jex.feature.impl.combat.killaura.Killaura;
 import me.dustin.jex.feature.impl.player.AutoEat;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -121,12 +122,12 @@ public enum EntityHelper {
 
     public float distanceFromGround(Entity entity) {
         float dist = 9999;
-        float pitch = Wrapper.INSTANCE.getLocalPlayer().pitch;
-        Wrapper.INSTANCE.getLocalPlayer().pitch = 90;
+        float pitch = PlayerHelper.INSTANCE.getPitch();
+        PlayerHelper.INSTANCE.setPitch(90);
         HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(256, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
         if (result != null)
             dist = ClientMathHelper.INSTANCE.getDistance(ClientMathHelper.INSTANCE.getVec(entity), result.getPos());
-        Wrapper.INSTANCE.getLocalPlayer().pitch = pitch;
+        PlayerHelper.INSTANCE.setPitch(pitch);
         if (dist > 256 || dist < 0)
             dist = 0;
         return dist;
@@ -162,6 +163,30 @@ public enum EntityHelper {
         if (entity instanceof WolfEntity && ((WolfEntity) entity).isAttacking() && !doesPlayerOwn(entity))
             return true;
         return false;
+    }
+
+    public float getYaw(Entity entity) {
+        return entity.yaw;
+    }
+
+    public float getPitch(Entity entity) {
+        return entity.pitch;
+    }
+
+    public void setYaw(Entity entity, float yaw) {
+        entity.yaw = yaw;
+    }
+
+    public void setPitch(Entity entity, float pitch) {
+        entity.pitch = pitch;
+    }
+
+    public void addYaw(Entity entity, float add) {
+        setYaw(entity, getYaw(entity) + add);
+    }
+
+    public void addPitch(Entity entity, float add) {
+        setPitch(entity, getPitch(entity) + add);
     }
 
 }

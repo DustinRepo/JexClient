@@ -63,6 +63,30 @@ public enum PlayerHelper {
         return uuidMap.get(name.toLowerCase());
     }
 
+    public float getYaw() {
+        return Wrapper.INSTANCE.getLocalPlayer().yaw;
+    }
+
+    public float getPitch() {
+        return Wrapper.INSTANCE.getLocalPlayer().pitch;
+    }
+
+    public void setYaw(float yaw) {
+        Wrapper.INSTANCE.getLocalPlayer().yaw = yaw;
+    }
+
+    public void setPitch(float pitch) {
+        Wrapper.INSTANCE.getLocalPlayer().pitch = pitch;
+    }
+
+    public void addYaw(float add) {
+        setYaw(getYaw() + add);
+    }
+
+    public void addPitch(float add) {
+        setPitch(getPitch() + add);
+    }
+
     public void setVelocityX(float x) {
         Vec3d velo = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
         Wrapper.INSTANCE.getLocalPlayer().setVelocity(x, velo.y, velo.z);
