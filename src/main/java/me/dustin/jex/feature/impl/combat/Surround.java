@@ -89,6 +89,11 @@ public class Surround extends Feature {
                 placePos.add(playerPos.south());
                 placePos.add(playerPos.west());
                 if (placeDelay != 0) {
+                    if (stage == placePos.size()) {
+                        InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+                        this.setState(false);
+                        return;
+                    }
                     BlockPos pos = placePos.get(stage);
                     if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
                         RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(pos, true));
@@ -98,11 +103,6 @@ public class Surround extends Feature {
                         timer.reset();
                     }
                     stage++;
-                    if (stage == placePos.size())
-                    {
-                        InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
-                        this.setState(false);
-                    }
                 } else {
                     for (BlockPos pos : placePos) {
                         if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {

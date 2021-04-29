@@ -77,6 +77,11 @@ public class AutoTrap extends Feature {
                     placePos.add(player.getBlockPos().west().up());
                     placePos.add(player.getBlockPos().up().up());
                     if (placeDelay != 0) {
+                        if (stage == placePos.size()) {
+                            InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+                            this.setState(false);
+                            return;
+                        }
                         BlockPos pos = placePos.get(stage);
                         if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
                             RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(pos, true));
@@ -86,11 +91,6 @@ public class AutoTrap extends Feature {
                             timer.reset();
                         }
                         stage++;
-                        if (stage == placePos.size())
-                        {
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
-                            this.setState(false);
-                        }
                     } else {
                         for (BlockPos pos : placePos) {
                             if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
