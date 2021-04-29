@@ -89,7 +89,9 @@ public class Tracers extends Feature {
     }
 
     public Color getColor(double power) {
-        double H = power * 0.4; // Hue (note 0.4 = Green, see huge chart below)
+        if (power > 1)
+            power = 1;
+        double H = power * 0.35; // Hue (note 0.35 = Green, see huge chart below)
         double S = 0.9; // Saturation
         double B = 0.9; // Brightness
 
