@@ -20,4 +20,13 @@ public class MixinParticleManager {
         }
     }
 
+    @Inject(method = "addParticle(Lnet/minecraft/client/particle/Particle;)V", at = @At("HEAD"), cancellable = true)
+    public void addParticle1(Particle particle, CallbackInfo ci) {
+        EventTickParticle eventTickParticle = new EventTickParticle(particle).run();
+        if (eventTickParticle.isCancelled() && particle.isAlive()) {
+            ci.cancel();
+            particle.markDead();
+        }
+    }
+
 }
