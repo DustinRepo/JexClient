@@ -5,13 +5,15 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.events.core.enums.EventPriority;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.movement.Sprint;
 import me.dustin.jex.helper.entity.EntityHelper;
+import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.movement.Sprint;
+import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -118,6 +120,79 @@ public enum PlayerHelper {
     public void setVelocityZ(float z) {
         Vec3d velo = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
         Wrapper.INSTANCE.getLocalPlayer().setVelocity(velo.x, velo.y, z);
+    }
+
+    public void placeBlockInPos(BlockPos blockPos, Hand hand, boolean illegallPlace) {
+        BlockPos north = blockPos.north();
+        BlockPos east = blockPos.east();
+        BlockPos south = blockPos.south();
+        BlockPos west = blockPos.west();
+        BlockPos down = blockPos.down();
+        BlockPos up = blockPos.up();
+
+        BlockPos placePos = null;
+        Direction placeDir = null;
+
+        if (!WorldHelper.INSTANCE.getBlockState(north).getMaterial().isReplaceable()) {
+            placePos = north;
+            placeDir = Direction.SOUTH;
+        } else if (!WorldHelper.INSTANCE.getBlockState(south).getMaterial().isReplaceable()) {
+            placePos = south;
+            placeDir = Direction.NORTH;
+        } else if (!WorldHelper.INSTANCE.getBlockState(east).getMaterial().isReplaceable()) {
+            placePos = east;
+            placeDir = Direction.WEST;
+        } else if (!WorldHelper.INSTANCE.getBlockState(west).getMaterial().isReplaceable()) {
+            placePos = west;
+            placeDir = Direction.EAST;
+        } else if (!WorldHelper.INSTANCE.getBlockState(up).getMaterial().isReplaceable()) {
+            placePos = up;
+            placeDir = Direction.DOWN;
+        } else if (!WorldHelper.INSTANCE.getBlockState(down).getMaterial().isReplaceable()) {
+            placePos = down;
+            placeDir = Direction.UP;
+        }
+        if (placePos == null || placeDir == null) {
+            if (illegallPlace) {
+                Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), hand, new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.UP, blockPos, false));
+                Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
+            }
+        } else {
+            Vec3d placeVec = ClientMathHelper.INSTANCE.getVec(placePos);
+            BlockHitResult blockHitResult = new BlockHitResult(placeVec, placeDir, placePos, false);
+            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), hand, blockHitResult);
+            Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
+        }
+    }
+
+    public Vec3d getPlacingLookPos(BlockPos blockPos, boolean illegallPlace) {
+        BlockPos north = blockPos.north();
+        BlockPos east = blockPos.east();
+        BlockPos south = blockPos.south();
+        BlockPos west = blockPos.west();
+        BlockPos down = blockPos.down();
+        BlockPos up = blockPos.up();
+
+        if (!WorldHelper.INSTANCE.getBlockState(north).getMaterial().isReplaceable()) {
+            Direction direction = Direction.SOUTH;
+            return ClientMathHelper.INSTANCE.getVec(north).add(0.5, 0.5, 0.5).add(direction.getOffsetX(), direction.getOffsetX(), direction.getOffsetX());
+        } else if (!WorldHelper.INSTANCE.getBlockState(south).getMaterial().isReplaceable()) {
+            Direction direction = Direction.NORTH;
+            return ClientMathHelper.INSTANCE.getVec(south).add(0.5, 0.5, 0.5).add(direction.getOffsetX(), direction.getOffsetX(), direction.getOffsetX());
+        } else if (!WorldHelper.INSTANCE.getBlockState(east).getMaterial().isReplaceable()) {
+            Direction direction = Direction.WEST;
+            return ClientMathHelper.INSTANCE.getVec(east).add(0.5, 0.5, 0.5).add(direction.getOffsetX(), direction.getOffsetX(), direction.getOffsetX());
+        } else if (!WorldHelper.INSTANCE.getBlockState(west).getMaterial().isReplaceable()) {
+            Direction direction = Direction.EAST;
+            return ClientMathHelper.INSTANCE.getVec(west).add(0.5, 0.5, 0.5).add(direction.getOffsetX(), direction.getOffsetX(), direction.getOffsetX());
+        } else if (!WorldHelper.INSTANCE.getBlockState(up).getMaterial().isReplaceable()) {
+            Direction direction = Direction.DOWN;
+            return ClientMathHelper.INSTANCE.getVec(up).add(0.5, 0.5, 0.5).add(direction.getOffsetX(), direction.getOffsetX(), direction.getOffsetX());
+        } else if (!WorldHelper.INSTANCE.getBlockState(down).getMaterial().isReplaceable()) {
+            Direction direction = Direction.UP;
+            return ClientMathHelper.INSTANCE.getVec(down).add(0.5, 0.5, 0.5).add(direction.getOffsetX(), direction.getOffsetX(), direction.getOffsetX());
+        }
+        return ClientMathHelper.INSTANCE.getVec(blockPos);
     }
 
     public RotationVector getRotations(Entity entityIn, Entity ent2) {

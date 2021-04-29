@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -26,6 +27,12 @@ public enum WorldHelper {
         if (Wrapper.INSTANCE.getWorld() == null)
             return null;
         return Wrapper.INSTANCE.getWorld().getBlockState(pos).getBlock();
+    }
+
+    public BlockState getBlockState(BlockPos pos) {
+        if (Wrapper.INSTANCE.getWorld() == null)
+            return null;
+        return Wrapper.INSTANCE.getWorld().getBlockState(pos);
     }
 
     public Identifier getDimensionID() {
