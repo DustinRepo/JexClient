@@ -3,6 +3,7 @@ package me.dustin.jex.helper.world;
 import com.google.common.collect.Maps;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -22,7 +23,13 @@ public enum WorldHelper {
     public Block getBlock(BlockPos pos) {
         if (Wrapper.INSTANCE.getWorld() == null)
             return null;
-        return Wrapper.INSTANCE.getWorld().getBlockState(pos).getBlock();
+        return getBlockState(pos).getBlock();
+    }
+
+    public BlockState getBlockState(BlockPos pos) {
+        if (Wrapper.INSTANCE.getWorld() == null)
+            return null;
+        return Wrapper.INSTANCE.getWorld().getBlockState(pos);
     }
 
     public Identifier getDimensionID() {
