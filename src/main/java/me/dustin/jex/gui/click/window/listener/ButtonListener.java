@@ -1,6 +1,6 @@
-package me.dustin.jex.gui.click.listener;
+package me.dustin.jex.gui.click.window.listener;
 
-import me.dustin.jex.gui.click.impl.Button;
+import me.dustin.jex.gui.click.window.impl.Button;
 
 public abstract class ButtonListener {
     public Button button;

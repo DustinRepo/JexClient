@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.click.impl;
+package me.dustin.jex.gui.click.window.impl;
 
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;

@@ -1,7 +1,7 @@
-package me.dustin.jex.gui.click.impl;
+package me.dustin.jex.gui.click.window.impl;
 
 
-import me.dustin.jex.gui.click.listener.ButtonListener;
+import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -22,8 +22,14 @@ public class Button {
     private ButtonListener listener;
     private boolean isOpen;
     private boolean isEnabled;
+    private boolean centerText = true;
     private boolean isVisible = true;
+    private boolean playClick = true;
+
     private ArrayList<Button> children = new ArrayList<>();
+
+    private int textColor;
+    private int backgroundColor;
 
     public Button(Window window, String name, float x, float y, float width, float height, ButtonListener listener) {
         this.window = window;
@@ -35,11 +41,16 @@ public class Button {
         this.listener = listener;
         this.isEnabled = true;
         gui = (Gui) Feature.get(Gui.class);
+        this.backgroundColor = 0x80000000;
+        this.textColor = 0xffaaaaaa;
     }
 
     public void draw(MatrixStack matrixStack) {
-        Render2DHelper.INSTANCE.fill(matrixStack, x, y, x + width, y + height, 0x80000000);
-        FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getName(), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 4, isEnabled ? 0xffaaaaaa : 0xff676767);
+        Render2DHelper.INSTANCE.fill(matrixStack, x, y, x + width, y + height, backgroundColor);
+        if (centerText)
+            FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getName(), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 3.5f, isEnabled ? textColor : 0xff676767);
+        else
+            FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getName(), this.getX() + 3, this.getY() + (this.getHeight() / 2) - 3.5f, isEnabled ? textColor : 0xff676767);
         if (isHovered() && isEnabled)
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
         this.getChildren().forEach(button -> {
@@ -58,7 +69,8 @@ public class Button {
             if (int_1 == 1) {
                 this.setOpen(!this.isOpen());
             }
-            Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            if (isPlayClick())
+                Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         }
     }
 
@@ -144,6 +156,22 @@ public class Button {
         isVisible = visible;
     }
 
+    public boolean isPlayClick() {
+        return playClick;
+    }
+
+    public void setPlayClick(boolean playClick) {
+        this.playClick = playClick;
+    }
+
+    public void setTextColor(int color) {
+        this.textColor = color;
+    }
+
+    public void setBackgroundColor(int color) {
+        this.backgroundColor = color;
+    }
+
     public void move(float x, float y) {
         this.setX(this.getX() + x);
         this.setY(this.getY() + y);
@@ -152,11 +180,11 @@ public class Button {
     public float getFullHeight(Button b) {
         float height = b.getHeight();
         if (b.isOpen())
-        for (Button button : b.getChildren()) {
-            height += button.getHeight();
-            if (button.hasChildren() && button.isOpen())
-                height += getFullHeight(button);
-        }
+            for (Button button : b.getChildren()) {
+                height += button.getHeight();
+                if (button.hasChildren() && button.isOpen())
+                    height += getFullHeight(button);
+            }
         return height;
     }
 
@@ -207,5 +235,9 @@ public class Button {
 
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
+    }
+
+    public void setCenterText(boolean centerText) {
+        this.centerText = centerText;
     }
 }

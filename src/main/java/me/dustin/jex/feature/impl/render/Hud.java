@@ -8,8 +8,9 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderEffects;
-import me.dustin.jex.gui.click.ClickGui;
-import me.dustin.jex.gui.click.impl.Window;
+import me.dustin.jex.gui.click.jex.JexGui;
+import me.dustin.jex.gui.click.window.ClickGui;
+import me.dustin.jex.gui.click.window.impl.Window;
 import me.dustin.jex.gui.tab.TabGui;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -161,7 +162,7 @@ public class Hud extends Feature {
             TabGui.INSTANCE.draw(eventRender2D.getMatrixStack(), 2, 35 + (10 * infoCount), tabGuiWidth, buttonHeight);
         }
         for (Window window : ClickGui.windows) {
-            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui)) {
+            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof JexGui)) {
                 window.draw(eventRender2D.getMatrixStack());
             }
         }

@@ -1,15 +1,15 @@
-package me.dustin.jex.gui.click;
+package me.dustin.jex.gui.click.window;
 
 
 import me.dustin.jex.JexClient;
 import me.dustin.jex.file.ClientSettingsFile;
 import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.file.GuiFile;
-import me.dustin.jex.gui.click.impl.Button;
-import me.dustin.jex.gui.click.impl.ModuleButton;
-import me.dustin.jex.gui.click.impl.RadarWindow;
-import me.dustin.jex.gui.click.impl.Window;
-import me.dustin.jex.gui.click.listener.ButtonListener;
+import me.dustin.jex.gui.click.window.impl.Button;
+import me.dustin.jex.gui.click.window.impl.ModuleButton;
+import me.dustin.jex.gui.click.window.impl.RadarWindow;
+import me.dustin.jex.gui.click.window.impl.Window;
+import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
 import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
 import me.dustin.jex.gui.particle.ParticleManager2D;
@@ -44,7 +44,7 @@ public class ClickGui extends Screen {
     private Button clickSoundButton = null;
     public Gui guiModule;
     Window configWindow;
-    RadarWindow radarWindow;
+    public RadarWindow radarWindow;
     private ButtonListener save = new ButtonListener() {
         @Override
         public void invoke() {

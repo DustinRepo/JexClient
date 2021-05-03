@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.click.impl;
+package me.dustin.jex.gui.click.jex.impl;
 
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -6,8 +6,11 @@ import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
+import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.file.FeatureFile;
-import me.dustin.jex.gui.click.ClickGui;
+import me.dustin.jex.gui.click.jex.JexGui;
+import me.dustin.jex.gui.click.window.ClickGui;
+import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
@@ -36,34 +39,37 @@ import org.lwjgl.glfw.GLFW;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class OptionButton extends Button {
+public class JexOptionButton extends Button {
 
     Timer timer = new Timer();
     int togglePos = 0;
     int cogSpin = 0;
     private Option option;
     private boolean isSliding;
-    private OptionButton masterButton;
-    private OptionButton parentButton;
+    private JexOptionButton masterButton;
+    private JexOptionButton parentButton;
     private Identifier colorSlider = new Identifier("jex", "gui/click/colorslider.png");
     private int buttonsHeight;
 
-    public OptionButton(Window window, Option option, float x, float y, float width, float height) {
-        super(window, option.getName(), x, y, width, height, null);
+    public JexOptionButton(Option option, float x, float y, float width, float height) {
+        super(null, option.getName(), x, y, width, height, null);
         this.option = option;
     }
 
     @Override
     public void draw(MatrixStack matrixStack) {
         updateOnOff();
-        //Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x60000000);
+        if (this.masterButton != null) {
+            Render2DHelper.INSTANCE.fill(matrixStack, masterButton.getX(), this.getY(), this.getX(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor());
+            Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth(), this.getY(), masterButton.getX() + masterButton.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor());
+        }
 
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
 
         switch (this.getOption().getType()) {
             case BOOL:
-                FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName(), this.getX() + 3, this.getY() + 4, ((BoolOption) option).getValue() ? getWindow().getColor() : 0xffaaaaaa);
+                FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName(), this.getX() + 3, this.getY() + 4, ((BoolOption) option).getValue() ? ColorHelper.INSTANCE.getClientColor() : 0xffaaaaaa);
                 break;
             case STRINGARRAY:
                 FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName() + ": \247f" + ((StringArrayOption) this.getOption()).getValue(), this.getX() + 3, this.getY() + 4, 0xffaaaaaa);
@@ -72,7 +78,7 @@ public class OptionButton extends Button {
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getOption().getName(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, ((StringOption)option).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 14, 0xffaaaaaa);
                 if (EventAPI.getInstance().alreadyRegistered(this)) {
-                    Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), getWindow().getColor(), 0x00ffffff, 1);
+                    Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor(), 0x00ffffff, 1);
                 }
                 break;
             case COLOR:
@@ -85,14 +91,12 @@ public class OptionButton extends Button {
             matrixStack.push();
             matrixStack.translate(this.getX() + this.getWidth() - 7, this.getY() + 7.5f, 0);
             matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), cogSpin, true));
-            Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : getWindow().getColor());
+            Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : ColorHelper.INSTANCE.getClientColor());
             matrixStack.pop();
         }
         if (isOpen())
             this.getChildren().forEach(button -> {
                 button.draw(matrixStack);
-                Render2DHelper.INSTANCE.fill(matrixStack, getWindow().getX(), button.getY(), button.getX(), button.getY() + button.getHeight(), 0xff252525);
-                Render2DHelper.INSTANCE.fill(matrixStack, button.getX() + button.getWidth(), button.getY(), getWindow().getX() + getWindow().getWidth(), button.getY() + button.getHeight(), 0xff252525);
             });
     }
 
@@ -173,7 +177,7 @@ public class OptionButton extends Button {
         buttonsHeight = 0;
         option.getChildren().forEach(option ->
         {
-            OptionButton optionButton = new OptionButton(this.getWindow(), option, this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, option instanceof ColorOption ? 100 : 15);
+            JexOptionButton optionButton = new JexOptionButton(option, this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, option instanceof ColorOption ? 100 : 15);
             optionButton.masterButton = this.masterButton == null ? this : this.masterButton;
             optionButton.parentButton = this;
 
@@ -206,29 +210,36 @@ public class OptionButton extends Button {
                     addAllChildren(buttons, button);
                 }
             });
-
-        getWindow().get(this.getOption().getFeature()).getChildren().forEach(button -> {
-            if (this.masterButton == null) {
-                if (getWindow().get(this.getOption().getFeature()).getChildren().indexOf(button) > getWindow().get(this.getOption().getFeature()).getChildren().indexOf(this)) {
-                    buttons.add(button);
-                    addAllChildren(buttons, button);
-                }
-            } else {
-                if (getWindow().get(this.getOption().getFeature()).getChildren().indexOf(button) > getWindow().get(this.getOption().getFeature()).getChildren().indexOf(masterButton)) {
-                    buttons.add(button);
-                    addAllChildren(buttons, button);
-                }
-            }
-        });
-        buttons.addAll(super.allButtonsAfter(getWindow().get(this.getOption().getFeature())));
+        buttons.addAll(allButtonsAfter(masterButton != null ? masterButton : parentButton != null ? parentButton : this));
         return buttons;
+    }
+
+    public ArrayList<Button> allButtonsAfter(Button button1) {
+        ArrayList<Button> buttons = new ArrayList<>();
+        for (Button button : JexGui.INSTANCE.optionButtons) {
+            if (JexGui.INSTANCE.optionButtons.indexOf(button) > JexGui.INSTANCE.optionButtons.indexOf(button1) && button.isVisible()) {
+                buttons.add(button);
+                buttons = addAllChildren(buttons, button);
+            }
+        }
+        return buttons;
+    }
+
+    public Button get(Feature feature) {
+        Button moduleButton = null;
+        for (Button button : JexGui.INSTANCE.featureButtons)
+            if (button instanceof Button) {
+                if (((Button) button).getName().equalsIgnoreCase(feature.getName()))
+                    moduleButton = (Button) button;
+            }
+        return moduleButton;
     }
 
     public void close() {
         this.getChildren().forEach(button -> {
-            if (button instanceof OptionButton) {
+            if (button instanceof JexOptionButton) {
                 if (button.isOpen())
-                    ((OptionButton) button).close();
+                    ((JexOptionButton) button).close();
             }
         });
         allButtonsAfter().forEach(button -> {
@@ -362,7 +373,7 @@ public class OptionButton extends Button {
 
             handleSliders(v);
 
-            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(getWindow().getColor())).darker().getRGB());
+            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(ColorHelper.INSTANCE.getClientColor())).darker().getRGB());
             FontHelper.INSTANCE.drawCenteredString(matrixStack, property.getName() + ": " + ((FloatOption) property).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
         }
         if (property instanceof IntOption) {
@@ -378,7 +389,7 @@ public class OptionButton extends Button {
 
             handleSliders(v);
 
-            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Color.decode("0x" + Integer.toHexString(getWindow().getColor()).substring(2)).darker().getRGB());
+            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Color.decode("0x" + Integer.toHexString(ColorHelper.INSTANCE.getClientColor()).substring(2)).darker().getRGB());
             FontHelper.INSTANCE.drawCenteredString(matrixStack, property.getName() + ": " + ((IntOption) property).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
         }
 
@@ -406,7 +417,7 @@ public class OptionButton extends Button {
             Render2DHelper.INSTANCE.bindTexture(colorSlider);
             DrawableHelper.drawTexture(matrixStack, (int) this.getX() + (int) this.getWidth() - 10, (int) this.getY() + 15, 0, 0, 5, 80, 10, 80);
             //hue cursor
-            Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 10, this.getY() + 15 + huepos - 1, (this.getX() + this.getWidth() - 10) + 5, this.getY() + 15 + huepos + 1, -1);
+            Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 11, this.getY() + 15 + huepos - 1, (this.getX() + this.getWidth() - 10) + 4, this.getY() + 15 + huepos + 1, -1);
 
             FontHelper.INSTANCE.drawWithShadow(matrixStack, property.getName(), this.getX() + 3, this.getY() + 3, v.getValue());
         }

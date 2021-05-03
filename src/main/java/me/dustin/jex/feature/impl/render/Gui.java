@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.impl.render;
 
-import me.dustin.jex.gui.click.ClickGui;
+import me.dustin.jex.gui.click.jex.JexGui;
+import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
@@ -14,8 +15,12 @@ import org.lwjgl.glfw.GLFW;
 public class Gui extends Feature {
 
     public static ClickGui clickgui = new ClickGui(new LiteralText("Click Gui"));
+    public static JexGui jexGui = new JexGui(new LiteralText("Jex Gui"));
 
-    @Op(name = "Colors", all = {"Customize", "Client"})
+    @Op(name = "Mode", all = {"Jex", "Window"})
+    public String mode = "Jex";
+
+    @OpChild(name = "Colors", all = {"Customize", "Client"}, parent = "Mode", dependency = "Window")
     public String colorScheme = "Customize";
 
     @OpChild(name = "Combat", parent = "Colors", dependency = "Customize", isColor = true)
@@ -31,8 +36,7 @@ public class Gui extends Feature {
     @OpChild(name = "Misc", parent = "Colors", dependency = "Customize", isColor = true)
     public int miscColor = Hud.getCategoryColor(FeatureCategory.MISC);
 
-    @Op(name = "Particles")
-    public boolean particles;
+    public boolean particles = false;
 
     public Gui() {
         this.setKey(GLFW.GLFW_KEY_RIGHT_SHIFT);
@@ -40,7 +44,14 @@ public class Gui extends Feature {
 
     @Override
     public void onEnable() {
-        Wrapper.INSTANCE.getMinecraft().openScreen(clickgui);
+        switch (mode.toLowerCase()) {
+            case "jex":
+                Wrapper.INSTANCE.getMinecraft().openScreen(jexGui);
+                break;
+            case "window":
+                Wrapper.INSTANCE.getMinecraft().openScreen(clickgui);
+                break;
+        }
         this.toggleState();
     }
 

@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.minecraft.blocklist.button;
 
-import me.dustin.jex.gui.click.impl.Button;
-import me.dustin.jex.gui.click.listener.ButtonListener;
+import me.dustin.jex.gui.click.window.impl.Button;
+import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
