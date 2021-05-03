@@ -81,6 +81,11 @@ public enum PlayerHelper {
         Wrapper.INSTANCE.getLocalPlayer().pitch = pitch;
     }
 
+    public void setRotation(RotationVector rotation) {
+        setYaw(rotation.getYaw());
+        setPitch(rotation.getPitch());
+    }
+
     public void addYaw(float add) {
         setYaw(getYaw() + add);
     }
