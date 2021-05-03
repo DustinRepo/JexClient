@@ -1,20 +1,20 @@
-package me.dustin.jex.gui.click.impl;
+package me.dustin.jex.gui.click.window.impl;
 
 import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.file.FeatureFile;
-import me.dustin.jex.gui.click.ClickGui;
-import me.dustin.jex.gui.click.listener.ButtonListener;
+import me.dustin.jex.gui.click.window.ClickGui;
+import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.option.types.ColorOption;
 import me.dustin.jex.option.types.StringOption;
 import net.minecraft.client.sound.PositionedSoundInstance;

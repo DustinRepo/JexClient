@@ -2,8 +2,8 @@ package me.dustin.jex.file;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.dustin.jex.gui.click.ClickGui;
-import me.dustin.jex.gui.click.impl.Window;
+import me.dustin.jex.gui.click.window.ClickGui;
+import me.dustin.jex.gui.click.window.impl.Window;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;

@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.click.impl;
+package me.dustin.jex.gui.click.window.impl;
 
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -7,7 +7,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.file.FeatureFile;
-import me.dustin.jex.gui.click.ClickGui;
+import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;

@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.click.impl;
+package me.dustin.jex.gui.click.window.impl;
 
 import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.feature.impl.world.Radar;
