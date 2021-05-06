@@ -320,22 +320,22 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     }
 
 
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.method_36454()F"))
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.getYaw()F"))
     public float ridingYaw(ClientPlayerEntity me) {
         return preEvent.getYaw();
     }
 
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.method_36455()F"))
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.getPitch()F"))
     public float ridingPitch(ClientPlayerEntity me) {
         return preEvent.getPitch();
     }
 
-    @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.method_36454()F"))
+    @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.getYaw()F"))
     public float redirYaw(ClientPlayerEntity me) {
         return preEvent.getYaw();
     }
 
-    @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.method_36455()F"))
+    @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.getPitch()F"))
     public float redirPitch(ClientPlayerEntity me) {
         return preEvent.getPitch();
     }

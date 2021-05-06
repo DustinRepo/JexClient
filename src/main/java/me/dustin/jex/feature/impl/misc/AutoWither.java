@@ -10,6 +10,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
@@ -49,7 +50,7 @@ public class AutoWither extends Feature {
                         originPos = originPos.east();//east
 
                     Vec3d originVec = new Vec3d(originPos.getX(), originPos.getY(), originPos.getZ());
-                    boolean northSouth = Direction.fromRotation((double) Wrapper.INSTANCE.getLocalPlayer().method_36454()) == Direction.NORTH || Direction.fromRotation((double) Wrapper.INSTANCE.getLocalPlayer().method_36454()) == Direction.SOUTH;
+                    boolean northSouth = Direction.fromRotation((double) PlayerHelper.INSTANCE.getYaw()) == Direction.NORTH || Direction.fromRotation((double) PlayerHelper.INSTANCE.getYaw()) == Direction.SOUTH;
                     int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                     BlockHitResult blockHitResult = new BlockHitResult(originVec.add(0, 1, 0), Direction.DOWN, originPos.up(), false);
                     NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));

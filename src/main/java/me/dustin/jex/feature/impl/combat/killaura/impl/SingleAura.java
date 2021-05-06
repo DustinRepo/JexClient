@@ -56,8 +56,7 @@ public class SingleAura extends FeatureExtension {
                         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
                         Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
                         if (killaura.lockview) {
-                            Wrapper.INSTANCE.getLocalPlayer().method_36456(event.getYaw());
-                            Wrapper.INSTANCE.getLocalPlayer().method_36457(event.getPitch());
+                            PlayerHelper.INSTANCE.setRotation(event.getRotation());
                         }
                     }
                 }

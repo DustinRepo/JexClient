@@ -11,6 +11,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SplashPotionItem;
@@ -51,7 +52,7 @@ public class AutoPot extends Feature {
                         throwing = true;
 
                         playerPacketEvent.setPitch(90);
-                        playerPacketEvent.setYaw(Wrapper.INSTANCE.getLocalPlayer().method_36454());
+                        playerPacketEvent.setYaw(PlayerHelper.INSTANCE.getYaw());
                         savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(getFirstPotion()));
                         InventoryHelper.INSTANCE.getInventory().selectedSlot = getFirstPotion();
@@ -59,7 +60,7 @@ public class AutoPot extends Feature {
                     } else {
                         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstPotion() < 9 ? getFirstPotion() + 36 : getFirstPotion(), SlotActionType.SWAP, 8);
                         playerPacketEvent.setPitch(90);
-                        playerPacketEvent.setYaw(Wrapper.INSTANCE.getLocalPlayer().method_36454());
+                        playerPacketEvent.setYaw(PlayerHelper.INSTANCE.getYaw());
                         savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(8));
                         InventoryHelper.INSTANCE.getInventory().selectedSlot = 8;

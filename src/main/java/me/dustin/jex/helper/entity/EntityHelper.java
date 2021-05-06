@@ -122,12 +122,12 @@ public enum EntityHelper {
 
     public float distanceFromGround(Entity entity) {
         float dist = 9999;
-        float pitch = Wrapper.INSTANCE.getLocalPlayer().method_36455();//get pitch
-        Wrapper.INSTANCE.getLocalPlayer().method_36457(90);
+        float pitch = getPitch(entity);
+        setPitch(entity, 90);
         HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(256, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
         if (result != null)
             dist = ClientMathHelper.INSTANCE.getDistance(ClientMathHelper.INSTANCE.getVec(entity), result.getPos());
-        Wrapper.INSTANCE.getLocalPlayer().method_36457(pitch);//oh boy I can't wait for method_36457 to change to setPitch next snapshot and I change this again
+        setPitch(entity, pitch);
         if (dist > 256 || dist < 0)
             dist = 0;
         return dist;
@@ -174,11 +174,11 @@ public enum EntityHelper {
     }
 
     public void setYaw(Entity entity, float yaw) {
-        entity.method_36456(yaw);
+        entity.setYaw(yaw);
     }
 
     public void setPitch(Entity entity, float pitch) {
-        entity.method_36457(pitch);
+        entity.setPitch(pitch);
     }
 
     public void addYaw(Entity entity, float add) {
