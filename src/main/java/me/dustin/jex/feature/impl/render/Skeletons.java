@@ -49,6 +49,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 float k = j - h;
                 float m = EntityHelper.INSTANCE.getPitch(playerEntity);
 
+                playerEntityModel.animateModel(playerEntity, q, p, g);
                 playerEntityModel.setAngles(playerEntity, q, p, o, k, m);
                 boolean sneaking = playerEntity.isSneaking();
 
@@ -59,7 +60,14 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 ModelPart rightLeg = playerEntityModel.rightLeg;
 
                 matrixStack.translate(footPos.x, footPos.y, footPos.z);
+                if (playerEntity.isInSwimmingPose()) {
+                    matrixStack.translate(0, 0.35f, 0);
+                }
                 matrixStack.multiply(new Quaternion(new Vec3f(0, -1, 0), playerEntity.bodyYaw + 180, true));
+                if (playerEntity.isInSwimmingPose()) {
+                    matrixStack.multiply(new Quaternion(new Vec3f(-1, 0, 0), 90 + EntityHelper.INSTANCE.getPitch(playerEntity), true));
+                    matrixStack.translate(0, -0.95f, 0);
+                }
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 
@@ -116,6 +124,11 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
 
+                if (playerEntity.isInSwimmingPose()) {
+                    matrixStack.translate(0, 0.95f, 0);
+                    matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90 + EntityHelper.INSTANCE.getPitch(playerEntity), true));
+                    matrixStack.translate(0, -0.35f, 0);
+                }
                 matrixStack.multiply(new Quaternion(new Vec3f(0, 1, 0), playerEntity.bodyYaw + 180, true));
                 matrixStack.translate(-footPos.x, -footPos.y, -footPos.z);
             }
