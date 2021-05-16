@@ -41,6 +41,7 @@ public class Discord extends Feature {
         // in a worker thread
         (discordThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
+                if (presence == null)return;
                 presence.details = "Jex Client " + JexClient.INSTANCE.getVersion();
                 presence.state = getDetails();
                 lib.Discord_UpdatePresence(presence);
