@@ -128,14 +128,16 @@ public class Nametag extends Feature {
                     matrixStack.scale(scale, scale, 1);
                     int enchCount = 1;
                     for (Tag tag : itemStack.getEnchantments()) {
-                        CompoundTag compoundTag = (CompoundTag) tag;
-                        float newY = ((posY - ((10 * scale) * enchCount) + 0.5f) / scale);
-                        float newerX = (newX / scale);
-                        String name = getEnchantName(compoundTag);
-                        float nameWidth = FontHelper.INSTANCE.getStringWidth(name);
-                        Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), newerX, newY - 1, newerX + nameWidth, newY + 9, 0x35000000);
-                        FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX, newY, enchantColor);
-                        enchCount++;
+                        try {
+                            CompoundTag compoundTag = (CompoundTag) tag;
+                            float newY = ((posY - ((10 * scale) * enchCount) + 0.5f) / scale);
+                            float newerX = (newX / scale);
+                            String name = getEnchantName(compoundTag);
+                            float nameWidth = FontHelper.INSTANCE.getStringWidth(name);
+                            Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), newerX, newY - 1, newerX + nameWidth, newY + 9, 0x35000000);
+                            FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX, newY, enchantColor);
+                            enchCount++;
+                        }catch (Exception e) {}
                     }
                     matrixStack.pop();
                 }
