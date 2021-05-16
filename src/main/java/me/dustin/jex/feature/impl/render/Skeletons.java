@@ -32,7 +32,6 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
         MatrixStack matrixStack = eventRender3D.getMatrixStack();
         float g = eventRender3D.getPartialTicks();
         Render3DHelper.INSTANCE.setup3DRender(true);
-        Render3DHelper.INSTANCE.fixCameraRots(matrixStack);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
                 PlayerEntity playerEntity = (PlayerEntity)entity;
@@ -121,7 +120,6 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 matrixStack.translate(-footPos.x, -footPos.y, -footPos.z);
             }
         });
-        Render3DHelper.INSTANCE.applyCameraRots(matrixStack);
         Render3DHelper.INSTANCE.end3DRender();
     }
 
