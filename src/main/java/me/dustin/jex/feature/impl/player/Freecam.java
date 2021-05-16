@@ -16,7 +16,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.load.impl.IKeyBinding;
-import me.dustin.jex.load.impl.IPlayerMoveC2SPacket;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.Entity;
@@ -52,12 +51,8 @@ public class Freecam extends Feature {
                 if (!(packetSent.getPacket() instanceof KeepAliveC2SPacket || packetSent.getPacket() instanceof ChatMessageC2SPacket))
                     packetSent.cancel();
             } else if (packetSent.getPacket() instanceof PlayerMoveC2SPacket) {
-                IPlayerMoveC2SPacket iPlayerMoveC2SPacket = (IPlayerMoveC2SPacket) packetSent.getPacket();
-                iPlayerMoveC2SPacket.setX(savedCoords.getX());
-                iPlayerMoveC2SPacket.setY(savedCoords.getY());
-                iPlayerMoveC2SPacket.setZ(savedCoords.getZ());
-                iPlayerMoveC2SPacket.setYaw(lookVec.getYaw());
-                iPlayerMoveC2SPacket.setPitch(lookVec.getPitch());
+                PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), lookVec.getYaw(), lookVec.getPitch(), true);
+                packetSent.setPacket(playerMoveC2SPacket);
             }
         }
         if (event instanceof EventMove) {

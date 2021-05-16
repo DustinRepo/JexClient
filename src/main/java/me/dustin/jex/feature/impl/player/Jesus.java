@@ -7,14 +7,13 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventFluidCollisionShape;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.load.impl.IPlayerMoveC2SPacket;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.Block;
@@ -106,7 +105,9 @@ public class Jesus extends Feature {
             if (sent.getPacket() instanceof PlayerMoveC2SPacket) {
                 if (WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer())) {
                     if (ticks >= 4) {
-                        ((IPlayerMoveC2SPacket) ((PlayerMoveC2SPacket) sent.getPacket())).setY(((IPlayerMoveC2SPacket) ((PlayerMoveC2SPacket) sent.getPacket())).getY() - 0.02);
+                        PlayerMoveC2SPacket origPacket = (PlayerMoveC2SPacket) sent.getPacket();
+                        PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(origPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), origPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.02, origPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), origPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), origPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), origPacket.isOnGround());
+                        sent.setPacket(playerMoveC2SPacket);
                         ticks = 0;
                     } else
                         ticks++;
