@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.entity;
 
+import me.dustin.jex.entity.FakePlayerEntity;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.impl.combat.killaura.Killaura;
 import me.dustin.jex.feature.impl.player.AutoEat;
@@ -134,6 +135,8 @@ public enum EntityHelper {
     }
 
     public boolean isNPC(PlayerEntity player) {
+        if (player instanceof FakePlayerEntity)
+            return false;
         try {
             PlayerListEntry p = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(player.getUuid());
             if (p.getGameMode().isSurvivalLike() || p.getGameMode().isCreative()) {
