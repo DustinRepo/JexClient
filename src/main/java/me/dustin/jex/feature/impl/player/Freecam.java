@@ -3,6 +3,7 @@ package me.dustin.jex.feature.impl.player;
 import com.mojang.authlib.GameProfile;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerUpdates;
@@ -17,7 +18,6 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.load.impl.IKeyBinding;
 import me.dustin.jex.option.annotate.Op;
-import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -85,7 +85,7 @@ public class Freecam extends Feature {
             savedCoords = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
             lookVec = new RotationVector(Wrapper.INSTANCE.getLocalPlayer());
 
-            playerEntity = new OtherClientPlayerEntity(Wrapper.INSTANCE.getWorld(), new GameProfile(UUID.randomUUID(), Wrapper.INSTANCE.getMinecraft().getSession().getUsername()));
+            playerEntity = new FakePlayerEntity(Wrapper.INSTANCE.getWorld(), new GameProfile(UUID.randomUUID(), Wrapper.INSTANCE.getMinecraft().getSession().getUsername()));
             playerEntity.copyFrom(Wrapper.INSTANCE.getLocalPlayer());
             playerEntity.copyPositionAndRotation(Wrapper.INSTANCE.getLocalPlayer());
             Wrapper.INSTANCE.getWorld().addEntity(69420, playerEntity);
