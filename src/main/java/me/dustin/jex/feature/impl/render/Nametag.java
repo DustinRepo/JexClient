@@ -169,7 +169,8 @@ public class Nametag extends Feature {
 
             if (showPlayerFace && playerEntity instanceof PlayerEntity) {
                 PlayerListEntry playerListEntry = Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(playerEntity.getUuid());
-                Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), x - 8, y + 2, 2, playerListEntry.getSkinTexture());
+                if (playerListEntry != null)
+                    Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), x - 8, y + 2, 2, playerListEntry.getSkinTexture());
             }
 
             if (health && healthMode.equalsIgnoreCase("Bar") && playerEntity instanceof LivingEntity) {

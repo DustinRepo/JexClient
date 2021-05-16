@@ -3,6 +3,7 @@ package me.dustin.jex.helper.entity;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.impl.combat.killaura.Killaura;
 import me.dustin.jex.feature.impl.player.AutoEat;
+import me.dustin.jex.feature.impl.player.Freecam;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -134,6 +135,8 @@ public enum EntityHelper {
     }
 
     public boolean isNPC(PlayerEntity player) {
+        if (player == Freecam.playerEntity)
+            return false;
         try {
             PlayerListEntry p = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(player.getUuid());
             if (p.getGameMode().isSurvivalLike() || p.getGameMode().isCreative()) {
