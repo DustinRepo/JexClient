@@ -46,7 +46,6 @@
     "MixinPlayerEntity",
     "MixinPlayerEntityRenderer",
     "MixinPlayerMoveC2SPacket",
-    "MixinPlayerPositionLookS2CPacket",
     "MixinProjectileEntity",
     "MixinRenderTickCounter",
     "MixinScreen",
