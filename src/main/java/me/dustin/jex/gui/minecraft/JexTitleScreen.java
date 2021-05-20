@@ -10,6 +10,8 @@ import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.addon.Addon;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.CustomMainMenu;
 import me.dustin.jex.file.ClientSettingsFile;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
@@ -21,8 +23,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.render.CustomMainMenu;
 import me.dustin.jex.update.UpdateManager;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -33,8 +33,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -178,11 +177,6 @@ public class JexTitleScreen extends Screen {
             titleScreen.background = 0;
         }
         this.client.setConnectedToRealms(false);
-        if (this.client.options.realmsNotifications && !this.realmsNotificationsInitialized) {
-            RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
-            this.realmsNotificationGui = realmsBridgeScreen.getNotificationScreen(this);
-            this.realmsNotificationsInitialized = true;
-        }
     }
 
     private void initWidgetsNormal(int y, int spacingY) {
@@ -256,8 +250,6 @@ public class JexTitleScreen extends Screen {
     }
 
     private void switchToRealms() {
-        RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
-        realmsBridgeScreen.switchToRealms(this);
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -326,10 +318,10 @@ public class JexTitleScreen extends Screen {
             }
 
 
-            Iterator var12 = this.buttons.iterator();
+            Iterator var12 = this.children().iterator();
 
             while (var12.hasNext()) {
-                AbstractButtonWidget abstractButtonWidget = (AbstractButtonWidget) var12.next();
+                ClickableWidget abstractButtonWidget = (ClickableWidget) var12.next();
                 abstractButtonWidget.setAlpha(g);
             }
             float top = this.height / 4 + 45;

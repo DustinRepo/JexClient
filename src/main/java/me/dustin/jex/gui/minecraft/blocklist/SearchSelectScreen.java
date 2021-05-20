@@ -84,10 +84,10 @@ public class SearchSelectScreen extends Screen {
         });
 
         this.addChild(searchField);
-        this.addButton(searchButton);
-        this.addButton(addSearchBlockButton);
-        this.addButton(removeSearchBlockButton);
-        this.addButton(doneButton);
+        this.method_37063(searchButton);
+        this.method_37063(addSearchBlockButton);
+        this.method_37063(removeSearchBlockButton);
+        this.method_37063(doneButton);
         super.init();
     }
 

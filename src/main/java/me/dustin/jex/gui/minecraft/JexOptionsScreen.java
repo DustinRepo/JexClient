@@ -76,12 +76,12 @@ public class JexOptionsScreen extends Screen {
 
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 
-        this.addButton(setPrefixButton);
-        this.addButton(clickGuiButton);
-        this.addButton(downloadInstallerButton);
-        this.addButton(xrayButton);
-        this.addButton(searchButton);
-        this.addButton(reloadAddonsButton);
+        this.method_37063(setPrefixButton);
+        this.method_37063(clickGuiButton);
+        this.method_37063(downloadInstallerButton);
+        this.method_37063(xrayButton);
+        this.method_37063(searchButton);
+        this.method_37063(reloadAddonsButton);
         this.addChild(prefixField);
         super.init();
     }

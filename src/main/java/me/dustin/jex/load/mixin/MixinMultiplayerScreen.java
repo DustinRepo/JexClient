@@ -21,7 +21,7 @@ public class MixinMultiplayerScreen extends Screen {
 
     @Inject(method = "init", at = @At("RETURN"))
     public void init(CallbackInfo ci) {
-        this.addButton(new ButtonWidget(2, 2, 75, 20, new LiteralText("Alt Manager"), button -> {
+        this.method_37063(new ButtonWidget(2, 2, 75, 20, new LiteralText("Alt Manager"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(new AccountManager(new LiteralText("Account Manager")));
         }));
     }

@@ -149,7 +149,7 @@ public class ClickGui extends Screen {
         for (int i = 0; i < 50; i++) {
             ParticleManager2D.INSTANCE.add(ClientMathHelper.INSTANCE.getRandom(Render2DHelper.INSTANCE.getScaledWidth()), ClientMathHelper.INSTANCE.getRandom(Render2DHelper.INSTANCE.getScaledHeight()));
         }
-        this.children.add(searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 150, Render2DHelper.INSTANCE.getScaledHeight() - 14, 300, 12, new LiteralText("")));
+        this.addChild(searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 150, Render2DHelper.INSTANCE.getScaledHeight() - 14, 300, 12, new LiteralText("")));
         super.init();
     }
 

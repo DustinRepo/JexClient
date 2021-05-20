@@ -104,17 +104,17 @@ public class AccountManager extends Screen {
         ButtonWidget searchButton = new ButtonWidget((int) midX + 102, (height / 2) - 124, 50, 20, new LiteralText("Search"), button -> {
             loadAccountButtons(searchTextField.getText());
         });
-        this.addButton(loginButton);
-        this.addButton(editButton);
-        this.addButton(removeButton);
-        this.addButton(randomButton);
-        this.addButton(directButton);
-        this.addButton(cancelButton);
-        this.children.add(searchTextField);
-        this.addButton(searchButton);
+        this.method_37063(loginButton);
+        this.method_37063(editButton);
+        this.method_37063(removeButton);
+        this.method_37063(randomButton);
+        this.method_37063(directButton);
+        this.method_37063(cancelButton);
+        this.addChild(searchTextField);
+        this.method_37063(searchButton);
 
-        this.addButton(exportButton);
-        this.addButton(importButton);
+        this.method_37063(exportButton);
+        this.method_37063(importButton);
         this.outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
 
         super.init();

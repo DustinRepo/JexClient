@@ -88,10 +88,10 @@ public class XraySelectScreen extends Screen {
         });
 
         this.addChild(searchField);
-        this.addButton(searchButton);
-        this.addButton(addXrayButton);
-        this.addButton(removeXrayButton);
-        this.addButton(doneButton);
+        this.method_37063(searchButton);
+        this.method_37063(addXrayButton);
+        this.method_37063(removeXrayButton);
+        this.method_37063(doneButton);
         super.init();
     }
 

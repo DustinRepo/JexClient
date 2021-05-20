@@ -64,7 +64,7 @@ public class AutoReconnect extends Feature {
             address = address.split(":")[0];
             port = Integer.parseInt(address.split(":")[1]);
         }
-        ConnectScreen.method_36877(new MultiplayerScreen(new JexTitleScreen()), Wrapper.INSTANCE.getMinecraft(), new ServerAddress(address, port), serverEntry);
+        ConnectScreen.connect(new MultiplayerScreen(new JexTitleScreen()), Wrapper.INSTANCE.getMinecraft(), new ServerAddress(address, port), serverEntry);
     }
 
 }
