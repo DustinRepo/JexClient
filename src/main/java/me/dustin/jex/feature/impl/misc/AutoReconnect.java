@@ -17,6 +17,7 @@ import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 
 @Feat(name = "AutoReconnect", category = FeatureCategory.MISC, description = "Reconnect automatically.")
@@ -57,7 +58,13 @@ public class AutoReconnect extends Feature {
     }
 
     public void connect() {
-        Wrapper.INSTANCE.getMinecraft().openScreen(new ConnectScreen(new MultiplayerScreen(new JexTitleScreen()), Wrapper.INSTANCE.getMinecraft(), serverEntry));
+        String address = serverEntry.address;
+        int port = 25565;
+        if (address.contains(":")) {
+            address = address.split(":")[0];
+            port = Integer.parseInt(address.split(":")[1]);
+        }
+        ConnectScreen.connect(new MultiplayerScreen(new JexTitleScreen()), Wrapper.INSTANCE.getMinecraft(), new ServerAddress(address, port), serverEntry);
     }
 
 }

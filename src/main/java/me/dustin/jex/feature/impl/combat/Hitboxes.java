@@ -16,7 +16,7 @@ public class Hitboxes extends Feature {
 
     @EventListener(events = {EventEntityHitbox.class})
     public void runMethod(EventEntityHitbox eventEntityHitbox) {
-        if (eventEntityHitbox.getEntity() == null || eventEntityHitbox.getEntity().getEntityId() == Wrapper.INSTANCE.getLocalPlayer().getEntityId())
+        if (eventEntityHitbox.getEntity() == null || eventEntityHitbox.getEntity().getId() == Wrapper.INSTANCE.getLocalPlayer().getId())
             return;
         eventEntityHitbox.setBox(eventEntityHitbox.getBox().expand(expansion, 0, expansion));
     }

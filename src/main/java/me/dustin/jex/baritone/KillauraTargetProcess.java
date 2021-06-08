@@ -1,5 +1,4 @@
 package me.dustin.jex.baritone;
-
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalNear;
 import baritone.api.pathing.goals.GoalRunAway;

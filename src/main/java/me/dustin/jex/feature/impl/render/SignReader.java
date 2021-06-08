@@ -8,6 +8,7 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
@@ -50,7 +51,7 @@ public class SignReader extends Feature {
                     }
                 }
             } else {
-                for (BlockEntity blockEntity : Wrapper.INSTANCE.getWorld().blockEntities) {
+                for (BlockEntity blockEntity : WorldHelper.INSTANCE.getBlockEntities()) {
                     if (blockEntity instanceof SignBlockEntity) {
                         SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
                         Vec3d pos = new Vec3d(signBlockEntity.getPos().getX(), signBlockEntity.getPos().getY(), signBlockEntity.getPos().getZ());
@@ -69,7 +70,7 @@ public class SignReader extends Feature {
                     float y = (float)vec3d.y / scale;
                     int count = 0;
                     for (int i = 0; i < 4; i++) {
-                        String text = signBlockEntity.getTextOnRow(3 - i).getString().trim();
+                        String text = signBlockEntity.getTextOnRow(3 - i, false).getString().trim();
                         float strWidth = FontHelper.INSTANCE.getStringWidth(text);
                         if (!text.isEmpty()) {
                             if (backgrounds)

@@ -74,11 +74,6 @@ public abstract class MixinEntity {
     @Shadow public float stepHeight;
 
     @Shadow
-    public static double squaredHorizontalLength(Vec3d vector)  {
-        return vector.x * vector.x + vector.z * vector.z;
-    }
-
-    @Shadow
     public static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, ReusableStream<VoxelShape> collisions) {
         double d = movement.x;
         double e = movement.y;
@@ -228,12 +223,12 @@ public abstract class MixinEntity {
             Vec3d vec3d3 = adjustMovementForCollisions((Entity)(Object)this, new Vec3d(0.0D, (double)this.stepHeight, 0.0D), box.stretch(movement.x, 0.0D, movement.z), this.world, shapeContext, reusableStream);
             if (vec3d3.y < (double)this.stepHeight) {
                 Vec3d vec3d4 = adjustMovementForCollisions((Entity)(Object)this, new Vec3d(movement.x, 0.0D, movement.z), box.offset(vec3d3), this.world, shapeContext, reusableStream).add(vec3d3);
-                if (squaredHorizontalLength(vec3d4) > squaredHorizontalLength(vec3d2)) {
+                if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
                     vec3d2 = vec3d4;
                 }
             }
             Vec3d savedVec = vec3d2.add(adjustMovementForCollisions((Entity)(Object)this, new Vec3d(0.0D, -vec3d2.y + movement.y, 0.0D), box.offset(vec3d2), this.world, shapeContext, reusableStream));
-            if (squaredHorizontalLength(vec3d2) > squaredHorizontalLength(vec3d)) {
+            if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
                 if (savedVec.y > 0.6f)
                     new EventStep((Entity)(Object)this, EventStep.Mode.MID, savedVec.y).run();
                 cir.setReturnValue(savedVec);

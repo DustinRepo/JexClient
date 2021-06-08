@@ -9,8 +9,8 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 
 @Cmd(name = "Dupe", alias = {"d"}, description = "Relog. Put items you want to dupe in a chest. Hold a book and quill and run this command to reset your inventory.")
@@ -37,11 +37,11 @@ public class CommandDupe extends Command {
     }
 
     private void writeBook(ItemStack itemStack) {
-        ListTag listTag_1 = new ListTag();
-        listTag_1.addTag(0, StringTag.of(firstPage));
+        NbtList listTag_1 = new NbtList();
+        listTag_1.add(0, NbtString.of(firstPage));
         itemStack.putSubTag("pages", listTag_1);
-        itemStack.putSubTag("author", StringTag.of(Wrapper.INSTANCE.getLocalPlayer().getName().getString()));
-        itemStack.putSubTag("title", StringTag.of("a nice book"));
+        itemStack.putSubTag("author", NbtString.of(Wrapper.INSTANCE.getLocalPlayer().getName().getString()));
+        itemStack.putSubTag("title", NbtString.of("a nice book"));
 
         NetworkHelper.INSTANCE.sendPacket(new BookUpdateC2SPacket(itemStack, true, InventoryHelper.INSTANCE.getInventory().selectedSlot));
     }

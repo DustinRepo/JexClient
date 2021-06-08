@@ -28,4 +28,5 @@ public class MixinParticleManager {
             particle.markDead();
         }
     }
+
 }

@@ -11,8 +11,7 @@ import net.minecraft.item.AirBlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
@@ -23,11 +22,11 @@ public enum InventoryHelper {
     INSTANCE;
 
     public PlayerInventory getInventory() {
-        return Wrapper.INSTANCE.getLocalPlayer().inventory;
+        return Wrapper.INSTANCE.getLocalPlayer().getInventory();
     }
 
     public PlayerInventory getInventory(PlayerEntity playerEntity) {
-        return playerEntity.inventory;
+        return playerEntity.getInventory();
     }
 
     public boolean isHotbarFull() {
@@ -93,36 +92,21 @@ public enum InventoryHelper {
     }
 
     public void windowClick(ScreenHandler container, int slot, SlotActionType action, int clickData) {
-        short short_1 = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getNextActionId(InventoryHelper.INSTANCE.getInventory());
-        ItemStack itemStack = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.onSlotClick(slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
-        Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new ClickSlotC2SPacket(container.syncId, slot, clickData, action, itemStack, short_1));
+        Wrapper.INSTANCE.getInteractionManager().clickSlot(container.syncId, slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
     }
 
     public HashMap<Integer, ItemStack> getStacksFromShulker(ItemStack shulkerBox) {
         HashMap<Integer, ItemStack> stacks = Maps.newHashMap();
-        CompoundTag nbttagcompound = shulkerBox.getTag();
+        NbtCompound nbttagcompound = shulkerBox.getTag();
         if (nbttagcompound == null) return stacks;
 
 
-        CompoundTag nbttagcompound1 = nbttagcompound.getCompound("BlockEntityTag");
+        NbtCompound nbttagcompound1 = nbttagcompound.getCompound("BlockEntityTag");
         for (int i = 0; i < nbttagcompound1.getList("Items", 10).size(); i++) {
-            CompoundTag compound = nbttagcompound1.getList("Items", 10).getCompound(i);
+            NbtCompound compound = nbttagcompound1.getList("Items", 10).getCompound(i);
             int slot = compound.getInt("Slot");
-            ItemStack itemStack = ItemStack.fromTag(compound);
+            ItemStack itemStack = ItemStack.fromNbt(compound);
             stacks.put(slot, itemStack);
-        }
-        return stacks;
-    }
-
-    public HashMap<Integer, ItemStack> getStacksFromInventory(boolean hotbar) {
-        HashMap<Integer, ItemStack> stacks = Maps.newHashMap();
-        if (hotbar) {
-            for (int i = 0; i < 9; i++) {
-                stacks.put(i + 36, getInventory().getStack(i));
-            }
-        }
-        for (int i = 9; i < 44; i++) {
-            stacks.put(i - 9, getInventory().getStack(i));
         }
         return stacks;
     }
@@ -149,6 +133,16 @@ public enum InventoryHelper {
         return true;
     }
 
+    public boolean hasEnchantment(ItemStack itemStack, Enchantment enchantment) {
+        if (itemStack.hasEnchantments()) {
+            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.get(itemStack);
+            if (equippedEnchants.containsKey(enchantment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean compareEnchants(ItemStack equippedStack, ItemStack newPiece, Enchantment enchantment) {
         int equippedLevel = 0;
         int newLevel = 0;
@@ -171,5 +165,18 @@ public enum InventoryHelper {
 
     public boolean isShulker(ItemStack stack) {
         return !stack.isEmpty() && (stack.getItem() == Items.SHULKER_BOX || stack.getItem() == Items.BLACK_SHULKER_BOX || stack.getItem() == Items.BLUE_SHULKER_BOX || stack.getItem() == Items.BROWN_SHULKER_BOX || stack.getItem() == Items.CYAN_SHULKER_BOX || stack.getItem() == Items.GRAY_SHULKER_BOX || stack.getItem() == Items.GREEN_SHULKER_BOX || stack.getItem() == Items.LIGHT_BLUE_SHULKER_BOX || stack.getItem() == Items.LIGHT_GRAY_SHULKER_BOX || stack.getItem() == Items.LIME_SHULKER_BOX || stack.getItem() == Items.MAGENTA_SHULKER_BOX || stack.getItem() == Items.ORANGE_SHULKER_BOX || stack.getItem() == Items.PINK_SHULKER_BOX || stack.getItem() == Items.PURPLE_SHULKER_BOX || stack.getItem() == Items.RED_SHULKER_BOX || stack.getItem() == Items.WHITE_SHULKER_BOX || stack.getItem() == Items.YELLOW_SHULKER_BOX);
+    }
+
+    public HashMap<Integer, ItemStack> getStacksFromInventory(boolean hotbar) {
+        HashMap<Integer, ItemStack> stacks = Maps.newHashMap();
+        if (hotbar) {
+            for (int i = 0; i < 9; i++) {
+                stacks.put(i + 36, getInventory().getStack(i));
+            }
+        }
+        for (int i = 9; i < 44; i++) {
+            stacks.put(i - 9, getInventory().getStack(i));
+        }
+        return stacks;
     }
 }

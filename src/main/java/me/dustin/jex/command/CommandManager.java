@@ -35,6 +35,7 @@ public enum CommandManager {
     public void init() {
         commands.clear();
         Reflections reflections = new Reflections("me.dustin.jex.command");
+
         Set<Class<? extends Command>> allClasses = reflections.getSubTypesOf(Command.class);
         allClasses.forEach(clazz -> {
             try {

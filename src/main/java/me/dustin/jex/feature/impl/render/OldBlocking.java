@@ -10,13 +10,13 @@ import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.Item;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 @Feat(name = "OldBlocking", category = FeatureCategory.VISUAL, description = "Get the pre-1.9 block animation when blocking with a shield.")
 public class OldBlocking extends Feature {
@@ -37,11 +37,11 @@ public class OldBlocking extends Feature {
                         if (!offHand) {
                             if (isGoodItem(eventRenderItem.getItemStack().getItem())) {
                                 //point the tip outward
-                                matrixStack.multiply(new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), -60, true));
+                                matrixStack.multiply(new Quaternion(new Vec3f(1.0F, 0.0F, 0.0F), -60, true));
                                 //rotate infront of camera
-                                matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 0.0F, 1.0F), 60, true));
+                                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), 60, true));
                                 //tilt
-                                matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), 50, true));
+                                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), 50, true));
                                 matrixStack.translate(-0.05, 0.1, 0.07);
                             }
                         }

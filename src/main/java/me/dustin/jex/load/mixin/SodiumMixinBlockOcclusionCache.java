@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class SodiumMixinBlockOcclusionCache {
 
     @Inject(method = "shouldDrawSide", at = @At("HEAD"), cancellable = true, remap = false)
-    public void shouldDrawSide1(BlockState selfState, BlockView view, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> cir) {//lol errors because I neglected to create a -dev jar so it's all already mapped code in sodium but it still works so fuck it
+    public void shouldDrawSide1(BlockState selfState, BlockView view, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> cir) {
         EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(selfState.getBlock(), pos).run();
         if (eventShouldDrawSide.isCancelled()) {
             cir.setReturnValue(eventShouldDrawSide.isShouldDrawSide());

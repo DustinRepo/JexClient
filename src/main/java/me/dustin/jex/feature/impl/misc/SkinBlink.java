@@ -41,7 +41,7 @@ public class SkinBlink extends Feature {
 
     private ArrayList<PlayerModelPart> savedEnabled = new ArrayList<>();
     private Timer timer = new Timer();
-
+    private boolean toggleCustom;
     @EventListener(events = {EventPlayerPackets.class})
     private void runMethod(EventPlayerPackets eventPlayerPackets) {
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
@@ -50,36 +50,36 @@ public class SkinBlink extends Feature {
             switch (mode) {
                 case "Random":
                     for (PlayerModelPart value : PlayerModelPart.values()) {
-                        Wrapper.INSTANCE.getOptions().setPlayerModelPart(value, random.nextBoolean());
+                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, random.nextBoolean());
                     }
                     break;
                 case "Full Flash":
                     boolean on = false;
-                    if (Wrapper.INSTANCE.getOptions().getEnabledPlayerModelParts().isEmpty())
+                    if (Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(PlayerModelPart.HAT))
                         on = true;
                     for (PlayerModelPart value : PlayerModelPart.values()) {
-                        Wrapper.INSTANCE.getOptions().setPlayerModelPart(value, on);
+                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, on);
                     }
                     break;
                 case "Custom":
                     if (head)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.HAT);
+                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.HAT, toggleCustom);
                     if (cape)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.CAPE);
+                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.CAPE, toggleCustom);
                     if (jacket)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.JACKET);
+                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.JACKET, toggleCustom);
                     if (leftArm)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_SLEEVE);
+                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_SLEEVE, toggleCustom);
                     if (leftLeg)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_PANTS_LEG);
+                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_PANTS_LEG, toggleCustom);
                     if (rightArm)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_SLEEVE);
+                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_SLEEVE, toggleCustom);
                     if (rightLeg)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_PANTS_LEG);
+                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_PANTS_LEG, toggleCustom);
+                    toggleCustom = !toggleCustom;
                     break;
             }
             timer.reset();
-            Wrapper.INSTANCE.getOptions().onPlayerModelPartChange();
         }
     }
 
@@ -87,7 +87,10 @@ public class SkinBlink extends Feature {
     public void onEnable() {
         if (Wrapper.INSTANCE.getOptions() != null) {
             savedEnabled.clear();
-            savedEnabled.addAll(Wrapper.INSTANCE.getOptions().getEnabledPlayerModelParts());
+            for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
+                if (Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(playerModelPart))
+                    savedEnabled.add(playerModelPart);
+            }
         }
         super.onEnable();
     }
@@ -96,7 +99,7 @@ public class SkinBlink extends Feature {
     public void onDisable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (PlayerModelPart value : PlayerModelPart.values()) {
-                Wrapper.INSTANCE.getOptions().setPlayerModelPart(value, savedEnabled.contains(value));
+                Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, savedEnabled.contains(value));
             }
         }
         super.onDisable();

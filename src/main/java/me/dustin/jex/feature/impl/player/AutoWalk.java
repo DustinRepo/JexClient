@@ -6,7 +6,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.option.KeyBinding;
 
 @Feat(name = "AutoWalk", category = FeatureCategory.PLAYER, description = "Automatically hold W")
 public class AutoWalk extends Feature {

@@ -22,7 +22,6 @@ public class MixinRenderTickCounter implements IRenderTickCounter {
         this.tickTime = ((EventRenderTick)new EventRenderTick(this.tickTime).run()).timeScale;
     }
 
-
     @Override
     public float getTimeScale() {
         return this.tickTime;

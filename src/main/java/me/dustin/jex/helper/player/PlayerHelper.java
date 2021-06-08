@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.impl.movement.Sprint;
+import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -65,20 +66,37 @@ public enum PlayerHelper {
         return uuidMap.get(name.toLowerCase());
     }
 
+    public void block(boolean ignoreNewCombat) {
+        if (ignoreNewCombat) {
+            if (Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() instanceof SwordItem) {
+                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
+                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.OFF_HAND);
+            }
+        } else {
+            if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem) {
+                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.OFF_HAND);
+            }
+        }
+    }
+
+    public void unblock() {
+        NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.DOWN));
+    }
+
     public float getYaw() {
-        return Wrapper.INSTANCE.getLocalPlayer().yaw;
+        return Wrapper.INSTANCE.getLocalPlayer().getYaw(Wrapper.INSTANCE.getMinecraft().getTickDelta());
     }
 
     public float getPitch() {
-        return Wrapper.INSTANCE.getLocalPlayer().pitch;
+        return Wrapper.INSTANCE.getLocalPlayer().getPitch(Wrapper.INSTANCE.getMinecraft().getTickDelta());
     }
 
     public void setYaw(float yaw) {
-        Wrapper.INSTANCE.getLocalPlayer().yaw = yaw;
+        Wrapper.INSTANCE.getLocalPlayer().setYaw(yaw);
     }
 
     public void setPitch(float pitch) {
-        Wrapper.INSTANCE.getLocalPlayer().pitch = pitch;
+        Wrapper.INSTANCE.getLocalPlayer().setPitch(pitch);
     }
 
     public void setRotation(RotationVector rotation) {
@@ -182,23 +200,6 @@ public enum PlayerHelper {
         return ClientMathHelper.INSTANCE.getVec(blockPos);
     }
 
-    public void block(boolean ignoreNewCombat) {
-        if (ignoreNewCombat) {
-            if (Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() instanceof SwordItem) {
-                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
-                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.OFF_HAND);
-            }
-        } else {
-            if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem) {
-                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.OFF_HAND);
-            }
-        }
-    }
-
-    public void unblock() {
-        NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.DOWN));
-    }
-
     public RotationVector getRotations(Entity entityIn, Entity ent2) {
         double var4 = entityIn.getX() - ent2.getX();
         double var8 = entityIn.getZ() - ent2.getZ();
@@ -211,11 +212,11 @@ public enum PlayerHelper {
             var6 = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - (ent2.getY() + (double) (ent2.getEyeHeight(ent2.getPose()) * Math.random()));
         }
 
-        double var141 = (double) MathHelper.sqrt(var4 * var4 + var8 * var8);
+        double var141 = (double) MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
         float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(ent2.pitch, var13, Float.MAX_VALUE);
-        float yaw = updateRotation(ent2.yaw, var12, Float.MAX_VALUE);
+        float pitch = updateRotation(EntityHelper.INSTANCE.getPitch(ent2), var13, Float.MAX_VALUE);
+        float yaw = updateRotation(EntityHelper.INSTANCE.getYaw(ent2), var12, Float.MAX_VALUE);
         return new RotationVector(yaw - 180, -pitch);
     }
 
@@ -225,11 +226,11 @@ public enum PlayerHelper {
         double var6;
         var6 = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - vec3d.y;
 
-        double var141 = (double) MathHelper.sqrt(var4 * var4 + var8 * var8);
+        double var141 = (double) MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
         float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(Wrapper.INSTANCE.getLocalPlayer().pitch, var13, Float.MAX_VALUE);
-        float yaw = updateRotation(Wrapper.INSTANCE.getLocalPlayer().yaw, var12, Float.MAX_VALUE);
+        float pitch = updateRotation(getPitch(), var13, Float.MAX_VALUE);
+        float yaw = updateRotation(getYaw(), var12, Float.MAX_VALUE);
         return new RotationVector(yaw - 180, -pitch);
     }
 
@@ -244,11 +245,11 @@ public enum PlayerHelper {
 
         var6 = entityIn.getY() + (double) entityIn.getEyeHeight(entityIn.getPose()) - (ent2.getY() + (double) (ent2.getHeight() / 2) - heightOffset + (random.nextFloat() * (heightOffset * 2)));
 
-        double var141 = MathHelper.sqrt(var4 * var4 + var8 * var8);
+        double var141 = MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
         float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(ent2.pitch, var13, Float.MAX_VALUE);
-        float yaw = updateRotation(ent2.yaw, var12, Float.MAX_VALUE);
+        float pitch = updateRotation(EntityHelper.INSTANCE.getPitch(ent2), var13, Float.MAX_VALUE);
+        float yaw = updateRotation(EntityHelper.INSTANCE.getYaw(ent2), var12, Float.MAX_VALUE);
         return new RotationVector(yaw - 180, -pitch);
     }
 

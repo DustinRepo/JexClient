@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "me.dustin.jex.load.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
   ],
   "client": [
@@ -22,7 +22,6 @@
     "MixinEntity",
     "MixinEntityRenderDispatcher",
     "MixinEntityRenderer",
-    "MixinEntityVelocityUpdateS2CPacket",
     "MixinFluidBlock",
     "MixinFluidRenderer",
     "MixinFluidState",
@@ -51,6 +50,7 @@
     "MixinSignEditScreen",
     "MixinSplashScreen",
     "MixinTerrainRenderContext",
+    "MixinWorldChunk",
     "MixinWorldRenderer",
     "SodiumMixinBlockOcclusionCache",
     "SodiumMixinBlockRenderer",

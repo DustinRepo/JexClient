@@ -45,12 +45,11 @@ public class SlimeSpawnMarker extends Feature {
             if (eventSpawnEntity.getEntity() instanceof SlimeEntity) {
                 if (eventSpawnEntity.getEntity().getY() > 40)
                     return;
-                ChunkPos chunkPos = new ChunkPos(eventSpawnEntity.getEntity().getBlockPos());
                 if (notifyPlayer)
-                    ChatHelper.INSTANCE.addClientMessage("A Slime has spawned in chunk: \247b" + chunkPos.x + " " + chunkPos.z);
+                    ChatHelper.INSTANCE.addClientMessage("A Slime has spawned in chunk: \247b" + eventSpawnEntity.getEntity().getChunkPos().x + " " + eventSpawnEntity.getEntity().getChunkPos().z);
                 if (markSlimeChunks)
-                if (!chunkPositions.contains(chunkPos))
-                    chunkPositions.add(chunkPos);
+                if (!chunkPositions.contains(eventSpawnEntity.getEntity().getChunkPos()))
+                    chunkPositions.add(eventSpawnEntity.getEntity().getChunkPos());
             }
         }
         if (event instanceof EventRender3D) {
@@ -58,8 +57,8 @@ public class SlimeSpawnMarker extends Feature {
                 return;
             chunkPositions.forEach(chunkPos -> {
                 if (Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunkPos.x, chunkPos.z)) {
-                    Vec3d renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, 0, chunkPos.z * 16);
-                    Box box = new Box(renderVec.getX(), renderVec.getY(), renderVec.getZ(), renderVec.getX() + 16, renderVec.getY() + 40, renderVec.getZ() + 16);
+                    Vec3d renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, -64, chunkPos.z * 16);
+                    Box box = new Box(renderVec.getX(), renderVec.getY(), renderVec.getZ(), renderVec.getX() + 16, renderVec.getY() + 64 + 40, renderVec.getZ() + 16);
                     Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, chunkColor);
                 }
             });

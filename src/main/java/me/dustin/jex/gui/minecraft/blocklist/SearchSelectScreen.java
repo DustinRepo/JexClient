@@ -83,11 +83,11 @@ public class SearchSelectScreen extends Screen {
             Wrapper.INSTANCE.getMinecraft().openScreen(new JexOptionsScreen());
         });
 
-        this.addChild(searchField);
-        this.addButton(searchButton);
-        this.addButton(addSearchBlockButton);
-        this.addButton(removeSearchBlockButton);
-        this.addButton(doneButton);
+        this.addSelectableChild(searchField);
+        this.addDrawableChild(searchButton);
+        this.addDrawableChild(addSearchBlockButton);
+        this.addDrawableChild(removeSearchBlockButton);
+        this.addDrawableChild(doneButton);
         super.init();
     }
 

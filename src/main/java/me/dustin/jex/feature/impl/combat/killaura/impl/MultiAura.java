@@ -88,7 +88,7 @@ public class MultiAura extends FeatureExtension {
                 double x = Wrapper.INSTANCE.getLocalPlayer().prevX + ((Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX) * ((EventRender3D) event1).getPartialTicks());
                 double y = Wrapper.INSTANCE.getLocalPlayer().prevY + ((Wrapper.INSTANCE.getLocalPlayer().getY() - Wrapper.INSTANCE.getLocalPlayer().prevY) * ((EventRender3D) event1).getPartialTicks());
                 double z = Wrapper.INSTANCE.getLocalPlayer().prevZ + ((Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ) * ((EventRender3D) event1).getPartialTicks());
-                Render3DHelper.INSTANCE.drawSphere(matrixStack, killaura.reach, 25, killaura.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
+                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getMatrixStack(), killaura.reach, 25, killaura.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
                 Render3DHelper.INSTANCE.end3DRender();
                 matrixStack.pop();
             }
@@ -126,9 +126,9 @@ public class MultiAura extends FeatureExtension {
                     }
                 }
 
-                if (target != null && Wrapper.INSTANCE.getWorld().getEntityById(target.getEntityId()) != null) {
+                if (target != null && Wrapper.INSTANCE.getWorld().getEntityById(target.getId()) != null) {
                     if (canSwing) {
-                        NetworkHelper.INSTANCE.sendPacket(new PlayerInteractEntityC2SPacket(target, Wrapper.INSTANCE.getLocalPlayer().isSneaking()));
+                        NetworkHelper.INSTANCE.sendPacket(PlayerInteractEntityC2SPacket.attack(target, Wrapper.INSTANCE.getLocalPlayer().isSneaking()));
                         //so crits work but also we don't have to reset our attack progress on every attack, only after
                         new EventAttackEntity(target).run();
                     }

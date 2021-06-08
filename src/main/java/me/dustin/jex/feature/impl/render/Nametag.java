@@ -5,7 +5,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.event.render.EventRenderNametags;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -14,7 +14,6 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
@@ -22,7 +21,7 @@ import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.options.Perspective;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -31,8 +30,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AirBlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
@@ -68,7 +67,7 @@ public class Nametag extends Feature {
     int count = 0;
     private HashMap<Entity, Vec3d> positions = Maps.newHashMap();
 
-    @EventListener(events = {EventRender2D.class, EventRenderNametags.class, EventRender3D.class})
+    @EventListener(events = {EventRender2D.class, EventRenderNametags.class, EventRenderGetPos.class})
     private void runMethod(Event event) {
         if (event instanceof EventRenderNametags) {
             EventRenderNametags eventRenderNametags = (EventRenderNametags) event;
@@ -90,21 +89,22 @@ public class Nametag extends Feature {
                 drawNametags(Wrapper.INSTANCE.getLocalPlayer(), (EventRender2D) event);
                 drawNametagInv(Wrapper.INSTANCE.getLocalPlayer(), (EventRender2D) event);
             }
-        } else if (event instanceof EventRender3D) {
+        } else if (event instanceof EventRenderGetPos) {
             this.positions.clear();
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                float offset = entity.getHeight() + 0.2f;
-                if (entity instanceof PlayerEntity) {
-                    if (Hat.hasHat((PlayerEntity)entity)) {
-                        if (Hat.getType((PlayerEntity)entity) == Hat.HatType.TOP_HAT)
-                            offset = entity.getHeight() + 0.7f;
-                        else
-                            offset = entity.getHeight() + 0.4f;
+                if (isValid(entity)) {
+                    float offset = entity.getHeight() + 0.2f;
+                    if (entity instanceof PlayerEntity) {
+                        if (Hat.hasHat((PlayerEntity) entity)) {
+                            if (Hat.getType((PlayerEntity) entity) == Hat.HatType.TOP_HAT)
+                                offset = entity.getHeight() + 0.7f;
+                            else
+                                offset = entity.getHeight() + 0.4f;
+                        }
                     }
+                    Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, ((EventRenderGetPos) event).getPartialTicks());
+                    this.positions.put(entity, vec);
                 }
-                Render3DHelper.INSTANCE.applyCameraRots();
-                this.positions.put(entity, Render2DHelper.INSTANCE.getPos(entity, offset, ((EventRender3D) event).getPartialTicks()));
-                Render3DHelper.INSTANCE.fixCameraRots();
             });
         }
     }
@@ -127,9 +127,9 @@ public class Nametag extends Feature {
                     matrixStack.push();
                     matrixStack.scale(scale, scale, 1);
                     int enchCount = 1;
-                    for (Tag tag : itemStack.getEnchantments()) {
+                    for (NbtElement tag : itemStack.getEnchantments()) {
                         try {
-                            CompoundTag compoundTag = (CompoundTag) tag;
+                            NbtCompound compoundTag = (NbtCompound) tag;
                             float newY = ((posY - ((10 * scale) * enchCount) + 0.5f) / scale);
                             float newerX = (newX / scale);
                             String name = getEnchantName(compoundTag);
@@ -137,7 +137,7 @@ public class Nametag extends Feature {
                             Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), newerX, newY - 1, newerX + nameWidth, newY + 9, 0x35000000);
                             FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX, newY, enchantColor);
                             enchCount++;
-                        }catch (Exception e) {}
+                        } catch (Exception e) {}
                     }
                     matrixStack.pop();
                 }
@@ -146,7 +146,7 @@ public class Nametag extends Feature {
         }
     }
 
-    private String getEnchantName(CompoundTag compoundTag) {
+    private String getEnchantName(NbtCompound compoundTag) {
         int level = compoundTag.getShort("lvl");
         String name = compoundTag.getString("id").split(":")[1];
         if (name.contains("_")) {
@@ -289,8 +289,11 @@ public class Nametag extends Feature {
         } else if (EntityHelper.INSTANCE.isPassiveMob(entity)) {
             return passives;
         } else if (entity instanceof PlayerEntity) {
-            if (entity != Wrapper.INSTANCE.getLocalPlayer() && !EntityHelper.INSTANCE.isNPC((PlayerEntity) entity))
+            if (!EntityHelper.INSTANCE.isNPC((PlayerEntity) entity)) {
+                if (entity == Wrapper.INSTANCE.getLocalPlayer())
+                    return showself && Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON;
                 return players;
+            }
         }
         return false;
     }

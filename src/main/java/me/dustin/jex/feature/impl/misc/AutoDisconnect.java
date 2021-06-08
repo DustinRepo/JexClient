@@ -37,7 +37,7 @@ public class AutoDisconnect extends Feature {
                         NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket("\247r"));
                         break;
                     case "Invalid Pos":
-                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, false));
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, false));
                         break;
                 }
             }

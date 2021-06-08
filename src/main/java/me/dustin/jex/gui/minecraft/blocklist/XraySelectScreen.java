@@ -87,11 +87,11 @@ public class XraySelectScreen extends Screen {
             Wrapper.INSTANCE.getMinecraft().openScreen(new JexOptionsScreen());
         });
 
-        this.addChild(searchField);
-        this.addButton(searchButton);
-        this.addButton(addXrayButton);
-        this.addButton(removeXrayButton);
-        this.addButton(doneButton);
+        this.addSelectableChild(searchField);
+        this.addDrawableChild(searchButton);
+        this.addDrawableChild(addXrayButton);
+        this.addDrawableChild(removeXrayButton);
+        this.addDrawableChild(doneButton);
         super.init();
     }
 

@@ -4,8 +4,6 @@ import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
@@ -15,14 +13,16 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.option.types.ColorOption;
 import me.dustin.jex.option.types.StringOption;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import org.lwjgl.glfw.GLFW;
 
 public class ModuleButton extends Button {
@@ -52,7 +52,7 @@ public class ModuleButton extends Button {
 
         matrixStack.push();
         matrixStack.translate(this.getX() + this.getWidth() - 7, this.getY() + 7.5f, 0);
-        matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 0.0F, 1.0F), cogSpin, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), cogSpin, true));
         Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : getWindow().getColor());
         matrixStack.pop();
         this.getChildren().forEach(button -> {

@@ -34,6 +34,9 @@ public class AccountButton {
         FontHelper.INSTANCE.drawWithShadow(matrixStack, account.getUsername(), getX() + 40, getY() + 5, -1);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, getAccount().isCracked() ? "Cracked" : "Premium", getX() + 40, getY() + 15, 0xff676767);
         String pword = "";
+        if (getAccount().getPassword() == null) {
+            pword = "ERROR READING FILE";
+        }else
         for (int i = 0; i < getAccount().getPassword().length(); i++) {
             pword += "*";
         }

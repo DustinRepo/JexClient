@@ -6,7 +6,7 @@ import me.dustin.jex.feature.impl.combat.killaura.Killaura;
 import me.dustin.jex.feature.impl.player.AutoEat;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.player.PlayerHelper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -99,8 +99,8 @@ public enum EntityHelper {
             }
         }
         if (armor) {
-            ItemStack player_1Armor = player_1.inventory.getArmorStack(3);
-            ItemStack player_2Armor = player_2.inventory.getArmorStack(3);
+            ItemStack player_1Armor = InventoryHelper.INSTANCE.getInventory(player_1).getArmorStack(3);
+            ItemStack player_2Armor = InventoryHelper.INSTANCE.getInventory(player_2).getArmorStack(3);
             if (player_1Armor != null && player_1Armor.getItem() instanceof ArmorItem && player_2Armor != null && player_2Armor.getItem() instanceof ArmorItem) {
                 ArmorItem armorItemP1 = (ArmorItem) player_1Armor.getItem();
                 ArmorItem armorItemP2 = (ArmorItem) player_2Armor.getItem();
@@ -123,12 +123,12 @@ public enum EntityHelper {
 
     public float distanceFromGround(Entity entity) {
         float dist = 9999;
-        float pitch = PlayerHelper.INSTANCE.getPitch();
-        PlayerHelper.INSTANCE.setPitch(90);
+        float pitch = getPitch(entity);
+        setPitch(entity, 90);
         HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(256, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
         if (result != null)
             dist = ClientMathHelper.INSTANCE.getDistance(ClientMathHelper.INSTANCE.getVec(entity), result.getPos());
-        PlayerHelper.INSTANCE.setPitch(pitch);
+        setPitch(entity, pitch);
         if (dist > 256 || dist < 0)
             dist = 0;
         return dist;
@@ -169,19 +169,19 @@ public enum EntityHelper {
     }
 
     public float getYaw(Entity entity) {
-        return entity.yaw;
+        return entity.getYaw(Wrapper.INSTANCE.getMinecraft().getTickDelta());
     }
 
     public float getPitch(Entity entity) {
-        return entity.pitch;
+        return entity.getPitch(Wrapper.INSTANCE.getMinecraft().getTickDelta());
     }
 
     public void setYaw(Entity entity, float yaw) {
-        entity.yaw = yaw;
+        entity.setYaw(yaw);
     }
 
     public void setPitch(Entity entity, float pitch) {
-        entity.pitch = pitch;
+        entity.setPitch(pitch);
     }
 
     public void addYaw(Entity entity, float add) {
@@ -189,7 +189,7 @@ public enum EntityHelper {
     }
 
     public void addPitch(Entity entity, float add) {
-        setPitch(entity, getPitch(entity) + add);
+        setPitch(entity,getPitch(entity) + add);
     }
 
 }

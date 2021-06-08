@@ -12,12 +12,8 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.load.impl.IPersistentProjectileEntity;
 import me.dustin.jex.load.impl.IProjectileEntity;
 import me.dustin.jex.option.annotate.Op;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -28,13 +24,10 @@ import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -52,7 +45,7 @@ public class Trajectories extends Feature {
     }
 
     public static boolean isCharged(ItemStack stack) {
-        CompoundTag compoundTag = stack.getTag();
+        NbtCompound compoundTag = stack.getTag();
         return compoundTag != null && compoundTag.getBoolean("Charged");
     }
 
@@ -87,9 +80,9 @@ public class Trajectories extends Feature {
                     PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(Wrapper.INSTANCE.getWorld(), itemStack, Wrapper.INSTANCE.getLocalPlayer());
 
                     Vec3d vec3d = Wrapper.INSTANCE.getLocalPlayer().getOppositeRotationVector(1.0F);
-                    Quaternion quaternion = new Quaternion(new Vector3f(vec3d), 0, true);
+                    Quaternion quaternion = new Quaternion(new Vec3f(vec3d), 0, true);
                     Vec3d vec3d2 = Wrapper.INSTANCE.getLocalPlayer().getRotationVec(1.0F);
-                    Vector3f vector3f = new Vector3f(vec3d2);
+                    Vec3f vector3f = new Vec3f(vec3d2);
                     vector3f.rotate(quaternion);
                     ((ProjectileEntity) persistentProjectileEntity).setVelocity((double) vector3f.getX(), (double) vector3f.getY(), (double) vector3f.getZ(), getSpeed(mainStack), 0);
                     for (int j = 0; j < 200; j++) {
@@ -197,7 +190,7 @@ public class Trajectories extends Feature {
                         Render3DHelper.INSTANCE.setup3DRender(true);
 
                         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                        bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+                        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
                         bufferBuilder.vertex(matrix4f, (float)x, (float)y, (float)z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                         bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                         bufferBuilder.end();

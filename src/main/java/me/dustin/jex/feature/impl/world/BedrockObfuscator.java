@@ -66,7 +66,7 @@ public class BedrockObfuscator extends Feature {
                 if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                     for (int i = -distance; i < distance; i++) {
                         for (int j = -distance; j < distance; j++) {
-                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX + i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
+                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
                             if (chunk != null && !chunksToUpdate.contains(chunk) && !obfuscatedChunks.contains(chunk) && Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z)) {
                                 chunksToUpdate.offer(chunk);
                             }
@@ -95,7 +95,7 @@ public class BedrockObfuscator extends Feature {
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
                 for (int j = -distance; j < distance; j++) {
-                    Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX+ i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
+                    Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
                     if (chunk != null && !chunksToUpdate.contains(chunk))
                         chunksToUpdate.offer(chunk);
                 }
@@ -108,10 +108,10 @@ public class BedrockObfuscator extends Feature {
         if (obfuscatedChunks.contains(chunk))
             return;
         boolean isNether = WorldHelper.INSTANCE.getDimensionID() != null && WorldHelper.INSTANCE.getDimensionID().getPath().contains("nether");
-        BlockState replaceState = isNether ? Blocks.NETHERRACK.getDefaultState() : Blocks.STONE.getDefaultState();
+        BlockState replaceState = isNether ? Blocks.NETHERRACK.getDefaultState() : Blocks.DEEPSLATE.getDefaultState();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < 5; y++) {
+                for (int y = chunk.getBottomY(); y < 5; y++) {
                     BlockPos blockPos = new BlockPos(x + (chunk.getPos().x * 16), y, z + (chunk.getPos().z * 16));
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
                     if (block == Blocks.BEDROCK || block == Blocks.STONE || block == Blocks.NETHERRACK) {

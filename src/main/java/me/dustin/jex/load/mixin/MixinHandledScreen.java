@@ -19,9 +19,9 @@ public class MixinHandledScreen implements IHandledScreen {
     @Shadow
     protected Slot focusedSlot;
     @Shadow
-    protected int x;
+    protected int x;//x
     @Shadow
-    protected int y;
+    protected int y;//y
 
     @Inject(method = "drawMouseoverTooltip", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/ingame/HandledScreen.renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V"), cancellable = true)
     public void drawMouseoverTooltip(MatrixStack matrixStack, int i, int j, CallbackInfo ci) {

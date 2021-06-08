@@ -69,7 +69,8 @@ public class Button {
             if (int_1 == 1) {
                 this.setOpen(!this.isOpen());
             }
-            Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            if (isPlayClick())
+                Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         }
     }
 

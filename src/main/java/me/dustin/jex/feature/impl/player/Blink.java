@@ -12,10 +12,7 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Vec3d;
 
@@ -47,7 +44,7 @@ public class Blink extends Feature {
                 Color color = ColorHelper.INSTANCE.getColor(ColorHelper.INSTANCE.getClientColor());
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+                bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
                 for (PlayerMoveC2SPacket packet : packets) {
                     Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(packet.getX(0), packet.getY(0), packet.getZ(0)));
                     bufferBuilder.vertex(renderPos.getX(), renderPos.getY(), renderPos.getZ()).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();

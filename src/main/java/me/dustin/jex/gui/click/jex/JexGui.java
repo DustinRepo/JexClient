@@ -45,7 +45,7 @@ public class JexGui extends Screen {
 
     private FeatureCategory currentCategory = FeatureCategory.values()[0];
     private Button currentFeature = null;
-
+    
     private Button autoSaveButton = null;
     private Button launchSoundButton = null;
     private Button clickSoundButton = null;

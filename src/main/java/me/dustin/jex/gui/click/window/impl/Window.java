@@ -62,7 +62,6 @@ public class Window {
             });
             Scissor.INSTANCE.seal();
         }
-
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), color);
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + 1, this.getY() + 1, this.getX() + this.getWidth() - 33, this.getY() + this.getHeight() - 1, 0x75252525);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, dispName, this.getX() + 3, this.getY() + (this.getHeight() / 2) - 4, -1);
@@ -70,19 +69,19 @@ public class Window {
         boolean isHoveredPin = Render2DHelper.INSTANCE.isHovered((int) (this.getX() + this.getWidth() - 15), (int) (this.getY()), 15, 15);
         boolean isHoveredEye = Render2DHelper.INSTANCE.isHovered((int) (this.getX() + this.getWidth() - 32), (int) (this.getY()), 15, 15);
 
-        Render2DHelper.INSTANCE.glColor(0xff000000);
         Render2DHelper.INSTANCE.bindTexture(pin);
+        Render2DHelper.INSTANCE.shaderColor(0xff000000);
         DrawableHelper.drawTexture(matrixStack, (int) (this.getX() + this.getWidth() - 14), (int) (this.getY() + 1), 0, 0, 15, 15, 15, 15);
-        Render2DHelper.INSTANCE.glColor(isHoveredPin ? -1 : isPinned() ? ColorHelper.INSTANCE.getColor(color).darker().getRGB() : ColorHelper.INSTANCE.getColor(color).darker().darker().darker().getRGB());
+        Render2DHelper.INSTANCE.shaderColor(isHoveredPin ? -1 : isPinned() ? ColorHelper.INSTANCE.getColor(color).darker().getRGB() : ColorHelper.INSTANCE.getColor(color).darker().darker().darker().getRGB());
         DrawableHelper.drawTexture(matrixStack, (int) (this.getX() + this.getWidth() - 15), (int) (this.getY()), 0, 0, 15, 15, 15, 15);
-        Render2DHelper.INSTANCE.glColor(-1);
+        Render2DHelper.INSTANCE.shaderColor(-1);
 
         Render2DHelper.INSTANCE.bindTexture(eye);
-        Render2DHelper.INSTANCE.glColor(0xff000000);
+        Render2DHelper.INSTANCE.shaderColor(0xff000000);
         DrawableHelper.drawTexture(matrixStack, (int) (this.getX() + this.getWidth() - 31), (int) (this.getY() + 1), 0, 0, 15, 15, 15, 15);
-        Render2DHelper.INSTANCE.glColor(isHoveredEye ? -1 : isOpen() ? ColorHelper.INSTANCE.getColor(color).darker().getRGB() : ColorHelper.INSTANCE.getColor(color).darker().darker().darker().getRGB());
+        Render2DHelper.INSTANCE.shaderColor(isHoveredEye ? -1 : isOpen() ? ColorHelper.INSTANCE.getColor(color).darker().getRGB() : ColorHelper.INSTANCE.getColor(color).darker().darker().darker().getRGB());
         DrawableHelper.drawTexture(matrixStack, (int) (this.getX() + this.getWidth() - 32), (int) (this.getY()), 0, 0, 15, 15, 15, 15);
-        Render2DHelper.INSTANCE.glColor(-1);
+        Render2DHelper.INSTANCE.shaderColor(-1);
 
         if (this.isDragging) {
             if (!MouseHelper.INSTANCE.isMouseButtonDown(0)) {
@@ -259,7 +258,6 @@ public class Window {
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
     }
-
     public ModuleButton get(Feature feature) {
         ModuleButton moduleButton = null;
         for (Button button : this.getButtons())
@@ -276,6 +274,22 @@ public class Window {
                 return category;
         }
         return null;
+    }
+
+    public Button getTopVisible() {
+        for (Button button : this.getButtons())
+            if (button.getY() > this.getY() + this.getHeight() && button.isVisible())
+                return button;
+        return null;
+    }
+
+    public Button getBottomVisible() {
+        Button b = null;
+        for (Button button : this.getButtons())
+            if (button.getY() > this.getY() + this.getHeight() && button.isVisible())
+                b = button;
+
+         return b;
     }
 
     public int getColor() {

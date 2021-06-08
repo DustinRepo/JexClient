@@ -7,8 +7,8 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 
 import java.util.Random;
 
@@ -22,13 +22,13 @@ public class CommandFirework extends Command {
         }
 
         ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
-        CompoundTag baseCompound = new CompoundTag();
-        CompoundTag tagCompound = new CompoundTag();
-        ListTag explosionList = new ListTag();
+        NbtCompound baseCompound = new NbtCompound();
+        NbtCompound tagCompound = new NbtCompound();
+        NbtList explosionList = new NbtList();
 
         for(int i = 0; i < 5000; i++)
         {
-            CompoundTag explosionCompound = new CompoundTag();
+            NbtCompound explosionCompound = new NbtCompound();
 
             Random rand = new Random();
             explosionCompound.putByte("Type", (byte)rand.nextInt(5));

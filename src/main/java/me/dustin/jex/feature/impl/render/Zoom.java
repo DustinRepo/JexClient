@@ -19,6 +19,7 @@ public class Zoom extends Feature {
 
     private double savedFOV;
     boolean resetFOV = true;
+    boolean disable = false;
 
     @Override
     public void onEnable() {
@@ -59,7 +60,7 @@ public class Zoom extends Feature {
                     if (!getState())
                         super.onDisable();
                 } else
-                        this.resetFOV = true;
+                    this.resetFOV = true;
             }
         }
     }

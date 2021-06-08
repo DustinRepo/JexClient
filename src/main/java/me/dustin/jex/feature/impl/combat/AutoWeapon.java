@@ -32,7 +32,6 @@ public class AutoWeapon extends Feature {
             return;
         if (livingOnly && !(eventAttackEntity.getEntity() instanceof LivingEntity))
             return;
-
             int slot = -1;
             float str = 1;
             ItemStack stack = null;

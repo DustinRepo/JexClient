@@ -20,9 +20,9 @@ public class CommandDamage extends Command {
                 ChatHelper.INSTANCE.addClientMessage("Minimum damage is 1");
                 return;
             }
-            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 2.1 + damage, Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
-            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 2.1 + damage, Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
             ChatHelper.INSTANCE.addClientMessage("Dealing \247b" + damage + " \2477damage.");
         } catch (Exception e) {
             giveSyntaxMessage();

@@ -13,6 +13,7 @@ import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.shape.VoxelShape;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +40,7 @@ public class MixinWorldRenderer implements IWorldRenderer {
     private Identifier my_outline = new Identifier("jex", "shaders/entity_outline.json");
     private Identifier mojang_outline = new Identifier("shaders/post/entity_outline.json");
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/render/BufferBuilderStorage.getEntityVertexConsumers()Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;"))
+    @Inject(method = "render", at = @At(value = "RETURN"))
     public void render1(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
         new EventWorldRender(matrices, tickDelta).run();
     }
@@ -86,10 +87,17 @@ public class MixinWorldRenderer implements IWorldRenderer {
         EventBlockOutlineColor eventBlockOutlineColor = new EventBlockOutlineColor().run();
         if (eventBlockOutlineColor.isCancelled()) {
             Color color = Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(eventBlockOutlineColor.getColor()));
-            Matrix4f matrix4f = matrixStack.peek().getModel();
+            net.minecraft.client.util.math.MatrixStack.Entry entry = matrixStack.peek();
             voxelShape.forEachEdge((k, l, m, n, o, p) -> {
-                vertexConsumer.vertex(matrix4f, (float) (k + d), (float) (l + e), (float) (m + f)).color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, j).next();
-                vertexConsumer.vertex(matrix4f, (float) (n + d), (float) (o + e), (float) (p + f)).color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, j).next();
+                float q = (float)(n - k);
+                float r = (float)(o - l);
+                float s = (float)(p - m);
+                float t = MathHelper.sqrt(q * q + r * r + s * s);
+                q /= t;
+                r /= t;
+                s /= t;
+                vertexConsumer.vertex(entry.getModel(), (float)(k + d), (float)(l + e), (float)(m + f)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormal(), q, r, s).next();
+                vertexConsumer.vertex(entry.getModel(), (float)(n + d), (float)(o + e), (float)(p + f)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormal(), q, r, s).next();
             });
             ci.cancel();
         }

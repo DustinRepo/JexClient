@@ -1,6 +1,5 @@
 package me.dustin.jex.load.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderCrosshair;
 import me.dustin.jex.event.render.EventRenderEffects;
@@ -8,7 +7,10 @@ import me.dustin.jex.event.render.EventRenderOverlay;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Identifier;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,11 +18,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InGameHud.class)
 public class MixinInGameHud {
 
+    @Shadow @Final private static Identifier PUMPKIN_BLUR;
+
+    @Shadow @Final private static Identifier POWDER_SNOW_OUTLINE;
+
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/scoreboard/Scoreboard.getObjectiveForSlot(I)Lnet/minecraft/scoreboard/ScoreboardObjective;"))
     public void draw(MatrixStack matrixStack, float float_1, CallbackInfo ci) {
         try {
             new EventRender2D(matrixStack).run();
-            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,11 +45,19 @@ public class MixinInGameHud {
             ci.cancel();
     }
 
-    @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
-    public void renderPumpkin(CallbackInfo ci) {
-        EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.PUMPKIN).run();
-        if (eventRenderOverlay.isCancelled())
-            ci.cancel();
+    @Inject(method = "renderOverlay", at = @At("HEAD"), cancellable = true)
+    public void renderPumpkin(Identifier texture, float opacity, CallbackInfo ci) {
+        if (texture == PUMPKIN_BLUR) {
+            EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.PUMPKIN).run();
+            if (eventRenderOverlay.isCancelled())
+                ci.cancel();
+        }
+
+        if (texture == POWDER_SNOW_OUTLINE) {
+            EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.COLD).run();
+            if (eventRenderOverlay.isCancelled())
+                ci.cancel();
+        }
     }
 
     @Inject(method = "renderVignetteOverlay", at = @At("HEAD"), cancellable = true)

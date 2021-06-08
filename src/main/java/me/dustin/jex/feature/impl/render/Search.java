@@ -1,15 +1,11 @@
 package me.dustin.jex.feature.impl.render;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.file.SearchFile;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -17,13 +13,13 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -68,7 +64,7 @@ public class Search extends Feature {
     public void onEnable() {
         (thread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                if (this.getState() && Wrapper.INSTANCE.getWorld() != null)
+                if (Wrapper.INSTANCE.getWorld() != null)
                     for (Chunk chunk : chunksToUpdate) {
                         searchChunk(chunk);
                     }
@@ -83,9 +79,10 @@ public class Search extends Feature {
             if (Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
-                        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX + i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
-                        if (chunk != null && !chunksToUpdate.contains(chunk))
+                        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
+                        if (chunk != null && !chunksToUpdate.contains(chunk)) {
                             chunksToUpdate.offer(chunk);
+                        }
                     }
                 }
             }
@@ -125,7 +122,7 @@ public class Search extends Feature {
                 if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                     for (int i = -distance; i < distance; i++) {
                         for (int j = -distance; j < distance; j++) {
-                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX + i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
+                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
                             if (chunk != null && !chunksToUpdate.contains(chunk))
                                 chunksToUpdate.offer(chunk);
                         }
@@ -149,12 +146,11 @@ public class Search extends Feature {
                 Color color1 = ColorHelper.INSTANCE.getColor(blocks.get(block));
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
-                RenderSystem.lineWidth(1.2f);
 
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+                bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
                 bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 bufferBuilder.end();
@@ -172,7 +168,6 @@ public class Search extends Feature {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
-
                 Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 1, entityPos.z + 1 - 0.5f);
                 Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, blocks.get(block));
             }
@@ -181,7 +176,7 @@ public class Search extends Feature {
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
-                        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().chunkX + i, Wrapper.INSTANCE.getLocalPlayer().chunkZ + j);
+                        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
                         if (chunk != null && !chunksToUpdate.contains(chunk))
                             chunksToUpdate.offer(chunk);
                     }
@@ -191,17 +186,19 @@ public class Search extends Feature {
     }
 
     public void searchChunk(Chunk chunk) {
-        for (int x = 0; x < 16; x++) {
-            for (int z = 0; z < 16; z++) {
-                for (int y = 0; y < chunk.getHighestNonEmptySectionYOffset() + 16; y++) {
-                    BlockPos blockPos = new BlockPos(x + (chunk.getPos().x * 16), y, z + (chunk.getPos().z * 16));
-                    Block block = WorldHelper.INSTANCE.getBlock(blockPos);
-                    if (block != null && blocks != null && blocks.containsKey(block)) {
-                        worldBlocks.put(blockPos, block);
-                    } else worldBlocks.remove(blockPos);
+        try {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    for (int y = chunk.getBottomY(); y < chunk.getHighestNonEmptySectionYOffset() + 16; y++) {
+                        BlockPos blockPos = new BlockPos(x + (chunk.getPos().x * 16), y, z + (chunk.getPos().z * 16));
+                        Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+                        if (block != null && blocks != null && blocks.containsKey(block)) {
+                            worldBlocks.put(blockPos, block);
+                        } else worldBlocks.remove(blockPos);
+                    }
                 }
             }
-        }
+        }catch (Exception e){}
         chunksToUpdate.remove(chunk);
     }
 

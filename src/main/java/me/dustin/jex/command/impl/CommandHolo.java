@@ -7,9 +7,9 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
@@ -27,11 +27,11 @@ public class CommandHolo extends Command {
             message = message + " " + args[i];
         }
             ItemStack stack = new ItemStack(Items.ARMOR_STAND);
-            CompoundTag tag = new CompoundTag();
-            ListTag listTag = new ListTag();
-            listTag.add(DoubleTag.of(Wrapper.INSTANCE.getLocalPlayer().getX()));
-            listTag.add(DoubleTag.of(Wrapper.INSTANCE.getLocalPlayer().getY()));
-            listTag.add(DoubleTag.of(Wrapper.INSTANCE.getLocalPlayer().getZ()));
+            NbtCompound tag = new NbtCompound();
+            NbtList listTag = new NbtList();
+            listTag.add(NbtDouble.of(Wrapper.INSTANCE.getLocalPlayer().getX()));
+            listTag.add(NbtDouble.of(Wrapper.INSTANCE.getLocalPlayer().getY()));
+            listTag.add(NbtDouble.of(Wrapper.INSTANCE.getLocalPlayer().getZ()));
             tag.putBoolean("Invisible", true);
             tag.putBoolean("Invulnerable", true);
             tag.putBoolean("Interpret", true);

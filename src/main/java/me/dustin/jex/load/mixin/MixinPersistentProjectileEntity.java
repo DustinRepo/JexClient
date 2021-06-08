@@ -11,10 +11,10 @@ public abstract class MixinPersistentProjectileEntity implements IPersistentProj
 
 
     @Shadow
-    protected abstract boolean method_26958(Entity entity);
+    protected abstract boolean canHit(Entity entity);
 
     @Override
     public boolean method(Entity entity) {
-        return this.method_26958(entity);
+        return this.canHit(entity);
     }
 }

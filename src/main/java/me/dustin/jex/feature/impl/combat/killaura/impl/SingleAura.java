@@ -56,8 +56,7 @@ public class SingleAura extends FeatureExtension {
                         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
                         Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
                         if (killaura.lockview) {
-                            Wrapper.INSTANCE.getLocalPlayer().yaw = event.getYaw();
-                            Wrapper.INSTANCE.getLocalPlayer().pitch = event.getPitch();
+                            PlayerHelper.INSTANCE.setRotation(event.getRotation());
                         }
                     }
                 }
@@ -79,7 +78,7 @@ public class SingleAura extends FeatureExtension {
                 double x = Wrapper.INSTANCE.getLocalPlayer().prevX + ((Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX) * ((EventRender3D) event1).getPartialTicks());
                 double y = Wrapper.INSTANCE.getLocalPlayer().prevY + ((Wrapper.INSTANCE.getLocalPlayer().getY() - Wrapper.INSTANCE.getLocalPlayer().prevY) * ((EventRender3D) event1).getPartialTicks());
                 double z = Wrapper.INSTANCE.getLocalPlayer().prevZ + ((Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ) * ((EventRender3D) event1).getPartialTicks());
-                Render3DHelper.INSTANCE.drawSphere(matrixStack, killaura.reach, 25, killaura.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
+                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getMatrixStack(), killaura.reach, 25, killaura.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
                 Render3DHelper.INSTANCE.end3DRender();
                 matrixStack.pop();
             }
@@ -106,7 +105,7 @@ public class SingleAura extends FeatureExtension {
                 }
             }
         }
-        if (target != null && Wrapper.INSTANCE.getWorld().getEntityById(target.getEntityId()) != null) {
+        if (target != null && Wrapper.INSTANCE.getWorld().getEntityById(target.getId()) != null) {
             if (BaritoneHelper.INSTANCE.baritoneExists()) {
                 if (killaura.baritoneOverride && BaritoneHelper.INSTANCE.isBaritoneRunning())
                     BaritoneHelper.INSTANCE.followUntilDead(target, killaura);

@@ -49,16 +49,16 @@ public class GuiAddAccount extends Screen {
         username.setMaxLength(16);
         this.email.setMaxLength(100);
         this.password.setMaxLength(250);
-        this.buttons.clear();
+        this.children().clear();
         username.setFocusUnlocked(true);
         email.setFocusUnlocked(true);
-        this.children.add(username);
-        this.children.add(email);
-        this.children.add(password);
-        this.addButton(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, new LiteralText("Cancel"), button -> {
+        this.addSelectableChild(username);
+        this.addSelectableChild(email);
+        this.addSelectableChild(password);
+        this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, new LiteralText("Cancel"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(parent);
         }));
-        this.addButton(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, editingAccount == null ? new LiteralText("Add") : new LiteralText("Edit"), button -> {
+        this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, editingAccount == null ? new LiteralText("Add") : new LiteralText("Edit"), button -> {
             MinecraftAccount account;
             if (email.getText().equalsIgnoreCase("") || password.getText().equalsIgnoreCase("")) {
                 account = new MinecraftAccount(username.getText());

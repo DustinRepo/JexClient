@@ -69,14 +69,14 @@ public enum Render2DHelper {
     }
 
     public void drawTexturedQuad(Matrix4f matrices, float x0, float x1, float y0, float y1, float z, float u0, float u1, float v0, float v1) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(matrices, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
         bufferBuilder.vertex(matrices, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
         bufferBuilder.vertex(matrices, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
         bufferBuilder.vertex(matrices, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
         bufferBuilder.end();
-        RenderSystem.enableAlphaTest();
         BufferRenderer.draw(bufferBuilder);
     }
 
@@ -95,20 +95,24 @@ public enum Render2DHelper {
             y2 = j;
         }
 
-        float f = (float) (color >> 24 & 255) / 255.0F;
-        float g = (float) (color >> 16 & 255) / 255.0F;
-        float h = (float) (color >> 8 & 255) / 255.0F;
-        float k = (float) (color & 255) / 255.0F;
+        float f = (float)(color >> 24 & 255) / 255.0F;
+        float g = (float)(color >> 16 & 255) / 255.0F;
+        float h = (float)(color >> 8 & 255) / 255.0F;
+        float k = (float)(color & 255) / 255.0F;
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        setup2DRender(false);
-        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-        bufferBuilder.vertex(matrix, (float) x1, (float) y2, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, (float) x2, (float) y2, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, (float) x2, (float) y1, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, (float) x1, (float) y1, 0.0F).color(g, h, k, f).next();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0.0F).color(g, h, k, f).next();
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
-        end2DRender();
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 
     public Color hexToColor(String value) {
@@ -156,8 +160,10 @@ public enum Render2DHelper {
         float f7 = (float) (col2 & 0xFF) / 255F;
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        setup2DRender(false);
-        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         bufferBuilder.vertex(x2, y, 0).color(f1, f2, f3, f).next();
         bufferBuilder.vertex(x, y, 0).color(f1, f2, f3, f).next();
@@ -167,7 +173,8 @@ public enum Render2DHelper {
 
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
-        end2DRender();
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 
     public void drawFullCircle(int cx, int cy, double r, int c, MatrixStack matrixStack) {
@@ -175,10 +182,13 @@ public enum Render2DHelper {
         float f1 = (c >> 16 & 0xFF) / 255.0F;
         float f2 = (c >> 8 & 0xFF) / 255.0F;
         float f3 = (c & 0xFF) / 255.0F;
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        setup2DRender(false);
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
         for (int i = 0; i <= 360; i++) {
             double x = Math.sin(i * 3.141592653589793D / 180.0D) * r;
             double y = Math.cos(i * 3.141592653589793D / 180.0D) * r;
@@ -186,7 +196,9 @@ public enum Render2DHelper {
         }
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
-        end2DRender();
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.defaultBlendFunc();
     }
 
     public void drawArc(float cx, float cy, double r, int c, int startpoint, double arc, int linewidth, MatrixStack matrixStack) {
@@ -194,12 +206,15 @@ public enum Render2DHelper {
         float f1 = (c >> 16 & 0xFF) / 255.0F;
         float f2 = (c >> 8 & 0xFF) / 255.0F;
         float f3 = (c & 0xFF) / 255.0F;
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.lineWidth(linewidth);
 
-        setup2DRender(false);
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(0, VertexFormats.POSITION_COLOR);
-        RenderSystem.lineWidth(linewidth);
+        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);//TRIANGLE_STRIP is fucked too I guess
 
         for (int i = (int) startpoint; i <= arc; i += 1) {
             double x = Math.sin(i * 3.141592653589793D / 180.0D) * r;
@@ -209,7 +224,9 @@ public enum Render2DHelper {
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
 
-        end2DRender();
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
+        RenderSystem.defaultBlendFunc();
     }
 
     public void drawHLine(MatrixStack matrixStack, float par1, float par2, float par3, int par4) {
@@ -266,15 +283,19 @@ public enum Render2DHelper {
     }
 
     public void drawItem(ItemStack stack, float xPosition, float yPosition) {
+        drawItem(stack, xPosition, yPosition, 1);
+    }
+    public void drawItem(ItemStack stack, float xPosition, float yPosition, float scale) {
         String amountText = stack.getCount() != 1 ? stack.getCount() + "" : "";
         IItemRenderer iItemRenderer = (IItemRenderer) Wrapper.INSTANCE.getMinecraft().getItemRenderer();
         iItemRenderer.renderItemIntoGUI(stack, xPosition, yPosition);
-        renderGuiItemOverlay(Wrapper.INSTANCE.getMinecraft().textRenderer, stack, xPosition - 0.5f, yPosition + 1, amountText);
+        renderGuiItemOverlay(Wrapper.INSTANCE.getMinecraft().textRenderer, stack, xPosition - 0.5f, yPosition + 1, scale, amountText);
     }
 
-    public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, float x, float y, @Nullable String countLabel) {
+    public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, float x, float y, float scale, @Nullable String countLabel) {
         if (!stack.isEmpty()) {
             MatrixStack matrixStack = new MatrixStack();
+            matrixStack.scale(scale, scale, scale);
             if (stack.getCount() != 1 || countLabel != null) {
                 String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
                 matrixStack.translate(0.0D, 0.0D, (double) (Wrapper.INSTANCE.getMinecraft().getItemRenderer().zOffset + 200.0F));
@@ -282,23 +303,17 @@ public enum Render2DHelper {
                 renderer.draw(string, (float) (x + 19 - 2 - renderer.getWidth(string)), (float) (y + 6 + 3), 16777215, true, matrixStack.peek().getModel(), immediate, false, 0, 15728880);
                 immediate.draw();
             }
-
-            if (stack.isDamaged()) {
+            if (stack.isItemBarVisible()) {
                 RenderSystem.disableDepthTest();
                 RenderSystem.disableTexture();
-                RenderSystem.disableAlphaTest();
                 RenderSystem.disableBlend();
                 Tessellator tessellator = Tessellator.getInstance();
                 BufferBuilder bufferBuilder = tessellator.getBuffer();
-                float f = (float) stack.getDamage();
-                float g = (float) stack.getMaxDamage();
-                float h = Math.max(0.0F, (g - f) / g);
-                int i = Math.round(13.0F - f * 13.0F / g);
-                int j = MathHelper.hsvToRgb(h / 3.0F, 1.0F, 1.0F);
+                int i = stack.getItemBarStep();
+                int j = stack.getItemBarColor();
                 this.renderGuiQuad(bufferBuilder, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
                 this.renderGuiQuad(bufferBuilder, x + 2, y + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
                 RenderSystem.enableBlend();
-                RenderSystem.enableAlphaTest();
                 RenderSystem.enableTexture();
                 RenderSystem.enableDepthTest();
             }
@@ -321,7 +336,7 @@ public enum Render2DHelper {
     }
 
     private void renderGuiQuad(BufferBuilder buffer, float x, float y, float width, float height, int red, int green, int blue, int alpha) {
-        buffer.begin(7, VertexFormats.POSITION_COLOR);
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         buffer.vertex((double) (x + 0), (double) (y + 0), 0.0D).color(red, green, blue, alpha).next();
         buffer.vertex((double) (x + 0), (double) (y + height), 0.0D).color(red, green, blue, alpha).next();
         buffer.vertex((double) (x + width), (double) (y + height), 0.0D).color(red, green, blue, alpha).next();
@@ -354,8 +369,8 @@ public enum Render2DHelper {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer modelView = stack.mallocFloat(16);
             FloatBuffer projection = stack.mallocFloat(16);
-            GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelView);
-            GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, projection);
+            RenderSystem.getModelViewMatrix().write(modelView, false);//glGetFloatV doesn't work for getting model or view matrix anymore but thankfully minecraft has handy-dandy methods to grab them
+            RenderSystem.getProjectionMatrix().write(projection, false);//and we write them to framebuffer so we can convert to JOML's matrix4f to do the math I don't fucking want to do
             GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
             new org.joml.Matrix4f(projection).mul(new org.joml.Matrix4f(modelView)).project((float) x, (float) y, (float) z, viewport, screenCoords);
         }
@@ -381,12 +396,21 @@ public enum Render2DHelper {
     }
 
     public void drawArrow(MatrixStack matrixStack, float x, float y, boolean open, int color) {
-        glColor(color);
         bindTexture(cog);
+        shaderColor(color);
         DrawableHelper.drawTexture(matrixStack, (int) x - 5, (int) y - 5, 0, 0, 10, 10, 10, 10);
+        shaderColor(-1);
     }
 
     public void bindTexture(Identifier identifier) {
-        Wrapper.INSTANCE.getMinecraft().getTextureManager().bindTexture(identifier);
+        RenderSystem.setShaderTexture(0, identifier);
+    }
+
+    public void shaderColor(int hex) {
+        float alpha = (hex >> 24 & 0xFF) / 255.0F;
+        float red = (hex >> 16 & 0xFF) / 255.0F;
+        float green = (hex >> 8 & 0xFF) / 255.0F;
+        float blue = (hex & 0xFF) / 255.0F;
+        RenderSystem.setShaderColor(red, green, blue, alpha);
     }
 }

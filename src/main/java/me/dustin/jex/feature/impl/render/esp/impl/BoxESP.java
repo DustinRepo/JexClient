@@ -25,7 +25,6 @@ public class BoxESP extends FeatureExtension {
                 try {
                     Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, event.getPartialTicks());
                     Render3DHelper.INSTANCE.drawEntityBox(event.getMatrixStack(), entity, vec.getX(), vec.getY(), vec.getZ(), ESP.INSTANCE.getColor(entity));
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

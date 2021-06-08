@@ -1,5 +1,6 @@
 package me.dustin.jex.load.mixin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -34,31 +35,37 @@ public abstract class MixinGameRenderer {
     protected abstract void bobView(MatrixStack matrixStack, float f);
 
     @Shadow
-    public abstract Matrix4f getBasicProjectionMatrix(Camera camera, float f, boolean bl);
-
-    @Shadow
     protected abstract void bobViewWhenHurt(MatrixStack matrixStack, float f);
+
+    @Shadow protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
+
+    @Shadow public abstract Matrix4f getBasicProjectionMatrix(double d);
 
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", at = @At(value = "INVOKE", target = "com/mojang/blaze3d/systems/RenderSystem.clear(IZ)V"))
     private void onRenderWorld(float partialTicks, long finishTimeNano, MatrixStack matrixStack1, CallbackInfo ci) {
         if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null)
             return;
+        RenderSystem.clearColor(1, 1, 1, 1);
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(camera, partialTicks, true));
+        double d = this.getFov(camera, partialTicks, true);
+        matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(d));
         loadProjectionMatrix(matrixStack.peek().getModel());
 
-        Render3DHelper.INSTANCE.applyCameraRots();
         this.bobViewWhenHurt(matrixStack, partialTicks);
+        Render3DHelper.INSTANCE.applyCameraRots(matrixStack);
         loadProjectionMatrix(matrixStack.peek().getModel());
         new EventRender3D.EventRender3DNoBob(matrixStack, partialTicks).run();
+        Render3DHelper.INSTANCE.fixCameraRots(matrixStack);
         if (this.client.options.bobView) {
             bobView(matrixStack, partialTicks);
         }
+        Render3DHelper.INSTANCE.applyCameraRots(matrixStack);
+        loadProjectionMatrix(matrixStack.peek().getModel());
+        new EventRenderGetPos(matrixStack, partialTicks).run();
+        Render3DHelper.INSTANCE.fixCameraRots(matrixStack);
         loadProjectionMatrix(matrixStack.peek().getModel());
 
-        Render3DHelper.INSTANCE.fixCameraRots();
         new EventRender3D(matrixStack1, partialTicks).run();
-
     }
 
     @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "net/minecraft/util/profiler/Profiler.pop()V"))
@@ -88,5 +95,4 @@ public abstract class MixinGameRenderer {
     public void renderForEvent(float float_1, long long_1, boolean boolean_1, CallbackInfo ci) {
         new EventRender2DNoScale().run();
     }
-
 }

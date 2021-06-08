@@ -18,7 +18,7 @@ public class Nofall extends Feature {
     private void runEvent(EventPlayerPackets eventPlayerPackets) {
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
             if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > 2.5f) {
-                NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket(true));
+                NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(true));
             }
         }
     }
@@ -27,7 +27,7 @@ public class Nofall extends Feature {
     private void runEvent(EventPacketSent eventPacketSent) {
         if (eventPacketSent.getPacket() instanceof PlayerMoveC2SPacket && Wrapper.INSTANCE.getLocalPlayer().fallDistance > 2.5f) {
             PlayerMoveC2SPacket origPacket = (PlayerMoveC2SPacket) eventPacketSent.getPacket();
-            PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Both(origPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), origPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()), origPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), origPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), origPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
+            PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(origPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), origPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()), origPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), origPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), origPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
             eventPacketSent.setPacket(playerMoveC2SPacket);
         }
     }

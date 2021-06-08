@@ -10,7 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.SocialInteractionsManager;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.Session;
@@ -46,9 +46,9 @@ public class MixinMinecraftClient implements IMinecraft {
 
     @Shadow @Final private RenderTickCounter renderTickCounter;
 
-    @Shadow @Nullable public ClientPlayerEntity player;
-
     @Shadow @Final public GameOptions options;
+
+    @Shadow @Nullable public ClientPlayerEntity player;
 
     @Override
     public void setSession(Session session) {

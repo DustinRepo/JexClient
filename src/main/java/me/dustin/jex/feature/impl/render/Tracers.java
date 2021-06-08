@@ -4,22 +4,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventBobView;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
-import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -45,13 +42,14 @@ public class Tracers extends Feature {
 
     @EventListener(events = {EventRender3D.EventRender3DNoBob.class})
     private void runEvent(EventRender3D.EventRender3DNoBob eventRender3D) {
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof LivingEntity && isValid((LivingEntity) entity)) {
                 LivingEntity living = (LivingEntity) entity;
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
-                Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
                 Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, eventRender3D.getPartialTicks());
+                Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
@@ -59,7 +57,7 @@ public class Tracers extends Feature {
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+                bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);//LINES doesn't fucking work for some reason so DEBUG_LINES yolo
                 bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 if (spine) {

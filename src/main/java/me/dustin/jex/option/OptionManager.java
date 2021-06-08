@@ -2,8 +2,8 @@ package me.dustin.jex.option;
 
 import com.google.common.collect.Maps;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.FeatureManager;
+import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import me.dustin.jex.option.enums.OpType;

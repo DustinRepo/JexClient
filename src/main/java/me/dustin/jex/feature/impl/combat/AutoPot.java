@@ -4,13 +4,13 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.item.ItemStack;
@@ -41,7 +41,6 @@ public class AutoPot extends Feature {
         if (event instanceof EventPlayerPackets) {
             this.setSuffix(getPotions() + "");
             EventPlayerPackets playerPacketEvent = (EventPlayerPackets) event;
-            short short_1 = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getNextActionId(InventoryHelper.INSTANCE.getInventory());
             if (playerPacketEvent.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (throwing) {
                     playerPacketEvent.setPitch(90);

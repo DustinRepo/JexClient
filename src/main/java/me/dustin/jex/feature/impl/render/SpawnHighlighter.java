@@ -47,7 +47,7 @@ public class SpawnHighlighter extends Feature {
                         BlockPos abovePos = blockPos.add(0, 1, 0);
                         Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(abovePos.getX(), abovePos.getY(), abovePos.getZ()));
                         Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
-                        Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, color);
+                        Render3DHelper.INSTANCE.drawBoxWithDepthTest(eventRender3D.getMatrixStack(), box, color);
                     }
                 }
             }

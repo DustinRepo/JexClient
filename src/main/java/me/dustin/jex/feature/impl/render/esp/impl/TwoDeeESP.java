@@ -3,12 +3,12 @@ package me.dustin.jex.feature.impl.render.esp.impl;
 import com.google.common.collect.Maps;
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.extension.FeatureExtension;
+import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.impl.render.esp.ESP;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -28,14 +28,14 @@ public class TwoDeeESP extends FeatureExtension {
 
     @Override
     public void pass(Event event) {
-        if (event instanceof EventRender3D) {
-            EventRender3D eventRender3D = (EventRender3D)event;
+        if (event instanceof EventRenderGetPos) {
+            EventRenderGetPos eventRenderGetPos = (EventRenderGetPos)event;
             headPos.clear();
             footPos.clear();
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                 if (ESP.INSTANCE.isValid(entity)) {
-                    headPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, entity.getHeight() + 0.2f, eventRender3D.getPartialTicks()));
-                    footPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, -0.2f, eventRender3D.getPartialTicks()));
+                    headPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, entity.getHeight() + 0.2f, eventRenderGetPos.getPartialTicks()));
+                    footPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, -0.2f, eventRenderGetPos.getPartialTicks()));
                 }
             }
         } else if (event instanceof EventRender2D) {
@@ -80,7 +80,7 @@ public class TwoDeeESP extends FeatureExtension {
             float pos = percent * distance;
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack,x2 - 1, y2 + pos, x2 + 2, y2, 0xff000000, color, 1);
         }
-        int color = ESP.INSTANCE.getColor(entity) & 0x25ffffff;
+        int color = ESP.INSTANCE.getColor(entity) & 0x35ffffff;
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y, x2, y2, 0xff000000, color, 1);
     }
 

@@ -4,12 +4,12 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -41,13 +41,13 @@ public class AutoWither extends Feature {
                     if (packet.getBlockHitResult().getSide() == Direction.UP || packet.getBlockHitResult().getSide() == Direction.DOWN)
                         originPos = originPos.up();
                     if (packet.getBlockHitResult().getSide() == Direction.NORTH)
-                        originPos = originPos.north();
+                        originPos = originPos.north();//north
                     if (packet.getBlockHitResult().getSide() == Direction.SOUTH)
-                        originPos = originPos.south();
+                        originPos = originPos.south();//south
                     if (packet.getBlockHitResult().getSide() == Direction.WEST)
-                        originPos = originPos.west();
+                        originPos = originPos.west();//west
                     if (packet.getBlockHitResult().getSide() == Direction.EAST)
-                        originPos = originPos.east();
+                        originPos = originPos.east();//east
 
                     Vec3d originVec = new Vec3d(originPos.getX(), originPos.getY(), originPos.getZ());
                     boolean northSouth = Direction.fromRotation((double) PlayerHelper.INSTANCE.getYaw()) == Direction.NORTH || Direction.fromRotation((double) PlayerHelper.INSTANCE.getYaw()) == Direction.SOUTH;

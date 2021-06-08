@@ -10,6 +10,8 @@ import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.addon.Addon;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.render.CustomMainMenu;
 import me.dustin.jex.file.ClientSettingsFile;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
@@ -21,8 +23,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.render.CustomMainMenu;
 import me.dustin.jex.update.UpdateManager;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -31,10 +31,10 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.options.OptionsScreen;
+import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -177,11 +177,6 @@ public class JexTitleScreen extends Screen {
             titleScreen.background = 0;
         }
         this.client.setConnectedToRealms(false);
-        if (this.client.options.realmsNotifications && !this.realmsNotificationsInitialized) {
-            RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
-            this.realmsNotificationGui = realmsBridgeScreen.getNotificationScreen(this);
-            this.realmsNotificationsInitialized = true;
-        }
     }
 
     private void initWidgetsNormal(int y, int spacingY) {
@@ -255,8 +250,6 @@ public class JexTitleScreen extends Screen {
     }
 
     private void switchToRealms() {
-        RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
-        realmsBridgeScreen.switchToRealms(this);
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -278,10 +271,10 @@ public class JexTitleScreen extends Screen {
         fill(matrices, 0, 0, this.width, this.height, -1);
         this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0F, 1.0F));
         int j = this.width / 2 - 137;
-        Render2DHelper.INSTANCE.bindTexture(PANORAMA_OVERLAY);
-        RenderSystem.enableBlend();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
+        RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
         drawTexture(matrices, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
         float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
         int l = MathHelper.ceil(g * 255.0F) << 24;
@@ -289,26 +282,23 @@ public class JexTitleScreen extends Screen {
         if (!this.backgrounds.isEmpty() && customMainMenu.customBackground) {
             Background currentBackground = backgrounds.get(background);
             Render2DHelper.INSTANCE.bindTexture(currentBackground.identifier);
-            Render2DHelper.INSTANCE.bindTexture(currentBackground.identifier);
             DrawableHelper.drawTexture(matrices, (int) 0, (int) 0, 0, 0, width, height, width, height);
         }
 
         if ((l & -67108864) != 0) {
-            Render2DHelper.INSTANCE.bindTexture(JEX_TITLE_TEXTURE);
-
+            RenderSystem.setShaderTexture(0, JEX_TITLE_TEXTURE);
             int j1 = this.height / 4 - 10;
-            RenderSystem.pushMatrix();
-            Render2DHelper.INSTANCE.glColor(ColorHelper.INSTANCE.getClientColor());
+            Render2DHelper.INSTANCE.shaderColor(ColorHelper.INSTANCE.getClientColor());
             drawTexture(matrices, 2, (int) j1, 0.0F, 0.0F, 250, 50, 250, 50);
-            RenderSystem.popMatrix();
 
-            RenderSystem.pushMatrix();
             this.splashText = isMinceraft ? "Minceraft" : "Build " + JexClient.INSTANCE.getVersion() + " for MC" + SharedConstants.getGameVersion().getName();
-            float h = 1.8F - MathHelper.abs(MathHelper.sin((float) (Util.getMeasuringTimeMs() % 1000L) / 1000.0F * 6.2831855F) * 0.1F);
-            h = h * 100.0F / (float) (this.textRenderer.getWidth(this.splashText) + 32);
-            RenderSystem.scalef(h, h, h);
+            matrices.push();
+            float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * 6.2831855F) * 0.1F);
+            h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
+            matrices.scale(h, h, h);
             FontHelper.INSTANCE.drawWithShadow(matrices, splashText, 2 / h, (j1 + 44) / h, ColorHelper.INSTANCE.getClientColor());
-            RenderSystem.popMatrix();
+            matrices.pop();
+
 
             if (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH) {
                 String updateString = "Jex Client is outdated. You can open the Jex Options screen in Options to update to Build " + UpdateManager.INSTANCE.getLatestVersion();
@@ -328,10 +318,10 @@ public class JexTitleScreen extends Screen {
             }
 
 
-            Iterator var12 = this.buttons.iterator();
+            Iterator var12 = this.children().iterator();
 
             while (var12.hasNext()) {
-                AbstractButtonWidget abstractButtonWidget = (AbstractButtonWidget) var12.next();
+                ClickableWidget abstractButtonWidget = (ClickableWidget) var12.next();
                 abstractButtonWidget.setAlpha(g);
             }
             float top = this.height / 4 + 45;

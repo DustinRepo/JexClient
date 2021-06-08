@@ -20,13 +20,13 @@ public enum Stencil {
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 1, 0xFFFF);
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
-        GlStateManager.colorMask(false, false, false, false);
+        GlStateManager._colorMask(false, false, false, false);
     }
 
     public void erase() {
         RenderSystem.stencilFunc(GL11.GL_NOTEQUAL, 1, 0xFFFF);
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
-        GlStateManager.colorMask(true, true, true, true);
+        GlStateManager._colorMask(true, true, true, true);
     }
 
     public void dispose() {

@@ -82,11 +82,11 @@ public class EntityRider extends Feature {
                 BoatEntity boatEntity = (BoatEntity)vehicle;
                 boatEntity.updateVelocity(boatSpeed / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));
                 if (allowBoatFly)
-                if (Wrapper.INSTANCE.getOptions().keyJump.isPressed()) {
-                    boatEntity.addVelocity(0, boatJump / 10.0f, 0);
-                } else if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_INSERT)) {
-                    boatEntity.addVelocity(0, -boatJump / 10.0f, 0);
-                }
+                    if (Wrapper.INSTANCE.getOptions().keyJump.isPressed()) {
+                        boatEntity.addVelocity(0, boatJump / 10.0f, 0);
+                    } else if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_INSERT)) {
+                        boatEntity.addVelocity(0, -boatJump / 10.0f, 0);
+                    }
             }
         }
         if (event instanceof EventHorseIsSaddled) {

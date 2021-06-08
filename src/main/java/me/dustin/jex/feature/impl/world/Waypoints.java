@@ -7,6 +7,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -20,10 +21,7 @@ import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.Box;
@@ -73,7 +71,7 @@ public class Waypoints extends Feature {
         return servers;
     }
 
-    @EventListener(events = {EventRender3D.class, EventRender3D.EventRender3DNoBob.class, EventRender2D.class, EventTick.class})
+    @EventListener(events = {EventRender3D.class, EventRender3D.EventRender3DNoBob.class, EventRenderGetPos.class, EventRender2D.class, EventTick.class})
     private void runMethod(Event event) {
         if (event instanceof EventTick) {
             spin++;
@@ -87,6 +85,21 @@ public class Waypoints extends Feature {
                 }
                 waypoints.add(new Waypoint("Last Death", server, (float) Wrapper.INSTANCE.getLocalPlayer().getX(), (float) Wrapper.INSTANCE.getLocalPlayer().getY(), (float) Wrapper.INSTANCE.getLocalPlayer().getZ(), WorldHelper.INSTANCE.getDimensionID().toString(), ColorHelper.INSTANCE.getColorViaHue(0).getRGB()));
             }
+            for (Waypoint waypoint : getWaypoints(server)) {
+                if (waypoint.getDimension().equalsIgnoreCase(WorldHelper.INSTANCE.getDimensionID().toString())) {
+                    float x = waypoint.getX();
+                    float y = waypoint.getY();
+                    float z = waypoint.getZ();
+                    float distance = ClientMathHelper.INSTANCE.getDistance2D(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(x, y, z));
+                    Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(x, waypoint.getY(), z));
+                    if (beacon && distance < 270) {
+                        Box box = new Box(renderPos.x - 0.2f, renderPos.y, renderPos.z - 0.2f, renderPos.x + 0.2f, (256 - waypoint.y), renderPos.z + 0.2f);
+                        Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, waypoint.getColor());
+                    }
+                }
+            }
+        } else if (event instanceof EventRenderGetPos) {
+            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getServer()).getName() : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry()).address;
             waypointPositions.clear();
             for (Waypoint waypoint : getWaypoints(server)) {
                 if (waypoint.getDimension().equalsIgnoreCase(WorldHelper.INSTANCE.getDimensionID().toString())) {
@@ -99,18 +112,11 @@ public class Waypoints extends Feature {
                         x = (float) Wrapper.INSTANCE.getLocalPlayer().getX() + 250 * (float) Math.cos(Math.toRadians(yaw + 90));
                         z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ() + 250 * (float) Math.sin(Math.toRadians(yaw + 90));
                     }
-                    Render3DHelper.INSTANCE.applyCameraRots();
-                    Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(x, waypoint.getY(), z));
                     Vec3d screenPos = Render2DHelper.INSTANCE.to2D(new Vec3d(x, waypoint.getY() + Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(EntityPose.STANDING), z));
                     waypointPositions.put(waypoint, screenPos);
-                    Render3DHelper.INSTANCE.fixCameraRots();
-                    if (beacon && distance < 270) {
-                        Box box = new Box(renderPos.x - 0.2f, renderPos.y, renderPos.z - 0.2f, renderPos.x + 0.2f, (256 - waypoint.y), renderPos.z + 0.2f);
-                        Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, waypoint.getColor());
-                    }
                 }
             }
-        }
+        } else
         if (event instanceof EventRender3D.EventRender3DNoBob) {
             if (!tracer)
                 return;
@@ -133,16 +139,15 @@ public class Waypoints extends Feature {
                 assert cameraEntity != null;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
 
-
                 Color color1 = ColorHelper.INSTANCE.getColor(waypoint.getColor());
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
 
-                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(Wrapper.INSTANCE.getLocalPlayer().pitch)).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
+                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+                bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR);
                 bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 bufferBuilder.end();
@@ -150,7 +155,7 @@ public class Waypoints extends Feature {
 
                 Render3DHelper.INSTANCE.end3DRender();
             }
-        }
+        } else
         if (event instanceof EventRender2D) {
             waypointPositions.keySet().forEach(waypoint -> {
                 if (waypoint.hidden)

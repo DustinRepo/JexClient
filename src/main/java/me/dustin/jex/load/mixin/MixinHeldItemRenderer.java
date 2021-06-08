@@ -20,17 +20,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HeldItemRenderer.class)
 public class MixinHeldItemRenderer {
-    @Shadow private float prevEquipProgressMainHand;
-
     @Shadow private float equipProgressMainHand;
 
     @Shadow private float equipProgressOffHand;
 
-    @Shadow private float prevEquipProgressOffHand;
+    @Shadow private ItemStack mainHand;
 
     @Shadow private ItemStack offHand;
 
-    @Shadow private ItemStack mainHand;
+    @Shadow private float prevEquipProgressMainHand;
+
+    @Shadow private float prevEquipProgressOffHand;
 
     @Shadow @Final private MinecraftClient client;
 

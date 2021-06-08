@@ -46,7 +46,7 @@ public class CommandFakePlayer extends Command {
                     return;
                 }
                 player.setPos(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-                Wrapper.INSTANCE.getWorld().removeEntity(player.getEntityId());
+                Wrapper.INSTANCE.getWorld().removeEntity(player.getId(), Entity.RemovalReason.DISCARDED);
                 ChatHelper.INSTANCE.addClientMessage("Removed fake player " + name);
             } else {
                 giveSyntaxMessage();

@@ -99,6 +99,9 @@ public class Scaffold extends Feature {
         }
     }
 
+    private boolean isGoodBlock(Block block) {
+        return block.getDefaultState().getMaterial().isReplaceable();
+    }
     private void getNearBlocks(BlockPos blockPos) {
         emptyNearBlocks.clear();
         if (range == 0) {
@@ -181,10 +184,6 @@ public class Scaffold extends Feature {
         if (!blockItem.getBlock().getDefaultState().isFullCube(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN))
             return false;
         return true;
-    }
-
-    private boolean isGoodBlock(Block block) {
-        return block.getDefaultState().getMaterial().isReplaceable();
     }
 
     public class BlockInfo {

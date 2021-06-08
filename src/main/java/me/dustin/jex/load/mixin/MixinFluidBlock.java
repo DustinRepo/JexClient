@@ -34,7 +34,7 @@ public class MixinFluidBlock {
 
     @Inject(method = "getCollisionShape", at = @At("HEAD"), cancellable = true)
     public void getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context, CallbackInfoReturnable<VoxelShape> ci) {
-        EventFluidCollisionShape eventFluidCollisionShape = new EventFluidCollisionShape(pos, state.getBlock(), context.isAbove(this.COLLISION_SHAPE, pos, true) && (Integer) state.get(this.LEVEL) == 0 && context.method_27866(world.getFluidState(pos.up()), this.fluid) ? COLLISION_SHAPE : VoxelShapes.empty()).run();
+        EventFluidCollisionShape eventFluidCollisionShape = new EventFluidCollisionShape(pos, state.getBlock(), context.isAbove(this.COLLISION_SHAPE, pos, true) && (Integer) state.get(this.LEVEL) == 0 && context.canWalkOnFluid(world.getFluidState(pos.up()), this.fluid) ? COLLISION_SHAPE : VoxelShapes.empty()).run();
         if (eventFluidCollisionShape.isCancelled())
             ci.setReturnValue(eventFluidCollisionShape.getVoxelShape());
     }

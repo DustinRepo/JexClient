@@ -28,6 +28,8 @@ import java.util.ArrayList;
 @Feat(name = "Surround", category = FeatureCategory.COMBAT, description = "Automatically place obsidian around your feet to defend from crystals")
 public class Surround extends Feature {
 
+    @Op(name = "Auto Turn Off")
+    public boolean autoTurnOff = true;
     @Op(name = "Place Delay (MS)", min = 0, max = 250)
     public int placeDelay = 0;
     @Op(name = "Rotate")
@@ -41,6 +43,8 @@ public class Surround extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class, EventRender3D.class})
     private void runMethod(Event event) {
+        if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld().isOutOfHeightLimit((int)Wrapper.INSTANCE.getLocalPlayer().getY()))
+            return;
         if (event instanceof EventPlayerPackets) {
             EventPlayerPackets eventPlayerPackets = (EventPlayerPackets)event;
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
@@ -57,7 +61,8 @@ public class Surround extends Feature {
                 int obby = InventoryHelper.INSTANCE.getFromHotbar(Items.OBSIDIAN);
                 if (obby == -1) {
                     this.stage = 0;
-                    this.setState(false);
+                    if (autoTurnOff)
+                        this.setState(false);
                     return;
                 }
                 double fracX = MathHelper.fractionalPart(Wrapper.INSTANCE.getLocalPlayer().getX());
@@ -65,21 +70,21 @@ public class Surround extends Feature {
                 if (fracX < 0.3) {
                     double x = Wrapper.INSTANCE.getLocalPlayer().getX() - fracX + 0.3;
                     Wrapper.INSTANCE.getLocalPlayer().setPos(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
                 } else if (fracX > 0.7) {
                     double x = Wrapper.INSTANCE.getLocalPlayer().getX() - fracX + 0.7;
                     Wrapper.INSTANCE.getLocalPlayer().setPos(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
                 }
 
                 if (fracZ < 0.3) {
                     double z = Wrapper.INSTANCE.getLocalPlayer().getZ() - fracZ + 0.3;
                     Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z);
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z, true));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z, true));
                 } else if (fracZ > 0.7) {
                     double z = Wrapper.INSTANCE.getLocalPlayer().getZ() - fracZ + 0.7;
                     Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z);
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionOnly(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z, true));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z, true));
                 }
                 InventoryHelper.INSTANCE.getInventory().selectedSlot = obby;
                 ArrayList<BlockPos> placePos = new ArrayList<>();
@@ -91,7 +96,8 @@ public class Surround extends Feature {
                 if (placeDelay != 0) {
                     if (stage == placePos.size()) {
                         InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
-                        this.setState(false);
+                        if (autoTurnOff)
+                            this.setState(false);
                         return;
                     }
                     BlockPos pos = placePos.get(stage);
@@ -110,7 +116,8 @@ public class Surround extends Feature {
                         }
                     }
                     InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
-                    this.setState(false);
+                    if (autoTurnOff)
+                        this.setState(false);
                     timer.reset();
                     this.stage = 0;
                 }

@@ -1,17 +1,13 @@
 package me.dustin.jex.feature.impl.render;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderEffects;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.FeatureManager;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.gui.click.jex.JexGui;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.impl.Window;
@@ -25,21 +21,21 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.FeatureManager;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -49,6 +45,7 @@ import java.util.*;
 
 @Feat(name = "HUD", category = FeatureCategory.VISUAL, description = "Renders an in-game HUD")
 public class Hud extends Feature {
+
     @Op(name = "Client Color", isColor = true)
     public int clientColor = 0xff00a1ff;
     @OpChild(name = "Rainbow", parent = "Client Color")
@@ -193,17 +190,17 @@ public class Hud extends Feature {
                 break;
             case "SpinFlip":
             case "Spin Only":
-                rot += 2;
+                rot+=2;
                 if (rot > 360)
                     rot -= 360;
                 break;
             case "Flip Only":
                 if (flipRot) {
-                    rot -= 2;
+                    rot-=2;
                     if (rot <= 0)
                         flipRot = false;
                 } else {
-                    rot += 2;
+                    rot+=2;
                     if (rot >= 90)
                         flipRot = true;
                 }
@@ -251,13 +248,13 @@ public class Hud extends Feature {
             case "Static":
                 break;
             case "Spin Only":
-                matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 0.0F, 1.0F), rot, true));
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), rot, true));
                 break;
             case "Flip Only":
-                matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 1F, 0F), rot, true));
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 1F, 0F), rot, true));
                 break;
             case "SpinFlip":
-                matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 0.5f, 1F), rot, true));
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.5f, 1F), rot, true));
                 break;
         }
 
@@ -276,13 +273,13 @@ public class Hud extends Feature {
             case "Static":
                 break;
             case "Spin Only":
-                matrixStack.multiply(new Quaternion(new Vector3f(0.0F, 0.0F, -1.0F), rot, true));
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, -1.0F), rot, true));
                 break;
             case "Flip Only":
-                matrixStack.multiply(new Quaternion(new Vector3f(0.0F, -1F, 0F), rot, true));
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, -1F, 0F), rot, true));
                 break;
             case "SpinFlip":
-                matrixStack.multiply(new Quaternion(new Vector3f(0.0F, -0.5f, -1F), rot, true));
+                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, -0.5f, -1F), rot, true));
                 break;
         }
         matrixStack.pop();
@@ -374,7 +371,6 @@ public class Hud extends Feature {
     }
 
     int bottomRightCount = 0;
-
     public void drawPotionEffectsAndCoordinates(EventRender2D eventRender2D) {
         bottomRightCount = 0;
         if (coords) {
@@ -404,7 +400,7 @@ public class Hud extends Feature {
                     Sprite sprite_1 = Wrapper.INSTANCE.getMinecraft().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
                     list_1.add(() -> {
                         Render2DHelper.INSTANCE.bindTexture(sprite_1.getAtlas().getId());
-                        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1);
+                        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
                         DrawableHelper.drawSprite(eventRender2D.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() - 10, (int) coordsY - 1 - (spriteCount * 10), 50, 9, 9, sprite_1);
                         spriteCount++;
                     });
@@ -600,6 +596,6 @@ public class Hud extends Feature {
     }
 
     public double length2D(Vec3d vec3d) {
-        return (double) MathHelper.sqrt(vec3d.x * vec3d.x + vec3d.z * vec3d.z);
+        return MathHelper.sqrt((float)(vec3d.x * vec3d.x + vec3d.z * vec3d.z));
     }
 }

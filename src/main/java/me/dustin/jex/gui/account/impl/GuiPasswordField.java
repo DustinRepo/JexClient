@@ -11,17 +11,20 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -29,12 +32,21 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Environment(EnvType.CLIENT)
-public class GuiPasswordField extends AbstractButtonWidget implements Drawable, Element {
+public class GuiPasswordField extends ClickableWidget implements Drawable, Element {
+    public static final int field_32194 = -1;
+    public static final int field_32195 = 1;
+    private static final int field_32197 = 1;
+    private static final int field_32198 = -3092272;
+    private static final String UNDERSCORE = "_";
+    public static final int DEFAULT_EDITABLE_COLOR = 14737632;
+    private static final int field_32201 = -1;
+    private static final int field_32202 = -6250336;
+    private static final int field_32203 = -16777216;
     private final TextRenderer textRenderer;
     private String text;
     private int maxLength;
     private int focusedTicks;
-    private boolean focused;
+    private boolean drawsBackground;
     private boolean focusUnlocked;
     private boolean editable;
     private boolean selecting;
@@ -43,27 +55,29 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
     private int selectionEnd;
     private int editableColor;
     private int uneditableColor;
+    @Nullable
     private String suggestion;
+    @Nullable
     private Consumer<String> changedListener;
     private Predicate<String> textPredicate;
-    private BiFunction<String, Integer, String> renderTextProvider;
+    private BiFunction<String, Integer, OrderedText> renderTextProvider;
 
     public GuiPasswordField(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
-        this(textRenderer, x, y, width, height, (TextFieldWidget) null, text);
+        this(textRenderer, x, y, width, height, (TextFieldWidget)null, text);
     }
 
-    public GuiPasswordField(TextRenderer textRenderer, int x, int y, int width, int height, TextFieldWidget copyFrom, Text text) {
+    public GuiPasswordField(TextRenderer textRenderer, int x, int y, int width, int height, @Nullable TextFieldWidget copyFrom, Text text) {
         super(x, y, width, height, text);
         this.text = "";
         this.maxLength = 32;
-        this.focused = true;
+        this.drawsBackground = true;
         this.focusUnlocked = true;
         this.editable = true;
         this.editableColor = 14737632;
         this.uneditableColor = 7368816;
         this.textPredicate = Objects::nonNull;
         this.renderTextProvider = (string, integer) -> {
-            return string;
+            return OrderedText.styledForwardsVisitedString(string, Style.EMPTY);
         };
         this.textRenderer = textRenderer;
         if (copyFrom != null) {
@@ -76,7 +90,7 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
         this.changedListener = changedListener;
     }
 
-    public void setRenderTextProvider(BiFunction<String, Integer, String> renderTextProvider) {
+    public void setRenderTextProvider(BiFunction<String, Integer, OrderedText> renderTextProvider) {
         this.renderTextProvider = renderTextProvider;
     }
 
@@ -87,10 +101,6 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
     protected MutableText getNarrationMessage() {
         Text text = this.getMessage();
         return new TranslatableText("gui.narrate.editBox", new Object[]{text, this.text});
-    }
-
-    public String getText() {
-        return this.text;
     }
 
     public void setText(String text) {
@@ -107,9 +117,13 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
         }
     }
 
+    public String getText() {
+        return this.text;
+    }
+
     public String getSelectedText() {
-        int i = this.selectionStart < this.selectionEnd ? this.selectionStart : this.selectionEnd;
-        int j = this.selectionStart < this.selectionEnd ? this.selectionEnd : this.selectionStart;
+        int i = Math.min(this.selectionStart, this.selectionEnd);
+        int j = Math.max(this.selectionStart, this.selectionEnd);
         return this.text.substring(i, j);
     }
 
@@ -117,20 +131,20 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
         this.textPredicate = textPredicate;
     }
 
-    public void write(String string) {
-        int i = this.selectionStart < this.selectionEnd ? this.selectionStart : this.selectionEnd;
-        int j = this.selectionStart < this.selectionEnd ? this.selectionEnd : this.selectionStart;
+    public void write(String text) {
+        int i = Math.min(this.selectionStart, this.selectionEnd);
+        int j = Math.max(this.selectionStart, this.selectionEnd);
         int k = this.maxLength - this.text.length() - (i - j);
-        String string2 = SharedConstants.stripInvalidChars(string);
-        int l = string2.length();
+        String string = SharedConstants.stripInvalidChars(text);
+        int l = string.length();
         if (k < l) {
-            string2 = string2.substring(0, k);
+            string = string.substring(0, k);
             l = k;
         }
 
-        String string3 = (new StringBuilder(this.text)).replace(i, j, string2).toString();
-        if (this.textPredicate.test(string3)) {
-            this.text = string3;
+        String string2 = (new StringBuilder(this.text)).replace(i, j, string).toString();
+        if (this.textPredicate.test(string2)) {
+            this.text = string2;
             this.setSelectionStart(i + l);
             this.setSelectionEnd(this.selectionStart);
             this.onChanged(this.text);
@@ -142,7 +156,6 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
             this.changedListener.accept(newText);
         }
 
-        this.nextNarration = Util.getMeasuringTimeMs() + 500L;
     }
 
     private void erase(int offset) {
@@ -169,7 +182,7 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
             if (this.selectionEnd != this.selectionStart) {
                 this.write("");
             } else {
-                int i = this.method_27537(characterOffset);
+                int i = this.getCursorPosWithOffset(characterOffset);
                 int j = Math.min(i, this.selectionStart);
                 int k = Math.max(i, this.selectionStart);
                 if (j != k) {
@@ -196,23 +209,23 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
         boolean bl = wordOffset < 0;
         int j = Math.abs(wordOffset);
 
-        for (int k = 0; k < j; ++k) {
+        for(int k = 0; k < j; ++k) {
             if (!bl) {
                 int l = this.text.length();
                 i = this.text.indexOf(32, i);
                 if (i == -1) {
                     i = l;
                 } else {
-                    while (skipOverSpaces && i < l && this.text.charAt(i) == ' ') {
+                    while(skipOverSpaces && i < l && this.text.charAt(i) == ' ') {
                         ++i;
                     }
                 }
             } else {
-                while (skipOverSpaces && i > 0 && this.text.charAt(i - 1) == ' ') {
+                while(skipOverSpaces && i > 0 && this.text.charAt(i - 1) == ' ') {
                     --i;
                 }
 
-                while (i > 0 && this.text.charAt(i - 1) != ' ') {
+                while(i > 0 && this.text.charAt(i - 1) != ' ') {
                     --i;
                 }
             }
@@ -222,11 +235,20 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
     }
 
     public void moveCursor(int offset) {
-        this.setCursor(this.method_27537(offset));
+        this.setCursor(this.getCursorPosWithOffset(offset));
     }
 
-    private int method_27537(int i) {
-        return Util.moveCursor(this.text, this.selectionStart, i);
+    private int getCursorPosWithOffset(int offset) {
+        return Util.moveCursor(this.text, this.selectionStart, offset);
+    }
+
+    public void setCursor(int cursor) {
+        this.setSelectionStart(cursor);
+        if (!this.selecting) {
+            this.setSelectionEnd(this.selectionStart);
+        }
+
+        this.onChanged(this.text);
     }
 
     public void setSelectionStart(int cursor) {
@@ -267,7 +289,7 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
 
                 return true;
             } else {
-                switch (keyCode) {
+                switch(keyCode) {
                     case 259:
                         if (this.editable) {
                             this.selecting = false;
@@ -322,7 +344,7 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
         return this.isVisible() && this.isFocused() && this.isEditable();
     }
 
-    public boolean charTyped(char chr, int keyCode) {
+    public boolean charTyped(char chr, int modifiers) {
         if (!this.isActive()) {
             return false;
         } else if (SharedConstants.isValidChar(chr)) {
@@ -340,14 +362,14 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
         if (!this.isVisible()) {
             return false;
         } else {
-            boolean bl = mouseX >= (double) this.x && mouseX < (double) (this.x + this.width) && mouseY >= (double) this.y && mouseY < (double) (this.y + this.height);
+            boolean bl = mouseX >= (double)this.x && mouseX < (double)(this.x + this.width) && mouseY >= (double)this.y && mouseY < (double)(this.y + this.height);
             if (this.focusUnlocked) {
-                this.setSelected(bl);
+                this.setTextFieldFocused(bl);
             }
 
             if (this.isFocused() && bl && button == 0) {
                 int i = MathHelper.floor(mouseX) - this.x;
-                if (this.focused) {
+                if (this.drawsBackground) {
                     i -= 4;
                 }
 
@@ -360,14 +382,14 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
         }
     }
 
-    public void setSelected(boolean selected) {
-        super.setFocused(selected);
+    public void setTextFieldFocused(boolean focused) {
+        this.setFocused(focused);
     }
 
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (this.isVisible()) {
             int j;
-            if (this.hasBorder()) {
+            if (this.drawsBackground()) {
                 j = this.isFocused() ? -1 : -6250336;
                 fill(matrices, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, j);
                 fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
@@ -383,8 +405,8 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
             }
             boolean bl = k >= 0 && k <= string.length();
             boolean bl2 = this.isFocused() && this.focusedTicks / 6 % 2 == 0 && bl;
-            int m = this.focused ? this.x + 4 : this.x;
-            int n = this.focused ? this.y + (this.height - 8) / 2 : this.y;
+            int m = this.drawsBackground ? this.x + 4 : this.x;
+            int n = this.drawsBackground ? this.y + (this.height - 8) / 2 : this.y;
             int o = m;
             if (l > string.length()) {
                 l = string.length();
@@ -392,7 +414,7 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
 
             if (!string.isEmpty()) {
                 String string2 = bl ? string.substring(0, k) : string;
-                o = this.textRenderer.drawWithShadow(matrices, (String) this.renderTextProvider.apply(string2, this.firstCharacterIndex), (float) m, (float) n, j);
+                o = this.textRenderer.drawWithShadow(matrices, (OrderedText)this.renderTextProvider.apply(string2, this.firstCharacterIndex), (float)m, (float)n, j);
             }
 
             boolean bl3 = this.selectionStart < this.text.length() || this.text.length() >= this.getMaxLength();
@@ -405,11 +427,11 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
             }
 
             if (!string.isEmpty() && bl && k < string.length()) {
-                this.textRenderer.drawWithShadow(matrices, (String) this.renderTextProvider.apply(string.substring(k), this.selectionStart), (float) o, (float) n, j);
+                this.textRenderer.drawWithShadow(matrices, (OrderedText)this.renderTextProvider.apply(string.substring(k), this.selectionStart), (float)o, (float)n, j);
             }
 
             if (!bl3 && this.suggestion != null) {
-                this.textRenderer.drawWithShadow(matrices, this.suggestion, (float) (p - 1), (float) n, -8355712);
+                this.textRenderer.drawWithShadow(matrices, this.suggestion, (float)(p - 1), (float)n, -8355712);
             }
 
             int var10002;
@@ -420,10 +442,10 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
                     var10002 = n - 1;
                     var10003 = p + 1;
                     var10004 = n + 1;
-                    this.textRenderer.getClass();
+                    Objects.requireNonNull(this.textRenderer);
                     DrawableHelper.fill(matrices, p, var10002, var10003, var10004 + 9, -3092272);
                 } else {
-                    this.textRenderer.drawWithShadow(matrices, "_", (float) p, (float) n, j);
+                    this.textRenderer.drawWithShadow(matrices, "_", (float)p, (float)n, j);
                 }
             }
 
@@ -432,7 +454,7 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
                 var10002 = n - 1;
                 var10003 = q - 1;
                 var10004 = n + 1;
-                this.textRenderer.getClass();
+                Objects.requireNonNull(this.textRenderer);
                 this.drawSelectionHighlight(p, var10002, var10003, var10004 + 9);
             }
 
@@ -463,22 +485,20 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.color4f(0.0F, 0.0F, 255.0F, 255.0F);
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+        RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(LogicOp.OR_REVERSE);
-        bufferBuilder.begin(7, VertexFormats.POSITION);
-        bufferBuilder.vertex((double) x1, (double) y2, 0.0D).next();
-        bufferBuilder.vertex((double) x2, (double) y2, 0.0D).next();
-        bufferBuilder.vertex((double) x2, (double) y1, 0.0D).next();
-        bufferBuilder.vertex((double) x1, (double) y1, 0.0D).next();
+        bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION);
+        bufferBuilder.vertex((double)x1, (double)y2, 0.0D).next();
+        bufferBuilder.vertex((double)x2, (double)y2, 0.0D).next();
+        bufferBuilder.vertex((double)x2, (double)y1, 0.0D).next();
+        bufferBuilder.vertex((double)x1, (double)y1, 0.0D).next();
         tessellator.draw();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableColorLogicOp();
         RenderSystem.enableTexture();
-    }
-
-    private int getMaxLength() {
-        return this.maxLength;
     }
 
     public void setMaxLength(int maxLength) {
@@ -490,25 +510,20 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
 
     }
 
+    private int getMaxLength() {
+        return this.maxLength;
+    }
+
     public int getCursor() {
         return this.selectionStart;
     }
 
-    public void setCursor(int cursor) {
-        this.setSelectionStart(cursor);
-        if (!this.selecting) {
-            this.setSelectionEnd(this.selectionStart);
-        }
-
-        this.onChanged(this.text);
+    private boolean drawsBackground() {
+        return this.drawsBackground;
     }
 
-    private boolean hasBorder() {
-        return this.focused;
-    }
-
-    public void setHasBorder(boolean hasBorder) {
-        this.focused = hasBorder;
+    public void setDrawsBackground(boolean drawsBackground) {
+        this.drawsBackground = drawsBackground;
     }
 
     public void setEditableColor(int color) {
@@ -524,11 +539,11 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
     }
 
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return this.visible && mouseX >= (double) this.x && mouseX < (double) (this.x + this.width) && mouseY >= (double) this.y && mouseY < (double) (this.y + this.height);
+        return this.visible && mouseX >= (double)this.x && mouseX < (double)(this.x + this.width) && mouseY >= (double)this.y && mouseY < (double)(this.y + this.height);
     }
 
-    protected void onFocusedChanged(boolean bl) {
-        if (bl) {
+    protected void onFocusedChanged(boolean newFocused) {
+        if (newFocused) {
             this.focusedTicks = 0;
         }
 
@@ -543,31 +558,31 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
     }
 
     public int getInnerWidth() {
-        return this.hasBorder() ? this.width - 8 : this.width;
+        return this.drawsBackground() ? this.width - 8 : this.width;
     }
 
-    public void setSelectionEnd(int i) {
-        int j = this.text.length();
-        this.selectionEnd = MathHelper.clamp(i, 0, j);
+    public void setSelectionEnd(int index) {
+        int i = this.text.length();
+        this.selectionEnd = MathHelper.clamp(index, 0, i);
         if (this.textRenderer != null) {
-            if (this.firstCharacterIndex > j) {
-                this.firstCharacterIndex = j;
+            if (this.firstCharacterIndex > i) {
+                this.firstCharacterIndex = i;
             }
 
-            int k = this.getInnerWidth();
-            String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), k);
-            int l = string.length() + this.firstCharacterIndex;
+            int j = this.getInnerWidth();
+            String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), j);
+            int k = string.length() + this.firstCharacterIndex;
             if (this.selectionEnd == this.firstCharacterIndex) {
-                this.firstCharacterIndex -= this.textRenderer.trimToWidth(this.text, k, true).length();
+                this.firstCharacterIndex -= this.textRenderer.trimToWidth(this.text, j, true).length();
             }
 
-            if (this.selectionEnd > l) {
-                this.firstCharacterIndex += this.selectionEnd - l;
+            if (this.selectionEnd > k) {
+                this.firstCharacterIndex += this.selectionEnd - k;
             } else if (this.selectionEnd <= this.firstCharacterIndex) {
                 this.firstCharacterIndex -= this.firstCharacterIndex - this.selectionEnd;
             }
 
-            this.firstCharacterIndex = MathHelper.clamp(this.firstCharacterIndex, 0, j);
+            this.firstCharacterIndex = MathHelper.clamp(this.firstCharacterIndex, 0, i);
         }
 
     }
@@ -584,7 +599,7 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
         this.visible = visible;
     }
 
-    public void setSuggestion(String suggestion) {
+    public void setSuggestion(@Nullable String suggestion) {
         this.suggestion = suggestion;
     }
 
@@ -594,5 +609,9 @@ public class GuiPasswordField extends AbstractButtonWidget implements Drawable, 
 
     public void setX(int x) {
         this.x = x;
+    }
+
+    public void appendNarrations(NarrationMessageBuilder builder) {
+        builder.put(NarrationPart.TITLE, new TranslatableText("narration.edit_box", new Object[]{this.getText()}));
     }
 }

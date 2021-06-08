@@ -30,11 +30,11 @@ public class MixinSignEditScreen extends Screen {
     @Inject(method = "init", at = @At("RETURN"))
     public void init(CallbackInfo ci) {
         AutoSign autoSign = (AutoSign) Feature.get(AutoSign.class);
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 142, 200, 20, new LiteralText("Set AutoSign Text"), (buttonWidget_1) -> {
-            autoSign.signText[0] = sign.getTextOnRow(0);
-            autoSign.signText[1] = sign.getTextOnRow(1);
-            autoSign.signText[2] = sign.getTextOnRow(2);
-            autoSign.signText[3] = sign.getTextOnRow(3);
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 142, 200, 20, new LiteralText("Set AutoSign Text"), (buttonWidget_1) -> {
+            autoSign.signText[0] = sign.getTextOnRow(0, false);
+            autoSign.signText[1] = sign.getTextOnRow(1, false);
+            autoSign.signText[2] = sign.getTextOnRow(2, false);
+            autoSign.signText[3] = sign.getTextOnRow(3, false);
             finishEditing();
         }));
     }
