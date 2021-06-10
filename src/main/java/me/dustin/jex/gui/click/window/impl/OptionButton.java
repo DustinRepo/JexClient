@@ -442,7 +442,7 @@ public class OptionButton extends Button {
 
     void handleSliders(IntOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
-            float position = MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseX() - this.getX();
+            float position = MouseHelper.INSTANCE.getMouseX() - this.getX();//.INSTANCE.INSTANCE.INSTANCE.INSTANCE.INSTANCE
             float percent = position / this.getWidth() * 100;
             float increment = v.getInc();
             if (percent > 100) {
@@ -466,7 +466,7 @@ public class OptionButton extends Button {
 
     void handleSliders(FloatOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
-            float position = MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseX() - this.getX();
+            float position = MouseHelper.INSTANCE.getMouseX() - this.getX();
             float percent = position / this.getWidth() * 100;
             float increment = v.getInc();
             if (percent > 100) {
@@ -484,14 +484,14 @@ public class OptionButton extends Button {
                 value = v.getMin();
             }
             v.setValue((float) ((float) Math.round(value * (1.0D / increment)) / (1.0D / increment)));
-            v.setValue((float) ClientMathHelper.INSTANCE.INSTANCE.INSTANCE.INSTANCE.round(v.getValue(), 2));
+            v.setValue((float) ClientMathHelper.INSTANCE.round(v.getValue(), 2));
         }
     }
 
     void handleSliders(ColorOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
-            if (MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseX() > this.getX() + 100) {
-                float position = MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseY() - (this.getY() + 15);
+            if (MouseHelper.INSTANCE.getMouseX() > this.getX() + 100) {
+                float position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
                 float percent = position / 79 * 100;
                 float increment = 1;
                 if (percent > 100) {
@@ -509,7 +509,7 @@ public class OptionButton extends Button {
                 }
                 v.setH((int) value);
             } else {
-                float position = MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseX() - (this.getX() + 5);
+                float position = MouseHelper.INSTANCE.getMouseX() - (this.getX() + 5);
                 float percent = position / 80 * 100;
                 float increment = 1;
                 if (percent > 100) {
@@ -520,7 +520,7 @@ public class OptionButton extends Button {
                 }
                 v.setS(percent / 100);
 
-                position = MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseY() - (this.getY() + 15);
+                position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
                 percent = position / 79 * 100;
                 percent = 100 - percent;
                 increment = 1;
