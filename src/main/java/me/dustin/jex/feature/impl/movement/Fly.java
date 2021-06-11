@@ -2,15 +2,18 @@ package me.dustin.jex.feature.impl.movement;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
-import me.dustin.jex.helper.misc.KeyboardHelper;
-import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.helper.entity.EntityHelper;
+import me.dustin.jex.helper.misc.KeyboardHelper;
+import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
 @Feat(name = "Fly", category = FeatureCategory.MOVEMENT, description = "Fly in survival")
@@ -20,18 +23,18 @@ public class Fly extends Feature {
     public float speed = 0.5f;
     @Op(name = "Ctrl = Down")
     public boolean ctrlDown = true;
+    @Op(name = "Fly Check Bypass")
+    public boolean flyCheckBypass;
     @Op(name = "Glide")
     public boolean glide = false;
-    @OpChild(name = "Fly Check glide", parent = "Glide")
-    public boolean flyCheckGlide;
-    @OpChild(name = "Glide Speed", min = 0.01f, max = 8, inc = 0.01f, parent = "Glide")
+    @OpChild(name = "Glide Speed", min = 0.01f, max = 2, inc = 0.01f, parent = "Glide")
     public float glideSpeed = 0.034f;
 
     public Fly() {
         this.setKey(GLFW.GLFW_KEY_F);
     }
 
-    @EventListener(events = {EventMove.class})
+    @EventListener(events = {EventMove.class, EventPacketSent.class})
     private void runMove(Event event) {
         if (event instanceof EventMove) {
             EventMove eventMove = (EventMove) event;
@@ -45,14 +48,19 @@ public class Fly extends Feature {
             } else if (sneaking) {
                 eventMove.setY(-speed);
             }
-            if (glide) {
-                if (flyCheckGlide) {
-                    if (Wrapper.INSTANCE.getLocalPlayer().age % 20 == 1)
-                        eventMove.setY(-glideSpeed);
-                    else if (Wrapper.INSTANCE.getLocalPlayer().age % 20 == 10)
-                        eventMove.setY(glideSpeed);
-                } else
-                    eventMove.setY(-glideSpeed);
+            if (glide && !jumping) {
+              eventMove.setY(-glideSpeed);
+            }
+        } else if (event instanceof EventPacketSent && flyCheckBypass) {
+            EventPacketSent eventPacketSent = (EventPacketSent) event;
+            if (eventPacketSent.getPacket() instanceof PlayerMoveC2SPacket) {
+                PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) eventPacketSent.getPacket();
+                if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {
+                    if (EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 2) {
+                        PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.05, playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
+                        eventPacketSent.setPacket(modified);
+                    }
+                }
             }
         }
 
