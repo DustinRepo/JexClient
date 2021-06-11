@@ -4,13 +4,15 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerUpdates;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.FoodComponents;
@@ -51,6 +53,8 @@ public class AutoEat extends Feature {
         if (event instanceof EventPlayerUpdates) {
             if (((EventPlayerUpdates) event).getMode() == EventPlayerUpdates.Mode.PRE) {
                 if (getBestFood().slot != -1 && getBestFood().itemStack != null && needsToEat(getBestFood())) {
+                    if (EntityHelper.INSTANCE.isAuraBlocking())
+                        PlayerHelper.INSTANCE.unblock();
                     if (!isEating) {
                         savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         if (BaritoneHelper.INSTANCE.baritoneExists())
