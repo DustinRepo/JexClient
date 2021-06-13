@@ -42,7 +42,7 @@ import java.util.Arrays;
 
 public enum JexClient {
     INSTANCE;
-    private String version = "0.3.0";
+    private String version = "0.3.1";
     private boolean autoSaveModules = false;
     private boolean soundOnLaunch = true;
 
@@ -57,7 +57,7 @@ public enum JexClient {
         FeatureManager.INSTANCE.initializeFeatureManager();
         OptionManager.INSTANCE.initializeOptionManager();
 
-        createJson();
+        //createJson();
 
         ModFileHelper.INSTANCE.gameBootLoad();
         CommandManager.INSTANCE.init();
