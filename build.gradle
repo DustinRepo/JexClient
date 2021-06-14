@@ -37,7 +37,7 @@ dependencies {
     //modImplementation "com.github.CaffeineMC:sodium-fabric:mc1.16.3-0.1.0"
     //The good part is that you can actually see the code in the IDE and it also loads as a mod in the game
     //but that's also the bad part because if I wanted to update MC versions I would either have to wait for Sodium to also update or leave the fix out sometimes
-    //now for the other one which is annoying because local file, but if you delete the "fabric.mod.json" from the jar and use "compile" instead it is just used as a library, still requiring you to put it in your mods folder
+    //now for the other one which is annoying because local file, but if you delete the "fabric.mod.json" from the jar and use "implementation" instead it is just used as a library, still requiring you to put it in your mods folder to use as a mod
     //this is also what I do for baritone
     implementation files('lib/sodium.jar')
 }
