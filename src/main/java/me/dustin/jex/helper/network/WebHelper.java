@@ -12,6 +12,7 @@ public enum WebHelper {
     public String readURL(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
+        connection.setConnectTimeout(10 * 1000);
         BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         StringBuilder buffer = new StringBuilder();
         for (String line; (line = input.readLine()) != null; ) {

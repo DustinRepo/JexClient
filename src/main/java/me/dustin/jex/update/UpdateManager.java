@@ -17,30 +17,31 @@ public enum UpdateManager {
     private String latestSnapshotVersion;
 
     public void checkForUpdate() {
-        try {
+        new Thread(() -> {
+            try {
+                URL url = new URL("https://jexclient.com/includes/version.inc.php");
+                String response = WebHelper.INSTANCE.readURL(url);
 
-            URL url = new URL("https://jexclient.com/includes/version.inc.php");
-            String response = WebHelper.INSTANCE.readURL(url);
+                JsonObject updateResponse = new Gson().fromJson(response, JsonObject.class);
+                latestMCVersion = updateResponse.get("mcVersion").getAsString();
+                latestVersion = updateResponse.get("version").getAsString();
+                latestSnapshotVersion = updateResponse.get("snapVersion").getAsString();
 
-            JsonObject updateResponse = new Gson().fromJson(response, JsonObject.class);
-            latestMCVersion = updateResponse.get("mcVersion").getAsString();
-            latestVersion = updateResponse.get("version").getAsString();
-            latestSnapshotVersion = updateResponse.get("snapVersion").getAsString();
-
-            boolean isCurrentlySnapshot = SharedConstants.getGameVersion().getName().contains("w");
-            boolean isVersionSame = JexClient.INSTANCE.getVersion().equalsIgnoreCase(latestVersion);
-            boolean isMCVersionSame = SharedConstants.getGameVersion().getName().equalsIgnoreCase(isCurrentlySnapshot ? latestSnapshotVersion : latestMCVersion);
-            if (isVersionSame && isMCVersionSame)
-                status = Status.UP_TO_DATE;
-            if (isVersionSame && !isMCVersionSame)
-                status = Status.OUTDATED_MC;
-            if (isMCVersionSame && !isVersionSame)
-                status = Status.OUTDATED;
-            if (!isMCVersionSame && !isVersionSame)
-                status = Status.OUTDATED_BOTH;
-        } catch (IOException e) {
-            status = Status.ERROR;
-        }
+                boolean isCurrentlySnapshot = SharedConstants.getGameVersion().getName().contains("w");
+                boolean isVersionSame = JexClient.INSTANCE.getVersion().equalsIgnoreCase(latestVersion);
+                boolean isMCVersionSame = SharedConstants.getGameVersion().getName().equalsIgnoreCase(isCurrentlySnapshot ? latestSnapshotVersion : latestMCVersion);
+                if (isVersionSame && isMCVersionSame)
+                    status = Status.UP_TO_DATE;
+                if (isVersionSame && !isMCVersionSame)
+                    status = Status.OUTDATED_MC;
+                if (isMCVersionSame && !isVersionSame)
+                    status = Status.OUTDATED;
+                if (!isMCVersionSame && !isVersionSame)
+                    status = Status.OUTDATED_BOTH;
+            } catch (IOException e) {
+                status = Status.ERROR;
+            }
+        }).start();
     }
 
     public Status getStatus() {
