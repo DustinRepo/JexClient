@@ -10,7 +10,14 @@ import me.dustin.jex.event.misc.EventGameFinishedLoading;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.FeatureManager;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.feature.impl.combat.killaura.Killaura;
+import me.dustin.jex.feature.impl.misc.Discord;
+import me.dustin.jex.feature.impl.misc.Fakelag;
+import me.dustin.jex.feature.impl.player.Freecam;
+import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
@@ -22,13 +29,6 @@ import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.FeatureManager;
-import me.dustin.jex.feature.impl.combat.killaura.Killaura;
-import me.dustin.jex.feature.impl.misc.Discord;
-import me.dustin.jex.feature.impl.misc.Fakelag;
-import me.dustin.jex.feature.impl.player.Freecam;
-import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.update.UpdateManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -42,7 +42,7 @@ import java.util.Arrays;
 
 public enum JexClient {
     INSTANCE;
-    private String version = "0.3.1";
+    private String version = "0.3.2";
     private boolean autoSaveModules = false;
     private boolean soundOnLaunch = true;
 

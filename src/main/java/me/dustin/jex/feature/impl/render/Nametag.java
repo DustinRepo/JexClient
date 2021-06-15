@@ -7,6 +7,10 @@ import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.event.render.EventRenderNametags;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -14,10 +18,6 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
-import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.network.PlayerListEntry;
@@ -41,6 +41,8 @@ import java.util.HashMap;
 @Feat(name = "Nametags", category = FeatureCategory.VISUAL, description = "Render names above players with more info.")
 public class Nametag extends Feature {
 
+    @Op(name = "Custom Font")
+    public boolean customFont = false;
     @Op(name = "Players")
     public boolean players = true;
     @OpChild(name = "Show Face", parent = "Players")
@@ -133,9 +135,9 @@ public class Nametag extends Feature {
                             float newY = ((posY - ((10 * scale) * enchCount) + 0.5f) / scale);
                             float newerX = (newX / scale);
                             String name = getEnchantName(compoundTag);
-                            float nameWidth = FontHelper.INSTANCE.getStringWidth(name);
+                            float nameWidth = FontHelper.INSTANCE.getStringWidth(name, customFont || CustomFont.INSTANCE.getState());
                             Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), newerX, newY - 1, newerX + nameWidth, newY + 9, 0x35000000);
-                            FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX, newY, enchantColor);
+                            FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX, newY, enchantColor, customFont);
                             enchCount++;
                         } catch (Exception e) {}
                     }
@@ -165,7 +167,7 @@ public class Nametag extends Feature {
             float x = (float) vec.x;
             float y = (float) vec.y - (showPlayerFace && playerEntity instanceof PlayerEntity ? 18 : 0);
             String nameString = getNameString(playerEntity);
-            float length = FontHelper.INSTANCE.getStringWidth(nameString);
+            float length = FontHelper.INSTANCE.getStringWidth(nameString, customFont || CustomFont.INSTANCE.getState());
 
             if (showPlayerFace && playerEntity instanceof PlayerEntity) {
                 PlayerListEntry playerListEntry = Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(playerEntity.getUuid());
@@ -179,7 +181,7 @@ public class Nametag extends Feature {
                 Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), x - (length / 2) - 2, y - 1, (x - (length / 2) - 2) + barLength, y, getHealthColor(((LivingEntity) playerEntity)));
             }
             Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), x - (length / 2) - 2, y - 12, x + (length / 2) + 2, y - 1, 0x35000000);
-            FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), nameString, x, y - 10, getColor(playerEntity));
+            FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), nameString, x, y - 10, getColor(playerEntity), customFont);
         }
     }
 
