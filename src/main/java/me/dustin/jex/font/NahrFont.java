@@ -1,6 +1,7 @@
 package me.dustin.jex.font;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.MinecraftClient;
@@ -73,9 +74,12 @@ public class NahrFont {
                 this.theFont = Font.createFont(0, (File) font).deriveFont(size);
             else if ((font instanceof InputStream))
                 this.theFont = Font.createFont(0, (InputStream) font).deriveFont(size);
-            else if ((font instanceof String))
-                this.theFont = new Font((String) font, 0, Math.round(size));
-            else {
+            else if ((font instanceof String)) {
+                if (((String)font).toLowerCase().endsWith("ttf") || ((String)font).toLowerCase().endsWith("otf"))
+                    this.theFont = Font.createFont(0, new File(ModFileHelper.INSTANCE.getJexDirectory() + File.separator + "fonts", (String)font)).deriveFont(size);
+                else
+                    this.theFont = new Font((String) font, 0, Math.round(size));
+            } else {
                 this.theFont = new Font("Verdana", 0, Math.round(size));
             }
             this.theGraphics.setFont(this.theFont);
@@ -102,7 +106,7 @@ public class NahrFont {
             }
         }
         String base64 = imageToBase64String(bufferedImage, "png");
-        this.setResourceLocation(base64, font, size);
+        this.setResourceLocation(base64, theFont, size);
     }
 
     private String imageToBase64String(BufferedImage image, String type) {
@@ -133,7 +137,7 @@ public class NahrFont {
         }
 
         image.close();
-        this.resourceLocation = new Identifier("jex", "font" + font.toString().toLowerCase().replace(" ", "-") + size);
+        this.resourceLocation = new Identifier("jex", "font" + getFont().getFontName().toLowerCase().replace(" ", "-") + size);
         applyTexture(resourceLocation, imgNew);
     }
 

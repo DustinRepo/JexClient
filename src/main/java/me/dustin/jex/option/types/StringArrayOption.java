@@ -38,4 +38,8 @@ public class StringArrayOption extends Option {
         return all;
     }
 
+    public void setAll(String[] all) {
+        this.all = all;
+    }
+
 }

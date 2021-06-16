@@ -37,7 +37,7 @@ public enum FontHelper {
 
     public void drawWithShadow(MatrixStack matrixStack, String text, float x, float y, int color, boolean customFont) {
         if (CustomFont.INSTANCE.getState() || customFont) {
-            clientFont.drawString(matrixStack, text, x + CustomFont.INSTANCE.xOffset, y + CustomFont.INSTANCE.yOffset, NahrFont.FontType.SHADOW_THIN, color);
+            clientFont.drawString(matrixStack, text, x + CustomFont.INSTANCE.xOffset, y + CustomFont.INSTANCE.yOffset, CustomFont.INSTANCE.textShadows ? NahrFont.FontType.SHADOW_THIN : NahrFont.FontType.NORMAL, color);
         } else {
             Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, fix(text), x + 0.5f, y + 0.5f, 0xff000000);
             Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, text, x, y, color);
@@ -63,7 +63,7 @@ public enum FontHelper {
     public void drawCenteredString(MatrixStack matrixStack, String string, float x, float y, int color, boolean customFont) {
         float newX = x - ((getStringWidth(string, CustomFont.INSTANCE.getState() || customFont) + (CustomFont.INSTANCE.getState() || customFont ? CustomFont.INSTANCE.xOffset : 0)) / 2);
         if (CustomFont.INSTANCE.getState() || customFont) {
-            clientFont.drawString(matrixStack, string, newX, y + CustomFont.INSTANCE.yOffset, NahrFont.FontType.SHADOW_THIN, color);
+            clientFont.drawString(matrixStack, string, newX, y + CustomFont.INSTANCE.yOffset, CustomFont.INSTANCE.textShadows ? NahrFont.FontType.SHADOW_THIN : NahrFont.FontType.NORMAL, color);
         } else {
             Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, fix(string), newX + 0.5f, y + 0.5f, 0xff000000);
             Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, string, newX, y, color);
@@ -73,7 +73,7 @@ public enum FontHelper {
     public void drawCenteredString(MatrixStack matrixStack, String string, float x, float y, int color) {
         float newX = x - ((getStringWidth(string, CustomFont.INSTANCE.getState()) + (CustomFont.INSTANCE.getState() ? CustomFont.INSTANCE.xOffset : 0)) / 2);
         if (CustomFont.INSTANCE.getState()) {
-            clientFont.drawString(matrixStack, string, newX, y + CustomFont.INSTANCE.yOffset, NahrFont.FontType.SHADOW_THIN, color);
+            clientFont.drawString(matrixStack, string, newX, y + CustomFont.INSTANCE.yOffset, CustomFont.INSTANCE.textShadows ? NahrFont.FontType.SHADOW_THIN : NahrFont.FontType.NORMAL, color);
         } else {
             Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, fix(string), newX + 0.5f, y + 0.5f, 0xff000000);
             Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, string, newX, y, color);

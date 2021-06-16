@@ -6,6 +6,7 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.feature.impl.render.CustomFont;
 import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.feature.impl.render.Hud;
 import me.dustin.jex.file.ClientSettingsFile;
@@ -34,6 +35,7 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class JexGui extends Screen {
     public static JexGui INSTANCE;
@@ -160,14 +162,27 @@ public class JexGui extends Screen {
             jexGuiButton.setCenterText(false);
             jexGuiButton.draw(matrices);
         });
+        AtomicReference<String> desc = new AtomicReference<>("");
         featureButtons.forEach(jexGuiButton -> {
+            if (jexGuiButton.isHovered()) {
+                Feature feature = Feature.get(jexGuiButton.getName());
+                if (feature != null) {
+                    desc.set(feature.getDescription());
+                }
+            }
             jexGuiButton.setPlayClick(ClickGui.doesPlayClickSound());
             jexGuiButton.setCenterText(false);
             jexGuiButton.setBackgroundColor(jexGuiButton.equals(currentFeature) ? Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(ColorHelper.INSTANCE.getClientColor())).darker().getRGB() : 0x00000000);
             jexGuiButton.draw(matrices);
+
         });
         optionButtons.forEach(jexGuiButton -> {jexGuiButton.draw(matrices); jexGuiButton.setPlayClick(ClickGui.doesPlayClickSound());});
         Scissor.INSTANCE.seal();
+
+        if (!desc.get().isEmpty() && Render2DHelper.INSTANCE.isHovered(x, topLineY, windowWidth, windowHeight - 15)) {
+            Render2DHelper.INSTANCE.fillAndBorder(matrices, 1, Render2DHelper.INSTANCE.getScaledHeight() - FontHelper.INSTANCE.getStringHeight(desc.get(), CustomFont.INSTANCE.getState()) - 3, 5 + FontHelper.INSTANCE.getStringWidth(desc.get()), Render2DHelper.INSTANCE.getScaledHeight() - 1, ColorHelper.INSTANCE.getClientColor(), 0x50000000, 1);
+            FontHelper.INSTANCE.drawWithShadow(matrices, desc.get(), 4, Render2DHelper.INSTANCE.getScaledHeight() - FontHelper.INSTANCE.getStringHeight(desc.get(), CustomFont.INSTANCE.getState()) - 1, ColorHelper.INSTANCE.getClientColor());
+        }
         Gui.clickgui.radarWindow.draw(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         lastwidth = width;
@@ -269,7 +284,7 @@ public class JexGui extends Screen {
                     return false;
                 if (button == 0) {
                     feature.toggleState();
-                    featureButton.setTextColor(feature.getState() ? -1 : 0xff656565);
+                    featureButton.setTextColor(feature.getState() ? -1 : 0xffaaaaaa);
                     if (JexClient.INSTANCE.isAutoSaveEnabled()) {
                         FeatureFile.write();
                     }
@@ -292,7 +307,7 @@ public class JexGui extends Screen {
             float oneThird = (windowWidth / 3) - 2;
             float topLineY = y + 15;
             Button jexGuiButton = new Button(null, feature.getName(), x + 2 + oneThird, topLineY + 1 + (featCount * 15), (windowWidth / 3) - 2, 15, null);
-            jexGuiButton.setTextColor(feature.getState() ? -1 : 0xff656565);
+            jexGuiButton.setTextColor(feature.getState() ? -1 : 0xffaaaaaa);
             featureButtons.add(jexGuiButton);
             featCount++;
         }

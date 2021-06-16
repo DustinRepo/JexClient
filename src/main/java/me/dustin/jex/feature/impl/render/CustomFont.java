@@ -6,21 +6,29 @@ import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.font.NahrFont;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
+import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.option.annotate.Op;
+import me.dustin.jex.option.types.StringArrayOption;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Map;
 
-@Feat(name = "CustomFont", category = FeatureCategory.VISUAL, description = "Change the font in aspects of the game")
+@Feat(name = "CustomFont", category = FeatureCategory.VISUAL, description = "Change the font in aspects of the game. Disable then re-enable to reload fonts from folder (.minecraft/JexClient/fonts)")
 public class CustomFont extends Feature {
     public static CustomFont INSTANCE;
 
+    @Op(name = "Text Shadows")
+    public boolean textShadows = true;
     @Op(name = "X Offset", min = -5, max = 5, inc = 0.5f)
     public float xOffset = -1;
     @Op(name = "Y Offset", min = -5, max = 5, inc = 0.5f)
     public float yOffset = -4.5f;
-    @Op(name = "Font")
+
+    @Op(name = "Font", all = {"Verdana", "Lucida Console"})
     public String font = "Verdana";
 
     public CustomFont() {
@@ -29,6 +37,7 @@ public class CustomFont extends Feature {
 
     @Override
     public void onEnable() {
+        loadFontFiles();
         loadFont();
         super.onEnable();
     }
@@ -46,6 +55,27 @@ public class CustomFont extends Feature {
         }
     }
 
+    private void loadFontFiles() {
+        File fontsDir = new File(ModFileHelper.INSTANCE.getJexDirectory(), "fonts");
+        if (!fontsDir.exists())
+            fontsDir.mkdir();
+        ArrayList<String> all = new ArrayList<>();
+        StringArrayOption fontOption = (StringArrayOption) OptionManager.INSTANCE.getOption("Font", this);
+        all.add("Verdana");
+        all.add("Lucida Console");
+        for (File file : fontsDir.listFiles()) {
+            if (file.getName().toLowerCase().endsWith("ttf") || file.getName().toLowerCase().endsWith("otf")) {
+                all.add(file.getName());
+            }
+        }
+        String[] finalArray = new String[all.size()];
+        Object[] obj = all.toArray();
+        for (int i = 0; i < obj.length; i++) {
+            finalArray[i] = obj[i].toString();
+        }
+        fontOption.setAll(finalArray);
+    }
+
     @Override
     public Map<String, ButtonListener> addButtons() {
         Map<String, ButtonListener> map = Maps.newHashMap();
@@ -55,7 +85,7 @@ public class CustomFont extends Feature {
                 loadFont();
             }
         };
-        map.put("Set Font", listener);
+        map.put("Change Font", listener);
         return map;
     }
 }
