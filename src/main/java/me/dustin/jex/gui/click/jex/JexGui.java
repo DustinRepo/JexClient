@@ -406,5 +406,12 @@ public class JexGui extends Screen {
         optionButtons.add(keyButton);
         visibleButton.setListener(visible);
         optionButtons.add(visibleButton);
+        for (String s : feature.addButtons().keySet()) {
+            ButtonListener listener = feature.addButtons().get(s);
+            Button button = new Button(null,s, x + 3 + (oneThird * 2), topLineY + 1 + buttonHeight, (windowWidth / 3) - 1, 15, listener);
+            button.setBackgroundColor(0x00000000);
+            optionButtons.add(button);
+            buttonHeight += 15;
+        }
     }
 }

@@ -282,7 +282,7 @@ public class JexOptionButton extends Button {
 
     @EventListener(events = {EventKeyPressed.class})
     private void handleKeys(EventKeyPressed eventKeyPressed) {
-        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui)) {
+        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof JexGui)) {
             while (EventAPI.getInstance().alreadyRegistered(this))
                 EventAPI.getInstance().unregister(this);
             return;

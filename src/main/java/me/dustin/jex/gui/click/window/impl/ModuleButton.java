@@ -148,6 +148,12 @@ public class ModuleButton extends Button {
     }
 
     public void addExtraButtons() {
+        for (String s : feature.addButtons().keySet()) {
+            ButtonListener listener = feature.addButtons().get(s);
+            this.getChildren().add(new Button(this.getWindow(), s, this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), listener));
+            childCount++;
+            buttonsHeight += this.getHeight();
+        }
         ButtonListener keybind = new ButtonListener(this) {
 
             @EventListener(events = {EventKeyPressed.class})

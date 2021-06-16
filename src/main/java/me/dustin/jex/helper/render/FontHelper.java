@@ -8,25 +8,25 @@ import net.minecraft.text.Text;
 
 public enum FontHelper {
     INSTANCE;
-    private NahrFont verdana = new NahrFont("Verdana", 18, 1.2f);
+    private NahrFont clientFont;
 
     public float getStringWidth(String string) {
         if (CustomFont.INSTANCE.getState())
-            return verdana.getStringWidth(verdana.stripControlCodes(string));
+            return clientFont.getStringWidth(clientFont.stripControlCodes(string));
         else
             return Wrapper.INSTANCE.getTextRenderer().getWidth(string);
     }
 
     public float getStringWidth(String string, boolean customFont) {
         if (customFont)
-            return verdana.getStringWidth(verdana.stripControlCodes(string));
+            return clientFont.getStringWidth(clientFont.stripControlCodes(string));
         else
             return Wrapper.INSTANCE.getTextRenderer().getWidth(string);
     }
 
     public float getStringHeight(String string, boolean customFont) {
         if (customFont)
-            return verdana.getStringHeight(verdana.stripControlCodes(string));
+            return clientFont.getStringHeight(clientFont.stripControlCodes(string));
         else
             return Wrapper.INSTANCE.getTextRenderer().fontHeight;
     }
@@ -37,7 +37,7 @@ public enum FontHelper {
 
     public void drawWithShadow(MatrixStack matrixStack, String text, float x, float y, int color, boolean customFont) {
         if (CustomFont.INSTANCE.getState() || customFont) {
-            verdana.drawString(matrixStack, text, x - 1f, y - 4.5f, NahrFont.FontType.SHADOW_THIN, color);
+            clientFont.drawString(matrixStack, text, x + CustomFont.INSTANCE.xOffset, y + CustomFont.INSTANCE.yOffset, NahrFont.FontType.SHADOW_THIN, color);
         } else {
             Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, fix(text), x + 0.5f, y + 0.5f, 0xff000000);
             Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, text, x, y, color);
@@ -54,20 +54,30 @@ public enum FontHelper {
 
     public void draw(MatrixStack matrixStack, String text, float x, float y, int color, boolean customFont) {
         if (CustomFont.INSTANCE.getState() || customFont) {
-            verdana.drawString(matrixStack, text, x - 1f, y - 4.5f, NahrFont.FontType.NORMAL, color);
+            clientFont.drawString(matrixStack, text, x + CustomFont.INSTANCE.xOffset, y + CustomFont.INSTANCE.yOffset, NahrFont.FontType.NORMAL, color);
         } else {
             Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, text, x, y, color);
         }
     }
 
     public void drawCenteredString(MatrixStack matrixStack, String string, float x, float y, int color, boolean customFont) {
-        float newX = x - (getStringWidth(string, customFont || CustomFont.INSTANCE.getState()) / 2);
-        drawWithShadow(matrixStack, string, newX, y, color, customFont || CustomFont.INSTANCE.getState());
+        float newX = x - ((getStringWidth(string, CustomFont.INSTANCE.getState() || customFont) + (CustomFont.INSTANCE.getState() || customFont ? CustomFont.INSTANCE.xOffset : 0)) / 2);
+        if (CustomFont.INSTANCE.getState() || customFont) {
+            clientFont.drawString(matrixStack, string, newX, y + CustomFont.INSTANCE.yOffset, NahrFont.FontType.SHADOW_THIN, color);
+        } else {
+            Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, fix(string), newX + 0.5f, y + 0.5f, 0xff000000);
+            Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, string, newX, y, color);
+        }
     }
 
     public void drawCenteredString(MatrixStack matrixStack, String string, float x, float y, int color) {
-        float newX = x - (getStringWidth(string, CustomFont.INSTANCE.getState()) / 2);
-        drawWithShadow(matrixStack, string, newX, y, color);
+        float newX = x - ((getStringWidth(string, CustomFont.INSTANCE.getState()) + (CustomFont.INSTANCE.getState() ? CustomFont.INSTANCE.xOffset : 0)) / 2);
+        if (CustomFont.INSTANCE.getState()) {
+            clientFont.drawString(matrixStack, string, newX, y + CustomFont.INSTANCE.yOffset, NahrFont.FontType.SHADOW_THIN, color);
+        } else {
+            Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, fix(string), newX + 0.5f, y + 0.5f, 0xff000000);
+            Wrapper.INSTANCE.getTextRenderer().draw(matrixStack, string, newX, y, color);
+        }
     }
 
     public void drawWithShadow(MatrixStack matrixStack, Text text, float x, float y, int color) {
@@ -82,6 +92,7 @@ public enum FontHelper {
 
     public void drawCenteredString(MatrixStack matrixStack, Text string, float x, float y, int color) {
         float newX = x - (getStringWidth(string) / 2);
+
         drawWithShadow(matrixStack, string, newX, y, color);
     }
 
@@ -95,7 +106,16 @@ public enum FontHelper {
         return s.replace("\247a", "").replace("\247b", "").replace("\247c", "").replace("\247d", "").replace("\247e", "").replace("\247f", "").replace("\247g", "");
     }
 
+    public boolean setClientFont(NahrFont font) {
+        try {
+            this.clientFont = font;
+            return true;
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
     public NahrFont getClientFont() {
-        return verdana;
+        return clientFont;
     }
 }

@@ -1,12 +1,15 @@
 package me.dustin.jex.feature.core;
 
+import com.google.common.collect.Maps;
 import me.dustin.events.api.EventAPI;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.option.Option;
 import me.dustin.jex.option.OptionManager;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Feature {
 
@@ -141,5 +144,6 @@ public class Feature {
         this.featureCategory = featureCategory;
     }
 
+    public Map<String, ButtonListener> addButtons() {return Maps.newHashMap();}
 
 }

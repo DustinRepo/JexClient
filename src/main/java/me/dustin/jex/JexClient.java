@@ -17,6 +17,7 @@ import me.dustin.jex.feature.impl.combat.killaura.Killaura;
 import me.dustin.jex.feature.impl.misc.Discord;
 import me.dustin.jex.feature.impl.misc.Fakelag;
 import me.dustin.jex.feature.impl.player.Freecam;
+import me.dustin.jex.feature.impl.render.CustomFont;
 import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.helper.file.FileHelper;
@@ -69,6 +70,7 @@ public enum JexClient {
         EventAPI.getInstance().register(PlayerHelper.INSTANCE);
         EventAPI.getInstance().register(ColorHelper.INSTANCE);
         UpdateManager.INSTANCE.checkForUpdate();
+        CustomFont.INSTANCE.loadFont();
         System.out.println("Load finished");
     }
 
