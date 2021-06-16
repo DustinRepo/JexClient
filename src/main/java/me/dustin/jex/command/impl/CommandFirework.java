@@ -4,11 +4,13 @@ import me.dustin.jex.command.core.Command;
 import me.dustin.jex.command.core.annotate.Cmd;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 
 import java.util.Random;
 
@@ -44,6 +46,7 @@ public class CommandFirework extends Command {
         tagCompound.put("Explosions", explosionList);
         baseCompound.put("Fireworks", tagCompound);
         firework.setTag(baseCompound);
+        NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, firework));
         InventoryHelper.INSTANCE.getInventory().setStack(InventoryHelper.INSTANCE.getInventory().selectedSlot, firework);
     }
 }
