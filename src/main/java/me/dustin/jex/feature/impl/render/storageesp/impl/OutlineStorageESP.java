@@ -36,8 +36,8 @@ public class OutlineStorageESP extends FeatureExtension {
             EventRender3D eventRender3D = (EventRender3D)event;
             if (ShaderHelper.canDrawFBO()) {
                 RenderSystem.depthFunc(519);
-                ShaderHelper.fbo.clear(MinecraftClient.IS_SYSTEM_MAC);
-                ShaderHelper.fbo.beginWrite(false);
+                ShaderHelper.storageFBO.clear(MinecraftClient.IS_SYSTEM_MAC);
+                ShaderHelper.storageFBO.beginWrite(false);
                 RenderSystem.teardownOverlayColor();
                 RenderSystem.setShader(GameRenderer::getPositionColorShader);
                 RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -57,14 +57,14 @@ public class OutlineStorageESP extends FeatureExtension {
                 RenderSystem.enableTexture();
                 RenderSystem.resetTextureMatrix();
                 RenderSystem.depthMask(false);
-                ShaderHelper.shaderEffect.render(Wrapper.INSTANCE.getMinecraft().getTickDelta());
+                ShaderHelper.storageShader.render(Wrapper.INSTANCE.getMinecraft().getTickDelta());
                 RenderSystem.enableTexture();
                 RenderSystem.depthMask(true);
                Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
             }
         } else if (event instanceof EventRender2DNoScale) {
             if (ShaderHelper.canDrawFBO()) {
-                ShaderHelper.drawFBO();
+                ShaderHelper.drawStorageFBO();
                 Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
             }
         }

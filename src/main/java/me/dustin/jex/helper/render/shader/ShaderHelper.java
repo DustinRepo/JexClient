@@ -12,51 +12,73 @@ import java.io.IOException;
 
 public class ShaderHelper {
 
-    public static Framebuffer fbo;
-    public static ShaderEffect shaderEffect;
+    public static Framebuffer storageFBO;
+    public static ShaderEffect storageShader;
+    public static Framebuffer boxOutlineFBO;
+    public static ShaderEffect boxOutlineShader;
     public static Identifier identifier_1 = new Identifier("jex", "shaders/entity_outline.json");
 
-    public static void drawFBO() {
+    public static void drawStorageFBO() {
         if (canDrawFBO()) {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
-            fbo.draw(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
+            storageFBO.draw(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
+            RenderSystem.disableBlend();
+        }
+    }
+
+    public static void drawBoxOutlineFBO() {
+        if (canDrawFBO()) {
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
+            boxOutlineFBO.draw(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
             RenderSystem.disableBlend();
         }
     }
 
     public static void onResized(int int_1, int int_2) {
-        if (shaderEffect != null) {
-            shaderEffect.setupDimensions(int_1, int_2);
+        if (storageShader != null) {
+            storageShader.setupDimensions(int_1, int_2);
+        }
+        if (boxOutlineShader != null) {
+            boxOutlineShader.setupDimensions(int_1, int_2);
         }
     }
     public static boolean canDrawFBO() {
-        return fbo != null && shaderEffect != null && Wrapper.INSTANCE.getLocalPlayer() != null;
+        return storageFBO != null && storageShader != null && Wrapper.INSTANCE.getLocalPlayer() != null;
     }
 
     public static void load()
     {
-        if (shaderEffect != null) {
-            close();
+        if (storageShader != null) {
+            storageShader.close();
+        }
+        if (boxOutlineShader != null) {
+            boxOutlineShader.close();
         }
 
         try {
-            shaderEffect = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
-            shaderEffect.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
-            fbo = shaderEffect.getSecondaryTarget("final");
+            storageShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
+            storageShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
+            storageFBO = storageShader.getSecondaryTarget("final");
+            boxOutlineShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
+            boxOutlineShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
+            boxOutlineFBO = boxOutlineShader.getSecondaryTarget("final");
         } catch (IOException | JsonSyntaxException var3) {
             var3.printStackTrace();
-            shaderEffect = null;
-            fbo = null;
+            storageShader = null;
+            storageFBO = null;
         }
 
     }
 
     public static void close() {
-        if (shaderEffect != null) {
-            shaderEffect.close();
+        if (storageShader != null) {
+            storageShader.close();
         }
-
+        if (boxOutlineShader != null) {
+            boxOutlineShader.close();
+        }
     }
 
 }

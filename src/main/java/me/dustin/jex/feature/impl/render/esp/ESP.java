@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.extension.FeatureExtension;
+import me.dustin.jex.feature.impl.render.esp.impl.OutlineBox;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -25,7 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 @Feat(name = "ESP", category = FeatureCategory.VISUAL, description = "Mark entities/players through walls")
 public class ESP extends Feature {
     public static ESP INSTANCE;
-    @Op(name = "Mode", all = {"Shader", "2D", "Box"})
+    @Op(name = "Mode", all = {"Shader", "2D", "Box Outline", "Box"})
     public String mode = "Shader";
 
     @OpChild(name = "Line Width", min = 1, max = 10, inc = 0.1f, parent = "Mode", dependency = "Box Outline")
@@ -60,12 +61,12 @@ public class ESP extends Feature {
     public ESP() {
         new ShaderESP();
         new BoxESP();
-        //new OutlineBox();
+        new OutlineBox();
         new TwoDeeESP();
         INSTANCE = this;
     }
 
-    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventOutlineColor.class, EventJoinWorld.class, EventRenderGetPos.class, EventHasOutline.class}, priority = 1)
+    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventRender2DNoScale.class, EventOutlineColor.class, EventJoinWorld.class, EventRenderGetPos.class, EventHasOutline.class}, priority = 1)
     public void run(Event event) {
         if (lastMode != null && !mode.equalsIgnoreCase(lastMode)) {
             FeatureExtension.get(lastMode, this).disable();
