@@ -2,10 +2,9 @@ package me.dustin.jex.feature.impl.render.storageesp;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.render.EventOutlineColor;
-import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.event.render.*;
 import me.dustin.jex.extension.FeatureExtension;
+import me.dustin.jex.feature.impl.render.storageesp.impl.OutlineStorageESP;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
@@ -21,8 +20,8 @@ import java.awt.*;
 @Feat(name = "StorageESP", category = FeatureCategory.VISUAL, description = "Show storage blocks through walls")
 public class StorageESP extends Feature {
 
-    //@Op(name = "Mode", all = {"Outline", "Box"})
-    public String mode = "Box";
+    @Op(name = "Mode", all = {"Box", "Shader"})
+    public String mode = "Shader";
     @Op(name = "Chest")
     public boolean chest = true;
     @Op(name = "Ender Chest")
@@ -51,11 +50,11 @@ public class StorageESP extends Feature {
     private String lastMode;
 
     public StorageESP() {
-        //OutlineStorageESP outlineStorageESP = new OutlineStorageESP();
+        OutlineStorageESP outlineStorageESP = new OutlineStorageESP();
         BoxStorageESP boxStorageESP = new BoxStorageESP();
     }
 
-    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventOutlineColor.class}, priority = 1)
+    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventRender2DNoScale.class}, priority = 1)
     public void run(Event event) {
         if (lastMode != null && !mode.equalsIgnoreCase(lastMode)) {
             FeatureExtension.get(lastMode, this).disable();

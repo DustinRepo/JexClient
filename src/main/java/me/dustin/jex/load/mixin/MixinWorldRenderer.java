@@ -6,6 +6,7 @@ import me.dustin.jex.event.render.EventRenderRain;
 import me.dustin.jex.event.render.EventWorldRender;
 import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.load.impl.IWorldRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -61,6 +62,7 @@ public class MixinWorldRenderer implements IWorldRenderer {
             this.entityOutlineShader = null;
             this.entityOutlinesFramebuffer = null;
         }
+        ShaderHelper.load();
         ci.cancel();
     }
 
@@ -101,6 +103,11 @@ public class MixinWorldRenderer implements IWorldRenderer {
             });
             ci.cancel();
         }
+    }
+
+    @Inject(method = "onResized", at = @At("HEAD"))
+    public void onResized1(int width, int height, CallbackInfo ci) {
+        ShaderHelper.onResized(width, height);
     }
 
     @Override
