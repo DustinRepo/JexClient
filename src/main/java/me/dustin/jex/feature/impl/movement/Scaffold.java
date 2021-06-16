@@ -109,6 +109,9 @@ public class Scaffold extends Feature {
     private void getNearBlocks(BlockPos blockPos) {
         emptyNearBlocks.clear();
         if (range == 0) {
+            BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
+            if (!isReplaceable(WorldHelper.INSTANCE.getBlock(below)))
+                return;
             BlockInfo blockInfo = getBlockInfo(blockPos);
             if (blockInfo == null) {
                 blockInfo = getBlockInfo(blockPos.add(1, 0, 0));
