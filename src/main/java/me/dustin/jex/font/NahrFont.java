@@ -399,7 +399,7 @@ public class NahrFont {
 
     private int getColorFromCode(char code) {
         switch (code) {
-            case '0': return Color.BLACK.getRed();
+            case '0': return Color.BLACK.getRGB();
             case '1': return 0xff0000AA;
             case '2': return 0xff00AA00;
             case '3': return 0xff00AAAA;
