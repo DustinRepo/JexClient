@@ -394,7 +394,7 @@ public class Hud extends Feature {
             List<Runnable> list_1 = Lists.newArrayListWithExpectedSize(Wrapper.INSTANCE.getLocalPlayer().getActiveStatusEffects().size());
             for (StatusEffectInstance effect : Wrapper.INSTANCE.getLocalPlayer().getActiveStatusEffects().values()) {
                 String effectString = String.format("%s %s§f: §7%s", effect.getEffectType().getName().getString(), getAmpString(effect), StatusEffectUtil.durationToString(effect, 1.0F));
-                FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), effectString, Render2DHelper.INSTANCE.getScaledWidth() - Wrapper.INSTANCE.getTextRenderer().getWidth(effectString) - (icons ? 11 : 2), coordsY - (bottomRightCount * 10), effect.getEffectType().getColor());
+                FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), effectString, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(effectString) - (icons ? 11 : 2), coordsY - (bottomRightCount * 10), effect.getEffectType().getColor());
 
                 if (icons) {
                     Sprite sprite_1 = Wrapper.INSTANCE.getMinecraft().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
