@@ -171,7 +171,7 @@ public class Waypoints extends Feature {
                         float x = (float) renderPos.x;
                         float y = (float) renderPos.y;
                         Render2DHelper.INSTANCE.fill(((EventRender2D) event).getMatrixStack(), (float) x - (width / 2) - 2, (float) y - 11, (float) x + (width / 2) + 2, (float) y, 0x50000000);
-                        FontHelper.INSTANCE.drawWithShadow(((EventRender2D) event).getMatrixStack(), name, (float) x - (width / 2), (float) y - 9, waypoint.color);
+                        FontHelper.INSTANCE.drawCenteredString(((EventRender2D) event).getMatrixStack(), name, x, (float) y - 9, waypoint.color);
                     }
                 }
             });

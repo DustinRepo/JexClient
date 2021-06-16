@@ -71,7 +71,7 @@ public enum FontHelper {
     }
 
     public void drawCenteredString(MatrixStack matrixStack, String string, float x, float y, int color) {
-        float newX = x - ((getStringWidth(string, CustomFont.INSTANCE.getState()) + (CustomFont.INSTANCE.getState() ? CustomFont.INSTANCE.xOffset : 0)) / 2);
+        float newX = x - getStringWidth(string) / 2;
         if (CustomFont.INSTANCE.getState()) {
             clientFont.drawString(matrixStack, string, newX, y + CustomFont.INSTANCE.yOffset, CustomFont.INSTANCE.textShadows ? NahrFont.FontType.SHADOW_THIN : NahrFont.FontType.NORMAL, color);
         } else {
