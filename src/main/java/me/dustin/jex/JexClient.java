@@ -10,7 +10,6 @@ import me.dustin.jex.event.misc.EventGameFinishedLoading;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
-import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.FeatureManager;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
@@ -77,7 +76,7 @@ public enum JexClient {
         System.out.println("Load finished");
     }
 
-    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class, EventDrawScreen.class})
+    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class})
     public void runMethod(Event event) {
         if (event instanceof EventKeyPressed) {
             EventKeyPressed eventKeyPressed = (EventKeyPressed)event;
