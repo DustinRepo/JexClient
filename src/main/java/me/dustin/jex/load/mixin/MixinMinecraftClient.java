@@ -1,5 +1,8 @@
 package me.dustin.jex.load.mixin;
 
+import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.minecraft.SocialInteractionsService;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import me.dustin.jex.event.misc.EventDisplayScreen;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.misc.EventScheduleStop;
@@ -7,6 +10,7 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventHasOutline;
 import me.dustin.jex.load.impl.IMinecraft;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.SocialInteractionsManager;
@@ -17,6 +21,7 @@ import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,8 +32,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.net.Proxy;
+
 @Mixin(MinecraftClient.class)
-public class MixinMinecraftClient implements IMinecraft {
+public abstract class MixinMinecraftClient implements IMinecraft {
     @Mutable
     @Shadow
     @Final
@@ -49,6 +56,19 @@ public class MixinMinecraftClient implements IMinecraft {
     @Shadow @Final public GameOptions options;
 
     @Shadow @Nullable public ClientPlayerEntity player;
+
+    @Mutable
+    @Shadow @Final private Proxy netProxy;
+
+    @Mutable
+    @Shadow @Final private MinecraftSessionService sessionService;
+
+    @Mutable
+    @Shadow @Final private SocialInteractionsService socialInteractionsService;
+
+    @Shadow protected abstract SocialInteractionsService createSocialInteractionsService(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs);
+
+    @Shadow @Final private static Logger LOGGER;
 
     @Override
     public void setSession(Session session) {
@@ -73,6 +93,11 @@ public class MixinMinecraftClient implements IMinecraft {
     @Override
     public RenderTickCounter getRenderTickCounter() {
         return this.renderTickCounter;
+    }
+
+    @Override
+    public void setProxy(Proxy proxy) {
+        this.netProxy = proxy;
     }
 
     @Inject(method = "tick", at = @At("HEAD"))

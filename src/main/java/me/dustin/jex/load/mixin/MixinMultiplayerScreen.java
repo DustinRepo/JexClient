@@ -1,6 +1,7 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.gui.account.AccountManager;
+import me.dustin.jex.gui.minecraft.ProxyScreen;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -23,6 +24,9 @@ public class MixinMultiplayerScreen extends Screen {
     public void init(CallbackInfo ci) {
         this.addDrawableChild(new ButtonWidget(2, 2, 75, 20, new LiteralText("Alt Manager"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(new AccountManager(new LiteralText("Account Manager")));
+        }));
+        this.addDrawableChild(new ButtonWidget(width - 77, 2, 75, 20, new LiteralText("Proxy"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new ProxyScreen());
         }));
     }
 
