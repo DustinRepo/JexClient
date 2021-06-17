@@ -47,6 +47,15 @@ public enum InventoryHelper {
         return true;
     }
 
+    public boolean isInventoryFullIgnoreHotbar() {
+        for (int i = 9; i < 36; i++) {
+            ItemStack itemStack = getInventory().getStack(i);
+            if (itemStack == null || itemStack.getItem() instanceof AirBlockItem)
+                return false;
+        }
+        return true;
+    }
+
     public int getFromHotbar(Item item) {
         for (int i = 0; i < 9; i++) {
             if (getInventory().getStack(i) != null && getInventory().getStack(i).getItem() == item)
