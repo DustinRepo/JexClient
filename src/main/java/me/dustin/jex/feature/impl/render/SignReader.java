@@ -4,14 +4,14 @@ import com.google.common.collect.Maps;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.event.render.EventRenderGetPos;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -34,9 +34,9 @@ public class SignReader extends Feature {
 
     private HashMap<SignBlockEntity, Vec3d> positions = Maps.newHashMap();
 
-    @EventListener(events = {EventRender3D.class, EventRender2D.class})
+    @EventListener(events = {EventRenderGetPos.class, EventRender2D.class})
     private void runMethod(Event event) {
-        if (event instanceof EventRender3D) {
+        if (event instanceof EventRenderGetPos) {
             positions.clear();
             if (hoverOnly) {
                 HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(1024, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
@@ -71,7 +71,7 @@ public class SignReader extends Feature {
                     int count = 0;
                     for (int i = 0; i < 4; i++) {
                         String text = signBlockEntity.getTextOnRow(3 - i, false).getString().trim();
-                        float strWidth = FontHelper.INSTANCE.getStringWidth(text);
+                        float strWidth = FontHelper.INSTANCE.getStringWidth(FontHelper.INSTANCE.fix(text));
                         if (!text.isEmpty()) {
                             if (backgrounds)
                                 Render2DHelper.INSTANCE.fill(((EventRender2D) event).getMatrixStack(), x - (strWidth / 2) - 2, y - (10 * count) - 0.5f, x + (strWidth / 2) + 2, y - (10 * count) + 9.5f, 0x35000000);

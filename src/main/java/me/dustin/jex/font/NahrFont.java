@@ -2,7 +2,6 @@ package me.dustin.jex.font;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.file.ModFileHelper;
-import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
@@ -382,7 +381,7 @@ public class NahrFont {
     }
 
     public final String stripControlCodes(String s) {
-        return FontHelper.INSTANCE.fix(s);
+        return this.patternControlCode.matcher(s).replaceAll("");
     }
 
     public final String stripUnsupported(String s) {
