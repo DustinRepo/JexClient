@@ -60,9 +60,9 @@ public class SlimeSpawnMarker extends Feature {
                     chunkPositions.add(eventSpawnEntity.getEntity().getChunkPos());
                     if (writeToFile) {
                         try {
-                            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? Wrapper.INSTANCE.getMinecraft().getServer().getName() : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
-                            String s = server + eventSpawnEntity.getEntity().getChunkPos().x + ":" + eventSpawnEntity.getEntity().getChunkPos().z;
-                            FileWriter fileWritter = new FileWriter(chunksFile.getName(), true);
+                            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SP world" : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
+                            String s = server + ":" + eventSpawnEntity.getEntity().getChunkPos().x + ":" + eventSpawnEntity.getEntity().getChunkPos().z + "\n";
+                            FileWriter fileWritter = new FileWriter(chunksFile, true);
                             BufferedWriter bw = new BufferedWriter(fileWritter);
                             bw.write(s);
                             bw.close();

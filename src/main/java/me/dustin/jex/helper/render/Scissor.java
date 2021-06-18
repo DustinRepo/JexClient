@@ -9,8 +9,6 @@ public enum Scissor {
 
     public void cut(int x, int y, int width, int height) {
         double factor = Render2DHelper.INSTANCE.getScaleFactor();
-        int factor2 = Render2DHelper.INSTANCE.getScaledWidth();
-        int factor3 = Render2DHelper.INSTANCE.getScaledHeight();
         RenderSystem.enableScissor((int) (x * factor), (int) ((Wrapper.INSTANCE.getWindow().getHeight() - (y * factor) - height * factor)), (int) (width * factor), (int) (height * factor));
     }
 
