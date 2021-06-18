@@ -8,6 +8,9 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.render.EventRenderGetPos;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -16,9 +19,6 @@ import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.render.*;
@@ -30,7 +30,6 @@ import net.minecraft.util.math.Vec3d;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 
 @Feat(name = "Waypoints", category = FeatureCategory.WORLD, description = "Display Waypoints to mark areas.")
 public class Waypoints extends Feature {
@@ -77,7 +76,7 @@ public class Waypoints extends Feature {
             spin++;
         }
         if (event instanceof EventRender3D) {
-            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getServer()).getName() : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry()).address;
+            String server = WorldHelper.INSTANCE.getCurrentServerName();
             if (!Wrapper.INSTANCE.getLocalPlayer().isAlive() && lastDeath) {
                 Waypoint oldWaypoint = get("Last Death", server);
                 if (oldWaypoint != null) {
@@ -99,7 +98,7 @@ public class Waypoints extends Feature {
                 }
             }
         } else if (event instanceof EventRenderGetPos) {
-            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getServer()).getName() : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry()).address;
+            String server = WorldHelper.INSTANCE.getCurrentServerName();
             waypointPositions.clear();
             for (Waypoint waypoint : getWaypoints(server)) {
                 if (waypoint.getDimension().equalsIgnoreCase(WorldHelper.INSTANCE.getDimensionID().toString())) {
@@ -120,7 +119,7 @@ public class Waypoints extends Feature {
         if (event instanceof EventRender3D.EventRender3DNoBob) {
             if (!tracer)
                 return;
-            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getServer()).getName() : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry()).address;
+            String server = WorldHelper.INSTANCE.getCurrentServerName();
             EventRender3D.EventRender3DNoBob eventRender3D = (EventRender3D.EventRender3DNoBob) event;
             for (Waypoint waypoint : getWaypoints(server)) {
                 if (waypoint.isHidden())

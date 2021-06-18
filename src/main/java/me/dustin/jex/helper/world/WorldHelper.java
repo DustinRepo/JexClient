@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentMap;
@@ -87,6 +88,17 @@ public enum WorldHelper {
 
     public Collection<BlockEntity> getBlockEntities() {
         return blockEntities.values();
+    }
+
+    public String getCurrentServerName() {
+        boolean isSinglePlayer = Wrapper.INSTANCE.getMinecraft().isInSingleplayer();
+        if (isSinglePlayer) {
+            String preString = Wrapper.INSTANCE.getMinecraft().getServer().getIconFile().toString().replace(File.separator + "icon.png", "").replace(File.separator, "/");
+            String[] list = preString.split("/");
+            return list[list.length - 1];
+        } else {
+            return Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
+        }
     }
 
     public boolean isOnLiquid(Entity entity) {

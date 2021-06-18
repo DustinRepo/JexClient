@@ -15,7 +15,7 @@ public class CommandWaypoint extends Command {
     @Override
     public void runCommand(String command, String[] args) {
         try {
-            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? Wrapper.INSTANCE.getMinecraft().getServer().getName() : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
+            String server = WorldHelper.INSTANCE.getCurrentServerName();
             if (isAddString(args[1])) {
                 String name = args[2].replace("_", " ");
                 float x;

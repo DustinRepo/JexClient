@@ -25,8 +25,10 @@ import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.FeatureManager;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.texture.Sprite;
@@ -435,7 +437,7 @@ public class Hud extends Feature {
         if (!info)
             return;
         if (serverName) {
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Server\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SinglePlayer" : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address + " " + Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().version.getString()), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Server\247f: \2477%s", WorldHelper.INSTANCE.getCurrentServerName() + " " + (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() == null ? SharedConstants.getGameVersion().getName() : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().version.getString())), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
         if (ping) {
