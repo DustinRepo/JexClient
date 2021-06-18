@@ -5,12 +5,14 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventSpawnEntity;
-import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.helper.file.FileHelper;
+import me.dustin.jex.helper.file.ModFileHelper;
+import me.dustin.jex.helper.misc.ChatHelper;
+import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.entity.mob.SlimeEntity;
@@ -19,6 +21,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 @Feat(name = "SlimeSpawnMarker", category = FeatureCategory.WORLD, description = "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk. Good for finding Slime Chunks on servers without the seed.")
@@ -28,12 +33,15 @@ public class SlimeSpawnMarker extends Feature {
     public boolean notifyPlayer = true;
     @Op(name = "Mark SlimeChunks")
     public boolean markSlimeChunks = true;
+    @OpChild(name = "Write to file", parent = "Mark SlimeChunks")
+    public boolean writeToFile = true;
     @OpChild(name = "Show SlimeChunks", parent = "Mark SlimeChunks")
     public boolean showSlimeChunks = true;
     @OpChild(name = "Chunk Color", isColor = true, parent = "Show SlimeChunks")
     public int chunkColor = new Color(0, 255, 38).getRGB();
 
     private ArrayList<ChunkPos> chunkPositions = new ArrayList<>();
+    private File chunksFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "slimes.txt");
 
     @EventListener(events = {EventSpawnEntity.class, EventRender3D.class, EventJoinWorld.class})
     private void runMethod(Event event) {
@@ -48,8 +56,21 @@ public class SlimeSpawnMarker extends Feature {
                 if (notifyPlayer)
                     ChatHelper.INSTANCE.addClientMessage("A Slime has spawned in chunk: \247b" + eventSpawnEntity.getEntity().getChunkPos().x + " " + eventSpawnEntity.getEntity().getChunkPos().z);
                 if (markSlimeChunks)
-                if (!chunkPositions.contains(eventSpawnEntity.getEntity().getChunkPos()))
+                if (!chunkPositions.contains(eventSpawnEntity.getEntity().getChunkPos())) {
                     chunkPositions.add(eventSpawnEntity.getEntity().getChunkPos());
+                    if (writeToFile) {
+                        try {
+                            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? Wrapper.INSTANCE.getMinecraft().getServer().getName() : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
+                            String s = server + eventSpawnEntity.getEntity().getChunkPos().x + ":" + eventSpawnEntity.getEntity().getChunkPos().z;
+                            FileWriter fileWritter = new FileWriter(chunksFile.getName(), true);
+                            BufferedWriter bw = new BufferedWriter(fileWritter);
+                            bw.write(s);
+                            bw.close();
+                        } catch (Exception e) {
+                            ChatHelper.INSTANCE.addClientMessage("Could not write to slimes.txt");
+                        }
+                    }
+                }
             }
         }
         if (event instanceof EventRender3D) {
@@ -63,5 +84,12 @@ public class SlimeSpawnMarker extends Feature {
                 }
             });
         }
+    }
+
+    @Override
+    public void onEnable() {
+        if (!chunksFile.exists())
+            FileHelper.INSTANCE.createFile(ModFileHelper.INSTANCE.getJexDirectory(), "slimes.txt");
+        super.onEnable();
     }
 }
