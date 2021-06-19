@@ -21,6 +21,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
+import me.dustin.jex.helper.render.Scrollbar;
 import me.dustin.jex.option.Option;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.option.types.ColorOption;
@@ -46,8 +47,10 @@ public class JexGui extends Screen {
     public ArrayList<Button> optionButtons = new ArrayList<>();
 
     private FeatureCategory currentCategory = FeatureCategory.values()[0];
+    private Scrollbar featureScrollbar;
+    private Scrollbar optionsScrollbar;
+
     private Button currentFeature = null;
-    
     private Button autoSaveButton = null;
     private Button launchSoundButton = null;
     private Button clickSoundButton = null;
@@ -131,6 +134,7 @@ public class JexGui extends Screen {
 
 
             loadFeatures(FeatureCategory.values()[0]);
+
         }
         super.init();
     }
@@ -183,6 +187,10 @@ public class JexGui extends Screen {
             Render2DHelper.INSTANCE.fillAndBorder(matrices, 1, Render2DHelper.INSTANCE.getScaledHeight() - FontHelper.INSTANCE.getStringHeight(desc.get(), CustomFont.INSTANCE.getState()) - 3, 5 + FontHelper.INSTANCE.getStringWidth(desc.get()), Render2DHelper.INSTANCE.getScaledHeight() - 1, ColorHelper.INSTANCE.getClientColor(), 0x50000000, 1);
             FontHelper.INSTANCE.drawWithShadow(matrices, desc.get(), 4, Render2DHelper.INSTANCE.getScaledHeight() - FontHelper.INSTANCE.getStringHeight(desc.get(), CustomFont.INSTANCE.getState()) - 1, ColorHelper.INSTANCE.getClientColor());
         }
+        if (featureScrollbar != null)
+            featureScrollbar.render(matrices);
+        if (optionsScrollbar != null)
+            optionsScrollbar.render(matrices);
         Gui.clickgui.radarWindow.draw(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         lastwidth = width;
@@ -198,11 +206,13 @@ public class JexGui extends Screen {
                     float topY = y + 16;
                     if (topButton.getY() < topY) {
                         for (int i = 0; i < 20; i++) {
-                            if (topButton.getY() < topY)
+                            if (topButton.getY() < topY) {
                                 for (Button button : featureButtons) {
                                     button.move(0, 1);
                                     moveAll(button, 0, 1);
                                 }
+                                featureScrollbar.moveUp();
+                            }
                         }
                     }
                 }
@@ -213,11 +223,13 @@ public class JexGui extends Screen {
                     float topY = y + 16;
                     if (topJexButton.getY() < topY) {
                         for (int i = 0; i < 20; i++) {
-                            if (topJexButton.getY() < topY)
+                            if (topJexButton.getY() < topY) {
                                 for (Button button : optionButtons) {
                                     button.move(0, 1);
                                     moveAll(button, 0, 1);
                                 }
+                                optionsScrollbar.moveUp();
+                            }
                         }
                     }
                 }
@@ -228,11 +240,13 @@ public class JexGui extends Screen {
                 if (bottomButton != null && MouseHelper.INSTANCE.getMouseX() > bottomButton.getX() && MouseHelper.INSTANCE.getMouseX() < bottomButton.getX() + bottomButton.getWidth()) {
                     if (bottomButton.getY() + bottomButton.getHeight() > y + windowHeight) {
                         for (int i = 0; i < 20; i++) {
-                            if (bottomButton.getY() + bottomButton.getHeight() > y + windowHeight)
+                            if (bottomButton.getY() + bottomButton.getHeight() > y + windowHeight) {
                                 for (Button button : featureButtons) {
                                     button.move(0, -1);
                                     moveAll(button, 0, -1);
                                 }
+                                featureScrollbar.moveDown();
+                            }
                         }
                     }
                 }
@@ -242,11 +256,13 @@ public class JexGui extends Screen {
                 if (bottomJexButton != null && MouseHelper.INSTANCE.getMouseX() > bottomJexButton.getX() && MouseHelper.INSTANCE.getMouseX() < bottomJexButton.getX() + bottomJexButton.getWidth()) {
                     if (bottomJexButton.getY() + bottomJexButton.getHeight() > y + windowHeight) {
                         for (int i = 0; i < 20; i++) {
-                            if (bottomJexButton.getY() + bottomJexButton.getHeight() > y + windowHeight)
+                            if (bottomJexButton.getY() + bottomJexButton.getHeight() > y + windowHeight) {
                                 for (Button button : optionButtons) {
                                     button.move(0, -1);
                                     moveAll(button, 0, -1);
                                 }
+                                optionsScrollbar.moveDown();
+                            }
                         }
                     }
                 }
@@ -297,29 +313,43 @@ public class JexGui extends Screen {
         }
         optionButtons.forEach(jexGuiButton -> jexGuiButton.click(mouseX, mouseY, button));
         Gui.clickgui.radarWindow.click(mouseX, mouseY, button);
+        if (featureScrollbar != null) {
+            float contentHeight = (featureButtons.get(featureButtons.size() - 1).getY() + (featureButtons.get(featureButtons.size() - 1).getHeight())) - featureButtons.get(0).getY();
+            featureScrollbar.setContentHeight(contentHeight);
+        }
+        if (optionsScrollbar != null) {
+            float contentHeight = (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - optionButtons.get(0).getY();
+            optionsScrollbar.setContentHeight(contentHeight);
+            optionsScrollbar.setViewportHeight(windowHeight - 17);
+            featureScrollbar.setViewportY(y + 15 + 1);
+        }
         return false;
     }
 
     private void loadFeatures(FeatureCategory featureCategory) {
         featureButtons.clear();
         int featCount = 0;
+        float oneThird = (windowWidth / 3) - 2;
         for (Feature feature : Feature.getModules(featureCategory)) {
-            float oneThird = (windowWidth / 3) - 2;
             float topLineY = y + 15;
             Button jexGuiButton = new Button(null, feature.getName(), x + 2 + oneThird, topLineY + 1 + (featCount * 15), (windowWidth / 3) - 2, 15, null);
             jexGuiButton.setTextColor(feature.getState() ? -1 : 0xffaaaaaa);
             featureButtons.add(jexGuiButton);
             featCount++;
         }
+        float contentHeight = (featCount * 15);
+        float viewportHeight = windowHeight - 17;
+        float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
+        featureScrollbar = new Scrollbar(x + 2 + (oneThird * 2), y + 16, 1, scrollBarHeight, viewportHeight, contentHeight, -1);
     }
     private float buttonHeight = 0;
     private void loadOptions(Feature feature) {
         buttonHeight = 0;
         optionButtons.clear();
         addExtraButtons(feature);
+        float oneThird = (windowWidth / 3) - 2;
         for (Option option : OptionManager.get().getOptions(feature)) {
             if (!option.hasParent()) {
-                float oneThird = (windowWidth / 3) - 2;
                 float topLineY = y + 15;
                 JexOptionButton jexGuiButton = new JexOptionButton(option, x + 3 + (oneThird * 2), topLineY + 1 + buttonHeight, (windowWidth / 3) + 1, 15);
 
@@ -333,6 +363,10 @@ public class JexGui extends Screen {
                 buttonHeight += jexGuiButton.getHeight();
             }
         }
+        float contentHeight = buttonHeight;
+        float viewportHeight = windowHeight - 17;
+        float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
+        optionsScrollbar = new Scrollbar(x + 5 + (oneThird * 3), y + 15 + 1, 1, scrollBarHeight, viewportHeight, contentHeight, -1);
     }
 
     public void moveAll(Button button, float x, float y) {
@@ -352,6 +386,17 @@ public class JexGui extends Screen {
         categoryButtons.forEach(jexGuiButton -> jexGuiButton.move(x - lastX, y - lastY));
         featureButtons.forEach(jexGuiButton -> jexGuiButton.move(x - lastX, y - lastY));
         optionButtons.forEach(jexGuiButton -> {jexGuiButton.move(x - lastX, y - lastY);moveAll(jexGuiButton, x - lastX, y - lastY);});
+
+        if (featureScrollbar != null) {
+            featureScrollbar.setX(featureScrollbar.getX() + (x - lastX));
+            featureScrollbar.setY(featureScrollbar.getY() + (y - lastY));
+            featureScrollbar.setViewportY(featureScrollbar.getViewportY() + (y - lastY));
+        }
+        if (optionsScrollbar != null) {
+            optionsScrollbar.setX(optionsScrollbar.getX() + (x - lastX));
+            optionsScrollbar.setY(optionsScrollbar.getY() + (y - lastY));
+            optionsScrollbar.setViewportY(optionsScrollbar.getViewportY() + (y - lastY));
+        }
     }
 
     public Button getVeryBottomButton() {

@@ -13,6 +13,7 @@ import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
+import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -40,6 +41,7 @@ public class AccountManager extends Screen {
     private TextFieldWidget searchTextField;
 
     private String outputString;
+    private Scrollbar scrollbar;
 
     public AccountManager(Text title) {
         super(title);
@@ -117,6 +119,10 @@ public class AccountManager extends Screen {
         this.addDrawableChild(importButton);
         this.outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
 
+        float contentHeight = (accountButtons.get(accountButtons.size() - 1).getY() + (accountButtons.get(accountButtons.size() - 1).getHeight())) - accountButtons.get(0).getY();
+        float viewportHeight = 200;
+        float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
+        this.scrollbar = new Scrollbar((width / 2.f), (height / 2.f) - 102, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
         super.init();
     }
 
@@ -154,6 +160,8 @@ public class AccountManager extends Screen {
 
         Render2DHelper.INSTANCE.fill(matrixStack, 0, height - 52, width, height, 0x70000000);
         Render2DHelper.INSTANCE.drawHLine(matrixStack, 0, width, height - 52, ColorHelper.INSTANCE.getClientColor());
+
+        scrollbar.render(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
@@ -178,20 +186,24 @@ public class AccountManager extends Screen {
             AccountButton topButton = accountButtons.get(0);
             if (topButton.getY() < ((height / 2) - 100)) {
                 for (int i = 0; i < 20; i++) {
-                    if (topButton.getY() < ((height / 2) - 100))
+                    if (topButton.getY() < ((height / 2) - 100)) {
                         for (AccountButton button : accountButtons) {
                             button.setY(button.getY() + 1);
                         }
+                        scrollbar.moveUp();
+                    }
                 }
             }
         } else if (amount < 0) {
             AccountButton bottomButton = accountButtons.get(accountButtons.size() - 1);
             if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 100)) {
                 for (int i = 0; i < 20; i++) {
-                    if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 100))
+                    if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 100)) {
                         for (AccountButton button : accountButtons) {
                             button.setY(button.getY() - 1);
                         }
+                        scrollbar.moveDown();
+                    }
                 }
             }
         }

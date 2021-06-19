@@ -11,6 +11,7 @@ import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.feature.impl.render.Hud;
+import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,6 +35,8 @@ public class Window {
     private int color = ColorHelper.INSTANCE.getClientColor();
     private ArrayList<Button> buttons = new ArrayList<>();
 
+    private Scrollbar scrollbar;
+
     private Identifier pin = new Identifier("jex", "gui/click/pin.png");
     private Identifier eye = new Identifier("jex", "gui/click/visible.png");
 
@@ -50,8 +53,14 @@ public class Window {
 
     public void draw(MatrixStack matrixStack) {
         String dispName = this.getName().substring(0, 1) + this.getName().substring(1).toLowerCase();
+        float maxY = Render2DHelper.INSTANCE.getScaledHeight() - 30;
         maxHeight = Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 > 0 ? Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 : 250;
-
+        if (scrollbar == null) {
+            float contentHeight = buttons.isEmpty() ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
+            float viewportHeight = maxHeight;
+            float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
+            scrollbar = new Scrollbar(getX() + getWidth() - 1, getY() + getHeight(), 1, scrollBarHeight, viewportHeight, contentHeight, -1);
+        }
         if (isOpen()) {
             Scissor.INSTANCE.cut((int) this.getX(), (int) this.getY() + (int) this.getHeight(), (int) this.getWidth(), (int) maxHeight);
             if (this.getVeryBottomButton() != null)
@@ -60,6 +69,11 @@ public class Window {
                 if (button.isVisible())
                     button.draw(matrixStack);
             });
+            if (scrollbar.getContentHeight() <= scrollbar.getViewportHeight()) {
+                scrollbar = null;
+            }
+            if (scrollbar != null)
+                scrollbar.render(matrixStack);
             Scissor.INSTANCE.seal();
         }
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), color);
@@ -94,6 +108,12 @@ public class Window {
                     button.move(x - prevX, y - prevY);
                     moveAll(button, x - prevX, y - prevY);
                 });
+                if (scrollbar != null) {
+                    scrollbar.setX(scrollbar.getX() + (x - prevX));
+                    scrollbar.setY(scrollbar.getY() + (y - prevY));
+                    scrollbar.setViewportY(scrollbar.getViewportY() + (y - prevY));
+                    scrollbar.setViewportHeight(maxHeight);
+                }
                 prevX = x;
                 prevY = y;
             }
@@ -149,6 +169,12 @@ public class Window {
                 if (button.isVisible())
                     button.click(double_1, double_2, int_1);
             });
+
+        if (scrollbar != null) {
+            float contentHeight = buttons.isEmpty() ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
+            scrollbar.setContentHeight(contentHeight);
+            scrollbar.setViewportHeight(maxHeight);
+        }
     }
 
     public void keyTyped(char typedChar, int keyCode) {
@@ -176,11 +202,14 @@ public class Window {
                 if (topButton != null)
                     if (topButton.getY() < this.getY() + this.getHeight()) {
                         for (int i = 0; i < 20; i++) {
-                            if (topButton.getY() < this.getY() + this.getHeight())
+                            if (topButton.getY() < this.getY() + this.getHeight()) {
                                 getButtons().forEach(button -> {
                                     button.move(0, 1);
                                     moveAll(button, 0, 1);
                                 });
+                                if (scrollbar != null)
+                                    scrollbar.moveUp();
+                            }
                         }
                     }
             } else if (double_3 < 0) {
@@ -188,11 +217,14 @@ public class Window {
                 if (bottomButton != null)
                     if (bottomButton.getY() + bottomButton.getHeight() > this.getY() + this.height + this.maxHeight) {
                         for (int i = 0; i < 20; i++) {
-                            if (bottomButton.getY() + bottomButton.getHeight() > this.getY() + this.height + this.maxHeight)
+                            if (bottomButton.getY() + bottomButton.getHeight() > this.getY() + this.height + this.maxHeight) {
                                 for (Button button : buttons) {
                                     button.move(0, -1);
                                     moveAll(button, 0, -1);
                                 }
+                                if (scrollbar != null)
+                                    scrollbar.moveDown();
+                            }
                         }
                     }
             }

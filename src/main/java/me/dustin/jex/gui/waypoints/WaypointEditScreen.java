@@ -207,7 +207,7 @@ public class WaypointEditScreen extends Screen {
         Render2DHelper.INSTANCE.bindTexture(colorSlider);
         DrawableHelper.drawTexture(matrixStack, (int) this.colorX + (int) this.colorWidth - 10, (int) this.colorY + 15, 0, 0, 5, 80, 10, 80);
         //hue cursor
-        Render2DHelper.INSTANCE.fill(matrixStack, this.colorX + this.colorWidth - 11, this.colorY + 15 + huepos - 1, (this.colorX + this.colorWidth - 10) + 4, this.colorY + 15 + huepos + 1, -1);
+        Render2DHelper.INSTANCE.fill(matrixStack, this.colorX + this.colorWidth - 10, this.colorY + 15 + huepos - 1, (this.colorX + this.colorWidth - 5), this.colorY + 15 + huepos + 1, -1);
 
         FontHelper.INSTANCE.drawWithShadow(matrixStack, "Color", this.colorX + 3, this.colorY + 3, currentColor);
     }
@@ -306,13 +306,13 @@ public class WaypointEditScreen extends Screen {
             waypoint.setY(Float.parseFloat(yPos.getText()));
             waypoint.setZ(Float.parseFloat(zPos.getText()));
             WaypointFile.write();
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
+            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen(serverName.getText()));
         }
     };
     private ButtonListener cancelListener = new ButtonListener() {
         @Override
         public void invoke() {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
+            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen(serverName.getText()));
         }
     };
 
