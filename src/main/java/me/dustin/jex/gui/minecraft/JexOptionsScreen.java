@@ -6,6 +6,7 @@ import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.file.ClientSettingsFile;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
 import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
+import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
@@ -29,6 +30,7 @@ public class JexOptionsScreen extends Screen {
     private ButtonWidget downloadInstallerButton;
     private ButtonWidget xrayButton;
     private ButtonWidget searchButton;
+    private ButtonWidget waypointScreenButton;
     private ButtonWidget reloadAddonsButton;
     private static Timer timer = new Timer();
     private boolean updating = false;
@@ -49,20 +51,20 @@ public class JexOptionsScreen extends Screen {
             CommandManager.INSTANCE.setPrefix(prefixField.getText());
             ClientSettingsFile.write();
         });
-        downloadInstallerButton = new ButtonWidget(centerX - 100, topY + 25, 200, 20, new LiteralText("Update Jex to " + UpdateManager.INSTANCE.getLatestVersion()), button -> {
+        downloadInstallerButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, new LiteralText("Update Jex to " + UpdateManager.INSTANCE.getLatestVersion()), button -> {
             Update.INSTANCE.update(UpdateManager.INSTANCE.getLatestVersion());
             updating = true;
         });
-        clickGuiButton = new ButtonWidget(centerX - 100, topY + 50, 200, 20, new LiteralText("Open ClickGUI"), button -> {
+        clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, new LiteralText("Open ClickGUI"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(Gui.clickgui);
         });
-        xrayButton = new ButtonWidget(centerX - 100, topY + 75, 200, 20, new LiteralText("Xray Block Selection"), button -> {
+        xrayButton = new ButtonWidget(centerX - 75, topY + 75, 150, 20, new LiteralText("Xray Block Selection"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(new XraySelectScreen());
         });
-        searchButton = new ButtonWidget(centerX - 100, topY + 100, 200, 20, new LiteralText("Search Block Selection"), button -> {
+        searchButton = new ButtonWidget(centerX - 75, topY + 100, 150, 20, new LiteralText("Search Block Selection"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(new SearchSelectScreen());
         });
-        reloadAddonsButton = new ButtonWidget(centerX - 100, topY + 125, 200, 20, new LiteralText("Reload Capes and Hats"), button -> {
+        reloadAddonsButton = new ButtonWidget(centerX - 75, topY + 125, 150, 20, new LiteralText("Reload Capes and Hats"), button -> {
             Addon.clearAddons();
             if (Wrapper.INSTANCE.getWorld() != null) {
                 Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
@@ -73,7 +75,9 @@ public class JexOptionsScreen extends Screen {
             }
             timer.reset();
         });
-
+        waypointScreenButton = new ButtonWidget(centerX - 230, topY + 25, 150, 20, new LiteralText("Waypoint Screen"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
+        });
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 
         this.addDrawableChild(setPrefixButton);
@@ -82,6 +86,7 @@ public class JexOptionsScreen extends Screen {
         this.addDrawableChild(xrayButton);
         this.addDrawableChild(searchButton);
         this.addDrawableChild(reloadAddonsButton);
+        this.addDrawableChild(waypointScreenButton);
         this.addSelectableChild(prefixField);
         super.init();
     }

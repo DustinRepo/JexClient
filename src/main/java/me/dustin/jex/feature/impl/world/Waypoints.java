@@ -20,11 +20,11 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.option.annotate.Op;
-import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
@@ -37,14 +37,12 @@ public class Waypoints extends Feature {
     public static ArrayList<String> servers = new ArrayList<>();
     public static ArrayList<Waypoint> waypoints = new ArrayList<>();
     private static Map<Waypoint, Vec3d> waypointPositions = Maps.newHashMap();
-    @Op(name = "Nametags")
-    public boolean nametags = true;
-    @OpChild(name = "Distance", parent = "Nametags")
+    @Op(name = "FOV based Tag")
+    public boolean fovBasedTag = true;
+    @Op(name = "Distance", min = 20, max = 150)
+    public int fovDistance = 35;
+    @Op(name = "Distance on Tag")
     public boolean distance = true;
-    @Op(name = "Beacon")
-    public boolean beacon = true;
-    @Op(name = "Tracer")
-    public boolean tracer = false;
     @Op(name = "Last Death")
     public boolean lastDeath = true;
     int spin = 0;
@@ -86,12 +84,14 @@ public class Waypoints extends Feature {
             }
             for (Waypoint waypoint : getWaypoints(server)) {
                 if (waypoint.getDimension().equalsIgnoreCase(WorldHelper.INSTANCE.getDimensionID().toString())) {
+                    if (waypoint.hidden || !waypoint.drawBeacon)
+                        continue;
                     float x = waypoint.getX();
                     float y = waypoint.getY();
                     float z = waypoint.getZ();
                     float distance = ClientMathHelper.INSTANCE.getDistance2D(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(x, y, z));
                     Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(x, waypoint.getY(), z));
-                    if (beacon && distance < 270) {
+                    if (distance < 270) {
                         Box box = new Box(renderPos.x - 0.2f, renderPos.y, renderPos.z - 0.2f, renderPos.x + 0.2f, (256 - waypoint.y), renderPos.z + 0.2f);
                         Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, waypoint.getColor());
                     }
@@ -101,6 +101,8 @@ public class Waypoints extends Feature {
             String server = WorldHelper.INSTANCE.getCurrentServerName();
             waypointPositions.clear();
             for (Waypoint waypoint : getWaypoints(server)) {
+                if (waypoint.hidden || !waypoint.drawNametag)
+                    continue;
                 if (waypoint.getDimension().equalsIgnoreCase(WorldHelper.INSTANCE.getDimensionID().toString())) {
                     float x = waypoint.getX();
                     float y = waypoint.getY();
@@ -117,11 +119,11 @@ public class Waypoints extends Feature {
             }
         } else
         if (event instanceof EventRender3D.EventRender3DNoBob) {
-            if (!tracer)
-                return;
             String server = WorldHelper.INSTANCE.getCurrentServerName();
             EventRender3D.EventRender3DNoBob eventRender3D = (EventRender3D.EventRender3DNoBob) event;
             for (Waypoint waypoint : getWaypoints(server)) {
+                if (waypoint.hidden || !waypoint.drawTracer)
+                    continue;
                 if (waypoint.isHidden())
                     continue;
                 float x = waypoint.getX();
@@ -157,21 +159,22 @@ public class Waypoints extends Feature {
         } else
         if (event instanceof EventRender2D) {
             waypointPositions.keySet().forEach(waypoint -> {
-                if (waypoint.hidden)
+                if (waypoint.hidden || !waypoint.drawNametag)
                     return;
                 Vec3d renderPos = waypointPositions.get(waypoint);
                 if (shouldRender(renderPos)) {
-                    if (nametags) {
-                        String name = waypoint.getName();
-                        if (this.distance) {
-                            name = String.format("%s [%.1f]", waypoint.getName(), ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(waypoint.getX(), waypoint.getY(), waypoint.getZ())));
-                        }
-                        float width = FontHelper.INSTANCE.getStringWidth(name);
-                        float x = (float) renderPos.x;
-                        float y = (float) renderPos.y;
-                        Render2DHelper.INSTANCE.fill(((EventRender2D) event).getMatrixStack(), (float) x - (width / 2) - 2, (float) y - 11, (float) x + (width / 2) + 2, (float) y, 0x50000000);
-                        FontHelper.INSTANCE.drawCenteredString(((EventRender2D) event).getMatrixStack(), name, x, (float) y - 9, waypoint.color);
+                    String name = waypoint.getName();
+                    if (this.distance) {
+                        name = String.format("%s [%.1f]", waypoint.getName(), ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(waypoint.getX(), waypoint.getY(), waypoint.getZ())));
                     }
+                    float x = (float) renderPos.x;
+                    float y = (float) renderPos.y;
+                    float crosshairFOV = ClientMathHelper.INSTANCE.getDistance2D(new Vec2f(x, y), new Vec2f(Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f));
+                    if (fovBasedTag && crosshairFOV > fovDistance)
+                        name = "[]";
+                    float width = FontHelper.INSTANCE.getStringWidth(name);
+                    Render2DHelper.INSTANCE.fill(((EventRender2D) event).getMatrixStack(), (float) x - (width / 2) - 2, (float) y - 11, (float) x + (width / 2) + 2, (float) y, 0x50000000);
+                    FontHelper.INSTANCE.drawCenteredString(((EventRender2D) event).getMatrixStack(), name, x, (float) y - 9, waypoint.color);
                 }
             });
         }
@@ -185,9 +188,13 @@ public class Waypoints extends Feature {
         private String name;
         private String server;
         private String dimension;
-        private boolean hidden;
         private float x, y, z;
         private int color;
+
+        private boolean hidden = false;
+        private boolean drawNametag = true;
+        private boolean drawBeacon = true;
+        private boolean drawTracer = false;
 
         public Waypoint(String name, String server, float x, float y, float z, String dimension, int color) {
             if (servers.contains(server))
@@ -264,6 +271,30 @@ public class Waypoints extends Feature {
 
         public void setHidden(boolean hidden) {
             this.hidden = hidden;
+        }
+
+        public boolean isDrawNametag() {
+            return drawNametag;
+        }
+
+        public void setDrawNametag(boolean drawNametag) {
+            this.drawNametag = drawNametag;
+        }
+
+        public boolean isDrawBeacon() {
+            return drawBeacon;
+        }
+
+        public void setDrawBeacon(boolean drawBeacon) {
+            this.drawBeacon = drawBeacon;
+        }
+
+        public boolean isDrawTracer() {
+            return drawTracer;
+        }
+
+        public void setDrawTracer(boolean drawTracer) {
+            this.drawTracer = drawTracer;
         }
     }
 }

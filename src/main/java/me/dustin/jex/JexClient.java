@@ -20,6 +20,7 @@ import me.dustin.jex.feature.impl.player.Freecam;
 import me.dustin.jex.feature.impl.render.CustomFont;
 import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.file.FeatureFile;
+import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -81,6 +82,8 @@ public enum JexClient {
         if (event instanceof EventKeyPressed) {
             EventKeyPressed eventKeyPressed = (EventKeyPressed)event;
             if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {
+                if (eventKeyPressed.getKey() == GLFW.GLFW_KEY_INSERT)
+                    Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
                 FeatureManager.INSTANCE.getFeatures().forEach(module -> {
                     if (module.getKey() == eventKeyPressed.getKey()) {
                         module.toggleState();

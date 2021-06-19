@@ -29,6 +29,10 @@ public class WaypointFile {
             jsonObject.addProperty("Z", waypoint.getZ());
             jsonObject.addProperty("Dimension", waypoint.getDimension());
             jsonObject.addProperty("Color", waypoint.getColor());
+            jsonObject.addProperty("Hidden", waypoint.isHidden());
+            jsonObject.addProperty("Beacon", waypoint.isDrawBeacon());
+            jsonObject.addProperty("Tracer", waypoint.isDrawTracer());
+            jsonObject.addProperty("Nametag", waypoint.isDrawNametag());
             jsonArray.add(jsonObject);
 
             ArrayList<String> stringList = new ArrayList<>();
@@ -64,7 +68,16 @@ public class WaypointFile {
                 float z = Float.parseFloat(object.get("Z").getAsString());
                 String dimension = object.get("Dimension").getAsString();
                 int color = Integer.parseInt(object.get("Color").getAsString());
-                Waypoints.waypoints.add(new Waypoints.Waypoint(name, server, x, y, z, dimension, color));
+                boolean hidden = object.get("Hidden").getAsBoolean();
+                boolean nametag = object.get("Nametag").getAsBoolean();
+                boolean beacon = object.get("Beacon").getAsBoolean();
+                boolean tracer = object.get("Tracer").getAsBoolean();
+                Waypoints.Waypoint waypoint = new Waypoints.Waypoint(name, server, x, y, z, dimension, color);
+                waypoint.setHidden(hidden);
+                waypoint.setDrawNametag(nametag);
+                waypoint.setDrawBeacon(beacon);
+                waypoint.setDrawTracer(tracer);
+                Waypoints.waypoints.add(waypoint);
             }
         } catch (Exception e) {
 
