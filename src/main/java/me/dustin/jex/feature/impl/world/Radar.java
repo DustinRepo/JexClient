@@ -13,6 +13,8 @@ import net.minecraft.entity.player.PlayerEntity;
 @Feat(name = "Radar", category = FeatureCategory.WORLD, description = "Draws a Radar on your HUD telling you where entities are")
 public class Radar extends Feature {
     public static Radar INSTANCE;
+    @Op(name = "Waypoints")
+    public boolean waypoints = true;
     @Op(name = "Players")
     public boolean players = true;
     @Op(name = "Hostiles")

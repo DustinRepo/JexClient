@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.click.window.impl;
 
+import me.dustin.jex.feature.impl.world.Waypoints;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -30,7 +31,7 @@ public class RadarWindow extends Window{
         super.draw(matrixStack);
         if (!isOpen() || Wrapper.INSTANCE.getLocalPlayer() == null)
             return;
-        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getY() + this.getHeight() + this.getWidth(),  0xff606060, 0x50000000, 1);
+        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getY() + this.getHeight() + this.getWidth(), 0xff606060, 0x50000000, 1);
         float midPos = this.getWidth() / 2.0f - 1;
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + midPos, this.getY() + this.getHeight() + 1, this.getX() + midPos + 1, this.getY() + this.getHeight() + this.getWidth() - 1, 0xff606060);
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + 1, this.getY() + this.getHeight() + midPos, this.getX() + this.getWidth() - 1, this.getY() + this.getHeight() + midPos + 1, 0xff606060);
@@ -39,22 +40,34 @@ public class RadarWindow extends Window{
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                 if (!Radar.INSTANCE.isValid(entity))
                     continue;
-                float xPos = (float)(entity.getX() - Wrapper.INSTANCE.getLocalPlayer().getX()) + midPos + this.getX();
-                float yPos = (float)(entity.getZ() - Wrapper.INSTANCE.getLocalPlayer().getZ()) + midPos + this.getY() + this.getHeight();
-                if(xPos < this.getX() + this.getWidth() - 2 && yPos < this.getY() + this.getHeight() + this.getWidth() - 2 && yPos > this.getY() + this.getHeight() + 2 && xPos > this.getX() + 2){
+                float xPos = (float) (entity.getX() - Wrapper.INSTANCE.getLocalPlayer().getX()) + midPos + this.getX();
+                float yPos = (float) (entity.getZ() - Wrapper.INSTANCE.getLocalPlayer().getZ()) + midPos + this.getY() + this.getHeight();
+                if (xPos < this.getX() + this.getWidth() - 2 && yPos < this.getY() + this.getHeight() + this.getWidth() - 2 && yPos > this.getY() + this.getHeight() + 2 && xPos > this.getX() + 2) {
                     Render2DHelper.INSTANCE.fill(matrixStack, xPos, yPos, xPos + 1, yPos + 1, ESP.INSTANCE.getColor(entity));
                 }
             }
+        if (Radar.INSTANCE.waypoints) {
+            matrixStack.push();
+            float scale = 0.75f;
+            matrixStack.scale(scale, scale, 1);
+            Waypoints.waypoints.forEach(waypoint -> {
+                float xPos = (float) (waypoint.getX() - Wrapper.INSTANCE.getLocalPlayer().getX()) + midPos + this.getX();
+                float yPos = (float) (waypoint.getZ() - Wrapper.INSTANCE.getLocalPlayer().getZ()) + midPos + this.getY() + this.getHeight();
+                String letter = waypoint.getName().substring(0, 1);
+                FontHelper.INSTANCE.drawCenteredString(matrixStack, letter, xPos / scale, yPos / scale, waypoint.getColor());
+            });
+            matrixStack.pop();
+        }
         matrixStack.push();
         matrixStack.translate(this.getX() + midPos + 0.5, this.getY() + this.getHeight() + midPos + 0.5, 0);
-        Render2DHelper.INSTANCE.fill(matrixStack,-0.5f, -0.5f, 0.5f, 0.5f, ColorHelper.INSTANCE.getClientColor());
+        Render2DHelper.INSTANCE.fill(matrixStack, -0.5f, -0.5f, 0.5f, 0.5f, ColorHelper.INSTANCE.getClientColor());
         matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), PlayerHelper.INSTANCE.getYaw() + 180, true));
         drawPointer(matrixStack);
         matrixStack.pop();
-        FontHelper.INSTANCE.drawCenteredString(matrixStack, "N",this.getX() + midPos + 1, this.getY() + this.getHeight() + 2, -1);
-        FontHelper.INSTANCE.drawCenteredString(matrixStack, "S",this.getX() + midPos + 1, this.getY() + this.getHeight() + this.getWidth() - 11, -1);
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, "W",this.getX() + 2, this.getY() + this.getHeight() + (this.getWidth() / 2) - 5, -1);
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, "E",this.getX() + this.getWidth() - 2 - FontHelper.INSTANCE.getStringWidth("E"), this.getY() + this.getHeight() + (this.getWidth() / 2) - 5, -1);
+        FontHelper.INSTANCE.drawCenteredString(matrixStack, "N", this.getX() + midPos + 1, this.getY() + this.getHeight() + 2, -1);
+        FontHelper.INSTANCE.drawCenteredString(matrixStack, "S", this.getX() + midPos + 1, this.getY() + this.getHeight() + this.getWidth() - 11, -1);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, "W", this.getX() + 2, this.getY() + this.getHeight() + (this.getWidth() / 2) - 5, -1);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, "E", this.getX() + this.getWidth() - 2 - FontHelper.INSTANCE.getStringWidth("E"), this.getY() + this.getHeight() + (this.getWidth() / 2) - 5, -1);
     }
 
     private void drawPointer(MatrixStack matrixStack) {
