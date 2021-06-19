@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -38,7 +39,7 @@ public class NahrFont {
     private float extraSpacing = 0.0F;
     private NativeImage dynamicTexture;
     private Identifier resourceLocation;
-    private final Pattern patternControlCode = Pattern.compile("(?i)\\u00A7[0-9A-FK-OG]"), patternUnsupported = Pattern.compile("(?i)\\u00A7[K-O]");
+    private final Pattern patternControlCode = Pattern.compile("(?i)\\u00A7[0-9A-FK-OG]"), patternUnsupported = Pattern.compile("(?i)\\u00A7[L-O]");
 
     public NahrFont(Object font, float size) {
         this(font, size, 0F);
@@ -212,6 +213,7 @@ public class NahrFont {
         int newColor = color;
         RenderSystem.blendEquation(7424);
         float startX = x;
+        boolean scramble = false;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
@@ -222,8 +224,9 @@ public class NahrFont {
                 if (oneMore == 'n') {
                     y += this.theMetrics.getAscent() + 2;
                     x = startX;
-                }
-                if (oneMore == 'r')
+                }else if (oneMore == 'k') {
+                    scramble = true;
+                } else if (oneMore == 'r')
                     newColor = color;
                 else {
                     newColor = getColorFromCode(oneMore);
@@ -231,7 +234,8 @@ public class NahrFont {
                 i++;
             } else {
                 try {
-                    char c = text.charAt(i);
+                    String obfText = "\\:><&%$@!/?";
+                    char c = scramble ? obfText.charAt((int)(new Random().nextFloat() * (obfText.length() - 1))) : text.charAt(i);
                     drawChar(matrixStack, c, x, y, newColor);
                     x += getStringWidth(Character.toString(c)) * 2.0F;
                 } catch (ArrayIndexOutOfBoundsException indexException) {
