@@ -54,7 +54,9 @@ public class RadarWindow extends Window{
                 float xPos = (float) (waypoint.getX() - Wrapper.INSTANCE.getLocalPlayer().getX()) + midPos + this.getX();
                 float yPos = (float) (waypoint.getZ() - Wrapper.INSTANCE.getLocalPlayer().getZ()) + midPos + this.getY() + this.getHeight();
                 String letter = waypoint.getName().substring(0, 1);
-                FontHelper.INSTANCE.drawCenteredString(matrixStack, letter, xPos / scale, yPos / scale, waypoint.getColor());
+                    if (xPos < this.getX() + this.getWidth() - 2 && yPos < this.getY() + this.getHeight() + this.getWidth() - 2 && yPos > this.getY() + this.getHeight() + 2 && xPos > this.getX() + 2) {
+                        FontHelper.INSTANCE.drawCenteredString(matrixStack, letter, xPos / scale, yPos / scale, waypoint.getColor());
+                    }
             });
             matrixStack.pop();
         }
