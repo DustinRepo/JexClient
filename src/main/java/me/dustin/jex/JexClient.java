@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.command.CommandManager;
 import me.dustin.jex.event.misc.EventGameFinishedLoading;
 import me.dustin.jex.event.misc.EventKeyPressed;
@@ -74,6 +75,7 @@ public enum JexClient {
         EventAPI.getInstance().register(ColorHelper.INSTANCE);
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();
+        Cape.setPersonalCape(new File(ModFileHelper.INSTANCE.getJexDirectory(), "cape.png"));
         System.out.println("Load finished");
     }
 
