@@ -65,7 +65,6 @@ public class ShaderHelper {
             boxOutlineShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
             boxOutlineFBO = boxOutlineShader.getSecondaryTarget("final");
         } catch (IOException | JsonSyntaxException var3) {
-            var3.printStackTrace();
             storageShader = null;
             storageFBO = null;
         }
