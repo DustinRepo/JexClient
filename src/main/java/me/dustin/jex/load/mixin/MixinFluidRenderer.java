@@ -32,4 +32,11 @@ public class MixinFluidRenderer {
             cir.setReturnValue(!eventShouldDrawSide.isShouldDrawSide());
     }
 
+    //Keep this? doesn't work on lava
+    /*@ModifyArg(method = "vertex", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumer;color(FFFF)Lnet/minecraft/client/render/VertexConsumer;"), index = 3)
+    public float getAlpha(float alpha) {
+        int a = (int)(alpha * 255);
+        EventBufferQuadAlpha eventBufferQuadAlpha = new EventBufferQuadAlpha(a).run();
+        return eventBufferQuadAlpha.getAlpha() / 255.f;
+    }*/
 }

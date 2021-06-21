@@ -8,6 +8,7 @@
   "client": [
     "MixinAbstractBlockstate",
     "MixinAbstractClientPlayerEntity",
+    "MixinAbstractQuadRenderer",
     "MixinBackgroundRenderer",
     "MixinBlock",
     "MixinBlockEntityRenderDispatcher",
@@ -45,6 +46,7 @@
     "MixinPlayerEntity",
     "MixinPlayerEntityRenderer",
     "MixinProjectileEntity",
+    "MixinRenderLayers",
     "MixinRenderTickCounter",
     "MixinScreen",
     "MixinSignEditScreen",
