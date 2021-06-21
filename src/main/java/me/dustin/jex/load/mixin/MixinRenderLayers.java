@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RenderLayers.class)
 public class MixinRenderLayers {
-    @Inject(method = "getBlockLayer", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "getBlockLayer", at = @At("HEAD"), cancellable = true)
     private static void getBlockLayer(BlockState state, CallbackInfoReturnable<RenderLayer> cir) {
-        EventGetRenderLayer eventGetRenderLayer = new EventGetRenderLayer(state, cir.getReturnValue()).run();
+        EventGetRenderLayer eventGetRenderLayer = new EventGetRenderLayer(state).run();
         if (eventGetRenderLayer.isCancelled()) {
             cir.setReturnValue(eventGetRenderLayer.getRenderLayer());
             cir.cancel();

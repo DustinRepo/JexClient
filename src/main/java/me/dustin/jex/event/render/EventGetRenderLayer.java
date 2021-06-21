@@ -8,9 +8,8 @@ public class EventGetRenderLayer extends Event {
     private BlockState state;
     private RenderLayer renderLayer;
 
-    public EventGetRenderLayer(BlockState state, RenderLayer renderLayer) {
+    public EventGetRenderLayer(BlockState state) {
         this.state = state;
-        this.renderLayer = renderLayer;
     }
 
     public BlockState getState() {
