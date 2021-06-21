@@ -4,6 +4,8 @@
   "package": "me.dustin.jex.load.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "MixinAbstractQuadRenderer",
+    "MixinRenderLayers"
   ],
   "client": [
     "MixinAbstractBlockstate",
