@@ -29,7 +29,7 @@ public class SodiumMixinBlockRenderer {
             cir.setReturnValue(false);
     }
 
-    @ModifyArg(method = "renderQuad", at = @At(value = "INVOKE", target = "me/jellysquid/mods/sodium/client/render/chunk/format/ModelVertexSink.writeVertex(FFFIFFI)V"), index = 3, remap=false)
+    @ModifyArg(method = "renderQuad", at = @At(value = "INVOKE", target = "me/jellysquid/mods/sodium/client/render/chunk/format/ModelVertexSink.writeVertex(FFFIFFII)V"), index = 3, remap=false)
     public int getBlockColor(int color) {
         Color col = ColorHelper.INSTANCE.getColor(color);
         int a = col.getAlpha();
