@@ -339,9 +339,12 @@ public class Hud extends Feature {
             int maxDamage = eventRender2DItem.getStack().getMaxDamage();
             int damage = eventRender2DItem.getStack().getDamage();
             int durability = maxDamage - damage;
+            float percent = (((float) eventRender2DItem.getStack().getMaxDamage() - (float) eventRender2DItem.getStack().getDamage()) / (float) eventRender2DItem.getStack().getMaxDamage()) * 100;
 
-            int color = (int) ((float) damage / maxDamage * 0xFF) << 16;
-            color += (int) ((float) durability / maxDamage * 0xFF) << 8;
+
+            /*int color = (int) ((float) damage / maxDamage * 0xFF) << 16;
+            color += (int) ((float) durability / maxDamage * 0xFF) << 8;*/
+            int color = Render2DHelper.INSTANCE.getPercentColor(percent);
 
             MatrixStack matrixStack = new MatrixStack();
             matrixStack.translate(0.0, 0.0, eventRender2DItem.getItemRenderer().zOffset + 200.0);

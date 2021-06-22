@@ -20,8 +20,7 @@ public class CompatSwim extends Feature {
 
     @EventListener(events = {EventMove.class, EventPlayerPackets.class}, priority = EventPriority.HIGH)
     private void runMethod(Event event) {
-        if (event instanceof EventMove) {
-            EventMove eventMove = (EventMove) event;
+        if (event instanceof EventMove eventMove) {
 
             if (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer())) {
                 PlayerHelper.INSTANCE.setMoveSpeed(eventMove, PlayerHelper.INSTANCE.getWaterSpeed());

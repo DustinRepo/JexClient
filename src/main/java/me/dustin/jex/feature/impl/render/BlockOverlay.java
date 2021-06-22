@@ -35,11 +35,9 @@ public class BlockOverlay extends Feature {
 
     @EventListener(events = {EventRender3D.class, EventBlockOutlineColor.class})
     private void runMethod(Event event) {
-        if (event instanceof EventRender3D) {
-            EventRender3D eventRender3D = (EventRender3D)event;
+        if (event instanceof EventRender3D eventRender3D) {
             HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), eventRender3D.getPartialTicks(), false);
-            if (result instanceof BlockHitResult) {
-                BlockHitResult blockHitResult = (BlockHitResult) result;
+            if (result instanceof BlockHitResult blockHitResult) {
                 if (WorldHelper.INSTANCE.getBlock(((BlockHitResult) result).getBlockPos()) instanceof AirBlock)
                     return;
                 Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
@@ -49,8 +47,7 @@ public class BlockOverlay extends Feature {
                     Render3DHelper.INSTANCE.drawBoxInside(eventRender3D.getMatrixStack(), box, progressColor ? getColor(1 - (breakProgress * 2)).getRGB() : overlayColor);
                 }
             }
-        } else if (event instanceof EventBlockOutlineColor) {
-            EventBlockOutlineColor eventBlockOutlineColor = (EventBlockOutlineColor)event;
+        } else if (event instanceof EventBlockOutlineColor eventBlockOutlineColor) {
             eventBlockOutlineColor.setColor(outlineColor);
             eventBlockOutlineColor.cancel();
         }

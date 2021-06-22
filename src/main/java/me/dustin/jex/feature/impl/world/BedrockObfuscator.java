@@ -39,8 +39,7 @@ public class BedrockObfuscator extends Feature {
 
             Packet packet = ((EventPacketReceive) event).getPacket();
 
-            if (packet instanceof ChunkDeltaUpdateS2CPacket) {
-                ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket = (ChunkDeltaUpdateS2CPacket) packet;
+            if (packet instanceof ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
 
                 ArrayList<BlockPos> changeBlocks = new ArrayList<>();
                 chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> {
@@ -51,8 +50,7 @@ public class BedrockObfuscator extends Feature {
                 emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(changeBlocks.get(0));
             } else if (packet instanceof BlockUpdateS2CPacket) {
                 emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(((BlockUpdateS2CPacket) packet).getPos());
-            } else if (packet instanceof ChunkDataS2CPacket) {
-                ChunkDataS2CPacket chunkDataS2CPacket = (ChunkDataS2CPacket) packet;
+            } else if (packet instanceof ChunkDataS2CPacket chunkDataS2CPacket) {
                 emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(chunkDataS2CPacket.getX(), chunkDataS2CPacket.getZ());
             }
 
@@ -87,7 +85,7 @@ public class BedrockObfuscator extends Feature {
                     }
                 try {
                     Thread.sleep(10);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                 }
             }
         })).start();

@@ -120,7 +120,6 @@ public class Waypoints extends Feature {
         } else
         if (event instanceof EventRender3D.EventRender3DNoBob) {
             String server = WorldHelper.INSTANCE.getCurrentServerName();
-            EventRender3D.EventRender3DNoBob eventRender3D = (EventRender3D.EventRender3DNoBob) event;
             for (Waypoint waypoint : getWaypoints(server)) {
                 if (waypoint.hidden || !waypoint.drawTracer)
                     continue;
@@ -173,8 +172,8 @@ public class Waypoints extends Feature {
                     if (fovBasedTag && crosshairFOV > fovDistance)
                         name = "[]";
                     float width = FontHelper.INSTANCE.getStringWidth(name);
-                    Render2DHelper.INSTANCE.fill(((EventRender2D) event).getMatrixStack(), (float) x - (width / 2) - 2, (float) y - 11, (float) x + (width / 2) + 2, (float) y, 0x50000000);
-                    FontHelper.INSTANCE.drawCenteredString(((EventRender2D) event).getMatrixStack(), name, x, (float) y - 9, waypoint.color);
+                    Render2DHelper.INSTANCE.fill(((EventRender2D) event).getMatrixStack(), x - (width / 2) - 2,  y - 11,  x + (width / 2.f) + 2, y, 0x50000000);
+                    FontHelper.INSTANCE.drawCenteredString(((EventRender2D) event).getMatrixStack(), name, x, y - 9, waypoint.color);
                 }
             });
         }

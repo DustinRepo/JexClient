@@ -51,7 +51,7 @@ public class CreativeDrop extends Feature {
             if (timer.hasPassed(delay) && Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
                 for (int i = 0; i < speed; i++) {
                     ItemStack itemStack = new ItemStack(Item.byRawId(slot));
-                    if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() != Items.AIR) {
+                    if (itemStack.getItem() != null && itemStack.getItem() != Items.AIR) {
                         String name = "§" + (slot % 9) + names[(int) (random.nextFloat() * (names.length))];
                         if (this.name)
                             itemStack.setCustomName(new LiteralText(name));

@@ -28,12 +28,10 @@ public class AirPlace extends Feature {
 
     @EventListener(events = {EventMouseButton.class, EventRender3D.class})
     private void runMethod(Event event) {
-        if (event instanceof EventMouseButton) {
-            EventMouseButton eventMouseButton = (EventMouseButton)event;
+        if (event instanceof EventMouseButton eventMouseButton) {
             if (eventMouseButton.getButton() == 1 && eventMouseButton.getClickType() == EventMouseButton.ClickType.IN_GAME) {
                 HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
-                if (hitResult instanceof BlockHitResult) {
-                    BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+                if (hitResult instanceof BlockHitResult blockHitResult) {
                     if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) == Blocks.AIR) {
                         Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
                         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
@@ -43,8 +41,7 @@ public class AirPlace extends Feature {
             }
         } else if (event instanceof EventRender3D) {
             HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
-            if (hitResult instanceof BlockHitResult) {
-                BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+            if (hitResult instanceof BlockHitResult blockHitResult) {
                 if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) == Blocks.AIR) {
                     Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
                     Box box = new Box(renderPos.getX(), renderPos.getY(), renderPos.getZ(), renderPos.getX() + 1, renderPos.getY() + 1, renderPos.getZ() + 1);

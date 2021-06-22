@@ -63,8 +63,7 @@ public class Roaster extends Feature {
             if (hand == null)
                 return;
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                if (entity instanceof LivingEntity) {
-                    LivingEntity livingEntity = (LivingEntity) entity;
+                if (entity instanceof LivingEntity livingEntity) {
                     if (isValid(livingEntity)) {
                         Block footBlock = Wrapper.INSTANCE.getWorld().getBlockState(livingEntity.getBlockPos()).getBlock();
                         if (footBlock == Blocks.AIR) {

@@ -45,8 +45,7 @@ public class Freecam extends Feature {
     public void runEvent(Event event) {
         if (event instanceof EventMarkChunkClosed)
             event.cancel();
-        if (event instanceof EventPacketSent) {
-            EventPacketSent packetSent = (EventPacketSent) event;
+        if (event instanceof EventPacketSent packetSent) {
             if (stealth) {
                 if (!(packetSent.getPacket() instanceof KeepAliveC2SPacket || packetSent.getPacket() instanceof ChatMessageC2SPacket))
                     packetSent.cancel();
@@ -55,8 +54,7 @@ public class Freecam extends Feature {
                 packetSent.setPacket(playerMoveC2SPacket);
             }
         }
-        if (event instanceof EventMove) {
-            EventMove move = (EventMove) event;
+        if (event instanceof EventMove move) {
             if (!PlayerHelper.INSTANCE.isMoving()) {
                 move.setX(0);
                 move.setZ(0);

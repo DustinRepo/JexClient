@@ -69,8 +69,7 @@ public class Enderman extends Feature {
 
     private EndermanEntity getEnderman() {
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if (entity instanceof EndermanEntity) {
-                EndermanEntity endermanEntity1 = (EndermanEntity) entity;
+            if (entity instanceof EndermanEntity endermanEntity1) {
                 if (!endermanEntity1.isAngry() && Wrapper.INSTANCE.getLocalPlayer().canSee(endermanEntity1))
                     return endermanEntity1;
             }

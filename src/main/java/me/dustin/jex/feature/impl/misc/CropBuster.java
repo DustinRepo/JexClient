@@ -33,8 +33,7 @@ public class CropBuster extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class, EventRender3D.class})
     private void runMethod(Event event) {
-        if (event instanceof EventPlayerPackets) {
-            EventPlayerPackets eventPlayerPackets = (EventPlayerPackets)event;
+        if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (!timer.hasPassed(breakDelay))
                     return;
@@ -80,9 +79,8 @@ public class CropBuster extends Feature {
 
     public boolean isCrop(BlockPos blockPos) {
         Block block = WorldHelper.INSTANCE.getBlock(blockPos);
-        if (block instanceof CropBlock) {
-            CropBlock cropBlock = (CropBlock)block;
-            int age = (Integer)Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
+        if (block instanceof CropBlock cropBlock) {
+            int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
             if (age == cropBlock.getMaxAge()) {
                 return true;
             }

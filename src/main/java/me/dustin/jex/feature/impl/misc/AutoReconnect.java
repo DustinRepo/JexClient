@@ -46,13 +46,12 @@ public class AutoReconnect extends Feature {
             if (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() != null) {
                 this.serverEntry = Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry();
             }
-        } else if (event instanceof EventDrawScreen) {
-            EventDrawScreen eventDrawScreen = (EventDrawScreen) event;
+        } else if (event instanceof EventDrawScreen eventDrawScreen) {
             if (eventDrawScreen.getMode() == EventDrawScreen.Mode.POST && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen) {
                 float timeLeft = (timer.getLastMS() + delay) - timer.getCurrentMS();
                 timeLeft /= 1000;
                 String messageString = String.format("§aReconnecting in %.1fs", timeLeft);
-                FontHelper.INSTANCE.drawCenteredString(eventDrawScreen.getMatrixStack(), messageString, Wrapper.INSTANCE.getWindow().getScaledWidth() / 2, 2, -1);
+                FontHelper.INSTANCE.drawCenteredString(eventDrawScreen.getMatrixStack(), messageString, Wrapper.INSTANCE.getWindow().getScaledWidth() / 2.f, 2, -1);
             }
         }
     }

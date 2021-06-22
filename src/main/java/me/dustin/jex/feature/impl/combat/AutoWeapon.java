@@ -63,24 +63,19 @@ public class AutoWeapon extends Feature {
             }
     }
     private boolean isGoodItem(Item item) {
-        switch (mode.toLowerCase()) {
-            case "sword":
-                return item instanceof SwordItem;
-            case "sword&axe":
-                return item instanceof SwordItem || item instanceof AxeItem;
-            case "all tools":
-                return item instanceof ToolItem;
-        }
-        return false;
+        return switch (mode.toLowerCase()) {
+            case "sword" -> item instanceof SwordItem;
+            case "sword&axe" -> item instanceof SwordItem || item instanceof AxeItem;
+            case "all tools" -> item instanceof ToolItem;
+            default -> false;
+        };
     }
 
     private float getAdjustedDamage(ItemStack itemStack) {
         float damage = 1;
-        if (itemStack.getItem() instanceof SwordItem) {
-            SwordItem itemSword = (SwordItem) itemStack.getItem();
+        if (itemStack.getItem() instanceof SwordItem itemSword) {
             damage = itemSword.getAttackDamage();
-        } else if (itemStack.getItem() instanceof MiningToolItem) {
-            MiningToolItem miningToolItem = (MiningToolItem) itemStack.getItem();
+        } else if (itemStack.getItem() instanceof MiningToolItem miningToolItem) {
             damage = miningToolItem.getAttackDamage();
         }
         return damage + getSharpnessModifier(itemStack);

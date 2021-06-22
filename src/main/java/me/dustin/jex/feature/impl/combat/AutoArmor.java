@@ -46,8 +46,7 @@ public class AutoArmor extends Feature {
                         if (bestItem != -1)
                             equippedStack = InventoryHelper.INSTANCE.getInventory().getStack(bestItem);
                         ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
-                        if (itemStack != null && itemStack.getItem() instanceof ArmorItem) {
-                            ArmorItem armorItem = (ArmorItem) itemStack.getItem();
+                        if (itemStack != null && itemStack.getItem() instanceof ArmorItem armorItem) {
                             if (equippedStack.getItem() instanceof AirBlockItem) {
                                 if (armorItem.getSlotType().getType() != EquipmentSlot.Type.HAND && armorItem.getSlotType().getEntitySlotId() == armorSlot)
                                     bestItem = i;
@@ -86,17 +85,13 @@ public class AutoArmor extends Feature {
     }
 
     public int getArmorSlot(ArmorItem armorItem) {
-        switch (armorItem.getSlotType()) {
-            case FEET:
-                return 8;
-            case LEGS:
-                return 7;
-            case CHEST:
-                return 6;
-            case HEAD:
-                return 5;
-        }
-        return -1;
+        return switch (armorItem.getSlotType()) {
+            case FEET -> 8;
+            case LEGS -> 7;
+            case CHEST -> 6;
+            case HEAD -> 5;
+            default -> -1;
+        };
     }
 
 }

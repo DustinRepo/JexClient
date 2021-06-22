@@ -19,8 +19,7 @@ public class Velocity extends Feature {
     @EventListener(events = {EventPacketReceive.class, EventExplosionVelocity.class, EventPlayerVelocity.class})
     public void run(Event event) {
         float perc = percent / 100.0f;
-        if (event instanceof EventPlayerVelocity) {
-            EventPlayerVelocity eventPlayerVelocity = (EventPlayerVelocity)event;
+        if (event instanceof EventPlayerVelocity eventPlayerVelocity) {
             if (percent == 0)
                 event.cancel();
             else {

@@ -28,8 +28,7 @@ public class NoSlow extends Feature {
 
     @EventListener(events = {EventSlowdown.class, EventMove.class}, priority = EventPriority.HIGHEST)
     public void run(Event event) {
-        if (event instanceof EventSlowdown) {
-            EventSlowdown eventSlowdown = (EventSlowdown) event;
+        if (event instanceof EventSlowdown eventSlowdown) {
             if (eventSlowdown.getState() == EventSlowdown.State.USE_ITEM && useItem) {
                 event.cancel();
             }
@@ -40,8 +39,7 @@ public class NoSlow extends Feature {
                 event.cancel();
             }
         }
-        if (event instanceof EventMove) {
-            EventMove eventMove = (EventMove) event;
+        if (event instanceof EventMove eventMove) {
             Block block = WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getLocalPlayer(), 0.7f);
             if (block == Blocks.SOUL_SAND && soulSand) {
                 eventMove.setX(eventMove.getX() * 1.72111554);

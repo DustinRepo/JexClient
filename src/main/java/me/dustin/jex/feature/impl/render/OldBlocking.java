@@ -32,7 +32,7 @@ public class OldBlocking extends Feature {
 
             if (EntityHelper.INSTANCE.isAuraBlocking())
                 switch (eventRenderItem.getRenderTime()) {
-                    case PRE:
+                    case PRE -> {
                         matrixStack.push();
                         if (!offHand) {
                             if (isGoodItem(eventRenderItem.getItemStack().getItem())) {
@@ -45,10 +45,8 @@ public class OldBlocking extends Feature {
                                 matrixStack.translate(-0.05, 0.1, 0.07);
                             }
                         }
-                        break;
-                    case POST:
-                        matrixStack.pop();
-                        break;
+                    }
+                    case POST -> matrixStack.pop();
                 }
 
         }
@@ -61,15 +59,12 @@ public class OldBlocking extends Feature {
     }
 
     private boolean isGoodItem(Item item) {
-        switch (mode.toLowerCase()) {
-            case "swords":
-                return item instanceof SwordItem;
-            case "tools":
-                return item instanceof ToolItem;
-            case "all items":
-                return true;
-        }
-        return false;
+        return switch (mode.toLowerCase()) {
+            case "swords" -> item instanceof SwordItem;
+            case "tools" -> item instanceof ToolItem;
+            case "all items" -> true;
+            default -> false;
+        };
     }
 
 }

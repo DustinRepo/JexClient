@@ -2,15 +2,14 @@ package me.dustin.jex.feature.impl.combat;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -34,11 +33,10 @@ public class AutoSoup extends Feature {
     int savedSlot;
     private Timer timer = new Timer();
 
-    @EventListener(events = {EventPlayerPackets.class, EventPacketSent.class})
+    @EventListener(events = {EventPlayerPackets.class})
     public void run(Event event) {
-        if (event instanceof EventPlayerPackets) {
+        if (event instanceof EventPlayerPackets playerPacketEvent) {
             this.setSuffix(getSoups() + "");
-            EventPlayerPackets playerPacketEvent = (EventPlayerPackets) event;
             if (playerPacketEvent.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (!timer.hasPassed(delay) || throwing)
                     return;
@@ -80,8 +78,6 @@ public class AutoSoup extends Feature {
 
                 }
             }
-        }
-        if (event instanceof EventPacketSent) {
         }
     }
 

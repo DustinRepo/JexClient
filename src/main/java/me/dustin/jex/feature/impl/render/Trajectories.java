@@ -84,7 +84,7 @@ public class Trajectories extends Feature {
                     Vec3d vec3d2 = Wrapper.INSTANCE.getLocalPlayer().getRotationVec(1.0F);
                     Vec3f vector3f = new Vec3f(vec3d2);
                     vector3f.rotate(quaternion);
-                    ((ProjectileEntity) persistentProjectileEntity).setVelocity((double) vector3f.getX(), (double) vector3f.getY(), (double) vector3f.getZ(), getSpeed(mainStack), 0);
+                    ((ProjectileEntity) persistentProjectileEntity).setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), getSpeed(mainStack), 0);
                     for (int j = 0; j < 200; j++) {
                         persistentProjectileEntity.tick();
                         positions.add(persistentProjectileEntity.getPos());

@@ -54,9 +54,7 @@ public class SkinBlink extends Feature {
                     }
                     break;
                 case "Full Flash":
-                    boolean on = false;
-                    if (Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(PlayerModelPart.HAT))
-                        on = true;
+                    boolean on = Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(PlayerModelPart.HAT);
                     for (PlayerModelPart value : PlayerModelPart.values()) {
                         Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, on);
                     }

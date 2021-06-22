@@ -26,8 +26,7 @@ public class Blink extends Feature {
 
     @EventListener(events = {EventPacketSent.class, EventRender3D.class})
     private void runMethod(Event event) {
-        if (event instanceof EventPacketSent) {
-            EventPacketSent eventPacketSent = (EventPacketSent)event;
+        if (event instanceof EventPacketSent eventPacketSent) {
             if (Wrapper.INSTANCE.getLocalPlayer() == null) {
                 packets.clear();
                 this.setState(false);

@@ -45,8 +45,7 @@ public class Surround extends Feature {
     private void runMethod(Event event) {
         if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld().isOutOfHeightLimit((int)Wrapper.INSTANCE.getLocalPlayer().getY()))
             return;
-        if (event instanceof EventPlayerPackets) {
-            EventPlayerPackets eventPlayerPackets = (EventPlayerPackets)event;
+        if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (placingPos != null) {
                     RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(placingPos, true));
@@ -122,8 +121,7 @@ public class Surround extends Feature {
                     this.stage = 0;
                 }
             }
-        } else if (event instanceof EventRender3D) {
-            EventRender3D eventRender3D = (EventRender3D)event;
+        } else if (event instanceof EventRender3D eventRender3D) {
             ArrayList<BlockPos> placePos = new ArrayList<>();
             BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
             placePos.add(playerPos.north());

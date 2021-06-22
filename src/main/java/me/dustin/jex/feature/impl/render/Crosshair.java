@@ -34,8 +34,8 @@ public class Crosshair extends Feature {
         if (event instanceof EventRenderCrosshair)
             event.cancel();
         else if (event instanceof EventRender2D) {
-            float x = Render2DHelper.INSTANCE.getScaledWidth() / 2;
-            float y = Render2DHelper.INSTANCE.getScaledHeight() / 2;
+            float x = Render2DHelper.INSTANCE.getScaledWidth() / 2.f;
+            float y = Render2DHelper.INSTANCE.getScaledHeight() / 2.f;
             MatrixStack matrixStack = ((EventRender2D) event).getMatrixStack();
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x - gap - size - thickness, y - thickness, x - gap - thickness, y + thickness, 0xff000000, color, outline);
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x + gap + thickness, y - thickness, x + gap + size + thickness, y + thickness, 0xff000000, color, outline);

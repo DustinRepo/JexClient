@@ -17,6 +17,7 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 @Feat(name = "Spammer", category = FeatureCategory.MISC, description = "Spam the chat")
@@ -63,9 +64,7 @@ public class Spammer extends Feature {
                     "Selling {$rplayer}'s feet pics";
 
     public static void createSpamFile() {
-        ArrayList<String> arrayList = new ArrayList<>();
-        for (String s : baseFileStr.split("\n"))
-            arrayList.add(s);
+        ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(baseFileStr.split("\n")));
         FileHelper.INSTANCE.writeFile(ModFileHelper.INSTANCE.getJexDirectory(), "Spam.txt", arrayList);
     }
 
@@ -92,15 +91,9 @@ public class Spammer extends Feature {
         if (!spamFile.exists())
             createSpamFile();
         switch (source) {
-            case "Spam.txt":
-                spamString = readFile();
-                break;
-            case "Jex AdBot":
-                spamString = jexAdString;
-                break;
-            case "Toxic":
-                spamString = toxicString;
-                break;
+            case "Spam.txt" -> spamString = readFile();
+            case "Jex AdBot" -> spamString = jexAdString;
+            case "Toxic" -> spamString = toxicString;
         }
         currentSpot = 0;
         super.onEnable();
@@ -110,7 +103,7 @@ public class Spammer extends Feature {
         StringBuilder sb = new StringBuilder();
         for (String s : FileHelper.INSTANCE.readFile(ModFileHelper.INSTANCE.getJexDirectory(), "Spam.txt")) {
             if (!s.startsWith("/*") && !s.startsWith("*") && !s.isEmpty()) {
-                sb.append(s + "\n");
+                sb.append(s).append("\n");
             }
         }
         return sb.toString();

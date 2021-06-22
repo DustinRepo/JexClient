@@ -33,8 +33,8 @@ public class CustomMainMenu extends Feature {
             if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof TitleScreen)
                 Wrapper.INSTANCE.getMinecraft().openScreen(new JexTitleScreen());
         }
-        if (event instanceof EventDisplayScreen) {
-            if (((EventDisplayScreen) event).getScreen() instanceof TitleScreen) {
+        if (event instanceof EventDisplayScreen eventDisplayScreen) {
+            if (eventDisplayScreen.getScreen() instanceof TitleScreen) {
                 Wrapper.INSTANCE.getMinecraft().openScreen(new JexTitleScreen());
             }
         }

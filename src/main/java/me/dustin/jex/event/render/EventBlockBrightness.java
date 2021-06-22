@@ -5,20 +5,13 @@ package me.dustin.jex.event.render;
  */
 
 import me.dustin.events.core.Event;
-import net.minecraft.block.Block;
 
 public class EventBlockBrightness extends Event {
 
-    private Block block;
     private int brightness;
 
-    public EventBlockBrightness(Block block, int brightness) {
-        this.block = block;
+    public EventBlockBrightness(int brightness) {
         this.brightness = brightness;
-    }
-
-    public Block getBlock() {
-        return block;
     }
 
     public int getBrightness() {

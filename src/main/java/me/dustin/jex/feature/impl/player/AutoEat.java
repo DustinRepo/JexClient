@@ -87,14 +87,12 @@ public class AutoEat extends Feature {
                 }
             }
         }
-        if (event instanceof EventPacketSent) {
-            EventPacketSent eventPacketSent = (EventPacketSent) event;
+        if (event instanceof EventPacketSent eventPacketSent) {
             if (eventPacketSent.getPacket() instanceof UpdateSelectedSlotC2SPacket && isEating) {
                 if (((UpdateSelectedSlotC2SPacket) eventPacketSent.getPacket()).getSelectedSlot() != getBestFood().slot)
                     event.cancel();
             }
-            if (eventPacketSent.getPacket() instanceof PlayerActionC2SPacket) {
-                PlayerActionC2SPacket playerActionC2SPacket = (PlayerActionC2SPacket) eventPacketSent.getPacket();
+            if (eventPacketSent.getPacket() instanceof PlayerActionC2SPacket playerActionC2SPacket) {
                 if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.RELEASE_USE_ITEM && isEating)
                     event.cancel();
             }
@@ -155,7 +153,7 @@ public class AutoEat extends Feature {
         else return true;
     }
 
-    public class FoodInfo {
+    public static class FoodInfo {
         public float points;
         public int slot;
         public ItemStack itemStack;

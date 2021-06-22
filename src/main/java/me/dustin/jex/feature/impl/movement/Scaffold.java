@@ -205,12 +205,10 @@ public class Scaffold extends Feature {
     }
 
     public boolean shouldUse(BlockItem blockItem) {
-        if (!blockItem.getBlock().getDefaultState().isFullCube(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN))
-            return false;
-        return true;
+        return blockItem.getBlock().getDefaultState().isFullCube(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN);
     }
 
-    public class BlockInfo {
+    public static class BlockInfo {
         public BlockPos blockPos;
         public Direction facing;
 

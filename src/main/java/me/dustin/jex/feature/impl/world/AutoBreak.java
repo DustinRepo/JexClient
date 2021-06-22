@@ -76,9 +76,9 @@ public class AutoBreak extends Feature {
     }
 
     public double getDistance(Vec3i vec, double xIn, double yIn, double zIn) {
-        double d0 = (double) (vec.getX() - xIn);
-        double d1 = (double) (vec.getY() - yIn);
-        double d2 = (double) (vec.getZ() - zIn);
+        double d0 = (vec.getX() - xIn);
+        double d1 = (vec.getY() - yIn);
+        double d2 = (vec.getZ() - zIn);
         return Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
     }
 

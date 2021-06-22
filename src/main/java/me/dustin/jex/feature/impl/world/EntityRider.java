@@ -78,8 +78,7 @@ public class EntityRider extends Feature {
                 if (llamaInstantJump)
                     iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? 1 : 0);
             }
-            if (boat && vehicle instanceof BoatEntity) {
-                BoatEntity boatEntity = (BoatEntity)vehicle;
+            if (boat && vehicle instanceof BoatEntity boatEntity) {
                 boatEntity.updateVelocity(boatSpeed / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));
                 if (allowBoatFly)
                     if (Wrapper.INSTANCE.getOptions().keyJump.isPressed()) {

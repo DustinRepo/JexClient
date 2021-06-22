@@ -27,20 +27,20 @@ public class SpeedMine extends Feature {
         if (event.getMode() != EventPlayerPackets.Mode.PRE)
             return;
         switch (mode) {
-            case "Progress":
+            case "Progress" -> {
                 if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
                     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
                 if (Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() > progress)
                     Wrapper.INSTANCE.getIInteractionManager().setBlockBreakProgress(1);
                 givenHaste = false;
-                break;
-            case "Haste":
+            }
+            case "Haste" -> {
                 givenHaste = true;
                 if (Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE) && Wrapper.INSTANCE.getLocalPlayer().getStatusEffect(StatusEffects.HASTE).getAmplifier() > haste - 1)
                     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
                 if (((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE)
                     Wrapper.INSTANCE.getLocalPlayer().addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 5200, haste - 1));
-                break;
+            }
         }
         Wrapper.INSTANCE.getIInteractionManager().setBlockBreakingCooldown(0);
         this.setSuffix(mode);

@@ -22,7 +22,7 @@ public class AutoWalk extends Feature {
     public void onDisable() {
         try {
             KeyBinding.setKeyPressed(Wrapper.INSTANCE.getOptions().keyForward.getDefaultKey(), false);
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
         }
         super.onDisable();
     }

@@ -19,7 +19,6 @@ public class Zoom extends Feature {
 
     private double savedFOV;
     boolean resetFOV = true;
-    boolean disable = false;
 
     @Override
     public void onEnable() {

@@ -94,9 +94,8 @@ public class ESP extends Feature {
             return false;
         if (entity instanceof ItemEntity)
             return item;
-        if (!(entity instanceof LivingEntity))
+        if (!(entity instanceof LivingEntity livingEntity))
             return false;
-        LivingEntity livingEntity = (LivingEntity) entity;
         if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
             return false;
         if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
@@ -121,7 +120,7 @@ public class ESP extends Feature {
             return playerColor;
 
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
-            if (EntityHelper.INSTANCE.doesPlayerOwn((LivingEntity) entity))
+            if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
                 return petColor;
             else
                 return passiveColor;

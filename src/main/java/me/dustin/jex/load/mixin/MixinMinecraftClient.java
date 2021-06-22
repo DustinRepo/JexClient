@@ -32,8 +32,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.net.Proxy;
-
 @Mixin(MinecraftClient.class)
 public abstract class MixinMinecraftClient implements IMinecraft {
     @Mutable
@@ -56,9 +54,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Shadow @Final public GameOptions options;
 
     @Shadow @Nullable public ClientPlayerEntity player;
-
-    @Mutable
-    @Shadow @Final private Proxy netProxy;
 
     @Mutable
     @Shadow @Final private MinecraftSessionService sessionService;
@@ -93,11 +88,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Override
     public RenderTickCounter getRenderTickCounter() {
         return this.renderTickCounter;
-    }
-
-    @Override
-    public void setProxy(Proxy proxy) {
-        this.netProxy = proxy;
     }
 
     @Inject(method = "tick", at = @At("HEAD"))

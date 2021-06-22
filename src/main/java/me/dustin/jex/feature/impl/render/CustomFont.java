@@ -75,6 +75,7 @@ public class CustomFont extends Feature {
         for (int i = 0; i < obj.length; i++) {
             finalArray[i] = obj[i].toString();
         }
+        assert fontOption != null;
         fontOption.setAll(finalArray);
     }
 

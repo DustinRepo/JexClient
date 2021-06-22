@@ -29,12 +29,11 @@ public class MiddleClickFriend extends Feature {
                     if (Friend.isFriend(entity.getName().asString())) {
                         Friend.removeFriend(name);
                         ChatHelper.INSTANCE.addClientMessage("Removed \247c" + name);
-                        FriendFile.write();
                     } else {
                         Friend.addFriend(name, name);
                         ChatHelper.INSTANCE.addClientMessage("Added \247b" + name);
-                        FriendFile.write();
                     }
+                    FriendFile.write();
                 }
             }
         }

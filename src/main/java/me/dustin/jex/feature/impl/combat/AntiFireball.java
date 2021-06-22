@@ -27,8 +27,7 @@ public class AntiFireball extends Feature {
     private void run(EventPlayerPackets event) {
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                if (entity instanceof FireballEntity) {
-                    FireballEntity fireballEntity = (FireballEntity) entity;
+                if (entity instanceof FireballEntity fireballEntity) {
                     if (fireballEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= range) {
                         if (rotate) {
                             RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), fireballEntity);

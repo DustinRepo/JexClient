@@ -73,8 +73,7 @@ public class AnchorAura extends Feature {
         this.setSuffix(mode);
         if (WorldHelper.INSTANCE.getDimensionID().toString().equalsIgnoreCase("the_nether"))
             return;
-        if (event instanceof EventPlayerPackets) {
-            EventPlayerPackets eventPlayerPackets = (EventPlayerPackets) event;
+        if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (attackTimer.hasPassed(attackDelay)) {
                     BlockPos chargedAnchor = getChargedAnchor(Wrapper.INSTANCE.getLocalPlayer());
@@ -101,8 +100,7 @@ public class AnchorAura extends Feature {
                 if (placeTimer.hasPassed(delay))
                     if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.RESPAWN_ANCHOR))) {
                         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                            if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer() && !Friend.isFriend(entity.getDisplayName().asString())) {
-                                PlayerEntity entityPlayer = (PlayerEntity) entity;
+                            if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !Friend.isFriend(entity.getDisplayName().asString())) {
                                 BlockPos placingPos = getOpenBlockPos(entityPlayer);
                                 if (placingPos != null) {
                                     if (ClientMathHelper.INSTANCE.getDistance(entityPlayer.getPos(), new Vec3d(placingPos.getX(), placingPos.getY(), placingPos.getZ())) <= 6 && !Friend.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldExplode(placingPos)) {
@@ -122,12 +120,10 @@ public class AnchorAura extends Feature {
                     placePos = null;
                 }
             }
-        } else if (event instanceof EventRender3D) {
-            EventRender3D eventRender3D = (EventRender3D)event;
+        } else if (event instanceof EventRender3D eventRender3D) {
             if (autoPlace && visualize)
                 Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                    if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
-                        PlayerEntity entityPlayer = (PlayerEntity) entity;
+                    if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
                         BlockPos placingPos = getOpenBlockPos(entityPlayer);
                         if (placingPos != null && !Friend.isFriend(entityPlayer.getDisplayName().asString())) {
                             Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());

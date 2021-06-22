@@ -36,8 +36,7 @@ public class Fly extends Feature {
 
     @EventListener(events = {EventMove.class, EventPacketSent.class})
     private void runMove(Event event) {
-        if (event instanceof EventMove) {
-            EventMove eventMove = (EventMove) event;
+        if (event instanceof EventMove eventMove) {
             PlayerHelper.INSTANCE.setMoveSpeed((EventMove) eventMove, speed);
             eventMove.setY(0);
             boolean jumping = Wrapper.INSTANCE.getOptions().keyJump.isPressed();
@@ -51,10 +50,8 @@ public class Fly extends Feature {
             if (glide && !jumping) {
               eventMove.setY(-glideSpeed);
             }
-        } else if (event instanceof EventPacketSent && flyCheckBypass) {
-            EventPacketSent eventPacketSent = (EventPacketSent) event;
-            if (eventPacketSent.getPacket() instanceof PlayerMoveC2SPacket) {
-                PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) eventPacketSent.getPacket();
+        } else if (event instanceof EventPacketSent eventPacketSent && flyCheckBypass) {
+            if (eventPacketSent.getPacket() instanceof PlayerMoveC2SPacket playerMoveC2SPacket) {
                 if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {
                     if (EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 2) {
                         PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.05, playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);

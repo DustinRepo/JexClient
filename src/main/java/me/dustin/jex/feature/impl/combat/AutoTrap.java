@@ -43,8 +43,7 @@ public class AutoTrap extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class, EventRender3D.class})
     private void runMethod(Event event) {
-        if (event instanceof EventPlayerPackets) {
-            EventPlayerPackets eventPlayerPackets = (EventPlayerPackets)event;
+        if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (placingPos != null) {
                     RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(placingPos, true));

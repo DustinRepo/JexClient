@@ -88,8 +88,10 @@ public class EndPortalFinder extends Feature {
         double x2 = secondPos.x;
         double z1 = firstPos.z;
         double z2 = secondPos.z;
-        double x = ((z1 - z2) + x2 * Math.tan(o2) - x1 * Math.tan(o1)) / (Math.tan(o2) - Math.tan(o1));
-        double z = ((z1 * Math.tan(o2) - z2 * Math.tan(o1)) + (x2 - x1) * Math.tan(o2) * Math.tan(o1)) / (Math.tan(o2) - Math.tan(o1));
+        double v = Math.tan(o2) - Math.tan(o1);
+
+        double x = ((z1 - z2) + x2 * Math.tan(o2) - x1 * Math.tan(o1)) / v;
+        double z = ((z1 * Math.tan(o2) - z2 * Math.tan(o1)) + (x2 - x1) * Math.tan(o2) * Math.tan(o1)) / v;
         return new double[]{x, z};
     }
 

@@ -55,8 +55,7 @@ public class AutoFish extends Feature {
 
     @EventListener(events = {EventPacketReceive.class, EventPlayerPackets.class, EventJoinWorld.class, EventRender3D.class})
     public void run(Event event) {
-        if (event instanceof EventRender3D) {
-            EventRender3D eventRender3D = (EventRender3D) event;
+        if (event instanceof EventRender3D eventRender3D) {
             FishingBobberEntity hook = getHook();
             if (hook != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.FISHING_ROD) {
                 Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(hook, eventRender3D.getPartialTicks());
@@ -103,12 +102,9 @@ public class AutoFish extends Feature {
                 }
             }
         }
-        if (!hasReeled && event instanceof EventPacketReceive) {
+        if (!hasReeled && event instanceof EventPacketReceive receive) {
 
-            EventPacketReceive receive = (EventPacketReceive) event;
-            if (receive.getPacket() instanceof PlaySoundS2CPacket) {
-                PlaySoundS2CPacket soundPacket = (PlaySoundS2CPacket) receive.getPacket();
-
+            if (receive.getPacket() instanceof PlaySoundS2CPacket soundPacket) {
                 if (soundPacket.getSound().getId().toString().equalsIgnoreCase("minecraft:entity.fishing_bobber.splash")) {
                     if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().fishHook == null)
                         Wrapper.INSTANCE.getLocalPlayer().fishHook = getClosest();
@@ -168,7 +164,7 @@ public class AutoFish extends Feature {
                     }
                 }
             }
-        } catch (ConcurrentModificationException e) {
+        } catch (ConcurrentModificationException ignored) {
 
         }
         return hook;

@@ -25,6 +25,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Feat(name = "SlimeSpawnMarker", category = FeatureCategory.WORLD, description = "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk. Good for finding Slime Chunks on servers without the seed.")
 public class SlimeSpawnMarker extends Feature {
@@ -48,8 +49,7 @@ public class SlimeSpawnMarker extends Feature {
         if (event instanceof EventJoinWorld) {
             chunkPositions.clear();
         }
-        if (event instanceof EventSpawnEntity) {
-            EventSpawnEntity eventSpawnEntity = (EventSpawnEntity)event;
+        if (event instanceof EventSpawnEntity eventSpawnEntity) {
             if (eventSpawnEntity.getEntity() instanceof SlimeEntity) {
                 if (eventSpawnEntity.getEntity().getY() > 40)
                     return;
@@ -60,7 +60,7 @@ public class SlimeSpawnMarker extends Feature {
                     chunkPositions.add(eventSpawnEntity.getEntity().getChunkPos());
                     if (writeToFile) {
                         try {
-                            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SP world" : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
+                            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SP world" : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry()).address;
                             String s = server + ":" + eventSpawnEntity.getEntity().getChunkPos().x + ":" + eventSpawnEntity.getEntity().getChunkPos().z + "\n";
                             FileWriter fileWritter = new FileWriter(chunksFile, true);
                             BufferedWriter bw = new BufferedWriter(fileWritter);

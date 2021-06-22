@@ -79,7 +79,7 @@ public class StorageESP extends Feature {
 
     public boolean isValid(BlockEntity blockEntity) {
         Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(blockEntity.getPos());
-        if (blockEntity == null || !Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
+        if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
             return false;
         if (blockEntity instanceof ChestBlockEntity)
             return chest;

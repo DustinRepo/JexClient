@@ -28,8 +28,7 @@ public class AutoWither extends Feature {
     
     @EventListener(events = {EventPlayerPackets.class, EventPacketSent.class})
     private void runMethod(Event event) {
-        if (event instanceof EventPlayerPackets) {
-            EventPlayerPackets eventPlayerPackets = (EventPlayerPackets)event;
+        if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (creatingWither && packet != null) {
                     if (getSkulls() == -1 || getSoulSand() == -1) {
@@ -70,8 +69,7 @@ public class AutoWither extends Feature {
                     packet = null;
                 }
             }
-        } else if (event instanceof EventPacketSent) {
-            EventPacketSent eventPacketSent = (EventPacketSent)event;
+        } else if (event instanceof EventPacketSent eventPacketSent) {
             if(eventPacketSent.getPacket() instanceof PlayerInteractBlockC2SPacket && !creatingWither && InventoryHelper.INSTANCE.getFromHotbar(Items.WITHER_SKELETON_SKULL) != -1)
             {
                 packet = (PlayerInteractBlockC2SPacket)eventPacketSent.getPacket();

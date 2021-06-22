@@ -52,16 +52,14 @@ public class NoRender extends Feature {
 
     @EventListener(events = {EventRenderEntity.class, EventRenderBlockEntity.class, EventTickParticle.class})
     private void runMethod(Event event) {
-        if (event instanceof EventRenderEntity) {
-            EventRenderEntity eventRenderEntity = (EventRenderEntity) event;
+        if (event instanceof EventRenderEntity eventRenderEntity) {
             if (eventRenderEntity.getEntity() instanceof ItemEntity && item)
                 eventRenderEntity.cancel();
             if (eventRenderEntity.getEntity() instanceof WitherEntity && withers)
                 eventRenderEntity.cancel();
             if (eventRenderEntity.getEntity() instanceof FallingBlockEntity && fallingBlocks)
                 eventRenderEntity.cancel();
-        } else if (event instanceof EventRenderBlockEntity) {
-            EventRenderBlockEntity eventRenderBlockEntity = (EventRenderBlockEntity) event;
+        } else if (event instanceof EventRenderBlockEntity eventRenderBlockEntity) {
             if (eventRenderBlockEntity.blockEntity instanceof SignBlockEntity && signs)
                 event.cancel();
             if (eventRenderBlockEntity.blockEntity instanceof ChestBlockEntity && chests)
@@ -76,8 +74,7 @@ public class NoRender extends Feature {
                 event.cancel();
             if (eventRenderBlockEntity.blockEntity instanceof CampfireBlockEntity && campfires)
                 event.cancel();
-        } else if (event instanceof EventTickParticle && particles) {
-            EventTickParticle eventTickParticle = (EventTickParticle)event;
+        } else if (event instanceof EventTickParticle eventTickParticle && particles) {
             if (eventTickParticle.getParticle() instanceof ExplosionSmokeParticle || eventTickParticle.getParticle() instanceof FireSmokeParticle || eventTickParticle.getParticle() instanceof CampfireSmokeParticle && smoke) {
                 eventTickParticle.cancel();
             }

@@ -10,6 +10,8 @@ import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 
+import java.util.Objects;
+
 @Feat(name = "DiscordRPC", category = FeatureCategory.MISC, description = "Show on Discord that you are using Jex Client")
 public class Discord extends Feature {
 
@@ -72,7 +74,7 @@ public class Discord extends Feature {
         else {
             sb.append("Playing ");
             if (showServerIP) {
-                sb.append(Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SinglePlayer" : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address + " " + Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().version.getString());
+                sb.append(Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SinglePlayer" : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry()).address + " " + Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().version.getString());
             } else {
                 sb.append(Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SinglePlayer" : "Mineman Multiplayer");
             }

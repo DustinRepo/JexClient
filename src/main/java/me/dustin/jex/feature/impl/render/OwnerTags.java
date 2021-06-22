@@ -35,15 +35,13 @@ public class OwnerTags extends Feature {
         if (event instanceof EventRenderGetPos) {
             positions.clear();
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                if (entity instanceof LivingEntity) {
-                    LivingEntity tameableEntity = (LivingEntity) entity;
+                if (entity instanceof LivingEntity tameableEntity) {
                     if (EntityHelper.INSTANCE.getOwnerUUID(tameableEntity) != null) {
                         positions.put(tameableEntity, Render2DHelper.INSTANCE.getHeadPos(entity, ((EventRenderGetPos) event).getPartialTicks()));
                     }
                 }
             }
-        } else if (event instanceof EventRender2D) {
-            EventRender2D eventRender2D = (EventRender2D) event;
+        } else if (event instanceof EventRender2D eventRender2D) {
             Nametag nametagModule = (Nametag) Feature.get(Nametag.class);
             positions.keySet().forEach(livingEntity -> {
                 Vec3d pos = positions.get(livingEntity);

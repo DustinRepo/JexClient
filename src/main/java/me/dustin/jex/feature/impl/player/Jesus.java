@@ -85,10 +85,9 @@ public class Jesus extends Feature {
 
             }
         }
-        if (event instanceof EventFluidCollisionShape) {
+        if (event instanceof EventFluidCollisionShape eventBox) {
             if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld() == null || mode.equalsIgnoreCase("Dolphin"))
                 return;
-            EventFluidCollisionShape eventBox = (EventFluidCollisionShape) event;
             Block block = eventBox.getBlock();
             if (block instanceof FluidBlock) {
                 Box waterBox = new Box(0.1f, 0, 0.1f, 0.9f, Wrapper.INSTANCE.getLocalPlayer().isRiding() ? 0.92f : 1, 0.9f);
@@ -100,8 +99,7 @@ public class Jesus extends Feature {
                 eventBox.cancel();
             }
         }
-        if (event instanceof EventPacketSent) {
-            EventPacketSent sent = (EventPacketSent) event;
+        if (event instanceof EventPacketSent sent) {
             if (sent.getPacket() instanceof PlayerMoveC2SPacket) {
                 if (WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer())) {
                     if (ticks >= 4) {

@@ -37,7 +37,6 @@ public class ChestStealer extends Feature {
                 }
                 if (InventoryHelper.INSTANCE.isContainerEmpty(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler)) {
                     Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
-                    return;
                 } else {
                     int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
                     for (int i = 0; i < most; i++) {

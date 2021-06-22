@@ -46,8 +46,7 @@ public class Xray extends Feature {
         if (event instanceof EventMarkChunkClosed) {
             event.cancel();
         }
-        if (event instanceof EventShouldDrawSide) {
-            EventShouldDrawSide eventShouldDrawSide = (EventShouldDrawSide) event;
+        if (event instanceof EventShouldDrawSide eventShouldDrawSide) {
             if (this.opacity && (isValid(eventShouldDrawSide.getBlock()) || eventShouldDrawSide.getBlock() instanceof FluidBlock)) {
                 eventShouldDrawSide.setShouldDrawSide(true);
                 event.cancel();
@@ -56,41 +55,34 @@ public class Xray extends Feature {
                 event.cancel();
             }
         }
-        if (event instanceof EventBlockBrightness) {
-            EventBlockBrightness eventBlockBrightness = (EventBlockBrightness) event;
+        if (event instanceof EventBlockBrightness eventBlockBrightness) {
             eventBlockBrightness.setBrightness(15);
         }
-        if (event instanceof EventRenderBlockEntity) {
-            EventRenderBlockEntity eventRenderBlockEntity = (EventRenderBlockEntity) event;
+        if (event instanceof EventRenderBlockEntity eventRenderBlockEntity) {
             if (!blockList.contains(WorldHelper.INSTANCE.getBlock(eventRenderBlockEntity.blockEntity.getPos())) && !this.opacity)
                 event.cancel();
         }
-        if (event instanceof EventRenderBlock) {
-            EventRenderBlock eventRenderBlock = (EventRenderBlock) event;
+        if (event instanceof EventRenderBlock eventRenderBlock) {
             if (!blockList.contains(eventRenderBlock.block) && !this.opacity)
                 event.cancel();
         }
-        if (event instanceof EventRenderFluid) {
-            EventRenderFluid eventRenderFluid = (EventRenderFluid) event;
+        if (event instanceof EventRenderFluid eventRenderFluid) {
             if (!blockList.contains(eventRenderFluid.getBlock()) && !opacity)
                 event.cancel();
         }
-        if (event instanceof EventGetRenderLayer) {
-            EventGetRenderLayer eventGetRenderLayer = (EventGetRenderLayer) event;
+        if (event instanceof EventGetRenderLayer eventGetRenderLayer) {
             if (!blockList.contains(eventGetRenderLayer.getState().getBlock()) && this.opacity) {
                 eventGetRenderLayer.setRenderLayer(RenderLayer.getTranslucent());
                 event.cancel();
             }
         }
-        if (event instanceof EventIsBlockOpaque) {
+        if (event instanceof EventIsBlockOpaque eventIsBlockOpaque) {
             //This is intended to stop non-opaque blocks from rendering if they're fully covered by other blocks i.e clumps of leaves on trees, glass etc..
-            EventIsBlockOpaque eventIsBlockOpaque = (EventIsBlockOpaque) event;
             if (this.opacity) {
                 eventIsBlockOpaque.setOpaque(true);
             }
         }
-        if (event instanceof EventBufferQuadAlpha) {
-            EventBufferQuadAlpha eventBufferQuadAlpha = (EventBufferQuadAlpha) event;
+        if (event instanceof EventBufferQuadAlpha eventBufferQuadAlpha) {
             if (this.opacity) {
                 eventBufferQuadAlpha.setAlpha(alphaValue);
             }

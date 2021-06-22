@@ -114,7 +114,7 @@ public class Nametag extends Feature {
     private void drawInv(LivingEntity player, float posX, float posY, EventRender2D eventRender2D) {
         int itemWidth = 16;
         int totalCount = getItems(player).size();
-        float startX = (posX - ((totalCount * itemWidth) / 2));
+        float startX = (posX - ((totalCount * itemWidth) / 2.f));
         posY = (posY - 28);
         count = 0;
         for (ItemStack itemStack : getItems(player)) {
@@ -139,7 +139,7 @@ public class Nametag extends Feature {
                             Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), newerX, newY - 1, newerX + nameWidth, newY + 9, 0x35000000);
                             FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX, newY, enchantColor, customFont);
                             enchCount++;
-                        } catch (Exception e) {}
+                        } catch (Exception ignored) {}
                     }
                     matrixStack.pop();
                 }
@@ -152,7 +152,7 @@ public class Nametag extends Feature {
         int level = compoundTag.getShort("lvl");
         String name = compoundTag.getString("id").split(":")[1];
         if (name.contains("_")) {
-            String s[] = name.split("_");
+            String[] s = name.split("_");
             name = s[0].substring(0, 1).toUpperCase() + s[0].substring(1, 3) + s[1].substring(0, 1).toUpperCase();
         } else {
             name = name.substring(0, 1).toUpperCase() + name.substring(1, 3);
@@ -219,8 +219,7 @@ public class Nametag extends Feature {
         String name = entity.getDisplayName().asString();
         if (name.trim().isEmpty())
             name = entity.getName().getString();
-        if (entity instanceof ItemEntity) {
-            ItemEntity itemEntity = (ItemEntity) entity;
+        if (entity instanceof ItemEntity itemEntity) {
             if (itemEntity.getStack().getCount() > 1)
                 name += " \247fx" + itemEntity.getStack().getCount();
         }
@@ -265,15 +264,12 @@ public class Nametag extends Feature {
     }
 
     private float getHealth(LivingEntity player) {
-        switch (healthMode) {
-            case "Hearts":
-                return player.getHealth() / 2;
-            case "HP":
-                return java.lang.Math.round(player.getHealth());
-            case "Percent":
-                return player.getHealth() * 5;
-        }
-        return player.getHealth();
+        return switch (healthMode) {
+            case "Hearts" -> player.getHealth() / 2;
+            case "HP" -> Math.round(player.getHealth());
+            case "Percent" -> player.getHealth() * 5;
+            default -> player.getHealth();
+        };
     }
 
     private int getHealthColor(LivingEntity player) {

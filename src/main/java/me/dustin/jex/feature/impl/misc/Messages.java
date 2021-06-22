@@ -22,24 +22,19 @@ public class Messages extends Feature {
             if (((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage().startsWith("/"))
                 return;
             switch (mode) {
-                case "Upside-Down":
-                    eventPacketSent.setPacket(new ChatMessageC2SPacket(upsideDown(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage())));
-                    break;
-                case "Backwards":
-                    eventPacketSent.setPacket(new ChatMessageC2SPacket(new StringBuilder(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage()).reverse().toString()));
-                    break;
-                case "Random Capital":
-                    eventPacketSent.setPacket(new ChatMessageC2SPacket(randomCapitalize(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage())));
+                case "Upside-Down" -> eventPacketSent.setPacket(new ChatMessageC2SPacket(upsideDown(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage())));
+                case "Backwards" -> eventPacketSent.setPacket(new ChatMessageC2SPacket(new StringBuilder(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage()).reverse().toString()));
+                case "Random Capital" -> eventPacketSent.setPacket(new ChatMessageC2SPacket(randomCapitalize(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage())));
             }
         }
     }
 
     public String randomCapitalize(String str) {
-        String newString = "";
+        StringBuilder newString = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
-            newString += (new Random().nextBoolean() ? String.valueOf(str.charAt(i)).toUpperCase() : String.valueOf(str.charAt(i)).toLowerCase());
+            newString.append(new Random().nextBoolean() ? String.valueOf(str.charAt(i)).toUpperCase() : String.valueOf(str.charAt(i)).toLowerCase());
         }
-        return newString;
+        return newString.toString();
     }
 
     public String upsideDown(String str) {

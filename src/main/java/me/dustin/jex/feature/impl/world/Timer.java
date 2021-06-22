@@ -20,9 +20,9 @@ public class Timer extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() == null && Wrapper.INSTANCE.getWorld() == null)
             this.setState(false);
         if (getState()) {
-            eventRenderTick.timeScale = 1000 / (20 * speed);
+            eventRenderTick.timeScale = 1000 / (20.f * speed);
         } else {
-            eventRenderTick.timeScale = 1000 / 20;
+            eventRenderTick.timeScale = 1000 / 20.f;
             while (EventAPI.getInstance().alreadyRegistered(this))
                 EventAPI.getInstance().unregister(this);
         }

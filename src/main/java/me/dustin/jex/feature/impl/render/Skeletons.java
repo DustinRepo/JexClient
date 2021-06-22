@@ -33,8 +33,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
         float g = eventRender3D.getPartialTicks();
         Render3DHelper.INSTANCE.setup3DRender(true);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
-                PlayerEntity playerEntity = (PlayerEntity)entity;
+            if (entity instanceof PlayerEntity playerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
                 Color color = ColorHelper.INSTANCE.getColor(skeletonColor);
                 Vec3d footPos = Render3DHelper.INSTANCE.getEntityRenderPosition(playerEntity, g);
                 PlayerEntityRenderer livingEntityRenderer = (PlayerEntityRenderer)(LivingEntityRenderer) Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().getRenderer(playerEntity);

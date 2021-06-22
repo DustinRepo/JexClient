@@ -15,18 +15,10 @@ public class YawLock extends Feature {
     public void run(EventPlayerPackets event) {
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
             switch (Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing()) {
-                case NORTH:
-                    PlayerHelper.INSTANCE.setYaw(-180);
-                    break;
-                case SOUTH:
-                    PlayerHelper.INSTANCE.setYaw(0);
-                    break;
-                case EAST:
-                    PlayerHelper.INSTANCE.setYaw(-90);
-                    break;
-                case WEST:
-                    PlayerHelper.INSTANCE.setYaw(90);
-                    break;
+                case NORTH -> PlayerHelper.INSTANCE.setYaw(-180);
+                case SOUTH -> PlayerHelper.INSTANCE.setYaw(0);
+                case EAST -> PlayerHelper.INSTANCE.setYaw(-90);
+                case WEST -> PlayerHelper.INSTANCE.setYaw(90);
             }
         }
     }

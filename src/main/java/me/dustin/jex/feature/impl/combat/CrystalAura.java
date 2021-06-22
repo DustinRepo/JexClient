@@ -79,8 +79,7 @@ public class CrystalAura extends Feature {
             if (timer.hasPassed(delay))
                 if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.END_CRYSTAL))) {
                     Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer() && !Friend.isFriend(entity.getDisplayName().asString())) {
-                            PlayerEntity entityPlayer = (PlayerEntity) entity;
+                        if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !Friend.isFriend(entity.getDisplayName().asString())) {
                             BlockPos placingPos = getOpenBlockPos(entityPlayer);
                             if (placingPos != null) {
                                 EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());

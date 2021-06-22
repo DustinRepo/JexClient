@@ -20,8 +20,7 @@ public class InventoryAutoClicker extends Feature {
     @EventListener(events = {EventPlayerPackets.class})
     private void runMethod(EventPlayerPackets eventPlayerPackets) {
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen) {
-                HandledScreen handledScreen = (HandledScreen) Wrapper.INSTANCE.getMinecraft().currentScreen;
+            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen handledScreen) {
                 IHandledScreen iHandledScreen = (IHandledScreen) handledScreen;
                 Slot slot = iHandledScreen.focusedSlot();
                 if (slot != null && slot.hasStack() && getInvSlot(slot) != -1) {

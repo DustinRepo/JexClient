@@ -67,12 +67,12 @@ public class SpawnHighlighter extends Feature {
         if (checkWater)
             if (aboveBlock == Blocks.WATER)
                 return false;
+        assert aboveBlock != null;
         if (!aboveBlock.canMobSpawnInside())
             return false;
         if (checkLight) {
             int light = Wrapper.INSTANCE.getWorld().getLightLevel(LightType.BLOCK, above);
-            if (light > lightValue)
-                return false;
+            return light <= lightValue;
         }
         return true;
     }

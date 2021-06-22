@@ -79,8 +79,7 @@ public class Tracers extends Feature {
     }
 
     private int getColor(Entity ent) {
-        if (ent instanceof PlayerEntity && colorOnDistance) {
-            PlayerEntity playerEntity = (PlayerEntity) ent;
+        if (ent instanceof PlayerEntity playerEntity && colorOnDistance) {
             if (!Friend.isFriend(playerEntity.getName().asString())) {
                 return getColor(ent.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 128).getRGB();
             }
