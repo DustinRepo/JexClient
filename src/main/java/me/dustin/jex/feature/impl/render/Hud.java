@@ -7,6 +7,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
+import me.dustin.jex.event.render.EventRender2DItem;
 import me.dustin.jex.event.render.EventRenderEffects;
 import me.dustin.jex.gui.click.jex.JexGui;
 import me.dustin.jex.gui.click.window.ClickGui;
@@ -31,6 +32,8 @@ import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -86,6 +89,10 @@ public class Hud extends Feature {
     public String textMode = "Percent";
     @OpChild(name = "Draw Mode", all = {"Tall", "Cube"}, parent = "Armor")
     public String drawMode = "Tall";
+    @Op(name = "Item Durability")
+    public boolean itemDurability = true;
+    @OpChild(name = "Static Color", parent = "Item Durability")
+    public boolean staticColor = false;
     @Op(name = "Info")
     public boolean info = true;
     @Op(name = "TabGui")
@@ -318,6 +325,30 @@ public class Hud extends Feature {
                     count++;
                 }
             }
+        }
+    }
+
+    @EventListener(events = {EventRender2DItem.class})
+    public void onRender2DItem(EventRender2DItem eventRender2DItem) {
+        if (this.itemDurability)
+            drawItemDurability(eventRender2DItem);
+    }
+
+    private void drawItemDurability(EventRender2DItem eventRender2DItem) {
+        if (eventRender2DItem.getStack().getMaxDamage() > 0) {
+            int maxDamage = eventRender2DItem.getStack().getMaxDamage();
+            int damage = eventRender2DItem.getStack().getDamage();
+            int durability = maxDamage - damage;
+
+            int color = (int) ((float) damage / maxDamage * 0xFF) << 16;
+            color += (int) ((float) durability / maxDamage * 0xFF) << 8;
+
+            MatrixStack matrixStack = new MatrixStack();
+            matrixStack.translate(0.0, 0.0, eventRender2DItem.getItemRenderer().zOffset + 200.0);
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
+            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+            eventRender2DItem.getFontRenderer().draw(Integer.toString(durability), eventRender2DItem.getX() * 2.0f, eventRender2DItem.getY() * 2.0f, staticColor ? 0xFFFFFF : color, true, matrixStack.peek().getModel(), immediate, false, 0, 15728880);
+            immediate.draw();
         }
     }
 

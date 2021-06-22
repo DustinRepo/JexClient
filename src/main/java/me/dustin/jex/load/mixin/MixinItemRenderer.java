@@ -2,9 +2,11 @@ package me.dustin.jex.load.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.jex.event.render.EventRender2DItem;
 import me.dustin.jex.event.render.EventRenderItem;
 import me.dustin.jex.load.impl.IItemRenderer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -49,6 +51,12 @@ public abstract class MixinItemRenderer implements IItemRenderer {
     public void postRenderItem(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model, CallbackInfo ci) {
         if (((EventRenderItem)new EventRenderItem(matrices, stack, renderMode, EventRenderItem.RenderTime.POST, leftHanded).run()).isCancelled())
             ci.cancel();
+    }
+
+    @Inject(method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At("RETURN"), cancellable = true)
+    public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, String countLabel, CallbackInfo ci) {
+        ItemRenderer instance = (ItemRenderer) (Object) this;
+        EventRender2DItem eventRender2DItem = new EventRender2DItem(instance, renderer, stack, x, y).run();
     }
 
     @Override
