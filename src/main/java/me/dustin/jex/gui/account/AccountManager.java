@@ -119,10 +119,11 @@ public class AccountManager extends Screen {
         this.addDrawableChild(importButton);
         this.outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
 
-        float contentHeight = (accountButtons.get(accountButtons.size() - 1).getY() + (accountButtons.get(accountButtons.size() - 1).getHeight())) - accountButtons.get(0).getY();
-        float viewportHeight = 200;
-        float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
-        this.scrollbar = new Scrollbar((width / 2.f), (height / 2.f) - 102, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
+        if (!accountButtons.isEmpty()) {
+            float contentHeight = (accountButtons.get(accountButtons.size() - 1).getY() + (accountButtons.get(accountButtons.size() - 1).getHeight())) - accountButtons.get(0).getY();
+            float viewportHeight = 200;
+            this.scrollbar = new Scrollbar((width / 2.f), (height / 2.f) - 102, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
+        }
         super.init();
     }
 
@@ -161,7 +162,8 @@ public class AccountManager extends Screen {
         Render2DHelper.INSTANCE.fill(matrixStack, 0, height - 52, width, height, 0x70000000);
         Render2DHelper.INSTANCE.drawHLine(matrixStack, 0, width, height - 52, ColorHelper.INSTANCE.getClientColor());
 
-        scrollbar.render(matrixStack);
+        if (scrollbar != null)
+            scrollbar.render(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
@@ -184,25 +186,29 @@ public class AccountManager extends Screen {
     public boolean mouseScrolled(double d, double e, double amount) {
         if (amount > 0) {
             AccountButton topButton = accountButtons.get(0);
+            if (topButton == null) return false;
             if (topButton.getY() < ((height / 2) - 100)) {
                 for (int i = 0; i < 20; i++) {
                     if (topButton.getY() < ((height / 2) - 100)) {
                         for (AccountButton button : accountButtons) {
                             button.setY(button.getY() + 1);
                         }
-                        scrollbar.moveUp();
+                        if (scrollbar != null)
+                            scrollbar.moveUp();
                     }
                 }
             }
         } else if (amount < 0) {
             AccountButton bottomButton = accountButtons.get(accountButtons.size() - 1);
+            if (bottomButton == null) return false;
             if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 100)) {
                 for (int i = 0; i < 20; i++) {
                     if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 100)) {
                         for (AccountButton button : accountButtons) {
                             button.setY(button.getY() - 1);
                         }
-                        scrollbar.moveDown();
+                        if (scrollbar != null)
+                            scrollbar.moveDown();
                     }
                 }
             }
@@ -267,8 +273,8 @@ public class AccountManager extends Screen {
                 if (!account.getUsername().toLowerCase().contains(searchField.toLowerCase()))
                     continue;
             }
-            float buttonX = (width / 2) - 150;
-            float buttonY = ((height / 2) - 100) + (yCount * 41);
+            float buttonX = (width / 2.f) - 150;
+            float buttonY = ((height / 2.f) - 100) + (yCount * 41);
             accountButtons.add(new AccountButton(account, buttonX, buttonY));
             yCount++;
         }
