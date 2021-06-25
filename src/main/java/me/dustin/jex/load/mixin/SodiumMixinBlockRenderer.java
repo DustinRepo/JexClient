@@ -3,7 +3,7 @@ package me.dustin.jex.load.mixin;
 import me.dustin.jex.event.render.EventBufferQuadAlpha;
 import me.dustin.jex.event.render.EventRenderBlock;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelBuffers;
+import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelBuilder;
 import me.jellysquid.mods.sodium.client.render.pipeline.BlockRenderer;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
@@ -23,7 +23,7 @@ import java.awt.*;
 public class SodiumMixinBlockRenderer {
 
     @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true, remap = false)
-    public void renderModel1(BlockRenderView world, BlockState state, BlockPos pos, BakedModel model, ChunkModelBuffers builder, boolean cull, long seed, CallbackInfoReturnable<Boolean> cir) {
+    public void renderModel1(BlockRenderView world, BlockState state, BlockPos pos, BakedModel model, ChunkModelBuilder builder, boolean cull, long seed, CallbackInfoReturnable<Boolean> cir) {
         EventRenderBlock eventRenderBlock = new EventRenderBlock(state.getBlock()).run();
         if (eventRenderBlock.isCancelled())
             cir.setReturnValue(false);

@@ -2,7 +2,7 @@ package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.event.render.EventRenderFluid;
 import me.dustin.jex.event.render.EventShouldDrawSide;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelBuffers;
+import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelBuilder;
 import me.jellysquid.mods.sodium.client.render.pipeline.FluidRenderer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +27,7 @@ public class SodiumMixinFluidRenderer {
     }
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true, remap = false)
-    public void render1(BlockRenderView world, FluidState fluidState, BlockPos pos, ChunkModelBuffers consumer, CallbackInfoReturnable<Boolean> cir) {
+    public void render1(BlockRenderView world, FluidState fluidState, BlockPos pos, ChunkModelBuilder consumer, CallbackInfoReturnable<Boolean> cir) {
         EventRenderFluid eventRenderFluid = new EventRenderFluid(world.getBlockState(pos).getBlock()).run();
         if (eventRenderFluid.isCancelled())
             cir.setReturnValue(false);
