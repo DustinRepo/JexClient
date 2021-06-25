@@ -1,6 +1,8 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.event.player.EventAttackEntity;
+import me.dustin.jex.event.player.EventGetReachDistance;
+import me.dustin.jex.event.player.EventHasExtendedReach;
 import me.dustin.jex.event.world.EventBreakBlock;
 import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -42,6 +44,20 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
         if (eventAttackEntity.isCancelled()) {
             ci.cancel();
         }
+    }
+
+    @Inject(method = "getReachDistance", at = @At("HEAD"), cancellable = true)
+    private void onGetReachDistance(CallbackInfoReturnable<Float> callback) {
+        EventGetReachDistance eventGetReachDistance = new EventGetReachDistance().run();
+        if (eventGetReachDistance.getReachDistance() != null)
+            callback.setReturnValue(eventGetReachDistance.getReachDistance());
+    }
+
+    @Inject(method = "hasExtendedReach", at = @At("HEAD"), cancellable = true)
+    private void hasExtendedReach(CallbackInfoReturnable<Boolean> callback) {
+        EventHasExtendedReach eventHasExtendedReach = new EventHasExtendedReach().run();
+        if (eventHasExtendedReach.isExtendedReach() != null)
+            callback.setReturnValue(eventHasExtendedReach.isExtendedReach());
     }
 
     @Override
