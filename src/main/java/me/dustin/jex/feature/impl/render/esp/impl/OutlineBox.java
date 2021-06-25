@@ -29,10 +29,10 @@ public class OutlineBox extends FeatureExtension {
         if (event instanceof EventRender3D) {
             EventRender3D eventRender3D = (EventRender3D) event;
 
-            if (ShaderHelper.canDrawFBO()) {
+            if (ShaderHelper.INSTANCE.canDrawFBO()) {
                 RenderSystem.depthFunc(519);
-                ShaderHelper.boxOutlineFBO.clear(MinecraftClient.IS_SYSTEM_MAC);
-                ShaderHelper.boxOutlineFBO.beginWrite(false);
+                ShaderHelper.INSTANCE.boxOutlineFBO.clear(MinecraftClient.IS_SYSTEM_MAC);
+                ShaderHelper.INSTANCE.boxOutlineFBO.beginWrite(false);
                 RenderSystem.teardownOverlayColor();
                 RenderSystem.setShader(GameRenderer::getPositionColorShader);
                 RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -102,14 +102,14 @@ public class OutlineBox extends FeatureExtension {
                 RenderSystem.enableTexture();
                 RenderSystem.resetTextureMatrix();
                 RenderSystem.depthMask(false);
-                ShaderHelper.boxOutlineShader.render(Wrapper.INSTANCE.getMinecraft().getTickDelta());
+                ShaderHelper.INSTANCE.boxOutlineShader.render(Wrapper.INSTANCE.getMinecraft().getTickDelta());
                 RenderSystem.enableTexture();
                 RenderSystem.depthMask(true);
                 Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
             }
         } else if (event instanceof EventRender2DNoScale) {
-            if (ShaderHelper.canDrawFBO()) {
-                ShaderHelper.drawBoxOutlineFBO();
+            if (ShaderHelper.INSTANCE.canDrawFBO()) {
+                ShaderHelper.INSTANCE.drawBoxOutlineFBO();
                 Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
             }
         }
@@ -119,7 +119,7 @@ public class OutlineBox extends FeatureExtension {
     public void enable() {
         try {
             if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
-                ShaderHelper.load();
+                ShaderHelper.INSTANCE.load();
         } catch (Exception e) {
             System.out.println("Loading");
         }

@@ -62,7 +62,7 @@ public class MixinWorldRenderer implements IWorldRenderer {
             this.entityOutlineShader = null;
             this.entityOutlinesFramebuffer = null;
         }
-        ShaderHelper.load();
+        ShaderHelper.INSTANCE.load();
         ci.cancel();
     }
 
@@ -107,7 +107,7 @@ public class MixinWorldRenderer implements IWorldRenderer {
 
     @Inject(method = "onResized", at = @At("HEAD"))
     public void onResized1(int width, int height, CallbackInfo ci) {
-        ShaderHelper.onResized(width, height);
+        ShaderHelper.INSTANCE.onResized(width, height);
     }
 
     @Override
