@@ -1,16 +1,16 @@
 package me.dustin.jex.gui.click.window.impl;
 
 
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.feature.impl.render.Gui;
+import me.dustin.jex.feature.impl.render.Hud;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
-import me.dustin.jex.feature.impl.render.Gui;
-import me.dustin.jex.feature.impl.render.Hud;
 import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -56,7 +56,7 @@ public class Window {
         float maxY = Render2DHelper.INSTANCE.getScaledHeight() - 30;
         maxHeight = Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 > 0 ? Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 : 250;
         if (scrollbar == null) {
-            float contentHeight = buttons.isEmpty() ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
+            float contentHeight = buttons.isEmpty() || getVeryBottomButton() == null ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
             float viewportHeight = maxHeight;
             float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
             scrollbar = new Scrollbar(getX() + getWidth() - 1, getY() + getHeight(), 1, scrollBarHeight, viewportHeight, contentHeight, -1);
@@ -104,6 +104,15 @@ public class Window {
             } else {
                 x = xDif + MouseHelper.INSTANCE.getMouseX();
                 y = yDif + MouseHelper.INSTANCE.getMouseY();
+                if (getY() < 0)
+                    setY(0);
+                if (getX() < 0)
+                    setX(0);
+                if (getY() + getHeight() > Render2DHelper.INSTANCE.getScaledHeight() - 20)
+                    setY(Render2DHelper.INSTANCE.getScaledHeight() - getHeight() - 20);
+                if (getX() + getWidth() > Render2DHelper.INSTANCE.getScaledWidth())
+                    setX(Render2DHelper.INSTANCE.getScaledWidth() - getWidth());
+
                 getButtons().forEach(button -> {
                     button.move(x - prevX, y - prevY);
                     moveAll(button, x - prevX, y - prevY);

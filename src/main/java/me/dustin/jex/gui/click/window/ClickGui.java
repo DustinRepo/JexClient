@@ -2,6 +2,9 @@ package me.dustin.jex.gui.click.window;
 
 
 import me.dustin.jex.JexClient;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.file.ClientSettingsFile;
 import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.file.GuiFile;
@@ -20,9 +23,6 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
-import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.option.types.ColorOption;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
