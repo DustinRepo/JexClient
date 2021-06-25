@@ -7,13 +7,17 @@ import me.dustin.jex.event.player.EventHasExtendedReach;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
+import me.dustin.jex.option.annotate.Op;
 
 @Feat(name = "Reach", category = FeatureCategory.PLAYER, description = "Stretch Armstrong, but nerfed.")
 public class Reach extends Feature {
+    @Op(name = "Distance", min = 5, max = 6, inc = 0.05f)
+    public float distance = 5.5f;
+
     @EventListener(events = {EventGetReachDistance.class, EventHasExtendedReach.class})
     public void run(Event event) {
         if (event instanceof EventGetReachDistance eventGetReachDistance) {
-            eventGetReachDistance.setReachDistance(5.5F);
+            eventGetReachDistance.setReachDistance(distance);
         }
         if (event instanceof EventHasExtendedReach eventHasExtendedReach) {
             eventHasExtendedReach.setExtendedReach(true);
