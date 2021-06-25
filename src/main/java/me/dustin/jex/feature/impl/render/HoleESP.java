@@ -2,13 +2,13 @@ package me.dustin.jex.feature.impl.render;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.core.annotate.Feat;
+import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -22,6 +22,8 @@ import java.util.ArrayList;
 @Feat(name = "HoleESP", category = FeatureCategory.VISUAL, description = "Automatically show holes for safe crystal-ing")
 public class HoleESP extends Feature {
 
+    @Op(name = "Fade Box")
+    public boolean fadeBox = true;
     @Op(name = "Range", min = 5, max = 25, inc = 1)
     public int range = 10;
     @Op(name = "Obsidian Color", isColor = true)
@@ -52,8 +54,16 @@ public class HoleESP extends Feature {
         }
         for (BlockPos blockPos : holes) {
             Vec3d vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-            Box box = new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1, vec3d.y + 1, vec3d.z + 1);
-            Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, WorldHelper.INSTANCE.getBlock(blockPos.down()) == Blocks.BEDROCK ? bedrockColor : obsidianColor);
+            int color = WorldHelper.INSTANCE.getBlock(blockPos.down()) == Blocks.BEDROCK ? bedrockColor : obsidianColor;
+            if (fadeBox) {
+                Box box = new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1, vec3d.y + 1.5f, vec3d.z + 1);
+                Render3DHelper.INSTANCE.setup3DRender(true);
+                Render3DHelper.INSTANCE.drawFadeBox(eventRender3D.getMatrixStack(), box, color & 0xa9ffffff);
+                Render3DHelper.INSTANCE.end3DRender();
+            } else {
+                Box box = new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1, vec3d.y + 1, vec3d.z + 1);
+                Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, color);
+            }
         }
     }
 
