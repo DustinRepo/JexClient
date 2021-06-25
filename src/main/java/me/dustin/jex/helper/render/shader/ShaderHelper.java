@@ -10,15 +10,15 @@ import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 
-public class ShaderHelper {
+public enum ShaderHelper {
+    INSTANCE;
+    public Framebuffer storageFBO;
+    public ShaderEffect storageShader;
+    public Framebuffer boxOutlineFBO;
+    public ShaderEffect boxOutlineShader;
+    public Identifier identifier_1 = new Identifier("jex", "shaders/entity_outline.json");
 
-    public static Framebuffer storageFBO;
-    public static ShaderEffect storageShader;
-    public static Framebuffer boxOutlineFBO;
-    public static ShaderEffect boxOutlineShader;
-    public static Identifier identifier_1 = new Identifier("jex", "shaders/entity_outline.json");
-
-    public static void drawStorageFBO() {
+    public void drawStorageFBO() {
         if (canDrawFBO()) {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
@@ -27,7 +27,7 @@ public class ShaderHelper {
         }
     }
 
-    public static void drawBoxOutlineFBO() {
+    public void drawBoxOutlineFBO() {
         if (canDrawFBO()) {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
@@ -36,7 +36,7 @@ public class ShaderHelper {
         }
     }
 
-    public static void onResized(int int_1, int int_2) {
+    public void onResized(int int_1, int int_2) {
         if (storageShader != null) {
             storageShader.setupDimensions(int_1, int_2);
         }
@@ -44,11 +44,11 @@ public class ShaderHelper {
             boxOutlineShader.setupDimensions(int_1, int_2);
         }
     }
-    public static boolean canDrawFBO() {
+    public boolean canDrawFBO() {
         return storageFBO != null && storageShader != null && Wrapper.INSTANCE.getLocalPlayer() != null;
     }
 
-    public static void load()
+    public void load()
     {
         if (storageShader != null) {
             storageShader.close();
@@ -71,7 +71,7 @@ public class ShaderHelper {
 
     }
 
-    public static void close() {
+    public void close() {
         if (storageShader != null) {
             storageShader.close();
         }
