@@ -527,8 +527,8 @@ public class Hud extends Feature {
             infoCount++;
         }
         if (buildInfo) {
-            String projectVersion =  String.format("%s %s", JexClient.INSTANCE.getMetaDataVersion().equals("${version}") ? "Build Error" : JexClient.INSTANCE.getMetaDataVersion(), FabricLoader.getInstance().isDevelopmentEnvironment() ? "(Dev)" : "(Release)");
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Build\247f: \2477%s", projectVersion), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            String buildMetaData =  String.format("%s %s", JexClient.INSTANCE.getBuildMetaData().equals("${buildVersion}") ? "Built Improperly" : JexClient.INSTANCE.getBuildMetaData(), FabricLoader.getInstance().isDevelopmentEnvironment() ? "(Dev)" : "(Release)");
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Build\247f: \2477%s", buildMetaData), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
     }

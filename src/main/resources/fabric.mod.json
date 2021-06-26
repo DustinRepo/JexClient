@@ -30,5 +30,8 @@
   },
   "suggests": {
     "flamingo": "*"
+  },
+  "custom": {
+    "buildVersion": "${buildVersion}"
   }
 }

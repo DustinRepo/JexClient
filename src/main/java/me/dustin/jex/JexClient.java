@@ -36,6 +36,7 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.update.UpdateManager;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.sound.SoundEvents;
@@ -47,7 +48,6 @@ import java.util.Arrays;
 
 public enum JexClient {
     INSTANCE;
-    private String version = "0.3.4";
     private boolean autoSaveModules = false;
     private boolean soundOnLaunch = true;
 
@@ -117,12 +117,16 @@ public enum JexClient {
         }
     }
 
-    public String getVersion() {
-        return version;
+    public ModContainer getModContainer() {
+        return FabricLoader.getInstance().getModContainer("jex").orElse(null);
     }
 
-    public String getMetaDataVersion() {
-        return FabricLoader.getInstance().getModContainer("jex").get().getMetadata().getVersion().getFriendlyString();
+    public String getVersion() {
+        return this.getModContainer().getMetadata().getVersion().getFriendlyString();
+    }
+
+    public String getBuildMetaData() {
+        return this.getModContainer().getMetadata().getCustomValue("buildVersion").getAsString();
     }
 
     public boolean isAutoSaveEnabled() {
