@@ -122,7 +122,11 @@ public enum JexClient {
     }
 
     public String getVersion() {
-        return this.getModContainer().getMetadata().getVersion().getFriendlyString();
+        if(this.getModContainer().getMetadata().getVersion().getFriendlyString().equals("${version}")) {
+            return "0.0.0-unknown";
+        } else {
+            return this.getModContainer().getMetadata().getVersion().getFriendlyString();
+        }
     }
 
     public String getBuildMetaData() {
