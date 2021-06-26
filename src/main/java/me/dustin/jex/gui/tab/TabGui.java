@@ -2,13 +2,14 @@ package me.dustin.jex.gui.tab;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventKeyPressed;
-import me.dustin.jex.event.misc.EventTick;
-import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.render.FontHelper;
-import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.Hud;
+import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -144,8 +145,13 @@ public enum TabGui {
         this.hoverBar = hoverBar;
     }
 
-    @EventListener(events = {EventTick.class})
-    private void updatePositions(EventTick eventTick) {
+    private Timer timer = new Timer();
+
+    @EventListener(events = {EventRender3D.class})
+    private void updatePositions(EventRender3D eventRender3D) {
+        if (!timer.hasPassed(50))
+            return;
+            timer.reset();
         float distance = Math.abs(hoverY - spotHoverY);
         if (distance < 3) {
             hoverY = spotHoverY;
