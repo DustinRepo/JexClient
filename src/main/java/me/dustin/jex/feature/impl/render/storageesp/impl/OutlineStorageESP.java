@@ -32,8 +32,7 @@ public class OutlineStorageESP extends FeatureExtension {
         if (storageESP == null) {
             storageESP = (StorageESP) Feature.get(StorageESP.class);
         }
-        if (event instanceof EventRender3D) {
-            EventRender3D eventRender3D = (EventRender3D)event;
+        if (event instanceof EventRender3D eventRender3D) {
             if (ShaderHelper.INSTANCE.canDrawFBO()) {
                 RenderSystem.depthFunc(519);
                 ShaderHelper.INSTANCE.storageFBO.clear(MinecraftClient.IS_SYSTEM_MAC);
@@ -60,7 +59,7 @@ public class OutlineStorageESP extends FeatureExtension {
                 ShaderHelper.INSTANCE.storageShader.render(Wrapper.INSTANCE.getMinecraft().getTickDelta());
                 RenderSystem.enableTexture();
                 RenderSystem.depthMask(true);
-               Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
+                Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
             }
         } else if (event instanceof EventRender2DNoScale) {
             if (ShaderHelper.INSTANCE.canDrawFBO()) {
@@ -72,8 +71,12 @@ public class OutlineStorageESP extends FeatureExtension {
 
     @Override
     public void enable() {
-        if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
-            ShaderHelper.INSTANCE.load();
+        try {
+            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
+                ShaderHelper.INSTANCE.load();
+        } catch (Exception e) {
+            System.out.println("Loading");
+        }
         super.enable();
     }
 
@@ -120,8 +123,6 @@ public class OutlineStorageESP extends FeatureExtension {
             bufferBuilder.vertex(matrix4f, minX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-
-            //Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getMatrixStack(), bb.offset(Render3DHelper.INSTANCE.getRenderPosition(blockEntity.getPos().getX(), blockEntity.getPos().getY(), blockEntity.getPos().getZ())), esp.getColor(blockEntity));
         });
     }
 
