@@ -15,7 +15,7 @@ def revision = _git_tag.contains(_git_data) ? _git_data : _git_tag
 
 project.mod_version = "${_git_ref}@${revision}".toString()
 
-version = ""
+version = project.mod_version
 group = project.maven_group
 
 repositories {
