@@ -29,6 +29,7 @@ import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -119,6 +120,8 @@ public class Hud extends Feature {
     public boolean biome = true;
     @OpChild(name = "Player Count", parent = "Info")
     public boolean playerCount = true;
+    @OpChild(name = "Build Info", parent = "Info")
+    public boolean buildInfo = false;
     @OpChild(name = "Yaw/Pitch", parent = "Info")
     public boolean yawAndPitch = true;
     @OpChild(name = "Direction", parent = "Info")
@@ -521,6 +524,11 @@ public class Hud extends Feature {
         if (playerCount) {
             String str = String.format("Player Count\247f: \2477%d", Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList() == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList().size());
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), str, 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            infoCount++;
+        }
+        if (buildInfo) {
+            String projectVersion =  String.format("%s %s", JexClient.INSTANCE.getMetaDataVersion().equals("${version}") ? "Build Error" : JexClient.INSTANCE.getMetaDataVersion(), FabricLoader.getInstance().isDevelopmentEnvironment() ? "(Dev)" : "(Release)");
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Build\247f: \2477%s", projectVersion), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
     }
