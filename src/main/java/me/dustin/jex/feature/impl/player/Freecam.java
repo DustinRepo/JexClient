@@ -79,7 +79,7 @@ public class Freecam extends Feature {
     @Override
     public void onEnable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
-            Wrapper.INSTANCE.getMinecraft().gameRenderer.reset();
+            Wrapper.INSTANCE.getWorldRenderer().reload();
             savedCoords = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
             lookVec = new RotationVector(Wrapper.INSTANCE.getLocalPlayer());
 
@@ -97,7 +97,7 @@ public class Freecam extends Feature {
         super.onDisable();
         if (Wrapper.INSTANCE.getLocalPlayer() != null && resetPos) {
             Wrapper.INSTANCE.getLocalPlayer().noClip = false;
-            Wrapper.INSTANCE.getMinecraft().gameRenderer.reset();
+            Wrapper.INSTANCE.getWorldRenderer().reload();
             Wrapper.INSTANCE.getLocalPlayer().setPos(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ());
             NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), false));
             if (!Wrapper.INSTANCE.getMinecraft().isInSingleplayer())
