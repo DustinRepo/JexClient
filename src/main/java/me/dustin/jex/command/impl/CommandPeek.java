@@ -1,7 +1,10 @@
 package me.dustin.jex.command.impl;
 
+import me.dustin.events.api.EventAPI;
+import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.command.core.Command;
 import me.dustin.jex.command.core.annotate.Cmd;
+import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -13,7 +16,7 @@ import java.util.HashMap;
 
 @Cmd(name = "Peek", description = "See inside of shulkers without placing them")
 public class CommandPeek extends Command {
-
+    ShulkerBoxScreen shulkerBoxScreen;
     @Override
     public void runCommand(String command, String[] args) {
         ItemStack stack = Wrapper.INSTANCE.getLocalPlayer().getMainHandStack();
@@ -23,16 +26,24 @@ public class CommandPeek extends Command {
             stackHashMap.keySet().forEach(slot -> {
                 shulkerBoxScreenHandler.setStackInSlot(slot, stackHashMap.get(slot));
             });
-            ShulkerBoxScreen shulkerBoxScreen = new ShulkerBoxScreen(shulkerBoxScreenHandler, InventoryHelper.INSTANCE.getInventory(), stack.getName());
-            new Thread(() -> {
-                try {
-                    Thread.sleep(50);
-                    Wrapper.INSTANCE.getMinecraft().openScreen(shulkerBoxScreen);
-                } catch (InterruptedException e) {
-                }
-            }).start();
+            shulkerBoxScreen = new ShulkerBoxScreen(shulkerBoxScreenHandler, InventoryHelper.INSTANCE.getInventory(), stack.getName());
+            EventAPI.getInstance().register(this);
         } else {
             ChatHelper.INSTANCE.addClientMessage("You must be holding a Shulker Box to use this command.");
+        }
+    }
+
+    @EventListener(events = {EventTick.class})
+    private void runMethod(EventTick eventTick) {
+        if (Wrapper.INSTANCE.getLocalPlayer() == null) {
+            while (EventAPI.getInstance().alreadyRegistered(this))
+                EventAPI.getInstance().unregister(this);
+            return;
+        }
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
+            Wrapper.INSTANCE.getMinecraft().openScreen(shulkerBoxScreen);
+            while (EventAPI.getInstance().alreadyRegistered(this))
+                EventAPI.getInstance().unregister(this);
         }
     }
 
