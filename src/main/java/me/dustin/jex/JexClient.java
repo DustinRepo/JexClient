@@ -35,6 +35,7 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.update.UpdateManager;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.sound.SoundEvents;
@@ -118,6 +119,10 @@ public enum JexClient {
 
     public String getVersion() {
         return version;
+    }
+
+    public String getMetaDataVersion() {
+        return FabricLoader.getInstance().getModContainer("jex").get().getMetadata().getVersion().getFriendlyString();
     }
 
     public boolean isAutoSaveEnabled() {
