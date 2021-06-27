@@ -5,12 +5,14 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderCrosshair;
+import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.annotate.Feat;
 import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
+import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
@@ -33,8 +35,11 @@ public class Crosshair extends Feature {
     public boolean attackIndicator = false;
     @Op(name = "Spin")
     public boolean spin = false;
+    @OpChild(name = "Spin Speed", min = 1, max = 5, parent = "Spin")
+    public int spinSpeed = 1;
 
     private int spinAmount;
+    private Timer timer = new Timer();
 
     @EventListener(events = {EventRender2D.class, EventRenderCrosshair.class, EventTick.class})
     public void runEvent(Event event) {
@@ -63,8 +68,12 @@ public class Crosshair extends Feature {
                 if (Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) > 0)
                     Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x - 15, y + gap + size + thickness + 10, x - 15 + (width * Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0)), y + gap + size + thickness + 14, 0x00000000, color, 1);
             }
-        } else if (event instanceof EventTick) {
-            spinAmount+=2;
+            if (!timer.hasPassed(20 / spinSpeed))
+                return;
+            timer.reset();
+            spinAmount+=spinSpeed;
+            if (spinAmount > 360)
+                spinAmount -=360;
         }
     }
 
