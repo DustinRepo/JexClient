@@ -1,6 +1,7 @@
 package me.dustin.jex.gui.waypoints;
 
 import me.dustin.jex.feature.impl.world.Waypoints;
+import me.dustin.jex.file.WaypointFile;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.gui.waypoints.impl.ServerButton;
@@ -294,6 +295,7 @@ public class WaypointScreen extends Screen {
             waypointButtons.remove(getSelectedWaypoint());
             goToServer = getSelectedServer().getName();
             waypointCount--;
+            WaypointFile.write();
             init();
         }
     };
