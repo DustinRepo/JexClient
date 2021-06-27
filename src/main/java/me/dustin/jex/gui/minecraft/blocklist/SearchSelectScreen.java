@@ -11,6 +11,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.feature.impl.render.Search;
+import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
@@ -33,6 +34,8 @@ public class SearchSelectScreen extends Screen {
     private ButtonWidget addSearchBlockButton;
     private ButtonWidget removeSearchBlockButton;
     private ButtonWidget doneButton;
+    private Scrollbar leftScrollbar;
+    private Scrollbar rightScrollbar;
     public SearchSelectScreen() {
         super(new LiteralText("Search Selection"));
     }
@@ -119,6 +122,10 @@ public class SearchSelectScreen extends Screen {
                 button.draw(matrices);
         });
         Scissor.INSTANCE.seal();
+        if (leftScrollbar != null)
+            leftScrollbar.render(matrices);
+        if (rightScrollbar != null)
+            rightScrollbar.render(matrices);
         searchField.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -165,10 +172,13 @@ public class SearchSelectScreen extends Screen {
                 BlockButton topButton = allowedBlocks.get(0);
                 if (topButton.getY() < ((height / 2) - 125)) {
                     for (int i = 0; i < 40; i++) {
-                        if (topButton.getY() < ((height / 2) - 125))
+                        if (topButton.getY() < ((height / 2) - 125)) {
                             for (BlockButton button : allowedBlocks) {
                                 button.setY(button.getY() + 1);
                             }
+                            if (leftScrollbar != null)
+                                leftScrollbar.moveUp();
+                        }
                     }
                 }
             } else if (isHoveredNotAllowed()) {
@@ -177,10 +187,13 @@ public class SearchSelectScreen extends Screen {
                 BlockButton topButton = notAllowedBlocks.get(0);
                 if (topButton.getY() < ((height / 2) - 125)) {
                     for (int i = 0; i < 40; i++) {
-                        if (topButton.getY() < ((height / 2) - 125))
+                        if (topButton.getY() < ((height / 2) - 125)) {
                             for (BlockButton button : notAllowedBlocks) {
                                 button.setY(button.getY() + 1);
                             }
+                            if (rightScrollbar != null)
+                                rightScrollbar.moveUp();
+                        }
                     }
                 }
             }
@@ -191,10 +204,13 @@ public class SearchSelectScreen extends Screen {
                 BlockButton bottomButton = allowedBlocks.get(allowedBlocks.size() - 1);
                 if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125)) {
                     for (int i = 0; i < 40; i++) {
-                        if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125))
+                        if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125)) {
                             for (BlockButton button : allowedBlocks) {
                                 button.setY(button.getY() - 1);
                             }
+                            if (leftScrollbar != null)
+                                leftScrollbar.moveDown();
+                        }
                     }
                 }
             } else if (isHoveredNotAllowed()) {
@@ -203,10 +219,13 @@ public class SearchSelectScreen extends Screen {
                 BlockButton bottomButton = notAllowedBlocks.get(notAllowedBlocks.size() - 1);
                 if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125)) {
                     for (int i = 0; i < 40; i++) {
-                        if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125))
+                        if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125)) {
                             for (BlockButton button : notAllowedBlocks) {
                                 button.setY(button.getY() - 1);
                             }
+                            if (rightScrollbar != null)
+                                rightScrollbar.moveDown();
+                        }
                     }
                 }
             }
@@ -270,7 +289,16 @@ public class SearchSelectScreen extends Screen {
                 notAllowedBlocks.add(new BlockButton(block, block.getTranslationKey(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 notAllowedCount++;
             }
-
+        }
+        if (!allowedBlocks.isEmpty()) {
+            float contentHeight = (allowedBlocks.get(allowedBlocks.size() - 1).getY() + (allowedBlocks.get(allowedBlocks.size() - 1).getHeight())) - allowedBlocks.get(0).getY();
+            float viewportHeight = 250;
+            this.leftScrollbar = new Scrollbar((width / 2.f) - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 126, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
+        }
+        if (!notAllowedBlocks.isEmpty()) {
+            float contentHeight = (notAllowedBlocks.get(notAllowedBlocks.size() - 1).getY() + (notAllowedBlocks.get(notAllowedBlocks.size() - 1).getHeight())) - notAllowedBlocks.get(0).getY();
+            float viewportHeight = 250;
+            this.rightScrollbar = new Scrollbar((width / 2.f) + 200, Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 126, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
         }
     }
 
@@ -303,7 +331,16 @@ public class SearchSelectScreen extends Screen {
                 notAllowedBlocks.add(new BlockButton(block, block.getTranslationKey(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 notAllowedCount++;
             }
-
+        }
+        if (!allowedBlocks.isEmpty()) {
+            float contentHeight = (allowedBlocks.get(allowedBlocks.size() - 1).getY() + (allowedBlocks.get(allowedBlocks.size() - 1).getHeight())) - allowedBlocks.get(0).getY();
+            float viewportHeight = 250;
+            this.leftScrollbar = new Scrollbar((width / 2.f), (height / 2.f) - 102, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
+        }
+        if (!notAllowedBlocks.isEmpty()) {
+            float contentHeight = (notAllowedBlocks.get(notAllowedBlocks.size() - 1).getY() + (notAllowedBlocks.get(notAllowedBlocks.size() - 1).getHeight())) - notAllowedBlocks.get(0).getY();
+            float viewportHeight = 250;
+            this.rightScrollbar = new Scrollbar((width / 2.f), (height / 2.f) - 102, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
         }
     }
 }
