@@ -34,7 +34,7 @@ public class AutoMend extends Feature {
     private int getMendingItem() {
         for (int i = 0; i < 36; i++) {
             ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
-            if (InventoryHelper.INSTANCE.hasEnchantment(itemStack, Enchantments.MENDING) && itemStack.isDamaged())
+            if (InventoryHelper.INSTANCE.hasEnchantment(itemStack, Enchantments.MENDING) && itemStack.isDamaged() && itemStack != Wrapper.INSTANCE.getLocalPlayer().getMainHandStack())
                 return i;
         }
         return -1;
