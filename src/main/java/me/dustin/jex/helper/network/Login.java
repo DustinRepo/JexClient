@@ -5,6 +5,7 @@ import com.mojang.authlib.UserAuthentication;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IMinecraft;
@@ -30,7 +31,7 @@ public enum Login {
                 String token = auth.getAuthenticatedToken();
                 session = new Session(username, uuid.toString(), token, email.contains("@") ? "mojang" : "legacy");
                 if (session == null)
-                    System.out.println("Invalid login");
+                    JexClient.INSTANCE.getLogger().error("Invalid login");
                 else
                     ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
             } catch (AuthenticationException e) {

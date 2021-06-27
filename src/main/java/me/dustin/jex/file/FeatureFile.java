@@ -2,6 +2,7 @@ package me.dustin.jex.file;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -56,7 +57,7 @@ public class FeatureFile {
                             }
                             options.add(optionObject);
                         } catch (Exception e) {
-                            System.out.println(feature.getName() + " " + option.getName());
+                            JexClient.INSTANCE.getLogger().error(feature.getName() + " " + option.getName());
                         }
                     }
                 }
@@ -103,7 +104,7 @@ public class FeatureFile {
                         feature.setVisible(object.get("visible").getAsBoolean());
                         feature.setState(object.get("state").getAsBoolean());
                     } else {
-                        System.out.println("Could not find Module " + name);
+                        JexClient.INSTANCE.getLogger().error("Could not find Module " + name);
                     }
                     JsonArray objectArray = null;
 

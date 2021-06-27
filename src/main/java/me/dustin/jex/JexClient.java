@@ -40,6 +40,8 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.sound.SoundEvents;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
@@ -50,22 +52,27 @@ public enum JexClient {
     INSTANCE;
     private boolean autoSaveModules = false;
     private boolean soundOnLaunch = true;
+    private Logger logger = LogManager.getFormatterLogger("Jex");;
 
     public void initializeClient() {
-        System.out.println("Loading Jex Client");
+        getLogger().info("Loading Jex Client");
         EventAPI.getInstance().setPrivateOnly(true);
 
         if (BaritoneHelper.INSTANCE.baritoneExists()) {
+            getLogger().info("Creating Baritone processes");
             BaritoneHelper.INSTANCE.initBaritoneProcesses();
         }
 
+        getLogger().info("Initializing Features");
         FeatureManager.INSTANCE.initializeFeatureManager();
+        getLogger().info("Initializing Options");
         OptionManager.INSTANCE.initializeOptionManager();
-
+        getLogger().info("Initializing Commands");
+        CommandManager.INSTANCE.init();
         //createJson();
 
+        getLogger().info("Reading Config Files");
         ModFileHelper.INSTANCE.gameBootLoad();
-        CommandManager.INSTANCE.init();
 
         EventAPI.getInstance().register(this);
         EventAPI.getInstance().register(TPSHelper.INSTANCE);
@@ -74,10 +81,11 @@ public enum JexClient {
         EventAPI.getInstance().register(WorldHelper.INSTANCE);
         EventAPI.getInstance().register(PlayerHelper.INSTANCE);
         EventAPI.getInstance().register(ColorHelper.INSTANCE);
+        getLogger().info("Checking for update");
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();
         Cape.setPersonalCape(new File(ModFileHelper.INSTANCE.getJexDirectory(), "cape.png"));
-        System.out.println("Load finished");
+        getLogger().info("Jex load finished.");
     }
 
     @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class})
@@ -131,6 +139,10 @@ public enum JexClient {
 
     public String getBuildMetaData() {
         return this.getModContainer().getMetadata().getCustomValue("buildVersion").getAsString();
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
     public boolean isAutoSaveEnabled() {

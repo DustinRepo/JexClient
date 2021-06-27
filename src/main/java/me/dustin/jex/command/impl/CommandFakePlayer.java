@@ -1,6 +1,7 @@
 package me.dustin.jex.command.impl;
 
 import com.mojang.authlib.GameProfile;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.command.core.Command;
 import me.dustin.jex.command.core.annotate.Cmd;
 import me.dustin.jex.entity.FakePlayerEntity;
@@ -24,7 +25,7 @@ public class CommandFakePlayer extends Command {
                 UUID uuid = UUID.randomUUID();
                 UUID realUUID = MCAPIHelper.INSTANCE.getUUIDFromName(name);
                 if (realUUID != null) {
-                    System.out.println("Grabbed UUID from Minecraft");
+                    JexClient.INSTANCE.getLogger().info("Grabbed UUID from Minecraft");
                     uuid = realUUID;
                 }
                 FakePlayerEntity otherClientPlayerEntity = new FakePlayerEntity(Wrapper.INSTANCE.getWorld(), new GameProfile(uuid, name));
@@ -35,7 +36,7 @@ public class CommandFakePlayer extends Command {
                 FakePlayerEntity player = null;
                 for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                     if (entity instanceof FakePlayerEntity) {
-                        System.out.println("Found fake player with name " + entity.getName().getString());
+                        JexClient.INSTANCE.getLogger().info("Found fake player with name " + entity.getName().getString());
                         if (entity.getName().getString().equalsIgnoreCase(name)) {
                             player = (FakePlayerEntity)entity;
                         }

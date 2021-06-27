@@ -71,12 +71,8 @@ public class OutlineStorageESP extends FeatureExtension {
 
     @Override
     public void enable() {
-        try {
-            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
-                ShaderHelper.INSTANCE.load();
-        } catch (Exception e) {
-            System.out.println("Loading");
-        }
+        if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
+            ShaderHelper.INSTANCE.load();
         super.enable();
     }
 

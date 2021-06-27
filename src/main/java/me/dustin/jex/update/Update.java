@@ -1,5 +1,6 @@
 package me.dustin.jex.update;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.SharedConstants;
 
@@ -48,9 +49,9 @@ public enum Update {
         int size = conn.getContentLength();
 
         if (size < 0) {
-            System.out.println("Could not get the file size");
+            JexClient.INSTANCE.getLogger().error("Could not get the file size");
         } else {
-            System.out.println("File size: " + size);
+            JexClient.INSTANCE.getLogger().error("File size: " + size);
         }
 
         in = new BufferedInputStream(url.openStream());

@@ -31,7 +31,7 @@ public class Discord extends Feature {
     public void onEnable() {
         lib = DiscordRPC.INSTANCE;
         DiscordEventHandlers handlers = new DiscordEventHandlers();
-        handlers.ready = (user) -> System.out.println("Ready!");
+        handlers.ready = (user) -> JexClient.INSTANCE.getLogger().info("Ready!");
         lib.Discord_Initialize(APPID, handlers, true, "");
         presence = new DiscordRichPresence();
         presence.startTimestamp = System.currentTimeMillis() / 1000; // epoch second

@@ -1,5 +1,6 @@
 package me.dustin.jex.option;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.core.Feature;
@@ -136,7 +137,7 @@ public class Option {
             }
         }catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Caused by " + this.feature.getName() + " " + this.getName());
+            JexClient.INSTANCE.getLogger().error("Caused by " + this.feature.getName() + " " + this.getName());
         }
     }
     private boolean contains(String[] values, String value)

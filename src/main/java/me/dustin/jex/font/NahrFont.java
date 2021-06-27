@@ -1,6 +1,7 @@
 package me.dustin.jex.font;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.MinecraftClient;
@@ -240,7 +241,7 @@ public class NahrFont {
                     x += getStringWidth(Character.toString(c)) * 2.0F;
                 } catch (ArrayIndexOutOfBoundsException indexException) {
                     char c = text.charAt(i);
-                    System.out.println("Can't draw character: " + c + " (" + Character.getNumericValue(c) + ")");
+                    JexClient.INSTANCE.getLogger().error("Can't draw character: " + c + " (" + Character.getNumericValue(c) + ")");
 
                 }
             }
@@ -282,7 +283,7 @@ public class NahrFont {
         try {
             return split + "\n" + wrapFormattedStringToWidth(split2, width);
         } catch (Exception e) {
-            System.out.println("Cannot wrap string to width.");
+            JexClient.INSTANCE.getLogger().error("Cannot wrap string to width.");
         }
         return "";
     }
