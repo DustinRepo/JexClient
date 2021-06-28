@@ -176,6 +176,16 @@ public enum InventoryHelper {
         return !stack.isEmpty() && (stack.getItem() == Items.SHULKER_BOX || stack.getItem() == Items.BLACK_SHULKER_BOX || stack.getItem() == Items.BLUE_SHULKER_BOX || stack.getItem() == Items.BROWN_SHULKER_BOX || stack.getItem() == Items.CYAN_SHULKER_BOX || stack.getItem() == Items.GRAY_SHULKER_BOX || stack.getItem() == Items.GREEN_SHULKER_BOX || stack.getItem() == Items.LIGHT_BLUE_SHULKER_BOX || stack.getItem() == Items.LIGHT_GRAY_SHULKER_BOX || stack.getItem() == Items.LIME_SHULKER_BOX || stack.getItem() == Items.MAGENTA_SHULKER_BOX || stack.getItem() == Items.ORANGE_SHULKER_BOX || stack.getItem() == Items.PINK_SHULKER_BOX || stack.getItem() == Items.PURPLE_SHULKER_BOX || stack.getItem() == Items.RED_SHULKER_BOX || stack.getItem() == Items.WHITE_SHULKER_BOX || stack.getItem() == Items.YELLOW_SHULKER_BOX);
     }
 
+    public int countItems(Item item) {
+        int count = 0;
+        for (int i = 0; i < 44; i++) {
+            ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
+            if (itemStack != null && itemStack.getItem() == item)
+                count+=itemStack.getCount();
+        }
+        return count;
+    }
+
     public HashMap<Integer, ItemStack> getStacksFromInventory(boolean hotbar) {
         HashMap<Integer, ItemStack> stacks = Maps.newHashMap();
         if (hotbar) {
