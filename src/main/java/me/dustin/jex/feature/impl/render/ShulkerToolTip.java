@@ -67,7 +67,7 @@ public class ShulkerToolTip extends Feature {
                     float yPos = y + 20 + (20 * yCount);
                     if (stacks.containsKey(i)) {
                         ItemStack itemStack = stacks.get(i);
-                        Wrapper.INSTANCE.getMinecraft().getItemRenderer().zOffset = 150;
+                        Wrapper.INSTANCE.getMinecraft().getItemRenderer().zOffset = 200;
                         Render2DHelper.INSTANCE.drawItem(itemStack, (int) xPos, (int) yPos);
                         Wrapper.INSTANCE.getMinecraft().getItemRenderer().zOffset = 0;
                     }
