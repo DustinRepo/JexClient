@@ -2,6 +2,7 @@ package me.dustin.jex.feature.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
@@ -23,6 +24,7 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 
@@ -36,7 +38,7 @@ public class FastAnvilDupe extends Feature {
     private boolean alertedXPEmpty;
     private boolean alertedInventoryNotFull;
 
-    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class})
+    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventKeyPressed.class})
     private void runMethod(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
@@ -89,6 +91,10 @@ public class FastAnvilDupe extends Feature {
                         }
                     }
                 }
+            }
+        } else if (event instanceof EventKeyPressed eventKeyPressed && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AnvilScreen anvilScreen) {
+            if (eventKeyPressed.getKey() == GLFW.GLFW_KEY_BACKSPACE && anvilScreen.getScreenHandler().getSlot(2).hasStack() && anvilScreen.getScreenHandler().getSlot(2).getStack().getName().getString().length() <= 1) {
+                NetworkHelper.INSTANCE.sendPacket(new RenameItemC2SPacket(""));
             }
         }
     }
