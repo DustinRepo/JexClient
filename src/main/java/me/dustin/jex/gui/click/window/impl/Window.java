@@ -180,9 +180,11 @@ public class Window {
             });
 
         if (scrollbar != null) {
-            float contentHeight = buttons.isEmpty() ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
-            scrollbar.setContentHeight(contentHeight);
-            scrollbar.setViewportHeight(maxHeight);
+            try {
+                float contentHeight = buttons.isEmpty() ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
+                scrollbar.setContentHeight(contentHeight);
+                scrollbar.setViewportHeight(maxHeight);
+            }catch (Exception e){}
         }
     }
 
