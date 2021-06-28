@@ -96,7 +96,7 @@ public class Scaffold extends Feature {
 
     private boolean goingToPlace(BlockPos blockPos) {
         for (BlockInfo blockInfo : emptyNearBlocks) {
-            if (isEqual(blockPos, blockInfo.blockPos))
+            if (isEqual(blockPos, blockInfo.blockpos()))
                 return true;
         }
         return false;
@@ -127,7 +127,7 @@ public class Scaffold extends Feature {
             }
             if (blockInfo != null) {
                 emptyNearBlocks.offer(blockInfo);
-                if (blockInfo.blockPos != blockPos)
+                if (blockInfo.blockpos() != blockPos)
                     emptyNearBlocks.offer(new BlockInfo(blockPos, null));
             }
             return;
@@ -145,15 +145,15 @@ public class Scaffold extends Feature {
     }
 
     public void place(BlockInfo blockInfo, EventPlayerPackets event) {
-        if (blockInfo.facing == null) {
-            blockInfo = getBlockInfo(blockInfo.blockPos);
+        if (blockInfo.facing() == null) {
+            blockInfo = getBlockInfo(blockInfo.blockpos());
         }
         if (blockInfo == null)
             return;
         if (sneak) {
             NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
         }
-        BlockPos lookAtPos = blockInfo.blockPos;
+        BlockPos lookAtPos = blockInfo.blockpos();
         RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(lookAtPos.getX(), lookAtPos.getY(), lookAtPos.getZ()));
         event.setYaw(rotation.getYaw());
         event.setPitch(80);
@@ -161,7 +161,7 @@ public class Scaffold extends Feature {
         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
         Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
 
-        blockHitResult = new BlockHitResult(new Vec3d(blockInfo.blockPos.getX(), blockInfo.blockPos.getY(), blockInfo.blockPos.getZ()), blockInfo.facing, blockInfo.blockPos, false);
+        blockHitResult = new BlockHitResult(new Vec3d(blockInfo.blockpos().getX(), blockInfo.blockpos().getY(), blockInfo.blockpos().getZ()), blockInfo.facing(), blockInfo.blockpos(), false);
         if (placeMode.equalsIgnoreCase("Pre"))
             Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
     }
@@ -208,13 +208,5 @@ public class Scaffold extends Feature {
         return blockItem.getBlock().getDefaultState().isFullCube(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN);
     }
 
-    public static class BlockInfo {
-        public BlockPos blockPos;
-        public Direction facing;
-
-        public BlockInfo(BlockPos blockpos, Direction facing) {
-            this.blockPos = blockpos;
-            this.facing = facing;
-        }
-    }
+    public record BlockInfo (BlockPos blockpos, Direction facing) {}
 }
