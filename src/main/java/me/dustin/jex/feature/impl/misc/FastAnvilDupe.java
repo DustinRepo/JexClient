@@ -13,6 +13,7 @@ import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
+import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -24,6 +25,7 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
+import net.minecraft.client.render.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -38,6 +40,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
 
 @Feat(name = "FastAnvilDupe", category = FeatureCategory.MISC, description = "Speeds up the current anvil dupe")
 public class FastAnvilDupe extends Feature {
@@ -54,6 +58,8 @@ public class FastAnvilDupe extends Feature {
     private boolean pickedUp;
     private Item dupingItem;
 
+    private ArrayList<Box> renderBoxes = new ArrayList<>();
+    private Timer timer = new Timer();
 
     @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventKeyPressed.class, EventDrawScreen.class, EventDisplayScreen.class})
     private void runMethod(Event event) {
@@ -112,17 +118,39 @@ public class FastAnvilDupe extends Feature {
                 }
             }
         } else if (event instanceof EventRender3D eventRender3D && markedDamage) {
+            ArrayList<BlockPos> ignore = new ArrayList<>();
+            int color = ColorHelper.INSTANCE.getRainbowColor();
+            Render3DHelper.INSTANCE.setup3DRender(true);
+            //I know this looks fucky but it's done for performance
+            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+            renderBoxes.forEach(box -> {
+                Vec3d vec3d = Render3DHelper.INSTANCE.getRenderPosition(box.minX, box.minY, box.minZ);
+                box = new Box(vec3d.getX(), vec3d.getY(), vec3d.getZ(), vec3d.getX() + 1, vec3d.getY() + (box.maxY - box.minY), vec3d.getZ() + 1);
+                Render3DHelper.INSTANCE.doFadeBoxNoDraw(eventRender3D.getMatrixStack(), box, color & 0xa9ffffff);
+            });
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+            Render3DHelper.INSTANCE.end3DRender();
+            if (!timer.hasPassed(250))
+                return;
+            timer.reset();
+            renderBoxes.clear();
             for (int x = -4; x < 4; x++) {
                 for (int y = -4; y < 4; y++) {
                     for (int z = -4; z < 4; z++) {
                         BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
+                        if (ignore.contains(blockPos))
+                            continue;
+                        Box box;
                         if (WorldHelper.INSTANCE.getBlock(blockPos) == Blocks.DAMAGED_ANVIL) {
-                            Vec3d vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                            int color = ColorHelper.INSTANCE.getRainbowColor();
-                            Box box = new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1, vec3d.y + 1.2f, vec3d.z + 1);
-                            Render3DHelper.INSTANCE.setup3DRender(true);
-                            Render3DHelper.INSTANCE.drawFadeBox(eventRender3D.getMatrixStack(), box, color & 0xa9ffffff);
-                            Render3DHelper.INSTANCE.end3DRender();
+                            box = new Box(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1.2f, blockPos.getZ() + 1);
+                            while (WorldHelper.INSTANCE.getBlock(blockPos.up()) == Blocks.DAMAGED_ANVIL) {
+                                box = box.withMaxY(box.maxY + 1);
+                                blockPos = blockPos.up();
+                                ignore.add(blockPos);
+                            }
+                            renderBoxes.add(box);
                         }
                     }
                 }
@@ -141,7 +169,7 @@ public class FastAnvilDupe extends Feature {
                 FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Filled Inventory?", midX + 90, midY - 60, !InventoryHelper.INSTANCE.isInventoryFull() ? 0xffff0000 : 0xff00ff00);
             }
         } else if (event instanceof EventDisplayScreen eventDisplayScreen) {
-            if (eventDisplayScreen.getScreen() == null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AnvilScreen && !KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_ESCAPE)) {
+            if (eventDisplayScreen.getScreen() == null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AnvilScreen && !(KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_ESCAPE) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_E))) {
                 pickedUp = false;
                 if (!openNext)
                     return;
