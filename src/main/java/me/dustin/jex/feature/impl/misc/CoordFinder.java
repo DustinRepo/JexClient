@@ -4,12 +4,10 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 
-@Feat(name = "CoordFinder", category = FeatureCategory.MISC, description = "sniff packets lol")
+@Feature.Manifest(name = "CoordFinder", category = Feature.Category.MISC, description = "Tells you exact coordinates of Wither Spawns and End Portal Activations on vanilla servers.")
 public class CoordFinder extends Feature {
 
     @EventListener(events = {EventPacketReceive.class})

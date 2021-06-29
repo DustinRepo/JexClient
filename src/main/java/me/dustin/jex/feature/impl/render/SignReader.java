@@ -6,8 +6,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -22,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.HashMap;
 
-@Feat(name = "SignReader", category = FeatureCategory.VISUAL, description = "Display the text of a hovered sign on screen.")
+@Feature.Manifest(name = "SignReader", category = Feature.Category.VISUAL, description = "Display the text of a hovered sign on screen.")
 public class SignReader extends Feature {
 
     @Op(name = "Scale", min = 0.1f, max = 2, inc = 0.05f)

@@ -6,15 +6,13 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 
-@Feat(name = "AutoTool", category = FeatureCategory.PLAYER, description = "Switch to the best tool for your needs.")
+@Feature.Manifest(name = "AutoTool", category = Feature.Category.PLAYER, description = "Switch to the best tool for your needs.")
 public class AutoTool extends Feature {
 
     @EventListener(events = {EventClickBlock.class})

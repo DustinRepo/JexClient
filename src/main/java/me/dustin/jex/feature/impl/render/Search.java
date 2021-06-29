@@ -14,8 +14,6 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -36,7 +34,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
-@Feat(name = "Search", category = FeatureCategory.VISUAL, description = "Search for a specific block. use \".help search\"")
+@Feature.Manifest(name = "Search", category = Feature.Category.VISUAL, description = "Search for a specific block. use \".help search\"")
 public class Search extends Feature {
 
     private static ConcurrentMap<Block, Integer> blocks = Maps.newConcurrentMap();

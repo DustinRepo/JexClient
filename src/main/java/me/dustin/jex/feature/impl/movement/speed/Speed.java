@@ -7,14 +7,12 @@ import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.extension.FeatureExtension;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.movement.speed.impl.NCPSpeed;
 import me.dustin.jex.feature.impl.movement.speed.impl.VanillaSpeed;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 
-@Feat(name = "Speed", category = FeatureCategory.MOVEMENT, description = "Sanic gotta go fast.")
+@Feature.Manifest(name = "Speed", category = Feature.Category.MOVEMENT, description = "Sanic gotta go fast.")
 public class Speed extends Feature {
 
     @Op(name = "Mode", all = {"Vanilla", "Floaty"})

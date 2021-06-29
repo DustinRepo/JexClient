@@ -4,14 +4,12 @@ import io.netty.buffer.Unpooled;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 
 import java.nio.charset.StandardCharsets;
 
-@Feat(name = "VanillaSpoof", category = FeatureCategory.MISC, description = "Tell the server you are a vanilla player")
+@Feature.Manifest(name = "VanillaSpoof", category = Feature.Category.MISC, description = "Tell the server you are a vanilla player")
 public class VanillaSpoof extends Feature {
 
     @EventListener(events = {EventPacketSent.class})

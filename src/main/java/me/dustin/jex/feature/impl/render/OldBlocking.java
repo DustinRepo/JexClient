@@ -5,8 +5,6 @@ import me.dustin.jex.event.render.EventRenderHeldItem;
 import me.dustin.jex.event.render.EventRenderItem;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,7 +16,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
-@Feat(name = "OldBlocking", category = FeatureCategory.VISUAL, description = "Get the pre-1.9 block animation when blocking with a shield.")
+@Feature.Manifest(name = "OldBlocking", category = Feature.Category.VISUAL, description = "Get the pre-1.9 block animation when blocking with a shield.")
 public class OldBlocking extends Feature {
 
     @Op(name = "Mode", all = {"Swords", "Tools", "All Items"})

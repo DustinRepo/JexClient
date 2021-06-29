@@ -5,8 +5,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Timer;
@@ -25,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 
-@Feat(name = "AutoTrap", category = FeatureCategory.COMBAT, description = "Automatically trap people in boxes of obsidian")
+@Feature.Manifest(name = "AutoTrap", category = Feature.Category.COMBAT, description = "Automatically trap people in boxes of obsidian")
 public class AutoTrap extends Feature {
 
     @Op(name = "Rotate")

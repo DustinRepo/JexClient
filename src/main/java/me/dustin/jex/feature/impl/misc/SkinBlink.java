@@ -5,8 +5,6 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -14,7 +12,7 @@ import net.minecraft.client.render.entity.PlayerModelPart;
 import java.util.ArrayList;
 import java.util.Random;
 
-@Feat(name = "SkinBlink", category = FeatureCategory.MISC, description = "Make your skin flash your layers on and off")
+@Feature.Manifest(name = "SkinBlink", category = Feature.Category.MISC, description = "Make your skin flash your layers on and off")
 public class SkinBlink extends Feature {
 
     @Op(name = "Mode", all = {"Random", "Full Flash", "Custom"})

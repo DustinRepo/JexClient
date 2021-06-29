@@ -7,13 +7,11 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.gui.screen.TitleScreen;
 
-@Feat(name = "CustomMainMenu", category = FeatureCategory.VISUAL, description = "The custom main menu for Jex")
+@Feature.Manifest(name = "CustomMainMenu", category = Feature.Category.VISUAL, description = "The custom main menu for Jex")
 public class CustomMainMenu extends Feature {
 
     @Op(name = "Background")

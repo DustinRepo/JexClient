@@ -8,13 +8,11 @@ import me.dustin.jex.event.player.EventSlowdown;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 
-@Feat(name = "NoSlow", category = FeatureCategory.MOVEMENT, description = "Prevent actions from slowing you down")
+@Feature.Manifest(name = "NoSlow", category = Feature.Category.MOVEMENT, description = "Prevent actions from slowing you down")
 public class NoSlow extends Feature {
 
     @Op(name = "Use Item")

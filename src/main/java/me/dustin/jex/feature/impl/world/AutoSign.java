@@ -8,8 +8,6 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
@@ -18,7 +16,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-@Feat(name = "AutoSign", category = FeatureCategory.WORLD, description = "Automatically write to signs.")
+@Feature.Manifest(name = "AutoSign", category = Feature.Category.WORLD, description = "Automatically write to signs.")
 public class AutoSign extends Feature {
 
     public Text[] signText = {new LiteralText("     "), new LiteralText(""), new LiteralText(""), new LiteralText("")};

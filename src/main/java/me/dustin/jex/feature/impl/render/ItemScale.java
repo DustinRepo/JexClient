@@ -3,13 +3,11 @@ package me.dustin.jex.feature.impl.render;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRenderItem;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.util.math.MatrixStack;
 
-@Feat(name = "ItemScale", category = FeatureCategory.VISUAL, description = "Change the scale and positioning of items in your hands")
+@Feature.Manifest(name = "ItemScale", category = Feature.Category.VISUAL, description = "Change the scale and positioning of items in your hands")
 public class ItemScale extends Feature {
 
     @Op(name = "Right Hand")

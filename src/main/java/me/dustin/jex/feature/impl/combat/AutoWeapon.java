@@ -3,8 +3,6 @@ package me.dustin.jex.feature.impl.combat;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.player.AutoEat;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -18,7 +16,7 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 
 import java.util.Map;
 
-@Feat(name = "AutoWeapon", category = FeatureCategory.COMBAT, description = "Automatically swap to the best weapon when attacking.")
+@Feature.Manifest(name = "AutoWeapon", category = Feature.Category.COMBAT, description = "Automatically swap to the best weapon when attacking.")
 public class AutoWeapon extends Feature {
 
     @Op(name = "Living Only")

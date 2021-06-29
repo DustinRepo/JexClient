@@ -10,8 +10,6 @@ import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.esp.impl.BoxESP;
 import me.dustin.jex.feature.impl.render.esp.impl.ShaderESP;
 import me.dustin.jex.feature.impl.render.esp.impl.TwoDeeESP;
@@ -22,8 +20,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-
-@Feat(name = "ESP", category = FeatureCategory.VISUAL, description = "Mark entities/players through walls")
+@Feature.Manifest(name = "ESP", category = Feature.Category.VISUAL, description = "Mark entities/players through walls")
 public class ESP extends Feature {
     public static ESP INSTANCE;
     @Op(name = "Mode", all = {"Shader", "2D", "Box Outline", "Box"})

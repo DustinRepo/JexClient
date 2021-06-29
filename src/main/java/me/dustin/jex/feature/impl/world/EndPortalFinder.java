@@ -6,13 +6,11 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.util.math.Vec3d;
 
-@Feat(name = "EndPortalFinder", category = FeatureCategory.WORLD, description = "Find end portals with just two eye of ender. Math from https://www.omnicalculator.com/other/end-portal-finder")
+@Feature.Manifest(name = "EndPortalFinder", category = Feature.Category.WORLD, description = "Find end portals with just two eye of ender. Math from https://www.omnicalculator.com/other/end-portal-finder")
 public class EndPortalFinder extends Feature {
 
     double[] portalPos = null;

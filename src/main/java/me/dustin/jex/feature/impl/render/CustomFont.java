@@ -2,8 +2,6 @@ package me.dustin.jex.feature.impl.render;
 
 import com.google.common.collect.Maps;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.file.FeatureFile;
 import me.dustin.jex.font.NahrFont;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
@@ -18,7 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Feat(name = "CustomFont", category = FeatureCategory.VISUAL, description = "Change the font in aspects of the game. Disable then re-enable to reload fonts from folder (.minecraft/JexClient/fonts)")
+@Feature.Manifest(name = "CustomFont", category = Feature.Category.VISUAL, description = "Change the font in aspects of the game. Disable then re-enable to reload fonts from folder (.minecraft/JexClient/fonts)")
 public class CustomFont extends Feature {
     public static CustomFont INSTANCE;
 

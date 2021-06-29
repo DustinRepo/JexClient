@@ -6,8 +6,6 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -20,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feat(name = "AutoArmor", category = FeatureCategory.COMBAT, description = "Puts on the best armor in your inventory automatically.")
+@Feature.Manifest(name = "AutoArmor", category = Feature.Category.COMBAT, description = "Puts on the best armor in your inventory automatically.")
 public class AutoArmor extends Feature {
 
     @Op(name = "Delay (MS)", max = 1000)

@@ -6,16 +6,14 @@ import me.dustin.events.core.enums.EventPriority;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.extension.FeatureExtension;
+import me.dustin.jex.feature.core.Feature;
+import me.dustin.jex.feature.impl.combat.killaura.impl.MultiAura;
+import me.dustin.jex.feature.impl.combat.killaura.impl.SingleAura;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.BaritoneHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
-import me.dustin.jex.feature.impl.combat.killaura.impl.MultiAura;
-import me.dustin.jex.feature.impl.combat.killaura.impl.SingleAura;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.entity.Entity;
@@ -25,7 +23,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@Feat(name = "Aura", category = FeatureCategory.COMBAT, description = "Attack entities around you.")
+@Feature.Manifest(name = "Aura", category = Feature.Category.COMBAT, description = "Attack entities around you.", key = GLFW.GLFW_KEY_R)
 public class Killaura extends Feature {
 
     @Op(name = "Mode", all = {"Single", "Multi"})
@@ -97,7 +95,6 @@ public class Killaura extends Feature {
     public Killaura() {
         new SingleAura();
         new MultiAura();
-        this.setKey(GLFW.GLFW_KEY_R);
     }
 
     @EventListener(events = {EventPlayerPackets.class, EventRender3D.class}, priority = EventPriority.LOWEST)

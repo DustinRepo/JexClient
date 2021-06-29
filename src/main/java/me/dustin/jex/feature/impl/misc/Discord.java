@@ -6,13 +6,11 @@ import club.minnced.discord.rpc.DiscordRichPresence;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 
 import java.util.Objects;
 
-@Feat(name = "DiscordRPC", category = FeatureCategory.MISC, description = "Show on Discord that you are using Jex Client")
+@Feature.Manifest(name = "DiscordRPC", category = Feature.Category.MISC, description = "Show on Discord that you are using Jex Client")
 public class Discord extends Feature {
 
     @Op(name = "Show Server IP")

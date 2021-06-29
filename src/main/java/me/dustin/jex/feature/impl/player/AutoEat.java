@@ -5,8 +5,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerUpdates;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -24,7 +22,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-@Feat(name = "AutoEat", category = FeatureCategory.PLAYER, description = "Eat food when hunger is low.")
+@Feature.Manifest(name = "AutoEat", category = Feature.Category.PLAYER, description = "Eat food when hunger is low.")
 public class AutoEat extends Feature {
 
     public static boolean isEating;

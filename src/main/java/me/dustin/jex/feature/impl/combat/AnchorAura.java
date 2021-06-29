@@ -5,8 +5,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -35,7 +33,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
-@Feat(name = "AnchorAura", category = FeatureCategory.COMBAT, description = "Automatically place/charge/explode respawn anchors near players")
+@Feature.Manifest(name = "AnchorAura", category = Feature.Category.COMBAT, description = "Automatically place/charge/explode respawn anchors near players")
 public class AnchorAura extends Feature {
 
     @Op(name = "Mode", all = {"Suicidal", "Risky", "Safe"})

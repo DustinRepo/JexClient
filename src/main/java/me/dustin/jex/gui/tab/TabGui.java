@@ -4,7 +4,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.Hud;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
@@ -28,10 +27,10 @@ public enum TabGui {
         int categoryCount = 0;
         spotHoverY = y + (categorySelect * buttonHeight);
         modSpotHoverY = y + (modSelect * buttonHeight);
-        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (FeatureCategory.values().length * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
-        for (FeatureCategory category : FeatureCategory.values()) {
+        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (Feature.Category.values().length * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
+        for (Feature.Category category : Feature.Category.values()) {
             int offset = 1;
-            if (categoryCount != FeatureCategory.values().length - 1) {
+            if (categoryCount != Feature.Category.values().length - 1) {
                 Render2DHelper.INSTANCE.drawHLine(matrixStack, x + 1, x + width - 2, y + (categoryCount * buttonHeight) + buttonHeight - 1, 0x50ffffff);
             }
             Render2DHelper.INSTANCE.fill(matrixStack, x + 1, y + (categoryCount * buttonHeight), x + width - 1, y + (categoryCount * buttonHeight) + buttonHeight - offset, 0x35000000);
@@ -43,7 +42,7 @@ public enum TabGui {
         else
             FontHelper.INSTANCE.drawWithShadow(matrixStack, ">", x + 5, hoverY + (buttonHeight / 2 - 4.5f), ColorHelper.INSTANCE.getClientColor());
 
-        for (FeatureCategory category : FeatureCategory.values()) {
+        for (Feature.Category category : Feature.Category.values()) {
             String catName = category.name().substring(0, 1).toUpperCase() + category.name().substring(1).toLowerCase();
             FontHelper.INSTANCE.drawWithShadow(matrixStack, catName, x + (categoryCount == categorySelect && !hoverBar ? 12 : 5), y + (categoryCount * buttonHeight) + (buttonHeight / 2 - 4.5f), categoryCount == categorySelect && !hoverBar ? ColorHelper.INSTANCE.getClientColor() : 0xffaaaaaa);
             categoryCount++;
@@ -53,10 +52,10 @@ public enum TabGui {
             x = x + width;
             width = getModWidth(width);
             int modCount = 0;
-            Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (Feature.getModules(FeatureCategory.values()[categorySelect]).size() * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
-            for (Feature category : Feature.getModules(FeatureCategory.values()[categorySelect])) {
+            Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (Feature.getModules(Feature.Category.values()[categorySelect]).size() * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
+            for (Feature category : Feature.getModules(Feature.Category.values()[categorySelect])) {
                 int offset = 1;
-                if (modCount != Feature.getModules(FeatureCategory.values()[categorySelect]).size() - 1) {
+                if (modCount != Feature.getModules(Feature.Category.values()[categorySelect]).size() - 1) {
                     Render2DHelper.INSTANCE.drawHLine(matrixStack, x + 1, x + width - 2, y + (modCount * buttonHeight) + buttonHeight - 1, 0x50ffffff);
                 }
                 Render2DHelper.INSTANCE.fill(matrixStack, x + 1, y + (modCount * buttonHeight), x + width - 1, y + (modCount * buttonHeight) + buttonHeight - offset, 0x35000000);
@@ -68,7 +67,7 @@ public enum TabGui {
             else
                 FontHelper.INSTANCE.drawWithShadow(matrixStack, ">", x + 5, modHoverY + (buttonHeight / 2 - 4.5f), ColorHelper.INSTANCE.getClientColor());
 
-            for (Feature feature : Feature.getModules(FeatureCategory.values()[categorySelect])) {
+            for (Feature feature : Feature.getModules(Feature.Category.values()[categorySelect])) {
                 FontHelper.INSTANCE.drawWithShadow(matrixStack, feature.getName(), x + (modCount == modSelect && !hoverBar ? 12 : 5), y + (modCount * buttonHeight) + (buttonHeight / 2 - 4.5f), feature.getState() ? 0xffaaaaaa : 0xff555555);
                 modCount++;
             }
@@ -85,22 +84,22 @@ public enum TabGui {
                 if (!categoryOpen) {
                     categorySelect--;
                     if (categorySelect < 0)
-                        categorySelect = FeatureCategory.values().length - 1;
+                        categorySelect = Feature.Category.values().length - 1;
                 } else {
                     modSelect--;
                     if (modSelect < 0) {
-                        modSelect = modListSize(FeatureCategory.values()[categorySelect]);
+                        modSelect = modListSize(Feature.Category.values()[categorySelect]);
                     }
                 }
                 break;
             case GLFW.GLFW_KEY_DOWN:
                 if (!categoryOpen) {
                     categorySelect++;
-                    if (categorySelect > FeatureCategory.values().length - 1)
+                    if (categorySelect > Feature.Category.values().length - 1)
                         categorySelect = 0;
                 } else {
                     modSelect++;
-                    if (modSelect > modListSize(FeatureCategory.values()[categorySelect])) {
+                    if (modSelect > modListSize(Feature.Category.values()[categorySelect])) {
                         modSelect = 0;
                     }
                 }
@@ -124,7 +123,7 @@ public enum TabGui {
     }
 
     private float getModWidth(float origWidth) {
-        for (Feature feature : Feature.getModules(FeatureCategory.values()[categorySelect])) {
+        for (Feature feature : Feature.getModules(Feature.Category.values()[categorySelect])) {
             float offset = hoverBar ? 8 : 15;
             if (FontHelper.INSTANCE.getStringWidth(feature.getName()) + offset > origWidth) {
                 origWidth = FontHelper.INSTANCE.getStringWidth(feature.getName()) + offset;
@@ -134,10 +133,10 @@ public enum TabGui {
     }
 
     private Feature getSelectedModule() {
-        return Feature.getModules(FeatureCategory.values()[categorySelect]).get(modSelect);
+        return Feature.getModules(Feature.Category.values()[categorySelect]).get(modSelect);
     }
 
-    private int modListSize(FeatureCategory category) {
+    private int modListSize(Feature.Category category) {
         return Feature.getModules(category).size() - 1;
     }
 

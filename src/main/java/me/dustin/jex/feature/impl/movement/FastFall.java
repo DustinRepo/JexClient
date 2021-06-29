@@ -4,12 +4,10 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.player.Freecam;
 import me.dustin.jex.option.annotate.Op;
 
-@Feat(name = "FallSpeed", category = FeatureCategory.MOVEMENT, description = "Fall faster")
+@Feature.Manifest(name = "FallSpeed", category = Feature.Category.MOVEMENT, description = "Fall faster")
 public class FastFall extends Feature {
 
     @Op(name = "Fall Distance", min = 0, max = 10, inc = 0.5f)

@@ -11,8 +11,6 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
@@ -20,7 +18,7 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 
-@Feat(name = "AutoReconnect", category = FeatureCategory.MISC, description = "Reconnect automatically.")
+@Feature.Manifest(name = "AutoReconnect", category = Feature.Category.MISC, description = "Reconnect automatically.")
 public class AutoReconnect extends Feature {
 
     @Op(name = "Delay", min = 1000, max = 20000, inc = 500)

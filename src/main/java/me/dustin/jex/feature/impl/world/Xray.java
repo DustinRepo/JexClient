@@ -3,11 +3,9 @@ package me.dustin.jex.feature.impl.world;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.*;
+import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.Block;
@@ -18,7 +16,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@Feat(name = "Xray", category = FeatureCategory.WORLD, description = "Have 200 iq while mining. Not cheating I promise.")
+@Feature.Manifest(name = "Xray", category = Feature.Category.WORLD, description = "Have 200 iq while mining. Not cheating I promise.", key = GLFW.GLFW_KEY_X)
 public class Xray extends Feature {
 
     public static ArrayList<Block> blockList = new ArrayList<>();
@@ -35,10 +33,6 @@ public class Xray extends Feature {
         blockList.add(Blocks.GOLD_ORE);
         blockList.add(Blocks.LAPIS_ORE);
         blockList.add(Blocks.NETHER_QUARTZ_ORE);
-    }
-
-    public Xray() {
-        this.setKey(GLFW.GLFW_KEY_X);
     }
 
     @EventListener(events = {EventShouldDrawSide.class, EventBlockBrightness.class, EventMarkChunkClosed.class, EventRenderBlockEntity.class, EventRenderBlock.class, EventRenderFluid.class, EventGetRenderLayer.class, EventIsBlockOpaque.class, EventBufferQuadAlpha.class})

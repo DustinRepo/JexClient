@@ -4,12 +4,10 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.util.InputUtil;
 
-@Feat(name = "Zoom", category = FeatureCategory.VISUAL, description = "Zoom in like optifine")
+@Feature.Manifest(name = "Zoom", category = Feature.Category.VISUAL, description = "Zoom in like Optifine")
 public class Zoom extends Feature {
 
     @Op(name = "Zoom Level", min = 1, max = 5, inc = 0.1f)

@@ -5,14 +5,12 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.network.Packet;
 
 import java.util.ArrayList;
 
-@Feat(name = "Fakelag", category = FeatureCategory.MISC, description = "Pretend to lag")
+@Feature.Manifest(name = "Fakelag", category = Feature.Category.MISC, description = "Pretend to lag")
 public class Fakelag extends Feature {
 
     @Op(name = "Choke MS", min = 50, max = 2000, inc = 10)

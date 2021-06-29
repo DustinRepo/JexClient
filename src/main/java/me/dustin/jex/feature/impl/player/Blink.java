@@ -5,8 +5,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -17,7 +15,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-@Feat(name = "Blink", category = FeatureCategory.PLAYER, description = "Delay your movements to the server, making it seem like you teleported.")
+@Feature.Manifest(name = "Blink", category = Feature.Category.PLAYER, description = "Delay your movements to the server, making it seem like you teleported.")
 public class Blink extends Feature {
 
     private ArrayList<PlayerMoveC2SPacket> packets = new ArrayList<>();

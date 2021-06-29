@@ -13,7 +13,6 @@ import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.FeatureManager;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.combat.killaura.Killaura;
 import me.dustin.jex.feature.impl.misc.Discord;
 import me.dustin.jex.feature.impl.misc.Fakelag;
@@ -52,7 +51,7 @@ public enum JexClient {
     INSTANCE;
     private boolean autoSaveModules = false;
     private boolean soundOnLaunch = true;
-    private Logger logger = LogManager.getFormatterLogger("Jex");;
+    private final Logger logger = LogManager.getFormatterLogger("Jex");
 
     public void initializeClient() {
         getLogger().info("Loading Jex Client");
@@ -163,7 +162,7 @@ public enum JexClient {
 
     private void createJson() {
         JsonObject jsonObject = new JsonObject();
-        for (FeatureCategory featureCategory : FeatureCategory.values()) {
+        for (Feature.Category featureCategory : Feature.Category.values()) {
             JsonArray categoryArray = new JsonArray();
             for (Feature feature : Feature.getModules(featureCategory)) {
                 JsonObject object = new JsonObject();

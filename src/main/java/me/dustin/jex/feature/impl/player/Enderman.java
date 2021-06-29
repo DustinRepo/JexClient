@@ -8,8 +8,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -18,7 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 
-@Feat(name = "Enderman", category = FeatureCategory.PLAYER, description = "Select how to deal with enderman.")
+@Feature.Manifest(name = "Enderman", category = Feature.Category.PLAYER, description = "Select how to deal with enderman.")
 public class Enderman extends Feature {
 
     @Op(name = "Mode", all = {"Look At", "Look Away"})

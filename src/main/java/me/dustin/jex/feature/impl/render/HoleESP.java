@@ -3,8 +3,6 @@ package me.dustin.jex.feature.impl.render;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -19,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 import java.awt.*;
 import java.util.ArrayList;
 
-@Feat(name = "HoleESP", category = FeatureCategory.VISUAL, description = "Automatically show holes for safe crystal-ing")
+@Feature.Manifest(name = "HoleESP", category = Feature.Category.VISUAL, description = "Automatically show holes for safe crystal-ing")
 public class HoleESP extends Feature {
 
     @Op(name = "Fade Box")

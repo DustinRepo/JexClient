@@ -7,14 +7,12 @@ import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 
-@Feat(name = "MiddleClickFriend", category = FeatureCategory.MISC, description = "Middle click people to add them as friends.")
+@Feature.Manifest(name = "MiddleClickFriend", category = Feature.Category.MISC, description = "Middle click people to add them as friends.")
 public class MiddleClickFriend extends Feature {
 
     @EventListener(events = {EventMouseButton.class})

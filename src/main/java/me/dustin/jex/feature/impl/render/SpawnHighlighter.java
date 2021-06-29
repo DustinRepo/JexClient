@@ -6,8 +6,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.Block;
@@ -19,7 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
-@Feat(name = "SpawnHighlighter", category = FeatureCategory.VISUAL, description = "Show all blocks near you that mobs can spawn on.")
+@Feature.Manifest(name = "SpawnHighlighter", category = Feature.Category.VISUAL, description = "Show all blocks near you that mobs can spawn on.")
 public class SpawnHighlighter extends Feature {
 
     @Op(name = "Radius", min = 10, max = 50, inc = 1)

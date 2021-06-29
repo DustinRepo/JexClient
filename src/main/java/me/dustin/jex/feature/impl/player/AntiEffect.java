@@ -4,12 +4,10 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.entity.effect.StatusEffects;
 
-@Feat(name = "AntiEffect", category = FeatureCategory.PLAYER, description = "Remove certain negative effects from yourself.")
+@Feature.Manifest(name = "AntiEffect", category = Feature.Category.PLAYER, description = "Remove certain negative effects from yourself.")
 public class AntiEffect extends Feature {
 
     @Op(name = "Blindness")

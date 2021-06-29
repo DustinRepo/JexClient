@@ -5,11 +5,9 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventRenderTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 
-@Feat(name = "Timer", category = FeatureCategory.WORLD, description = "Speed up or slow down the game")
+@Feature.Manifest(name = "Timer", category = Feature.Category.WORLD, description = "Speed up or slow down the game")
 public class Timer extends Feature {
 
     @Op(name = "Speed", min = 0.1f, max = 5, inc = 0.1f)

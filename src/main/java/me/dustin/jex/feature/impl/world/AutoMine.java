@@ -3,11 +3,9 @@ package me.dustin.jex.feature.impl.world;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Wrapper;
 
-@Feat(name = "AutoMine", category = FeatureCategory.WORLD, description = "Automatically mine any block you hover over.")
+@Feature.Manifest(name = "AutoMine", category = Feature.Category.WORLD, description = "Automatically mine any block you hover over.")
 public class AutoMine extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

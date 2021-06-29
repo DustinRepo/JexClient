@@ -6,13 +6,11 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.util.Hand;
 
-@Feat(name = "AntiAFK", category = FeatureCategory.MISC, description = "Prevent yourself from being detected as AFK and potentially kicked")
+@Feature.Manifest(name = "AntiAFK", category = Feature.Category.MISC, description = "Prevent yourself from being detected as AFK and potentially kicked")
 public class AntiAFK extends Feature {
 
     @Op(name = "Mode", all = {"Swing", "Jump", "Chat"})

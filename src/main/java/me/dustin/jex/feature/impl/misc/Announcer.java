@@ -13,8 +13,6 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -22,7 +20,7 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import java.io.File;
 import java.util.ArrayList;
 
-@Feat(name = "Announcer", category = FeatureCategory.MISC, description = "Fastest way to get muted! Fully customizable with files in the Jex folder")
+@Feature.Manifest(name = "Announcer", category = Feature.Category.MISC, description = "Fastest way to get muted! Fully customizable with files in the Jex folder")
 public class Announcer extends Feature {
 
     @Op(name = "Message Delay", min = 50, max = 5000, inc = 10)

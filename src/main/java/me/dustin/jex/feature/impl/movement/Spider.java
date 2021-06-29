@@ -5,14 +5,12 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Vec3d;
 
-@Feat(name = "Spider", category = FeatureCategory.MOVEMENT, description = "Climb up walls like a spider.")
+@Feature.Manifest(name = "Spider", category = Feature.Category.MOVEMENT, description = "Climb up walls like a spider.")
 public class Spider extends Feature {
 
     @Op(name = "Mode", all = {"Vanilla", "NCP"})

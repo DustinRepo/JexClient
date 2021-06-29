@@ -12,8 +12,6 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.Block;
@@ -21,7 +19,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 
-@Feat(name = "AutoBreak", category = FeatureCategory.WORLD, description = "Set a block to auto re-break when a new block is there.")
+@Feature.Manifest(name = "AutoBreak", category = Feature.Category.WORLD, description = "Set a block to auto re-break when a new block is there.")
 public class AutoBreak extends Feature {
 
     @Op(name = "Show Position")

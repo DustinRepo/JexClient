@@ -3,11 +3,9 @@ package me.dustin.jex.feature.impl.render;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRenderOverlay;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 
-@Feat(name = "AntiOverlay", category = FeatureCategory.VISUAL, description = "Remove overlays")
+@Feature.Manifest(name = "AntiOverlay", category = Feature.Category.VISUAL, description = "Remove overlays")
 public class AntiOverlay extends Feature {
 
     @Op(name = "Water")

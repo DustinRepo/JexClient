@@ -5,7 +5,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.CustomFont;
 import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.feature.impl.render.Hud;
@@ -46,7 +45,7 @@ public class JexGui extends Screen {
     public ArrayList<Button> featureButtons = new ArrayList<>();
     public ArrayList<Button> optionButtons = new ArrayList<>();
 
-    private FeatureCategory currentCategory = FeatureCategory.values()[0];
+    private Feature.Category currentCategory = Feature.Category.values()[0];
     private Scrollbar featureScrollbar;
     private Scrollbar optionsScrollbar;
 
@@ -105,7 +104,7 @@ public class JexGui extends Screen {
         }
         if (categoryButtons.isEmpty()) {
             int catCount = 0;
-            for (FeatureCategory category : FeatureCategory.values()) {
+            for (Feature.Category category : Feature.Category.values()) {
                 ButtonListener listener = new ButtonListener() {
                     @Override
                     public void invoke() {
@@ -133,7 +132,7 @@ public class JexGui extends Screen {
             childCount++;
 
 
-            loadFeatures(FeatureCategory.values()[0]);
+            loadFeatures(Feature.Category.values()[0]);
 
         }
         super.init();
@@ -156,7 +155,7 @@ public class JexGui extends Screen {
         categoryButtons.forEach(jexGuiButton -> {
             jexGuiButton.setPlayClick(ClickGui.doesPlayClickSound());
             try {
-                FeatureCategory cat = FeatureCategory.valueOf(jexGuiButton.getName().toUpperCase());
+                Feature.Category cat = Feature.Category.valueOf(jexGuiButton.getName().toUpperCase());
                 jexGuiButton.setTextColor(cat.equals(currentCategory) ? -1 : Hud.getCategoryColor(cat));
                 jexGuiButton.setBackgroundColor(cat.equals(currentCategory) ? Hud.getCategoryColor(cat) : 0x00000000);
             }catch (IllegalArgumentException | NullPointerException e) {
@@ -326,7 +325,7 @@ public class JexGui extends Screen {
         return false;
     }
 
-    private void loadFeatures(FeatureCategory featureCategory) {
+    private void loadFeatures(Feature.Category featureCategory) {
         featureButtons.clear();
         int featCount = 0;
         float oneThird = (windowWidth / 3) - 2;

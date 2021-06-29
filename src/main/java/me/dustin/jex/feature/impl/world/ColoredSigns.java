@@ -3,11 +3,9 @@ package me.dustin.jex.feature.impl.world;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 
-@Feat(name = "ColoredSigns", category = FeatureCategory.WORLD, description = "Color coded signs. Use & for the color code")
+@Feature.Manifest(name = "ColoredSigns", category = Feature.Category.WORLD, description = "Color coded signs. Use & for the color code")
 public class ColoredSigns extends Feature {
 
     @EventListener(events = {EventPacketSent.class})

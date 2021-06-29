@@ -3,14 +3,12 @@ package me.dustin.jex.feature.impl.world;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-@Feat(name = "Radar", category = FeatureCategory.WORLD, description = "Draws a Radar on your HUD telling you where entities are")
+@Feature.Manifest(name = "Radar", category = Feature.Category.WORLD, description = "Draws a Radar on your HUD telling you where entities are")
 public class Radar extends Feature {
     public static Radar INSTANCE;
     @Op(name = "Waypoints")

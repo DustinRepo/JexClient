@@ -4,14 +4,12 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
-@Feat(name = "Nofall", category = FeatureCategory.PLAYER, description = "Remove fall damage.")
+@Feature.Manifest(name = "Nofall", category = Feature.Category.PLAYER, description = "Remove fall damage.")
 public class Nofall extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

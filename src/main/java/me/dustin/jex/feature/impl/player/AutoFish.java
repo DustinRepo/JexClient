@@ -13,8 +13,6 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.Blocks;
@@ -30,7 +28,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.ConcurrentModificationException;
 
-@Feat(name = "AutoFish", category = FeatureCategory.PLAYER, description = "Automatically detect a fish on the hook")
+@Feature.Manifest(name = "AutoFish", category = Feature.Category.PLAYER, description = "Automatically detect a fish on the hook")
 public class AutoFish extends Feature {
 
     @Op(name = "Sound")

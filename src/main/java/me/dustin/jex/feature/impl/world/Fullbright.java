@@ -4,10 +4,8 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 
-@Feat(name = "Fullbright", category = FeatureCategory.WORLD, description = "Goodbye, darkness. You were never my friend.")
+@Feature.Manifest(name = "Fullbright", category = Feature.Category.WORLD, description = "Goodbye, darkness. You were never my friend.")
 public class Fullbright extends Feature {
 
 

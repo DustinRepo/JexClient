@@ -24,8 +24,6 @@ import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.core.FeatureManager;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
@@ -49,7 +47,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-@Feat(name = "HUD", category = FeatureCategory.VISUAL, description = "Renders an in-game HUD")
+@Feature.Manifest(name = "HUD", category = Feature.Category.VISUAL, description = "Renders an in-game HUD")
 public class Hud extends Feature {
 
     @Op(name = "Client Color", isColor = true)
@@ -569,7 +567,7 @@ public class Hud extends Feature {
         return ColorHelper.INSTANCE.getColorViaHue(hue % 270, rainbowSaturation).getRGB();
     }
 
-    public static int getCategoryColor(FeatureCategory category) {
+    public static int getCategoryColor(Feature.Category category) {
         switch (category) {
             case MOVEMENT:
                 return new Color(141, 95, 255).getRGB();

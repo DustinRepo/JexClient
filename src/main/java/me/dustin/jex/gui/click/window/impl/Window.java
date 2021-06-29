@@ -2,7 +2,6 @@ package me.dustin.jex.gui.click.window.impl;
 
 
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.feature.impl.render.Hud;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -194,7 +193,7 @@ public class Window {
 
     public Window init() {
         try {
-            FeatureCategory category = FeatureCategory.valueOf(this.getName());
+            Feature.Category category = Feature.Category.valueOf(this.getName());
             Feature.getModules(category).forEach(module -> {
                 this.getButtons().add(new ModuleButton(this, module, this.getX() + 1, (this.getY() + this.getHeight()) + ((this.getHeight() + 1) * childCount), this.getWidth() - 2, this.getHeight()));
                 childCount++;
@@ -311,9 +310,9 @@ public class Window {
         return moduleButton;
     }
 
-    public static FeatureCategory getCategory(Window window) {
-        for (FeatureCategory category : FeatureCategory.values()) {
-            if (category.toString().toLowerCase().equalsIgnoreCase(window.getName().toLowerCase()))
+    public static Feature.Category getCategory(Window window) {
+        for (Feature.Category category : Feature.Category.values()) {
+            if (category.toString().equalsIgnoreCase(window.getName()))
                 return category;
         }
         return null;

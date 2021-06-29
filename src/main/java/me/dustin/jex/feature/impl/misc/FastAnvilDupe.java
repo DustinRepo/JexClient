@@ -8,8 +8,6 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
@@ -43,7 +41,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@Feat(name = "FastAnvilDupe", category = FeatureCategory.MISC, description = "Speeds up the current anvil dupe")
+@Feature.Manifest(name = "FastAnvilDupe", category = Feature.Category.MISC, description = "Speeds up the current anvil dupe")
 public class FastAnvilDupe extends Feature {
 
     @Op(name = "Mark Damaged")
@@ -164,9 +162,10 @@ public class FastAnvilDupe extends Feature {
                 float midX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f;
                 float midY = Render2DHelper.INSTANCE.getScaledHeight() / 2.f;
                 FontHelper.INSTANCE.drawCenteredString(eventDrawScreen.getMatrixStack(), "Tip: Open slots in your inventory and remove the name on the item to get original name.", midX, 2, ColorHelper.INSTANCE.getClientColor());
-                FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Auto Level: " + (autoLevel ? "\247aON \247rBottles: \247f" + InventoryHelper.INSTANCE.countItems(Items.EXPERIENCE_BOTTLE) : "\2474OFF"), midX + 90, midY - 80, ColorHelper.INSTANCE.getClientColor());
+                FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Auto Level\2477: " + (autoLevel ? "\247aON \247rBottles\2477: \247f" + InventoryHelper.INSTANCE.countItems(Items.EXPERIENCE_BOTTLE) : "\2474OFF"), midX + 90, midY - 80, ColorHelper.INSTANCE.getClientColor());
                 FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Enough XP?", midX + 90, midY - 70, Wrapper.INSTANCE.getLocalPlayer().experienceLevel < 1 ? 0xffff0000 : 0xff00ff00);
                 FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Filled Inventory?", midX + 90, midY - 60, !InventoryHelper.INSTANCE.isInventoryFull() ? 0xffff0000 : 0xff00ff00);
+                FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Duping Item\2477: \247f" + (dupingItem == null ? "None" : dupingItem.getName().getString()), midX + 90, midY - 50, ColorHelper.INSTANCE.getClientColor());
             }
         } else if (event instanceof EventDisplayScreen eventDisplayScreen) {
             if (eventDisplayScreen.getScreen() == null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AnvilScreen && !(KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_ESCAPE) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_E))) {

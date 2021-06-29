@@ -7,14 +7,12 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.load.impl.IHandledScreen;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import org.lwjgl.glfw.GLFW;
 
-@Feat(name = "InvAutoClicker", category = FeatureCategory.MISC, description = "Hold shift+click or ctrl+q to automatically do them.")
+@Feature.Manifest(name = "InvAutoClicker", category = Feature.Category.MISC, description = "Hold shift+click or ctrl+q to automatically do them.")
 public class InventoryAutoClicker extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

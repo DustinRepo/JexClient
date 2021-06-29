@@ -12,8 +12,6 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -23,7 +21,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
-@Feat(name = "MobOwners", category = FeatureCategory.VISUAL, description = "Show the names of the owners of tamed mobs")
+@Feature.Manifest(name = "MobOwners", category = Feature.Category.VISUAL, description = "Show the names of the owners of tamed mobs")
 public class OwnerTags extends Feature {
 
     @Op(name = "Draw Faces")

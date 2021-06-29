@@ -9,15 +9,13 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
-@Feat(name = "Crosshair", category = FeatureCategory.VISUAL, description = "Draw a custom crosshair on-screen.")
+@Feature.Manifest(name = "Crosshair", category = Feature.Category.VISUAL, description = "Draw a custom crosshair on-screen.")
 public class Crosshair extends Feature {
 
     @Op(name = "Color", isColor = true)

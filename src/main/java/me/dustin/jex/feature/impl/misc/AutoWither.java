@@ -8,8 +8,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -20,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
-@Feat(name = "AutoWither", category = FeatureCategory.MISC, description = "Automatically create withers by just placing soul sand")
+@Feature.Manifest(name = "AutoWither", category = Feature.Category.MISC, description = "Automatically create withers by just placing soul sand")
 public class AutoWither extends Feature {
 
     boolean creatingWither = false;

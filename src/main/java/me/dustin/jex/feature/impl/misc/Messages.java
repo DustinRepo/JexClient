@@ -3,14 +3,12 @@ package me.dustin.jex.feature.impl.misc;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 
 import java.util.Random;
 
-@Feat(name = "Messages", category = FeatureCategory.MISC, description = "Modify messages you send in chat")
+@Feature.Manifest(name = "Messages", category = Feature.Category.MISC, description = "Modify messages you send in chat")
 public class Messages extends Feature {
 
     @Op(name = "Mode", all = {"Upside-Down", "Backwards", "Random Capital"})

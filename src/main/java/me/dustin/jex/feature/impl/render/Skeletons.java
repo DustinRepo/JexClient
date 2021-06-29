@@ -7,8 +7,6 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.*;
@@ -21,7 +19,7 @@ import net.minecraft.util.math.*;
 
 import java.awt.*;
 
-@Feat(name = "Skeletons", category = FeatureCategory.VISUAL, description = "Draw player skeletons")
+@Feature.Manifest(name = "Skeletons", category = Feature.Category.VISUAL, description = "Draw player skeletons")
 public class Skeletons extends Feature {//it looks cool as fuck but seriously fuck this was a massive pain in the ass
 
     @Op(name = "Color", isColor = true)

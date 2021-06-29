@@ -2,12 +2,12 @@ package me.dustin.jex.feature.core;
 
 import com.google.common.collect.Maps;
 import me.dustin.events.api.EventAPI;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.option.Option;
 import me.dustin.jex.option.OptionManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -19,13 +19,14 @@ public class Feature {
     private boolean state;
     private boolean visible;
     private int key;
-    private FeatureCategory featureCategory;
+    private Feature.Category featureCategory;
 
     public Feature() {
-        this.name = this.getClass().getAnnotation(Feat.class).name();
-        this.displayName = this.getClass().getAnnotation(Feat.class).name();
-        this.description = this.getClass().getAnnotation(Feat.class).description();
-        this.featureCategory = this.getClass().getAnnotation(Feat.class).category();
+        this.name = this.getClass().getAnnotation(Feature.Manifest.class).name();
+        this.displayName = this.getClass().getAnnotation(Feature.Manifest.class).name();
+        this.description = this.getClass().getAnnotation(Feature.Manifest.class).description();
+        this.featureCategory = this.getClass().getAnnotation(Feature.Manifest.class).category();
+        this.key = this.getClass().getAnnotation(Feature.Manifest.class).key();
         this.visible = true;
     }
 
@@ -41,7 +42,7 @@ public class Feature {
         return FeatureManager.INSTANCE.getFeatures().stream().filter(module -> module.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
-    public static ArrayList<Feature> getModules(FeatureCategory category) {
+    public static ArrayList<Feature> getModules(Feature.Category category) {
         ArrayList<Feature> features = new ArrayList<>();
         FeatureManager.INSTANCE.getFeatures().forEach(module ->
         {
@@ -136,14 +137,25 @@ public class Feature {
         this.key = key;
     }
 
-    public FeatureCategory getFeatureCategory() {
+    public Feature.Category getFeatureCategory() {
         return featureCategory;
     }
 
-    public void setFeatureCategory(FeatureCategory featureCategory) {
+    public void setFeatureCategory(Feature.Category featureCategory) {
         this.featureCategory = featureCategory;
     }
 
     public Map<String, ButtonListener> addButtons() {return Maps.newHashMap();}
+
+    public enum Category {
+        COMBAT, PLAYER, MOVEMENT, WORLD, VISUAL, MISC
+    }
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Manifest {
+        String name();
+        Feature.Category category();
+        String description();
+        int key() default 0;
+    }
 
 }

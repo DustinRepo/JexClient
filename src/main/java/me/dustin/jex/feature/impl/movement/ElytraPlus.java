@@ -6,8 +6,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.entity.EquipmentSlot;
@@ -16,7 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.util.math.Vec3d;
 
-@Feat(name = "ElytraPlus", category = FeatureCategory.MOVEMENT, description = "Change how the Elytra flies.")
+@Feature.Manifest(name = "ElytraPlus", category = Feature.Category.MOVEMENT, description = "Change how the Elytra flies.")
 public class ElytraPlus extends Feature {
 
     @Op(name = "Auto Elytra")

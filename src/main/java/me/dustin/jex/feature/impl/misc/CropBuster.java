@@ -11,8 +11,6 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -23,7 +21,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
-@Feat(name = "CropBuster", category = FeatureCategory.MISC, description = "Destroy any fully grown crops nearby")
+@Feature.Manifest(name = "CropBuster", category = Feature.Category.MISC, description = "Destroy any fully grown crops nearby")
 public class CropBuster extends Feature {
 
     @Op(name = "Break Delay (MS)", max = 1000, inc = 10)

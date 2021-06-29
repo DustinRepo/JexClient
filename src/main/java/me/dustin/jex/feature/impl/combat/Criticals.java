@@ -3,15 +3,13 @@ package me.dustin.jex.feature.impl.combat;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
-@Feat(name = "Criticals", category = FeatureCategory.COMBAT, description = "Automatically deal critical strikes when attacking.")
+@Feature.Manifest(name = "Criticals", category = Feature.Category.COMBAT, description = "Automatically deal critical strikes when attacking.")
 public class Criticals extends Feature {
 
     @Op(name = "Living Only")

@@ -6,8 +6,6 @@ import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventSpawnEntity;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -27,7 +25,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@Feat(name = "SlimeSpawnMarker", category = FeatureCategory.WORLD, description = "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk. Good for finding Slime Chunks on servers without the seed.")
+@Feature.Manifest(name = "SlimeSpawnMarker", category = Feature.Category.WORLD, description = "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk. Good for finding Slime Chunks on servers without the seed.")
 public class SlimeSpawnMarker extends Feature {
 
     @Op(name = "Notify player")

@@ -17,12 +17,10 @@ public class ShaderESP extends FeatureExtension {
 
     @Override
     public void pass(Event event) {
-        if (event instanceof EventHasOutline) {
-            EventHasOutline eventHasOutline = (EventHasOutline)event;
+        if (event instanceof EventHasOutline eventHasOutline) {
             eventHasOutline.setOutline(ESP.INSTANCE.isValid(eventHasOutline.getEntity()));
         }
-        if (event instanceof EventOutlineColor) {
-            EventOutlineColor eventOutlineColor = (EventOutlineColor) event;
+        if (event instanceof EventOutlineColor eventOutlineColor) {
             eventOutlineColor.setColor(ESP.INSTANCE.getColor(eventOutlineColor.getEntity()));
         }
     }

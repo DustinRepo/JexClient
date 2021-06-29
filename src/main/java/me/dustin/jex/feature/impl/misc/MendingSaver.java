@@ -3,8 +3,6 @@ package me.dustin.jex.feature.impl.misc;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -13,7 +11,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feat(name = "MendingSaver", category = FeatureCategory.MISC, description = "Save your mending tools from breaking by putting them away automatically.")
+@Feature.Manifest(name = "MendingSaver", category = Feature.Category.MISC, description = "Save your mending tools from breaking by putting them away automatically.")
 public class MendingSaver extends Feature {
 
     @Op(name = "Notify")

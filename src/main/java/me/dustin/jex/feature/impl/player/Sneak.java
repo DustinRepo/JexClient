@@ -5,17 +5,11 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
-@Feat(name = "Sneak", category = FeatureCategory.PLAYER, description = "Sneak around to hide your nametag")
+@Feature.Manifest(name = "Sneak", category = Feature.Category.PLAYER, description = "Sneak around to hide your nametag", key = GLFW.GLFW_KEY_Z)
 public class Sneak extends Feature {
-
-    public Sneak() {
-        this.setKey(GLFW.GLFW_KEY_Z);
-    }
 
     @EventListener(events = {EventPlayerPackets.class})
     private void runMethod(EventPlayerPackets eventPlayerPackets) {

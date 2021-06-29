@@ -11,8 +11,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
@@ -24,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
-@Feat(name = "Tracers", category = FeatureCategory.VISUAL, description = "Draw a line to entities in range.")
+@Feature.Manifest(name = "Tracers", category = Feature.Category.VISUAL, description = "Draw a line to entities in range.")
 public class Tracers extends Feature {
 
     @Op(name = "Spine")

@@ -9,8 +9,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.BlockOverlay;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Blocks;
@@ -20,7 +18,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-@Feat(name = "AirPlace", category = FeatureCategory.WORLD, description = "Gives you the ability to place blocks in the air. (Anticheats usually block this)")
+@Feature.Manifest(name = "AirPlace", category = Feature.Category.WORLD, description = "Gives you the ability to place blocks in the air. (Anticheats usually block this)")
 public class AirPlace extends Feature {
 
     @Op(name = "Reach", min = 3, max = 6, inc = 0.1f)

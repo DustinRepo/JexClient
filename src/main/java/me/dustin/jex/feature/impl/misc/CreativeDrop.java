@@ -3,8 +3,6 @@ package me.dustin.jex.feature.impl.misc;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -22,7 +20,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.Random;
 
-@Feat(name = "CreativeDrop", category = FeatureCategory.MISC, description = "Drop all items from your inventory in creative.")
+@Feature.Manifest(name = "CreativeDrop", category = Feature.Category.MISC, description = "Drop all items from your inventory in creative.")
 public class CreativeDrop extends Feature {
 
     @Op(name = "Drop Delay (MS)", max = 1000, inc = 10)
@@ -37,7 +35,7 @@ public class CreativeDrop extends Feature {
     @Op(name = "Enchant")
     public boolean enchant = true;
 
-    @OpChild(name = "1.14", parent = "Enchant")
+    @OpChild(name = "1.14+", parent = "Enchant")
     public boolean newEnchants = true;
 
     private int slot = 1;

@@ -8,8 +8,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.AirBlock;
@@ -20,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
-@Feat(name = "BlockOverlay", category = FeatureCategory.VISUAL, description = "Change the block outline and have an overlay show your break progress")
+@Feature.Manifest(name = "BlockOverlay", category = Feature.Category.VISUAL, description = "Change the block outline and have an overlay show your break progress")
 public class BlockOverlay extends Feature {
 
     @Op(name = "Outline Color", isColor = true)

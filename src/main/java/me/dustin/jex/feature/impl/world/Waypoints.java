@@ -9,8 +9,6 @@ import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -31,7 +29,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Feat(name = "Waypoints", category = FeatureCategory.WORLD, description = "Display Waypoints to mark areas.")
+@Feature.Manifest(name = "Waypoints", category = Feature.Category.WORLD, description = "Display Waypoints to mark areas.")
 public class Waypoints extends Feature {
 
     public static ArrayList<String> servers = new ArrayList<>();

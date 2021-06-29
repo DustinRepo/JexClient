@@ -12,8 +12,6 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.Block;
@@ -34,7 +32,7 @@ import net.minecraft.util.math.Vec3d;
 import java.awt.*;
 import java.util.List;
 
-@Feat(name = "CrystalAura", category = FeatureCategory.COMBAT, description = "Auto place/destroy End Crystals")
+@Feature.Manifest(name = "CrystalAura", category = Feature.Category.COMBAT, description = "Auto place/destroy End Crystals")
 public class CrystalAura extends Feature {
 
     @Op(name = "Mode", all = {"Suicidal", "Risky", "Safe"})

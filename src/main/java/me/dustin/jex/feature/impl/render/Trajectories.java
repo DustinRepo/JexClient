@@ -3,8 +3,6 @@ package me.dustin.jex.feature.impl.render;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -32,7 +30,7 @@ import net.minecraft.util.math.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-@Feat(name = "Trajectories", category = FeatureCategory.VISUAL, description = "Show a trajectory line for things like bows and snowballs")
+@Feature.Manifest(name = "Trajectories", category = Feature.Category.VISUAL, description = "Show a trajectory line for things like bows and snowballs")
 public class Trajectories extends Feature {
 
     @Op(name = "Miss Color", isColor = true)

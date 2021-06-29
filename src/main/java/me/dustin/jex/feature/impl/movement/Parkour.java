@@ -6,10 +6,8 @@ import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 
-@Feat(name = "Parkour", category = FeatureCategory.MOVEMENT, description = "Jump while on edge of block.")
+@Feature.Manifest(name = "Parkour", category = Feature.Category.MOVEMENT, description = "Jump while on edge of block.")
 public class Parkour extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

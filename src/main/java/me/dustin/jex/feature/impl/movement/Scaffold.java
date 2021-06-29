@@ -5,8 +5,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventWalkOffBlock;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.player.AutoEat;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Timer;
@@ -28,7 +26,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feat(name = "Scaffold", category = FeatureCategory.MOVEMENT, description = "Place blocks under yourself automatically.")
+@Feature.Manifest(name = "Scaffold", category = Feature.Category.MOVEMENT, description = "Place blocks under yourself automatically.")
 public class Scaffold extends Feature {
 
     @Op(name = "Place Mode", all = {"Post", "Pre"})

@@ -5,11 +5,9 @@ import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.entity.player.PlayerEntity;
 
-@Feat(name = "NoFriendDMG", category = FeatureCategory.COMBAT, description = "Prevent yourself from attacking your friends and pets")
+@Feature.Manifest(name = "NoFriendDMG", category = Feature.Category.COMBAT, description = "Prevent yourself from attacking your friends and pets")
 public class NoFriendDMG extends Feature {
 
     @EventListener(events = {EventAttackEntity.class})

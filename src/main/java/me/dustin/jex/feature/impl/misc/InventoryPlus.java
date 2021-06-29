@@ -4,12 +4,10 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 
-@Feat(name = "InventoryPlus", category = FeatureCategory.MISC, description = "Keep items in your crafting space in inventory.")
+@Feature.Manifest(name = "InventoryPlus", category = Feature.Category.MISC, description = "Keep items in your crafting space in inventory.")
 public class InventoryPlus extends Feature {
 
     @EventListener(events = {EventPacketSent.class})

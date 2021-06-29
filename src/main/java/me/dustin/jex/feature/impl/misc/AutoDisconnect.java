@@ -5,8 +5,6 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -15,7 +13,7 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.text.LiteralText;
 
-@Feat(name = "AutoDisconnect", category = FeatureCategory.MISC, description = "Automatically disconnect when your health gets below a certain value")
+@Feature.Manifest(name = "AutoDisconnect", category = Feature.Category.MISC, description = "Automatically disconnect when your health gets below a certain value")
 public class AutoDisconnect extends Feature {
 
     @Op(name = "Mode", all = {"Disconnect", "Chars", "Invalid Pos"})

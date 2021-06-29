@@ -5,8 +5,6 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
@@ -14,7 +12,7 @@ import net.minecraft.util.Hand;
 
 import java.util.Random;
 
-@Feat(name = "Derp", category = FeatureCategory.MISC, description = "Randomly look around for other players")
+@Feature.Manifest(name = "Derp", category = Feature.Category.MISC, description = "Randomly look around for other players")
 public class Derp extends Feature {
 
     @Op(name = "Swing")

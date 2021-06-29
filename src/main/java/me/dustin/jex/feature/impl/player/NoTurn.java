@@ -5,10 +5,8 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.misc.EventServerTurn;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 
-@Feat(name = "NoTurn", category = FeatureCategory.PLAYER, description = "Ignore the server telling you to look somewhere.")
+@Feature.Manifest(name = "NoTurn", category = Feature.Category.PLAYER, description = "Ignore the server telling you to look somewhere.")
 public class NoTurn extends Feature {
 
     boolean reconnected;

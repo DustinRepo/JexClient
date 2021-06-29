@@ -9,8 +9,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.block.Block;
@@ -27,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
-@Feat(name = "Roaster", category = FeatureCategory.COMBAT, description = "Roast your friends.")
+@Feature.Manifest(name = "Roaster", category = Feature.Category.COMBAT, description = "Roast your friends.")
 public class Roaster extends Feature {
 
     @Op(name = "Player")

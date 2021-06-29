@@ -6,14 +6,12 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
 
-@Feat(name = "FastLadder", category = FeatureCategory.MOVEMENT, description = "Move faster on ladders")
+@Feature.Manifest(name = "FastLadder", category = Feature.Category.MOVEMENT, description = "Move faster on ladders")
 public class FastLadder extends Feature {
 
     @Op(name = "SkipLadder")

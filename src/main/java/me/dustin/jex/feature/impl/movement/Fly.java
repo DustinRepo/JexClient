@@ -5,8 +5,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -16,7 +14,7 @@ import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
-@Feat(name = "Fly", category = FeatureCategory.MOVEMENT, description = "Fly in survival")
+@Feature.Manifest(name = "Fly", category = Feature.Category.MOVEMENT, description = "Fly in survival", key = GLFW.GLFW_KEY_F)
 public class Fly extends Feature {
 
     @Op(name = "Speed", min = 0.1f, max = 5f, inc = 0.1f)
@@ -30,17 +28,13 @@ public class Fly extends Feature {
     @OpChild(name = "Glide Speed", min = 0.01f, max = 2, inc = 0.01f, parent = "Glide")
     public float glideSpeed = 0.034f;
 
-    public Fly() {
-        this.setKey(GLFW.GLFW_KEY_F);
-    }
-
     @EventListener(events = {EventMove.class, EventPacketSent.class})
     private void runMove(Event event) {
         if (event instanceof EventMove eventMove) {
             PlayerHelper.INSTANCE.setMoveSpeed((EventMove) eventMove, speed);
             eventMove.setY(0);
             boolean jumping = Wrapper.INSTANCE.getOptions().keyJump.isPressed();
-            boolean sneaking = Wrapper.INSTANCE.getOptions().keySneak.isPressed() || (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_CONTROL) && ctrlDown);
+            boolean sneaking = Wrapper.INSTANCE.getOptions().keySneak.isPressed() || (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_CONTROL) && ctrlDown && Wrapper.INSTANCE.getMinecraft().currentScreen == null);
 
             if (jumping) {
                 eventMove.setY(speed);

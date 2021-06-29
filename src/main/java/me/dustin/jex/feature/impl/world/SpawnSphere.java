@@ -6,15 +6,13 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
-@Feat(name = "SpawnSphere", category = FeatureCategory.WORLD, description = "Show a 128 block radius sphere around an area to see all spots mobs could spawn in that radius.")
+@Feature.Manifest(name = "SpawnSphere", category = Feature.Category.WORLD, description = "Show a 128 block radius sphere around an area to see all spots mobs could spawn in that radius.")
 public class SpawnSphere extends Feature {
 
     @Op(name = "Sphere Color", isColor = true)

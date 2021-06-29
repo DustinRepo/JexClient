@@ -4,14 +4,12 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 
-@Feat(name = "Speedmine", category = FeatureCategory.PLAYER, description = "Break blocks faster")
+@Feature.Manifest(name = "Speedmine", category = Feature.Category.PLAYER, description = "Break blocks faster")
 public class SpeedMine extends Feature {
 
     @Op(name = "Mode", all = {"Progress", "Haste"})

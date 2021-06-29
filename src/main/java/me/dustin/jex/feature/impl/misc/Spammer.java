@@ -9,8 +9,6 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -20,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-@Feat(name = "Spammer", category = FeatureCategory.MISC, description = "Spam the chat")
+@Feature.Manifest(name = "Spammer", category = Feature.Category.MISC, description = "Spam the chat")
 public class Spammer extends Feature {
 
     private static String baseFileStr =

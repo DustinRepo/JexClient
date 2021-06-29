@@ -5,8 +5,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -25,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 
-@Feat(name = "Surround", category = FeatureCategory.COMBAT, description = "Automatically place obsidian around your feet to defend from crystals")
+@Feature.Manifest(name = "Surround", category = Feature.Category.COMBAT, description = "Automatically place obsidian around your feet to defend from crystals")
 public class Surround extends Feature {
 
     @Op(name = "Auto Turn Off")

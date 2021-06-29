@@ -3,7 +3,6 @@ package me.dustin.jex.gui.click.window;
 
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.Gui;
 import me.dustin.jex.file.ClientSettingsFile;
 import me.dustin.jex.file.FeatureFile;
@@ -118,7 +117,7 @@ public class ClickGui extends Screen {
             int count = 0;
             float windowWidth = 120;
             float windowHeight = 15;
-            for (FeatureCategory category : FeatureCategory.values()) {
+            for (Feature.Category category : Feature.Category.values()) {
                 windows.add(new Window(category.name(), 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
                 count++;
             }

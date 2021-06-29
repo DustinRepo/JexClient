@@ -9,8 +9,6 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
@@ -18,7 +16,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
-@Feat(name = "BucketCatch", category = FeatureCategory.MOVEMENT, description = "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time")
+@Feature.Manifest(name = "BucketCatch", category = Feature.Category.MOVEMENT, description = "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time")
 public class BucketCatch extends Feature {
 
     @Op(name = "Fall Distance", min = 3, max = 10)

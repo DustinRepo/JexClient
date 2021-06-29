@@ -8,8 +8,6 @@ import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.event.render.EventRenderNametags;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.friend.Friend;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -38,7 +36,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@Feat(name = "Nametags", category = FeatureCategory.VISUAL, description = "Render names above players with more info.")
+@Feature.Manifest(name = "Nametags", category = Feature.Category.VISUAL, description = "Render names above players with more info.")
 public class Nametag extends Feature {
 
     @Op(name = "Custom Font")

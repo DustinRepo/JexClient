@@ -5,11 +5,9 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventGetReachDistance;
 import me.dustin.jex.event.player.EventHasExtendedReach;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 
-@Feat(name = "Reach", category = FeatureCategory.PLAYER, description = "Stretch Armstrong, but nerfed.")
+@Feature.Manifest(name = "Reach", category = Feature.Category.PLAYER, description = "Stretch Armstrong, but nerfed.")
 public class Reach extends Feature {
     @Op(name = "Distance", min = 5, max = 6, inc = 0.05f)
     public float distance = 5.5f;

@@ -10,8 +10,6 @@ import me.dustin.jex.event.player.EventPlayerUpdates;
 import me.dustin.jex.event.player.EventPushOutOfBlocks;
 import me.dustin.jex.event.render.EventMarkChunkClosed;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -27,7 +25,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.UUID;
 
-@Feat(name = "Freecam", category = FeatureCategory.PLAYER, description = "Take a look around like a ghost.")
+@Feature.Manifest(name = "Freecam", category = Feature.Category.PLAYER, description = "Take a look around like a ghost.")
 public class Freecam extends Feature {
 
     @Op(name = "Stealth")

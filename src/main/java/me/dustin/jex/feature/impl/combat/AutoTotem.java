@@ -5,13 +5,11 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feat(name = "AutoTotem", category = FeatureCategory.COMBAT, description = "Keep a Totem in your offhand at all times.")
+@Feature.Manifest(name = "AutoTotem", category = Feature.Category.COMBAT, description = "Keep a Totem in your offhand at all times.")
 public class AutoTotem extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

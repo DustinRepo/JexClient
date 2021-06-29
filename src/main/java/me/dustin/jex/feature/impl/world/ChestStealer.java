@@ -6,8 +6,6 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.item.ItemStack;
@@ -15,7 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feat(name = "ChestStealer", category = FeatureCategory.WORLD, description = "Automatically steal from chests when opened.")
+@Feature.Manifest(name = "ChestStealer", category = Feature.Category.WORLD, description = "Automatically steal from chests when opened.")
 public class ChestStealer extends Feature {
 
     @Op(name = "Delay", max = 1000, inc = 10)

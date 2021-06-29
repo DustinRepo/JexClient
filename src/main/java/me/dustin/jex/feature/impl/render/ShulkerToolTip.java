@@ -11,8 +11,6 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.load.impl.IHandledScreen;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -22,7 +20,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
-@Feat(name = "ShulkerToolTip", category = FeatureCategory.VISUAL, description = "Show the contents of a shulker box as a tooltip.")
+@Feature.Manifest(name = "ShulkerToolTip", category = Feature.Category.VISUAL, description = "Show the contents of a shulker box as a tooltip.")
 public class ShulkerToolTip extends Feature {
 
     private final Identifier SHULKER_GUI = new Identifier("textures/gui/container/shulker_box.png");

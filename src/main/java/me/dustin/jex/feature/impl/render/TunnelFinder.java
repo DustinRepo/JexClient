@@ -9,8 +9,6 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.block.Blocks;
 import net.minecraft.network.Packet;
@@ -26,7 +24,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feat(name = "TunnelFinder", category = FeatureCategory.VISUAL, description = "Find tunnels in the nether that might lead to bases.")
+@Feature.Manifest(name = "TunnelFinder", category = Feature.Category.VISUAL, description = "Find tunnels in the nether that might lead to bases.")
 public class TunnelFinder extends Feature {
 
     @Op(name = "Color", isColor = true)

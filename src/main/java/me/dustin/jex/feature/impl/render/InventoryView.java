@@ -7,15 +7,13 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
-@Feat(name = "InventoryView", category = FeatureCategory.VISUAL, description = "Show your inventory on your HUD")
+@Feature.Manifest(name = "InventoryView", category = Feature.Category.VISUAL, description = "Show your inventory on your HUD")
 public class InventoryView extends Feature {
 
     @Op(name = "Location", all = {"Top", "Bottom"})

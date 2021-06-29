@@ -6,13 +6,11 @@ import me.dustin.jex.helper.math.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.util.Hand;
 
-@Feat(name = "AntiFireball", category = FeatureCategory.COMBAT, description = "Knock away fireballs from ghasts")
+@Feature.Manifest(name = "AntiFireball", category = Feature.Category.COMBAT, description = "Knock away fireballs from ghasts")
 public class AntiFireball extends Feature {
 
     @Op(name = "Range", min = 1, max = 6, inc = 0.1f)

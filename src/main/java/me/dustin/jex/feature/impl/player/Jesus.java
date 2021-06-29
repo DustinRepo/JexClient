@@ -8,8 +8,6 @@ import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventFluidCollisionShape;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.helper.misc.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -25,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
 import org.lwjgl.glfw.GLFW;
 
-@Feat(name = "Jesus", category = FeatureCategory.PLAYER, description = "Walk on water like Jesus.")
+@Feature.Manifest(name = "Jesus", category = Feature.Category.PLAYER, description = "Walk on water like Jesus.", key = GLFW.GLFW_KEY_J)
 public class Jesus extends Feature {
 
     @Op(name = "Mode", all = {"Solid", "Dolphin"})
@@ -33,10 +31,6 @@ public class Jesus extends Feature {
     @OpChild(name = "Jump", parent = "Mode", dependency = "Dolphin")
     public boolean allowJump = true;
     private int ticks;
-
-    public Jesus() {
-        this.setKey(GLFW.GLFW_KEY_J);
-    }
 
     @EventListener(events = {EventPlayerPackets.class, EventFluidCollisionShape.class, EventMove.class, EventPacketSent.class}, priority = EventPriority.LOW)
     public void run(Event event) {

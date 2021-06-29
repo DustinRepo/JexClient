@@ -10,8 +10,6 @@ import me.dustin.jex.helper.misc.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import me.dustin.jex.feature.impl.world.Timer;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
@@ -19,7 +17,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 import java.util.Random;
 
-@Feat(name = "Step", category = FeatureCategory.MOVEMENT, description = "Step up blocks")
+@Feature.Manifest(name = "Step", category = Feature.Category.MOVEMENT, description = "Step up blocks")
 public class Step extends Feature {
 
     @Op(name = "Mode", all = {"Vanilla", "Packet"})

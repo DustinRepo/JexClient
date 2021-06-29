@@ -6,8 +6,6 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.core.annotate.Feat;
-import me.dustin.jex.feature.core.enums.FeatureCategory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feat(name = "BedrockObfuscator", category = FeatureCategory.WORLD, description = "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.")
+@Feature.Manifest(name = "BedrockObfuscator", category = Feature.Category.WORLD, description = "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.")
 public class BedrockObfuscator extends Feature {
 
     private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
