@@ -4,17 +4,22 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Shader;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.math.Matrix4f;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
 public abstract class MixinGameRenderer {
@@ -41,6 +46,12 @@ public abstract class MixinGameRenderer {
 
     @Shadow public abstract Matrix4f getBasicProjectionMatrix(double d);
 
+    @Shadow @Nullable private static Shader renderTypeGlintDirectShader;
+
+    @Shadow @Nullable private static Shader renderTypeArmorEntityGlintShader;
+
+    @Shadow @Nullable private static Shader renderTypeArmorGlintShader;
+
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", at = @At(value = "INVOKE", target = "com/mojang/blaze3d/systems/RenderSystem.clear(IZ)V"))
     private void onRenderWorld(float partialTicks, long finishTimeNano, MatrixStack matrixStack1, CallbackInfo ci) {
         if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null)
@@ -66,6 +77,32 @@ public abstract class MixinGameRenderer {
         loadProjectionMatrix(matrixStack.peek().getModel());
 
         new EventRender3D(matrixStack1, partialTicks).run();
+    }
+
+    @Inject(method = "preloadShaders", at = @At("RETURN"))
+    public void preLoadShaders1(ResourceFactory factory, CallbackInfo ci) {
+        ShaderHelper.loadCustomMCShaders();
+    }
+
+    @Inject(method = "getRenderTypeGlintDirectShader", at = @At("HEAD"), cancellable = true)
+    private static void overrideGlintShader(CallbackInfoReturnable<Shader> cir) {
+        EventGetGlintShaders eventGetGlintShaders = new EventGetGlintShaders(renderTypeGlintDirectShader).run();
+        if (eventGetGlintShaders.isCancelled())
+            cir.setReturnValue(eventGetGlintShaders.getShader());
+    }
+
+    @Inject(method = "getRenderTypeArmorEntityGlintShader", at = @At("HEAD"), cancellable = true)
+    private static void overrideGlintShader1(CallbackInfoReturnable<Shader> cir) {
+        EventGetGlintShaders eventGetGlintShaders = new EventGetGlintShaders(renderTypeArmorEntityGlintShader).run();
+        if (eventGetGlintShaders.isCancelled())
+            cir.setReturnValue(eventGetGlintShaders.getShader());
+    }
+
+    @Inject(method = "getRenderTypeArmorGlintShader", at = @At("HEAD"), cancellable = true)
+    private static void overrideGlintShader2(CallbackInfoReturnable<Shader> cir) {
+        EventGetGlintShaders eventGetGlintShaders = new EventGetGlintShaders(renderTypeArmorGlintShader).run();
+        if (eventGetGlintShaders.isCancelled())
+            cir.setReturnValue(eventGetGlintShaders.getShader());
     }
 
     @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "net/minecraft/util/profiler/Profiler.pop()V"))

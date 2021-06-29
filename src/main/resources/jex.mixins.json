@@ -49,6 +49,7 @@
     "MixinRenderLayers",
     "MixinRenderTickCounter",
     "MixinScreen",
+    "MixinShader",
     "MixinSignEditScreen",
     "MixinSplashScreen",
     "MixinTerrainRenderContext",

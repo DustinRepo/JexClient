@@ -1,14 +1,13 @@
 package me.dustin.jex.helper.render.shader;
 
-import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.client.render.Shader;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
-
-import java.io.IOException;
 
 public enum ShaderHelper {
     INSTANCE;
@@ -17,6 +16,8 @@ public enum ShaderHelper {
     public Framebuffer boxOutlineFBO;
     public ShaderEffect boxOutlineShader;
     public Identifier identifier_1 = new Identifier("jex", "shaders/entity_outline.json");
+
+    private static Shader rainbowEnchantShader;
 
     public void drawStorageFBO() {
         if (canDrawFBO()) {
@@ -64,11 +65,19 @@ public enum ShaderHelper {
             boxOutlineShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
             boxOutlineShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
             boxOutlineFBO = boxOutlineShader.getSecondaryTarget("final");
-        } catch (IOException | JsonSyntaxException var3) {
+        } catch (Exception var3) {
             storageShader = null;
             storageFBO = null;
         }
 
+    }
+
+    public static void loadCustomMCShaders() {
+        try {
+            rainbowEnchantShader = new Shader(Wrapper.INSTANCE.getMinecraft().getResourcePackProvider().getPack(), "jex:rainbow_enchant", VertexFormats.POSITION_TEXTURE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void close() {
@@ -78,6 +87,10 @@ public enum ShaderHelper {
         if (boxOutlineShader != null) {
             boxOutlineShader.close();
         }
+    }
+
+    public static Shader getRainbowEnchantShader() {
+        return rainbowEnchantShader;
     }
 
 }
