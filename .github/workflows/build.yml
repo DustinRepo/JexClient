@@ -32,56 +32,29 @@
   }
 
     processResources {
-    inputs.property "version", project.version
+name: Build Pull Request
 
-    filesMatching("fabric.mod.json") {
-  expand "version": project.version
-  }
-  }
+on: [push]
 
-    tasks.withType(JavaCompile).configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
-    it.options.encoding = "UTF-8"
+jobs:
+  build:
 
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 16
-  }
+    runs-on: ubuntu-latest
 
-    java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
-    withSourcesJar()
-  }
-
-    jar {
-    from("LICENSE") {
-    rename { "${it}_${project.archivesBaseName}"}
-  }
-  }
-
-    // configure the maven publication
-    publishing {
-    publications {
-    mavenJava(MavenPublication) {
-    // add all the jars that should be included when publishing to maven
-    artifact(remapJar) {
-    builtBy remapJar
-    }
-    artifact(sourcesJar) {
-    builtBy remapSourcesJar
-    }
-  }
-  }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-    // Add repositories to publish to here.
-  // Notice: This block does NOT have the same function as the block in the top level.
-    // The repositories here will be used for publishing your artifact, not for
-    // retrieving dependencies.
-  }
-  }
+    steps:
+    - name: Clone repo
+      uses: actions/checkout@v2
+    - name: Set up JDK 16
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '16'
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew build
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: pull-request-build
+        path: build/
