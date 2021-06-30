@@ -50,15 +50,17 @@ public class AutoArmor extends Feature {
                                     bestItem = i;
                                 continue;
                             }
-                            equipped = (ArmorItem) equippedStack.getItem();
-                            if (armorItem.getSlotType() != equipped.getSlotType())
-                                continue;
-                            if (equipped.getMaterial().getProtectionAmount(equipped.getSlotType()) < armorItem.getMaterial().getProtectionAmount(armorItem.getSlotType())) {
-                                bestItem = i;
-                            } else if (equipped.getMaterial().getProtectionAmount(equipped.getSlotType()) == armorItem.getMaterial().getProtectionAmount(armorItem.getSlotType()) && equipped.getMaterial().getToughness() < armorItem.getMaterial().getToughness()) {
-                                bestItem = i;
-                            } else if (equipped.getMaterial().getToughness() == armorItem.getMaterial().getToughness() && InventoryHelper.INSTANCE.compareEnchants(equippedStack, itemStack, Enchantments.PROTECTION)) {
-                                bestItem = i;
+                            if (equippedStack.getItem() instanceof ArmorItem) {
+                                equipped = (ArmorItem) equippedStack.getItem();
+                                if (armorItem.getSlotType() != equipped.getSlotType())
+                                    continue;
+                                if (equipped.getMaterial().getProtectionAmount(equipped.getSlotType()) < armorItem.getMaterial().getProtectionAmount(armorItem.getSlotType())) {
+                                    bestItem = i;
+                                } else if (equipped.getMaterial().getProtectionAmount(equipped.getSlotType()) == armorItem.getMaterial().getProtectionAmount(armorItem.getSlotType()) && equipped.getMaterial().getToughness() < armorItem.getMaterial().getToughness()) {
+                                    bestItem = i;
+                                } else if (equipped.getMaterial().getToughness() == armorItem.getMaterial().getToughness() && InventoryHelper.INSTANCE.compareEnchants(equippedStack, itemStack, Enchantments.PROTECTION)) {
+                                    bestItem = i;
+                                }
                             }
                         }
                     }
