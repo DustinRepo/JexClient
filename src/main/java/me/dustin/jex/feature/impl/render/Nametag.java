@@ -28,6 +28,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AirBlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.Vec3d;
@@ -96,7 +97,7 @@ public class Nametag extends Feature {
                     float offset = entity.getHeight() + 0.2f;
                     if (entity instanceof PlayerEntity) {
                         if (Hat.hasHat((PlayerEntity) entity)) {
-                            if (Hat.getType((PlayerEntity) entity) == Hat.HatType.TOP_HAT)
+                            if (Hat.getType((PlayerEntity) entity) == Hat.HatType.TOP_HAT || ((PlayerEntity) entity).getEquippedStack(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD)
                                 offset = entity.getHeight() + 0.7f;
                             else
                                 offset = entity.getHeight() + 0.4f;
