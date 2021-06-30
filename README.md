@@ -6,6 +6,7 @@ Simply open build.gradle as an Intellij project
 
 ## How to build
 1. Run the gradle Build script
-2. Download my jar merger and Jex libraries [here](https://jexclient.com/download/LibMerger.zip)
-3. Set the jar file you've just created as the Main jar, and add libraries
-4. Click "Create Fat Jar" and the outputted jar can be dropped in your Fabric mods folder
+2. Drag & drop jex-client-(build number).jar into your mods folder
+
+## Want to test features before they're released?
+Sometimes features will be pushed to github before the update is fully released. If you'd like to try them, you can find auto-builds [https://github.com/DustinRepo/JexClient-main/actions/workflows/build.yml](here)

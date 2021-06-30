@@ -1,5 +1,6 @@
 plugins {
     id 'fabric-loom' version '0.8-SNAPSHOT'
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_16
@@ -23,6 +24,10 @@ repositories {
 }
 
 dependencies {
+    def dependency = { id ->
+        implementation id
+        shadow id
+    }
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
@@ -35,13 +40,13 @@ dependencies {
     // You may need to force-disable transitiveness on them.
 
     // https://mvnrepository.com/artifact/org.reflections/reflections
-    implementation group: 'org.reflections', name: 'reflections', version: '0.9.10'
+    dependency group: 'org.reflections', name: 'reflections', version: '0.9.10'
     // https://mvnrepository.com/artifact/org.joml/joml
-    implementation group: 'org.joml', name: 'joml', version: '1.10.1'
+    dependency group: 'org.joml', name: 'joml', version: '1.10.1'
 
-    implementation files('lib/eventmanager-1.0.2.jar')
+    dependency files('lib/eventmanager-1.0.2.jar')
+    dependency files('lib/java-discord-rpc-2.0.1-all.jar')
     implementation files('lib/baritone-1.6.3-dev.jar')
-    implementation files('lib/java-discord-rpc-2.0.1-all.jar')
     //so there's two ways to go about implementing Sodium. First is to just modImplementation with like fabricAPI and use jitpack as host
     //modImplementation "com.github.CaffeineMC:sodium-fabric:mc1.16.3-0.1.0"
     //The good part is that you can actually see the code in the IDE and it also loads as a mod in the game
@@ -76,6 +81,15 @@ tasks.withType(JavaCompile).configureEach {
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = "sources"
     from sourceSets.main.allSource
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+    exclude("com/google/")
+}
+
+remapJar {
+    input.set(shadowJar.archiveFile)
 }
 
 jar {
