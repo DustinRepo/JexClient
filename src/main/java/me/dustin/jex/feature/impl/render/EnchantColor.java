@@ -1,10 +1,10 @@
 package me.dustin.jex.feature.impl.render;
 
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventGetGlintShaders;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.load.impl.IShader;
 import me.dustin.jex.option.annotate.Op;
@@ -24,6 +24,7 @@ public class EnchantColor extends Feature{
     public int rainbowSpeed = 1;
 
     private int col;
+    private Timer timer = new Timer();
 
     @EventListener(events = {EventGetGlintShaders.class})
     private void runMethod(EventGetGlintShaders eventGetGlintShaders) {
@@ -35,12 +36,12 @@ public class EnchantColor extends Feature{
         }
         eventGetGlintShaders.setShader(ShaderHelper.getRainbowEnchantShader());
         eventGetGlintShaders.cancel();
-    }
 
-    @EventListener(events = {EventTick.class})
-    private void updateColor(EventTick eventTick) {
-        col += rainbowSpeed;
-        if (col > 270)
-            col -=270;
+        if (timer.hasPassed(25)) {
+            col+=rainbowSpeed;
+            if (col > 270)
+                col-=270;
+            timer.reset();
+        }
     }
 }
