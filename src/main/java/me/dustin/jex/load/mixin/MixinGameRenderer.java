@@ -52,6 +52,8 @@ public abstract class MixinGameRenderer {
 
     @Shadow @Nullable private static Shader renderTypeArmorGlintShader;
 
+    @Shadow @Nullable private static Shader renderTypeTranslucentShader;
+
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", at = @At(value = "INVOKE", target = "com/mojang/blaze3d/systems/RenderSystem.clear(IZ)V"))
     private void onRenderWorld(float partialTicks, long finishTimeNano, MatrixStack matrixStack1, CallbackInfo ci) {
         if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null)
@@ -82,6 +84,13 @@ public abstract class MixinGameRenderer {
     @Inject(method = "preloadShaders", at = @At("RETURN"))
     public void preLoadShaders1(ResourceFactory factory, CallbackInfo ci) {
         ShaderHelper.loadCustomMCShaders();
+    }
+
+    @Inject(method = "getRenderTypeTranslucentShader", at = @At("HEAD"), cancellable = true)
+    private static void overrideTranslucentShader(CallbackInfoReturnable<Shader> cir) {
+        EventGetTranslucentShader eventGetTranslucentShader = new EventGetTranslucentShader(renderTypeTranslucentShader).run();
+        if (eventGetTranslucentShader.isCancelled())
+            cir.setReturnValue(eventGetTranslucentShader.getShader());
     }
 
     @Inject(method = "getRenderTypeGlintDirectShader", at = @At("HEAD"), cancellable = true)

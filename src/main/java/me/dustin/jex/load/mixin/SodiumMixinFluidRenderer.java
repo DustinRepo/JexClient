@@ -27,7 +27,7 @@ public class SodiumMixinFluidRenderer {
     }
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true, remap = false)
-    public void render1(BlockRenderView world, FluidState fluidState, BlockPos pos, ChunkModelBuilder consumer, CallbackInfoReturnable<Boolean> cir) {
+    public void render1(BlockRenderView world, FluidState fluidState, BlockPos pos, BlockPos offset, ChunkModelBuilder buffers, CallbackInfoReturnable<Boolean> cir) {
         EventRenderFluid eventRenderFluid = new EventRenderFluid(world.getBlockState(pos).getBlock()).run();
         if (eventRenderFluid.isCancelled())
             cir.setReturnValue(false);

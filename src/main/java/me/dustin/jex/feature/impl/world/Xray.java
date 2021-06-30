@@ -2,15 +2,20 @@ package me.dustin.jex.feature.impl.world;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import me.dustin.jex.load.impl.IShader;
 import me.dustin.jex.option.annotate.Op;
 import me.dustin.jex.option.annotate.OpChild;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.render.RenderLayer;
 import org.lwjgl.glfw.GLFW;
 
@@ -22,8 +27,8 @@ public class Xray extends Feature {
     public static ArrayList<Block> blockList = new ArrayList<>();
     @Op(name = "Opacity")
     public boolean opacity = true;
-    @OpChild(name = "Alpha Value", parent = "Opacity", max = 255)
-    public int alphaValue = 64;
+    @OpChild(name = "Alpha Value", parent = "Opacity", min = 0, inc = 0.01f)
+    public float alphaValue = 0.5f;
 
     public static void firstLoad() {
         blockList.add(Blocks.DIAMOND_ORE);
@@ -35,7 +40,7 @@ public class Xray extends Feature {
         blockList.add(Blocks.NETHER_QUARTZ_ORE);
     }
 
-    @EventListener(events = {EventShouldDrawSide.class, EventBlockBrightness.class, EventMarkChunkClosed.class, EventRenderBlockEntity.class, EventRenderBlock.class, EventRenderFluid.class, EventGetRenderLayer.class, EventIsBlockOpaque.class, EventBufferQuadAlpha.class})
+    @EventListener(events = {EventShouldDrawSide.class, EventBlockBrightness.class, EventMarkChunkClosed.class, EventRenderBlockEntity.class, EventRenderBlock.class, EventRenderFluid.class, EventGetRenderLayer.class, EventIsBlockOpaque.class, EventBufferQuadAlpha.class, EventGetTranslucentShader.class, EventTick.class})
     private void run(Event event) {
         if (event instanceof EventMarkChunkClosed) {
             event.cancel();
@@ -77,8 +82,21 @@ public class Xray extends Feature {
             }
         }
         if (event instanceof EventBufferQuadAlpha eventBufferQuadAlpha) {
-            if (this.opacity) {
-                eventBufferQuadAlpha.setAlpha(alphaValue);
+            if (this.opacity && FabricLoader.getInstance().isModLoaded("sodium")) {
+                eventBufferQuadAlpha.setAlpha((int)(alphaValue * 255));
+            }
+        }
+        if (event instanceof EventGetTranslucentShader eventGetTranslucentShader) {
+            eventGetTranslucentShader.setShader(ShaderHelper.getTranslucentShader());
+            eventGetTranslucentShader.cancel();
+        }
+        if (event instanceof EventTick eventTick) {
+            IShader translucentShader = (IShader) ShaderHelper.getTranslucentShader();
+            if (translucentShader == null)
+                return;
+            GlUniform alphaUniform = translucentShader.getCustomUniform("Alpha");
+            if (alphaUniform != null) {
+                alphaUniform.set(alphaValue);
             }
         }
     }
@@ -88,6 +106,18 @@ public class Xray extends Feature {
         if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
             Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
         super.setState(state);
+    }
+
+    @Override
+    public void onDisable() {
+        IShader translucentShader = (IShader) ShaderHelper.getTranslucentShader();
+        if (translucentShader == null)
+            return;
+        GlUniform alphaUniform = translucentShader.getCustomUniform("Alpha");
+        if (alphaUniform != null) {
+            alphaUniform.set(1.1f);
+        }
+        super.onDisable();
     }
 
     private boolean isValid(Block block) {

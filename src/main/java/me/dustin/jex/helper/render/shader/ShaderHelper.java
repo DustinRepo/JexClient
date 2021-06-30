@@ -18,6 +18,7 @@ public enum ShaderHelper {
     public Identifier identifier_1 = new Identifier("jex", "shaders/entity_outline.json");
 
     private static Shader rainbowEnchantShader;
+    private static Shader translucentShader;
 
     public void drawStorageFBO() {
         if (canDrawFBO()) {
@@ -75,6 +76,7 @@ public enum ShaderHelper {
     public static void loadCustomMCShaders() {
         try {
             rainbowEnchantShader = new Shader(Wrapper.INSTANCE.getMinecraft().getResourcePackProvider().getPack(), "jex:rainbow_enchant", VertexFormats.POSITION_TEXTURE);
+            translucentShader = new Shader(Wrapper.INSTANCE.getMinecraft().getResourcePackProvider().getPack(), "jex:translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,6 +93,10 @@ public enum ShaderHelper {
 
     public static Shader getRainbowEnchantShader() {
         return rainbowEnchantShader;
+    }
+
+    public static Shader getTranslucentShader() {
+        return translucentShader;
     }
 
 }

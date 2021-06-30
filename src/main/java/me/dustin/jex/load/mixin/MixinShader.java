@@ -47,7 +47,6 @@ public class MixinShader implements IShader {
     @ModifyArg(method = "addUniform", at = @At(value = "INVOKE", target = "java/util/List.add(Ljava/lang/Object;)Z"))
     public Object renameIDOfHelpers(Object orig) {
         if (orig instanceof GlUniform glUniform && this.name.contains("jex:")) {
-            JexClient.INSTANCE.getLogger().info("Adding uniform: " + glUniform.getName());
             customUniforms.put(glUniform.getName(), glUniform);
         }
         return orig;
