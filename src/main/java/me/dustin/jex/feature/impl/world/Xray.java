@@ -31,6 +31,8 @@ public class Xray extends Feature {
     public float alphaValue = 0.5f;
     @OpChild(name = "Fade", parent = "Opacity")
     public boolean fade = true;
+    @OpChild(name = "Fade Increment", parent = "Fade", min = 0.05F, max = 1F, inc = 0.05F)
+    public float fadeIncrement = 0.25F;
 
     public static void firstLoad() {
         blockList.add(Blocks.DIAMOND_ORE);
@@ -57,7 +59,8 @@ public class Xray extends Feature {
             }
         }
         if (event instanceof EventBlockBrightness eventBlockBrightness) {
-            eventBlockBrightness.setBrightness(15);
+            if (isValid(eventBlockBrightness.getBlock()))
+                eventBlockBrightness.setBrightness(15);
         }
         if (event instanceof EventRenderBlockEntity eventRenderBlockEntity) {
             if (!blockList.contains(WorldHelper.INSTANCE.getBlock(eventRenderBlockEntity.blockEntity.getPos())) && !this.opacity)
@@ -109,12 +112,12 @@ public class Xray extends Feature {
                             super.onDisable();
                         }
                     } else {
-                        if (Math.abs(currentAlpha - alphaValue) < 0.05f)
+                        if (Math.abs(currentAlpha - alphaValue) <= (fadeIncrement / 10.f))
                             alphaUniform.set(alphaValue);
                         else if (currentAlpha > alphaValue) {
-                            alphaUniform.set(currentAlpha - 0.025F);
+                            alphaUniform.set(currentAlpha - (fadeIncrement / 10.f));
                         } else if (currentAlpha < alphaValue) {
-                            alphaUniform.set(currentAlpha + 0.025F);
+                            alphaUniform.set(currentAlpha + (fadeIncrement / 10.f));
                         }
                     }
                 } else {

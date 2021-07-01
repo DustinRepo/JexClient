@@ -3,6 +3,7 @@ package me.dustin.jex.load.mixin;
 import me.dustin.jex.event.render.EventBlockBrightness;
 import me.dustin.jex.event.render.EventIsBlockOpaque;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,9 +22,11 @@ public abstract class MixinAbstractBlockstate {
     @Final
     private boolean opaque;
 
+    @Shadow public abstract Block getBlock();
+
     @Inject(method = "getLuminance", at = @At("HEAD"), cancellable = true)
     public void getLuminance1(CallbackInfoReturnable<Integer> cir) {
-        EventBlockBrightness eventBlockBrightness = new EventBlockBrightness(this.luminance).run();
+        EventBlockBrightness eventBlockBrightness = new EventBlockBrightness(this.getBlock(), this.luminance).run();
         cir.setReturnValue(eventBlockBrightness.getBrightness());
     }
 
