@@ -18,6 +18,7 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.render.RenderLayer;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL20C;
 
 import java.util.ArrayList;
 
@@ -34,6 +35,11 @@ public class Xray extends Feature {
     @OpChild(name = "Fade Increment", parent = "Fade", min = 0.05F, max = 1F, inc = 0.05F)
     public float fadeIncrement = 0.25F;
 
+    public static int sodiumShaderProgram;
+    public static int alphaLocation = -1;
+
+    private float currentAlpha = 1.1f;
+
     public static void firstLoad() {
         blockList.add(Blocks.DIAMOND_ORE);
         blockList.add(Blocks.IRON_ORE);
@@ -44,7 +50,7 @@ public class Xray extends Feature {
         blockList.add(Blocks.NETHER_QUARTZ_ORE);
     }
 
-    @EventListener(events = {EventShouldDrawSide.class, EventBlockBrightness.class, EventMarkChunkClosed.class, EventRenderBlockEntity.class, EventRenderBlock.class, EventRenderFluid.class, EventGetRenderLayer.class, EventIsBlockOpaque.class, EventBufferQuadAlpha.class, EventGetTranslucentShader.class, EventTick.class})
+    @EventListener(events = {EventShouldDrawSide.class, EventBlockBrightness.class, EventMarkChunkClosed.class, EventRenderBlockEntity.class, EventRenderBlock.class, EventRenderFluid.class, EventGetRenderLayer.class, EventIsBlockOpaque.class, EventGetTranslucentShader.class, EventTick.class, EventSodiumBeginShader.class})
     private void run(Event event) {
         if (event instanceof EventMarkChunkClosed) {
             event.cancel();
@@ -82,68 +88,88 @@ public class Xray extends Feature {
         }
         if (event instanceof EventIsBlockOpaque eventIsBlockOpaque) {
             //This is intended to stop non-opaque blocks from rendering if they're fully covered by other blocks i.e clumps of leaves on trees, glass etc..
-            if (this.opacity && (!this.fade || isSodiumLoaded())) {
+            if (this.opacity && (!this.fade)) {
                 eventIsBlockOpaque.setOpaque(true);
-            }
-        }
-        if (event instanceof EventBufferQuadAlpha eventBufferQuadAlpha) {
-            if (this.opacity && isSodiumLoaded()) {
-                eventBufferQuadAlpha.setAlpha((int)(alphaValue * 255));
             }
         }
         if (event instanceof EventGetTranslucentShader eventGetTranslucentShader) {
             eventGetTranslucentShader.setShader(ShaderHelper.getTranslucentShader());
             eventGetTranslucentShader.cancel();
         }
+        if (event instanceof EventSodiumBeginShader) {
+            updateAlpha();
+        }
         if (event instanceof EventTick eventTick) {
+            if (!isSodiumLoaded())
+                return;
             IShader translucentShader = (IShader) ShaderHelper.getTranslucentShader();
             if (translucentShader == null)
                 return;
             GlUniform alphaUniform = translucentShader.getCustomUniform("Alpha");
+            float currentAlpha = alphaUniform.getFloatData().get(0);
             if (alphaUniform != null) {
-                float currentAlpha = alphaUniform.getFloatData().get(0);
-                //TODO Clean this up, made add some fade modes? Linear curve, adjustable fade increments etc..
-                if (this.fade && !isSodiumLoaded()) {
-                    if (!getState()) {
-                        if (currentAlpha < 1.1F) {
-                            alphaUniform.set(currentAlpha + 0.025F);
-                        } else {
-                            this.renderChunksSmooth();
-                            super.onDisable();
-                        }
-                    } else {
-                        if (Math.abs(currentAlpha - alphaValue) <= (fadeIncrement / 10.f))
-                            alphaUniform.set(alphaValue);
-                        else if (currentAlpha > alphaValue) {
-                            alphaUniform.set(currentAlpha - (fadeIncrement / 10.f));
-                        } else if (currentAlpha < alphaValue) {
-                            alphaUniform.set(currentAlpha + (fadeIncrement / 10.f));
-                        }
-                    }
+                updateAlpha();
+            }
+        }
+    }
+
+    void updateAlpha() {
+        IShader translucentShader = (IShader) ShaderHelper.getTranslucentShader();
+        GlUniform alphaUniform = null;
+        if (translucentShader != null)
+            alphaUniform = translucentShader.getCustomUniform("Alpha");
+
+        currentAlpha = isSodiumLoaded() ? GL20C.glGetUniformf(sodiumShaderProgram, alphaLocation) : alphaUniform.getFloatData().get(0);
+        //TODO Clean this up, made add some fade modes? Linear curve, adjustable fade increments etc..
+        if (this.fade) {
+            if (!getState()) {
+                if (currentAlpha < 1.1F) {
+                    if (alphaUniform != null)
+                        alphaUniform.set(currentAlpha + (fadeIncrement / 10.f));
+                    if (isSodiumLoaded())
+                        GL20C.glUniform1f(alphaLocation, currentAlpha + (fadeIncrement / 10.f));
                 } else {
-                    alphaUniform.set(alphaValue);
+                    this.renderChunksSmooth();
+                    super.onDisable();
+                }
+            } else {
+                if (Math.abs(currentAlpha - alphaValue) <= (fadeIncrement / 10.f)) {
+                    if (alphaUniform != null)
+                        alphaUniform.set(alphaValue);
+                    if (isSodiumLoaded())
+                        GL20C.glUniform1f(alphaLocation, alphaValue);
+
+                } else if (currentAlpha > alphaValue) {
+                    if (alphaUniform != null)
+                        alphaUniform.set(currentAlpha - (fadeIncrement / 10.f));
+                    if (isSodiumLoaded())
+                        GL20C.glUniform1f(alphaLocation, currentAlpha - (fadeIncrement / 10.f));
+                } else if (currentAlpha < alphaValue) {
+                    if (alphaUniform != null)
+                        alphaUniform.set(currentAlpha + (fadeIncrement / 10.f));
+                    if (isSodiumLoaded())
+                        GL20C.glUniform1f(alphaLocation, currentAlpha + (fadeIncrement / 10.f));
                 }
             }
+        } else {
+            if (alphaUniform != null)
+                alphaUniform.set(alphaValue);
+            if (isSodiumLoaded())
+                GL20C.glUniform1f(alphaLocation, currentAlpha + (fadeIncrement / 10.f));
         }
     }
 
     @Override
     public void onEnable() {
         this.renderChunksSmooth();
-        if (isSodiumLoaded() && Wrapper.INSTANCE.getWorldRenderer() != null) {
-            Wrapper.INSTANCE.getWorldRenderer().reload();
-        }
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        if(!this.fade || isSodiumLoaded()) {
+        if(!this.fade) {
             this.renderChunksSmooth();
             super.onDisable();
-        }
-        if (isSodiumLoaded() && Wrapper.INSTANCE.getWorldRenderer() != null) {
-            Wrapper.INSTANCE.getWorldRenderer().reload();
         }
     }
 

@@ -56,7 +56,9 @@
     "MixinWorldRenderer",
     "SodiumMixinBlockOcclusionCache",
     "SodiumMixinBlockRenderer",
-    "SodiumMixinFluidRenderer"
+    "SodiumMixinFluidRenderer",
+    "SodiumMixinGlProgramBuilder",
+    "SodiumMixinShaderChunkRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
