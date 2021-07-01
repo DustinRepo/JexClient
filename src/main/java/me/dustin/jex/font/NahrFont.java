@@ -212,7 +212,6 @@ public class NahrFont {
         }
 
         int newColor = color;
-        RenderSystem.blendEquation(7424);
         float startX = x;
         boolean scramble = false;
         Tessellator tessellator = Tessellator.getInstance();

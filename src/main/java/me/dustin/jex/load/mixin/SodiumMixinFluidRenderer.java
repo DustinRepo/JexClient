@@ -20,7 +20,8 @@ public class SodiumMixinFluidRenderer {
 
     @Inject(method = "isSideExposed", at = @At("HEAD"), cancellable = true, remap = false)
     public void isSideExposed1(BlockRenderView world, int x, int y, int z, Direction dir, float height, CallbackInfoReturnable<Boolean> cir) {
-        EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(world.getBlockState(new BlockPos(x, y, z)).getBlock(), new BlockPos(x, y, z)).run();
+        BlockPos pos = new BlockPos(x, y, z);
+        EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(world.getBlockState(pos).getBlock(), dir, pos).run();
         if (eventShouldDrawSide.isCancelled()) {
             cir.setReturnValue(eventShouldDrawSide.isShouldDrawSide());
         }

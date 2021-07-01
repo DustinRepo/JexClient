@@ -17,6 +17,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL20C;
 
@@ -57,7 +59,7 @@ public class Xray extends Feature {
         }
         if (event instanceof EventShouldDrawSide eventShouldDrawSide) {
             if (this.opacity && (isValid(eventShouldDrawSide.getBlock()) || eventShouldDrawSide.getBlock() instanceof FluidBlock)) {
-                eventShouldDrawSide.setShouldDrawSide(true);
+                eventShouldDrawSide.setShouldDrawSide(this.shouldDrawSide(eventShouldDrawSide.getSide(), eventShouldDrawSide.getBlockPos()));
                 event.cancel();
             } else if (!this.opacity) {
                 eventShouldDrawSide.setShouldDrawSide(isValid(eventShouldDrawSide.getBlock()));
@@ -111,6 +113,19 @@ public class Xray extends Feature {
                 updateAlpha();
             }
         }
+    }
+
+    private boolean shouldDrawSide(Direction side, BlockPos blockPos) {
+        switch (side) {//Don't draw side if it can't be seen (e.g don't render inside faces for ore vein)
+            case UP -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.up()));}
+            case DOWN -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.down()));}
+            case NORTH -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.north()));}
+            case SOUTH -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.south()));}
+            case EAST -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.east()));}
+            case WEST -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.west()));}
+
+        }
+        return true;
     }
 
     void updateAlpha() {
@@ -195,6 +210,6 @@ public class Xray extends Feature {
     }
 
     private boolean isValid(Block block) {
-        return blockList.contains(block);
+        return blockList.contains(block) || (this.opacity && block instanceof FluidBlock);
     }
 }

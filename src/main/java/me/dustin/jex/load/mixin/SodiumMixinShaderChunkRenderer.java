@@ -28,7 +28,6 @@ public class SodiumMixinShaderChunkRenderer {
 
     @Inject(method = "createShader", at = @At("HEAD"), cancellable = true)
     public void createShaderOverride(RenderDevice device, String path, ChunkShaderOptions options, CallbackInfoReturnable<ChunkProgram> cir) {
-        JexClient.INSTANCE.getLogger().info("Sodium loading shader: " + path);
         if ("blocks/block_layer_translucent".equalsIgnoreCase(path)) {
             ShaderConstants constants = options.constants();
             GlShader vertShader = ShaderLoader.loadShader(device, ShaderType.VERTEX, new Identifier("sodium", path + ".vsh"), constants);

@@ -27,7 +27,7 @@ public class MixinFluidRenderer {
 
     @Inject(method = "isSideCovered(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;F)Z", at = @At("HEAD"), cancellable = true)
     private static void isSideCovered1(BlockView world, BlockPos pos, Direction direction, float maxDeviation, CallbackInfoReturnable<Boolean> cir) {
-        EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(WorldHelper.INSTANCE.getBlock(pos), pos).run();
+        EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(WorldHelper.INSTANCE.getBlock(pos), direction, pos).run();
         if (eventShouldDrawSide.isCancelled())
             cir.setReturnValue(!eventShouldDrawSide.isShouldDrawSide());
     }

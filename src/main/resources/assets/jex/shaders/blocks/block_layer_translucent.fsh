@@ -14,7 +14,7 @@ void main() {
     }
     diffuseColor *= v_Color;
     vec4 final = _linearFog(diffuseColor, v_FragDistance, u_FogColor, u_FogStart, u_FogEnd);
-    if (Alpha > 1.0) {
+    if (Alpha > 1.0 || Alpha > final.a) {
         fragColor = final;
         return;
     }
