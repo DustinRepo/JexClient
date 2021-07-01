@@ -23,7 +23,6 @@ public class MixinBlock {
             if (eventShouldDrawSide.isCancelled())
                 cir.setReturnValue(eventShouldDrawSide.isShouldDrawSide());
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

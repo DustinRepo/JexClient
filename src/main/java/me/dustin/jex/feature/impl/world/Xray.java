@@ -79,12 +79,12 @@ public class Xray extends Feature {
         }
         if (event instanceof EventIsBlockOpaque eventIsBlockOpaque) {
             //This is intended to stop non-opaque blocks from rendering if they're fully covered by other blocks i.e clumps of leaves on trees, glass etc..
-            if (this.opacity && !this.fade) {
+            if (this.opacity && (!this.fade || isSodiumLoaded())) {
                 eventIsBlockOpaque.setOpaque(true);
             }
         }
         if (event instanceof EventBufferQuadAlpha eventBufferQuadAlpha) {
-            if (this.opacity && FabricLoader.getInstance().isModLoaded("sodium")) {
+            if (this.opacity && isSodiumLoaded()) {
                 eventBufferQuadAlpha.setAlpha((int)(alphaValue * 255));
             }
         }
@@ -98,9 +98,9 @@ public class Xray extends Feature {
                 return;
             GlUniform alphaUniform = translucentShader.getCustomUniform("Alpha");
             if (alphaUniform != null) {
-                float currentAlpha = alphaUniform.getFloatData().get();
+                float currentAlpha = alphaUniform.getFloatData().get(0);
                 //TODO Clean this up, made add some fade modes? Linear curve, adjustable fade increments etc..
-                if (this.fade) {
+                if (this.fade && !isSodiumLoaded()) {
                     if (!getState()) {
                         if (currentAlpha < 1.1F) {
                             alphaUniform.set(currentAlpha + 0.025F);
@@ -109,8 +109,12 @@ public class Xray extends Feature {
                             super.onDisable();
                         }
                     } else {
-                        if (currentAlpha > alphaValue) {
+                        if (Math.abs(currentAlpha - alphaValue) < 0.05f)
+                            alphaUniform.set(alphaValue);
+                        else if (currentAlpha > alphaValue) {
                             alphaUniform.set(currentAlpha - 0.025F);
+                        } else if (currentAlpha < alphaValue) {
+                            alphaUniform.set(currentAlpha + 0.025F);
                         }
                     }
                 } else {
@@ -123,31 +127,42 @@ public class Xray extends Feature {
     @Override
     public void onEnable() {
         this.renderChunksSmooth();
+        if (isSodiumLoaded() && Wrapper.INSTANCE.getWorldRenderer() != null) {
+            Wrapper.INSTANCE.getWorldRenderer().reload();
+        }
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        if(!this.fade) {
+        if(!this.fade || isSodiumLoaded()) {
             this.renderChunksSmooth();
             super.onDisable();
+        }
+        if (isSodiumLoaded() && Wrapper.INSTANCE.getWorldRenderer() != null) {
+            Wrapper.INSTANCE.getWorldRenderer().reload();
         }
     }
 
     private void renderChunksSmooth() {
         if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             final int x = (int) Wrapper.INSTANCE.getLocalPlayer().getX() >> 4;
+            final int y = (int) Wrapper.INSTANCE.getLocalPlayer().getY() >> 4;
             final int z = (int) Wrapper.INSTANCE.getLocalPlayer().getZ() >> 4;
 
             final int distance = Wrapper.INSTANCE.getOptions().viewDistance;
             for (int i = x - distance; i < x + distance; i++) {
                 for (int k = z - distance; k < z + distance; k++) {
-                    for (int j = 0; j < 16; j++) {
+                    for (int j = y - distance; j < 16; j++) {
                         Wrapper.INSTANCE.getWorldRenderer().scheduleBlockRender(i, j, k);
                     }
                 }
             }
         }
+    }
+
+    private boolean isSodiumLoaded() {
+        return FabricLoader.getInstance().isModLoaded("sodium");
     }
 
     private boolean isValid(Block block) {
