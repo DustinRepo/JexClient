@@ -44,7 +44,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.joml/joml
     dependency group: 'org.joml', name: 'joml', version: '1.10.1'
 
-    dependency files('lib/eventmanager-1.0.2.jar')
     dependency files('lib/java-discord-rpc-2.0.1-all.jar')
     implementation files('lib/baritone-1.6.3-dev.jar')
     //so there's two ways to go about implementing Sodium. First is to just modImplementation with like fabricAPI and use jitpack as host
