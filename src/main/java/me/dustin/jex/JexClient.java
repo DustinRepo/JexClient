@@ -32,6 +32,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import me.dustin.jex.load.impl.IKeyboard;
 import me.dustin.jex.option.OptionManager;
 import me.dustin.jex.update.UpdateManager;
 import net.fabricmc.loader.api.FabricLoader;
@@ -69,7 +70,7 @@ public enum JexClient {
         getLogger().info("Initializing Commands");
         CommandManager.INSTANCE.init();
         //createJson();
-
+        checkAndFixOptifine();
         getLogger().info("Reading Config Files");
         ModFileHelper.INSTANCE.gameBootLoad();
 
@@ -158,6 +159,25 @@ public enum JexClient {
 
     public void setPlaySoundOnLaunch(boolean soundOnLaunch) {
         this.soundOnLaunch = soundOnLaunch;
+    }
+
+    //fuck you optifabric
+    private void checkAndFixOptifine() {
+        if (FabricLoader.getInstance().isModLoaded("optifabric")) {
+            getLogger().info("Optifabric found. Changing Key Event listener to Optifabric compatible listener.");
+            getLogger().info("Jex keybinds may not work if you are using another mod that does the same.");
+            InputUtil.setKeyboardCallbacks(Wrapper.INSTANCE.getWindow().getHandle(), (windowx, key, scancode, action, modifiers) -> {
+                Wrapper.INSTANCE.getMinecraft().execute(() -> {
+                    Wrapper.INSTANCE.getMinecraft().keyboard.onKey(windowx, key, scancode, action, modifiers);
+                    if (action == 1)
+                        new EventKeyPressed(key, scancode, Wrapper.INSTANCE.getMinecraft().currentScreen == null ? EventKeyPressed.PressType.IN_GAME : EventKeyPressed.PressType.IN_MENU).run();
+                });
+            }, (windowx, codePoint, modifiers) -> {
+                Wrapper.INSTANCE.getMinecraft().execute(() -> {
+                    ((IKeyboard)Wrapper.INSTANCE.getMinecraft().keyboard).callOnChar(windowx, codePoint, modifiers);
+                });
+            });
+        }
     }
 
     private void createJson() {
