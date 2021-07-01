@@ -102,28 +102,33 @@ public class Xray extends Feature {
             updateAlpha();
         }
         if (event instanceof EventTick eventTick) {
-            if (!isSodiumLoaded())
+            if (isSodiumLoaded())
                 return;
             IShader translucentShader = (IShader) ShaderHelper.getTranslucentShader();
             if (translucentShader == null)
                 return;
             GlUniform alphaUniform = translucentShader.getCustomUniform("Alpha");
-            float currentAlpha = alphaUniform.getFloatData().get(0);
-            if (alphaUniform != null) {
-                updateAlpha();
-            }
+            updateAlpha();
         }
     }
 
     private boolean shouldDrawSide(Direction side, BlockPos blockPos) {
+        Block currentBlock = WorldHelper.INSTANCE.getBlock(blockPos);
+        //fix this at some point to make it not render water faces not facing the player
+        /*if (currentBlock instanceof FluidBlock) {
+            float yaw = PlayerHelper.INSTANCE.getRotations(ClientMathHelper.INSTANCE.getVec(blockPos), Wrapper.INSTANCE.getLocalPlayer()).getYaw();
+            Direction dir = Direction.fromRotation(yaw);
+            if (dir == side || (Wrapper.INSTANCE.getLocalPlayer().getY() >= blockPos.getY() - 1 && side == Direction.UP) || (Wrapper.INSTANCE.getLocalPlayer().getY() < blockPos.getY() - 1 && side == Direction.DOWN))
+                return true;
+            return false;
+        }*/
         switch (side) {//Don't draw side if it can't be seen (e.g don't render inside faces for ore vein)
-            case UP -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.up()));}
-            case DOWN -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.down()));}
-            case NORTH -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.north()));}
-            case SOUTH -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.south()));}
-            case EAST -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.east()));}
-            case WEST -> {return !isValid(WorldHelper.INSTANCE.getBlock(blockPos.west()));}
-
+            case UP -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.up())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.up())) || WorldHelper.INSTANCE.getBlock(blockPos.up()) instanceof FluidBlock);}
+            case DOWN -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.down())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.down())) || WorldHelper.INSTANCE.getBlock(blockPos.down()) instanceof FluidBlock);}
+            case NORTH -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.north())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.north())) || WorldHelper.INSTANCE.getBlock(blockPos.north()) instanceof FluidBlock);}
+            case SOUTH -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.south())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.south())) || WorldHelper.INSTANCE.getBlock(blockPos.south()) instanceof FluidBlock);}
+            case EAST -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.east())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.east())) || WorldHelper.INSTANCE.getBlock(blockPos.east()) instanceof FluidBlock);}
+            case WEST -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.west())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.west())) || WorldHelper.INSTANCE.getBlock(blockPos.west()) instanceof FluidBlock);}
         }
         return true;
     }
@@ -134,7 +139,12 @@ public class Xray extends Feature {
         if (translucentShader != null)
             alphaUniform = translucentShader.getCustomUniform("Alpha");
 
-        currentAlpha = isSodiumLoaded() ? GL20C.glGetUniformf(sodiumShaderProgram, alphaLocation) : alphaUniform.getFloatData().get(0);
+        if (isSodiumLoaded()) {
+            currentAlpha = GL20C.glGetUniformf(sodiumShaderProgram, alphaLocation);
+        } else {
+            assert alphaUniform != null;
+            currentAlpha = alphaUniform.getFloatData().get(0);
+        }
         //TODO Clean this up, made add some fade modes? Linear curve, adjustable fade increments etc..
         if (this.fade) {
             if (!getState()) {

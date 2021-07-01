@@ -234,6 +234,20 @@ public enum PlayerHelper {
         return new RotationVector(yaw - 180, -pitch);
     }
 
+    public RotationVector getRotations(Vec3d vec3d, Entity entityIn) {
+        double var4 = vec3d.x - entityIn.getX();
+        double var8 = vec3d.z - entityIn.getZ();
+        double var6;
+        var6 = vec3d.y - (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D;
+
+        double var141 = (double) MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
+        float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
+        float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
+        float pitch = updateRotation(getPitch(), var13, Float.MAX_VALUE);
+        float yaw = updateRotation(getYaw(), var12, Float.MAX_VALUE);
+        return new RotationVector(yaw - 180, -pitch);
+    }
+
     public RotationVector getRotations(Entity ent2, float sideOffset, float heightOffset) {
         ClientPlayerEntity entityIn = Wrapper.INSTANCE.getLocalPlayer();
         Random random = new Random();
