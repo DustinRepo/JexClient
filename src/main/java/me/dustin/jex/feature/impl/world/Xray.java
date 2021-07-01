@@ -29,6 +29,8 @@ public class Xray extends Feature {
     public boolean opacity = true;
     @OpChild(name = "Alpha Value", parent = "Opacity", min = 0, inc = 0.01f)
     public float alphaValue = 0.5f;
+    @OpChild(name = "Fade", parent = "Opacity")
+    public boolean fade = true;
 
     public static void firstLoad() {
         blockList.add(Blocks.DIAMOND_ORE);
@@ -77,7 +79,7 @@ public class Xray extends Feature {
         }
         if (event instanceof EventIsBlockOpaque eventIsBlockOpaque) {
             //This is intended to stop non-opaque blocks from rendering if they're fully covered by other blocks i.e clumps of leaves on trees, glass etc..
-            if (this.opacity) {
+            if (this.opacity && !this.fade) {
                 eventIsBlockOpaque.setOpaque(true);
             }
         }
@@ -96,28 +98,56 @@ public class Xray extends Feature {
                 return;
             GlUniform alphaUniform = translucentShader.getCustomUniform("Alpha");
             if (alphaUniform != null) {
-                alphaUniform.set(alphaValue);
+                float currentAlpha = alphaUniform.getFloatData().get();
+                //TODO Clean this up, made add some fade modes? Linear curve, adjustable fade increments etc..
+                if (this.fade) {
+                    if (!getState()) {
+                        if (currentAlpha < 1.1F) {
+                            alphaUniform.set(currentAlpha + 0.025F);
+                        } else {
+                            this.renderChunksSmooth();
+                            super.onDisable();
+                        }
+                    } else {
+                        if (currentAlpha > alphaValue) {
+                            alphaUniform.set(currentAlpha - 0.025F);
+                        }
+                    }
+                } else {
+                    alphaUniform.set(alphaValue);
+                }
             }
         }
     }
 
     @Override
-    public void setState(boolean state) {
-        if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
-            Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
-        super.setState(state);
+    public void onEnable() {
+        this.renderChunksSmooth();
+        super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        IShader translucentShader = (IShader) ShaderHelper.getTranslucentShader();
-        if (translucentShader == null)
-            return;
-        GlUniform alphaUniform = translucentShader.getCustomUniform("Alpha");
-        if (alphaUniform != null) {
-            alphaUniform.set(1.1f);
+        if(!this.fade) {
+            this.renderChunksSmooth();
+            super.onDisable();
         }
-        super.onDisable();
+    }
+
+    private void renderChunksSmooth() {
+        if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
+            final int x = (int) Wrapper.INSTANCE.getLocalPlayer().getX() >> 4;
+            final int z = (int) Wrapper.INSTANCE.getLocalPlayer().getZ() >> 4;
+
+            final int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            for (int i = x - distance; i < x + distance; i++) {
+                for (int k = z - distance; k < z + distance; k++) {
+                    for (int j = 0; j < 16; j++) {
+                        Wrapper.INSTANCE.getWorldRenderer().scheduleBlockRender(i, j, k);
+                    }
+                }
+            }
+        }
     }
 
     private boolean isValid(Block block) {
