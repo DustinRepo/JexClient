@@ -3,17 +3,19 @@
   "id": "jex",
   "version": "${version}",
   "name": "Jex Client",
-  "description": "Jex Utility Client",
+  "description": "A Utility Client mod to be used on Anarchy servers.",
   "authors": [
-    "Untrusted"
+    "Untrusted/Dustin - Main Dev",
+    "sl - Code Contributor",
+    "BobIsMyManager - Contributor"
   ],
   "contact": {
     "homepage": "https://jexclient.com",
     "sources": "https://github.com/DustinRepo/JexClient-main/tree/main"
   },
-  "license": "CC0-1.0",
+  "license": "GNU General Public",
   "icon": "assets/jex/icon.png",
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "main": [
       "me.dustin.jex.load.JexLoad"
