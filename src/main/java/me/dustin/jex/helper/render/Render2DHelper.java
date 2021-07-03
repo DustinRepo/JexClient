@@ -2,8 +2,12 @@ package me.dustin.jex.helper.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
+import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.shader.ShaderProgram;
+import me.dustin.jex.helper.render.shader.ShaderUniform;
 import me.dustin.jex.load.impl.IItemRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -29,6 +33,7 @@ import java.nio.FloatBuffer;
 public enum Render2DHelper {
     INSTANCE;
     protected Identifier cog = new Identifier("jex", "gui/click/cog.png");
+    //private BlurShader blurShader = new BlurShader();
 
     public void setup2DRender(boolean disableDepth) {
         RenderSystem.enableBlend();
@@ -342,6 +347,73 @@ public enum Render2DHelper {
         Tessellator.getInstance().draw();
     }
 
+    float offset = 0;
+    float a = 1;
+    boolean up = false;
+    private Timer timer = new Timer();
+
+    public void background(MatrixStack matrixStack, float x, float y, float width, float height) {
+        if (timer.hasPassed(20)) {
+            if (up) {
+                if (a < .69f)//nice
+                    a+=0.01f;
+                else
+                    up = false;
+            } else {
+                if (a > 0.01f)
+                    a-=0.01f;
+                else
+                    up = true;
+            }
+            offset += 0.25f;
+            if (offset > 270)
+                offset -=270;
+            timer.reset();
+        }
+        float topLeftColor = offset;
+        float topRightColor = offset + 80;
+        float bottomRightColor = offset + (80 * 2);
+        float bottomLeftColor = offset + (80 * 3);
+        if (topRightColor > 270)
+            topRightColor-=270;
+        if (bottomRightColor > 270)
+            bottomRightColor-=270;
+        if (bottomLeftColor > 270)
+            bottomLeftColor-=270;
+        Matrix4f matrix4f = matrixStack.peek().getModel();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        shaderColor(0xffffffff);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        Color topLeft = ColorHelper.INSTANCE.getColorViaHue(topLeftColor);
+        Color topRight = ColorHelper.INSTANCE.getColorViaHue(topRightColor);
+        Color bottomRight = ColorHelper.INSTANCE.getColorViaHue(bottomRightColor);
+        Color bottomLeft = ColorHelper.INSTANCE.getColorViaHue(bottomLeftColor);
+
+        bufferBuilder.vertex(matrix4f, x, y + height, 0.0F).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, a + 0.3f).next();
+        bufferBuilder.vertex(matrix4f, x + width, y + height, 0.0F).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, 1 - a).next();
+        bufferBuilder.vertex(matrix4f, x + width, y, 0.0F).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, a + 0.3f).next();
+        bufferBuilder.vertex(matrix4f, x, y, 0.0F).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, 1 - a).next();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+
+
+        /*VertexObjectList vertexObjectList = new VertexObjectList();
+        vertexObjectList.vertex(matrix4f, x + width, y + height, 0).color(0, 0, 1, 0.5f);
+        vertexObjectList.vertex(matrix4f, x, y + height, 0).color(1, 1, 0, 0.5f);
+        vertexObjectList.vertex(matrix4f, x + width, y, 0).color(0, 1, 1, 0.5f);
+        vertexObjectList.vertex(matrix4f, x, y, 0).color(1, 0, 1, 0.5f);
+        vertexObjectList.end();
+        VertexObjectList.draw(vertexObjectList);*/
+    }
+
     public int getPercentColor(float percent) {
         if (percent <= 15)
             return new Color(255, 0, 0).getRGB();
@@ -410,5 +482,23 @@ public enum Render2DHelper {
         float green = (hex >> 8 & 0xFF) / 255.0F;
         float blue = (hex & 0xFF) / 255.0F;
         RenderSystem.setShaderColor(red, green, blue, alpha);
+    }
+
+    protected class BlurShader extends ShaderProgram {
+
+        private ShaderUniform modelViewMat, projMat;
+        public BlurShader() {
+            super("blur");
+            this.modelViewMat = addUniform("ModelViewMat");
+            this.projMat = addUniform("ProjMat");
+            this.bindAttribute("Position", 0);
+            this.bindAttribute("Color", 1);
+        }
+
+        @Override
+        public void updateUniforms() {
+            modelViewMat.setMatrix(RenderSystem.getModelViewMatrix());
+            projMat.setMatrix(RenderSystem.getProjectionMatrix());
+        }
     }
 }

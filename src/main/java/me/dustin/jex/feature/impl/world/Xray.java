@@ -138,7 +138,6 @@ public class Xray extends Feature {
         GlUniform alphaUniform = null;
         if (translucentShader != null)
             alphaUniform = translucentShader.getCustomUniform("Alpha");
-
         if (isSodiumLoaded()) {
             currentAlpha = GL20C.glGetUniformf(sodiumShaderProgram, alphaLocation);
         } else {
@@ -180,7 +179,7 @@ public class Xray extends Feature {
             if (alphaUniform != null)
                 alphaUniform.set(alphaValue);
             if (isSodiumLoaded())
-                GL20C.glUniform1f(alphaLocation, currentAlpha + (fadeIncrement / 10.f));
+                GL20C.glUniform1f(alphaLocation, alphaValue);
         }
     }
 

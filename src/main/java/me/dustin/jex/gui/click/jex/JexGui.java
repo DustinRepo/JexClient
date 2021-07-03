@@ -142,6 +142,7 @@ public class JexGui extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         float oneThird = (windowWidth / 3) - 2;
         float topLineY = y + 15;
+        Render2DHelper.INSTANCE.background(matrices, 0, 0, width, height);
         Render2DHelper.INSTANCE.fillAndBorder(matrices, x, y, x + windowWidth, y + windowHeight, ColorHelper.INSTANCE.getClientColor(), 0x60000000, 1);
         FontHelper.INSTANCE.drawCenteredString(matrices, "Jex Client", x + ((1 + oneThird) / 2), y + 4.5f, ColorHelper.INSTANCE.getClientColor());
         FontHelper.INSTANCE.drawCenteredString(matrices, currentCategory.name(), x + (windowWidth / 2), y + 4.5f, ColorHelper.INSTANCE.getClientColor());
