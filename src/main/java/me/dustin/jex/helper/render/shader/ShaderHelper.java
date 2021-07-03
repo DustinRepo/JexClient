@@ -19,6 +19,7 @@ public enum ShaderHelper {
 
     private static Shader rainbowEnchantShader;
     private static Shader translucentShader;
+    private static Shader testShader;
 
     public void drawStorageFBO() {
         if (canDrawFBO()) {
@@ -58,7 +59,6 @@ public enum ShaderHelper {
         if (boxOutlineShader != null) {
             boxOutlineShader.close();
         }
-
         try {
             storageShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
             storageShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
@@ -77,6 +77,7 @@ public enum ShaderHelper {
         try {
             rainbowEnchantShader = new Shader(Wrapper.INSTANCE.getMinecraft().getResourcePackProvider().getPack(), "jex:rainbow_enchant", VertexFormats.POSITION_TEXTURE);
             translucentShader = new Shader(Wrapper.INSTANCE.getMinecraft().getResourcePackProvider().getPack(), "jex:translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+            testShader = new Shader(Wrapper.INSTANCE.getMinecraft().getResourcePackProvider().getPack(), "jex:test", VertexFormats.POSITION_COLOR);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,6 +98,10 @@ public enum ShaderHelper {
 
     public static Shader getTranslucentShader() {
         return translucentShader;
+    }
+
+    public static Shader getTestShader() {
+        return testShader;
     }
 
 }

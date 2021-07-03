@@ -29,6 +29,22 @@ public enum FileHelper {
         return new ArrayList<>();
     }
 
+    public String readFile(File file) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
+            String inString;
+            while ((inString = in.readLine()) != null) {
+                sb.append(inString);
+                sb.append("\n");
+            }
+            in.close();
+            return sb.toString();
+        } catch (IOException e) {
+        }
+        return "";
+    }
+
     public void writeFile(File path, String name, List<String> content) {
         try {
             File file = new File(path, name);

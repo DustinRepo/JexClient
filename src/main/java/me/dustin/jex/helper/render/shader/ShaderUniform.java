@@ -1,0 +1,73 @@
+package me.dustin.jex.helper.render.shader;
+
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vector4f;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.FloatBuffer;
+
+import static org.lwjgl.opengl.GL20.*;
+
+public class ShaderUniform {
+
+    private final String name;
+    private final int location;
+
+    FloatBuffer matrixBuffer;
+
+    public ShaderUniform(String name, int location) {
+        this.name = name;
+        this.location = location;
+        matrixBuffer = MemoryUtil.memAllocFloat(16);
+    }
+
+    public final void setInt(int value) {
+        glUniform1i(location, value);
+    }
+
+    public final void setFloat(float value) {
+        glUniform1f(location, value);
+    }
+
+    public final void setBoolean(boolean value) {
+        glUniform1i(location, value ? 1 : 0);
+    }
+
+    public final void setVec(Vec2f value) {
+        glUniform2f(location, value.x, value.y);
+    }
+
+    public final void setVec(Vector4f value) {
+        glUniform4f(location, value.getX(), value.getY(), value.getZ(), value.getW());
+    }
+
+    public void setMatrix(FloatBuffer matrix) {
+        glUniformMatrix4fv(location, false, matrix);
+    }
+
+    public void setMatrix(Matrix4f matrix) {
+        matrixBuffer.position(0);
+        matrix.writeColumnMajor(matrixBuffer);
+        matrixBuffer.flip();
+        matrixBuffer.clear();
+        glUniformMatrix4fv(location, false, matrixBuffer);
+    }
+
+    public final void setVec(Vec3d value) {
+        glUniform3f(location, (float) value.x, (float) value.y, (float) value.z);
+    }
+
+    public final String getName() {
+        return this.name;
+    }
+
+    public final int getLocation() {
+        return this.location;
+    }
+
+    public static ShaderUniform get(int shaderID, String uniformName) {
+        return new ShaderUniform(uniformName, glGetUniformLocation(shaderID, uniformName));
+    }
+}

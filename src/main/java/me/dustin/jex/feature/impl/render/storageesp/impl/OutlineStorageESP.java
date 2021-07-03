@@ -11,6 +11,8 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
+import me.dustin.jex.helper.render.shader.ShaderProgram;
+import me.dustin.jex.helper.render.shader.ShaderUniform;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -18,6 +20,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec2f;
 
 import java.awt.*;
 
@@ -121,5 +124,27 @@ public class OutlineStorageESP extends FeatureExtension {
             bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         });
     }
+    public static class OutlineShader extends ShaderProgram {
 
+        private ShaderUniform sampler, texel, width, modelviewmat;
+
+        public OutlineShader() {
+            super("outline");
+            this.sampler = addUniform("DiffuseSampler");
+            this.texel = addUniform("TexelSize");
+            this.width = addUniform("Width");
+            this.modelviewmat = addUniform("ModelViewMat");
+            bindAttribute("Position", 0);
+            bindAttribute("Texture", 1);
+        }
+
+        @Override
+        public void updateUniforms() {
+            //Matrix4f matrix4f = Matrix4f.translate(0.0F, 0.0F, -2000.0F);
+            this.sampler.setInt(0);
+            this.texel.setVec(new Vec2f(1f / Wrapper.INSTANCE.getWindow().getWidth(), 1f / Wrapper.INSTANCE.getWindow().getHeight()));
+            this.width.setInt(5);
+            //this.modelviewmat.setMatrix(matrix4f);
+        }
+    }
 }
