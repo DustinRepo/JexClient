@@ -348,7 +348,7 @@ public enum Render2DHelper {
     }
 
     float offset = 0;
-    float a = 1;
+    float a = 0.69f;
     boolean up = false;
     private Timer timer = new Timer();
 
