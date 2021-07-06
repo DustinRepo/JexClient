@@ -24,7 +24,7 @@ public class CommandPeek extends Command {
         if (InventoryHelper.INSTANCE.isShulker(stack)) {
             HashMap<Integer, ItemStack> stackHashMap = InventoryHelper.INSTANCE.getStacksFromShulker(stack);
             stackHashMap.keySet().forEach(slot -> {
-                shulkerBoxScreenHandler.setStackInSlot(slot, stackHashMap.get(slot));
+                shulkerBoxScreenHandler.setStackInSlot(slot, shulkerBoxScreenHandler.nextRevision(), stackHashMap.get(slot));
             });
             shulkerBoxScreen = new ShulkerBoxScreen(shulkerBoxScreenHandler, InventoryHelper.INSTANCE.getInventory(), stack.getName());
             EventAPI.getInstance().register(this);
