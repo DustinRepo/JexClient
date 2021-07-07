@@ -62,7 +62,9 @@ public class Xray extends Feature {
                 eventShouldDrawSide.setShouldDrawSide(this.shouldDrawSide(eventShouldDrawSide.getSide(), eventShouldDrawSide.getBlockPos()));
                 event.cancel();
             } else if (!this.opacity) {
-                eventShouldDrawSide.setShouldDrawSide(isValid(eventShouldDrawSide.getBlock()));
+                if (isValid(eventShouldDrawSide.getBlock()))
+                    eventShouldDrawSide.setShouldDrawSide(this.shouldDrawSide(eventShouldDrawSide.getSide(), eventShouldDrawSide.getBlockPos()));
+                else eventShouldDrawSide.setShouldDrawSide(false);
                 event.cancel();
             }
         }
@@ -90,9 +92,9 @@ public class Xray extends Feature {
         }
         if (event instanceof EventIsBlockOpaque eventIsBlockOpaque) {
             //This is intended to stop non-opaque blocks from rendering if they're fully covered by other blocks i.e clumps of leaves on trees, glass etc..
-            if (this.opacity && (!this.fade)) {
+            /*if (this.opacity && (!this.fade)) {
                 eventIsBlockOpaque.setOpaque(true);
-            }
+            }*/
         }
         if (event instanceof EventGetTranslucentShader eventGetTranslucentShader) {
             eventGetTranslucentShader.setShader(ShaderHelper.getTranslucentShader());
@@ -107,7 +109,6 @@ public class Xray extends Feature {
             IShader translucentShader = (IShader) ShaderHelper.getTranslucentShader();
             if (translucentShader == null)
                 return;
-            GlUniform alphaUniform = translucentShader.getCustomUniform("Alpha");
             updateAlpha();
         }
     }
@@ -191,7 +192,7 @@ public class Xray extends Feature {
 
     @Override
     public void onDisable() {
-        if(!this.fade) {
+        if(!this.fade || !this.opacity) {
             this.renderChunksSmooth();
             super.onDisable();
         }
