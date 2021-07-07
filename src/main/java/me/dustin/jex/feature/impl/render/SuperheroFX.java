@@ -7,13 +7,16 @@ import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.option.annotate.Op;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -21,6 +24,8 @@ import java.util.Random;
 @Feature.Manifest(name = "SuperheroFX", category = Feature.Category.VISUAL, description = "Add comic \"Pow!\" and others to the game")
 public class SuperheroFX extends Feature{
 
+    @Op(name = "Visible Only")
+    public boolean visibleOnly = true;
     @Op(name = "Max Age (MS)", min = 250, max = 2000)
     public int maxAge = 500;
     @Op(name = "Size", min = 8, max = 64, inc = 4)
@@ -28,13 +33,13 @@ public class SuperheroFX extends Feature{
     @Op(name = "Particle Count", min = 1, max = 10)
     public int particleCount = 5;
 
-    private ArrayList<LivingEntity> attacked = new ArrayList<>();
-    private ArrayList<KapowParticle> particles = new ArrayList<>();
+    private final ArrayList<LivingEntity> attacked = new ArrayList<>();
+    private final ArrayList<KapowParticle> particles = new ArrayList<>();
 
     @EventListener(events = {EventAttackEntity.class, EventRenderGetPos.class, EventRender2D.class})
     private void runMethod(Event event) {
         if (event instanceof EventAttackEntity eventAttackEntity) {
-            if (eventAttackEntity.getEntity() instanceof LivingEntity livingEntity) {
+            if (eventAttackEntity.getEntity() instanceof LivingEntity livingEntity && livingEntity.isAlive()) {
                 attacked.add(livingEntity);
             }
         } else if (event instanceof EventRenderGetPos eventRenderGetPos) {
@@ -87,6 +92,12 @@ public class SuperheroFX extends Feature{
         }
 
         public void render(MatrixStack matrixStack) {
+            if (visibleOnly) {
+                Vec3d vec3d = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getEyeY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
+                Vec3d vec3d2 = new Vec3d(position.getX(), position.getY(), position.getZ());
+                if (vec3d2.distanceTo(vec3d) > 128.0D || Wrapper.INSTANCE.getWorld().raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, Wrapper.INSTANCE.getLocalPlayer())).getType() != HitResult.Type.MISS)
+                    return;
+            }
             if (Render2DHelper.INSTANCE.isOnScreen(twoDPosition)) {
                 Render2DHelper.INSTANCE.bindTexture(identifier);
                 DrawableHelper.drawTexture(matrixStack, (int)twoDPosition.x - (size / 2), (int)twoDPosition.y - (size / 2), 0, 0, size, size, size, size);
