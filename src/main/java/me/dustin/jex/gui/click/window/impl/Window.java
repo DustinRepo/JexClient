@@ -345,4 +345,8 @@ public class Window {
     public boolean isHovered() {
         return Render2DHelper.INSTANCE.isHovered(x, y, width, height);
     }
+
+    public boolean isHoveredAtAll() {
+        return Render2DHelper.INSTANCE.isHovered(x, y, width, maxHeight);
+    }
 }
