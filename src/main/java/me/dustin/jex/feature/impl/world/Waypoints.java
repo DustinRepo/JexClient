@@ -7,7 +7,6 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.event.render.EventRenderGetPos;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -66,12 +65,12 @@ public class Waypoints extends Feature {
         return servers;
     }
 
-    @EventListener(events = {EventRender3D.class, EventRender3D.EventRender3DNoBob.class, EventRenderGetPos.class, EventRender2D.class, EventTick.class})
+    @EventListener(events = {EventRender3D.class, EventRender3D.EventRender3DNoBob.class, EventRender3D.class, EventRender2D.class, EventTick.class})
     private void runMethod(Event event) {
         if (event instanceof EventTick) {
             spin++;
         }
-        if (event instanceof EventRender3D) {
+        if (event instanceof EventRender3D eventRender3D) {
             String server = WorldHelper.INSTANCE.getCurrentServerName();
             if (!Wrapper.INSTANCE.getLocalPlayer().isAlive() && lastDeath) {
                 Waypoint oldWaypoint = get("Last Death", server);
@@ -92,26 +91,12 @@ public class Waypoints extends Feature {
                     if (distance < 270) {
                         Box box = new Box(renderPos.x - 0.2f, renderPos.y, renderPos.z - 0.2f, renderPos.x + 0.2f, (256 - waypoint.y), renderPos.z + 0.2f);
                         Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, waypoint.getColor());
-                    }
-                }
-            }
-        } else if (event instanceof EventRenderGetPos) {
-            String server = WorldHelper.INSTANCE.getCurrentServerName();
-            waypointPositions.clear();
-            for (Waypoint waypoint : getWaypoints(server)) {
-                if (waypoint.hidden || !waypoint.drawNametag)
-                    continue;
-                if (waypoint.getDimension().equalsIgnoreCase(WorldHelper.INSTANCE.getDimensionID().toString())) {
-                    float x = waypoint.getX();
-                    float y = waypoint.getY();
-                    float z = waypoint.getZ();
-                    float distance = ClientMathHelper.INSTANCE.getDistance2D(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(x, y, z));
-                    if (distance > 270) {
+                    } else {
                         float yaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(x, y, z)).getYaw();
                         x = (float) Wrapper.INSTANCE.getLocalPlayer().getX() + 250 * (float) Math.cos(Math.toRadians(yaw + 90));
                         z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ() + 250 * (float) Math.sin(Math.toRadians(yaw + 90));
                     }
-                    Vec3d screenPos = Render2DHelper.INSTANCE.to2D(new Vec3d(x, waypoint.getY() + Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(EntityPose.STANDING), z));
+                    Vec3d screenPos = Render2DHelper.INSTANCE.to2D(new Vec3d(x, waypoint.getY() + Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(EntityPose.STANDING), z), eventRender3D.getMatrixStack());
                     waypointPositions.put(waypoint, screenPos);
                 }
             }

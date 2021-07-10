@@ -5,7 +5,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRenderGetPos;
+import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.render.EventRenderNametags;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.feature.impl.render.esp.ESP;
@@ -68,7 +68,7 @@ public class Nametag extends Feature {
     int count = 0;
     private HashMap<Entity, Vec3d> positions = Maps.newHashMap();
 
-    @EventListener(events = {EventRender2D.class, EventRenderNametags.class, EventRenderGetPos.class})
+    @EventListener(events = {EventRender2D.class, EventRenderNametags.class, EventRender3D.class})
     private void runMethod(Event event) {
         if (event instanceof EventRenderNametags) {
             EventRenderNametags eventRenderNametags = (EventRenderNametags) event;
@@ -90,7 +90,7 @@ public class Nametag extends Feature {
                 drawNametags(Wrapper.INSTANCE.getLocalPlayer(), (EventRender2D) event);
                 drawNametagInv(Wrapper.INSTANCE.getLocalPlayer(), (EventRender2D) event);
             }
-        } else if (event instanceof EventRenderGetPos) {
+        } else if (event instanceof EventRender3D eventRender3D) {
             this.positions.clear();
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                 if (isValid(entity)) {
@@ -103,7 +103,7 @@ public class Nametag extends Feature {
                                 offset = entity.getHeight() + 0.4f;
                         }
                     }
-                    Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, ((EventRenderGetPos) event).getPartialTicks());
+                    Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, eventRender3D.getPartialTicks(), eventRender3D.getMatrixStack());
                     this.positions.put(entity, vec);
                 }
             });

@@ -63,7 +63,7 @@ public class ESP extends Feature {
         INSTANCE = this;
     }
 
-    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventRender2DNoScale.class, EventOutlineColor.class, EventJoinWorld.class, EventRenderGetPos.class, EventHasOutline.class}, priority = 1)
+    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventRender2DNoScale.class, EventOutlineColor.class, EventJoinWorld.class, EventRender3D.class, EventHasOutline.class}, priority = 1)
     public void run(Event event) {
         if (lastMode != null && !mode.equalsIgnoreCase(lastMode)) {
             FeatureExtension.get(lastMode, this).disable();

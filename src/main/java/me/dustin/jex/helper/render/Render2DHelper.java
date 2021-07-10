@@ -18,10 +18,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -426,8 +423,8 @@ public enum Render2DHelper {
         return new Color(0, 255, 0).getRGB();
     }
 
-    public Vec3d to2D(Vec3d worldPos) {
-        Vec3d bound = Render3DHelper.INSTANCE.getRenderPosition(worldPos);
+    public Vec3d to2D(Vec3d worldPos, MatrixStack matrixStack) {
+        Vec3d bound = Render3DHelper.INSTANCE.getRenderPosition(worldPos, matrixStack);
         Vec3d twoD = to2D(bound.x, bound.y, bound.z);
         return new Vec3d(twoD.x, twoD.y, twoD.z);
     }
@@ -447,20 +444,20 @@ public enum Render2DHelper {
         return new Vec3d(screenCoords.x / Render2DHelper.INSTANCE.getScaleFactor(), (displayHeight - screenCoords.y) / Render2DHelper.INSTANCE.getScaleFactor(), screenCoords.z);
     }
 
-    public Vec3d getHeadPos(Entity entity, float partialTicks) {
-        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks);
+    public Vec3d getHeadPos(Entity entity, float partialTicks, MatrixStack matrixStack) {
+        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks, matrixStack);
         Vec3d twoD = to2D(bound.x, bound.y + entity.getHeight() + 0.2, bound.z);
         return new Vec3d(twoD.x, twoD.y, twoD.z);
     }
 
-    public Vec3d getFootPos(Entity entity, float partialTicks) {
-        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks);
+    public Vec3d getFootPos(Entity entity, float partialTicks, MatrixStack matrixStack) {
+        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks, matrixStack);
         Vec3d twoD = to2D(bound.x, bound.y, bound.z);
         return new Vec3d(twoD.x, twoD.y, twoD.z);
     }
 
-    public Vec3d getPos(Entity entity, float yOffset, float partialTicks) {
-        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks);
+    public Vec3d getPos(Entity entity, float yOffset, float partialTicks, MatrixStack matrixStack) {
+        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks, matrixStack);
         Vec3d twoD = to2D(bound.x, bound.y + yOffset, bound.z);
         return new Vec3d(twoD.x, twoD.y, twoD.z);
     }

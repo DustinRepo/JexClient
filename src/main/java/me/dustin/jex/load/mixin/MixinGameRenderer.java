@@ -72,10 +72,6 @@ public abstract class MixinGameRenderer {
         if (this.client.options.bobView) {
             bobView(matrixStack, partialTicks);
         }
-        Render3DHelper.INSTANCE.applyCameraRots(matrixStack);
-        loadProjectionMatrix(matrixStack.peek().getModel());
-        new EventRenderGetPos(matrixStack, partialTicks).run();
-        Render3DHelper.INSTANCE.fixCameraRots(matrixStack);
         loadProjectionMatrix(matrixStack.peek().getModel());
 
         new EventRender3D(matrixStack1, partialTicks).run();

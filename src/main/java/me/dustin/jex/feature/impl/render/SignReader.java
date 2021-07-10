@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRenderGetPos;
+import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FontHelper;
@@ -32,9 +32,9 @@ public class SignReader extends Feature {
 
     private HashMap<SignBlockEntity, Vec3d> positions = Maps.newHashMap();
 
-    @EventListener(events = {EventRenderGetPos.class, EventRender2D.class})
+    @EventListener(events = {EventRender3D.class, EventRender2D.class})
     private void runMethod(Event event) {
-        if (event instanceof EventRenderGetPos) {
+        if (event instanceof EventRender3D eventRender3D) {
             positions.clear();
             if (hoverOnly) {
                 HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(1024, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
@@ -43,7 +43,7 @@ public class SignReader extends Feature {
                     if (Wrapper.INSTANCE.getWorld().getBlockEntity(blockHitResult.getBlockPos()) instanceof SignBlockEntity signBlockEntity) {
                         if (signBlockEntity != null) {
                            Vec3d pos = new Vec3d(signBlockEntity.getPos().getX(), signBlockEntity.getPos().getY(), signBlockEntity.getPos().getZ());
-                           positions.put(signBlockEntity, Render2DHelper.INSTANCE.to2D(pos.add(0.5f, 1.5, 0.5f)));
+                           positions.put(signBlockEntity, Render2DHelper.INSTANCE.to2D(pos.add(0.5f, 1.5, 0.5f), eventRender3D.getMatrixStack()));
                        }
                     }
                 }
@@ -51,7 +51,7 @@ public class SignReader extends Feature {
                 for (BlockEntity blockEntity : WorldHelper.INSTANCE.getBlockEntities()) {
                     if (blockEntity instanceof SignBlockEntity signBlockEntity) {
                         Vec3d pos = new Vec3d(signBlockEntity.getPos().getX(), signBlockEntity.getPos().getY(), signBlockEntity.getPos().getZ());
-                        positions.put(signBlockEntity, Render2DHelper.INSTANCE.to2D(pos.add(0.5f, 1.5, 0.5f)));
+                        positions.put(signBlockEntity, Render2DHelper.INSTANCE.to2D(pos.add(0.5f, 1.5, 0.5f), eventRender3D.getMatrixStack()));
                     }
                 }
             }

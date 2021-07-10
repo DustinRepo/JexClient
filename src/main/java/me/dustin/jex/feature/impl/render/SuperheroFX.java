@@ -4,7 +4,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRenderGetPos;
+import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -30,19 +30,19 @@ public class SuperheroFX extends Feature{
     public int maxAge = 500;
     @Op(name = "Size", min = 8, max = 64, inc = 4)
     public int size = 32;
-    @Op(name = "Particle Count", min = 1, max = 10)
+    @Op(name = "Particle Count", min = 1, max = 20)
     public int particleCount = 5;
 
     private final ArrayList<LivingEntity> attacked = new ArrayList<>();
     private final ArrayList<KapowParticle> particles = new ArrayList<>();
 
-    @EventListener(events = {EventAttackEntity.class, EventRenderGetPos.class, EventRender2D.class})
+    @EventListener(events = {EventAttackEntity.class, EventRender3D.class, EventRender2D.class})
     private void runMethod(Event event) {
         if (event instanceof EventAttackEntity eventAttackEntity) {
             if (eventAttackEntity.getEntity() instanceof LivingEntity livingEntity && livingEntity.isAlive()) {
                 attacked.add(livingEntity);
             }
-        } else if (event instanceof EventRenderGetPos eventRenderGetPos) {
+        } else if (event instanceof EventRender3D eventRender3D) {
             for (int i = 0; i < attacked.size(); i++) {
                 LivingEntity livingEntity = attacked.get(i);
                 Random random = new Random();
@@ -55,7 +55,7 @@ public class SuperheroFX extends Feature{
                     double z = livingEntity.getZ() - sideOffset + (random.nextDouble() * (sideOffset * 2));
                     Vec3d vec3d = new Vec3d(x, y, z);
                     KapowParticle kapowParticle = new KapowParticle(vec3d, type);
-                    kapowParticle.setTwoDPosition(Render2DHelper.INSTANCE.to2D(kapowParticle.getPosition()));
+                    kapowParticle.setTwoDPosition(Render2DHelper.INSTANCE.to2D(kapowParticle.getPosition(), eventRender3D.getMatrixStack()));
                     particles.add(kapowParticle);
                 }
                 attacked.remove(i);
@@ -66,7 +66,7 @@ public class SuperheroFX extends Feature{
                     particles.remove(i);
                     continue;
                 }
-                kapowParticle.setTwoDPosition(Render2DHelper.INSTANCE.to2D(kapowParticle.getPosition()));
+                kapowParticle.setTwoDPosition(Render2DHelper.INSTANCE.to2D(kapowParticle.getPosition(), eventRender3D.getMatrixStack()));
             }
         } else if (event instanceof EventRender2D eventRender2D) {
             particles.forEach(particle -> {

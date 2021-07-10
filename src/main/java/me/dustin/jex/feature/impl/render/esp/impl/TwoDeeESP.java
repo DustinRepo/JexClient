@@ -3,7 +3,7 @@ package me.dustin.jex.feature.impl.render.esp.impl;
 import com.google.common.collect.Maps;
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventRender2D;
-import me.dustin.jex.event.render.EventRenderGetPos;
+import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.extension.FeatureExtension;
 import me.dustin.jex.feature.impl.render.esp.ESP;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -28,14 +28,13 @@ public class TwoDeeESP extends FeatureExtension {
 
     @Override
     public void pass(Event event) {
-        if (event instanceof EventRenderGetPos) {
-            EventRenderGetPos eventRenderGetPos = (EventRenderGetPos)event;
+        if (event instanceof EventRender3D eventRender3D) {
             headPos.clear();
             footPos.clear();
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                 if (ESP.INSTANCE.isValid(entity)) {
-                    headPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, entity.getHeight() + 0.2f, eventRenderGetPos.getPartialTicks()));
-                    footPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, -0.2f, eventRenderGetPos.getPartialTicks()));
+                    headPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, entity.getHeight() + 0.2f, eventRender3D.getPartialTicks(), eventRender3D.getMatrixStack()));
+                    footPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, -0.2f, eventRender3D.getPartialTicks(), eventRender3D.getMatrixStack()));
                 }
             }
         } else if (event instanceof EventRender2D) {
