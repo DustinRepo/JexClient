@@ -11,7 +11,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.world.Xray;
+import me.dustin.jex.feature.impl.world.xray.Xray;
 import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;

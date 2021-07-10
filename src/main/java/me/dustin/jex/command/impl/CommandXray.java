@@ -6,7 +6,7 @@ import me.dustin.jex.file.XrayFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.world.Xray;
+import me.dustin.jex.feature.impl.world.xray.Xray;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;

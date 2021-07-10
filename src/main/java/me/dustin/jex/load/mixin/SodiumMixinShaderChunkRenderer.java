@@ -2,7 +2,7 @@ package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.render.EventSodiumBeginShader;
-import me.dustin.jex.feature.impl.world.Xray;
+import me.dustin.jex.feature.impl.world.xray.impl.OpacityXray;
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.gl.shader.*;
 import me.jellysquid.mods.sodium.client.render.chunk.ShaderChunkRenderer;
@@ -45,9 +45,9 @@ public class SodiumMixinShaderChunkRenderer {
                 fragShader.delete();
             }
 
-            Xray.alphaLocation = builder.getUniformLocation("Alpha");
-            if (Xray.alphaLocation < 0) {
-                JexClient.INSTANCE.getLogger().error("Couldn't find Alpha uniform! " + Xray.alphaLocation);
+            OpacityXray.alphaLocation = builder.getUniformLocation("Alpha");
+            if (OpacityXray.alphaLocation < 0) {
+                JexClient.INSTANCE.getLogger().error("Couldn't find Alpha uniform! " + OpacityXray.alphaLocation);
             }
             cir.setReturnValue(var7);
         }
