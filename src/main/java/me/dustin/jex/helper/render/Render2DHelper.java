@@ -33,7 +33,7 @@ import java.nio.FloatBuffer;
 public enum Render2DHelper {
     INSTANCE;
     protected Identifier cog = new Identifier("jex", "gui/click/cog.png");
-    //private BlurShader blurShader = new BlurShader();
+    public BlurShader blurShader = new BlurShader();
 
     public void setup2DRender(boolean disableDepth) {
         RenderSystem.enableBlend();
@@ -348,14 +348,24 @@ public enum Render2DHelper {
     }
 
     float offset = 0;
-    float a = 0.69f;
+    float a = 0.49f;
     boolean up = false;
     private Timer timer = new Timer();
 
     public void background(MatrixStack matrixStack, float x, float y, float width, float height) {
+        Matrix4f matrix4f = matrixStack.peek().getModel();
+        /*blurShader.bind();//projection and modelview matrices just don't fucking apply properly for some reason :(
+        VertexObjectList vertexObjectList = new VertexObjectList();
+        vertexObjectList.vertex(matrix4f,-1, 1, 0).color(0, 0, 0, 1f);
+        vertexObjectList.vertex(matrix4f,-1, -1, 0).color(0, 0, 0, 1f);
+        vertexObjectList.vertex(matrix4f,1, 1, 0).color(0, 0, 0, 1f);
+        vertexObjectList.vertex(matrix4f,1, -1, 0).color(0, 0, 0, 1f);
+        vertexObjectList.end();
+        VertexObjectList.draw(vertexObjectList);
+        blurShader.detach();*/
         if (timer.hasPassed(20)) {
             if (up) {
-                if (a < .69f)//nice
+                if (a < .49f)
                     a+=0.01f;
                 else
                     up = false;
@@ -380,7 +390,6 @@ public enum Render2DHelper {
             bottomRightColor-=270;
         if (bottomLeftColor > 270)
             bottomLeftColor-=270;
-        Matrix4f matrix4f = matrixStack.peek().getModel();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         shaderColor(0xffffffff);
@@ -403,15 +412,6 @@ public enum Render2DHelper {
         BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
-
-
-        /*VertexObjectList vertexObjectList = new VertexObjectList();
-        vertexObjectList.vertex(matrix4f, x + width, y + height, 0).color(0, 0, 1, 0.5f);
-        vertexObjectList.vertex(matrix4f, x, y + height, 0).color(1, 1, 0, 0.5f);
-        vertexObjectList.vertex(matrix4f, x + width, y, 0).color(0, 1, 1, 0.5f);
-        vertexObjectList.vertex(matrix4f, x, y, 0).color(1, 0, 1, 0.5f);
-        vertexObjectList.end();
-        VertexObjectList.draw(vertexObjectList);*/
     }
 
     public int getPercentColor(float percent) {
@@ -497,8 +497,8 @@ public enum Render2DHelper {
 
         @Override
         public void updateUniforms() {
-            modelViewMat.setMatrix(RenderSystem.getModelViewMatrix());
             projMat.setMatrix(RenderSystem.getProjectionMatrix());
+            modelViewMat.setMatrix(RenderSystem.getModelViewMatrix());
         }
     }
 }

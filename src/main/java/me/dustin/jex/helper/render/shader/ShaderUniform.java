@@ -4,7 +4,7 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vector4f;
-import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
@@ -15,12 +15,9 @@ public class ShaderUniform {
     private final String name;
     private final int location;
 
-    FloatBuffer matrixBuffer;
-
     public ShaderUniform(String name, int location) {
         this.name = name;
         this.location = location;
-        matrixBuffer = MemoryUtil.memAllocFloat(16);
     }
 
     public final void setInt(int value) {
@@ -48,15 +45,13 @@ public class ShaderUniform {
     }
 
     public void setMatrix(Matrix4f matrix) {
-        matrixBuffer.position(0);
+        FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
         matrix.writeColumnMajor(matrixBuffer);
-        matrixBuffer.flip();
-        matrixBuffer.clear();
         glUniformMatrix4fv(location, false, matrixBuffer);
     }
 
     public final void setVec(Vec3d value) {
-        glUniform3f(location, (float) value.x, (float) value.y, (float) value.z);
+        glUniform3f(location, (float) value.getX(), (float) value.getY(), (float) value.getZ());
     }
 
     public final String getName() {

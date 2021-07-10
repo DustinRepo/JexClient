@@ -64,6 +64,10 @@ public class VertexObjectList {
         vertexCount = (verticesArray.length / 3);
     }
 
+    public void draw() {
+        draw(this);
+    }
+
     public static void draw(VertexObjectList vertexObjectList) {
         //RenderSystem.clear(GL30.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
         GL30.glBindVertexArray(vertexObjectList.vertexArrayObject);
