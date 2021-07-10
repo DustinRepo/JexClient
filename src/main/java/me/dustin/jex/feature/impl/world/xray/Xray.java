@@ -64,6 +64,10 @@ public class Xray extends Feature {
 
     @Override
     public void onEnable() {
+        if (Wrapper.INSTANCE.getWorld() == null) {
+            this.setState(false);
+            return;
+        }
         FeatureExtension.get(mode, this).enable();
         lastMode = mode;
         super.onEnable();
@@ -71,6 +75,9 @@ public class Xray extends Feature {
 
     @Override
     public void onDisable() {
+        if (Wrapper.INSTANCE.getWorld() == null) {
+            return;
+        }
         FeatureExtension.get(mode, this).disable();
         lastMode = mode;
         super.onDisable();
