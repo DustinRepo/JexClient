@@ -4,23 +4,22 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import me.dustin.jex.feature.core.Feature;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 
 @Feature.Manifest(name = "AutoWither", category = Feature.Category.MISC, description = "Automatically create withers by just placing soul sand")
 public class AutoWither extends Feature {
 
+    int stage = 0;
     boolean creatingWither = false;
     PlayerInteractBlockC2SPacket packet = null;
     
@@ -29,7 +28,10 @@ public class AutoWither extends Feature {
         if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (creatingWither && packet != null) {
-                    if (getSkulls() == -1 || getSoulSand() == -1) {
+                    int skulls = getSkulls();
+                    int soulSand = getSoulSand();
+                    if (skulls == -1 || soulSand == -1) {
+                        stage = 0;
                         creatingWither = false;
                         packet = null;
                         return;
@@ -45,26 +47,27 @@ public class AutoWither extends Feature {
                         originPos = originPos.west();//west
                     if (packet.getBlockHitResult().getSide() == Direction.EAST)
                         originPos = originPos.east();//east
+                    if (stage >= 3) {
+                        if (InventoryHelper.INSTANCE.getInventory().selectedSlot != skulls) {
+                            InventoryHelper.INSTANCE.getInventory().selectedSlot = skulls;
+                            NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(skulls));
+                        }
+                    } else {
+                        if (InventoryHelper.INSTANCE.getInventory().selectedSlot != soulSand) {
+                            InventoryHelper.INSTANCE.getInventory().selectedSlot = soulSand;
+                            NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(soulSand));
+                        }
+                    }
+                    PlayerHelper.INSTANCE.placeBlockInPos(getBlockPos(originPos, stage), Hand.MAIN_HAND, true);
 
-                    Vec3d originVec = new Vec3d(originPos.getX(), originPos.getY(), originPos.getZ());
-                    boolean northSouth = Direction.fromRotation((double) PlayerHelper.INSTANCE.getYaw()) == Direction.NORTH || Direction.fromRotation((double) PlayerHelper.INSTANCE.getYaw()) == Direction.SOUTH;
-                    int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-                    BlockHitResult blockHitResult = new BlockHitResult(originVec.add(0, 1, 0), Direction.DOWN, originPos.up(), false);
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    blockHitResult = new BlockHitResult(originVec.add(1, 1, 0), northSouth ? Direction.EAST : Direction.SOUTH, northSouth ? originPos.up().east() : originPos.up().north(), false);
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    blockHitResult = new BlockHitResult(originVec.add(-1, 1, 0), northSouth ? Direction.WEST : Direction.NORTH, northSouth ? originPos.up().west() : originPos.up().south(), false);
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(getSkulls()));
-                    blockHitResult = new BlockHitResult(originVec.add(0, 1, 0), Direction.UP, originPos.up(2), false);
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    blockHitResult = new BlockHitResult(originVec.add(1, 1, 0), Direction.UP, northSouth ? originPos.up().east() : originPos.up().north(), false);
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    blockHitResult = new BlockHitResult(originVec.add(-1, 1, 0), Direction.UP, northSouth ? originPos.up().west() : originPos.up().south(), false);
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-                    NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(savedSlot));
-                    creatingWither = false;
-                    packet = null;
+                    stage++;
+                    if (stage == 6) {
+                        creatingWither = false;
+                        packet = null;
+                        stage = 0;
+                        InventoryHelper.INSTANCE.getInventory().selectedSlot = soulSand;
+                        NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(soulSand));
+                    }
                 }
             }
         } else if (event instanceof EventPacketSent eventPacketSent) {
@@ -74,12 +77,41 @@ public class AutoWither extends Feature {
                 if(Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.SOUL_SAND)
                 {
                     creatingWither = true;
-
                 }
             }
         }
     }
-    
+
+    @Override
+    public void onDisable() {
+        stage = 0;
+        super.onDisable();
+    }
+
+    public BlockPos getBlockPos(BlockPos origin, int stage) {
+        switch (stage) {
+            case 0 -> {//right above block we originally place
+                return origin.add(0, 1, 0);
+            }
+            case 1 -> {//to the side
+                return origin.add(1, 1, 0);
+            }
+            case 2 -> {//other side
+                return origin.add(-1, 1, 0);
+            }
+            case 3 -> {//side head
+                return origin.add(1, 2, 0);
+            }
+            case 4 -> {//middle head
+                return origin.add(0, 2, 0);
+            }
+            case 5 -> {//other side head
+                return origin.add(-1, 2, 0);
+            }
+        }
+        return BlockPos.ORIGIN;
+    }
+
     public int getSkulls()
     {
         for(int i = 0; i < 9; i++)
