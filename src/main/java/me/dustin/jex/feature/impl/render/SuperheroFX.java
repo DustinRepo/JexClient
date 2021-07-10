@@ -92,6 +92,8 @@ public class SuperheroFX extends Feature{
         }
 
         public void render(MatrixStack matrixStack) {
+            if (timer.hasPassed(maxAge))
+                this.age = 0;
             if (visibleOnly) {
                 Vec3d vec3d = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getEyeY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
                 Vec3d vec3d2 = new Vec3d(position.getX(), position.getY(), position.getZ());
@@ -102,8 +104,6 @@ public class SuperheroFX extends Feature{
                 Render2DHelper.INSTANCE.bindTexture(identifier);
                 DrawableHelper.drawTexture(matrixStack, (int)twoDPosition.x - (size / 2), (int)twoDPosition.y - (size / 2), 0, 0, size, size, size, size);
             }
-            if (timer.hasPassed(maxAge))
-                this.age = 0;
         }
 
         public Vec3d getPosition() {
