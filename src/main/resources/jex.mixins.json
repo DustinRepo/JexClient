@@ -36,6 +36,7 @@
     "MixinKeybinding",
     "MixinKeyboard",
     "MixinLlamaEntity",
+    "MixinMatrix4f",
     "MixinMinecraftClient",
     "MixinMouse",
     "MixinMultiplayerScreen",

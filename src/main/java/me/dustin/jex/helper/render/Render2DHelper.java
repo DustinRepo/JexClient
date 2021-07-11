@@ -3,6 +3,8 @@ package me.dustin.jex.helper.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.math.Matrix4x4;
+import me.dustin.jex.helper.math.Vector3D;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -20,12 +22,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.MemoryStack;
 
 import java.awt.*;
-import java.nio.FloatBuffer;
 
 public enum Render2DHelper {
     INSTANCE;
@@ -351,15 +350,21 @@ public enum Render2DHelper {
 
     public void background(MatrixStack matrixStack, float x, float y, float width, float height) {
         Matrix4f matrix4f = matrixStack.peek().getModel();
-        /*blurShader.bind();//projection and modelview matrices just don't fucking apply properly for some reason :(
-        VertexObjectList vertexObjectList = new VertexObjectList();
-        vertexObjectList.vertex(matrix4f,-1, 1, 0).color(0, 0, 0, 1f);
-        vertexObjectList.vertex(matrix4f,-1, -1, 0).color(0, 0, 0, 1f);
-        vertexObjectList.vertex(matrix4f,1, 1, 0).color(0, 0, 0, 1f);
-        vertexObjectList.vertex(matrix4f,1, -1, 0).color(0, 0, 0, 1f);
+        //-1,1
+        //-1,-1
+        //1,1
+        //1,-1
+        /*blurShader.bind();
+        VertexObjectList vertexObjectList = new VertexObjectList(GL11.GL_TRIANGLE_STRIP);
+        vertexObjectList.vertex(matrix4f,x, y + height, 0).color(1, 0, 0, 1f);
+        vertexObjectList.vertex(matrix4f,x,y, 0).color(0, 1, 0, 1f);
+        vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(0, 0, 1, 1f);
+        vertexObjectList.vertex(matrix4f,x + width,y, 0).color(1, 1, 0, 1f);
         vertexObjectList.end();
         VertexObjectList.draw(vertexObjectList);
-        blurShader.detach();*/
+        blurShader.detach();
+        if (true)
+            return;*/
         if (timer.hasPassed(20)) {
             if (up) {
                 if (a < .49f)
@@ -394,6 +399,7 @@ public enum Render2DHelper {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
+
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         Color topLeft = ColorHelper.INSTANCE.getColorViaHue(topLeftColor);
@@ -431,22 +437,21 @@ public enum Render2DHelper {
 
     private Vec3d to2D(double x, double y, double z) {
         int displayHeight = Wrapper.INSTANCE.getWindow().getHeight();
-        Vector3f screenCoords = new Vector3f();
+        Vector3D screenCoords = new Vector3D();
         int[] viewport = new int[4];
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer modelView = stack.mallocFloat(16);
-            FloatBuffer projection = stack.mallocFloat(16);
-            RenderSystem.getModelViewMatrix().write(modelView, false);//glGetFloatV doesn't work for getting model or view matrix anymore but thankfully minecraft has handy-dandy methods to grab them
-            RenderSystem.getProjectionMatrix().write(projection, false);//and we write them to framebuffer so we can convert to JOML's matrix4f to do the math I don't fucking want to do
-            GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
-            new org.joml.Matrix4f(projection).mul(new org.joml.Matrix4f(modelView)).project((float) x, (float) y, (float) z, viewport, screenCoords);
-        }
+        GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
+        Matrix4x4 matrix4x4Proj = Matrix4x4.copyFrom(RenderSystem.getProjectionMatrix());//no more joml :)
+        Matrix4x4 matrix4x4Model = Matrix4x4.copyFrom(RenderSystem.getModelViewMatrix());//but I do the math myself now :( (heck math)
+        matrix4x4Proj.mul(matrix4x4Model).project((float) x, (float) y, (float) z, viewport, screenCoords);
+
         return new Vec3d(screenCoords.x / Render2DHelper.INSTANCE.getScaleFactor(), (displayHeight - screenCoords.y) / Render2DHelper.INSTANCE.getScaleFactor(), screenCoords.z);
     }
 
     public Vec3d getHeadPos(Entity entity, float partialTicks, MatrixStack matrixStack) {
-        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks, matrixStack);
-        Vec3d twoD = to2D(bound.x, bound.y + entity.getHeight() + 0.2, bound.z);
+        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks).add(0, entity.getHeight() + 0.2, 0);
+        Vector4f vector4f = new Vector4f((float)bound.x, (float)bound.y, (float)bound.z, 1.f);
+        vector4f.transform(matrixStack.peek().getModel());
+        Vec3d twoD = to2D(vector4f.getX(), vector4f.getY(), vector4f.getZ());
         return new Vec3d(twoD.x, twoD.y, twoD.z);
     }
 
@@ -457,8 +462,10 @@ public enum Render2DHelper {
     }
 
     public Vec3d getPos(Entity entity, float yOffset, float partialTicks, MatrixStack matrixStack) {
-        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks, matrixStack);
-        Vec3d twoD = to2D(bound.x, bound.y + yOffset, bound.z);
+        Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks).add(0, yOffset, 0);
+        Vector4f vector4f = new Vector4f((float)bound.x, (float)bound.y, (float)bound.z, 1.f);
+        vector4f.transform(matrixStack.peek().getModel());
+        Vec3d twoD = to2D(vector4f.getX(), vector4f.getY(), vector4f.getZ());
         return new Vec3d(twoD.x, twoD.y, twoD.z);
     }
 
@@ -483,19 +490,25 @@ public enum Render2DHelper {
 
     protected class BlurShader extends ShaderProgram {
 
-        private ShaderUniform modelViewMat, projMat;
+        private ShaderUniform mvpUnifrom;
         public BlurShader() {
             super("blur");
-            this.modelViewMat = addUniform("ModelViewMat");
-            this.projMat = addUniform("ProjMat");
+            this.mvpUnifrom = addUniform("MVP");
             this.bindAttribute("Position", 0);
             this.bindAttribute("Color", 1);
         }
 
         @Override
         public void updateUniforms() {
-            projMat.setMatrix(RenderSystem.getProjectionMatrix());
-            modelViewMat.setMatrix(RenderSystem.getModelViewMatrix());
+            float left = -(Wrapper.INSTANCE.getWindow().getWidth() / 2.f);
+            float right = (Wrapper.INSTANCE.getWindow().getWidth() / 2.f);
+            float top = -(Wrapper.INSTANCE.getWindow().getHeight() / 2.f);
+            float bottom = (Wrapper.INSTANCE.getWindow().getHeight() / 2.f);
+
+            Matrix4f projectionMatrix = Matrix4f.projectionMatrix(left, right, bottom, top, 0.1f, 1000.f);
+            Matrix4f mvp = RenderSystem.getProjectionMatrix().copy();
+            projectionMatrix.multiply(RenderSystem.getModelViewMatrix());
+            mvpUnifrom.setMatrix(projectionMatrix);
         }
     }
 }

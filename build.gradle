@@ -41,8 +41,6 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.reflections/reflections
     dependency group: 'org.reflections', name: 'reflections', version: '0.9.10'
-    // https://mvnrepository.com/artifact/org.joml/joml
-    dependency group: 'org.joml', name: 'joml', version: '1.10.1'
 
     dependency files('lib/java-discord-rpc-2.0.1-all.jar')
     implementation files('lib/baritone-1.6.3-dev.jar')

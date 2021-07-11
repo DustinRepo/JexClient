@@ -1,10 +1,10 @@
 package me.dustin.jex.helper.render.shader;
 
+import me.dustin.jex.load.impl.IMatrix4f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vector4f;
-import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
@@ -45,9 +45,16 @@ public class ShaderUniform {
     }
 
     public void setMatrix(Matrix4f matrix) {
-        FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
-        matrix.writeColumnMajor(matrixBuffer);
-        glUniformMatrix4fv(location, false, matrixBuffer);
+        IMatrix4f iMatrix4f = (IMatrix4f)(Object)matrix;
+        float[] floats = iMatrix4f.toFloatArray();
+
+        /*JexClient.INSTANCE.getLogger().info("\nMatrix: \n" +
+        floats[0] + " " + floats[1] + " " + floats[2] + " " + floats[3] + "\n" +
+        floats[4] + " " + floats[5] + " " + floats[6] + " " + floats[7] + "\n" +
+        floats[8] + " " + floats[9] + " " + floats[10] + " " + floats[11] + "\n" +
+        floats[12] + " " + floats[13] + " " + floats[14] + " " + floats[15] + "\n");*/
+
+        glUniformMatrix4fv(location, false, floats);
     }
 
     public final void setVec(Vec3d value) {
