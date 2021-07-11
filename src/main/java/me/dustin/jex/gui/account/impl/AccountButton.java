@@ -4,7 +4,7 @@ import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.util.math.MatrixStack;
 

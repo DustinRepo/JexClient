@@ -1,17 +1,17 @@
 package me.dustin.jex.gui.waypoints;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.dustin.jex.feature.impl.world.Waypoints;
-import me.dustin.jex.file.WaypointFile;
+import me.dustin.jex.feature.mod.impl.world.Waypoints;
+import me.dustin.jex.helper.file.files.WaypointFile;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.option.types.ColorOption;
+import me.dustin.jex.feature.option.types.ColorOption;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;

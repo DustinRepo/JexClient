@@ -3,10 +3,10 @@ package me.dustin.jex.gui.click.window.impl;
 
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.render.Gui;
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.render.Gui;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;

@@ -10,7 +10,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.network.*;

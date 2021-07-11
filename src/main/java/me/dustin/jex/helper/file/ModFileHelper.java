@@ -1,8 +1,8 @@
 package me.dustin.jex.helper.file;
 
-import me.dustin.jex.file.*;
+import me.dustin.jex.helper.file.files.*;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.impl.world.xray.Xray;
+import me.dustin.jex.feature.mod.impl.world.xray.Xray;
 
 import java.io.File;
 

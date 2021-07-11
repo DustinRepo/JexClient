@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import me.dustin.jex.event.chat.EventSendMessage;
 import me.dustin.jex.event.misc.EventPortalCloseGUI;
 import me.dustin.jex.event.player.*;
-import me.dustin.jex.feature.impl.player.AutoEat;
+import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.Input;

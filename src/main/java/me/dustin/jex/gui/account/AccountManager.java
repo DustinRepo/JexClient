@@ -1,6 +1,6 @@
 package me.dustin.jex.gui.account;
 
-import me.dustin.jex.file.AltFile;
+import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.gui.account.impl.AccountButton;
@@ -10,7 +10,7 @@ import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.Login;
 import me.dustin.jex.helper.network.MCAPIHelper;
-import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;

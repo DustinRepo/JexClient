@@ -1,13 +1,13 @@
 package me.dustin.jex.gui.click.window.impl;
 
 
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.render.Gui;
-import me.dustin.jex.feature.impl.render.Hud;
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.render.Gui;
+import me.dustin.jex.feature.mod.impl.render.Hud;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;

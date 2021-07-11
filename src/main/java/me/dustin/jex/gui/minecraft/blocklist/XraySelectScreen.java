@@ -2,7 +2,7 @@ package me.dustin.jex.gui.minecraft.blocklist;
 
 
 import me.dustin.jex.addon.hat.Hat;
-import me.dustin.jex.file.XrayFile;
+import me.dustin.jex.helper.file.files.XrayFile;
 import me.dustin.jex.gui.minecraft.JexOptionsScreen;
 import me.dustin.jex.gui.minecraft.blocklist.button.BlockButton;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -10,8 +10,8 @@ import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.world.xray.Xray;
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.world.xray.Xray;
 import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;

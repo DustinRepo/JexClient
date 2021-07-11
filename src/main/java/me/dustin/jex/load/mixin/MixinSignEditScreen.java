@@ -1,8 +1,8 @@
 package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.world.AutoSign;
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.world.AutoSign;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;

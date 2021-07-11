@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.waypoints;
 
-import me.dustin.jex.feature.impl.world.Waypoints;
-import me.dustin.jex.file.WaypointFile;
+import me.dustin.jex.feature.mod.impl.world.Waypoints;
+import me.dustin.jex.helper.file.files.WaypointFile;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.gui.waypoints.impl.ServerButton;
@@ -9,7 +9,7 @@ import me.dustin.jex.gui.waypoints.impl.WaypointButton;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;

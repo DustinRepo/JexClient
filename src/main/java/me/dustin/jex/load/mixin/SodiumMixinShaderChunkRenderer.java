@@ -2,7 +2,7 @@ package me.dustin.jex.load.mixin;
 
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.render.EventSodiumBeginShader;
-import me.dustin.jex.feature.impl.world.xray.impl.OpacityXray;
+import me.dustin.jex.feature.mod.impl.world.xray.impl.OpacityXray;
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.gl.shader.*;
 import me.jellysquid.mods.sodium.client.render.chunk.ShaderChunkRenderer;

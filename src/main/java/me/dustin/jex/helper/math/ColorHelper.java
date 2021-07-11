@@ -2,8 +2,8 @@ package me.dustin.jex.helper.math;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventTick;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.render.Hud;
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.render.Hud;
 
 import java.awt.*;
 

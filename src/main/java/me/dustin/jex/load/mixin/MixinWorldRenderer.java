@@ -4,7 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import me.dustin.jex.event.render.EventBlockOutlineColor;
 import me.dustin.jex.event.render.EventRenderRain;
 import me.dustin.jex.event.render.EventWorldRender;
-import me.dustin.jex.feature.impl.render.esp.ESP;
+import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.load.impl.IWorldRenderer;

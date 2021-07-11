@@ -1,9 +1,9 @@
 package me.dustin.jex.gui.minecraft;
 
 import me.dustin.jex.addon.Addon;
-import me.dustin.jex.command.CommandManager;
-import me.dustin.jex.feature.impl.render.Gui;
-import me.dustin.jex.file.ClientSettingsFile;
+import me.dustin.jex.feature.command.CommandManager;
+import me.dustin.jex.feature.mod.impl.render.Gui;
+import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
 import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
@@ -11,10 +11,10 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.update.Update;
-import me.dustin.jex.update.UpdateManager;
+import me.dustin.jex.helper.update.Update;
+import me.dustin.jex.helper.update.UpdateManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;

@@ -1,9 +1,8 @@
 package me.dustin.jex.helper.entity;
 
-import me.dustin.jex.entity.FakePlayerEntity;
-import me.dustin.jex.feature.core.Feature;
-import me.dustin.jex.feature.impl.combat.killaura.Killaura;
-import me.dustin.jex.feature.impl.player.AutoEat;
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.combat.killaura.Killaura;
+import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;

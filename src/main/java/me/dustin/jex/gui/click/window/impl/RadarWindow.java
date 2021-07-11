@@ -1,13 +1,13 @@
 package me.dustin.jex.gui.click.window.impl;
 
-import me.dustin.jex.feature.impl.world.Waypoints;
+import me.dustin.jex.feature.mod.impl.world.Waypoints;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.helper.render.FontHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.impl.render.esp.ESP;
-import me.dustin.jex.feature.impl.world.Radar;
+import me.dustin.jex.feature.mod.impl.render.esp.ESP;
+import me.dustin.jex.feature.mod.impl.world.Radar;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
