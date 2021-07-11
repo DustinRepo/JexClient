@@ -24,8 +24,6 @@ public class Matrix4x4 {
     public float a32;
     public float a33;
 
-    public int property;
-
     public Matrix4x4(FloatBuffer floatBuffer) {
         int offset = floatBuffer.position();
         this.a00 = floatBuffer.get(offset);
