@@ -63,10 +63,66 @@ public class Matrix4x4 {
         this.a33 = floats[15];
     }
 
+    public Matrix4x4() {
+        identity();
+    }
+
     public static Matrix4x4 copyFrom(Matrix4f matrix4f) {
         FloatBuffer buffer = MemoryUtil.memAllocFloat(4*4);
         matrix4f.write(buffer, false);
         return new Matrix4x4(buffer);
+    }
+
+    public void identity() {
+        this.a00 = 1;
+        this.a11 = 1;
+        this.a22 = 1;
+        this.a33 = 1;
+    }
+
+    public static Matrix4x4 ortho2DMatrix(float left, float right, float bottom, float top, float near, float far) {
+        Matrix4x4 matrix4x4 = new Matrix4x4();
+        matrix4x4.identity();
+        // calculate right matrix elements
+        double rm00 = 2.0 / (right - left);
+        double rm11 = 2.0 / (top - bottom);
+        double rm30 = (right + left) / (left - right);
+        double rm31 = (top + bottom) / (bottom - top);
+        // perform optimized multiplication
+        // compute the last column first, because other columns do not depend on it
+        matrix4x4.a30 = (float) (matrix4x4.a00 * rm30 + matrix4x4.a10 * rm31 + matrix4x4.a30);
+        matrix4x4.a31 = (float) (matrix4x4.a01 * rm30 + matrix4x4.a11 * rm31 + matrix4x4.a31);
+        matrix4x4.a32 = (float) (matrix4x4.a02 * rm30 + matrix4x4.a12 * rm31 + matrix4x4.a32);
+        matrix4x4.a33 = (float) (matrix4x4.a03 * rm30 + matrix4x4.a13 * rm31 + matrix4x4.a33);
+        matrix4x4.a00 = (float) (matrix4x4.a00 * rm00);
+        matrix4x4.a01 = (float) (matrix4x4.a01 * rm00);
+        matrix4x4.a02 = (float) (matrix4x4.a02 * rm00);
+        matrix4x4.a03 = (float) (matrix4x4.a03 * rm00);
+        matrix4x4.a10 = (float) (matrix4x4.a10 * rm11);
+        matrix4x4.a11 = (float) (matrix4x4.a11 * rm11);
+        matrix4x4.a12 = (float) (matrix4x4.a12 * rm11);
+        matrix4x4.a13 = (float) (matrix4x4.a13 * rm11);
+        matrix4x4.a20 = (float) (-matrix4x4.a20);
+        matrix4x4.a21 = (float) (-matrix4x4.a21);
+        matrix4x4.a22 = (float) (-matrix4x4.a22);
+        matrix4x4.a23 = (float) (-matrix4x4.a23);
+        return matrix4x4;
+    }
+
+    public static Matrix4x4 projectionMatrix(float width, float height, float fov, float near, float far) {
+        Matrix4x4 proj = new Matrix4x4();
+        float aspectRatio = width/height;
+        float zp = far + near;
+        float zm = far - near;
+        float a00 = (float) (1 / aspectRatio);
+        float a11 = (float) (1);
+        float a22 = -zp/zm;
+        float a23 = -(2*far*near)/zm;
+        proj.a00 = a00;
+        proj.a11 = a11;
+        proj.a22 = a22;
+        proj.a23 = a23;
+        return proj;
     }
 
     public Vector3D project(float x, float y, float z, int[] viewport, Vector3D winCoordsDest) {
@@ -139,5 +195,28 @@ public class Matrix4x4 {
         floats[14] = this.a32;
         floats[15] = this.a33;
         return floats;
+    }
+
+    public Matrix4f toMinecraft() {
+        Matrix4f matrix4f = new Matrix4f();
+        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(4*4);
+        floatBuffer.put(0, this.a00);
+        floatBuffer.put(1, this.a01);
+        floatBuffer.put(2, this.a02);
+        floatBuffer.put(3, this.a03);
+        floatBuffer.put(4, this.a10);
+        floatBuffer.put(5, this.a11);
+        floatBuffer.put(6, this.a12);
+        floatBuffer.put(7, this.a13);
+        floatBuffer.put(8, this.a20);
+        floatBuffer.put(9, this.a21);
+        floatBuffer.put(10, this.a22);
+        floatBuffer.put(11, this.a23);
+        floatBuffer.put(12, this.a30);
+        floatBuffer.put(13, this.a31);
+        floatBuffer.put(14, this.a32);
+        floatBuffer.put(15, this.a33);
+        matrix4f.read(floatBuffer, false);
+        return matrix4f;
     }
 }

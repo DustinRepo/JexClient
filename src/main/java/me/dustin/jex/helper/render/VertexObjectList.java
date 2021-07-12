@@ -35,9 +35,7 @@ public class VertexObjectList {
     public VertexObjectList vertex(Matrix4f matrix4f, float x, float y, float z) {
         Vector4f vector4f = new Vector4f(x, y, z, 1.f);
         vector4f.transform(matrix4f);
-        verticesArray = addElement(verticesArray, vector4f.getX());
-        verticesArray = addElement(verticesArray, vector4f.getY());
-        verticesArray = addElement(verticesArray, vector4f.getZ());
+        vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ());
         return this;
     }
 

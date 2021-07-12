@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.render.shader;
 
+import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.load.impl.IMatrix4f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
@@ -42,6 +43,10 @@ public class ShaderUniform {
 
     public void setMatrix(FloatBuffer matrix) {
         glUniformMatrix4fv(location, false, matrix);
+    }
+
+    public void setMatrix(Matrix4x4 matrix4x4) {
+        glUniformMatrix4fv(location, false, matrix4x4.toFloatArray());
     }
 
     public void setMatrix(Matrix4f matrix) {

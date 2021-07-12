@@ -29,7 +29,7 @@ import java.awt.*;
 public enum Render2DHelper {
     INSTANCE;
     protected Identifier cog = new Identifier("jex", "gui/click/cog.png");
-    public BlurShader blurShader = new BlurShader();
+    public TestShader testShader = new TestShader();
 
     public void setup2DRender(boolean disableDepth) {
         RenderSystem.enableBlend();
@@ -350,30 +350,15 @@ public enum Render2DHelper {
 
     public void background(MatrixStack matrixStack, float x, float y, float width, float height) {
         Matrix4f matrix4f = matrixStack.peek().getModel();
-        //-1,1
-        //-1,-1
-        //1,1
-        //1,-1
-        /*blurShader.bind();
-        VertexObjectList vertexObjectList = new VertexObjectList(GL11.GL_TRIANGLE_STRIP);
-        vertexObjectList.vertex(matrix4f,x, y + height, 0).color(1, 0, 0, 1f);
-        vertexObjectList.vertex(matrix4f,x,y, 0).color(0, 1, 0, 1f);
-        vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(0, 0, 1, 1f);
-        vertexObjectList.vertex(matrix4f,x + width,y, 0).color(1, 1, 0, 1f);
-        vertexObjectList.end();
-        VertexObjectList.draw(vertexObjectList);
-        blurShader.detach();
-        if (true)
-            return;*/
         if (timer.hasPassed(20)) {
             if (up) {
                 if (a < .49f)
-                    a+=0.01f;
+                    a+=0.005f;
                 else
                     up = false;
             } else {
                 if (a > 0.01f)
-                    a-=0.01f;
+                    a-=0.005f;
                 else
                     up = true;
             }
@@ -392,27 +377,37 @@ public enum Render2DHelper {
             bottomRightColor-=270;
         if (bottomLeftColor > 270)
             bottomLeftColor-=270;
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        shaderColor(0xffffffff);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         Color topLeft = ColorHelper.INSTANCE.getColorViaHue(topLeftColor);
         Color topRight = ColorHelper.INSTANCE.getColorViaHue(topRightColor);
         Color bottomRight = ColorHelper.INSTANCE.getColorViaHue(bottomRightColor);
         Color bottomLeft = ColorHelper.INSTANCE.getColorViaHue(bottomLeftColor);
 
-        bufferBuilder.vertex(matrix4f, x, y + height, 0.0F).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, a + 0.3f).next();
-        bufferBuilder.vertex(matrix4f, x + width, y + height, 0.0F).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, 1 - a).next();
-        bufferBuilder.vertex(matrix4f, x + width, y, 0.0F).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, a + 0.3f).next();
-        bufferBuilder.vertex(matrix4f, x, y, 0.0F).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, 1 - a).next();
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+
+        testShader.bind();
+        VertexObjectList vertexObjectList = new VertexObjectList(GL11.GL_TRIANGLE_STRIP);
+        x = x - width;//really hacky fix for the proj matrix not changing origin from middle of screen rather than top-right like I want it
+        y = y - height;
+        width *= 2.f;
+        height *= 2.f;
+        vertexObjectList.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a);
+        vertexObjectList.vertex(matrix4f,x,y, 0).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, a + 0.3f);
+        vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f);
+        vertexObjectList.vertex(matrix4f,x + width,y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a);
+        //for testing with MC's coordinates
+        /*vertexObjectList.vertex(matrix4f, (float)x, (float)y + height, 0.0F).color(g, h, k, f);
+        vertexObjectList.vertex(matrix4f, (float)x + width, (float)y + height, 0.0F).color(g, h, k, f);
+        vertexObjectList.vertex(matrix4f, (float)x + width, (float)y, 0.0F).color(g, h, k, f);
+        vertexObjectList.vertex(matrix4f, (float)x, (float)y, 0.0F).color(g, h, k, f);*/
+
+        vertexObjectList.end();
+        VertexObjectList.draw(vertexObjectList);
+        testShader.detach();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
@@ -488,11 +483,11 @@ public enum Render2DHelper {
         RenderSystem.setShaderColor(red, green, blue, alpha);
     }
 
-    protected class BlurShader extends ShaderProgram {
+    protected class TestShader extends ShaderProgram {
 
         private ShaderUniform mvpUnifrom;
-        public BlurShader() {
-            super("blur");
+        public TestShader() {
+            super("test");
             this.mvpUnifrom = addUniform("MVP");
             this.bindAttribute("Position", 0);
             this.bindAttribute("Color", 1);
@@ -506,6 +501,7 @@ public enum Render2DHelper {
             float bottom = (Wrapper.INSTANCE.getWindow().getHeight() / 2.f);
 
             Matrix4f projectionMatrix = Matrix4f.projectionMatrix(left, right, bottom, top, 0.1f, 1000.f);
+            Matrix4f proj = Matrix4x4.ortho2DMatrix(0, Wrapper.INSTANCE.getWindow().getWidth(), Wrapper.INSTANCE.getWindow().getHeight(), 0, 0.1f, 1000.f).toMinecraft();
             Matrix4f mvp = RenderSystem.getProjectionMatrix().copy();
             projectionMatrix.multiply(RenderSystem.getModelViewMatrix());
             mvpUnifrom.setMatrix(projectionMatrix);
