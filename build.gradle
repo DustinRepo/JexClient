@@ -81,12 +81,14 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 shadowJar {
+    archiveName = "shadow-unmapped.jar"
     configurations = [project.configurations.shadow]
     exclude("com/google/")
 }
 
 remapJar {
     input.set(shadowJar.archiveFile)
+    archiveName = "JexClient.jar"
 }
 
 jar {
