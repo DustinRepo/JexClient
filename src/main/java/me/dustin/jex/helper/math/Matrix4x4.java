@@ -114,14 +114,15 @@ public class Matrix4x4 {
         float aspectRatio = width/height;
         float zp = far + near;
         float zm = far - near;
-        float a00 = (float) (1 / aspectRatio);
-        float a11 = (float) (1);
+        float a00 = 1 / aspectRatio;
+        float a11 = 1;
         float a22 = -zp/zm;
         float a23 = -(2*far*near)/zm;
         proj.a00 = a00;
         proj.a11 = a11;
         proj.a22 = a22;
         proj.a23 = a23;
+        proj.a32 = -1;
         return proj;
     }
 

@@ -210,7 +210,7 @@ public class ClickGui extends Screen {
 
     @Override
     public void render(MatrixStack matrixStack, int int_1, int int_2, float float_1) {
-        Render2DHelper.INSTANCE.background(matrixStack, 0, 0, width, height);
+        renderBackground(matrixStack);
         updateWindowColors();
         configWindow.setColor(ColorHelper.INSTANCE.getClientColor());
         if (timer.hasPassed(100)) {

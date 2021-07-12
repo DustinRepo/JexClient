@@ -135,8 +135,7 @@ public class WaypointEditScreen extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        if (Wrapper.INSTANCE.getLocalPlayer() == null)
-            renderBackground(matrices);
+        renderBackground(matrices);
         Render2DHelper.INSTANCE.fillAndBorder(matrices, width / 2.f - 105, height / 2.f - 112, width / 2.f + 105, height / 2.f + 150, ColorHelper.INSTANCE.getClientColor(), 0x60000000, 1);
         serverName.render(matrices, mouseX, mouseY, delta);
         name.render(matrices, mouseX, mouseY, delta);

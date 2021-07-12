@@ -2,11 +2,9 @@ package me.dustin.jex.helper.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.math.ClientMathHelper;
-import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.math.Vector3D;
 import me.dustin.jex.helper.misc.MouseHelper;
-import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.shader.ShaderProgram;
 import me.dustin.jex.helper.render.shader.ShaderUniform;
@@ -114,23 +112,6 @@ public enum Render2DHelper {
         BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
-    }
-
-    public Color hexToColor(String value) {
-        String digits;
-        if (value.startsWith("#")) {
-            digits = value.substring(1, Math.min(value.length(), 7));
-        } else {
-            digits = value;
-        }
-        String hstr = "0x" + digits;
-        Color c;
-        try {
-            c = Color.decode(hstr);
-        } catch (NumberFormatException nfe) {
-            c = null;
-        }
-        return c;
     }
 
     public void drawFace(MatrixStack matrixStack, float x, float y, int renderScale, Identifier id) {
@@ -250,14 +231,6 @@ public enum Render2DHelper {
         fill(matrixStack, par1, par2 + 1, par1 + 1, par3, par4);
     }
 
-    public void glColor(int hex) {
-        float alpha = (hex >> 24 & 0xFF) / 255.0F;
-        float red = (hex >> 16 & 0xFF) / 255.0F;
-        float green = (hex >> 8 & 0xFF) / 255.0F;
-        float blue = (hex & 0xFF) / 255.0F;
-        GL11.glColor4f(red, green, blue, alpha);
-    }
-
     public Color hex2Rgb(String colorStr) {
         try {
             return new Color(Integer.valueOf(colorStr.substring(2, 4), 16), Integer.valueOf(colorStr.substring(4, 6), 16), Integer.valueOf(colorStr.substring(6, 8), 16));
@@ -343,75 +316,6 @@ public enum Render2DHelper {
         Tessellator.getInstance().draw();
     }
 
-    float offset = 0;
-    float a = 0.49f;
-    boolean up = false;
-    private Timer timer = new Timer();
-
-    public void background(MatrixStack matrixStack, float x, float y, float width, float height) {
-        Matrix4f matrix4f = matrixStack.peek().getModel();
-        if (timer.hasPassed(20)) {
-            if (up) {
-                if (a < .49f)
-                    a+=0.005f;
-                else
-                    up = false;
-            } else {
-                if (a > 0.01f)
-                    a-=0.005f;
-                else
-                    up = true;
-            }
-            offset += 0.25f;
-            if (offset > 270)
-                offset -=270;
-            timer.reset();
-        }
-        float topLeftColor = offset;
-        float topRightColor = offset + 80;
-        float bottomRightColor = offset + (80 * 2);
-        float bottomLeftColor = offset + (80 * 3);
-        if (topRightColor > 270)
-            topRightColor-=270;
-        if (bottomRightColor > 270)
-            bottomRightColor-=270;
-        if (bottomLeftColor > 270)
-            bottomLeftColor-=270;
-
-        Color topLeft = ColorHelper.INSTANCE.getColorViaHue(topLeftColor);
-        Color topRight = ColorHelper.INSTANCE.getColorViaHue(topRightColor);
-        Color bottomRight = ColorHelper.INSTANCE.getColorViaHue(bottomRightColor);
-        Color bottomLeft = ColorHelper.INSTANCE.getColorViaHue(bottomLeftColor);
-
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
-
-        testShader.bind();
-        VertexObjectList vertexObjectList = new VertexObjectList(GL11.GL_TRIANGLE_STRIP);
-        x = x - width;//really hacky fix for the proj matrix not changing origin from middle of screen rather than top-right like I want it
-        y = y - height;
-        width *= 2.f;
-        height *= 2.f;
-        vertexObjectList.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a);
-        vertexObjectList.vertex(matrix4f,x,y, 0).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, a + 0.3f);
-        vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f);
-        vertexObjectList.vertex(matrix4f,x + width,y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a);
-        //for testing with MC's coordinates
-        /*vertexObjectList.vertex(matrix4f, (float)x, (float)y + height, 0.0F).color(g, h, k, f);
-        vertexObjectList.vertex(matrix4f, (float)x + width, (float)y + height, 0.0F).color(g, h, k, f);
-        vertexObjectList.vertex(matrix4f, (float)x + width, (float)y, 0.0F).color(g, h, k, f);
-        vertexObjectList.vertex(matrix4f, (float)x, (float)y, 0.0F).color(g, h, k, f);*/
-
-        vertexObjectList.end();
-        VertexObjectList.draw(vertexObjectList);
-        testShader.detach();
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
-    }
-
     public int getPercentColor(float percent) {
         if (percent <= 15)
             return new Color(255, 0, 0).getRGB();
@@ -483,7 +387,7 @@ public enum Render2DHelper {
         RenderSystem.setShaderColor(red, green, blue, alpha);
     }
 
-    protected class TestShader extends ShaderProgram {
+    public class TestShader extends ShaderProgram {
 
         private ShaderUniform mvpUnifrom;
         public TestShader() {
@@ -501,7 +405,7 @@ public enum Render2DHelper {
             float bottom = (Wrapper.INSTANCE.getWindow().getHeight() / 2.f);
 
             Matrix4f projectionMatrix = Matrix4f.projectionMatrix(left, right, bottom, top, 0.1f, 1000.f);
-            Matrix4f proj = Matrix4x4.ortho2DMatrix(0, Wrapper.INSTANCE.getWindow().getWidth(), Wrapper.INSTANCE.getWindow().getHeight(), 0, 0.1f, 1000.f).toMinecraft();
+            Matrix4f proj = Matrix4x4.ortho2DMatrix(0, Wrapper.INSTANCE.getWindow().getWidth(), -Wrapper.INSTANCE.getWindow().getHeight(), 0, 0.1f, 1000.f).toMinecraft();
             Matrix4f mvp = RenderSystem.getProjectionMatrix().copy();
             projectionMatrix.multiply(RenderSystem.getModelViewMatrix());
             mvpUnifrom.setMatrix(projectionMatrix);

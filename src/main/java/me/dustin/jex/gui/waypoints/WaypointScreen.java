@@ -105,8 +105,7 @@ public class WaypointScreen extends Screen {
 
     @Override
     public void render(MatrixStack matrixStack, int int_1, int int_2, float float_1) {
-        if (Wrapper.INSTANCE.getLocalPlayer() == null)
-            renderBackground(matrixStack);
+        renderBackground(matrixStack);
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, getMidX() - buttonWidth - 6, getMidY() - 105, getMidX() + buttonWidth + 6, getMidY() + 130, ColorHelper.INSTANCE.getClientColor(), 0x60000000, 1);
 
         if(page == 0)
