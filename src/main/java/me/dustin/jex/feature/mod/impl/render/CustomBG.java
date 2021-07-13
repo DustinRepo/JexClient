@@ -74,7 +74,7 @@ public class CustomBG extends Feature {
         float width = Render2DHelper.INSTANCE.getScaledWidth();
         float height = Render2DHelper.INSTANCE.getScaledHeight();
 
-        x = x - width;//really hacky fix for the proj matrix not changing origin from middle of screen rather than top-right like I want it
+        x = x - width;//really hacky fix for the proj matrix not changing origin from middle of screen rather than top-left like I want it
         y = y - height;
         width *= 2.f;
         height *= 2.f;
@@ -88,6 +88,7 @@ public class CustomBG extends Feature {
             vertexObjectList.end();
             VertexObjectList.draw(vertexObjectList);
         }
+        //if using .index, switch last two .vertex
         vertexObjectList.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a);
         vertexObjectList.vertex(matrix4f,x,y, 0).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, a + 0.3f);
         vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f);
