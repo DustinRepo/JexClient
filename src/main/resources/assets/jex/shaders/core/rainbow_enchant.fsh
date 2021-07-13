@@ -9,6 +9,7 @@ uniform vec4 GlintColor;
 uniform int CrazyRainbow;
 uniform float Saturation;
 uniform float Alpha;
+uniform int MathMode;
 
 in float vertexDistance;
 in vec2 texCoord0;
@@ -31,6 +32,17 @@ void main() {
         discard;
     }
     if (CrazyRainbow == 1) {
+        switch (MathMode) {
+            case 0:
+            fragColor = vec4(hsb2rgb(vec3(fract(color.r + color.g + color.b + pos.x + pos.y), Saturation, Alpha)), 1);
+            return;
+            case 1:
+            fragColor = vec4(hsb2rgb(vec3(fract(cos(color.r + color.g + color.b + pos.x + pos.y) * 180), Saturation, Alpha)), 1);
+            return;
+            case 2:
+            fragColor = vec4(hsb2rgb(vec3(fract(cos(color.r + color.g + color.b + pos.x * pos.y) * 45), Saturation, Alpha)), 1);
+            return;
+        }
         fragColor = vec4(hsb2rgb(vec3(fract(color.r + color.g + color.b + pos.x + pos.y), Saturation, Alpha)), 1);
     } else {
         fragColor = vec4(GlintColor.r, GlintColor.g, GlintColor.b, 1.0);

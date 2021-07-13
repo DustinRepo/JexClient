@@ -18,6 +18,8 @@ public class EnchantColor extends Feature{
 
     @Op(name = "Mode", all = {"Shader Rainbow", "Customize"})
     public String mode = "Shader Rainbow";
+    @Op(name = "Shader Mode", all = {"Rainbow", "TV", "Test"})
+    public String shaderMode = "Rainbow";
     @OpChild(name = "Saturation", min = 0.1f, inc = 0.05f, parent = "Mode", dependency = "Shader Rainbow")
     public float saturation = 0.75f;
     @OpChild(name = "Alpha", min = 0.1f, inc = 0.05f, parent = "Mode", dependency = "Shader Rainbow")
@@ -31,32 +33,37 @@ public class EnchantColor extends Feature{
 
     private int col;
     private Timer timer = new Timer();
-    private GlUniform glintColor;
-    private GlUniform crazyRainbow;
+    private GlUniform glintColorU;
+    private GlUniform crazyRainbowU;
     private GlUniform saturationU;
     private GlUniform alphaU;
+    private GlUniform mathModeU;
 
     @EventListener(events = {EventGetGlintShaders.class})
     private void runMethod(EventGetGlintShaders eventGetGlintShaders) {
-        if (glintColor == null || crazyRainbow == null || saturationU == null) {
+        if (glintColorU == null || crazyRainbowU == null || saturationU == null || mathModeU == null) {
             IShader iShader = (IShader) ShaderHelper.getRainbowEnchantShader();
-            glintColor = iShader.getCustomUniform("GlintColor");
-            crazyRainbow = iShader.getCustomUniform("CrazyRainbow");
+            glintColorU = iShader.getCustomUniform("GlintColor");
+            crazyRainbowU = iShader.getCustomUniform("CrazyRainbow");
             saturationU = iShader.getCustomUniform("Saturation");
             alphaU = iShader.getCustomUniform("Alpha");
+            mathModeU = iShader.getCustomUniform("MathMode");
         }
-        if (glintColor != null) {
+        if (glintColorU != null) {
             Color setColor = rainbow ? ColorHelper.INSTANCE.getColorViaHue(col) : ColorHelper.INSTANCE.getColor(color);
-            glintColor.set(setColor.getRed() / 255.f, setColor.getGreen() / 255.f, setColor.getBlue() / 255.f, 1);
+            glintColorU.set(setColor.getRed() / 255.f, setColor.getGreen() / 255.f, setColor.getBlue() / 255.f, 1);
         }
-        if (crazyRainbow != null) {
-            crazyRainbow.set("Shader Rainbow".equalsIgnoreCase(mode) ? 1 : 0);
+        if (crazyRainbowU != null) {
+            crazyRainbowU.set("Shader Rainbow".equalsIgnoreCase(mode) ? 1 : 0);
         }
         if (saturationU != null) {
             saturationU.set(saturation);
         }
         if (alphaU != null) {
             alphaU.set(alpha);
+        }
+        if (mathModeU != null) {
+            mathModeU.set(getShaderMode());
         }
         eventGetGlintShaders.setShader(ShaderHelper.getRainbowEnchantShader());
         eventGetGlintShaders.cancel();
@@ -67,5 +74,14 @@ public class EnchantColor extends Feature{
                 col-=270;
             timer.reset();
         }
+    }
+
+    public int getShaderMode() {
+        switch (shaderMode.toLowerCase()) {
+            case "add" -> {return 0;}
+            case "tv" -> {return 1;}
+            case "test" -> {return 2;}
+        }
+        return 0;
     }
 }
