@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.math;
 
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
 public class Vector3D {
@@ -74,6 +75,36 @@ public class Vector3D {
         this.y -= subY;
         this.z -= subZ;
         return this;
+    }
+
+    public Vector3D transform(Matrix4f matrix4f) {
+        return transform(Matrix4x4.copyFromRowMajor(matrix4f));
+    }
+
+    public Vector3D transform(Matrix4x4 matrix4x4) {
+        double f = this.x;
+        double g = this.y;
+        double h = this.z;
+        this.x = matrix4x4.a00 * f + matrix4x4.a01 * g + matrix4x4.a02 * h + matrix4x4.a03;
+        this.y = matrix4x4.a10 * f + matrix4x4.a11 * g + matrix4x4.a12 * h + matrix4x4.a13;
+        this.z = matrix4x4.a20 * f + matrix4x4.a21 * g + matrix4x4.a22 * h + matrix4x4.a23;
+        return this;
+    }
+
+    public Vector3D multiply(Vector3D vector3D) {
+        return multiply(vector3D.getX(), vector3D.getY(), vector3D.getZ());
+    }
+
+    public Vector3D divide(Vector3D vector3D) {
+        return divide(vector3D.getX(), vector3D.getY(), vector3D.getZ());
+    }
+
+    public Vector3D add(Vector3D vector3D) {
+        return add(vector3D.getX(), vector3D.getY(), vector3D.getZ());
+    }
+
+    public Vector3D subtract(Vector3D vector3D) {
+        return subtract(vector3D.getX(), vector3D.getY(), vector3D.getZ());
     }
 
     public Vector3D multiply(double mul) {

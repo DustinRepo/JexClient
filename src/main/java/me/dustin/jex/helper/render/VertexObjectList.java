@@ -1,7 +1,8 @@
 package me.dustin.jex.helper.render;
 
+import me.dustin.jex.helper.math.Vector3D;
+import me.dustin.jex.helper.math.Vector4D;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
@@ -11,6 +12,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.awt.*;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class VertexObjectList {
@@ -19,25 +21,30 @@ public class VertexObjectList {
 
     private DrawMode drawMode;
     private int vertexCount;
-    private float[] verticesArray = new float[]{};
+    private ArrayList<Vector3D> verticesArray = new ArrayList<>();
+    private ArrayList<Vector4D> colorsArray = new ArrayList<>();
+    //private float[] verticesArray = new float[]{};
     private int[] indicesArray = new int[]{};
-    private float[] colorsArray = new float[]{};
+    //private float[] colorsArray = new float[]{};
 
     public VertexObjectList(DrawMode drawMode) {
         this.drawMode = drawMode;
     }
 
+    public VertexObjectList vertex(Vector3D vector3D) {
+        verticesArray.add(vector3D);
+        return this;
+    }
+
     public VertexObjectList vertex(float x, float y, float z) {
-        verticesArray = addElement(verticesArray, x);
-        verticesArray = addElement(verticesArray, y);
-        verticesArray = addElement(verticesArray, z);
+        Vector3D vector3D = new Vector3D(x, y, z);
+        verticesArray.add(vector3D);
         return this;
     }
 
     public VertexObjectList vertex(Matrix4f matrix4f, float x, float y, float z) {
-        Vector4f vector4f = new Vector4f(x, y, z, 1.f);
-        vector4f.transform(matrix4f);
-        vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ());
+        Vector3D vector3D = new Vector3D(x, y, z).transform(matrix4f);
+        vertex(vector3D);
         return this;
     }
 
@@ -57,10 +64,8 @@ public class VertexObjectList {
     }
 
     public VertexObjectList color(float red, float green, float blue, float alpha) {
-        colorsArray = addElement(colorsArray, red);
-        colorsArray = addElement(colorsArray, green);
-        colorsArray = addElement(colorsArray, blue);
-        colorsArray = addElement(colorsArray, alpha);
+        Vector4D vector4D = new Vector4D(red, green, blue, alpha);
+        colorsArray.add(vector4D);
         return this;
     }
 
@@ -73,11 +78,13 @@ public class VertexObjectList {
         GL30.glBindVertexArray(vertexArrayObject);
         if (indicesArray.length != 0)
             bindIndices();
-        storeAttribute(vertexBufferObject, 0, 3, toFloatBuffer(verticesArray));
-        storeAttribute(colorBufferObject, 1, 4, toFloatBuffer(colorsArray));
+        storeAttribute(vertexBufferObject, 0, 3, toFloatBufferVec3D(verticesArray));
+        storeAttribute(colorBufferObject, 1, 4, toFloatBufferVec4D(colorsArray));
 
         GL30.glBindVertexArray(0);
-        vertexCount = indicesArray.length == 0 ? verticesArray.length / 3 : indicesArray.length;
+        vertexCount = indicesArray.length == 0 ? verticesArray.size() : indicesArray.length;
+        verticesArray.clear();
+        colorsArray.clear();
     }
 
     public void draw() {
@@ -122,6 +129,29 @@ public class VertexObjectList {
     private FloatBuffer toFloatBuffer(float[] array) {
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(array.length);
         return floatBuffer.put(array).flip();
+    }
+
+    private FloatBuffer toFloatBufferVec3D(ArrayList<Vector3D> array) {
+        float[] floats = new float[array.size() * 3];
+        for (int i = 0; i < array.size(); i++) {
+            Vector3D vector3D = array.get(i);
+            floats[i*3] = (float)vector3D.getX();
+            floats[i*3+1] = (float)vector3D.getY();
+            floats[i*3+2] = (float)vector3D.getZ();
+        }
+        return toFloatBuffer(floats);
+    }
+
+    private FloatBuffer toFloatBufferVec4D(ArrayList<Vector4D> array) {
+        float[] floats = new float[array.size() * 4];
+        for (int i = 0; i < array.size(); i++) {
+            Vector4D vector4D = array.get(i);
+            floats[i*4] = (float)vector4D.getX();
+            floats[i*4+1] = (float)vector4D.getY();
+            floats[i*4+2] = (float)vector4D.getZ();
+            floats[i*4+3] = (float)vector4D.getW();
+        }
+        return toFloatBuffer(floats);
     }
 
     private int[] addElement(int[] a, int e) {
