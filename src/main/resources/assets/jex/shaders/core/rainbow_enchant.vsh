@@ -9,10 +9,12 @@ uniform mat4 TextureMat;
 
 out float vertexDistance;
 out vec2 texCoord0;
+out vec3 pos;
 
 void main() {
     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 
     vertexDistance = length((ModelViewMat * vec4(Position, 1.0)).xyz);
     texCoord0 = (TextureMat * vec4(UV0, 0.0, 1.0)).xy;
+    pos = Position;
 }
