@@ -389,10 +389,11 @@ public enum Render2DHelper {
 
     public class TestShader extends ShaderProgram {
 
-        private ShaderUniform mvpUnifrom;
+        private ShaderUniform projUniform, modelViewUniform;
         public TestShader() {
             super("test");
-            this.mvpUnifrom = addUniform("MVP");
+            this.projUniform = addUniform("Projection");
+            this.modelViewUniform = addUniform("ModelView");
             this.bindAttribute("Position", 0);
             this.bindAttribute("Color", 1);
         }
@@ -405,10 +406,9 @@ public enum Render2DHelper {
             float bottom = (Wrapper.INSTANCE.getWindow().getHeight() / 2.f);
 
             Matrix4f projectionMatrix = Matrix4f.projectionMatrix(left, right, bottom, top, 0.1f, 1000.f);
-            Matrix4f proj = Matrix4x4.ortho2DMatrix(0, Wrapper.INSTANCE.getWindow().getWidth(), -Wrapper.INSTANCE.getWindow().getHeight(), 0, 0.1f, 1000.f).toMinecraft();
-            Matrix4f mvp = RenderSystem.getProjectionMatrix().copy();
-            projectionMatrix.multiply(RenderSystem.getModelViewMatrix());
-            mvpUnifrom.setMatrix(projectionMatrix);
+            Matrix4f proj = Matrix4x4.projectionMatrix(getScaledWidth(), getScaledHeight(), 1, -0.1f, 1000.f).toMinecraft();
+            projUniform.setMatrix(Matrix4x4.copyFrom(projectionMatrix));//should be RenderSystem.getProjectionMatrix() but fuck me I guess
+            modelViewUniform.setMatrix(Matrix4x4.copyFrom(RenderSystem.getModelViewMatrix()));
         }
     }
 }

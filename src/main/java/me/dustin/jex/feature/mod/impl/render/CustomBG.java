@@ -11,7 +11,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.VertexObjectList;
 import net.minecraft.util.math.Matrix4f;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -71,7 +70,7 @@ public class CustomBG extends Feature {
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
 
-        VertexObjectList vertexObjectList = new VertexObjectList(GL11.GL_TRIANGLE_STRIP);
+        VertexObjectList vertexObjectList = new VertexObjectList(VertexObjectList.DrawMode.QUAD);
         float x = 0;
         float y = 0;
         float width = Render2DHelper.INSTANCE.getScaledWidth();
@@ -85,13 +84,18 @@ public class CustomBG extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
             vertexObjectList.vertex(matrix4f,x, y + height, 0).color(0.5f, 0.5f, 0.5f, 1);
             vertexObjectList.vertex(matrix4f,x,y, 0).color(0.5f, 0.5f, 0.5f, 1);
-            vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(0.5f, 0.5f, 0.5f, 1);
             vertexObjectList.vertex(matrix4f,x + width,y, 0).color(0.5f, 0.5f, 0.5f, 1);
+            vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(0.5f, 0.5f, 0.5f, 1);
+            vertexObjectList.index(0,1,3).index(3,1,2);
+            vertexObjectList.end();
+            VertexObjectList.draw(vertexObjectList);
+            vertexObjectList = new VertexObjectList(VertexObjectList.DrawMode.QUAD);
         }
         vertexObjectList.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a);
         vertexObjectList.vertex(matrix4f,x,y, 0).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, a + 0.3f);
-        vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f);
         vertexObjectList.vertex(matrix4f,x + width,y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a);
+        vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f);
+        vertexObjectList.index(0,1,3).index(3,1,2);
         vertexObjectList.end();
         VertexObjectList.draw(vertexObjectList);
         Render2DHelper.INSTANCE.testShader.detach();
