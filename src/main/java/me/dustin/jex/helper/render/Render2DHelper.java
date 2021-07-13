@@ -339,8 +339,8 @@ public enum Render2DHelper {
         Vector3D screenCoords = new Vector3D();
         int[] viewport = new int[4];
         GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
-        Matrix4x4 matrix4x4Proj = Matrix4x4.copyFrom(RenderSystem.getProjectionMatrix());//no more joml :)
-        Matrix4x4 matrix4x4Model = Matrix4x4.copyFrom(RenderSystem.getModelViewMatrix());//but I do the math myself now :( (heck math)
+        Matrix4x4 matrix4x4Proj = Matrix4x4.copyFromColumnMajor(RenderSystem.getProjectionMatrix());//no more joml :)
+        Matrix4x4 matrix4x4Model = Matrix4x4.copyFromColumnMajor(RenderSystem.getModelViewMatrix());//but I do the math myself now :( (heck math)
         matrix4x4Proj.mul(matrix4x4Model).project((float) x, (float) y, (float) z, viewport, screenCoords);
 
         return new Vec3d(screenCoords.x / Render2DHelper.INSTANCE.getScaleFactor(), (displayHeight - screenCoords.y) / Render2DHelper.INSTANCE.getScaleFactor(), screenCoords.z);
@@ -407,8 +407,8 @@ public enum Render2DHelper {
 
             Matrix4f projectionMatrix = Matrix4f.projectionMatrix(left, right, bottom, top, 0.1f, 1000.f);
             Matrix4f proj = Matrix4x4.projectionMatrix(getScaledWidth(), getScaledHeight(), 1, -0.1f, 1000.f).toMinecraft();
-            projUniform.setMatrix(Matrix4x4.copyFrom(projectionMatrix));//should be RenderSystem.getProjectionMatrix() but fuck me I guess
-            modelViewUniform.setMatrix(Matrix4x4.copyFrom(RenderSystem.getModelViewMatrix()));
+            projUniform.setMatrix(Matrix4x4.copyFromRowMajor(projectionMatrix));//should be RenderSystem.getProjectionMatrix() but fuck me I guess
+            modelViewUniform.setMatrix(Matrix4x4.copyFromRowMajor(RenderSystem.getModelViewMatrix()));
         }
     }
 }

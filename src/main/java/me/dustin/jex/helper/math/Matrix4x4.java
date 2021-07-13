@@ -67,9 +67,15 @@ public class Matrix4x4 {
         identity();
     }
 
-    public static Matrix4x4 copyFrom(Matrix4f matrix4f) {
+    public static Matrix4x4 copyFromRowMajor(Matrix4f matrix4f) {
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(16);
         matrix4f.write(floatBuffer, true);
+        return new Matrix4x4(floatBuffer);
+    }
+
+    public static Matrix4x4 copyFromColumnMajor(Matrix4f matrix4f) {
+        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(16);
+        matrix4f.write(floatBuffer, false);
         return new Matrix4x4(floatBuffer);
     }
 
