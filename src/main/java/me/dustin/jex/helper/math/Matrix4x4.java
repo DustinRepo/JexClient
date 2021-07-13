@@ -73,11 +73,24 @@ public class Matrix4x4 {
         return new Matrix4x4(buffer);
     }
 
-    public void identity() {
+    public Matrix4x4 identity() {
         this.a00 = 1;
+        this.a01 = 0;
+        this.a02 = 0;
+        this.a03 = 0;
+        this.a10 = 0;
         this.a11 = 1;
+        this.a12 = 0;
+        this.a13 = 0;
+        this.a20 = 0;
+        this.a21 = 0;
         this.a22 = 1;
+        this.a23 = 0;
+        this.a30 = 0;
+        this.a31 = 0;
+        this.a32 = 0;
         this.a33 = 1;
+        return this;
     }
 
     public static Matrix4x4 ortho2DMatrix(float left, float right, float bottom, float top, float near, float far) {
@@ -102,10 +115,10 @@ public class Matrix4x4 {
         matrix4x4.a11 = (float) (matrix4x4.a11 * rm11);
         matrix4x4.a12 = (float) (matrix4x4.a12 * rm11);
         matrix4x4.a13 = (float) (matrix4x4.a13 * rm11);
-        matrix4x4.a20 = (float) (-matrix4x4.a20);
-        matrix4x4.a21 = (float) (-matrix4x4.a21);
-        matrix4x4.a22 = (float) (-matrix4x4.a22);
-        matrix4x4.a23 = (float) (-matrix4x4.a23);
+        matrix4x4.a20 = -matrix4x4.a20;
+        matrix4x4.a21 = -matrix4x4.a21;
+        matrix4x4.a22 = -matrix4x4.a22;
+        matrix4x4.a23 = -matrix4x4.a23;
         return matrix4x4;
     }
 
@@ -174,6 +187,87 @@ public class Matrix4x4 {
         this.a31 = matrix4x4.a31;
         this.a32 = matrix4x4.a32;
         this.a33 = matrix4x4.a33;
+        return this;
+    }
+
+    public static Matrix4x4 scale(float x, float y, float z) {
+        Matrix4x4 matrix4x4 = new Matrix4x4();
+        matrix4x4.a00 = x;
+        matrix4x4.a11 = y;
+        matrix4x4.a22 = z;
+        matrix4x4.a33 = 1.0F;
+        return matrix4x4;
+    }
+
+    public static Matrix4x4 translate(float x, float y, float z) {
+        Matrix4x4 matrix4x4 = new Matrix4x4();
+        matrix4x4.a00 = 1.0F;
+        matrix4x4.a11 = 1.0F;
+        matrix4x4.a22 = 1.0F;
+        matrix4x4.a33 = 1.0F;
+        matrix4x4.a03 = x;
+        matrix4x4.a13 = y;
+        matrix4x4.a23 = z;
+        return matrix4x4;
+    }
+
+    public Matrix4x4 multiply(float scalar) {
+        this.a00 *= scalar;
+        this.a01 *= scalar;
+        this.a02 *= scalar;
+        this.a03 *= scalar;
+        this.a10 *= scalar;
+        this.a11 *= scalar;
+        this.a12 *= scalar;
+        this.a13 *= scalar;
+        this.a20 *= scalar;
+        this.a21 *= scalar;
+        this.a22 *= scalar;
+        this.a23 *= scalar;
+        this.a30 *= scalar;
+        this.a31 *= scalar;
+        this.a32 *= scalar;
+        this.a33 *= scalar;
+        return this;
+    }
+
+    public Matrix4x4 add(Matrix4x4 matrix) {
+        this.a00 += matrix.a00;
+        this.a01 += matrix.a01;
+        this.a02 += matrix.a02;
+        this.a03 += matrix.a03;
+        this.a10 += matrix.a10;
+        this.a11 += matrix.a11;
+        this.a12 += matrix.a12;
+        this.a13 += matrix.a13;
+        this.a20 += matrix.a20;
+        this.a21 += matrix.a21;
+        this.a22 += matrix.a22;
+        this.a23 += matrix.a23;
+        this.a30 += matrix.a30;
+        this.a31 += matrix.a31;
+        this.a32 += matrix.a32;
+        this.a33 += matrix.a33;
+        return this;
+    }
+
+    public Matrix4x4 subtract(Matrix4x4 matrix) {
+        this.a00 -= matrix.a00;
+        this.a01 -= matrix.a01;
+        this.a02 -= matrix.a02;
+        this.a03 -= matrix.a03;
+        this.a10 -= matrix.a10;
+        this.a11 -= matrix.a11;
+        this.a12 -= matrix.a12;
+        this.a13 -= matrix.a13;
+        this.a20 -= matrix.a20;
+        this.a21 -= matrix.a21;
+        this.a22 -= matrix.a22;
+        this.a23 -= matrix.a23;
+        this.a30 -= matrix.a30;
+        this.a31 -= matrix.a31;
+        this.a32 -= matrix.a32;
+        this.a33 -= matrix.a33;
         return this;
     }
 
