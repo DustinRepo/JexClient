@@ -3,7 +3,7 @@ package me.dustin.jex.feature.mod.impl.player;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.events.core.enums.EventPriority;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.helper.math.RotationVector;
+import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;

@@ -1,11 +1,12 @@
 package me.dustin.jex.helper.render.shader;
 
 import me.dustin.jex.helper.math.Matrix4x4;
+import me.dustin.jex.helper.math.vector.Vector2D;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vector4f;
-import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 
@@ -33,6 +34,10 @@ public class ShaderUniform {
         glUniform1i(location, value ? 1 : 0);
     }
 
+    public final void setVec(Vector2D value) {
+        glUniform2f(location, (float)value.getX(), (float)value.getY());
+    }
+
     public final void setVec(Vec2f value) {
         glUniform2f(location, value.x, value.y);
     }
@@ -50,9 +55,11 @@ public class ShaderUniform {
     }
 
     public void setMatrix(Matrix4f matrix) {
-        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(16);
-        matrix.write(floatBuffer, true);
-        glUniformMatrix4fv(location, false, floatBuffer);
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
+            matrix.write(floatBuffer, true);
+            glUniformMatrix4fv(location, false, floatBuffer);
+        }
     }
 
     public final void setVec(Vec3d value) {

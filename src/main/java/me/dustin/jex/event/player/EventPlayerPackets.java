@@ -1,7 +1,7 @@
 package me.dustin.jex.event.player;
 
 import me.dustin.events.core.Event;
-import me.dustin.jex.helper.math.RotationVector;
+import me.dustin.jex.helper.math.vector.RotationVector;
 
 public class EventPlayerPackets extends Event {
 

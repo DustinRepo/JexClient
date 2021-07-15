@@ -5,6 +5,7 @@ import me.dustin.jex.event.render.*;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
+import me.dustin.jex.load.impl.IGameRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -22,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
-public abstract class MixinGameRenderer {
+public abstract class MixinGameRenderer implements IGameRenderer {
 
     @Shadow
     private int ticks;
@@ -136,5 +137,10 @@ public abstract class MixinGameRenderer {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V"))
     public void renderForEvent(float float_1, long long_1, boolean boolean_1, CallbackInfo ci) {
         new EventRender2DNoScale().run();
+    }
+
+    @Override
+    public double getFOV(float tickDelta) {
+        return this.getFov(camera, tickDelta, true);
     }
 }

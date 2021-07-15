@@ -20,8 +20,8 @@ public abstract class ShaderProgram {//unused as of right now. doesn't play well
     public ShaderProgram(String shaderName) {
         this.shaderName = shaderName;
         this.shaderProgram = glCreateProgram();
-        String vCode = readShader("/assets/jex/shaders/" + shaderName + ".vsh");
-        String fCode = readShader("/assets/jex/shaders/" + shaderName + ".fsh");
+        String vCode = readShader("/assets/jex/shaders/jex/" + shaderName + ".vsh");
+        String fCode = readShader("/assets/jex/shaders/jex/" + shaderName + ".fsh");
         createProgram(vCode, fCode);
     }
 

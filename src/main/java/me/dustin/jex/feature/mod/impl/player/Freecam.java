@@ -10,7 +10,7 @@ import me.dustin.jex.event.player.EventPlayerUpdates;
 import me.dustin.jex.event.player.EventPushOutOfBlocks;
 import me.dustin.jex.event.render.EventMarkChunkClosed;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.helper.math.RotationVector;
+import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;

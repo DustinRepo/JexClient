@@ -1,4 +1,4 @@
-package me.dustin.jex.helper.math;
+package me.dustin.jex.helper.math.vector;
 
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;

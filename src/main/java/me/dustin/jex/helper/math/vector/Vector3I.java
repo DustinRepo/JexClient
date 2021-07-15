@@ -1,4 +1,4 @@
-package me.dustin.jex.helper.math;
+package me.dustin.jex.helper.math.vector;
 
 import net.minecraft.util.math.Vec3i;
 

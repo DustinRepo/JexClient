@@ -6,10 +6,12 @@ import me.dustin.jex.event.render.EventRenderBackground;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.VertexObjectList;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.util.math.Matrix4f;
 
 import java.awt.*;
@@ -68,43 +70,49 @@ public class CustomBG extends Feature {
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
 
-        VertexObjectList vertexObjectList = new VertexObjectList(VertexObjectList.DrawMode.QUAD);
+        //little test square
+        /*Render2DHelper.INSTANCE.testShader.bind();
+        vertexObjectList.begin(VertexObjectList.DrawMode.QUAD);
+        vertexObjectList.vertex(matrix4f, 100, 0, 0).color(1, 1, 0, 1);//top right
+        vertexObjectList.vertex(matrix4f, 0, 0, 0).color(1, 0, 0, 1);//top left
+        vertexObjectList.vertex(matrix4f, 100, 100, 0).color(0, 1, 0, 1);//bottom right
+        vertexObjectList.vertex(matrix4f, 0, 100, 0).color(0, 0, 1, 1);//bottom left
+        vertexObjectList.end();
+        vertexObjectList.draw();
+        Render2DHelper.INSTANCE.testShader.detach();*/
+
+        Matrix4x4 ortho = Matrix4x4.ortho2DMatrix(0, Render2DHelper.INSTANCE.getScaledWidth(), Render2DHelper.INSTANCE.getScaledHeight(), 0, -0.1f, 1000.f);
+        ShaderHelper.INSTANCE.setProjectionMatrix(ortho);
+        ShaderHelper.INSTANCE.setModelViewMatrix(Matrix4x4.copyFromRowMajor(RenderSystem.getModelViewMatrix()));
         float x = 0;
         float y = 0;
         float width = Render2DHelper.INSTANCE.getScaledWidth();
         float height = Render2DHelper.INSTANCE.getScaledHeight();
 
-        x = x - width;//really hacky fix for the proj matrix not changing origin from middle of screen rather than top-left like I want it
-        y = y - height;
-        width *= 2.f;
-        height *= 2.f;
-        Render2DHelper.INSTANCE.testShader.bind();
+        VertexObjectList vertexObjectList = VertexObjectList.getMain();
+        ShaderHelper.INSTANCE.getPosColorShader().bind();
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-            vertexObjectList.vertex(matrix4f,x, y + height, 0).color(0.5f, 0.5f, 0.5f, 1);
+            vertexObjectList.begin(VertexObjectList.DrawMode.QUAD, VertexObjectList.Format.POS_COLOR);
+            vertexObjectList.vertex(matrix4f,x + width,y, 0).color(0.5f, 0.5f, 0.5f, 1);
             vertexObjectList.vertex(matrix4f,x,y, 0).color(0.5f, 0.5f, 0.5f, 1);
             vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(0.5f, 0.5f, 0.5f, 1);
-            vertexObjectList.vertex(matrix4f,x + width,y, 0).color(0.5f, 0.5f, 0.5f, 1);
+            vertexObjectList.vertex(matrix4f,x, y + height, 0).color(0.5f, 0.5f, 0.5f, 1);
             //vertexObjectList.index(0,1,3).index(3,1,2);
             vertexObjectList.end();
-            VertexObjectList.draw(vertexObjectList);
+            vertexObjectList.draw();
         }
         //if using .index, switch last two .vertex
-        vertexObjectList.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a);
+
+        vertexObjectList.begin(VertexObjectList.DrawMode.QUAD, VertexObjectList.Format.POS_COLOR);
+        vertexObjectList.vertex(matrix4f,x + width,y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a);
         vertexObjectList.vertex(matrix4f,x,y, 0).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, a + 0.3f);
         vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f);
-        vertexObjectList.vertex(matrix4f,x + width,y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a);
+        vertexObjectList.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a);
         //vertexObjectList.index(0,1,3).index(3,1,2);
         vertexObjectList.end();
-        VertexObjectList.draw(vertexObjectList);
-        Render2DHelper.INSTANCE.testShader.detach();
+        vertexObjectList.draw();
+        ShaderHelper.INSTANCE.getPosColorShader().detach();
         RenderSystem.enableTexture();
-
-        //for testing with MC's coordinates
-        /*float g=1,h=0,k=0,f=1;
-        vertexObjectList.vertex(matrix4f, (float)x, (float)y + height, 0.0F).color(g, h, k, f);
-        vertexObjectList.vertex(matrix4f, (float)x + width, (float)y + height, 0.0F).color(g, h, k, f);
-        vertexObjectList.vertex(matrix4f, (float)x + width, (float)y, 0.0F).color(g, h, k, f);
-        vertexObjectList.vertex(matrix4f, (float)x, (float)y, 0.0F).color(g, h, k, f);*/
     }
 
 }

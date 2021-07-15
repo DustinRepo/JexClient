@@ -2,7 +2,10 @@ package me.dustin.jex.helper.render.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.shader.impl.OutlineShader;
+import me.dustin.jex.helper.render.shader.impl.PosColorShader;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.render.Shader;
@@ -20,6 +23,11 @@ public enum ShaderHelper {
     private static Shader rainbowEnchantShader;
     private static Shader translucentShader;
     private static Shader testShader;
+
+    public Matrix4x4 projectionMatrix;
+    public Matrix4x4 modelViewMatrix;
+    private PosColorShader posColorShader = new PosColorShader();
+    private OutlineShader outlineShader = new OutlineShader();
 
     public void drawStorageFBO() {
         if (canDrawFBO()) {
@@ -92,6 +100,22 @@ public enum ShaderHelper {
         }
     }
 
+    public Matrix4x4 getProjectionMatrix() {
+        return projectionMatrix;
+    }
+
+    public void setProjectionMatrix(Matrix4x4 projectionMatrix) {
+        this.projectionMatrix = projectionMatrix;
+    }
+
+    public Matrix4x4 getModelViewMatrix() {
+        return modelViewMatrix;
+    }
+
+    public void setModelViewMatrix(Matrix4x4 modelViewMatrix) {
+        this.modelViewMatrix = modelViewMatrix;
+    }
+
     public static Shader getRainbowEnchantShader() {
         return rainbowEnchantShader;
     }
@@ -102,6 +126,13 @@ public enum ShaderHelper {
 
     public static Shader getTestShader() {
         return testShader;
+    }
+
+    public PosColorShader getPosColorShader() {
+        return posColorShader;
+    }
+    public OutlineShader getOutlineShader() {
+        return outlineShader;
     }
 
 }

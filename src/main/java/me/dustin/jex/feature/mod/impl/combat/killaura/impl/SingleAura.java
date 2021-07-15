@@ -6,7 +6,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.helper.entity.EntityHelper;
-import me.dustin.jex.helper.math.RotationVector;
+import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;

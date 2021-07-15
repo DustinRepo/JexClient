@@ -1,9 +1,10 @@
 package me.dustin.jex.helper.render;
 
 import me.dustin.jex.JexClient;
-import me.dustin.jex.helper.math.Vector3D;
-import me.dustin.jex.helper.math.Vector3I;
-import me.dustin.jex.helper.math.Vector4D;
+import me.dustin.jex.helper.math.vector.Vector2D;
+import me.dustin.jex.helper.math.vector.Vector3D;
+import me.dustin.jex.helper.math.vector.Vector3I;
+import me.dustin.jex.helper.math.vector.Vector4D;
 import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -18,17 +19,24 @@ import java.util.ArrayList;
 
 public class VertexObjectList {
 
-    protected int vertexArrayObject, vertexBufferObject, indexBufferObject, colorBufferObject;
+    private static VertexObjectList vertexObjectList = new VertexObjectList();
 
-    private final DrawMode drawMode;
+    protected int vertexArrayObject, vertexBufferObject, indexBufferObject, colorBufferObject, texBufferObject;
+
+    private DrawMode drawMode;
+    private Format format;
     private int vertexCount;
     private final ArrayList<Vector3D> verticesArray = new ArrayList<>();
     private final ArrayList<Vector4D> colorsArray = new ArrayList<>();
+    private final ArrayList<Vector2D> texArray = new ArrayList<>();
     private final ArrayList<Vector3I> indicesArray = new ArrayList<>();
     private boolean building;
 
-    public VertexObjectList(DrawMode drawMode) {
-        this.drawMode = drawMode;
+    public VertexObjectList() {
+    }
+
+    public static VertexObjectList getMain() {
+        return vertexObjectList;
     }
 
     public VertexObjectList vertex(Vector3D vector3D) {
@@ -68,29 +76,59 @@ public class VertexObjectList {
         return this;
     }
 
-    public void end() {
+    public VertexObjectList color(int red, int green, int blue, int alpha) {
+        Vector4D vector4D = new Vector4D(red/255.f, green/255.f, blue/255.f, alpha/255.f);
+        colorsArray.add(vector4D);
+        return this;
+    }
+
+    public VertexObjectList tex(Vector2D vector2D) {
+        texArray.add(vector2D);
+        return this;
+    }
+
+    public VertexObjectList tex(float u, float v) {
+        Vector2D vector2D = new Vector2D(u,v);
+        return tex(vector2D);
+    }
+
+    public void begin(DrawMode drawMode, Format format) {
         if (building) {
             JexClient.INSTANCE.getLogger().info("Already building! You must use .end() and .draw() before using again!");
             building = false;
             return;
         }
+        this.drawMode = drawMode;
+        this.format = format;
         this.vertexArrayObject = GL30.glGenVertexArrays();
         this.vertexBufferObject = GL15.glGenBuffers();
         this.colorBufferObject = GL15.glGenBuffers();
         this.indexBufferObject = GL15.glGenBuffers();
+        this.texBufferObject = GL15.glGenBuffers();
+        building = true;
+    }
 
+    public void end() {
         GL30.glBindVertexArray(vertexArrayObject);
-        if (indicesArray.size() != 0)
+        if (!indicesArray.isEmpty())
             bindIndices();
-        storeAttribute(vertexBufferObject, 0, 3, toFloatBufferVec3D(verticesArray));
-        storeAttribute(colorBufferObject, 1, 4, toFloatBufferVec4D(colorsArray));
+        switch (format) {
+            case POS_COLOR_TEX:
+                storeAttribute(vertexBufferObject, 0, 3, toFloatBufferVec3D(verticesArray));
+                storeAttribute(colorBufferObject, 1, 4, toFloatBufferVec4D(colorsArray));
+                storeAttribute(texBufferObject, 2, 2, toFloatBufferVec2D(texArray));
+            break;
+            case POS_COLOR:
+                storeAttribute(vertexBufferObject, 0, 3, toFloatBufferVec3D(verticesArray));
+                storeAttribute(colorBufferObject, 1, 4, toFloatBufferVec4D(colorsArray));
+            break;
 
+        }
         GL30.glBindVertexArray(0);
-        vertexCount = indicesArray.size() == 0 ? verticesArray.size() : indicesArray.size() * 3;
+        vertexCount = indicesArray.isEmpty() ? verticesArray.size() : indicesArray.size() * 3;
         verticesArray.clear();
         colorsArray.clear();
-        indicesArray.clear();
-        building = true;
+        texArray.clear();
     }
 
     public void draw() {
@@ -102,18 +140,16 @@ public class VertexObjectList {
         GL30.glBindVertexArray(vertexObjectList.vertexArrayObject);
         GL30.glEnableVertexAttribArray(0);
         GL30.glEnableVertexAttribArray(1);
-        if (vertexObjectList.indicesArray.size() != 0)
+        if (!vertexObjectList.indicesArray.isEmpty())
             GL11.glDrawElements(vertexObjectList.getGLDrawMode(), vertexObjectList.vertexCount, GL11.GL_UNSIGNED_INT, 0);
         else
             GL30.glDrawArrays(vertexObjectList.getGLDrawMode(), 0, vertexObjectList.vertexCount);
         GL30.glDisableVertexAttribArray(0);
         GL30.glDisableVertexAttribArray(1);
         GL30.glBindVertexArray(0);
-
-        GL15.glDeleteBuffers(vertexObjectList.vertexBufferObject);
-        GL30.glDeleteBuffers(vertexObjectList.indexBufferObject);
-        GL30.glDeleteVertexArrays(vertexObjectList.vertexArrayObject);
+        vertexObjectList.deleteBuffers();
         vertexObjectList.building = false;
+        vertexObjectList.indicesArray.clear();
     }
 
     private void bindIndices() {
@@ -126,6 +162,15 @@ public class VertexObjectList {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, data, GL15.GL_STATIC_DRAW);
         GL20.glVertexAttribPointer(index, size, GL11.GL_FLOAT, false, 0, 0);
+    }
+
+    private void deleteBuffers() {
+        GL15.glDeleteBuffers(vertexObjectList.vertexBufferObject);
+        GL30.glDeleteBuffers(vertexObjectList.indexBufferObject);
+        GL30.glDeleteBuffers(vertexObjectList.colorBufferObject);
+        GL30.glDeleteBuffers(vertexObjectList.texBufferObject);
+        GL30.glDeleteVertexArrays(vertexObjectList.vertexArrayObject);
+        GL30.glDeleteVertexArrays(vertexObjectList.vertexArrayObject);
     }
 
     private IntBuffer toIntBuffer(ArrayList<Vector3I> array) {
@@ -143,6 +188,16 @@ public class VertexObjectList {
     private FloatBuffer toFloatBuffer(float[] array) {
         FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(array.length);
         return floatBuffer.put(array).flip();
+    }
+
+    private FloatBuffer toFloatBufferVec2D(ArrayList<Vector2D> array) {
+        float[] floats = new float[array.size() * 2];
+        for (int i = 0; i < array.size(); i++) {
+            Vector2D vector3D = array.get(i);
+            floats[i*2] = (float)vector3D.getX();
+            floats[i*2+1] = (float)vector3D.getY();
+        }
+        return toFloatBuffer(floats);
     }
 
     private FloatBuffer toFloatBufferVec3D(ArrayList<Vector3D> array) {
@@ -170,7 +225,7 @@ public class VertexObjectList {
 
     private int getGLDrawMode() {
         switch(drawMode) {
-            case QUAD -> {return indicesArray.size() == 0 ? GL11.GL_TRIANGLE_STRIP : GL11.GL_TRIANGLES;}
+            case QUAD -> {return indicesArray.isEmpty() ? GL11.GL_TRIANGLE_STRIP : GL11.GL_TRIANGLES;}
             case LINE -> {return GL11.GL_LINES;}
         }
         return GL11.GL_TRIANGLES;
@@ -178,5 +233,9 @@ public class VertexObjectList {
 
     public enum DrawMode {
         QUAD, LINE
+    }
+
+    public enum Format {
+        POS_COLOR, POS_COLOR_TEX
     }
 }

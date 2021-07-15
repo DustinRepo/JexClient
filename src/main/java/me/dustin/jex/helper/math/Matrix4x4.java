@@ -1,7 +1,8 @@
 package me.dustin.jex.helper.math;
 
+import me.dustin.jex.helper.math.vector.Vector3D;
 import net.minecraft.util.math.Matrix4f;
-import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 
@@ -68,15 +69,19 @@ public class Matrix4x4 {
     }
 
     public static Matrix4x4 copyFromRowMajor(Matrix4f matrix4f) {
-        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(16);
-        matrix4f.write(floatBuffer, true);
-        return new Matrix4x4(floatBuffer);
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
+            matrix4f.write(floatBuffer, true);
+            return new Matrix4x4(floatBuffer);
+        }
     }
 
     public static Matrix4x4 copyFromColumnMajor(Matrix4f matrix4f) {
-        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(16);
-        matrix4f.write(floatBuffer, false);
-        return new Matrix4x4(floatBuffer);
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
+            matrix4f.write(floatBuffer, false);
+            return new Matrix4x4(floatBuffer);
+        }
     }
 
     public Matrix4x4 identity() {
@@ -299,46 +304,50 @@ public class Matrix4x4 {
     }
 
     public FloatBuffer toFloatBuffer() {
-        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(4*4);
-        floatBuffer.put(0, this.a00);
-        floatBuffer.put(1, this.a01);
-        floatBuffer.put(2, this.a02);
-        floatBuffer.put(3, this.a03);
-        floatBuffer.put(4, this.a10);
-        floatBuffer.put(5, this.a11);
-        floatBuffer.put(6, this.a12);
-        floatBuffer.put(7, this.a13);
-        floatBuffer.put(8, this.a20);
-        floatBuffer.put(9, this.a21);
-        floatBuffer.put(10, this.a22);
-        floatBuffer.put(11, this.a23);
-        floatBuffer.put(12, this.a30);
-        floatBuffer.put(13, this.a31);
-        floatBuffer.put(14, this.a32);
-        floatBuffer.put(15, this.a33);
-        return floatBuffer;
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
+            floatBuffer.put(0, this.a00);
+            floatBuffer.put(1, this.a01);
+            floatBuffer.put(2, this.a02);
+            floatBuffer.put(3, this.a03);
+            floatBuffer.put(4, this.a10);
+            floatBuffer.put(5, this.a11);
+            floatBuffer.put(6, this.a12);
+            floatBuffer.put(7, this.a13);
+            floatBuffer.put(8, this.a20);
+            floatBuffer.put(9, this.a21);
+            floatBuffer.put(10, this.a22);
+            floatBuffer.put(11, this.a23);
+            floatBuffer.put(12, this.a30);
+            floatBuffer.put(13, this.a31);
+            floatBuffer.put(14, this.a32);
+            floatBuffer.put(15, this.a33);
+            return floatBuffer;
+        }
     }
 
     public Matrix4f toMinecraft() {
         Matrix4f matrix4f = new Matrix4f();
-        FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(4*4);
-        floatBuffer.put(0, this.a00);
-        floatBuffer.put(1, this.a01);
-        floatBuffer.put(2, this.a02);
-        floatBuffer.put(3, this.a03);
-        floatBuffer.put(4, this.a10);
-        floatBuffer.put(5, this.a11);
-        floatBuffer.put(6, this.a12);
-        floatBuffer.put(7, this.a13);
-        floatBuffer.put(8, this.a20);
-        floatBuffer.put(9, this.a21);
-        floatBuffer.put(10, this.a22);
-        floatBuffer.put(11, this.a23);
-        floatBuffer.put(12, this.a30);
-        floatBuffer.put(13, this.a31);
-        floatBuffer.put(14, this.a32);
-        floatBuffer.put(15, this.a33);
-        matrix4f.read(floatBuffer, false);
-        return matrix4f;
+        try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+            FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
+            floatBuffer.put(0, this.a00);
+            floatBuffer.put(1, this.a01);
+            floatBuffer.put(2, this.a02);
+            floatBuffer.put(3, this.a03);
+            floatBuffer.put(4, this.a10);
+            floatBuffer.put(5, this.a11);
+            floatBuffer.put(6, this.a12);
+            floatBuffer.put(7, this.a13);
+            floatBuffer.put(8, this.a20);
+            floatBuffer.put(9, this.a21);
+            floatBuffer.put(10, this.a22);
+            floatBuffer.put(11, this.a23);
+            floatBuffer.put(12, this.a30);
+            floatBuffer.put(13, this.a31);
+            floatBuffer.put(14, this.a32);
+            floatBuffer.put(15, this.a33);
+            matrix4f.read(floatBuffer, false);
+            return matrix4f;
+        }
     }
 }

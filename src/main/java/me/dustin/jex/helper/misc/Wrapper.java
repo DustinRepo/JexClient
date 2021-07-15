@@ -1,9 +1,6 @@
 package me.dustin.jex.helper.misc;
 
-import me.dustin.jex.load.impl.IClientPlayerInteractionManager;
-import me.dustin.jex.load.impl.IMinecraft;
-import me.dustin.jex.load.impl.IPlayerEntity;
-import me.dustin.jex.load.impl.IRenderTickCounter;
+import me.dustin.jex.load.impl.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -64,6 +61,10 @@ public enum Wrapper {
 
     public GameRenderer getGameRenderer() {
         return getMinecraft().gameRenderer;
+    }
+
+    public IGameRenderer getIGameRenderer() {
+        return (IGameRenderer)getMinecraft().gameRenderer;
     }
 
 }

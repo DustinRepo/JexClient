@@ -3,11 +3,10 @@ package me.dustin.jex.helper.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.Matrix4x4;
-import me.dustin.jex.helper.math.Vector3D;
+import me.dustin.jex.helper.math.vector.Vector3D;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.shader.ShaderProgram;
-import me.dustin.jex.helper.render.shader.ShaderUniform;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.load.impl.IItemRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -27,7 +26,6 @@ import java.awt.*;
 public enum Render2DHelper {
     INSTANCE;
     protected Identifier cog = new Identifier("jex", "gui/click/cog.png");
-    public TestShader testShader = new TestShader();
 
     public void setup2DRender(boolean disableDepth) {
         RenderSystem.enableBlend();
@@ -112,6 +110,43 @@ public enum Render2DHelper {
         BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+    }
+
+    public void newFill(MatrixStack matrixStack, float x, float y, float x2, float y2, int color) {
+        Matrix4f matrix4f = matrixStack.peek().getModel();
+        float j;
+        if (x < x2) {
+            j = x;
+            x = x2;
+            x2 = j;
+        }
+
+        if (y < y2) {
+            j = y;
+            y = y2;
+            y2 = j;
+        }
+        Matrix4x4 ortho = Matrix4x4.ortho2DMatrix(0, Render2DHelper.INSTANCE.getScaledWidth(), Render2DHelper.INSTANCE.getScaledHeight(), 0, -0.1f, 1000.f);
+        ShaderHelper.INSTANCE.setProjectionMatrix(ortho);
+        ShaderHelper.INSTANCE.setModelViewMatrix(Matrix4x4.copyFromRowMajor(RenderSystem.getModelViewMatrix()));
+
+        float f = (float)(color >> 24 & 255) / 255.0F;
+        float g = (float)(color >> 16 & 255) / 255.0F;
+        float h = (float)(color >> 8 & 255) / 255.0F;
+        float k = (float)(color & 255) / 255.0F;
+        setup2DRender(false);
+        ShaderHelper.INSTANCE.getPosColorShader().bind();
+        VertexObjectList vertexObjectList = VertexObjectList.getMain();
+        vertexObjectList.begin(VertexObjectList.DrawMode.QUAD, VertexObjectList.Format.POS_COLOR);
+        vertexObjectList.vertex(matrix4f,x2,y, 0).color(g, h, k, f);
+        vertexObjectList.vertex(matrix4f,x,y, 0).color(g, h, k, f);
+        vertexObjectList.vertex(matrix4f,x2, y2, 0).color(g, h, k, f);
+        vertexObjectList.vertex(matrix4f,x, y2, 0).color(g, h, k, f);
+        //vertexObjectList.index(0,1,3).index(3,1,2);
+        vertexObjectList.end();
+        vertexObjectList.draw();
+        ShaderHelper.INSTANCE.getPosColorShader().detach();
+        end2DRender();
     }
 
     public void drawFace(MatrixStack matrixStack, float x, float y, int renderScale, Identifier id) {
@@ -385,30 +420,5 @@ public enum Render2DHelper {
         float green = (hex >> 8 & 0xFF) / 255.0F;
         float blue = (hex & 0xFF) / 255.0F;
         RenderSystem.setShaderColor(red, green, blue, alpha);
-    }
-
-    public class TestShader extends ShaderProgram {
-
-        private ShaderUniform projUniform, modelViewUniform;
-        public TestShader() {
-            super("test");
-            this.projUniform = addUniform("Projection");
-            this.modelViewUniform = addUniform("ModelView");
-            this.bindAttribute("Position", 0);
-            this.bindAttribute("Color", 1);
-        }
-
-        @Override
-        public void updateUniforms() {
-            float left = -(Wrapper.INSTANCE.getWindow().getWidth() / 2.f);
-            float right = (Wrapper.INSTANCE.getWindow().getWidth() / 2.f);
-            float top = -(Wrapper.INSTANCE.getWindow().getHeight() / 2.f);
-            float bottom = (Wrapper.INSTANCE.getWindow().getHeight() / 2.f);
-
-            Matrix4f projectionMatrix = Matrix4f.projectionMatrix(left, right, bottom, top, 0.1f, 1000.f);
-            Matrix4f proj = Matrix4x4.projectionMatrix(getScaledWidth(), getScaledHeight(), 1, -0.1f, 1000.f).toMinecraft();
-            projUniform.setMatrix(Matrix4x4.copyFromRowMajor(projectionMatrix));//should be RenderSystem.getProjectionMatrix() but fuck me I guess
-            modelViewUniform.setMatrix(Matrix4x4.copyFromRowMajor(RenderSystem.getModelViewMatrix()));
-        }
     }
 }
