@@ -30,13 +30,13 @@ public class SodiumMixinShaderChunkRenderer {
     public void createShaderOverride(RenderDevice device, String path, ChunkShaderOptions options, CallbackInfoReturnable<ChunkProgram> cir) {
         if ("blocks/block_layer_translucent".equalsIgnoreCase(path)) {
             ShaderConstants constants = options.constants();
-            GlShader vertShader = ShaderLoader.loadShader(device, ShaderType.VERTEX, new Identifier("sodium", path + ".vsh"), constants);
-            GlShader fragShader = ShaderLoader.loadShader(device, ShaderType.FRAGMENT, new Identifier("jex", path + ".fsh"), constants);
+            GlShader vertShader = ShaderLoader.loadShader(ShaderType.VERTEX, new Identifier("sodium", path + ".vsh"), constants);
+            GlShader fragShader = ShaderLoader.loadShader(ShaderType.FRAGMENT, new Identifier("jex", path + ".fsh"), constants);
 
             ChunkProgram var7;
             GlProgram builder;
             try {
-                builder = GlProgram.builder(new Identifier("jex", "xray_shader")).attachShader(vertShader).attachShader(fragShader).bindAttribute("a_Origin", ChunkShaderBindingPoints.ATTRIBUTE_ORIGIN).bindAttribute("a_Pos", ChunkShaderBindingPoints.ATTRIBUTE_POSITION).bindAttribute("a_Color", ChunkShaderBindingPoints.ATTRIBUTE_COLOR).bindAttribute("a_TexCoord", ChunkShaderBindingPoints.ATTRIBUTE_BLOCK_TEXTURE).bindAttribute("a_LightCoord", ChunkShaderBindingPoints.ATTRIBUTE_LIGHT_TEXTURE).bindFragmentData("fragColor", ChunkShaderBindingPoints.FRAG_COLOR).build((name) -> {
+                builder = GlProgram.builder(new Identifier("jex", "xray_shader")).attachShader(vertShader).attachShader(fragShader).bindAttribute("a_Pos", ChunkShaderBindingPoints.ATTRIBUTE_POSITION_ID).bindAttribute("a_Color", ChunkShaderBindingPoints.ATTRIBUTE_COLOR).bindAttribute("a_TexCoord", ChunkShaderBindingPoints.ATTRIBUTE_BLOCK_TEXTURE).bindAttribute("a_LightCoord", ChunkShaderBindingPoints.ATTRIBUTE_LIGHT_TEXTURE).bindFragmentData("fragColor", ChunkShaderBindingPoints.FRAG_COLOR).build((name) -> {
                     return new ChunkProgram(device, name, options);
                 });
                 var7 = (ChunkProgram) builder;
