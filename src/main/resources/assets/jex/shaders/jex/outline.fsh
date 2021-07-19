@@ -7,6 +7,8 @@ uniform sampler2D Sampler;
 uniform vec2 TexelSize;
 uniform int Width;
 
+out vec4 fragColor;
+
 void main(){
     vec4 centerCol = texture2D(Sampler, TexCoord.st);
 
@@ -32,6 +34,6 @@ void main(){
         }
     }
     color.a = max(0, ((Width*1.0F) - (closest - 1)) / (Width*1.0F));
-    gl_FragColor = color;
+    fragColor = color;
 }
 
