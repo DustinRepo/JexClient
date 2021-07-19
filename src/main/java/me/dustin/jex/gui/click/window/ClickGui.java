@@ -252,7 +252,7 @@ public class ClickGui extends Screen {
                     focused = window;
             });
         windows.forEach(window -> {
-            if (window == focused)
+            if (window == focused || window == configWindow)
                 window.click(mouseX, mouseY, button);
         });
         return super.mouseClicked(mouseX, mouseY, button);
