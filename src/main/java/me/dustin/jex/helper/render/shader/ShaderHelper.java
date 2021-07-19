@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.shader.impl.OutlineShader;
 import me.dustin.jex.helper.render.shader.impl.PosColorShader;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderEffect;
@@ -27,7 +26,7 @@ public enum ShaderHelper {
     public Matrix4x4 projectionMatrix;
     public Matrix4x4 modelViewMatrix;
     private PosColorShader posColorShader = new PosColorShader();
-    private OutlineShader outlineShader = new OutlineShader();
+    //private OutlineShader outlineShader = new OutlineShader();
 
     public void drawStorageFBO() {
         if (canDrawFBO()) {
@@ -130,9 +129,6 @@ public enum ShaderHelper {
 
     public PosColorShader getPosColorShader() {
         return posColorShader;
-    }
-    public OutlineShader getOutlineShader() {
-        return outlineShader;
     }
 
 }
