@@ -51,7 +51,7 @@ public class Tracers extends Feature {
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
-
+                RenderSystem.setShader(GameRenderer::getPositionColorShader);
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
 
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();

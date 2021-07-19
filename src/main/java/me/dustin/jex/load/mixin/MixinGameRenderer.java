@@ -64,6 +64,8 @@ public abstract class MixinGameRenderer implements IGameRenderer {
         double d = this.getFov(camera, partialTicks, true);
         matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(d));
         loadProjectionMatrix(matrixStack.peek().getModel());
+        //Sets up 3D render space for shaders
+        Render3DHelper.INSTANCE.setup3DProj(partialTicks);
 
         this.bobViewWhenHurt(matrixStack, partialTicks);
         Render3DHelper.INSTANCE.applyCameraRots(matrixStack);

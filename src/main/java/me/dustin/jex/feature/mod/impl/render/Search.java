@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
@@ -140,6 +141,7 @@ public class Search extends Feature {
                 Color color1 = ColorHelper.INSTANCE.getColor(blocks.get(block));
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
+                RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
 

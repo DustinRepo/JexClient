@@ -113,16 +113,15 @@ public class VertexObjectList {
         if (!indicesArray.isEmpty())
             bindIndices();
         switch (format) {
-            case POS_COLOR_TEX:
+            case POS_COLOR_TEX -> {
                 storeAttribute(vertexBufferObject, 0, 3, toFloatBufferVec3D(verticesArray));
                 storeAttribute(colorBufferObject, 1, 4, toFloatBufferVec4D(colorsArray));
                 storeAttribute(texBufferObject, 2, 2, toFloatBufferVec2D(texArray));
-            break;
-            case POS_COLOR:
+            }
+            case POS_COLOR -> {
                 storeAttribute(vertexBufferObject, 0, 3, toFloatBufferVec3D(verticesArray));
                 storeAttribute(colorBufferObject, 1, 4, toFloatBufferVec4D(colorsArray));
-            break;
-
+            }
         }
         GL30.glBindVertexArray(0);
         vertexCount = indicesArray.isEmpty() ? verticesArray.size() : indicesArray.size() * 3;
