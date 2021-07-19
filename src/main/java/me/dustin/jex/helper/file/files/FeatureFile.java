@@ -102,7 +102,8 @@ public class FeatureFile {
                     if (feature != null) {
                         feature.setKey(object.get("key").getAsInt());
                         feature.setVisible(object.get("visible").getAsBoolean());
-                        feature.setState(object.get("state").getAsBoolean());
+                        if (feature.getState() != object.get("state").getAsBoolean())
+                            feature.setState(object.get("state").getAsBoolean());
                     } else {
                         JexClient.INSTANCE.getLogger().error("Could not find Module " + name);
                     }
