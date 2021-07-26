@@ -203,6 +203,15 @@ public class ClickGui extends Screen {
                     }
                 }
             }
+            windows.forEach(window -> {
+                if (window.scrollbar != null) {
+                    try {
+                        float contentHeight = window.getButtons().isEmpty() ? 0 : (window.getVeryBottomButton().getY() + window.getVeryBottomButton().getHeight()) - window.getButtons().get(0).getY();
+                        window.scrollbar.setContentHeight(contentHeight);
+                        window.scrollbar.setViewportHeight(window.maxHeight);
+                    }catch (Exception e){}
+                }
+            });
         }
         lastSearch = searchField.getText();
         super.tick();

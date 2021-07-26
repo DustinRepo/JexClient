@@ -28,13 +28,13 @@ public class Window {
     private float x, y, width, height;
     private boolean isOpen;
     private boolean isDragging;
-    private float maxHeight = 300;
+    public float maxHeight = 300;
     private float xDif, yDif;
     private boolean pinned;
     private int color = ColorHelper.INSTANCE.getClientColor();
     private ArrayList<Button> buttons = new ArrayList<>();
 
-    private Scrollbar scrollbar;
+    public Scrollbar scrollbar;
 
     private Identifier pin = new Identifier("jex", "gui/click/pin.png");
     private Identifier eye = new Identifier("jex", "gui/click/visible.png");
