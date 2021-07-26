@@ -41,6 +41,11 @@ public enum Render2DHelper {
         RenderSystem.enableDepthTest();
     }
 
+    public void setup2DProjection() {
+        ShaderHelper.INSTANCE.setProjectionMatrix(Matrix4x4.ortho2DMatrix(0, Render2DHelper.INSTANCE.getScaledWidth(), Render2DHelper.INSTANCE.getScaledHeight(), 0, -0.1f, 1000.f));
+        ShaderHelper.INSTANCE.setModelViewMatrix(Matrix4x4.copyFromColumnMajor(RenderSystem.getModelViewMatrix()));
+    }
+
     public double getScaleFactor() {
         return Wrapper.INSTANCE.getWindow().getScaleFactor();
     }
@@ -126,10 +131,6 @@ public enum Render2DHelper {
             y = y2;
             y2 = j;
         }
-        Matrix4x4 ortho = Matrix4x4.ortho2DMatrix(0, Render2DHelper.INSTANCE.getScaledWidth(), Render2DHelper.INSTANCE.getScaledHeight(), 0, -0.1f, 1000.f);
-        ShaderHelper.INSTANCE.setProjectionMatrix(ortho);
-        ShaderHelper.INSTANCE.setModelViewMatrix(Matrix4x4.copyFromRowMajor(RenderSystem.getModelViewMatrix()));
-
         float f = (float)(color >> 24 & 255) / 255.0F;
         float g = (float)(color >> 16 & 255) / 255.0F;
         float h = (float)(color >> 8 & 255) / 255.0F;

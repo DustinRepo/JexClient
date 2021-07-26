@@ -4,6 +4,7 @@ import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderCrosshair;
 import me.dustin.jex.event.render.EventRenderEffects;
 import me.dustin.jex.event.render.EventRenderOverlay;
+import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -25,6 +26,7 @@ public class MixinInGameHud {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/scoreboard/Scoreboard.getObjectiveForSlot(I)Lnet/minecraft/scoreboard/ScoreboardObjective;"))
     public void draw(MatrixStack matrixStack, float float_1, CallbackInfo ci) {
         try {
+            Render2DHelper.INSTANCE.setup2DProjection();
             new EventRender2D(matrixStack).run();
         }catch (Exception e) {
             e.printStackTrace();

@@ -6,7 +6,6 @@ import me.dustin.jex.event.render.EventRenderBackground;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -70,9 +69,6 @@ public class CustomBG extends Feature {
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
 
-        Matrix4x4 ortho = Matrix4x4.ortho2DMatrix(0, Render2DHelper.INSTANCE.getScaledWidth(), Render2DHelper.INSTANCE.getScaledHeight(), 0, -0.1f, 1000.f);
-        ShaderHelper.INSTANCE.setProjectionMatrix(ortho);
-        ShaderHelper.INSTANCE.setModelViewMatrix(Matrix4x4.copyFromRowMajor(RenderSystem.getModelViewMatrix()));
         float x = 0;
         float y = 0;
         float width = Render2DHelper.INSTANCE.getScaledWidth();
