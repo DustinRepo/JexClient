@@ -142,7 +142,7 @@ public enum Render2DHelper {
         vertexObjectList.vertex(matrix4f,x,y, 0).color(g, h, k, f);
         vertexObjectList.vertex(matrix4f,x2, y2, 0).color(g, h, k, f);
         vertexObjectList.vertex(matrix4f,x, y2, 0).color(g, h, k, f);
-        //vertexObjectList.index(0,1,3).index(3,1,2);
+        vertexObjectList.index(0,1,3).index(3,2,0);
         vertexObjectList.end();
         vertexObjectList.draw();
         ShaderHelper.INSTANCE.getPosColorShader().detach();

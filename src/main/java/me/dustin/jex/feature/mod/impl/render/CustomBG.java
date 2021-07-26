@@ -70,17 +70,6 @@ public class CustomBG extends Feature {
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
 
-        //little test square
-        /*Render2DHelper.INSTANCE.testShader.bind();
-        vertexObjectList.begin(VertexObjectList.DrawMode.QUAD);
-        vertexObjectList.vertex(matrix4f, 100, 0, 0).color(1, 1, 0, 1);//top right
-        vertexObjectList.vertex(matrix4f, 0, 0, 0).color(1, 0, 0, 1);//top left
-        vertexObjectList.vertex(matrix4f, 100, 100, 0).color(0, 1, 0, 1);//bottom right
-        vertexObjectList.vertex(matrix4f, 0, 100, 0).color(0, 0, 1, 1);//bottom left
-        vertexObjectList.end();
-        vertexObjectList.draw();
-        Render2DHelper.INSTANCE.testShader.detach();*/
-
         Matrix4x4 ortho = Matrix4x4.ortho2DMatrix(0, Render2DHelper.INSTANCE.getScaledWidth(), Render2DHelper.INSTANCE.getScaledHeight(), 0, -0.1f, 1000.f);
         ShaderHelper.INSTANCE.setProjectionMatrix(ortho);
         ShaderHelper.INSTANCE.setModelViewMatrix(Matrix4x4.copyFromRowMajor(RenderSystem.getModelViewMatrix()));
@@ -89,26 +78,17 @@ public class CustomBG extends Feature {
         float width = Render2DHelper.INSTANCE.getScaledWidth();
         float height = Render2DHelper.INSTANCE.getScaledHeight();
 
-        VertexObjectList vertexObjectList = VertexObjectList.getMain();
-        ShaderHelper.INSTANCE.getPosColorShader().bind();
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-            vertexObjectList.begin(VertexObjectList.DrawMode.QUAD, VertexObjectList.Format.POS_COLOR);
-            vertexObjectList.vertex(matrix4f,x + width,y, 0).color(0.5f, 0.5f, 0.5f, 1);
-            vertexObjectList.vertex(matrix4f,x,y, 0).color(0.5f, 0.5f, 0.5f, 1);
-            vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(0.5f, 0.5f, 0.5f, 1);
-            vertexObjectList.vertex(matrix4f,x, y + height, 0).color(0.5f, 0.5f, 0.5f, 1);
-            //vertexObjectList.index(0,1,3).index(3,1,2);
-            vertexObjectList.end();
-            vertexObjectList.draw();
+            Render2DHelper.INSTANCE.newFill(eventRenderBackground.getMatrixStack(), 0, 0, width, height, 0xff7f7f7f);
         }
-        //if using .index, switch last two .vertex
-
+        ShaderHelper.INSTANCE.getPosColorShader().bind();
+        VertexObjectList vertexObjectList = VertexObjectList.getMain();
         vertexObjectList.begin(VertexObjectList.DrawMode.QUAD, VertexObjectList.Format.POS_COLOR);
         vertexObjectList.vertex(matrix4f,x + width,y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a);
         vertexObjectList.vertex(matrix4f,x,y, 0).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, a + 0.3f);
         vertexObjectList.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f);
         vertexObjectList.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a);
-        //vertexObjectList.index(0,1,3).index(3,1,2);
+        vertexObjectList.index(0,1,3).index(3,2,0);
         vertexObjectList.end();
         vertexObjectList.draw();
         ShaderHelper.INSTANCE.getPosColorShader().detach();
