@@ -41,6 +41,8 @@ public class MixinBackgroundRenderer {
             EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.UNDERWATER).run();
             if (eventRenderOverlay.isCancelled())
                 u = 0;
+            RenderSystem.setShaderFogStart(u);
+            RenderSystem.setShaderFogEnd(10000);
         } else {
             float x;
             if (cameraSubmersionType == CameraSubmersionType.LAVA) {
