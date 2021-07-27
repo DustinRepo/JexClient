@@ -3,6 +3,7 @@ package me.dustin.jex.load.mixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.load.impl.IGameRenderer;
@@ -138,6 +139,7 @@ public abstract class MixinGameRenderer implements IGameRenderer {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V"))
     public void renderForEvent(float float_1, long long_1, boolean boolean_1, CallbackInfo ci) {
+        Render2DHelper.INSTANCE.setup2DProjection();
         new EventRender2DNoScale().run();
     }
 
