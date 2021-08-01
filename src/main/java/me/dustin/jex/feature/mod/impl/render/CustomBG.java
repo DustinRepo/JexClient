@@ -9,8 +9,11 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.helper.render.VertexObjectList;
-import me.dustin.jex.helper.render.shader.ShaderHelper;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.Matrix4f;
 
 import java.awt.*;
@@ -75,9 +78,19 @@ public class CustomBG extends Feature {
         float height = Render2DHelper.INSTANCE.getScaledHeight();
 
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-            Render2DHelper.INSTANCE.newFill(eventRenderBackground.getMatrixStack(), 0, 0, width, height, 0xff7f7f7f);
+            Render2DHelper.INSTANCE.fill(eventRenderBackground.getMatrixStack(), 0, 0, width, height, 0xff7f7f7f);
         }
-        ShaderHelper.INSTANCE.getPosColorShader().bind();
+
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        bufferBuilder.vertex(matrix4f,x + width,y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a).next();
+        bufferBuilder.vertex(matrix4f,x,y, 0).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, a + 0.3f).next();
+        bufferBuilder.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a).next();
+        bufferBuilder.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f).next();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+
+        /*ShaderHelper.INSTANCE.getPosColorShader().bind();
         VertexObjectList vertexObjectList = VertexObjectList.getMain();
         vertexObjectList.begin(VertexObjectList.DrawMode.QUAD, VertexObjectList.Format.POS_COLOR);
         vertexObjectList.vertex(matrix4f,x + width,y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a);
@@ -87,7 +100,7 @@ public class CustomBG extends Feature {
         vertexObjectList.index(0,1,3).index(3,2,0);
         vertexObjectList.end();
         vertexObjectList.draw();
-        ShaderHelper.INSTANCE.getPosColorShader().detach();
+        ShaderHelper.INSTANCE.getPosColorShader().detach();*/
         RenderSystem.enableTexture();
     }
 
