@@ -16,8 +16,15 @@
 # Jex Utility Client
 https://jexclient.com/
 
-## Setup
+## Setup Intellij:
 Simply open build.gradle as an Intellij project
+
+## Setup Eclipse:
+1. Download the repo and run the command "gradlew eclipse" (use a ./ before command if using PowerShell)
+2. Open Eclipse and go to File -> Import -> Import from existing project
+3. Click the drop-down box next to the Run button in Eclipse
+4. Select "Java Application" then select "jexclient-main_client"
+5. Run
 
 ## How to build
 1. Run the gradle Build script
