@@ -1,11 +1,18 @@
 package me.dustin.jex.helper.render.shader;
 
+import me.dustin.events.core.Event;
 import me.dustin.jex.JexClient;
+import me.dustin.jex.gui.click.window.impl.Button;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.google.common.collect.Maps;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -60,19 +67,20 @@ public abstract class ShaderProgram {//unused as of right now. doesn't play well
         int errorCheckValue = glGetError();
         if(glGetProgrami(shaderProgram, GL_LINK_STATUS) == GL_FALSE)
         {
-            JexClient.INSTANCE.getLogger().info("Shader failed to compile!");
+            JexClient.INSTANCE.getLogger().info(this.shaderName + " Shader failed to compile!");
             JexClient.INSTANCE.getLogger().info(glGetProgramInfoLog(shaderProgram, 2048));
             System.exit(-1);
         }
-        if(glGetProgrami(shaderProgram, GL_VALIDATE_STATUS) == GL_FALSE)
+        //Validating here seems to break macs
+        /*if(glGetProgrami(shaderProgram, GL_VALIDATE_STATUS) == GL_FALSE)
         {
-            JexClient.INSTANCE.getLogger().info("Shader failed to compile!");
+            JexClient.INSTANCE.getLogger().info(this.shaderName + " Shader failed to compile!");
             JexClient.INSTANCE.getLogger().info(glGetProgramInfoLog(shaderProgram, 2048));
             System.exit(-1);
-        }
+        }*/
         if(errorCheckValue != GL_NO_ERROR)
         {
-            JexClient.INSTANCE.getLogger().info("Could not create shader " + this.shaderName);
+            JexClient.INSTANCE.getLogger().info(this.shaderName + " Could not create shader " + this.shaderName);
             JexClient.INSTANCE.getLogger().info(glGetProgramInfoLog(shaderProgram, glGetProgrami(shaderProgram, GL_INFO_LOG_LENGTH)));
             System.exit(-1);
         }
@@ -85,7 +93,7 @@ public abstract class ShaderProgram {//unused as of right now. doesn't play well
 
         if(glGetShaderi(shaderID, GL_COMPILE_STATUS) == GL_FALSE)
         {
-            JexClient.INSTANCE.getLogger().info("Shader failed to compile!");
+            JexClient.INSTANCE.getLogger().info(this.shaderName + " Shader failed to compile!");
             JexClient.INSTANCE.getLogger().info(glGetShaderInfoLog(shaderID, 2048));
             System.exit(-1);
         }
@@ -111,5 +119,4 @@ public abstract class ShaderProgram {//unused as of right now. doesn't play well
             return "Error";
         }
     }
-
 }
