@@ -2,20 +2,18 @@ package me.dustin.jex.feature.command.impl;
 
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
-import me.dustin.jex.helper.file.files.SearchFile;
+import me.dustin.jex.feature.mod.impl.render.Search;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
+import me.dustin.jex.helper.file.files.SearchFile;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.mod.impl.render.Search;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-
-import java.util.Random;
 
 @Cmd(name = "Search", description = "Add or remove blocks from Search", syntax = {".search add <blockname> <hex color (f62d3e)/random>", ".search del <blockname>", ".search list"})
 public class CommandSearch extends Command {
@@ -42,7 +40,6 @@ public class CommandSearch extends Command {
                 return;
             }
             if (isAddString(args[1])) {
-                Random r = new Random();
                 int color = args[3].equalsIgnoreCase("random") ? ColorHelper.INSTANCE.getColorViaHue(ClientMathHelper.INSTANCE.getRandom(270), 1, 1).getRGB() : Render2DHelper.INSTANCE.hex2Rgb("ff" + args[3]).getRGB();
                 if (block != null && block != Blocks.AIR) {
                     if (Search.getBlocks().containsKey(block))

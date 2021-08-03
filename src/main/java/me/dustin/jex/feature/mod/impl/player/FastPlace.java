@@ -9,17 +9,17 @@ import me.dustin.jex.feature.mod.core.Feature;
 @Feature.Manifest(name = "FastPlace", category = Feature.Category.PLAYER, description = "Place fast.")
 public class FastPlace extends Feature {
 
-    @EventListener(events = {EventPlayerPackets.class})
-    public void run(EventPlayerPackets event) {
-        if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-            ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setRightClickDelayTimer(0);
-        }
-    }
+	@EventListener(events = { EventPlayerPackets.class })
+	public void run(EventPlayerPackets event) {
+		if (event.getMode() == EventPlayerPackets.Mode.PRE) {
+			((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setRightClickDelayTimer(0);
+		}
+	}
 
-    @Override
-    public void onDisable() {
-        ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setRightClickDelayTimer(4);
-        super.onDisable();
-    }
+	@Override
+	public void onDisable() {
+		((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setRightClickDelayTimer(4);
+		super.onDisable();
+	}
 
 }

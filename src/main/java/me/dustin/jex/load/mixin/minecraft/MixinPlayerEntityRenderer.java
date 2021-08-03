@@ -15,14 +15,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerEntityRenderer.class)
 public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<PlayerEntity, PlayerEntityModel<PlayerEntity>> {
 
+	public MixinPlayerEntityRenderer(EntityRendererFactory.Context ctx, PlayerEntityModel<PlayerEntity> model, float shadowRadius) {
+		super(ctx, model, shadowRadius);
+	}
 
-    public MixinPlayerEntityRenderer(EntityRendererFactory.Context ctx, PlayerEntityModel<PlayerEntity> model, float shadowRadius) {
-        super(ctx, model, shadowRadius);
-    }
-
-    @Inject(method = {"<init>"}, at = {@At("RETURN")})
-    private void construct(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
-        addFeature(new HatFeatureRenderer((FeatureRendererContext<PlayerEntity, PlayerEntityModel<PlayerEntity>>) (Object)this));
-    }
+	@Inject(method = { "<init>" }, at = { @At("RETURN") })
+	private void construct(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
+		addFeature(new HatFeatureRenderer((FeatureRendererContext<PlayerEntity, PlayerEntityModel<PlayerEntity>>) (Object) this));
+	}
 
 }

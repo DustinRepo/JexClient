@@ -37,7 +37,7 @@ public enum Render3DHelper {
         double minX = x - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
         double minY = y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
         double minZ = z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
-        Vector4f vector4f = new Vector4f((float)x, (float)y, (float)z, 1.f);
+        Vector4f vector4f = new Vector4f((float)minX, (float)minY, (float)minZ, 1.f);
         vector4f.transform(matrix);
         return new Vec3d(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
@@ -406,37 +406,6 @@ public enum Render3DHelper {
 
     public boolean useNewRendering() {
         return Feature.get(TestRender.class) != null && Feature.get(TestRender.class).getState();
-    }
-
-    private void newFadeBox(MatrixStack matrixStack, Box bb, int color) {
-        Matrix4f matrix4f = matrixStack.peek().getModel();
-        Color color1 = ColorHelper.INSTANCE.getColor(color);
-
-        float minX = (float)bb.minX;
-        float minY = (float)bb.minY;
-        float minZ = (float)bb.minZ;
-        float maxX = (float)bb.maxX;
-        float maxY = (float)bb.maxY;
-        float maxZ = (float)bb.maxZ;
-
-        VertexObjectList vertexObjectList = VertexObjectList.getMain();
-        vertexObjectList.begin(VertexObjectList.DrawMode.QUAD, VertexObjectList.Format.POS_COLOR);
-        /*0*/vertexObjectList.vertex(matrix4f, maxX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha());
-        /*1*/vertexObjectList.vertex(matrix4f, minX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha());
-        /*2*/vertexObjectList.vertex(matrix4f, minX, minY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha());
-        /*3*/vertexObjectList.vertex(matrix4f, maxX, minY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha());
-        /*4*/vertexObjectList.vertex(matrix4f, maxX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0.1f);
-        /*5*/vertexObjectList.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0.1f);
-        /*6*/vertexObjectList.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0.1f);
-        /*7*/vertexObjectList.vertex(matrix4f, maxX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0.1f);
-        vertexObjectList.index(0, 1, 2).index(2, 3, 0);//bottom
-        vertexObjectList.index(0, 3, 7).index(7, 4, 0);//east face
-        vertexObjectList.index(0, 4, 5).index(5, 1, 0);//south face
-        vertexObjectList.index(2, 1, 5).index(5, 6, 2);//west face
-        vertexObjectList.index(2, 6, 7).index(7, 3, 2);//north face
-        vertexObjectList.index(4, 7, 6).index(6, 5, 4);//top
-        vertexObjectList.end();
-        vertexObjectList.draw();
     }
 
     private void newFilledBox(MatrixStack matrixStack, Box bb, int color) {

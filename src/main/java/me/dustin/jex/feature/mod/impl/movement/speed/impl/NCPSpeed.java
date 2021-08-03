@@ -11,8 +11,6 @@ import net.minecraft.util.math.Vec3d;
 public class NCPSpeed extends FeatureExtension {
 
     public static double stage;
-    private double moveSpeed;
-    private double lastDist;
     public NCPSpeed() {
         super("Floaty", Speed.class);
     }

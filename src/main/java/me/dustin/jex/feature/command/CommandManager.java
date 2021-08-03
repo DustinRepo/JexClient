@@ -39,7 +39,8 @@ public enum CommandManager {
         Set<Class<? extends Command>> allClasses = reflections.getSubTypesOf(Command.class);
         allClasses.forEach(clazz -> {
             try {
-                Command instance = clazz.newInstance();
+                @SuppressWarnings("deprecation")
+				Command instance = clazz.newInstance();
                 this.getCommands().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();

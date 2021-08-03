@@ -43,7 +43,7 @@ public class TunnelFinder extends Feature {
                 return;
             Chunk emptyChunk = null;
 
-            Packet packet = ((EventPacketReceive) event).getPacket();
+            Packet<?> packet = ((EventPacketReceive) event).getPacket();
 
             if (packet instanceof ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
 

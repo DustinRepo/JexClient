@@ -74,10 +74,6 @@ public class Button {
         }
     }
 
-    private boolean shouldBeSoft() {
-        return this.getName().contains("Key:") || this.getName().contains("Visible:");
-    }
-
     public void keyTyped(char typedChar, int keyCode) {
         this.children.forEach(button -> {
             if (button != null) keyTyped(typedChar, keyCode);

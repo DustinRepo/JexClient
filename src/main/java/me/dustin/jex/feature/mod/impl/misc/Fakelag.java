@@ -16,7 +16,7 @@ public class Fakelag extends Feature {
     @Op(name = "Choke MS", min = 50, max = 2000, inc = 10)
     public int choke = 100;
 
-    private ArrayList<Packet> packets = new ArrayList<>();
+    private ArrayList<Packet<?>> packets = new ArrayList<>();
     private Timer timer = new Timer();
     private boolean sending = false;
 

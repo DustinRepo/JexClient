@@ -11,8 +11,6 @@ import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 
 public class VanillaSpeed extends FeatureExtension {
 
-    private boolean slowdown = false;
-
     public VanillaSpeed() {
         super("Vanilla", Speed.class);
     }

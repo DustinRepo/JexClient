@@ -6,21 +6,20 @@ import net.minecraft.util.math.Direction;
 
 public class EventClickBlock extends Event {
 
-    private BlockPos blockPos;
-    private Direction face;
+	private BlockPos blockPos;
+	private Direction face;
 
-    public EventClickBlock(BlockPos loc, Direction face) {
-        this.blockPos = loc;
-        this.face = face;
-    }
+	public EventClickBlock(BlockPos loc, Direction face) {
+		this.blockPos = loc;
+		this.face = face;
+	}
 
-    public BlockPos getBlockPos() {
-        return blockPos;
-    }
+	public BlockPos getBlockPos() {
+		return blockPos;
+	}
 
-    public Direction getFace() {
-        return face;
-    }
-
+	public Direction getFace() {
+		return face;
+	}
 
 }

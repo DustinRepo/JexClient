@@ -1,26 +1,34 @@
 package me.dustin.jex.helper.file.files;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
 import me.dustin.jex.JexClient;
-import me.dustin.jex.helper.file.FileHelper;
-import me.dustin.jex.helper.file.JsonHelper;
-import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
-import me.dustin.jex.feature.option.types.*;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import me.dustin.jex.feature.option.types.BoolOption;
+import me.dustin.jex.feature.option.types.ColorOption;
+import me.dustin.jex.feature.option.types.FloatOption;
+import me.dustin.jex.feature.option.types.IntOption;
+import me.dustin.jex.feature.option.types.StringArrayOption;
+import me.dustin.jex.feature.option.types.StringOption;
+import me.dustin.jex.helper.file.FileHelper;
+import me.dustin.jex.helper.file.JsonHelper;
+import me.dustin.jex.helper.file.ModFileHelper;
 
 public class FeatureFile {
 
     private static String fileName = "Features.json";
-    private static boolean firstLoad = true;
-
     public static void write() {
         JsonArray jsonArray = new JsonArray();
         for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
@@ -131,14 +139,6 @@ public class FeatureFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static boolean contains(String[] values, String value) {
-        for (String s : values) {
-            if (s.equalsIgnoreCase(value))
-                return true;
-        }
-        return false;
     }
 
 }

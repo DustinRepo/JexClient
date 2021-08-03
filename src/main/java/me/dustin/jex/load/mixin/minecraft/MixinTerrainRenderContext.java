@@ -17,15 +17,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(TerrainRenderContext.class)
 public class MixinTerrainRenderContext {
 
-    @Shadow
-    @Final
-    private TerrainBlockRenderInfo blockInfo;
+	@Shadow
+	@Final
+	private TerrainBlockRenderInfo blockInfo;
 
-    @Inject(at = {@At("HEAD")}, method = "tesselateBlock", cancellable = true, remap = false)
-    private void tesselateBlock(BlockState blockState, BlockPos blockPos, BakedModel model, MatrixStack matrixStack, CallbackInfoReturnable<Boolean> cir) {
-        EventRenderBlock eventRenderBlock = new EventRenderBlock(blockState.getBlock()).run();
-        if (eventRenderBlock.isCancelled())
-            cir.setReturnValue(false);
-    }
+	@Inject(at = { @At("HEAD") }, method = "tesselateBlock", cancellable = true, remap = false)
+	private void tesselateBlock(BlockState blockState, BlockPos blockPos, BakedModel model, MatrixStack matrixStack, CallbackInfoReturnable<Boolean> cir) {
+		EventRenderBlock eventRenderBlock = new EventRenderBlock(blockState.getBlock()).run();
+		if (eventRenderBlock.isCancelled())
+			cir.setReturnValue(false);
+	}
 
 }

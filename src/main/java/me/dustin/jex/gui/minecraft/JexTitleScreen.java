@@ -5,24 +5,37 @@
 
 package me.dustin.jex.gui.minecraft;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import me.dustin.jex.JexClient;
 import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.CustomMainMenu;
-import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
-import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
+import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
-import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.update.UpdateManager;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -38,31 +51,14 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.level.storage.LevelStorage.Session;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 public class JexTitleScreen extends Screen {
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
-    private static final Logger field_23775 = LogManager.getLogger();
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier JEX_TITLE_TEXTURE = new Identifier("jex", "gui/mc/jex-logo.png");
@@ -74,10 +70,7 @@ public class JexTitleScreen extends Screen {
     private final boolean doBackgroundFade;
     @Nullable
     private String splashText;
-    private boolean realmsNotificationsInitialized;
     private Screen realmsNotificationGui;
-    private int copyrightTextWidth;
-    private int copyrightTextX;
     private long backgroundFadeStart;
     private ArrayList<MainMenuButton> customButtons = new ArrayList<>();
 
@@ -123,7 +116,6 @@ public class JexTitleScreen extends Screen {
     }
 
     protected void init() {
-        JexTitleScreen titleScreen = this;
         this.customButtons.clear();
         try {
             loadBackgrounds();
@@ -134,8 +126,7 @@ public class JexTitleScreen extends Screen {
             this.splashText = this.client.getSplashTextLoader().get();
         }
 
-        this.copyrightTextWidth = this.textRenderer.getWidth("Copyright Mojang AB. Do not distribute!");
-        this.copyrightTextX = this.width - this.copyrightTextWidth - 2;
+        this.textRenderer.getWidth("Copyright Mojang AB. Do not distribute!");
         int j = this.height / 4 + 48;
 
         this.initWidgetsNormal(j, 24);
@@ -145,9 +136,9 @@ public class JexTitleScreen extends Screen {
                 this.customButtons.add(new MainMenuButton(">", this.width - 22, this.height - 22, 20, 20, new ButtonListener() {
                     @Override
                     public void invoke() {
-                        titleScreen.background += 1;
-                        if (titleScreen.background > backgrounds.size() - 1) {
-                            titleScreen.background = 0;
+                        JexTitleScreen.background += 1;
+                        if (JexTitleScreen.background > backgrounds.size() - 1) {
+                            JexTitleScreen.background = 0;
                         }
                         ClientSettingsFile.write();
                     }
@@ -155,9 +146,9 @@ public class JexTitleScreen extends Screen {
                 this.customButtons.add(new MainMenuButton("<", this.width - 44, this.height - 22, 20, 20, new ButtonListener() {
                     @Override
                     public void invoke() {
-                        titleScreen.background -= 1;
-                        if (titleScreen.background < 0) {
-                            titleScreen.background = backgrounds.size() - 1;
+                        JexTitleScreen.background -= 1;
+                        if (JexTitleScreen.background < 0) {
+                            JexTitleScreen.background = backgrounds.size() - 1;
                         }
                         ClientSettingsFile.write();
                     }
@@ -171,10 +162,10 @@ public class JexTitleScreen extends Screen {
                 }));
             }
         }
-        if (titleScreen.background < 0) {
-            titleScreen.background = backgrounds.size() - 1;
-        } else if (titleScreen.background > backgrounds.size() - 1) {
-            titleScreen.background = 0;
+        if (JexTitleScreen.background < 0) {
+            JexTitleScreen.background = backgrounds.size() - 1;
+        } else if (JexTitleScreen.background > backgrounds.size() - 1) {
+            JexTitleScreen.background = 0;
         }
         this.client.setConnectedToRealms(false);
     }
@@ -215,40 +206,6 @@ public class JexTitleScreen extends Screen {
         }));
     }
 
-    private boolean method_31129() {
-        try {
-            Session session = this.client.getLevelStorage().createSession("Demo_World");
-            Throwable var2 = null;
-
-            boolean var3;
-            try {
-                var3 = session.getLevelSummary() != null;
-            } catch (Throwable var13) {
-                var2 = var13;
-                throw var13;
-            } finally {
-                if (session != null) {
-                    if (var2 != null) {
-                        try {
-                            session.close();
-                        } catch (Throwable var12) {
-                            var2.addSuppressed(var12);
-                        }
-                    } else {
-                        session.close();
-                    }
-                }
-
-            }
-
-            return var3;
-        } catch (IOException var15) {
-            SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-            field_23775.warn("Failed to read demo world data", var15);
-            return false;
-        }
-    }
-
     private void switchToRealms() {
     }
 
@@ -270,7 +227,6 @@ public class JexTitleScreen extends Screen {
         float f = this.doBackgroundFade ? (float) (Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
         fill(matrices, 0, 0, this.width, this.height, -1);
         this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0F, 1.0F));
-        int j = this.width / 2 - 137;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
@@ -279,7 +235,7 @@ public class JexTitleScreen extends Screen {
         float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
         int l = MathHelper.ceil(g * 255.0F) << 24;
 
-        if (!this.backgrounds.isEmpty() && customMainMenu.customBackground) {
+        if (!JexTitleScreen.backgrounds.isEmpty() && customMainMenu.customBackground) {
             Background currentBackground = backgrounds.get(background);
             Render2DHelper.INSTANCE.bindTexture(currentBackground.identifier);
             DrawableHelper.drawTexture(matrices, (int) 0, (int) 0, 0, 0, width, height, width, height);
@@ -318,7 +274,7 @@ public class JexTitleScreen extends Screen {
             }
 
 
-            Iterator var12 = this.children().iterator();
+            Iterator<?> var12 = this.children().iterator();
 
             while (var12.hasNext()) {
                 ClickableWidget abstractButtonWidget = (ClickableWidget) var12.next();
@@ -374,7 +330,7 @@ public class JexTitleScreen extends Screen {
     }
 
     public boolean backgroundExists(String name) {
-        for (Background background : this.backgrounds) {
+        for (Background background : JexTitleScreen.backgrounds) {
             if (background.name.equalsIgnoreCase(name))
                 return true;
         }
@@ -391,10 +347,6 @@ public class JexTitleScreen extends Screen {
             if (backgroundExists(file.getName().replaceAll("-", "").replaceAll(" ", "").toLowerCase()))
                 continue;
             if (!file.isDirectory()) {
-                String fileString = "";
-                for (String s : FileHelper.INSTANCE.readFile(backgroundsFolder, file.getName())) {
-                    fileString += s;
-                }
                 byte[] fileContent = FileUtils.readFileToByteArray(file);
                 String encodedString = Base64.encodeBase64String(fileContent);
                 try {
@@ -421,7 +373,7 @@ public class JexTitleScreen extends Screen {
         image1.close();
         Identifier id = new Identifier("jex", "background/" + name);
         applyTexture(id, imgNew);
-        this.backgrounds.add(new Background(name, imageWidth, imageHeight, id));
+        JexTitleScreen.backgrounds.add(new Background(name, imageWidth, imageHeight, id));
     }
 
     private NativeImage readTexture(String textureBase64) {

@@ -213,8 +213,8 @@ public class WaypointEditScreen extends Screen {
 
     void handleSliders(ColorOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
-            if (MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseX() > this.colorX + 100) {
-                float position = MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseY() - (this.colorY + 15);
+            if (MouseHelper.INSTANCE.getMouseX() > this.colorX + 100) {
+                float position = MouseHelper.INSTANCE.getMouseY() - (this.colorY + 15);
                 float percent = position / 79 * 100;
                 float increment = 1;
                 if (percent > 100) {
@@ -232,9 +232,8 @@ public class WaypointEditScreen extends Screen {
                 }
                 v.setH((int) value);
             } else {
-                float position = MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseX() - (this.colorX + 5);
+                float position = MouseHelper.INSTANCE.getMouseX() - (this.colorX + 5);
                 float percent = position / 80 * 100;
-                float increment = 1;
                 if (percent > 100) {
                     percent = 100;
                 }
@@ -243,10 +242,9 @@ public class WaypointEditScreen extends Screen {
                 }
                 v.setS(percent / 100);
 
-                position = MouseHelper.INSTANCE.INSTANCE.INSTANCE.getMouseY() - (this.colorY + 15);
+                position = MouseHelper.INSTANCE.getMouseY() - (this.colorY + 15);
                 percent = position / 79 * 100;
                 percent = 100 - percent;
-                increment = 1;
                 if (percent > 100) {
                     percent = 100;
                 }

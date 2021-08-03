@@ -7,9 +7,9 @@ import me.dustin.jex.feature.mod.core.Feature;
 @Feature.Manifest(name = "NoHurtCam", category = Feature.Category.VISUAL, description = "Remove the hurt-cam effect that bobs your view when damaged.")
 public class NoHurtCam extends Feature {
 
-    @EventListener(events = {EventHurtCam.class})
-    private void runMethod(EventHurtCam eventHurtCam) {
-        eventHurtCam.cancel();
-    }
+	@EventListener(events = { EventHurtCam.class })
+	private void runMethod(EventHurtCam eventHurtCam) {
+		eventHurtCam.cancel();
+	}
 
 }

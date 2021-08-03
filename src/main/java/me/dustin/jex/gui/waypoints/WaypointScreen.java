@@ -282,8 +282,8 @@ public class WaypointScreen extends Screen {
         return page;
     }
 
-    public void setPage(int page) {
-        this.page = page;
+    public void setPage(int page1) {
+       page = page1;
     }
 
     private ButtonListener deleteListener = new ButtonListener() {

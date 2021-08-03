@@ -1,27 +1,25 @@
 package me.dustin.jex.gui.click.window.impl;
 
 
+import java.util.ArrayList;
+
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.Hud;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
+import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
-
 public class Window {
 
-    private static Gui gui;
     int childCount = 0;
     private String name;
     private float prevX, prevY;
@@ -47,12 +45,10 @@ public class Window {
         this.height = height;
         if (getCategory(this) != null)
             this.color = Hud.getCategoryColor(getCategory(this));
-        gui = (Gui) Feature.get(Gui.class);
     }
 
     public void draw(MatrixStack matrixStack) {
         String dispName = this.getName().substring(0, 1) + this.getName().substring(1).toLowerCase();
-        float maxY = Render2DHelper.INSTANCE.getScaledHeight() - 30;
         maxHeight = Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 > 0 ? Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 : 250;
         if (scrollbar == null) {
             float contentHeight = buttons.isEmpty() || getVeryBottomButton() == null ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();

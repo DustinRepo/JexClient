@@ -6,29 +6,29 @@ import net.minecraft.client.util.math.MatrixStack;
 
 public class EventDrawScreen extends Event {
 
-    private Screen screen;
-    private MatrixStack matrixStack;
-    private Mode mode;
+	private Screen screen;
+	private MatrixStack matrixStack;
+	private Mode mode;
 
-    public EventDrawScreen(Screen screen, MatrixStack matrixStack, Mode mode) {
-        this.screen = screen;
-        this.matrixStack = matrixStack;
-        this.mode = mode;
-    }
+	public EventDrawScreen(Screen screen, MatrixStack matrixStack, Mode mode) {
+		this.screen = screen;
+		this.matrixStack = matrixStack;
+		this.mode = mode;
+	}
 
-    public Screen getScreen() {
-        return screen;
-    }
+	public Screen getScreen() {
+		return screen;
+	}
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
-    }
+	public MatrixStack getMatrixStack() {
+		return matrixStack;
+	}
 
-    public Mode getMode() {
-        return mode;
-    }
+	public Mode getMode() {
+		return mode;
+	}
 
-    public enum Mode {
-        PRE, POST, POST_CONTAINER
-    }
+	public enum Mode {
+		PRE, POST, POST_CONTAINER
+	}
 }

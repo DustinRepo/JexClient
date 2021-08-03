@@ -25,8 +25,7 @@ public class HatFeatureRenderer extends FeatureRenderer<PlayerEntity, PlayerEnti
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PlayerEntity snowGolemEntity, float f, float g, float h, float j, float k, float l, ItemStack itemStack) {
         if (!snowGolemEntity.isInvisible() && Hat.hasHat(snowGolemEntity.getUuidAsString().replace("-", ""))) {
             matrixStack.push();
-            ((PlayerEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
-            float m = 0.625F;
+            ((PlayerEntityModel<?>)this.getContextModel()).getHead().rotate(matrixStack);
             matrixStack.translate(0.0D, -0.34375D, 0.0D);
             matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
             matrixStack.scale(0.625F, -0.625F, -0.625F);

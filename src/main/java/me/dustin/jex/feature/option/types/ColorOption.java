@@ -14,7 +14,8 @@ public class ColorOption extends Option {
         this.name = name;
     }
 
-    public int getValue() {
+    @SuppressWarnings("deprecation")
+	public int getValue() {
         try {
             for (Field f : this.getFeature().getClass().getDeclaredFields()) {
                 if (!f.isAccessible())

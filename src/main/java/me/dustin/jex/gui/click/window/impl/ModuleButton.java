@@ -31,7 +31,6 @@ public class ModuleButton extends Button {
     int togglePos = 0;
     int cogSpin = 0;
     private Feature feature;
-    private int childCount;
     private float buttonsHeight;
 
     public ModuleButton(Window window, Feature feature, float x, float y, float width, float height) {
@@ -96,7 +95,6 @@ public class ModuleButton extends Button {
 
     public void open() {
         buttonsHeight = 0;
-        childCount = 0;
         /*if(module instanceof Breadcrumbs)
         {
         	Button button = new Button(this.getWindow(), "Clear", this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), new ButtonListener() {
@@ -122,7 +120,6 @@ public class ModuleButton extends Button {
                     optionButton.setHeight(this.getHeight() + 10);
 
                 this.getChildren().add(optionButton);
-                childCount++;
                 buttonsHeight += optionButton.getHeight();
             }
         });
@@ -151,7 +148,6 @@ public class ModuleButton extends Button {
         for (String s : feature.addButtons().keySet()) {
             ButtonListener listener = feature.addButtons().get(s);
             this.getChildren().add(new Button(this.getWindow(), s, this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), listener));
-            childCount++;
             buttonsHeight += this.getHeight();
         }
         ButtonListener keybind = new ButtonListener(this) {
@@ -190,7 +186,6 @@ public class ModuleButton extends Button {
         };
         String keyString = feature.getKey() == 0 ? "<>" : (GLFW.glfwGetKeyName(feature.getKey(), 0) == null ? InputUtil.fromKeyCode(feature.getKey(), 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(feature.getKey(), 0).toUpperCase()).replace("key.keyboard.", "").replace(".", "_");
         this.getChildren().add(new Button(this.getWindow(), "Key: " + (keyString.equalsIgnoreCase("0") ? "<>" : keyString.toUpperCase()), this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), keybind));
-        childCount++;
         buttonsHeight += this.getHeight();
         ButtonListener visible = new ButtonListener(this) {
             @Override
@@ -202,7 +197,6 @@ public class ModuleButton extends Button {
             }
         };
         this.getChildren().add(new Button(this.getWindow(), "Visible: " + this.getFeature().isVisible(), this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), visible));
-        childCount++;
         buttonsHeight += this.getHeight();
     }
 

@@ -56,7 +56,7 @@ public class Trajectories extends Feature {
             if (mainStack.getItem() instanceof BowItem) {
                 BowItem bowItem = (BowItem) mainStack.getItem();
                 int i = bowItem.getMaxUseTime(mainStack) - Wrapper.INSTANCE.getLocalPlayer().getItemUseTimeLeft();
-                float f = bowItem.getPullProgress(i);
+                float f = BowItem.getPullProgress(i);
                 if (f == 0)
                     f = 1;
                 ItemStack itemStack = new ItemStack(Items.ARROW);

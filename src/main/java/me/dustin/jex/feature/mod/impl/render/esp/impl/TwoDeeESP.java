@@ -70,8 +70,6 @@ public class TwoDeeESP extends FeatureExtension {
     }
 
     public void drawBox(MatrixStack matrixStack, float x, float y, float x2, float y2, Entity entity) {
-        float f = 1f;
-
         if(entity instanceof LivingEntity){
             float percent = ((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth();
             int color = Render2DHelper.INSTANCE.getPercentColor(percent * 100);

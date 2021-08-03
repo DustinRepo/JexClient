@@ -18,20 +18,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(FluidRenderer.class)
 public class MixinFluidRenderer {
 
-    @Inject(method = "isSideExposed", at = @At("HEAD"), cancellable = true, remap = false)
-    public void isSideExposed1(BlockRenderView world, int x, int y, int z, Direction dir, float height, CallbackInfoReturnable<Boolean> cir) {
-        BlockPos pos = new BlockPos(x, y, z);
-        EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(world.getBlockState(pos).getBlock(), dir, pos).run();
-        if (eventShouldDrawSide.isCancelled()) {
-            cir.setReturnValue(eventShouldDrawSide.isShouldDrawSide());
-        }
-    }
+	@Inject(method = "isSideExposed", at = @At("HEAD"), cancellable = true, remap = false)
+	public void isSideExposed1(BlockRenderView world, int x, int y, int z, Direction dir, float height, CallbackInfoReturnable<Boolean> cir) {
+		BlockPos pos = new BlockPos(x, y, z);
+		EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(world.getBlockState(pos).getBlock(), dir, pos).run();
+		if (eventShouldDrawSide.isCancelled()) {
+			cir.setReturnValue(eventShouldDrawSide.isShouldDrawSide());
+		}
+	}
 
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true, remap = false)
-    public void render1(BlockRenderView world, FluidState fluidState, BlockPos pos, BlockPos offset, ChunkModelBuilder buffers, CallbackInfoReturnable<Boolean> cir) {
-        EventRenderFluid eventRenderFluid = new EventRenderFluid(world.getBlockState(pos).getBlock()).run();
-        if (eventRenderFluid.isCancelled())
-            cir.setReturnValue(false);
-    }
+	@Inject(method = "render", at = @At("HEAD"), cancellable = true, remap = false)
+	public void render1(BlockRenderView world, FluidState fluidState, BlockPos pos, BlockPos offset, ChunkModelBuilder buffers, CallbackInfoReturnable<Boolean> cir) {
+		EventRenderFluid eventRenderFluid = new EventRenderFluid(world.getBlockState(pos).getBlock()).run();
+		if (eventRenderFluid.isCancelled())
+			cir.setReturnValue(false);
+	}
 
 }

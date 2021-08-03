@@ -48,8 +48,8 @@ public class StorageESP extends Feature {
     private String lastMode;
 
     public StorageESP() {
-        OutlineStorageESP outlineStorageESP = new OutlineStorageESP();
-        BoxStorageESP boxStorageESP = new BoxStorageESP();
+        new OutlineStorageESP();
+        new BoxStorageESP();
     }
 
     @EventListener(events = {EventRender3D.class, EventRender2D.class, EventRender2DNoScale.class}, priority = 1)

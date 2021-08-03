@@ -1,18 +1,18 @@
 package me.dustin.jex.helper.network;
 
+import java.net.Proxy;
+import java.util.UUID;
+
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.UserAuthentication;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
-import me.dustin.jex.JexClient;
+
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IMinecraft;
 import net.minecraft.client.util.Session;
-
-import java.net.Proxy;
-import java.util.UUID;
 
 public enum Login {
 
@@ -30,10 +30,7 @@ public enum Login {
                 UUID uuid = auth.getSelectedProfile().getId();
                 String token = auth.getAuthenticatedToken();
                 session = new Session(username, uuid.toString(), token, email.contains("@") ? "mojang" : "legacy");
-                if (session == null)
-                    JexClient.INSTANCE.getLogger().error("Invalid login");
-                else
-                    ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
+                ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
             } catch (AuthenticationException e) {
                 e.printStackTrace();
             }
@@ -60,10 +57,7 @@ public enum Login {
                 UUID uuid = auth.getSelectedProfile().getId();
                 String token = auth.getAuthenticatedToken();
                 Session session = new Session(username, uuid.toString(), token, email.contains("@") ? "mojang" : "legacy");
-                if (session == null)
-                    return "Invalid Login.";
-                else
-                    ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
+                ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
             } catch (AuthenticationException e) {
                 return e.getMessage();
             }

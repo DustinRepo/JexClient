@@ -25,7 +25,8 @@ public enum OptionManager {
         return INSTANCE;
     }
 
-    public void initializeOptionManager() {
+    @SuppressWarnings("deprecation")
+	public void initializeOptionManager() {
         ConcurrentMap<Field, Feature> parentNotFound = Maps.newConcurrentMap();
         FeatureManager.INSTANCE.getFeatures().forEach(mod ->
         {
@@ -123,7 +124,6 @@ public enum OptionManager {
                     }
                     if (field.getType() == boolean.class) {
                         try {
-                            boolean value = field.getBoolean(mod);
                             Op anot = field.getAnnotation(Op.class);
                             String name = anot.name();
                             OpType type = OpType.BOOL;
@@ -134,7 +134,7 @@ public enum OptionManager {
                             option.feature = mod;
 
                             this.getOptions().add(option);
-                        } catch (IllegalArgumentException | IllegalAccessException e) {
+                        } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                         }
 
@@ -149,7 +149,6 @@ public enum OptionManager {
             }
             int count = 0;
             while (!parentNotFound.isEmpty() && count < 15) {
-                int finalCount = count;
                 parentNotFound.keySet().forEach(field -> {
                     if (loadChildren(parentNotFound.get(field), field)) {
                         parentNotFound.remove(field);
@@ -288,7 +287,6 @@ public enum OptionManager {
             }
             if (field.getType() == boolean.class) {
                 try {
-                    boolean value = field.getBoolean(mod);
                     OpChild anot = field.getAnnotation(OpChild.class);
                     String name = anot.name();
                     OpType type = OpType.BOOL;
@@ -304,7 +302,7 @@ public enum OptionManager {
                         this.getOptions().add(option);
                         return true;
                     }
-                } catch (IllegalArgumentException | IllegalAccessException e) {
+                } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
 

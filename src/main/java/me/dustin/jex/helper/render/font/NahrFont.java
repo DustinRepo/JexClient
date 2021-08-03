@@ -37,8 +37,6 @@ public class NahrFont {
     private int startChar, endChar;
     private float[] xPos, yPos;
     private BufferedImage bufferedImage;
-    private float extraSpacing = 0.0F;
-    private NativeImage dynamicTexture;
     private Identifier resourceLocation;
     private final Pattern patternControlCode = Pattern.compile("(?i)\\u00A7[0-9A-FK-OG]"), patternUnsupported = Pattern.compile("(?i)\\u00A7[L-O]");
 
@@ -54,7 +52,6 @@ public class NahrFont {
         this.fontSize = size;
         this.startChar = 32;
         this.endChar = 255;
-        this.extraSpacing = spacing;
         this.xPos = new float[this.endChar - this.startChar];
         this.yPos = new float[this.endChar - this.startChar];
         setupGraphics2D();
@@ -266,7 +263,7 @@ public class NahrFont {
         drawTexturedModalRect(matrixStack, x, y, this.xPos[(character - this.startChar)], this.yPos[(character - this.startChar)], (float) bounds.getWidth(), (float) bounds.getHeight() + this.theMetrics.getMaxDescent() + 1.0F, color);
     }
 
-    private final List listFormattedStringToWidth(String s, int width) {
+    private final List<String> listFormattedStringToWidth(String s, int width) {
         return Arrays.asList(wrapFormattedStringToWidth(s, width).split("\n"));
     }
 

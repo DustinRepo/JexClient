@@ -1,22 +1,21 @@
 package me.dustin.jex.helper.network;
 
-import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import me.dustin.jex.helper.file.JsonHelper;
-import me.dustin.jex.helper.misc.Timer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.util.Identifier;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+
+import com.google.common.collect.Maps;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+
+import me.dustin.jex.helper.file.JsonHelper;
+import me.dustin.jex.helper.misc.Timer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.Identifier;
 
 public enum MCAPIHelper {
     INSTANCE;
@@ -107,10 +106,6 @@ public enum MCAPIHelper {
         return STEVE_SKIN;
     }
 
-    private static void applyTexture(Identifier identifier, NativeImage nativeImage) {
-        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(nativeImage)));
-    }
-
     public APIStatus getStatus(APIServer server) {
         updateStatus();
         if (!serverStatusMap.containsKey(server))
@@ -130,8 +125,6 @@ public enum MCAPIHelper {
         if (result == null)
             return;
         JsonArray nameArray = JsonHelper.INSTANCE.gson.fromJson(result, JsonArray.class);
-        JsonObject object = nameArray.get(0).getAsJsonObject();
-
         for (int i = 0; i < nameArray.size(); i++) {
             JsonObject object1 = nameArray.get(i).getAsJsonObject();
             String serverName = object1.toString().split("\"")[1];

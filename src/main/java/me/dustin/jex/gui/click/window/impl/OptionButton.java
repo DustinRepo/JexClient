@@ -511,7 +511,6 @@ public class OptionButton extends Button {
             } else {
                 float position = MouseHelper.INSTANCE.getMouseX() - (this.getX() + 5);
                 float percent = position / 80 * 100;
-                float increment = 1;
                 if (percent > 100) {
                     percent = 100;
                 }
@@ -523,7 +522,6 @@ public class OptionButton extends Button {
                 position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
                 percent = position / 79 * 100;
                 percent = 100 - percent;
-                increment = 1;
                 if (percent > 100) {
                     percent = 100;
                 }

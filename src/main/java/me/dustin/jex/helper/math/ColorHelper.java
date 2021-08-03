@@ -10,8 +10,6 @@ import java.awt.*;
 public enum ColorHelper {
     INSTANCE;
 
-    private int clientColor = 0xff15f4ee;
-
     private int rainbowHue = 0;
 
     public Color getColorViaHue(float hue) {
@@ -48,10 +46,6 @@ public enum ColorHelper {
         float green = (color >> 8 & 0xFF) / 255.0F;
         float blue = (color & 0xFF) / 255.0F;
         return new Color(red, green, blue, alpha);
-    }
-
-    public void setClientColor(int clientColor) {
-        this.clientColor = clientColor;
     }
 
     public int getRainbowColor() {
