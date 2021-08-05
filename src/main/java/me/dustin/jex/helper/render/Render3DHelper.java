@@ -1,6 +1,10 @@
 package me.dustin.jex.helper.render;
 
+import java.awt.Color;
+import java.util.ArrayList;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.TestRender;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -8,16 +12,28 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
+import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-
-import java.awt.*;
 
 public enum Render3DHelper {
     INSTANCE;
@@ -252,10 +268,32 @@ public enum Render3DHelper {
         return (then + (now - then) * percent);
     }
 
+    public void drawList(MatrixStack matrixStack, ArrayList<BoxStorage> list) {
+		setup3DRender(true);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+    	list.forEach(blockStorage -> {
+            Box box = blockStorage.box();
+            int color = blockStorage.color();
+            drawOutlineBox(matrixStack, box, color, false);
+    	});
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+
+        bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        list.forEach(blockStorage -> {
+            Box box = blockStorage.box();
+            int color = blockStorage.color();
+            drawFilledBox(matrixStack, box, color & 0x70ffffff, false);
+    	});
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        end3DRender();
+    }
+    
     public void drawFilledBox(MatrixStack matrixStack, Box bb, int color) {
     	drawFilledBox(matrixStack, bb, color, true);
     }
-    
     
     public void drawFilledBox(MatrixStack matrixStack, Box bb, int color, boolean draw) {
         Matrix4f matrix4f = matrixStack.peek().getModel();
@@ -467,4 +505,6 @@ public enum Render3DHelper {
         vertexObjectList.end();
         vertexObjectList.draw();
     }
+    
+    public record BoxStorage (Box box, int color) {}
 }

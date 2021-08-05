@@ -1,6 +1,10 @@
 package me.dustin.jex.feature.mod.impl.render.esp.impl;
 
+import java.util.HashMap;
+
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -9,13 +13,17 @@ import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
-
-import java.util.HashMap;
 
 public class TwoDeeESP extends FeatureExtension {
     public TwoDeeESP() {
@@ -39,6 +47,9 @@ public class TwoDeeESP extends FeatureExtension {
             }
         } else if (event instanceof EventRender2D) {
             EventRender2D eventRender2D = (EventRender2D)event;
+            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+            Render2DHelper.INSTANCE.setup2DRender(true);
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
             headPos.keySet().forEach(entity -> {
                 Vec3d top = headPos.get(entity);
                 Vec3d bottom = footPos.get(entity);
@@ -66,19 +77,25 @@ public class TwoDeeESP extends FeatureExtension {
                     drawBox(eventRender2D.getMatrixStack(), x - dif, y + 1, x2 + dif, y2, entity);
                 }
             });
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+            Render2DHelper.INSTANCE.end2DRender();
         }
     }
 
     public void drawBox(MatrixStack matrixStack, float x, float y, float x2, float y2, Entity entity) {
-        if(entity instanceof LivingEntity){
-            float percent = ((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth();
-            int color = Render2DHelper.INSTANCE.getPercentColor(percent * 100);
-            float distance = y - y2;
-            float pos = percent * distance;
-            Render2DHelper.INSTANCE.fillAndBorder(matrixStack,x2 - 1, y2 + pos, x2 + 2, y2, 0xff000000, color, 1);
-        }
-        int color = ESP.INSTANCE.getColor(entity) & 0x35ffffff;
-        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y, x2, y2, 0xff000000, color, 1);
+        int color = ESP.INSTANCE.getColor(entity) & 0x50ffffff;
+        Matrix4f matrix = matrixStack.peek().getModel();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        float f = (float)(color >> 24 & 255) / 255.0F;
+        float g = (float)(color >> 16 & 255) / 255.0F;
+        float h = (float)(color >> 8 & 255) / 255.0F;
+        float k = (float)(color & 255) / 255.0F;
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.vertex(matrix, (float)x, (float)y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, (float)x2, (float)y, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, (float)x, (float)y, 0.0F).color(g, h, k, f).next();
     }
 
 }

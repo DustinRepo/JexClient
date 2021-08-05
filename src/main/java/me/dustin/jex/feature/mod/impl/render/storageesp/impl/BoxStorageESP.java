@@ -1,14 +1,18 @@
 package me.dustin.jex.feature.mod.impl.render.storageesp.impl;
 
+import java.util.ArrayList;
+
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
-import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render3DHelper;
-import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.storageesp.StorageESP;
+import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.Render3DHelper.BoxStorage;
+import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 
 public class BoxStorageESP extends FeatureExtension {
     private StorageESP storageESP;
@@ -23,57 +27,15 @@ public class BoxStorageESP extends FeatureExtension {
         }
         if (event instanceof EventRender3D) {
             EventRender3D eventRender3D = (EventRender3D)event;
+            ArrayList<BoxStorage> list = new ArrayList<>();
             WorldHelper.INSTANCE.getBlockEntities().forEach(blockEntity -> {
                 if (storageESP.isValid(blockEntity)) {
-                    double x = blockEntity.getPos().getX() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().getX();
-                    double y = blockEntity.getPos().getY() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().getY();
-                    double z = blockEntity.getPos().getZ() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().getZ();
-                    Box box = new Box(x, y, z, x + 1, y + 1, z + 1);
-                    /*if (blockEntity instanceof ChestBlockEntity) {
-                        ChestType chestType = (ChestType)Wrapper.INSTANCE.getWorld().getBlockState(blockEntity.getPos()).get(ChestBlock.CHEST_TYPE);
-                        if (chestType == ChestType.LEFT) {
-                            switch (ChestBlock.getFacing(Wrapper.INSTANCE.getWorld().getBlockState(blockEntity.getPos()))) {
-                                case SOUTH:
-                                    removePos.add(blockEntity.getPos().east());
-                                    box = new Box(x, y, z, x + 2, y + 1, z + 1);
-                                    break;
-                                case WEST:
-                                    removePos.add(blockEntity.getPos().west());
-                                    box = new Box(x - 1, y, z, x + 1, y + 1, z + 1);
-                                    break;
-                                case NORTH:
-                                    removePos.add(blockEntity.getPos().north());
-                                    box = new Box(x, y, z - 1, x + 1, y + 1, z + 1);
-                                    break;
-                                case EAST:
-                                    removePos.add(blockEntity.getPos().south());
-                                    box = new Box(x, y, z, x + 1, y + 1, z + 2);
-                                    break;
-                            }
-                        } else if (chestType == ChestType.RIGHT) {
-                            switch (ChestBlock.getFacing(Wrapper.INSTANCE.getWorld().getBlockState(blockEntity.getPos()))) {
-                                case EAST://good
-                                    removePos.add(blockEntity.getPos().south());
-                                    box = new Box(x, y, z, x + 1, y + 1, z + 2);
-                                    break;
-                                case SOUTH:
-                                    removePos.add(blockEntity.getPos().east());
-                                    box = new Box(x, y, z, x + 2, y + 1, z + 1);
-                                    break;
-                                case WEST://good
-                                    removePos.add(blockEntity.getPos().west());
-                                    box = new Box(x - 1, y, z, x + 1, y + 1, z + 1);
-                                    break;
-                                case NORTH://good
-                                    removePos.add(blockEntity.getPos().north());
-                                    box = new Box(x, y, z - 1, x + 1, y + 1, z + 1);
-                                    break;
-                            }
-                        }
-                    }*/
-                    Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, storageESP.getColor(blockEntity));
+                	Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockEntity.getPos());
+                    Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
+                    list.add(new BoxStorage(box, storageESP.getColor(blockEntity)));
                 }
             });
+            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), list);
         }
     }
 }
