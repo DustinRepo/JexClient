@@ -253,11 +253,17 @@ public enum Render3DHelper {
     }
 
     public void drawFilledBox(MatrixStack matrixStack, Box bb, int color) {
+    	drawFilledBox(matrixStack, bb, color, true);
+    }
+    
+    
+    public void drawFilledBox(MatrixStack matrixStack, Box bb, int color, boolean draw) {
         Matrix4f matrix4f = matrixStack.peek().getModel();
         Color color1 = ColorHelper.INSTANCE.getColor(color);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS/*QUADS*/, VertexFormats.POSITION_COLOR);
+        if (draw)
+        	bufferBuilder.begin(VertexFormat.DrawMode.QUADS/*QUADS*/, VertexFormats.POSITION_COLOR);
         float minX = (float)bb.minX;
         float minY = (float)bb.minY;
         float minZ = (float)bb.minZ;
@@ -294,8 +300,10 @@ public enum Render3DHelper {
         bufferBuilder.vertex(matrix4f, minX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        if (draw) {
+	        bufferBuilder.end();
+	        BufferRenderer.draw(bufferBuilder);
+        }
     }
 
     public void drawFadeBox(MatrixStack matrixStack, Box bb, int color) {
@@ -388,20 +396,26 @@ public enum Render3DHelper {
     }
 
     public void drawOutlineBox(MatrixStack matrixStack, Box bb, int color) {
+    	drawOutlineBox(matrixStack, bb, color, true);
+    }
+
+    public void drawOutlineBox(MatrixStack matrixStack, Box bb, int color, boolean draw) {
         Color color1 = ColorHelper.INSTANCE.getColor(color);
         Matrix4f matrix4f = matrixStack.peek().getModel();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES/*LINES*/, VertexFormats.POSITION_COLOR);
+        if (draw)
+        	bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES/*LINES*/, VertexFormats.POSITION_COLOR);
 
         VoxelShape shape = VoxelShapes.cuboid(bb);
         shape.forEachEdge((x1, y1, z1, x2, y2, z2) -> {
             bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z2).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         });
-
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        if (draw) {
+	        bufferBuilder.end();
+	        BufferRenderer.draw(bufferBuilder);
+        }
     }
 
     public boolean useNewRendering() {
