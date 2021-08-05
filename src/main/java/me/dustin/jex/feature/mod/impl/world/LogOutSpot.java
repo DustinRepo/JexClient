@@ -41,6 +41,8 @@ public class LogOutSpot extends Feature {
 						int id = 69420 + ClientMathHelper.INSTANCE.getRandom(200);
 						UUID uuid = entry.getProfile().getId();
 						PlayerEntity player = Wrapper.INSTANCE.getWorld().getPlayerByUuid(uuid);
+						if (player == null)
+							return;
 						PlayerData playerInfo = new PlayerData(player.getName().asString(), uuid, id);
 						String name = "LOG: \247b" + player.getName().asString();
 						logOutList.add(playerInfo);
