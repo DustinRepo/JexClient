@@ -1,6 +1,9 @@
 package me.dustin.jex.feature.mod.impl.render;
 
+import java.awt.Color;
+
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRenderBackground;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -11,12 +14,11 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.Matrix4f;
-
-import java.awt.*;
 
 @Feature.Manifest(name = "CustomBG", category = Feature.Category.VISUAL, description = "Draws a custom background rather than the simple dark one")
 public class CustomBG extends Feature {
@@ -80,7 +82,7 @@ public class CustomBG extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
             Render2DHelper.INSTANCE.fill(eventRenderBackground.getMatrixStack(), 0, 0, width, height, 0xff7f7f7f);
         }
-
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(matrix4f,x + width,y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a).next();
