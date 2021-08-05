@@ -430,7 +430,7 @@ public class Hud extends Feature {
         if (potionEffects) {
             List<Runnable> list_1 = Lists.newArrayListWithExpectedSize(Wrapper.INSTANCE.getLocalPlayer().getActiveStatusEffects().size());
             for (StatusEffectInstance effect : Wrapper.INSTANCE.getLocalPlayer().getActiveStatusEffects().values()) {
-                String effectString = String.format("%s %s§f: §7%s", effect.getEffectType().getName().getString(), getAmpString(effect), StatusEffectUtil.durationToString(effect, 1.0F));
+                String effectString = String.format("%s %s\247f: \2477%s", effect.getEffectType().getName().getString(), getAmpString(effect), StatusEffectUtil.durationToString(effect, 1.0F));
                 FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), effectString, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(effectString) - (icons ? 11 : 2), coordsY - (bottomRightCount * 10), effect.getEffectType().getColor());
 
                 if (icons) {
