@@ -33,7 +33,7 @@ import java.util.ArrayList;
 
 public class ClickGui extends Screen {
 
-    private Window focused;
+    //private Window focused;
     public static ArrayList<Window> windows = new ArrayList<>();
     private static boolean playClickSounds = false;
     private Timer timer = new Timer();
@@ -127,7 +127,7 @@ public class ClickGui extends Screen {
             windows.add(radarWindow = new RadarWindow("Radar", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
             count++;
             GuiFile.read();
-            focused = configWindow;
+            //focused = configWindow;
 
             int childCount = 0;
             configWindow.setOpen(true);
@@ -233,10 +233,10 @@ public class ClickGui extends Screen {
         }
 
         windows.forEach(window -> {
-            if (window != focused)
+            //if (window != focused)
                 window.draw(matrixStack);
         });
-        focused.draw(matrixStack);
+        //focused.draw(matrixStack);
         if (getHovered() != null) {
             String description = getHovered().getFeature().getDescription();
             if (!description.endsWith("."))
@@ -257,8 +257,8 @@ public class ClickGui extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!Render2DHelper.INSTANCE.isHovered(0, Render2DHelper.INSTANCE.getScaledHeight() - 15, Render2DHelper.INSTANCE.getScaledWidth(), 15))
             windows.forEach(window -> {
-                if (window.isHoveredAtAll())
-                    focused = window;
+                //if (window.isHoveredAtAll())
+                    //focused = window;
             });
         windows.forEach(window -> {
             //if (window == focused || window == configWindow)
