@@ -13,6 +13,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -160,11 +161,65 @@ public enum Render2DHelper {
     }
 
     public void fillAndBorder(MatrixStack matrixStack, float left, float top, float right, float bottom, int bcolor, int icolor, float f) {
-        fill(matrixStack, left + f, top + f, right - f, bottom - f, icolor);
-        fill(matrixStack, left, top, left + f, bottom, bcolor);
-        fill(matrixStack, left + f, top, right, top + f, bcolor);
-        fill(matrixStack, left + f, bottom - f, right, bottom, bcolor);
-        fill(matrixStack, right - f, top + f, right, bottom - f, bcolor);
+		/*
+		 * fill(matrixStack, left + f, top + f, right - f, bottom - f, icolor);
+		 * fill(matrixStack, left, top, left + f, bottom, bcolor); fill(matrixStack,
+		 * left + f, top, right, top + f, bcolor); fill(matrixStack, left + f, bottom -
+		 * f, right, bottom, bcolor); fill(matrixStack, right - f, top + f, right,
+		 * bottom - f, bcolor);
+		 */
+        
+        Matrix4f matrix = matrixStack.peek().getModel();
+        float j;
+        if (left < right) {
+            j = left;
+            left = right;
+            right = j;
+        }
+
+        if (top < bottom) {
+            j = top;
+            top = bottom;
+            bottom = j;
+        }
+
+        float f1 = (float)(icolor >> 24 & 255) / 255.0F;
+        float g = (float)(icolor >> 16 & 255) / 255.0F;
+        float h = (float)(icolor >> 8 & 255) / 255.0F;
+        float k = (float)(icolor & 255) / 255.0F;
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        bufferBuilder.vertex(matrix, (float)left, (float)bottom, 0.0F).color(g, h, k, f1).next();
+        bufferBuilder.vertex(matrix, (float)right, (float)bottom, 0.0F).color(g, h, k, f1).next();
+        bufferBuilder.vertex(matrix, (float)right, (float)top, 0.0F).color(g, h, k, f1).next();
+        bufferBuilder.vertex(matrix, (float)left, (float)top, 0.0F).color(g, h, k, f1).next();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        float f2 = (float)(bcolor >> 24 & 255) / 255.0F;
+        float g1 = (float)(bcolor >> 16 & 255) / 255.0F;
+        float h1 = (float)(bcolor >> 8 & 255) / 255.0F;
+        float k1 = (float)(bcolor & 255) / 255.0F;
+        RenderSystem.lineWidth(f);
+        bufferBuilder.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        bufferBuilder.vertex(matrix, (float)left, (float)top, 0.0F).color(g1, h1, k1, f2).next();
+        bufferBuilder.vertex(matrix, (float)left, (float)bottom, 0.0F).color(g1, h1, k1, f2).next();
+
+        bufferBuilder.vertex(matrix, (float)left, (float)bottom, 0.0F).color(g1, h1, k1, f2).next();
+        bufferBuilder.vertex(matrix, (float)right, (float)bottom, 0.0F).color(g1, h1, k1, f2).next();
+
+        bufferBuilder.vertex(matrix, (float)right, (float)bottom, 0.0F).color(g1, h1, k1, f2).next();
+        bufferBuilder.vertex(matrix, (float)right, (float)top, 0.0F).color(g1, h1, k1, f2).next();
+        
+        bufferBuilder.vertex(matrix, (float)right, (float)top, 0.0F).color(g1, h1, k1, f2).next();
+        bufferBuilder.vertex(matrix, (float)left, (float)top, 0.0F).color(g1, h1, k1, f2).next();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 
     public void drawGradientRect(double x, double y, double x2, double y2, int col1, int col2) {
