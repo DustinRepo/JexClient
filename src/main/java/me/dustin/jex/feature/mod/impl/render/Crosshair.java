@@ -61,10 +61,10 @@ public class Crosshair extends Feature {
 				matrixStack.pop();
 			}
 			if (attackIndicator && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) < 1) {
-				Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x - 15, y + gap + size + thickness + 10, x + 15, y + gap + size + thickness + 14, 0xff000000, 0x00ffffff, 1);
 				float width = 30;
 				if (Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) > 0)
-					Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x - 15, y + gap + size + thickness + 10, x - 15 + (width * Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0)), y + gap + size + thickness + 14, 0x00000000, color, 1);
+					Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x - 15, y + gap + size + thickness + 10, x - 15 + (width * Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0)), y + gap + size + thickness + 13, 0x00000000, color, 1);
+				Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x - 15, y + gap + size + thickness + 10, x + 15, y + gap + size + thickness + 14, 0xff000000, 0x00ffffff, 1);
 			}
 			if (!timer.hasPassed(20 / spinSpeed))
 				return;
