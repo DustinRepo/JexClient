@@ -13,6 +13,7 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.Render3DHelper.BoxStorage;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -154,9 +155,10 @@ public class Search extends Feature {
 
                 Render3DHelper.INSTANCE.end3DRender();
             }
-        } else if (event instanceof EventRender3D) {
+        } else if (event instanceof EventRender3D eventRender3D) {
+            ArrayList<BoxStorage> boxList = new ArrayList<>();
             for (BlockPos pos : worldBlocks.keySet()) {
-                Block block = worldBlocks.get(pos);
+            	Block block = worldBlocks.get(pos);
                 if (WorldHelper.INSTANCE.getBlock(pos) != block) {
                     worldBlocks.remove(pos);
                     continue;
@@ -165,8 +167,10 @@ public class Search extends Feature {
                 assert cameraEntity != null;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
                 Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 1, entityPos.z + 1 - 0.5f);
-                Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, blocks.get(block));
+                BoxStorage boxStorage = new BoxStorage(box, blocks.get(block));
+                boxList.add(boxStorage);
             }
+            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), boxList);
         } else if (event instanceof EventJoinWorld) {
             int distance = Wrapper.INSTANCE.getOptions().viewDistance;
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
