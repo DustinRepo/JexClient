@@ -77,10 +77,12 @@ public class LogOutSpot extends Feature {
 	
 	@Override
 	public void onDisable() {
-		fakePlayers.forEach(fakePlayer -> {
-			fakePlayer.setPos(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-			Wrapper.INSTANCE.getWorld().removeEntity(fakePlayer.getId(), RemovalReason.DISCARDED);
-		});
+		if (Wrapper.INSTANCE.getWorld() != null) {
+			fakePlayers.forEach(fakePlayer -> {
+				fakePlayer.setPos(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+				Wrapper.INSTANCE.getWorld().removeEntity(fakePlayer.getId(), RemovalReason.DISCARDED);
+			});
+		}
 		fakePlayers.clear();
 		logOutList.clear();
 		super.onDisable();
