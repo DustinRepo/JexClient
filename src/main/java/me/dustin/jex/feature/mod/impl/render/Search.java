@@ -7,8 +7,10 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.jex.helper.file.files.SearchFile;
 import me.dustin.jex.helper.file.ModFileHelper;
+import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -43,9 +45,12 @@ public class Search extends Feature {
     private static ConcurrentMap<BlockPos, Block> worldBlocks = Maps.newConcurrentMap();
     @Op(name = "Tracers")
     public boolean tracers;
+    @Op(name = "Limit Range")
+    public boolean limitRange = false;
+    @OpChild(name = "Range", min = 10, max = 100, parent = "Limit Range")
+    public int range = 25;
 
     private Thread thread;
-    me.dustin.jex.helper.misc.Timer timer = new me.dustin.jex.helper.misc.Timer();
     private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
     public Search() {
         File searchFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "Search.json");
@@ -165,6 +170,8 @@ public class Search extends Feature {
                 }
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
+                if (limitRange && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos)) > range)
+                    continue;
                 Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
                 Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 1, entityPos.z + 1 - 0.5f);
                 BoxStorage boxStorage = new BoxStorage(box, blocks.get(block));
