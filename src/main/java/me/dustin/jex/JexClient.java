@@ -16,7 +16,9 @@ import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.mod.impl.combat.killaura.Killaura;
 import me.dustin.jex.feature.mod.impl.misc.Discord;
 import me.dustin.jex.feature.mod.impl.misc.Fakelag;
+import me.dustin.jex.feature.mod.impl.movement.Step;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
+import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.feature.mod.impl.render.CustomFont;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.helper.file.files.FeatureFile;
@@ -114,6 +116,10 @@ public enum JexClient {
                     Feature.get(Fakelag.class).setState(false);
             } else if (Gui.clickgui.guiModule == null) {
                 Gui.clickgui.init();
+            }
+            if (BaritoneHelper.INSTANCE.baritoneExists()) {
+                BaritoneHelper.INSTANCE.setAssumeStep(Feature.get(Step.class).getState());
+                BaritoneHelper.INSTANCE.setAssumeJesus(Feature.get(Jesus.class).getState());
             }
         } else if (event instanceof EventScheduleStop) {
             if (Feature.get(Discord.class).getState()) {
