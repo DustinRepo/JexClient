@@ -4,6 +4,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventExplosionVelocity;
+import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -14,7 +15,7 @@ public class Velocity extends Feature {
     @Op(name = "Percent", max = 300)
     public int percent = 0;
 
-    @EventListener(events = {EventPacketReceive.class, EventExplosionVelocity.class, EventPlayerVelocity.class})
+    @EventListener(events = {EventExplosionVelocity.class, EventPlayerVelocity.class, EventPlayerPackets.class})
     public void run(Event event) {
         float perc = percent / 100.0f;
         if (event instanceof EventPlayerVelocity eventPlayerVelocity) {
@@ -35,6 +36,9 @@ public class Velocity extends Feature {
                 eventExplosionVelocity.setMultY(perc);
                 eventExplosionVelocity.setMultZ(perc);
             }
+        }
+        if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
+            this.setSuffix(percent + "%");
         }
     }
 
