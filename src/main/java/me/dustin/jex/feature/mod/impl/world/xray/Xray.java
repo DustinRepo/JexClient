@@ -28,15 +28,15 @@ public class Xray extends Feature {
 
     public static ArrayList<Block> blockList = new ArrayList<>();
 
-    @Op(name = "Mode", all = {"Opacity", "Normal"})
-    public String mode = "Opacity";
+    //@Op(name = "Mode", all = {"Opacity", "Normal"})
+    public String mode = "Normal";
     @OpChild(name = "Alpha Value", parent = "Mode", min = 0, inc = 0.01f, dependency = "Opacity")
     public float alphaValue = 0.5f;
 
     public String lastMode;
 
     public Xray() {
-        new OpacityXray();
+        //new OpacityXray();
         new NormalXray();
         INSTANCE = this;
     }
