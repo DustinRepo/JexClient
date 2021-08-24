@@ -18,7 +18,7 @@ public class EnchantColor extends Feature{
 
     @Op(name = "Mode", all = {"Shader Rainbow", "Customize"})
     public String mode = "Shader Rainbow";
-    @Op(name = "Shader Mode", all = {"Rainbow", "TV", "Test"})
+    @OpChild(name = "Shader Mode", all = {"Rainbow", "TV", "Test"}, parent = "Mode", dependency = "Shader Rainbow")
     public String shaderMode = "Rainbow";
     @OpChild(name = "Saturation", min = 0.1f, inc = 0.05f, parent = "Mode", dependency = "Shader Rainbow")
     public float saturation = 0.75f;
