@@ -94,16 +94,15 @@ public enum JexClient {
 
     @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class})
     public void runMethod(Event event) {
-        if (event instanceof EventKeyPressed) {
-            EventKeyPressed eventKeyPressed = (EventKeyPressed)event;
+        if (event instanceof EventKeyPressed eventKeyPressed) {
             if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {
                 if (eventKeyPressed.getKey() == GLFW.GLFW_KEY_INSERT)
                     Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
                 FeatureManager.INSTANCE.getFeatures().forEach(module -> {
                     if (module.getKey() == eventKeyPressed.getKey()) {
                         module.toggleState();
-                        if (JexClient.INSTANCE.isAutoSaveEnabled())
-                            FeatureFile.write();
+                    if (JexClient.INSTANCE.isAutoSaveEnabled())
+                        FeatureFile.write();
                     }
                 });
             }
