@@ -11,8 +11,8 @@ import java.util.Random;
 @Feature.Manifest(name = "Messages", category = Feature.Category.MISC, description = "Modify messages you send in chat")
 public class Messages extends Feature {
 
-    @Op(name = "Mode", all = {"Upside-Down", "Backwards", "Random Capital"})
-    public String mode = "Upside-Down";
+    @Op(name = "Mode", all = {"Fancy", "Upside-Down", "Backwards", "Random Capital"})
+    public String mode = "Fancy";
 
     @EventListener(events = {EventPacketSent.class})
     private void runMethod(EventPacketSent eventPacketSent) {
@@ -20,6 +20,17 @@ public class Messages extends Feature {
             if (((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage().startsWith("/"))
                 return;
             switch (mode) {
+                case "Fancy" -> {
+                    String fancyChars = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ１２３４５６７８９０－＝｀～！＠＃＄％＾＆＊＼，＜．＞／？：；＇＂";
+                    String replaceChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=`~!@#$%^&*\\,<.>/?:;'\"";
+                    String s = ((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage();
+                    for (int i = 0; i < fancyChars.length(); i++) {
+                        char currentChar = replaceChars.charAt(i);
+                        char replace = fancyChars.charAt(replaceChars.indexOf(currentChar));
+                        s = s.replace(currentChar, replace);
+                    }
+                    eventPacketSent.setPacket(new ChatMessageC2SPacket(s));
+                }
                 case "Upside-Down" -> eventPacketSent.setPacket(new ChatMessageC2SPacket(upsideDown(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage())));
                 case "Backwards" -> eventPacketSent.setPacket(new ChatMessageC2SPacket(new StringBuilder(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage()).reverse().toString()));
                 case "Random Capital" -> eventPacketSent.setPacket(new ChatMessageC2SPacket(randomCapitalize(((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage())));
