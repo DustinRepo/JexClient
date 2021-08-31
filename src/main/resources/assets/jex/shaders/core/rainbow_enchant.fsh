@@ -26,6 +26,17 @@ vec3 hsb2rgb( in vec3 c ){
     return c.z * mix(vec3(1.0), rgb, c.y);
 }
 
+vec4 transRights(vec3 pos) {
+    float y = fract(pos.y * 5);
+    if (y > 0.30) {
+        return vec4( 96, 205, 248, 255) / 255;
+    } else if (y > 0.15) {
+        return vec4(243, 168, 183, 255) / 255;
+    } else {
+        return vec4(255, 255, 255, 255) / 255;
+    }
+}
+
 void main() {
     vec4 color = texture(Sampler0, texCoord0) * ColorModulator;
     if (color.a < 0.1) {
@@ -37,9 +48,12 @@ void main() {
             fragColor = vec4(hsb2rgb(vec3(fract(color.r + color.g + color.b + pos.x + pos.y), Saturation, Alpha)), 1);
             return;
             case 1:
-            fragColor = vec4(hsb2rgb(vec3(fract(cos(color.r + color.g + color.b + pos.x + pos.y) * 180), Saturation, Alpha)), 1);
+            fragColor = transRights(color.xyz);
             return;
             case 2:
+            fragColor = vec4(hsb2rgb(vec3(fract(cos(color.r + color.g + color.b + pos.x + pos.y) * 180), Saturation, Alpha)), 1);
+            return;
+            case 3:
             fragColor = vec4(hsb2rgb(vec3(fract(cos(color.r + color.g + color.b + pos.x * pos.y) * 45), Saturation, Alpha)), 1);
             return;
         }

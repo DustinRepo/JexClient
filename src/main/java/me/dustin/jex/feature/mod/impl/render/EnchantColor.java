@@ -18,7 +18,7 @@ public class EnchantColor extends Feature{
 
     @Op(name = "Mode", all = {"Shader Rainbow", "Customize"})
     public String mode = "Shader Rainbow";
-    @OpChild(name = "Shader Mode", all = {"Rainbow", "TV", "Test"}, parent = "Mode", dependency = "Shader Rainbow")
+    @OpChild(name = "Shader Mode", all = {"Rainbow", "Trans Rights", "TV", "Test"}, parent = "Mode", dependency = "Shader Rainbow")
     public String shaderMode = "Rainbow";
     @OpChild(name = "Saturation", min = 0.1f, inc = 0.05f, parent = "Mode", dependency = "Shader Rainbow")
     public float saturation = 0.75f;
@@ -78,9 +78,10 @@ public class EnchantColor extends Feature{
 
     public int getShaderMode() {
         switch (shaderMode.toLowerCase()) {
-            case "add" -> {return 0;}
-            case "tv" -> {return 1;}
-            case "test" -> {return 2;}
+            case "rainbow" -> {return 0;}
+            case "trans rights" -> {return 1;}
+            case "tv" -> {return 2;}
+            case "test" -> {return 3;}
         }
         return 0;
     }
