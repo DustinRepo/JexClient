@@ -123,8 +123,9 @@ public class AntiLiquid extends Feature {
                 if (isReplaceable(WorldHelper.INSTANCE.getBlock(pos))) {
                     Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(pos);
                     Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-                    renderList.add(new Render3DHelper.BoxStorage(box, foundPlacing ? 0xff00ff00 : 0xffff0000));
-                    foundPlacing = true;
+                    renderList.add(new Render3DHelper.BoxStorage(box, canPlaceHere(pos) && !foundPlacing ? 0xff00ff00 : 0xffff0000));
+                    if (canPlaceHere(pos))
+                        foundPlacing = true;
                 }
             }
             Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), renderList);
