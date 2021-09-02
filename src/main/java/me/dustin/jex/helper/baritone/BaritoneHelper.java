@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.baritone;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.impl.combat.killaura.Killaura;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.LivingEntity;
@@ -9,13 +10,17 @@ public enum BaritoneHelper {
     INSTANCE;
 
     public void pause() {
-        if (baritoneExists())
+        if (baritoneExists()) {
             UnsafeBaritoneHelper.pauseProcess.pause(true);
+            JexClient.INSTANCE.getLogger().info("Pausing Baritone");
+        }
     }
 
     public void resume() {
-        if (baritoneExists())
+        if (baritoneExists()) {
             UnsafeBaritoneHelper.pauseProcess.pause(false);
+            JexClient.INSTANCE.getLogger().info("Resuming Baritone");
+        }
     }
 
     public void sendCommand(String command) {

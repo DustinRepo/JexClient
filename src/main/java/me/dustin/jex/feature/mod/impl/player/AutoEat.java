@@ -2,11 +2,13 @@ package me.dustin.jex.feature.mod.impl.player;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerUpdates;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
+import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -34,9 +36,11 @@ public class AutoEat extends Feature {
     public boolean negativeFoods;
     @Op(name = "Eat To Regen")
     public boolean eatToRegen;
+    private boolean wasEating;
     private int savedSlot = 0;
     private int lastFood;
 
+    private Timer baritoneTimer = new Timer();
     @EventListener(events = {EventPlayerUpdates.class, EventPacketSent.class})
     public void run(Event event) {
         if (Wrapper.INSTANCE.getLocalPlayer() != null && getBestFood().itemStack != null) {
@@ -44,8 +48,16 @@ public class AutoEat extends Feature {
         } else {
             setSuffix("None");
         }
+        if (!isEating && wasEating) {
+            if (BaritoneHelper.INSTANCE.baritoneExists())
+                BaritoneHelper.INSTANCE.resume();
+        }
         if (Wrapper.INSTANCE.getLocalPlayer() == null || Feature.get(Freecam.class).getState() || Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
             isEating = false;
+            if (BaritoneHelper.INSTANCE.baritoneExists()) {
+                BaritoneHelper.INSTANCE.resume();
+                baritoneTimer.reset();
+            }
             return;
         }
         if (event instanceof EventPlayerUpdates) {
@@ -70,8 +82,9 @@ public class AutoEat extends Feature {
                             InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
                         }
                         lastFood = Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel();
-                        if (BaritoneHelper.INSTANCE.baritoneExists())
+                        if (BaritoneHelper.INSTANCE.baritoneExists()) {
                             BaritoneHelper.INSTANCE.resume();
+                        }
                     }
                     if (isEating) {
                         if (pressKey)
@@ -83,6 +96,7 @@ public class AutoEat extends Feature {
                     NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
                     InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
                 }
+                wasEating = isEating;
             }
         }
         if (event instanceof EventPacketSent eventPacketSent) {

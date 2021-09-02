@@ -7,6 +7,9 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 
