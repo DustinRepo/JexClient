@@ -31,6 +31,10 @@ public class UnsafeBaritoneHelper {
         return BaritoneHelper.INSTANCE.baritoneExists() && isBaritoneRunning() && (BaritoneAPI.getProvider().getPrimaryBaritone().getInputOverrideHandler().isInputForcedDown(Input.CLICK_LEFT) || BaritoneAPI.getProvider().getPrimaryBaritone().getInputOverrideHandler().isInputForcedDown(Input.CLICK_RIGHT));
     }
 
+    public static void gotoLocation(BlockPos pos) {
+        BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(new GoalXZ(pos.getX(), pos.getZ()));
+    }
+
     protected static void sendCommand(String command) {
         BaritoneAPI.getSettings().prefix.value = "*&";
         ChatEvent event = new ChatEvent(command);

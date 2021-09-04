@@ -12,14 +12,18 @@ public enum BaritoneHelper {
     public void pause() {
         if (baritoneExists()) {
             UnsafeBaritoneHelper.pauseProcess.pause(true);
-            JexClient.INSTANCE.getLogger().info("Pausing Baritone");
         }
     }
 
     public void resume() {
         if (baritoneExists()) {
             UnsafeBaritoneHelper.pauseProcess.pause(false);
-            JexClient.INSTANCE.getLogger().info("Resuming Baritone");
+        }
+    }
+
+    public void gotoLocation(BlockPos pos) {
+        if (baritoneExists()) {
+            UnsafeBaritoneHelper.gotoLocation(pos);
         }
     }
 
