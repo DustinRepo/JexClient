@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
@@ -207,6 +208,7 @@ public class JexTitleScreen extends Screen {
     }
 
     private void switchToRealms() {
+        this.client.openScreen(new RealmsMainScreen(this));
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
