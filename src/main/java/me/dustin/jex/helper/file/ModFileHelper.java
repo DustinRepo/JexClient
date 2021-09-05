@@ -3,6 +3,7 @@ package me.dustin.jex.helper.file;
 import me.dustin.jex.helper.file.files.*;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.impl.world.xray.Xray;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;
 
@@ -35,6 +36,8 @@ public enum ModFileHelper {
     }
 
     public File getJexDirectory() {
+        if (Wrapper.INSTANCE.getMinecraft() == null)
+            return new File(FabricLoader.getInstance().getGameDir().toString(), PATH_NAME);
         return new File(Wrapper.INSTANCE.getMinecraft().runDirectory, PATH_NAME);
     }
 

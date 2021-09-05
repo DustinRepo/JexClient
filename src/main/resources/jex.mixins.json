@@ -36,6 +36,7 @@
     "minecraft.MixinKeybinding",
     "minecraft.MixinKeyboard",
     "minecraft.MixinLlamaEntity",
+    "minecraft.MixinMain",
     "minecraft.MixinMinecraftClient",
     "minecraft.MixinMouse",
     "minecraft.MixinMultiplayerScreen",

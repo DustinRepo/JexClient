@@ -10,6 +10,7 @@ import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.Login;
 import me.dustin.jex.helper.network.MCAPIHelper;
+import me.dustin.jex.helper.network.MicrosoftLogin;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
@@ -24,10 +25,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class AccountManager extends Screen {
+public class AccountManagerScreen extends Screen {
 
     private ArrayList<AccountButton> accountButtons = new ArrayList<>();
     private MinecraftAccountManager accountManager = MinecraftAccountManager.INSTANCE;
@@ -40,11 +43,11 @@ public class AccountManager extends Screen {
     private ButtonWidget exportButton;
     private TextFieldWidget searchTextField;
 
-    private String outputString;
+    public String outputString;
     private Scrollbar scrollbar;
 
-    public AccountManager(Text title) {
-        super(title);
+    public AccountManagerScreen() {
+        super(new LiteralText("Account Manager"));
     }
 
     @Override
@@ -64,7 +67,9 @@ public class AccountManager extends Screen {
             login(getSelected());
         });
         editButton = new ButtonWidget((int) (midX + 3), (height / 2) - 56, 150, 20, new LiteralText("Edit"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new GuiAddAccount(getSelected().getAccount(), this));
+            if (getSelected().getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
+                Wrapper.INSTANCE.getMinecraft().openScreen(new AddAccountScreen(mojangAccount, this));
+            }
         });
 
         removeButton = new ButtonWidget((int) (midX + 3), (height / 2) - 34, 150, 20, new LiteralText("Remove"), button -> {
@@ -79,10 +84,13 @@ public class AccountManager extends Screen {
             Random rand = new Random();
             login(accountButtons.get(rand.nextInt(accountButtons.size())));
         });
-        ButtonWidget directButton = new ButtonWidget((int) (midX - 75), height - 50, 150, 20, new LiteralText("Add Account"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new GuiAddAccount(null, this));
+        ButtonWidget addAccountButton = new ButtonWidget((int) (midX - 151), height - 50, 150, 20, new LiteralText("Add Account"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new AddAccountScreen(null, this));
         });
-        cancelButton = new ButtonWidget((int) (midX - 75), height - 28, 150, 20, new LiteralText("Cancel"), button -> {
+        ButtonWidget directLoginButton = new ButtonWidget((int) (midX + 1), height - 50, 150, 20, new LiteralText("Direct Login"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new DirectLoginScreen(this));
+        });
+        cancelButton = new ButtonWidget((int) (midX - 151), height - 28, 302, 20, new LiteralText("Cancel"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(new TitleScreen()));
         });
         importButton = new ButtonWidget(2, 2, 50, 15, new LiteralText("Import"), button -> {
@@ -110,7 +118,8 @@ public class AccountManager extends Screen {
         this.addDrawableChild(editButton);
         this.addDrawableChild(removeButton);
         this.addDrawableChild(randomButton);
-        this.addDrawableChild(directButton);
+        this.addDrawableChild(addAccountButton);
+        this.addDrawableChild(directLoginButton);
         this.addDrawableChild(cancelButton);
         this.addSelectableChild(searchTextField);
         this.addDrawableChild(searchButton);
@@ -137,12 +146,12 @@ public class AccountManager extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         loginButton.active = getSelected() != null;
-        editButton.active = getSelected() != null;
+        editButton.active = getSelected() != null && getSelected().getAccount() instanceof MinecraftAccount.MojangAccount;
         removeButton.active = getSelected() != null;
         randomButton.active = accountButtons.size() > 1;
         renderBackground(matrixStack);
 
-        Render2DHelper.INSTANCE.fill(matrixStack, (width / 2) - 152, (height / 2) - 102, (width / 2), (height / 2) + 102, 0x50000000);
+        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, (width / 2) - 154, (height / 2) - 128, (width / 2) + 156, (height / 2) + 102, 0xff000000, 0x50cccccc, 1);
 
         Scissor.INSTANCE.cut(0, ((height / 2) - 100), width / 2 - 2, 200);
         accountButtons.forEach(button -> {
@@ -153,14 +162,30 @@ public class AccountManager extends Screen {
 
         searchTextField.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, "Status", (width / 2) + 3, (height / 2) - 98, -1);
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, outputString, (width / 2) + 3, (height / 2) - 88, 0xff696969);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, "Status", (width / 2.f) + 4, (height / 2.f) - 98, -1);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, outputString, (width / 2.f) + 4, (height / 2.f) - 88, ColorHelper.INSTANCE.getClientColor());
 
         Render2DHelper.INSTANCE.fill(matrixStack, 0, 0, width, 20, 0x70000000);
         Render2DHelper.INSTANCE.drawHLine(matrixStack, 0, width, 20, ColorHelper.INSTANCE.getClientColor());
 
         Render2DHelper.INSTANCE.fill(matrixStack, 0, height - 52, width, height, 0x70000000);
         Render2DHelper.INSTANCE.drawHLine(matrixStack, 0, width, height - 52, ColorHelper.INSTANCE.getClientColor());
+
+        if (getSelected() != null) {
+            int loginCount = getSelected().getAccount().loginCount;
+            long lastLogin = getSelected().getAccount().lastUsed;
+            String lastLoginString = "";
+            if (lastLogin <= 0) {
+                lastLoginString = "Last login: \247cNever";
+            } else {
+                DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm");
+                String formattedDate = df.format(lastLogin);
+                lastLoginString = "Last login: \247c" + formattedDate.split(" ")[0] + " \247a" + formattedDate.split(" ")[1];
+            }
+            Render2DHelper.INSTANCE.fillAndBorder(matrixStack, width / 2.f + 3, height / 2.f + 9, width / 2.f + 154, height / 2.f + 60, 0xff000000, 0x60000000, 1);
+            FontHelper.INSTANCE.drawWithShadow(matrixStack, "Times logged in: " + loginCount, width / 2.f + 6, height / 2.f + 12, -1);
+            FontHelper.INSTANCE.drawWithShadow(matrixStack, lastLoginString, width / 2.f + 6, height / 2.f + 23, -1);
+        }
 
         if (scrollbar != null)
             scrollbar.render(matrixStack);
@@ -246,23 +271,27 @@ public class AccountManager extends Screen {
     }
 
     public void login(AccountButton button) {
-        new Thread("Login") {
-            @Override
-            public void run() {
-                outputString = "Logging in...";
-                outputString = Login.INSTANCE.loginToAccount(button.getAccount());
-                if (outputString.contains("Logged in")) {
-                    button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
+        if (button.getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
+            new Thread("Login") {
+                @Override
+                public void run() {
+                    outputString = "Logging in...";
+                    outputString = Login.INSTANCE.loginToAccount(button.getAccount());
+                    if (outputString.contains("Logged in")) {
+                        button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
+                    }
+                    if (outputString.equalsIgnoreCase("Cannot contact authentication server")) {
+                        MCAPIHelper.APIStatus authServer = MCAPIHelper.INSTANCE.getStatus(MCAPIHelper.APIServer.AUTHSERVER);
+                        if (authServer == MCAPIHelper.APIStatus.RED)
+                            outputString = "Authentication servers offline.";
+                        if (authServer == MCAPIHelper.APIStatus.GREEN)
+                            outputString = "Your IP may be temp banned from logging in.";
+                    }
                 }
-                if (outputString.equalsIgnoreCase("Cannot contact authentication server")) {
-                    MCAPIHelper.APIStatus authServer = MCAPIHelper.INSTANCE.getStatus(MCAPIHelper.APIServer.AUTHSERVER);
-                    if (authServer == MCAPIHelper.APIStatus.RED)
-                        outputString = "Authentication servers offline.";
-                    if (authServer == MCAPIHelper.APIStatus.GREEN)
-                        outputString = "Your IP may be temp banned from logging in.";
-                }
-            }
-        }.start();
+            }.start();
+        } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
+            new MicrosoftLogin(true).login(microsoftAccount.accessToken, microsoftAccount.refreshToken);
+        }
     }
 
     public void loadAccountButtons(String searchField) {

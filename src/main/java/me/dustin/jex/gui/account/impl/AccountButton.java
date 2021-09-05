@@ -1,12 +1,17 @@
 package me.dustin.jex.gui.account.impl;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
+import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 import java.util.UUID;
 
@@ -32,16 +37,23 @@ public class AccountButton {
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x30ffffff);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, account.getUsername(), getX() + 40, getY() + 5, -1);
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, getAccount().isCracked() ? "Cracked" : "Premium", getX() + 40, getY() + 15, 0xff676767);
         String pword = "";
-        if (getAccount().getPassword() == null) {
-            pword = "ERROR READING FILE";
-        }else
-        for (int i = 0; i < getAccount().getPassword().length(); i++) {
-            pword += "*";
+        if (account instanceof MinecraftAccount.MojangAccount mojangAccount) {
+            FontHelper.INSTANCE.drawWithShadow(matrixStack, mojangAccount.isCracked() ? "Cracked" : "Mojang Account", getX() + 40, getY() + 15, mojangAccount.isCracked() ? 0xffff0000 : 0xffdd7000);
+            if (mojangAccount.getPassword() == null) {
+                pword = "ERROR READING FILE";
+            } else
+                for (int i = 0; i < mojangAccount.getPassword().length(); i++) {
+                    pword += "*";
+                }
+            if (uuid == null)
+                uuid = PlayerHelper.INSTANCE.getUUID(account.getUsername());
+        } else {
+            FontHelper.INSTANCE.drawWithShadow(matrixStack, "Microsoft Account", getX() + 40, getY() + 15, 0xff00ff00);
         }
-        if (uuid == null)
-            uuid = PlayerHelper.INSTANCE.getUUID(account.getUsername());
+        if (this.getAccount().getUsername().equalsIgnoreCase(Wrapper.INSTANCE.getMinecraft().getSession().getUsername())) {
+            Render2DHelper.INSTANCE.drawItem(new ItemStack(Items.EMERALD), getX() + getWidth() - 20, getY() + getHeight() - 20);
+        }
         FontHelper.INSTANCE.drawWithShadow(matrixStack, pword, getX() + 40, getY() + 25, 0xff676767);
         Render2DHelper.INSTANCE.drawFace(matrixStack, this.getX() + 4, this.getY() + 4, 4, MCAPIHelper.INSTANCE.getPlayerSkin(uuid));
     }
