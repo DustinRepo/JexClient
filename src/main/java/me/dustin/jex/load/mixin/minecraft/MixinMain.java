@@ -27,13 +27,13 @@ public class MixinMain {
             if (!MinecraftAccountManager.INSTANCE.getAccounts().isEmpty()) {
                 MinecraftAccount mcAccount = MinecraftAccountManager.INSTANCE.getAccounts().get(0);
                 if (mcAccount instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-                    UUID uuid = MCAPIHelper.INSTANCE.getUUIDFromName(microsoftAccount.username);
-                    if (uuid == null) {
+                    String uuid = microsoftAccount.uuid;
+                    if (uuid == null || uuid.equalsIgnoreCase("null")) {
                         JexClient.INSTANCE.getLogger().info("UUID null, can not log in");
                         return;
                     }
                     JexClient.INSTANCE.getLogger().info("Logging in to Microsoft account with name " + microsoftAccount.username);
-                    args.setAll(microsoftAccount.username, UUIDTypeAdapter.fromUUID(uuid), microsoftAccount.accessToken, "mojang");
+                    args.setAll(microsoftAccount.username, uuid, microsoftAccount.accessToken, "mojang");
                 } else if (mcAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
                     Session session = Login.INSTANCE.login(mojangAccount.getEmail(), mojangAccount.getPassword(), false);
                     JexClient.INSTANCE.getLogger().info("Logging in to Mojang account with name " + session.getUsername());

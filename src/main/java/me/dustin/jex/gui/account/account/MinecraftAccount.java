@@ -7,11 +7,13 @@ public class MinecraftAccount {
     public static class MicrosoftAccount extends MinecraftAccount {
         public String accessToken;
         public String refreshToken;
+        public String uuid;
 
-        public MicrosoftAccount(String name, String token, String refresh) {
+        public MicrosoftAccount(String name, String token, String refresh, String uuid) {
             this.username = name;
             this.accessToken = token;
             this.refreshToken = refresh;
+            this.uuid = uuid.replace("-", "");
         }
     }
 

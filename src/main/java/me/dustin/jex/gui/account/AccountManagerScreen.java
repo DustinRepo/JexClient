@@ -84,11 +84,11 @@ public class AccountManagerScreen extends Screen {
             Random rand = new Random();
             login(accountButtons.get(rand.nextInt(accountButtons.size())));
         });
-        ButtonWidget addAccountButton = new ButtonWidget((int) (midX - 151), height - 50, 150, 20, new LiteralText("Add Account"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new AddAccountScreen(null, this));
-        });
-        ButtonWidget directLoginButton = new ButtonWidget((int) (midX + 1), height - 50, 150, 20, new LiteralText("Direct Login"), button -> {
+        ButtonWidget addAccountButton = new ButtonWidget((int) (midX - 151), height - 50, 150, 20, new LiteralText("Direct Login"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(new DirectLoginScreen(this));
+        });
+        ButtonWidget directLoginButton = new ButtonWidget((int) (midX + 1), height - 50, 150, 20, new LiteralText("Add Account"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new AddAccountScreen(null, this));
         });
         cancelButton = new ButtonWidget((int) (midX - 151), height - 28, 302, 20, new LiteralText("Cancel"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(new TitleScreen()));
@@ -209,6 +209,8 @@ public class AccountManagerScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double d, double e, double amount) {
+        if (accountButtons.isEmpty())
+            return false;
         if (amount > 0) {
             AccountButton topButton = accountButtons.get(0);
             if (topButton == null) return false;

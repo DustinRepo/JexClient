@@ -32,6 +32,7 @@ public class AltFile {
                 jsonObject.addProperty("cracked", mojangAccount.isCracked());
                 jsonObject.addProperty("Microsoft", false);
             } else if (alt instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
+                jsonObject.addProperty("uuid", microsoftAccount.uuid);
                 jsonObject.addProperty("accessToken", EncryptHelper.INSTANCE.encrypt(HWID.INSTANCE.getHWID(), microsoftAccount.accessToken));
                 jsonObject.addProperty("refreshToken", EncryptHelper.INSTANCE.encrypt(HWID.INSTANCE.getHWID(), microsoftAccount.refreshToken));
                 jsonObject.addProperty("Microsoft", true);
@@ -67,6 +68,7 @@ public class AltFile {
                 jsonObject.addProperty("cracked", mojangAccount.isCracked());
                 jsonObject.addProperty("Microsoft", false);
             } else if (alt instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
+                jsonObject.addProperty("uuid", microsoftAccount.uuid);
                 jsonObject.addProperty("accessToken", microsoftAccount.accessToken);
                 jsonObject.addProperty("refreshToken", microsoftAccount.refreshToken);
                 jsonObject.addProperty("Microsoft", true);
@@ -123,8 +125,9 @@ public class AltFile {
                 } else {
                     String accessToken = object.get("accessToken").getAsString();
                     String refreshToken = object.get("refreshToken").getAsString();
+                    String uuid = object.get("uuid") == null ? "null" : object.get("uuid").getAsString();
 
-                    MinecraftAccount.MicrosoftAccount account = new MinecraftAccount.MicrosoftAccount(name, accessToken, refreshToken);
+                    MinecraftAccount.MicrosoftAccount account = new MinecraftAccount.MicrosoftAccount(name, accessToken, refreshToken, uuid);
                     account.lastUsed = lastUsed;
                     account.loginCount = loginCount;
                     MinecraftAccountManager.INSTANCE.getAccounts().add(account);
@@ -168,7 +171,8 @@ public class AltFile {
                 } else {
                     String accessToken = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), object.get("accessToken").getAsString());
                     String refreshToken = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), object.get("refreshToken").getAsString());
-                    MinecraftAccount.MicrosoftAccount account = new MinecraftAccount.MicrosoftAccount(name, accessToken, refreshToken);
+                    String uuid = object.get("uuid") == null ? "null" : object.get("uuid").getAsString();
+                    MinecraftAccount.MicrosoftAccount account = new MinecraftAccount.MicrosoftAccount(name, accessToken, refreshToken, uuid);
                     account.lastUsed = lastUsed;
                     account.loginCount = loginCount;
                     MinecraftAccountManager.INSTANCE.getAccounts().add(account);

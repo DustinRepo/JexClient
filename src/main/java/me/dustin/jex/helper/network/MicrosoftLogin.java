@@ -328,6 +328,7 @@ public class MicrosoftLogin {
                     microsoftAccount.setUsername(name);
                     microsoftAccount.accessToken = token;
                     microsoftAccount.refreshToken = refresh;
+                    microsoftAccount.uuid = uuid;
                 } else
                     MinecraftAccountManager.INSTANCE.getAccounts().remove(mcAccount);
             } else {
@@ -335,8 +336,9 @@ public class MicrosoftLogin {
                     microsoftAccount.setUsername(name);
                     microsoftAccount.accessToken = token;
                     microsoftAccount.refreshToken = refresh;
+                    microsoftAccount.uuid = uuid;
                 } else {
-                    MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(name, token, refresh);
+                    MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(name, token, refresh, uuid);
                     MinecraftAccountManager.INSTANCE.getAccounts().add(microsoftAccount);
                 }
             }
