@@ -75,4 +75,9 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
     public float getBlockBreakProgress() {
         return this.currentBreakingProgress;
     }
+
+    @Override
+    public int getBlockBreakingCooldown() {
+        return this.blockBreakingCooldown;
+    }
 }
