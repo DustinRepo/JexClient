@@ -177,7 +177,6 @@ public class MicrosoftLogin {
             HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
                 if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
                     String body = resp.body();
-                    JexClient.INSTANCE.getLogger().info(resp.body());
                     JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(body, JsonObject.class);
                     String xblToken = jsonObject.get("Token").getAsString();
                     xstsAuthenticate(xblToken, refreshToken);
