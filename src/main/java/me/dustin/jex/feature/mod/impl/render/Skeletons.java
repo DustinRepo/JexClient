@@ -9,6 +9,7 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
@@ -31,7 +32,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
         float g = eventRender3D.getPartialTicks();
         Render3DHelper.INSTANCE.setup3DRender(true);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (entity instanceof PlayerEntity playerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
+            if (entity instanceof PlayerEntity playerEntity && (entity != Wrapper.INSTANCE.getLocalPlayer() || Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON)) {
                 Color color = ColorHelper.INSTANCE.getColor(skeletonColor);
                 Vec3d footPos = Render3DHelper.INSTANCE.getEntityRenderPosition(playerEntity, g);
                 PlayerEntityRenderer livingEntityRenderer = (PlayerEntityRenderer)(LivingEntityRenderer<?, ?>) Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().getRenderer(playerEntity);
@@ -48,7 +49,10 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
 
                 playerEntityModel.animateModel(playerEntity, q, p, g);
                 playerEntityModel.setAngles(playerEntity, q, p, o, k, m);
+
+                boolean swimming = playerEntity.isInSwimmingPose();
                 boolean sneaking = playerEntity.isSneaking();
+                boolean flying = playerEntity.isFallFlying();
 
                 ModelPart head = playerEntityModel.head;
                 ModelPart leftArm = playerEntityModel.leftArm;
@@ -57,14 +61,13 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 ModelPart rightLeg = playerEntityModel.rightLeg;
 
                 matrixStack.translate(footPos.x, footPos.y, footPos.z);
-                if (playerEntity.isInSwimmingPose()) {
-                    matrixStack.translate(0, 0.35f, 0);
-                }
+                if (swimming) matrixStack.translate(0, 0.35f, 0);
+
                 matrixStack.multiply(new Quaternion(new Vec3f(0, -1, 0), playerEntity.bodyYaw + 180, true));
-                if (playerEntity.isInSwimmingPose()) {
-                    matrixStack.multiply(new Quaternion(new Vec3f(-1, 0, 0), 90 + EntityHelper.INSTANCE.getPitch(playerEntity), true));
-                    matrixStack.translate(0, -0.95f, 0);
-                }
+                if (swimming || flying) matrixStack.multiply(new Quaternion(new Vec3f(-1, 0, 0), 90 + m, true));
+
+                if (swimming) matrixStack.translate(0, -0.95f, 0);
+
                 BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                 bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 
@@ -121,11 +124,10 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 bufferBuilder.end();
                 BufferRenderer.draw(bufferBuilder);
 
-                if (playerEntity.isInSwimmingPose()) {
-                    matrixStack.translate(0, 0.95f, 0);
-                    matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90 + EntityHelper.INSTANCE.getPitch(playerEntity), true));
-                    matrixStack.translate(0, -0.35f, 0);
-                }
+                if (swimming) matrixStack.translate(0, 0.95f, 0);
+                if (swimming || flying) matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90 + m, true));
+                if (swimming) matrixStack.translate(0, -0.35f, 0);
+
                 matrixStack.multiply(new Quaternion(new Vec3f(0, 1, 0), playerEntity.bodyYaw + 180, true));
                 matrixStack.translate(-footPos.x, -footPos.y, -footPos.z);
             }
