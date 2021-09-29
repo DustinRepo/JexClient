@@ -15,8 +15,6 @@ import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.util.Session;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
@@ -86,7 +84,7 @@ public class MicrosoftLogin {
                         } else if (query.startsWith("code=")) {
                             try {
                                 getAccessToken(query.replace("code=", ""));
-                            } catch (URISyntaxException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else if (query.equalsIgnoreCase("error=access_denied&error_description=The user has denied access to the scope requested by the client application.")) {
@@ -126,33 +124,31 @@ public class MicrosoftLogin {
             server.stop(0);
     }
 
-    private void getAccessToken(String code) throws URISyntaxException {
+    private void getAccessToken(String code) throws URISyntaxException, MalformedURLException {
         JexClient.INSTANCE.getLogger().info("Grabbing Access Token");
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Grabbing Access Token";
         }
         URI uri = new URI("https://login.live.com/oauth20_token.srf");
-        Map<Object, Object> map = Maps.newHashMap();
+        Map<String, String> map = Maps.newHashMap();
         map.put("client_id", "54fd49e4-2103-4044-9603-2b028c814ec3");
         map.put("code", code);
         map.put("grant_type", "authorization_code");
         map.put("redirect_uri", "http://localhost:59125");
         map.put("scope", "XboxLive.signin XboxLive.offline_access");
 
-        HttpRequest request = HttpRequest.newBuilder(uri).header("Content-Type", "application/x-www-form-urlencoded").POST(ofFormData(map)).build();
-        HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
-            if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
-                String body = resp.body();
-                JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(body, JsonObject.class);
-                String accessToken = jsonObject.get("access_token").getAsString();
-                String refreshToken = jsonObject.get("refresh_token").getAsString();
-                authenticateXboxLive(accessToken, refreshToken);
-            } else {
-                if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
-                    accountManagerScreen.outputString = "Error Grabbing Access Token";
-                }
+        String r = WebHelper.INSTANCE.sendPOST(new URL(uri.toString()), map);
+
+        JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(r, JsonObject.class);
+        if (jsonObject.get("access_token") != null) {
+            String accessToken = jsonObject.get("access_token").getAsString();
+            String refreshToken = jsonObject.get("refresh_token").getAsString();
+            authenticateXboxLive(accessToken, refreshToken);
+        } else {
+            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
+                accountManagerScreen.outputString = "Error Grabbing Access Token";
             }
-        });
+        }
     }
 
     private void authenticateXboxLive(String accessToken, String refreshToken) {

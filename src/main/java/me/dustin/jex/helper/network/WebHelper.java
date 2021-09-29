@@ -3,8 +3,14 @@ package me.dustin.jex.helper.network;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.StringJoiner;
 
 public enum WebHelper {
     INSTANCE;
@@ -21,6 +27,45 @@ public enum WebHelper {
         }
         input.close();
         return buffer.toString();
+    }
+
+    public String sendPOST(URL url, Map<?, ?> args) {
+        String response = "";
+        try {
+
+            URLConnection con = url.openConnection();
+            HttpURLConnection http = (HttpURLConnection) con;
+            http.setRequestMethod("POST");
+            http.setDoOutput(true);
+
+
+            StringJoiner sj = new StringJoiner("&");
+            for (Map.Entry<?, ?> entry : args.entrySet())
+                sj.add(URLEncoder.encode(entry.getKey().toString(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
+
+            byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
+            int length = out.length;
+
+            http.setFixedLengthStreamingMode(length);
+            http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            http.connect();
+            try (OutputStream os = http.getOutputStream()) {
+                os.write(out);
+            }
+
+            BufferedReader input = new BufferedReader(new InputStreamReader(http.getInputStream()));
+            StringBuilder buffer = new StringBuilder();
+            for (String line; (line = input.readLine()) != null; ) {
+                buffer.append(line);
+                buffer.append("\n");
+            }
+            input.close();
+
+            response = buffer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     public boolean openLink(String url) {

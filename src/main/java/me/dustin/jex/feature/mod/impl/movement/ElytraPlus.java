@@ -24,13 +24,13 @@ public class ElytraPlus extends Feature {
 
     @Op(name = "Fly")
     public boolean elytraFly = true;
-    @OpChild(name = "Mode", all = {"Vanilla", "Firework", "NCP"}, parent = "Fly")
+    @OpChild(name = "Mode", all = {"Vanilla", "Firework", "Hover"}, parent = "Fly")
     public String mode = "Vanilla";
 
-    @OpChild(name = "Fly Speed", min = 0.1f, max = 2, inc = 0.1f, parent = "Mode", dependency = "NCP")
+    @OpChild(name = "Fly Speed", min = 0.1f, max = 2, inc = 0.1f, parent = "Mode", dependency = "Hover")
     public float flySpeed = 0.5f;
 
-    @OpChild(name = "Slow Glide", parent = "Mode", dependency = "NCP")
+    @OpChild(name = "Slow Glide", parent = "Mode", dependency = "Hover")
     public boolean slowGlide = false;
 
     @EventListener(events = {EventMove.class})
@@ -50,10 +50,10 @@ public class ElytraPlus extends Feature {
                 Vec3d vec3d_2 = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
                 Wrapper.INSTANCE.getLocalPlayer().setVelocity(vec3d_2.add(vec3d_1.x * 0.1D + (vec3d_1.x * 1.5D - vec3d_2.x) * 0.5D, vec3d_1.y * 0.1D + (vec3d_1.y * 1.5D - vec3d_2.y) * 0.5D, vec3d_1.z * 0.1D + (vec3d_1.z * 1.5D - vec3d_2.z) * 0.5D));
             } else {
-                if (mode.equalsIgnoreCase("NCP")) {
+                if (mode.equalsIgnoreCase("Hover")) {
                     PlayerHelper.INSTANCE.setMoveSpeed(event, flySpeed);
                     if (event.getY() <= 0)
-                        event.setY(Wrapper.INSTANCE.getLocalPlayer().isSneaking() ? -0.3f : (slowGlide ? -0.0001 : 0));
+                        event.setY(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? flySpeed : (Wrapper.INSTANCE.getLocalPlayer().isSneaking() ? -flySpeed : (slowGlide ? -0.0001 : 0)));
                 }
 
             }
