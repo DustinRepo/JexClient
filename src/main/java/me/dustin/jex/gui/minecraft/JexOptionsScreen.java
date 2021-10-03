@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.minecraft;
 
 import me.dustin.jex.addon.Addon;
-import me.dustin.jex.feature.command.CommandManager;
+import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
@@ -43,12 +43,12 @@ public class JexOptionsScreen extends Screen {
         int centerX = Render2DHelper.INSTANCE.getScaledWidth() / 2;
         int centerY = Render2DHelper.INSTANCE.getScaledHeight() / 2;
         int topY = centerY - 100;
-        prefixField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), centerX - 55, topY, 50, 20, new LiteralText(CommandManager.INSTANCE.getPrefix()));
+        prefixField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), centerX - 55, topY, 50, 20, new LiteralText(CommandManagerJex.INSTANCE.getPrefix()));
         prefixField.setMaxLength(1);
-        prefixField.setText(CommandManager.INSTANCE.getPrefix());
+        prefixField.setText(CommandManagerJex.INSTANCE.getPrefix());
         prefixField.setVisible(true);
         setPrefixButton = new ButtonWidget(centerX + 1, topY, 54, 20, new LiteralText("Set Prefix"), button -> {
-            CommandManager.INSTANCE.setPrefix(prefixField.getText());
+            CommandManagerJex.INSTANCE.setPrefix(prefixField.getText());
             ClientSettingsFile.write();
         });
         downloadInstallerButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, new LiteralText("Update Jex to " + UpdateManager.INSTANCE.getLatestVersion()), button -> {

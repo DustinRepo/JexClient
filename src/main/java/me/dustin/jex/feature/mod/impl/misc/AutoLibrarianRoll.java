@@ -2,11 +2,10 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.feature.command.CommandManager;
+import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Nametag;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -183,7 +182,7 @@ public class AutoLibrarianRoll extends Feature {
     @Override
     public void onEnable() {
         if ((enchantment == null || enchantmentLevel == -1) && Wrapper.INSTANCE.getLocalPlayer() != null) {
-            ChatHelper.INSTANCE.addClientMessage("Enchantment not set! Set enchantment with " + CommandManager.INSTANCE.getPrefix() + "librarianroll <enchant> <level>");
+            ChatHelper.INSTANCE.addClientMessage("Enchantment not set! Set enchantment with " + CommandManagerJex.INSTANCE.getPrefix() + "librarianroll <enchant> <level>");
         }
         super.onEnable();
     }

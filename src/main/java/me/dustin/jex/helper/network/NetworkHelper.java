@@ -7,7 +7,7 @@ public enum NetworkHelper {
     INSTANCE;
 
     public void sendPacket(Packet<?> packet) {
-        Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(packet);
+        Wrapper.INSTANCE.getMinecraft().getNetworkHandler().sendPacket(packet);
     }
 
 }

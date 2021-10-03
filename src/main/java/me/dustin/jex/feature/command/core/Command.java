@@ -1,65 +1,53 @@
 package me.dustin.jex.feature.command.core;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
-import me.dustin.jex.feature.command.CommandManager;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
-import me.dustin.jex.helper.misc.ChatHelper;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class Command {
+public abstract class Command implements com.mojang.brigadier.Command<FabricClientCommandSource> {
+    protected CommandDispatcher<FabricClientCommandSource> dispatcher = CommandManagerJex.DISPATCHER;
 
-    private String name, description;
+    protected String name, description;
     private List<String> alias, syntax;
-    private ArrayList<String[]> tabCompleteList;
 
     public Command() {
         this.name = this.getClass().getAnnotation(Cmd.class).name();
-        this.syntax = Arrays.asList(this.getClass().getAnnotation(Cmd.class).syntax());
         this.description = this.getClass().getAnnotation(Cmd.class).description();
+        this.syntax = Arrays.asList(this.getClass().getAnnotation(Cmd.class).syntax());
         this.alias = Arrays.asList(this.getClass().getAnnotation(Cmd.class).alias());
-        this.tabCompleteList = new ArrayList<>();
     }
-
-    public abstract void runCommand(String command, String[] args);
 
     public String getName() {
         return name;
-    }
-
-    public List<String> getSyntax() {
-        return syntax;
     }
 
     public String getDescription() {
         return description;
     }
 
+    public List<String> getSyntax() {
+        return syntax;
+    }
+
     public List<String> getAlias() {
         return alias;
     }
 
-    protected boolean isAddString(String s) {
-        return s.equalsIgnoreCase("add") || s.equalsIgnoreCase("a");
+    public abstract void registerCommand();
+
+    public LiteralArgumentBuilder<FabricClientCommandSource> literal(String s) {
+        return ClientCommandManager.literal(s);
     }
 
-    protected boolean isDeleteString(String s) {
-        return s.equalsIgnoreCase("delete") || s.equalsIgnoreCase("del") || s.equalsIgnoreCase("remove") || s.equalsIgnoreCase("r");
-    }
-
-    protected void giveSyntaxMessage() {
-        ChatHelper.INSTANCE.addClientMessage("Invalid Syntax!");
-        for (String s : syntax) {
-            ChatHelper.INSTANCE.addClientMessage(s.replace(".", CommandManager.INSTANCE.getPrefix()));
-        }
-    }
-
-    protected ArrayList<String[]> getTabCompleteList() {
-        return tabCompleteList;
+    public <T> RequiredArgumentBuilder<FabricClientCommandSource, T> argument(String s, ArgumentType<T> type) {
+        return ClientCommandManager.argument(s, type);
     }
 }

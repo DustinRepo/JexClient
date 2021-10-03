@@ -1,50 +1,81 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.CommandNode;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
+import me.dustin.jex.feature.command.core.arguments.EnchantmentArgumentType;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-@Cmd(name = "Enchant", syntax = { ".enchant <enchantment> <level>", ".enchant all <level>" }, description = "Enchant the item in your hand at any level.")
+@Cmd(name = "ench", syntax = { ".ench <enchantment> <level (optional)>", ".ench all <level (optional)>" }, description = "Enchant the item in your hand at any level.", alias = "cench")
 public class CommandEnchant extends Command {
 
 	@Override
-	public void runCommand(String command, String[] args) {
-		try {
-			if (!Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
-				ChatHelper.INSTANCE.addClientMessage("You must be in creative for this command!");
-				return;
+	public void registerCommand() {
+		CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(literal("all").executes(context -> {
+			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
+			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
+				ChatHelper.INSTANCE.addClientMessage("Your must be in creative holding an item to enchant");
+				return 0;
 			}
-			ItemStack stack = InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot);
-			if (Wrapper.INSTANCE.getLocalPlayer().isCreative() && stack != null && stack.getItem() != Items.AIR) {
-				String enchant = args[1];
-				int level = Integer.parseInt(args[2]);
+			Registry.ENCHANTMENT.forEach(enchantment -> {
+				stack.addEnchantment(enchantment, (short) enchantment.getMaxLevel());
+			});
+			NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
+			ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
+			return 1;
+		}).then(argument("level", IntegerArgumentType.integer()).executes(context -> {
+			int level = IntegerArgumentType.getInteger(context, "level");
+			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
+			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
+				ChatHelper.INSTANCE.addClientMessage("Your must be in creative holding an item to enchant");
+				return 0;
+			}
+			Registry.ENCHANTMENT.forEach(enchantment -> {
+				stack.addEnchantment(enchantment, (short) level);
+			});
+			NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
+			ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
+			return 1;
+		}))).then(argument("enchantment", EnchantmentArgumentType.enchantment()).executes(context -> {
+			Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
+			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
+			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
+				ChatHelper.INSTANCE.addClientMessage("Your must be in creative holding an item to enchant");
+				return 0;
+			}
+			stack.addEnchantment(enchantment, (short) enchantment.getMaxLevel());
+			NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
+			ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
+			return 1;
+		}).then(argument("level", IntegerArgumentType.integer()).executes(context -> {
+			Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
+			int level = IntegerArgumentType.getInteger(context, "level");
+			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
+			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
+				ChatHelper.INSTANCE.addClientMessage("Your must be in creative holding an item to enchant");
+				return 0;
+			}
+			stack.addEnchantment(enchantment, (short) level);
+			NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
+			ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
+			return 1;
+		}))));
+		dispatcher.register(literal("e").redirect(node));
+	}
 
-				if (enchant.equalsIgnoreCase("all")) {
-					Registry.ENCHANTMENT.forEach(enchantment -> {
-						stack.addEnchantment(enchantment, (short) level);
-					});
-					NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
-					ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
-				} else {
-					Enchantment enchantment = Registry.ENCHANTMENT.get(new Identifier(enchant));
-					stack.addEnchantment(enchantment, (short) level);
-					NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
-					ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
-				}
-			} else {
-				ChatHelper.INSTANCE.addClientMessage("You must be in creative to use this command!");
-			}
-		} catch (Exception e) {
-			giveSyntaxMessage();
-		}
+	@Override
+	public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
+		return 0;
 	}
 }

@@ -8,6 +8,7 @@ public enum FriendHelper {
 
     public void addFriend(Friend friend) {
         friendsList.add(friend);
+        friendsList.sort((c1, c2) -> c1.name().compareToIgnoreCase(c2.name()));
     }
 
     public void addFriend(String name, String alias) {

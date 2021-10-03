@@ -1,16 +1,24 @@
 package me.dustin.jex.feature.command.impl;
 
 
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.feature.mod.core.Feature;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 
-@Cmd(name = "Panic", description = "Disables all mods that are not visual incase an admin is nearby.")
+@Cmd(name = "panic", description = "Disables all mods that are not visual incase an admin is nearby.")
 public class CommandPanic extends Command {
 
     @Override
-    public void runCommand(String command, String[] args) {
+    public void registerCommand() {
+        dispatcher.register(literal(this.name).executes(this));
+    }
+
+    @Override
+    public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         for (Feature.Category category : Feature.Category.values()) {
             if (category != Feature.Category.VISUAL) {
                 for (Feature feature : Feature.getModules(category)) {
@@ -20,5 +28,6 @@ public class CommandPanic extends Command {
             }
         }
         ChatHelper.INSTANCE.addClientMessage("All non-visual mods disabled.");
+        return 1;
     }
 }

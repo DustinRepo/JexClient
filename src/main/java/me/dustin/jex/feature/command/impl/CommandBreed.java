@@ -1,18 +1,26 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.util.Hand;
 
-@Cmd(name = "Breed", description = "Instantly make all animals around you breed with your current food in hand")
+@Cmd(name = "breed", description = "Instantly make all animals around you breed with your current food in hand")
 public class CommandBreed extends Command {
     @Override
-    public void runCommand(String command, String[] args) {
+    public void registerCommand() {
+        dispatcher.register(literal(this.name).executes(this));
+    }
+
+    @Override
+    public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         int entCount = 0;
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof AnimalEntity && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= 6) {
@@ -27,5 +35,6 @@ public class CommandBreed extends Command {
         } else {
             ChatHelper.INSTANCE.addClientMessage("Successfully bred " + entCount + " entities");
         }
+        return 1;
     }
 }

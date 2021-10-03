@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.feature.command.CommandManager;
+import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -62,7 +62,7 @@ public class SpeedCrafter extends Feature {
     public void onEnable() {
         if (craftingItem == null) {
             ChatHelper.INSTANCE.addClientMessage("Crafting item not set!");
-            ChatHelper.INSTANCE.addClientMessage("Hold the intended output item and use " + CommandManager.INSTANCE.getPrefix() + "sc set");
+            ChatHelper.INSTANCE.addClientMessage("Hold the intended output item and use " + CommandManagerJex.INSTANCE.getPrefix() + "sc set");
         }
         super.onEnable();
     }

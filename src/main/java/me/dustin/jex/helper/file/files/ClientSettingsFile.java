@@ -2,7 +2,7 @@ package me.dustin.jex.helper.file.files;
 
 import com.google.gson.JsonObject;
 import me.dustin.jex.JexClient;
-import me.dustin.jex.feature.command.CommandManager;
+import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
 import me.dustin.jex.helper.file.FileHelper;
@@ -21,7 +21,7 @@ public class ClientSettingsFile {
 
     public static void write() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("prefix", CommandManager.INSTANCE.getPrefix());
+        jsonObject.addProperty("prefix", CommandManagerJex.INSTANCE.getPrefix());
         jsonObject.addProperty("main-menu-bg", JexTitleScreen.background);
         jsonObject.addProperty("auto-save", JexClient.INSTANCE.isAutoSaveEnabled());
         jsonObject.addProperty("gui-click-sounds", ClickGui.doesPlayClickSound());
@@ -49,7 +49,7 @@ public class ClientSettingsFile {
             }
             JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(String.valueOf(stringBuffer), JsonObject.class);
             in.close();
-            CommandManager.INSTANCE.setPrefix(object.get("prefix").getAsString());
+            CommandManagerJex.INSTANCE.setPrefix(object.get("prefix").getAsString());
             JexTitleScreen.background = object.get("main-menu-bg").getAsInt();
             JexClient.INSTANCE.setAutoSave(object.get("auto-save").getAsBoolean());
             ClickGui.setDoesPlayClickSound(object.get("gui-click-sounds").getAsBoolean());

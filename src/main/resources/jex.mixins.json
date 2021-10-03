@@ -19,6 +19,7 @@
     "minecraft.MixinClientPlayerInteractionManager",
     "minecraft.MixinClientPlayNetworkHandler",
     "minecraft.MixinClientWorld",
+    "minecraft.MixinCommandSuggestor",
     "minecraft.MixinEntity",
     "minecraft.MixinEntityRenderDispatcher",
     "minecraft.MixinEntityRenderer",

@@ -1,11 +1,14 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -14,13 +17,19 @@ import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 
 import java.util.Random;
 
-@Cmd(name = "Firework", description = "Create a hacked firework (Creative mode only)")
+@Cmd(name = "firework", description = "Create a hacked firework (Creative mode only)")
 public class CommandFirework extends Command {
 
     @Override
-    public void runCommand(String command, String[] args) {
+    public void registerCommand() {
+        dispatcher.register(literal(this.name).requires(source -> source.getPlayer().isCreative()).executes(this));
+    }
+
+    @Override
+    public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         if (!Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
             ChatHelper.INSTANCE.addClientMessage("This command is for creative mode only!");
+            return 0;
         }
 
         ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
@@ -48,5 +57,6 @@ public class CommandFirework extends Command {
         firework.setTag(baseCompound);
         NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, firework));
         InventoryHelper.INSTANCE.getInventory().setStack(InventoryHelper.INSTANCE.getInventory().selectedSlot, firework);
+        return 1;
     }
 }

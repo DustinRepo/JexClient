@@ -8,6 +8,7 @@ import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventHasOutline;
+import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.load.impl.IMinecraft;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
@@ -88,6 +89,11 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Override
     public RenderTickCounter getRenderTickCounter() {
         return this.renderTickCounter;
+    }
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void onConstruct(RunArgs args, CallbackInfo info) {
+        ClientCommandInternals.finalizeInit();
     }
 
     @Inject(method = "tick", at = @At("HEAD"))

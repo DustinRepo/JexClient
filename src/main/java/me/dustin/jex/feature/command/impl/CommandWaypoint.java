@@ -1,53 +1,71 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
+import me.dustin.jex.feature.command.core.arguments.ColorArgumentType;
+import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
 import me.dustin.jex.helper.file.files.WaypointFile;
-import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.minecraft.util.math.Vec3d;
 
-@Cmd(name = "Waypoint", description = "Add or remove waypoints", syntax = {".waypoint add <name> <x/y/z/here>", ".waypoint del <name>"})
+@Cmd(name = "waypoint", description = "Add or remove waypoints", syntax = {".waypoint add <name> <x/y/z/here> <color>", ".waypoint del <name>"})
 public class CommandWaypoint extends Command {
 
     @Override
-    public void runCommand(String command, String[] args) {
-        try {
+    public void registerCommand() {
+        LiteralArgumentBuilder<FabricClientCommandSource> builder = literal(this.name).then(literal("add").then(argument("name", StringArgumentType.string()).then(literal("here").then(argument("color", ColorArgumentType.color()).executes(context -> {
+            //adding "here"
             String server = WorldHelper.INSTANCE.getCurrentServerName();
-            if (isAddString(args[1])) {
-                String name = args[2].replace("_", " ");
-                float x;
-                float y;
-                float z;
-                int color = ColorHelper.INSTANCE.getColorViaHue((int) (Math.random() * 270)).getRGB();
-                if (args[3].equalsIgnoreCase("here")) {
-                    x = (float) Wrapper.INSTANCE.getLocalPlayer().getX();
-                    y = (float) Wrapper.INSTANCE.getLocalPlayer().getY();
-                    z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ();
-                } else {
-                    x = Float.parseFloat(args[3]);
-                    y = Float.parseFloat(args[4]);
-                    z = Float.parseFloat(args[5]);
-                }
-                Waypoints.waypoints.add(new Waypoints.Waypoint(name, server, x, y, z, WorldHelper.INSTANCE.getDimensionID().toString(), color));
+            String name = StringArgumentType.getString(context,"name").replace("_", " ");
+            int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColorValue())).getRGB();
+            float x = (float) Wrapper.INSTANCE.getLocalPlayer().getX();
+            float y = (float) Wrapper.INSTANCE.getLocalPlayer().getY();
+            float z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ();
+            Waypoints.waypoints.add(new Waypoints.Waypoint(name, server, x, y, z, WorldHelper.INSTANCE.getDimensionID().toString(), color));
+            WaypointFile.write();
+            ChatHelper.INSTANCE.addClientMessage("Added waypoint " + name + ".");
+            return 1;
+        }))).then(argument("pos", Vec3ArgumentType.vec3()).then(argument("color", ColorArgumentType.color()).executes(context -> {
+            //adding with coords
+            String server = WorldHelper.INSTANCE.getCurrentServerName();
+            Vec3d pos = Vec3ArgumentType.getVec3(context, "pos");
+            String name = StringArgumentType.getString(context,"name").replace("_", " ");
+            int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColorValue())).getRGB();
+            float x = (float) pos.getX();
+            float y = (float) pos.getY();
+            float z = (float) pos.getZ();
+            Waypoints.waypoints.add(new Waypoints.Waypoint(name, server, x, y, z, WorldHelper.INSTANCE.getDimensionID().toString(), color));
+            WaypointFile.write();
+            ChatHelper.INSTANCE.addClientMessage("Added waypoint " + name + ".");
+            return 1;
+        }))))).then(literal("del").then(argument("name", StringArgumentType.string()).executes(context -> {
+            //deleting
+            String server = WorldHelper.INSTANCE.getCurrentServerName();
+            String name = StringArgumentType.getString(context,"name").replace("_", " ");
+            Waypoints.Waypoint waypoint = Waypoints.get(name, server);
+            if (waypoint != null) {
+                Waypoints.waypoints.remove(waypoint);
                 WaypointFile.write();
-                ChatHelper.INSTANCE.addClientMessage("Added waypoint " + name + ".");
-            } else if (isDeleteString(args[1])) {
-                Waypoints.Waypoint waypoint = Waypoints.get(args[2].replace("_", " "), server);
-                if (waypoint != null) {
-                    Waypoints.waypoints.remove(waypoint);
-                    WaypointFile.write();
-                    ChatHelper.INSTANCE.addClientMessage("Removed waypoint " + args[2].replace("_", " ") + ".");
-                } else {
-                    ChatHelper.INSTANCE.addClientMessage("That waypoint does not exist on this server!");
-                }
+                ChatHelper.INSTANCE.addClientMessage("Removed waypoint " + name + ".");
             } else {
-                giveSyntaxMessage();
+                ChatHelper.INSTANCE.addClientMessage("That waypoint does not exist on this server!");
             }
-        } catch (Exception e) {
-            giveSyntaxMessage();
-        }
+            return 1;
+        })));
+        dispatcher.register(builder);
+    }
+
+    @Override
+    public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
+        return 0;
     }
 }

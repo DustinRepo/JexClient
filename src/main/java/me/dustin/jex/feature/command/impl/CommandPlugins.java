@@ -3,6 +3,10 @@ package me.dustin.jex.feature.command.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.dustin.jex.feature.command.core.Command;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import org.apache.commons.lang3.StringUtils;
 
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -11,22 +15,14 @@ import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.packet.EventPacketReceive;
-import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 
-@Cmd(name = "Plugins", syntax = ".plugins", description = "List all plugins used on a server", alias = "pl")
+@Cmd(name = "plugins", syntax = ".plugins", description = "List all plugins used on a server", alias = "pl")
 public class CommandPlugins extends Command {
-
-	@Override
-	public void runCommand(String command, String[] args) {
-		ChatHelper.INSTANCE.addClientMessage("Grabbing server plugins");
-		EventAPI.getInstance().register(this);
-		NetworkHelper.INSTANCE.sendPacket(new RequestCommandCompletionsC2SPacket(0, "/"));
-	}
 
 	@EventListener(events = {EventPacketReceive.class})
 	private void runMethod(EventPacketReceive eventPacketReceive) {
@@ -47,5 +43,17 @@ public class CommandPlugins extends Command {
 				EventAPI.getInstance().unregister(this);
 		}
 	}
-	
+
+	@Override
+	public void registerCommand() {
+		dispatcher.register(literal(this.name).executes(this));
+	}
+
+	@Override
+	public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
+		ChatHelper.INSTANCE.addClientMessage("Grabbing server plugins");
+		EventAPI.getInstance().register(this);
+		NetworkHelper.INSTANCE.sendPacket(new RequestCommandCompletionsC2SPacket(0, "/"));
+		return 1;
+	}
 }

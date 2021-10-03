@@ -6,11 +6,8 @@ import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.addon.cape.Cape;
-import me.dustin.jex.feature.command.CommandManager;
-import me.dustin.jex.event.misc.EventGameFinishedLoading;
-import me.dustin.jex.event.misc.EventKeyPressed;
-import me.dustin.jex.event.misc.EventScheduleStop;
-import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.event.misc.*;
+import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.mod.impl.combat.killaura.Killaura;
@@ -31,6 +28,7 @@ import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.JexServerHelper;
 import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.EntityPositionHelper;
@@ -38,6 +36,7 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.load.impl.IKeyboard;
 import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.helper.update.UpdateManager;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -71,7 +70,7 @@ public enum JexClient {
         getLogger().info("Initializing Options");
         OptionManager.INSTANCE.initializeOptionManager();
         getLogger().info("Initializing Commands");
-        CommandManager.INSTANCE.init();
+        CommandManagerJex.INSTANCE.registerCommands();
         //createJson();
         checkAndFixOptifine();
         getLogger().info("Reading Config Files");
@@ -85,6 +84,7 @@ public enum JexClient {
         EventAPI.getInstance().register(PlayerHelper.INSTANCE);
         EventAPI.getInstance().register(ColorHelper.INSTANCE);
         EventAPI.getInstance().register(EntityPositionHelper.INSTANCE);
+        EventAPI.getInstance().register(JexServerHelper.INSTANCE);
         getLogger().info("Checking for update");
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();
@@ -92,7 +92,7 @@ public enum JexClient {
         getLogger().info("Jex load finished.");
     }
 
-    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class})
+    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class,})
     public void runMethod(Event event) {
         if (event instanceof EventKeyPressed eventKeyPressed) {
             if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {
