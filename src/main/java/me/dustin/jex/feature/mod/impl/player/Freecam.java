@@ -16,6 +16,8 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.load.impl.IKeyBinding;
 import me.dustin.jex.feature.option.annotate.Op;
+import net.fabricmc.fabric.api.renderer.v1.Renderer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -98,8 +100,6 @@ public class Freecam extends Feature {
             Wrapper.INSTANCE.getWorldRenderer().reload();
             Wrapper.INSTANCE.getLocalPlayer().setPos(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ());
             NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), false));
-            if (!Wrapper.INSTANCE.getMinecraft().isInSingleplayer())
-                NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(savedCoords.getX(), -1337.0, savedCoords.getZ(), true));
             PlayerHelper.INSTANCE.setYaw(lookVec.getYaw());
             PlayerHelper.INSTANCE.setPitch(lookVec.getPitch());
         }
