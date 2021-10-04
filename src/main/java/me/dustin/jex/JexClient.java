@@ -92,7 +92,7 @@ public enum JexClient {
         getLogger().info("Jex load finished.");
     }
 
-    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class,})
+    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class})
     public void runMethod(Event event) {
         if (event instanceof EventKeyPressed eventKeyPressed) {
             if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {
