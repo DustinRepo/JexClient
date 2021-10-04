@@ -12,13 +12,18 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 
-@Cmd(name = "cgive", description = "Give yourself items in creative mode", syntax = ".cgive <item> <amount (optional)> <nbt(optional)>", alias = "i")
+@Cmd(name = "cgive", description = "Give yourself items in creative mode", syntax = ".cgive <item> <amount (optional)>", alias = "i")
 public class CommandCGive extends Command {
     @Override
     public void registerCommand() {
         CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("item", ItemStackArgumentType.itemStack()).executes(context -> {
+            if (!context.getSource().getPlayer().isCreative()) {
+                ChatHelper.INSTANCE.addClientMessage("Your must be in creative to use this command");
+                return 0;
+            }
             ItemStack stack = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, true);
             int amount = stack.getMaxCount();
             stack.setCount(amount);
@@ -32,6 +37,10 @@ public class CommandCGive extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
+        if (!context.getSource().getPlayer().isCreative()) {
+            ChatHelper.INSTANCE.addClientMessage("Your must be in creative to use this command");
+            return 0;
+        }
         int amount = IntegerArgumentType.getInteger(context, "amount");
         ItemStack stack = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(amount, true);
 
