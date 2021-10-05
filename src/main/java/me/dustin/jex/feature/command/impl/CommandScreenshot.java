@@ -26,6 +26,6 @@ public class CommandScreenshot extends Command {
         ScreenshotRecorder.saveScreenshot(Wrapper.INSTANCE.getMinecraft().runDirectory, "jex_screenshot.png", Wrapper.INSTANCE.getMinecraft().getFramebuffer(), text -> {
             WebHelper.INSTANCE.uploadToImgur(new File(screenshotFolder, "jex_screenshot.png"));
         });
-        return 0;
+        return 1;
     }
 }

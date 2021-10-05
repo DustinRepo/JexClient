@@ -21,7 +21,7 @@ public class CommandCGive extends Command {
     public void registerCommand() {
         CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("item", ItemStackArgumentType.itemStack()).executes(context -> {
             if (!context.getSource().getPlayer().isCreative()) {
-                ChatHelper.INSTANCE.addClientMessage("Your must be in creative to use this command");
+                ChatHelper.INSTANCE.addClientMessage("You must be in creative to use this command");
                 return 0;
             }
             ItemStack stack = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, true);
@@ -38,7 +38,7 @@ public class CommandCGive extends Command {
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         if (!context.getSource().getPlayer().isCreative()) {
-            ChatHelper.INSTANCE.addClientMessage("Your must be in creative to use this command");
+            ChatHelper.INSTANCE.addClientMessage("You must be in creative to use this command");
             return 0;
         }
         int amount = IntegerArgumentType.getInteger(context, "amount");

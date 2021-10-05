@@ -25,7 +25,7 @@ public class CommandEnchant extends Command {
 		CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(literal("all").executes(context -> {
 			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
 			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
-				ChatHelper.INSTANCE.addClientMessage("Your must be in creative holding an item to enchant");
+				ChatHelper.INSTANCE.addClientMessage("You must be in creative holding an item to enchant");
 				return 0;
 			}
 			Registry.ENCHANTMENT.forEach(enchantment -> {
@@ -38,7 +38,7 @@ public class CommandEnchant extends Command {
 			int level = IntegerArgumentType.getInteger(context, "level");
 			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
 			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
-				ChatHelper.INSTANCE.addClientMessage("Your must be in creative holding an item to enchant");
+				ChatHelper.INSTANCE.addClientMessage("You must be in creative holding an item to enchant");
 				return 0;
 			}
 			Registry.ENCHANTMENT.forEach(enchantment -> {
@@ -51,7 +51,7 @@ public class CommandEnchant extends Command {
 			Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
 			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
 			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
-				ChatHelper.INSTANCE.addClientMessage("Your must be in creative holding an item to enchant");
+				ChatHelper.INSTANCE.addClientMessage("You must be in creative holding an item to enchant");
 				return 0;
 			}
 			stack.addEnchantment(enchantment, (short) enchantment.getMaxLevel());
@@ -63,7 +63,7 @@ public class CommandEnchant extends Command {
 			int level = IntegerArgumentType.getInteger(context, "level");
 			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
 			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
-				ChatHelper.INSTANCE.addClientMessage("Your must be in creative holding an item to enchant");
+				ChatHelper.INSTANCE.addClientMessage("You must be in creative holding an item to enchant");
 				return 0;
 			}
 			stack.addEnchantment(enchantment, (short) level);
