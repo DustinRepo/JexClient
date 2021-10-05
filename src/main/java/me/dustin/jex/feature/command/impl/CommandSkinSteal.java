@@ -22,13 +22,12 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-@Cmd(name = "skinsteal", syntax = ".skinsteal <name>", description = "Download a player's skin by name. Puts into .minecraft/JexClient/skins", alias = {"ss", "skin"})
+@Cmd(name = "skinsteal", syntax = ".skinsteal <name>", description = "Download a player's skin by name. Puts into .minecraft/JexClient/skins", alias = {"skin"})
 public class CommandSkinSteal extends Command {
 
     @Override
     public void registerCommand() {
         CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("player", PlayerNameArgumentType.playerName()).executes(this)));
-        dispatcher.register(literal("ss").redirect(node));
         dispatcher.register(literal("skin").redirect(node));
     }
 
