@@ -1,6 +1,7 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IChatScreen;
 import net.minecraft.client.MinecraftClient;
@@ -30,7 +31,7 @@ public class MixinChatScreen implements IChatScreen {
 
     @Inject(method = "onChatFieldUpdate", at = @At("RETURN"))
     public void onChatFieldUpdate(String chatText, CallbackInfo ci) {
-        if (this.chatField == null) return;
+        if (this.chatField == null || CommandManagerJex.INSTANCE.jexCommandSuggestor == null) return;
         String string = this.chatField.getText();
         CommandManagerJex.INSTANCE.jexCommandSuggestor.setWindowActive(string.startsWith(CommandManagerJex.INSTANCE.getPrefix()));
         CommandManagerJex.INSTANCE.jexCommandSuggestor.refresh();
@@ -42,23 +43,25 @@ public class MixinChatScreen implements IChatScreen {
 
     @Inject(method = "setChatFromHistory", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/CommandSuggestor.setWindowActive(Z)V"))
     public void setChat(int offset, CallbackInfo ci) {
-        CommandManagerJex.INSTANCE.jexCommandSuggestor.setWindowActive(false);
+        if (CommandManagerJex.INSTANCE.jexCommandSuggestor != null)
+            CommandManagerJex.INSTANCE.jexCommandSuggestor.setWindowActive(false);
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/CommandSuggestor.render(Lnet/minecraft/client/util/math/MatrixStack;II)V"))
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()))
+        if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()) && CommandManagerJex.INSTANCE.jexCommandSuggestor != null)
             CommandManagerJex.INSTANCE.jexCommandSuggestor.render(matrices, mouseX, mouseY);
     }
 
     @Inject(method = "resize", at = @At("RETURN"))
     public void resize(MinecraftClient client, int width, int height, CallbackInfo ci) {
-        CommandManagerJex.INSTANCE.jexCommandSuggestor.refresh();
+        if (CommandManagerJex.INSTANCE.jexCommandSuggestor != null)
+            CommandManagerJex.INSTANCE.jexCommandSuggestor.refresh();
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     public void keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
-        if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()))
+        if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()) && CommandManagerJex.INSTANCE.jexCommandSuggestor != null)
             if (CommandManagerJex.INSTANCE.jexCommandSuggestor.keyPressed(keyCode, scanCode, modifiers)) {
                 cir.setReturnValue(true);
             }
@@ -74,7 +77,7 @@ public class MixinChatScreen implements IChatScreen {
             amount = -1.0D;
         }
 
-        if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()))
+        if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()) && CommandManagerJex.INSTANCE.jexCommandSuggestor != null)
             if (CommandManagerJex.INSTANCE.jexCommandSuggestor.mouseScrolled(amount)) {
                 cir.setReturnValue(true);
             }
@@ -82,7 +85,7 @@ public class MixinChatScreen implements IChatScreen {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()))
+        if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()) && CommandManagerJex.INSTANCE.jexCommandSuggestor != null)
             if (CommandManagerJex.INSTANCE.jexCommandSuggestor.mouseClicked((double)((int)mouseX), (double)((int)mouseY), button)) {
                 cir.setReturnValue(true);
             }
