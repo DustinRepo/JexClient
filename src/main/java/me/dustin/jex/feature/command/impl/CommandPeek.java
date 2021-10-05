@@ -37,7 +37,7 @@ public class CommandPeek extends Command {
 
     @Override
     public void registerCommand() {
-        dispatcher.register(literal(this.name).requires(source -> InventoryHelper.INSTANCE.isShulker(source.getPlayer().getMainHandStack())).executes(this));
+        dispatcher.register(literal(this.name).executes(this));
     }
 
     @Override
