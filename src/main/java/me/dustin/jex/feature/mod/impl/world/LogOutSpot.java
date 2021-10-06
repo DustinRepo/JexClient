@@ -12,6 +12,7 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.Feature.Category;
 import me.dustin.jex.feature.mod.core.Feature.Manifest;
+import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -41,7 +42,7 @@ public class LogOutSpot extends Feature {
 						int id = 69420 + ClientMathHelper.INSTANCE.getRandom(200);
 						UUID uuid = entry.getProfile().getId();
 						PlayerEntity player = Wrapper.INSTANCE.getWorld().getPlayerByUuid(uuid);
-						if (player == null || player.getName().getString().isEmpty())
+						if (player == null || player.getName().getString().isEmpty() || EntityHelper.INSTANCE.isNPC(player))
 							return;
 						PlayerData playerInfo = new PlayerData(player.getName().asString(), uuid, id);
 						String name = "LOG: \247b" + player.getName().asString();
