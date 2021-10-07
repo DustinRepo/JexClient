@@ -102,14 +102,19 @@ public class AutoEZ extends Feature {
                 in.close();
                 jsonString = sb.toString();
             } catch (Exception e) {
-                ChatHelper.INSTANCE.addClientMessage("Error in json file.");
-                ChatHelper.INSTANCE.addClientMessage(e.getMessage());
+                ChatHelper.INSTANCE.addClientMessage("Error reading file.");
                 e.printStackTrace();
             }
         }
-        JsonArray jsonArray = JsonHelper.INSTANCE.prettyGson.fromJson(jsonString, JsonArray.class);
-        for (int i = 0; i < jsonArray.size(); i++) {
-            messages.add(jsonArray.get(i).getAsString());
+        try {
+            JsonArray jsonArray = JsonHelper.INSTANCE.prettyGson.fromJson(jsonString, JsonArray.class);
+            for (int i = 0; i < jsonArray.size(); i++) {
+                messages.add(jsonArray.get(i).getAsString());
+            }
+        } catch (Exception e) {
+            ChatHelper.INSTANCE.addClientMessage("Error in json file.");
+            ChatHelper.INSTANCE.addClientMessage(e.getMessage());
+            e.printStackTrace();
         }
     }
 

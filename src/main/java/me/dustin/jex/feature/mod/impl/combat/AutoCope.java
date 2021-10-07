@@ -75,8 +75,7 @@ public class AutoCope extends Feature {
                 in.close();
                 jsonString = sb.toString();
             } catch (Exception e) {
-                ChatHelper.INSTANCE.addClientMessage("Error in json file.");
-                ChatHelper.INSTANCE.addClientMessage(e.getMessage());
+                ChatHelper.INSTANCE.addClientMessage("Error reading file.");
                 e.printStackTrace();
             }
         }
@@ -86,6 +85,8 @@ public class AutoCope extends Feature {
                 messages.add(jsonArray.get(i).getAsString());
             }
         }catch (Exception e) {
+            ChatHelper.INSTANCE.addClientMessage("Error in json file.");
+            ChatHelper.INSTANCE.addClientMessage(e.getMessage());
             e.printStackTrace();
         }
     }
