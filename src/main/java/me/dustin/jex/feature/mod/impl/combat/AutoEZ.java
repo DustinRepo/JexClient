@@ -59,7 +59,7 @@ public class AutoEZ extends Feature {
                     fightingPlayers.remove(player);
                     continue;
                 }
-                if (player.getHealth() <= 0 || player.isDead()) {
+                if (player.getHealth() <= 0 || player.isDead() && isFighting) {
                     sendMessage(player);
                     fightingPlayers.remove(player);
                 }
@@ -117,7 +117,7 @@ public class AutoEZ extends Feature {
             "  \"%player died to Jex Client\",\n" +
             "  \"get better kid\",\n" +
             "  \"wow I didn't even use a totem. you suck, %player\",\n" +
-            "  \"cope, nn\"\n" +
+            "  \"cope, nn\",\n" +
             "  \"ez\"\n" +
             "]";
 }
