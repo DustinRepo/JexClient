@@ -12,6 +12,7 @@
     "minecraft.MixinBlock",
     "minecraft.MixinBlockEntityRenderDispatcher",
     "minecraft.MixinCamera",
+    "minecraft.MixinChatHud",
     "minecraft.MixinChatScreen",
     "minecraft.MixinChunkOcclusionDataBuilder",
     "minecraft.MixinClientConnection",
