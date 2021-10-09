@@ -12,8 +12,9 @@ public class CoordFinder extends Feature {
 
     @EventListener(events = {EventPacketReceive.class})
     private void run(Event event) {
-        if (event.equals(EventPacketReceive.class)) {
-            EventPacketReceive eventPacketReceive = (EventPacketReceive) event;
+        if (event instanceof EventPacketReceive eventPacketReceive) {
+            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+                return;
             if (eventPacketReceive.getPacket() instanceof WorldEventS2CPacket worldEventS2CPacket) {
                 if (worldEventS2CPacket.isGlobal()) {
                     switch (worldEventS2CPacket.getEventId()) {

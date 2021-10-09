@@ -39,6 +39,8 @@ public class AutoEZ extends Feature {
     @EventListener(events = {EventPlayerPackets.class, EventPacketReceive.class, EventAttackEntity.class})
     private void runMethod(Event event) {
         if (event instanceof EventPacketReceive eventPacketReceive) {
+            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+                return;
             if (eventPacketReceive.getPacket() instanceof EnterCombatS2CPacket) {
                 isFighting = true;
             } else if (eventPacketReceive.getPacket() instanceof EndCombatS2CPacket) {

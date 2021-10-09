@@ -20,6 +20,8 @@ public class Messages extends Feature {
 
     @EventListener(events = {EventPacketSent.class})
     private void runMethod(EventPacketSent eventPacketSent) {
+        if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+            return;
         if (eventPacketSent.getPacket() instanceof ChatMessageC2SPacket) {
             String message = ((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage();
             if (message.startsWith("/"))

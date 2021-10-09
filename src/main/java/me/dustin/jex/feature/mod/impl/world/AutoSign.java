@@ -32,6 +32,8 @@ public class AutoSign extends Feature {
                 event.setCancelled(true);
             }
         } else if (event instanceof EventPacketReceive eventPacketReceive) {
+            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+                return;
             if (eventPacketReceive.getPacket() instanceof SignEditorOpenS2CPacket && !signText[0].asString().equalsIgnoreCase("     ")) {
                 BlockPos blockPos = ((SignEditorOpenS2CPacket) eventPacketReceive.getPacket()).getPos();
                 SignBlockEntity signBlockEntity = (SignBlockEntity) Wrapper.INSTANCE.getWorld().getBlockEntity(blockPos);

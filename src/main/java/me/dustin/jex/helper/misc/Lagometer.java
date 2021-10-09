@@ -11,6 +11,8 @@ public enum Lagometer {
 
     @EventListener(events = {EventPacketReceive.class})
     public void run(EventPacketReceive eventPacketReceive) {
+        if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+            return;
         if (!(eventPacketReceive.getPacket() instanceof GameMessageS2CPacket))
             lagTimer.reset();
     }

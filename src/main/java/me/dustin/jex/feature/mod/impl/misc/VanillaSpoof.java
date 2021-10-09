@@ -14,6 +14,8 @@ public class VanillaSpoof extends Feature {
 
     @EventListener(events = {EventPacketSent.class})
     private void runMethod(EventPacketSent eventPacketSent) {
+        if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+            return;
         if (eventPacketSent.getPacket() instanceof CustomPayloadC2SPacket packet) {
             if (packet.getChannel() == CustomPayloadC2SPacket.BRAND) {
                 CustomPayloadC2SPacket newPacket = new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString("vanilla"));

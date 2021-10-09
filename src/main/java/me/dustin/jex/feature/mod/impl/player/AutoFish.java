@@ -101,7 +101,8 @@ public class AutoFish extends Feature {
             }
         }
         if (!hasReeled && event instanceof EventPacketReceive receive) {
-
+            if (receive.getMode() != EventPacketReceive.Mode.PRE)
+                return;
             if (receive.getPacket() instanceof PlaySoundS2CPacket soundPacket) {
                 if (soundPacket.getSound().getId().toString().equalsIgnoreCase("minecraft:entity.fishing_bobber.splash")) {
                     if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().fishHook == null)

@@ -12,6 +12,8 @@ public class InventoryPlus extends Feature {
 
     @EventListener(events = {EventPacketSent.class})
     private void runMethod(EventPacketSent eventPacketSent) {
+        if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+            return;
         if (eventPacketSent.getPacket() instanceof CloseHandledScreenC2SPacket) {
             if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof InventoryScreen) {
                 eventPacketSent.cancel();

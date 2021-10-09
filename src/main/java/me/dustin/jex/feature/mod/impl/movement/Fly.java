@@ -45,6 +45,8 @@ public class Fly extends Feature {
               eventMove.setY(-glideSpeed);
             }
         } else if (event instanceof EventPacketSent eventPacketSent && flyCheckBypass) {
+            if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+                return;
             if (eventPacketSent.getPacket() instanceof PlayerMoveC2SPacket playerMoveC2SPacket) {
                 if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {
                     if (EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 2) {

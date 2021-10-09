@@ -46,6 +46,8 @@ public class Freecam extends Feature {
         if (event instanceof EventMarkChunkClosed)
             event.cancel();
         if (event instanceof EventPacketSent packetSent) {
+            if (packetSent.getMode() != EventPacketSent.Mode.PRE)
+                return;
             if (stealth) {
                 if (!(packetSent.getPacket() instanceof KeepAliveC2SPacket || packetSent.getPacket() instanceof ChatMessageC2SPacket))
                     packetSent.cancel();

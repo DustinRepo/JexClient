@@ -25,6 +25,8 @@ public class Fakelag extends Feature {
 
     @EventListener(events = {EventPacketSent.class})
     private void runMethod(EventPacketSent eventPacketSent) {
+        if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+            return;
         if (sending)
             return;
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {

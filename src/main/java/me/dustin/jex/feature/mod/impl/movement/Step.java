@@ -70,6 +70,8 @@ public class Step extends Feature {
                 case POST -> slow = false;
             }
         } else if (event instanceof EventPacketSent eventPacketSent) {
+            if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+                return;
             if (eventPacketSent.getPacket() instanceof PlayerMoveC2SPacket playerMoveC2SPacket && cancelPackets > 0 && cancelPacket)
             {
                 double yDif = playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - Wrapper.INSTANCE.getLocalPlayer().getY();

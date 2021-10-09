@@ -34,6 +34,8 @@ public class LogOutSpot extends Feature {
 		if (event instanceof EventJoinWorld) {
 			logOutList.clear();
 		} else if (event instanceof EventPacketReceive eventPacketReceive) {
+			if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+				return;
 			if (eventPacketReceive.getPacket() instanceof PlayerListS2CPacket playerLists2CPacket) {
 				if (Wrapper.INSTANCE.getWorld() == null || Wrapper.INSTANCE.getLocalPlayer() == null)
 					return;

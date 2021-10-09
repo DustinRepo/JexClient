@@ -42,8 +42,9 @@ public enum TPSHelper {
         if (event instanceof EventJoinWorld) {
             reports.clear();
         }
-        if (event instanceof EventPacketReceive) {
-            EventPacketReceive packetReceive = (EventPacketReceive) event;
+        if (event instanceof EventPacketReceive packetReceive) {
+            if (packetReceive.getMode() != EventPacketReceive.Mode.PRE)
+                return;
             if (packetReceive.getPacket() instanceof WorldTimeUpdateS2CPacket) {
                 reports.add(System.currentTimeMillis());
                 while (reports.size() > ((TPSSync) Feature.get(TPSSync.class)).sampleSize) {

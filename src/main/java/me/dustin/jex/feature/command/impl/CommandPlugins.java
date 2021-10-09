@@ -26,6 +26,8 @@ public class CommandPlugins extends Command {
 
 	@EventListener(events = {EventPacketReceive.class})
 	private void runMethod(EventPacketReceive eventPacketReceive) {
+		if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+			return;
 		if (eventPacketReceive.getPacket() instanceof CommandSuggestionsS2CPacket commandSuggestionsS2CPacket) {
 			Suggestions suggestions = commandSuggestionsS2CPacket.getSuggestions();
 			List<String> commandsList = new ArrayList<>();

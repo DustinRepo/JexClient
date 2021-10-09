@@ -94,6 +94,8 @@ public class Jesus extends Feature {
             }
         }
         if (event instanceof EventPacketSent sent) {
+            if (sent.getMode() != EventPacketSent.Mode.PRE)
+                return;
             if (sent.getPacket() instanceof PlayerMoveC2SPacket) {
                 if (WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer())) {
                     if (ticks >= 4) {

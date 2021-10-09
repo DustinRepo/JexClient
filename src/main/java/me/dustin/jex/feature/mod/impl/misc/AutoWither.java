@@ -71,6 +71,8 @@ public class AutoWither extends Feature {
                 }
             }
         } else if (event instanceof EventPacketSent eventPacketSent) {
+            if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+                return;
             if(eventPacketSent.getPacket() instanceof PlayerInteractBlockC2SPacket && !creatingWither && InventoryHelper.INSTANCE.getFromHotbar(Items.WITHER_SKELETON_SKULL) != -1)
             {
                 packet = (PlayerInteractBlockC2SPacket)eventPacketSent.getPacket();

@@ -37,7 +37,7 @@ public class PlayerNameArgumentType implements ArgumentType<String> {
         }
         String nameString = reader.getString().substring(argBeginning, reader.getCursor());
 
-        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        Pattern p = Pattern.compile("[^a-z0-9_]", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(nameString);
         boolean b = m.find();
 

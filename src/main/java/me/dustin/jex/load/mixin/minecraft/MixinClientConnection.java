@@ -77,21 +77,29 @@ public abstract class MixinClientConnection {
 
     @Inject(method = "send(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
     public void send(Packet packet, CallbackInfo ci) {
-        EventPacketSent eventPacketSent = new EventPacketSent(packet).run();
+        EventPacketSent eventPacketSent = new EventPacketSent(packet, EventPacketSent.Mode.PRE).run();
         if (eventPacketSent.isCancelled()) {
             ci.cancel();
             return;
         }
         send(eventPacketSent.getPacket(), (GenericFutureListener) null);
+        new EventPacketSent(packet, EventPacketSent.Mode.POST).run();
         ci.cancel();
     }
 
     @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
     public void channelRead0(ChannelHandlerContext channelHandlerContext_1, Packet<?> packet_1, CallbackInfo ci) {
         if (this.side == NetworkSide.CLIENTBOUND && this.isOpen()) {
-            EventPacketReceive eventPacketReceive = new EventPacketReceive(packet_1).run();
+            EventPacketReceive eventPacketReceive = new EventPacketReceive(packet_1, EventPacketReceive.Mode.PRE).run();
             if (eventPacketReceive.isCancelled())
                 ci.cancel();
+        }
+    }
+
+    @Inject(method = "channelRead0", at = @At("TAIL"))
+    public void channelRead01(ChannelHandlerContext channelHandlerContext_1, Packet<?> packet_1, CallbackInfo ci) {
+        if (this.side == NetworkSide.CLIENTBOUND && this.isOpen()) {
+            new EventPacketReceive(packet_1, EventPacketReceive.Mode.POST).run();
         }
     }
 }

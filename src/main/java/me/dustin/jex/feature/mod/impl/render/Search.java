@@ -97,12 +97,14 @@ public class Search extends Feature {
 
     @EventListener(events = {EventRender3D.class, EventRender3D.EventRender3DNoBob.class, EventPacketReceive.class, EventJoinWorld.class})
     private void runMethod(Event event) {
-        if (event instanceof EventPacketReceive) {
+        if (event instanceof EventPacketReceive eventPacketReceive) {
+            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+                return;
             if (Wrapper.INSTANCE.getWorld() == null)
                 return;
             Chunk emptyChunk = null;
 
-            Packet<?> packet = ((EventPacketReceive) event).getPacket();
+            Packet<?> packet = eventPacketReceive.getPacket();
 
             if (packet instanceof ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
 

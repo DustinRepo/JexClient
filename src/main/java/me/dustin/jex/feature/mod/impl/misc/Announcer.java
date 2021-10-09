@@ -40,6 +40,8 @@ public class Announcer extends Feature {
     
     @EventListener(events = {EventPacketReceive.class})
     private void runMethod(EventPacketReceive eventPacketReceive) {
+        if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+            return;
     	if (eventPacketReceive.getPacket() instanceof PlayerListS2CPacket playerListPacket) {
             if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !timer.hasPassed(messageDelay))
             	return;

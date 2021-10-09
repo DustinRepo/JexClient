@@ -22,8 +22,10 @@ public class WorldTime extends Feature {
                 Wrapper.INSTANCE.getWorld().setTimeOfDay(time);
             }
 
-        if (event instanceof EventPacketReceive) {
-            if (((EventPacketReceive) event).getPacket() instanceof WorldTimeUpdateS2CPacket)
+        if (event instanceof EventPacketReceive eventPacketReceive) {
+            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+                return;
+            if (eventPacketReceive.getPacket() instanceof WorldTimeUpdateS2CPacket)
                 event.cancel();
         }
 

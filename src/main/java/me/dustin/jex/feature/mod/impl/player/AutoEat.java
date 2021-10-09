@@ -100,6 +100,8 @@ public class AutoEat extends Feature {
             }
         }
         if (event instanceof EventPacketSent eventPacketSent) {
+            if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+                return;
             if (eventPacketSent.getPacket() instanceof UpdateSelectedSlotC2SPacket && isEating) {
                 if (((UpdateSelectedSlotC2SPacket) eventPacketSent.getPacket()).getSelectedSlot() != getBestFood().slot)
                     event.cancel();

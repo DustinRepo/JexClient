@@ -10,18 +10,26 @@ import net.minecraft.network.Packet;
 public class EventPacketSent extends Event {
 
     private Packet<?> packet;
+    private Mode mode;
 
-    public EventPacketSent(Packet<?> packet) {
-        super();
+    public EventPacketSent(Packet<?> packet, Mode mode) {
         this.packet = packet;
+        this.mode = mode;
     }
 
     public Packet<?> getPacket() {
         return packet;
     }
 
+    public Mode getMode() {
+        return mode;
+    }
+
     public void setPacket(Packet<?> packet) {
         this.packet = packet;
     }
 
+    public enum Mode {
+        PRE, POST
+    }
 }

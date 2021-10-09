@@ -22,6 +22,8 @@ public enum JexServerHelper {
     @EventListener(events = {EventPacketReceive.class})
     private void run(Event event) {
         if (event instanceof EventPacketReceive eventPacketReceive) {
+            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+                return;
             if (eventPacketReceive.getPacket() instanceof CustomPayloadS2CPacket customPayloadS2CPacket) {
                 if (customPayloadS2CPacket.getChannel().getNamespace().equalsIgnoreCase("jex")) {
                     if (customPayloadS2CPacket.getChannel().getPath().equalsIgnoreCase("join_packet")) {

@@ -32,6 +32,8 @@ public class Blink extends Feature {
 
 	@EventListener(events = { EventPacketSent.class })
 	private void runMethod(EventPacketSent eventPacketSent) {
+		if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+			return;
 		if (Wrapper.INSTANCE.getLocalPlayer() == null || (packets.isEmpty() && stopCatching)) {
 			packets.clear();
 			this.setState(false);
