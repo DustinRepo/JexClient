@@ -46,10 +46,24 @@ public class CommandDupe extends Command {
 
     private BlockHitResult blockHitResult;
     private boolean speedmine;
-
+    private boolean all;
+    private boolean throwItems = false;
     @Override
     public void registerCommand() {
-        dispatcher.register(literal("d").redirect(dispatcher.register(literal(this.name).executes(this))));
+        dispatcher.register(literal("d").redirect(dispatcher.register(literal(this.name).executes(this).then(literal("all").executes(context -> {
+            this.all = true;
+            run(context);
+            return 1;
+        }).then(literal("throw").executes(context -> {
+            this.all = true;
+            this.throwItems = true;
+            run(context);
+            return 1;
+        }))).then(literal("throw").executes(context -> {
+            this.throwItems = true;
+            run(context);
+            return 1;
+        })))));
     }
 
     @Override
@@ -86,16 +100,22 @@ public class CommandDupe extends Command {
                     if (speedmine) {
                         Feature.get(SpeedMine.class).setState(true);
                     }
-                    int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
-                    for (int i = 0; i < most; i++) {
-                        ItemStack stack = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getSlot(i).getStack();
-                        if (stack != null && stack.getItem() != Items.AIR) {
-                            InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, i, SlotActionType.QUICK_MOVE);
+                    if (all) {
+                        int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
+                        for (int i = 0; i < most; i++) {
+                            ItemStack stack = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getSlot(i).getStack();
+                            if (stack != null && stack.getItem() != Items.AIR) {
+                                InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, i, throwItems ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, throwItems ? 1 : 0);
+                            }
                         }
+                    } else {
+                        InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, 0, throwItems ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, throwItems ? 1 : 0);
                     }
                 }
                 while (EventAPI.getInstance().alreadyRegistered(this))
                     EventAPI.getInstance().unregister(this);
+                this.throwItems = false;
+                this.all = false;
             }
         }
     }
