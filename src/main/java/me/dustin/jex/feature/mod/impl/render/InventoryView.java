@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRender2D;
+import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -10,6 +11,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 
@@ -25,6 +27,8 @@ public class InventoryView extends Feature {
 
     @EventListener(events = {EventRender2D.class})
     private void runMethod(EventRender2D eventRender2D) {
+        if (location.equalsIgnoreCase("Top") && KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_TAB))
+            return;
         float y = location.equalsIgnoreCase("Top") ? -10 : Render2DHelper.INSTANCE.getScaledHeight() - 140;
         float x = (Render2DHelper.INSTANCE.getScaledWidth() / 2.f) - 95;
 
