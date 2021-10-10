@@ -11,10 +11,12 @@ public enum ModFileHelper {
     INSTANCE;
 
     private String PATH_NAME = "JexClient";
+    private boolean firstLoad;
 
     public void gameBootLoad() {
         File jexDir = getJexDirectory();
         if (!jexDir.exists()) { //First load.
+            firstLoad = true;
             jexDir.mkdirs();
             return;
         }
@@ -33,6 +35,10 @@ public enum ModFileHelper {
 
     public void closeGame() {
         ClientSettingsFile.write();
+    }
+
+    public boolean isFirstTimeLoading() {
+        return firstLoad;
     }
 
     public File getJexDirectory() {

@@ -6,6 +6,7 @@
   "mixins": [
   ],
   "client": [
+    "indigo.MixinTerrainRenderContext",
     "minecraft.MixinAbstractBlockstate",
     "minecraft.MixinAbstractClientPlayerEntity",
     "minecraft.MixinBackgroundRenderer",
@@ -52,10 +53,10 @@
     "minecraft.MixinRenderLayers",
     "minecraft.MixinRenderTickCounter",
     "minecraft.MixinScreen",
+    "minecraft.MixinServerList",
     "minecraft.MixinShader",
     "minecraft.MixinSignEditScreen",
     "minecraft.MixinSplashScreen",
-    "minecraft.MixinTerrainRenderContext",
     "minecraft.MixinWorldChunk",
     "minecraft.MixinWorldRenderer",
     "sodium.MixinBlockOcclusionCache",
