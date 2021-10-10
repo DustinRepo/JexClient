@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.misc.EventDisplayScreen;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -49,7 +50,7 @@ public class AutoLibrarianRoll extends Feature {
 
     @Op(name = "Price Mode", all = {"Normal", "Adjusted"})
     public String priceMode = "Normal";
-    @Op(name = "Max Price", min = 1, max = 50)
+    @Op(name = "Max Price", min = 1, max = 75)
     public int price = 20;
 
     private VillagerEntity villager;
