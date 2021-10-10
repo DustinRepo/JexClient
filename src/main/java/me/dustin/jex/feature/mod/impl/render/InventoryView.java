@@ -27,7 +27,7 @@ public class InventoryView extends Feature {
 
     @EventListener(events = {EventRender2D.class})
     private void runMethod(EventRender2D eventRender2D) {
-        if (location.equalsIgnoreCase("Top") && KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_TAB))
+        if (location.equalsIgnoreCase("Top") && KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_TAB) && Wrapper.INSTANCE.getMinecraft().currentScreen == null)
             return;
         float y = location.equalsIgnoreCase("Top") ? -10 : Render2DHelper.INSTANCE.getScaledHeight() - 140;
         float x = (Render2DHelper.INSTANCE.getScaledWidth() / 2.f) - 95;
