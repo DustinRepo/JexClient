@@ -31,6 +31,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
@@ -156,7 +157,9 @@ public class Hud extends Feature {
         if (watermark)
             drawWatermark(eventRender2D);
         if (drawFace && Wrapper.INSTANCE.getMinecraft().getNetworkHandler() != null && Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()) != null) {
-            Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), watermark ? 35 : 2, 2, 4, Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId())).getSkinTexture());
+            PlayerListEntry playerListEntry = Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
+            if (playerListEntry != null)
+                Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), watermark ? 35 : 2, 2, 4, playerListEntry.getSkinTexture());
         }
         drawPotionEffectsAndCoordinates(eventRender2D);
         if (lagometer)
@@ -476,7 +479,7 @@ public class Hud extends Feature {
             infoCount++;
         }
         if (ping) {
-            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Ping\247f: \2477%d", Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()) == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()).getLatency()), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), String.format("Ping\247f: \2477%d", Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()) == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()).getLatency()), 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }
         if (yawAndPitch) {
@@ -520,7 +523,7 @@ public class Hud extends Feature {
             infoCount++;
         }
         if (playerCount) {
-            String str = String.format("Player Count\247f: \2477%d", Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList() == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList().size());
+            String str = String.format("Player Count\247f: \2477%d", Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList() == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList().size());
             FontHelper.INSTANCE.drawWithShadow(eventRender2D.getMatrixStack(), str, 2, startY + (10 * infoCount), ColorHelper.INSTANCE.getClientColor());
             infoCount++;
         }

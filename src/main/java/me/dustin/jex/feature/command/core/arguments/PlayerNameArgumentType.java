@@ -10,6 +10,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
@@ -71,7 +72,7 @@ public class PlayerNameArgumentType implements ArgumentType<String> {
     }
 
     private Collection<String> getPlayerNames() {
-        return MinecraftClient.getInstance().getNetworkHandler().getPlayerList().stream().map(e -> e.getProfile().getName()).collect(Collectors.toList());
+        return Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList().stream().map(e -> e.getProfile().getName()).collect(Collectors.toList());
     }
 
     @Override

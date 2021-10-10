@@ -110,10 +110,10 @@ public class Spammer extends Feature {
     private String parseSyntax(String s) {
         Random random = new Random();
         if (s.contains("{$rplayer}")) {
-            int size = Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList().size();
+            int size = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList().size();
             int r = random.nextInt(size);
             int c = 0;
-            for (PlayerListEntry playerListEntry1 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList()) {
+            for (PlayerListEntry playerListEntry1 : Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList()) {
                 if (c == r) {
                     return s.replace("{$rplayer}", playerListEntry1.getProfile().getName());
                 }
