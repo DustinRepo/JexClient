@@ -112,5 +112,7 @@ public class Freecam extends Feature {
                 Wrapper.INSTANCE.getWorld().removeEntity(playerEntity.getId(), Entity.RemovalReason.DISCARDED);
             playerEntity = null;
         }
+        if (Wrapper.INSTANCE.getLocalPlayer() != null)
+            Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
     }
 }
