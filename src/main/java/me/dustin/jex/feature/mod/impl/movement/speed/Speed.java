@@ -20,6 +20,8 @@ public class Speed extends Feature {
 
     @OpChild(name = "Vanilla Speed", min = 0.3f, max = 3, inc = 0.01f, parent = "Mode", dependency = "Vanilla")
     public float vanillaSpeed = 0.6f;
+    @OpChild(name = "Auto Hop", min = 0.3f, max = 3, inc = 0.01f, parent = "Mode", dependency = "Vanilla")
+    public boolean autoHop;
 
     private String lastMode;
 
