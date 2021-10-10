@@ -15,6 +15,8 @@ public class Sprint extends Feature {
 
     @Op(name = "Multi Dir")
     public boolean multiDir;
+    @Op(name = "In inventory")
+    public boolean inInventory = true;
 
     @EventListener(events = {EventPlayerPackets.class, EventSetSprint.class})
     private void runMethod(Event event) {
@@ -28,6 +30,8 @@ public class Sprint extends Feature {
     }
 
     private boolean canSprint() {
+        if (!inInventory && Wrapper.INSTANCE.getMinecraft().currentScreen != null)
+            return false;
         return isMoving() && !Wrapper.INSTANCE.getLocalPlayer().horizontalCollision && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() > 6;
     }
 
