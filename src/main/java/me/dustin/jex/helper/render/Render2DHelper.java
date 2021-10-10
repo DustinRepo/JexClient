@@ -119,39 +119,6 @@ public enum Render2DHelper {
         RenderSystem.disableBlend();
     }
 
-    public void newFill(MatrixStack matrixStack, float x, float y, float x2, float y2, int color) {
-        Matrix4f matrix4f = matrixStack.peek().getModel();
-        float j;
-        if (x < x2) {
-            j = x;
-            x = x2;
-            x2 = j;
-        }
-
-        if (y < y2) {
-            j = y;
-            y = y2;
-            y2 = j;
-        }
-        float f = (float)(color >> 24 & 255) / 255.0F;
-        float g = (float)(color >> 16 & 255) / 255.0F;
-        float h = (float)(color >> 8 & 255) / 255.0F;
-        float k = (float)(color & 255) / 255.0F;
-        setup2DRender(false);
-        ShaderHelper.INSTANCE.getPosColorShader().bind();
-        VertexObjectList vertexObjectList = VertexObjectList.getMain();
-        vertexObjectList.begin(VertexObjectList.DrawMode.QUAD, VertexObjectList.Format.POS_COLOR);
-        vertexObjectList.vertex(matrix4f,x2,y, 0).color(g, h, k, f);
-        vertexObjectList.vertex(matrix4f,x,y, 0).color(g, h, k, f);
-        vertexObjectList.vertex(matrix4f,x2, y2, 0).color(g, h, k, f);
-        vertexObjectList.vertex(matrix4f,x, y2, 0).color(g, h, k, f);
-        vertexObjectList.index(0,1,3).index(3,2,0);
-        vertexObjectList.end();
-        vertexObjectList.draw();
-        ShaderHelper.INSTANCE.getPosColorShader().detach();
-        end2DRender();
-    }
-
     public void drawFace(MatrixStack matrixStack, float x, float y, int renderScale, Identifier id) {
         try {
             bindTexture(id);
