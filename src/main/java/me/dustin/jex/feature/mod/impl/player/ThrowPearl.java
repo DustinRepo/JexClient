@@ -9,6 +9,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.util.Hand;
@@ -34,6 +35,7 @@ public class ThrowPearl extends Feature {
                     InventoryHelper.INSTANCE.getInventory().selectedSlot = slot;
                 }
                 NetworkHelper.INSTANCE.sendPacket(new PlayerInteractItemC2SPacket(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND));
+                NetworkHelper.INSTANCE.sendPacket(new HandSwingC2SPacket(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND));
                 if (slot != -1) {
                     NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(savedSlot));
                     InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
