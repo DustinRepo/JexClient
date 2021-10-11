@@ -40,6 +40,11 @@ public enum ColorHelper {
         return hud.rainbowClientColor ? getRainbowColor() : hud.clientColor;
     }
 
+    public int setAlpha(int color, int alpha) {
+        Color color1 = getColor(color);
+        return new Color(color1.getRed(), color1.getGreen(),color1.getBlue(), alpha).getRGB();
+    }
+
     public Color getColor(int color) {
         float alpha = (color >> 24 & 0xFF) / 255.0F;
         float red = (color >> 16 & 0xFF) / 255.0F;
