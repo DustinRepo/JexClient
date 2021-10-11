@@ -14,11 +14,8 @@ import me.dustin.jex.gui.click.window.impl.Window;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
 import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
-import me.dustin.jex.gui.particle.ParticleManager2D;
-import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
-import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -36,7 +33,6 @@ public class ClickGui extends Screen {
     //private Window focused;
     public static ArrayList<Window> windows = new ArrayList<>();
     private static boolean playClickSounds = false;
-    private Timer timer = new Timer();
     private TextFieldWidget searchField;
     private String lastSearch = "";
     private Button autoSaveButton = null;
@@ -151,10 +147,6 @@ public class ClickGui extends Screen {
                     window.init();
             });
         }
-        ParticleManager2D.INSTANCE.getParticles().clear();
-        for (int i = 0; i < 50; i++) {
-            ParticleManager2D.INSTANCE.add(ClientMathHelper.INSTANCE.getRandom(Render2DHelper.INSTANCE.getScaledWidth()), ClientMathHelper.INSTANCE.getRandom(Render2DHelper.INSTANCE.getScaledHeight()));
-        }
         this.addSelectableChild(searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 150, Render2DHelper.INSTANCE.getScaledHeight() - 14, 300, 12, new LiteralText("")));
         super.init();
     }
@@ -222,15 +214,6 @@ public class ClickGui extends Screen {
         renderBackground(matrixStack);
         updateWindowColors();
         configWindow.setColor(ColorHelper.INSTANCE.getClientColor());
-        if (timer.hasPassed(100)) {
-            ParticleManager2D.INSTANCE.update();
-        }
-
-        if (((Gui) Feature.get(Gui.class)).particles) {
-            for (ParticleManager2D.Particle particle : ParticleManager2D.INSTANCE.getParticles()) {
-                particle.draw(matrixStack);
-            }
-        }
 
         windows.forEach(window -> {
             //if (window != focused)
@@ -294,8 +277,10 @@ public class ClickGui extends Screen {
         for (Window window : windows) {
             if (window.isOpen())
                 for (Button button : window.getButtons()) {
-                    if (button instanceof ModuleButton && button.isHovered() && button.isVisible())
-                        return (ModuleButton) button;
+                    float maxHeight = Math.min(Render2DHelper.INSTANCE.getScaledHeight() - window.getY() - 35, Gui.INSTANCE.maxWindowHeight);
+                    if (button.getY() < window.getY() + window.getHeight() + maxHeight)
+                        if (button instanceof ModuleButton && button.isHovered() && button.isVisible())
+                            return (ModuleButton) button;
                 }
         }
         return null;

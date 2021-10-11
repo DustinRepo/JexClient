@@ -11,13 +11,19 @@ import org.lwjgl.glfw.GLFW;
 
 @Feature.Manifest(name = "Gui", category = Feature.Category.VISUAL, description = "Opens the ClickGui.", key = GLFW.GLFW_KEY_RIGHT_SHIFT)
 public class Gui extends Feature {
-
+    public static Gui INSTANCE;
     public static ClickGui clickgui = new ClickGui(new LiteralText("Click Gui"));
     public static JexGui jexGui = new JexGui(new LiteralText("Jex Gui"));
 
-    @Op(name = "Mode", all = {"Jex", "Window"})
-    public String mode = "Jex";
+    public Gui() {
+        INSTANCE = this;
+    }
 
+    @Op(name = "Mode", all = {"Window", "Jex"})
+    public String mode = "Window";
+
+    @OpChild(name = "Max Window Height", min = 200, max = 800, inc = 5, parent = "Mode", dependency = "Window")
+    public int maxWindowHeight = 310;
     @OpChild(name = "Colors", all = {"Customize", "Client"}, parent = "Mode", dependency = "Window")
     public String colorScheme = "Customize";
 
@@ -33,8 +39,6 @@ public class Gui extends Feature {
     public int worldColor = Hud.getCategoryColor(Feature.Category.WORLD);
     @OpChild(name = "Misc", parent = "Colors", dependency = "Customize", isColor = true)
     public int miscColor = Hud.getCategoryColor(Feature.Category.MISC);
-
-    public boolean particles = false;
 
     @Override
     public void onEnable() {

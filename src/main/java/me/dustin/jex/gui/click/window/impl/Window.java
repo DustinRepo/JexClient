@@ -4,7 +4,9 @@ package me.dustin.jex.gui.click.window.impl;
 import java.util.ArrayList;
 
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.Hud;
+import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -26,7 +28,7 @@ public class Window {
     private float x, y, width, height;
     private boolean isOpen;
     private boolean isDragging;
-    public float maxHeight = 300;
+    public float maxHeight = 250;
     private float xDif, yDif;
     private boolean pinned;
     private int color = ColorHelper.INSTANCE.getClientColor();
@@ -49,23 +51,31 @@ public class Window {
 
     public void draw(MatrixStack matrixStack) {
         String dispName = this.getName().substring(0, 1) + this.getName().substring(1).toLowerCase();
-        maxHeight = Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 > 0 ? Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 30 : 250;
+        maxHeight = Math.min(Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 35, Gui.INSTANCE.maxWindowHeight);
         if (scrollbar == null) {
             float contentHeight = buttons.isEmpty() || getVeryBottomButton() == null ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
             float viewportHeight = maxHeight;
             float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
             scrollbar = new Scrollbar(getX() + getWidth() - 1, getY() + getHeight(), 1, scrollBarHeight, viewportHeight, contentHeight, -1);
         }
+        float contentHeight = buttons.isEmpty() ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
+        scrollbar.setContentHeight(contentHeight);
+        scrollbar.setViewportHeight(maxHeight);
         if (isOpen()) {
-            Scissor.INSTANCE.cut((int) this.getX(), (int) this.getY() + (int) this.getHeight(), (int) this.getWidth(), (int) maxHeight);
-            if (this.getVeryBottomButton() != null)
-                Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), this.getVeryBottomButton().getY() + this.getVeryBottomButton().getHeight() + 1,  color, 0xff101010, 1);
+            Scissor.INSTANCE.cut((int) this.getX(), (int) this.getY() + (int) this.getHeight(), (int) this.getWidth(), (int) maxHeight + 1);
+            if (this.getVeryBottomButton() != null) {
+
+                Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), Math.min(this.getVeryBottomButton().getY() + this.getVeryBottomButton().getHeight(), this.getY() + this.getHeight() + maxHeight), 0x60101010, 0x60101010, 1);
+            }
             this.getButtons().forEach(button -> {
                 if (button.isVisible())
                     button.draw(matrixStack);
             });
             if (scrollbar.getContentHeight() <= scrollbar.getViewportHeight()) {
                 scrollbar = null;
+            }
+            if (this.getVeryBottomButton() != null) {
+                Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY() + this.getHeight(), this.getX() + this.getWidth(), Math.min(this.getVeryBottomButton().getY() + this.getVeryBottomButton().getHeight(), this.getY() + this.getHeight() + maxHeight) + 1, color, 0x00ffffff, 1);
             }
             if (scrollbar != null)
                 scrollbar.render(matrixStack);
@@ -170,7 +180,8 @@ public class Window {
         } else
         if (this.isOpen())
             this.getButtons().forEach(button -> {
-                if (button.isVisible())
+                maxHeight = Math.min(Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 35, Gui.INSTANCE.maxWindowHeight);
+                if (button.isVisible() && button.getY() < this.getY() + this.getHeight() + maxHeight)
                     button.click(double_1, double_2, int_1);
             });
 

@@ -42,7 +42,7 @@ public class ModuleButton extends Button {
     public void draw(MatrixStack matrixStack) {
         updateOnOff();
         Gui.clickgui.setZOffset(-200);
-        Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), feature.getState() ? ColorHelper.INSTANCE.getColor(getWindow().getColor()).darker().darker().getRGB() : 0x80000000);
+        Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), feature.getState() ? ColorHelper.INSTANCE.setAlpha(ColorHelper.INSTANCE.getColor(getWindow().getColor()).darker().darker().getRGB(), 180) : 0x80000000);
         Gui.clickgui.setZOffset(0);
 
         FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getFeature().getName(), this.getX() + 3, (this.getY() + (this.getHeight() / 2)) - (Wrapper.INSTANCE.getTextRenderer().fontHeight / 2), -1);
