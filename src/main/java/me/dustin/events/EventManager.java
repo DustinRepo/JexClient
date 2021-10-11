@@ -79,7 +79,8 @@ public class EventManager {
                 methods.forEach(method -> {
                     if (method.getAnnotation(EventListener.class).priority() == finalI)
                         try {
-                            method.invoke(classes.get(method.getDeclaringClass()), event);
+                            if (methods.contains(method))
+                                method.invoke(classes.get(method.getDeclaringClass()), event);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
