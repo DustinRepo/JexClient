@@ -14,7 +14,9 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.text.LiteralText;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +75,6 @@ public class JexTitleScreen extends Screen {
     private String splashText;
     private Screen realmsNotificationGui;
     private long backgroundFadeStart;
-    private ArrayList<MainMenuButton> customButtons = new ArrayList<>();
 
     private CustomMainMenu customMainMenu;
     private Timer timer = new Timer();
@@ -117,7 +118,6 @@ public class JexTitleScreen extends Screen {
     }
 
     protected void init() {
-        this.customButtons.clear();
         try {
             loadBackgrounds();
         } catch (IOException e) {
@@ -134,32 +134,23 @@ public class JexTitleScreen extends Screen {
 
         if (customMainMenu.customBackground) {
             if (!backgrounds.isEmpty()) {
-                this.customButtons.add(new MainMenuButton(">", this.width - 22, this.height - 22, 20, 20, new ButtonListener() {
-                    @Override
-                    public void invoke() {
-                        JexTitleScreen.background += 1;
-                        if (JexTitleScreen.background > backgrounds.size() - 1) {
-                            JexTitleScreen.background = 0;
-                        }
-                        ClientSettingsFile.write();
+                this.addDrawableChild(new ButtonWidget(this.width - 22, this.height - 22, 20, 20, new LiteralText(">"), button -> {
+                    JexTitleScreen.background += 1;
+                    if (JexTitleScreen.background > backgrounds.size() - 1) {
+                        JexTitleScreen.background = 0;
                     }
+                    ClientSettingsFile.write();
                 }));
-                this.customButtons.add(new MainMenuButton("<", this.width - 44, this.height - 22, 20, 20, new ButtonListener() {
-                    @Override
-                    public void invoke() {
-                        JexTitleScreen.background -= 1;
-                        if (JexTitleScreen.background < 0) {
-                            JexTitleScreen.background = backgrounds.size() - 1;
-                        }
-                        ClientSettingsFile.write();
+                this.addDrawableChild(new ButtonWidget(this.width - 44, this.height - 22, 20, 20, new LiteralText("<"), button -> {
+                    JexTitleScreen.background -= 1;
+                    if (JexTitleScreen.background < 0) {
+                        JexTitleScreen.background = backgrounds.size() - 1;
                     }
+                    ClientSettingsFile.write();
                 }));
             } else {
-                this.customButtons.add(new MainMenuButton("Open Backgrounds Folder", this.width - 152, this.height - 22, 150, 20, new ButtonListener() {
-                    @Override
-                    public void invoke() {
-                        Util.getOperatingSystem().open(new File(ModFileHelper.INSTANCE.getJexDirectory(), "backgrounds"));
-                    }
+                this.addDrawableChild(new ButtonWidget(this.width - 152, this.height - 22, 150, 20, new LiteralText("Open Backgrounds Folder"), button -> {
+                    Util.getOperatingSystem().open(new File(ModFileHelper.INSTANCE.getJexDirectory(), "backgrounds"));
                 }));
             }
         }
@@ -173,37 +164,20 @@ public class JexTitleScreen extends Screen {
 
     private void initWidgetsNormal(int y, int spacingY) {
         JexTitleScreen titleScreen = this;
-        this.customButtons.add(new MainMenuButton("Singleplayer", 2, y, 200, 20, new ButtonListener() {
-            @Override
-            public void invoke() {
-                Wrapper.INSTANCE.getMinecraft().openScreen(new SelectWorldScreen(titleScreen));
-            }
+        this.addDrawableChild(new ButtonWidget(2, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new SelectWorldScreen(titleScreen));
         }));
-
-        this.customButtons.add(new MainMenuButton("Multiplayer", 2, y + spacingY * 1, 175, 20, new ButtonListener() {
-            @Override
-            public void invoke() {
-                Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(titleScreen));
-            }
+        this.addDrawableChild(new ButtonWidget(2, y + spacingY * 1, 175, 20, new TranslatableText("menu.multiplayer"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(titleScreen));
         }));
-
-        this.customButtons.add(new MainMenuButton("Realms", 2, y + spacingY * 2, 150, 20, new ButtonListener() {
-            @Override
-            public void invoke() {
-                titleScreen.switchToRealms();
-            }
+        this.addDrawableChild(new ButtonWidget(2, y + spacingY * 2, 150, 20, new TranslatableText("menu.online"), button -> {
+            titleScreen.switchToRealms();
         }));
-        this.customButtons.add(new MainMenuButton("Options", 2, y + spacingY * 3, 125, 20, new ButtonListener() {
-            @Override
-            public void invoke() {
-                Wrapper.INSTANCE.getMinecraft().openScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
-            }
+        this.addDrawableChild(new ButtonWidget(2, y + spacingY * 3, 125, 20, new TranslatableText("menu.options"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
         }));
-        this.customButtons.add(new MainMenuButton("Quit Game", 2, y + spacingY * 4, 100, 20, new ButtonListener() {
-            @Override
-            public void invoke() {
-                Wrapper.INSTANCE.getMinecraft().scheduleStop();
-            }
+        this.addDrawableChild(new ButtonWidget(2, y + spacingY * 4, 100, 20, new TranslatableText("menu.quit"), button -> {
+            Wrapper.INSTANCE.getMinecraft().scheduleStop();
         }));
     }
 
@@ -306,22 +280,13 @@ public class JexTitleScreen extends Screen {
             }
             Render2DHelper.INSTANCE.fillAndBorder(matrices, left, top, right, bottom, ColorHelper.INSTANCE.getClientColor(), 0x40000000, 1);
 
-            this.customButtons.forEach(button -> {
-                button.draw(matrices);
-            });
             super.render(matrices, mouseX, mouseY, delta);
 
         }
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        this.customButtons.forEach(button1 -> {
-            button1.click(mouseX, mouseY, button);
-        });
-        if (super.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
-        return false;
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     public void removed() {
@@ -429,24 +394,6 @@ public class JexTitleScreen extends Screen {
 
         public void setHeight(int height) {
             this.height = height;
-        }
-    }
-
-    public class MainMenuButton extends Button {
-
-        public MainMenuButton(String name, float x, float y, float width, float height, ButtonListener listener) {
-            super(null, name, x, y, width, height, listener);
-        }
-
-        @Override
-        public void draw(MatrixStack matrixStack) {
-            Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + this.getWidth(), getY() + this.getHeight(), 0x80000000);
-            FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getName(), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 4, isEnabled() ? -1 : 0xff676767);
-            if (isHovered() && this.isEnabled())
-                Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x35ffffff);
-            this.getChildren().forEach(button -> {
-                button.draw(matrixStack);
-            });
         }
     }
 }
