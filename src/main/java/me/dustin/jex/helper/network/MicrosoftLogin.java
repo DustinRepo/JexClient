@@ -210,12 +210,12 @@ public class MicrosoftLogin {
             HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
                 if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
                     String body = resp.body();
-                        JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(body, JsonObject.class);
-                        String xblXsts = jsonObject.get("Token").getAsString();
-                        JsonObject claims = jsonObject.get("DisplayClaims").getAsJsonObject();
-                        JsonArray xui = claims.get("xui").getAsJsonArray();
-                        String uhs = (xui.get(0)).getAsJsonObject().get("uhs").getAsString();
-                        authenticateMinecraft(uhs, xblXsts, refreshToken);
+                    JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(body, JsonObject.class);
+                    String xblXsts = jsonObject.get("Token").getAsString();
+                    JsonObject claims = jsonObject.get("DisplayClaims").getAsJsonObject();
+                    JsonArray xui = claims.get("xui").getAsJsonArray();
+                    String uhs = (xui.get(0)).getAsJsonObject().get("uhs").getAsString();
+                    authenticateMinecraft(uhs, xblXsts, refreshToken);
                 } else {
                     JexClient.INSTANCE.getLogger().info(resp.body());
                     if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {

@@ -3,6 +3,8 @@ package me.dustin.jex.helper.misc;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Locale;
+
 public enum KeyboardHelper {
     INSTANCE;
 
@@ -28,10 +30,12 @@ public enum KeyboardHelper {
         if (keyName.equalsIgnoreCase("Middle-Click")) {
             return 10002;
         }
-        else if (keyName.startsWith("MB")) {
+        else if (keyName.toLowerCase().startsWith("mb")) {
             try {
-                String n = keyName.replace("MB", "");
-                return Integer.parseInt(n) - 1;
+                String n = keyName.toLowerCase().replace("mb", "");
+                int i = Integer.parseInt(n) - 1;
+                if (i > 2)
+                return 10000 + i;
             } catch (Exception e) {}
         }
         keyName = keyName.replace("_", ".");
