@@ -39,9 +39,9 @@ public class IRC extends Feature {
 
     private static ArrayList<String> messageList = new ArrayList<>();
 
-    IRCManager ircManager = new IRCManager(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
+    public IRCManager ircManager = new IRCManager(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
 
-    @EventListener(events = {EventSendMessage.class, EventDrawScreen.class, EventPlayerPackets.class, EventRenderChatHud.class, EventMouseButton.class})
+    @EventListener(events = {EventSendMessage.class, EventPlayerPackets.class, EventRenderChatHud.class, EventDrawScreen.class})
     private void runMethod(Event event) {
         if (ircManager.isConnected() && event instanceof EventSendMessage eventSendMessage) {
             if (eventSendMessage.getMessage().startsWith(sendPrefix) || ircChatOverride) {
@@ -67,22 +67,15 @@ public class IRC extends Feature {
                 ChatHelper.INSTANCE.addRawMessage(ircString);
             }
         } else if (ircManager.isConnected() && event instanceof EventDrawScreen eventDrawScreen && eventDrawScreen.getScreen() instanceof ChatScreen chatScreen) {
-            IChatScreen iChatScreen = (IChatScreen) chatScreen;
-            String chatString = iChatScreen.getText();
-            if (eventDrawScreen.getMode() == EventDrawScreen.Mode.PRE) {
-                drawButtons = chatString.strip().isEmpty();
-                if (drawButtons) {
-                    int chatBorderColor = chatButtonHovered() ? ColorHelper.INSTANCE.getClientColor() : 0x70000000;
-                    int ircBorderColor = ircButtonHovered() ? ColorHelper.INSTANCE.getClientColor() : 0x70000000;
-
-                    //irc/chat buttons left side
-                    Render2DHelper.INSTANCE.fillAndBorder(eventDrawScreen.getMatrixStack(), 2, Render2DHelper.INSTANCE.getScaledHeight() - 25, 25, Render2DHelper.INSTANCE.getScaledHeight() - 15, chatBorderColor, 0x70000000, 1);
-                    FontHelper.INSTANCE.drawCenteredString(eventDrawScreen.getMatrixStack(), "Chat", 13, Render2DHelper.INSTANCE.getScaledHeight() - 24, !ircChatOverride ? ColorHelper.INSTANCE.getClientColor() : -1);
-
-                    Render2DHelper.INSTANCE.fillAndBorder(eventDrawScreen.getMatrixStack(), 27, Render2DHelper.INSTANCE.getScaledHeight() - 25, 52, Render2DHelper.INSTANCE.getScaledHeight() - 15, ircBorderColor, 0x70000000, 1);
-                    FontHelper.INSTANCE.drawCenteredString(eventDrawScreen.getMatrixStack(), "IRC", 40, Render2DHelper.INSTANCE.getScaledHeight() - 24, ircChatOverride ? ColorHelper.INSTANCE.getClientColor() : -1);
+            if (eventDrawScreen.getMode() == EventDrawScreen.Mode.POST) {
+                IChatScreen iChatScreen = (IChatScreen) chatScreen;
+                String chatString = iChatScreen.getText();
+                if (!chatString.isEmpty() && !chatString.startsWith(CommandManagerJex.INSTANCE.getPrefix()) && !chatString.startsWith(sendPrefix)) {
+                    FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"),iChatScreen.getWidget().x - 2, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
                 }
-            } else if (eventDrawScreen.getMode() == EventDrawScreen.Mode.POST) {
+                if (chatString.isEmpty()) {
+                    FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"), iChatScreen.getWidget().x + 84, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
+                }
                 if (chatString.startsWith(sendPrefix) || ircChatOverride) {
                     int color = 0xffFF5555;
                     int users = ircManager.getUsers(IRCManager.IRC_ChannelName).length;
@@ -109,23 +102,7 @@ public class IRC extends Feature {
                 eventRenderChatHud.cancel();
                 ircChatHud.render(eventRenderChatHud.getMatrixStack(), eventRenderChatHud.getTickDelta());
             }
-        } else if (event instanceof EventMouseButton eventMouseButton && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen) {
-            if (eventMouseButton.getButton() == 0) {
-                if (chatButtonHovered()) {
-                    ircChatOverride = false;
-                } else if (ircButtonHovered()) {
-                    ircChatOverride = true;
-                }
-            }
         }
-    }
-
-    private boolean chatButtonHovered() {
-        return drawButtons && Render2DHelper.INSTANCE.isHovered(2, Render2DHelper.INSTANCE.getScaledHeight() - 25, 23, 10);
-    }
-
-    private boolean ircButtonHovered() {
-        return drawButtons && Render2DHelper.INSTANCE.isHovered(27, Render2DHelper.INSTANCE.getScaledHeight() - 25, 23, 10);
     }
 
     public static void addIRCMessage(String sender, String message) {
