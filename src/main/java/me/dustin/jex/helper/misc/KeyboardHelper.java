@@ -20,7 +20,8 @@ public enum KeyboardHelper {
             }
             return "MB" + (mousebutton + 1);
         }
-        return (GLFW.glfwGetKeyName(key, 0) == null ? InputUtil.fromKeyCode(key, 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(key, 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_");
+        String s = (GLFW.glfwGetKeyName(key, 0) == null ? InputUtil.fromKeyCode(key, 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(key, 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_");
+        return s.equalsIgnoreCase("_") ? "." : s;
     }
 
     public int getKeyFromName(String keyName) {

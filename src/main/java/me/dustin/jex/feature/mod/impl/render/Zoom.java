@@ -2,18 +2,20 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.client.util.InputUtil;
+import org.lwjgl.glfw.GLFW;
 
 @Feature.Manifest(name = "Zoom", category = Feature.Category.VISUAL, description = "Zoom in like Optifine")
 public class Zoom extends Feature {
 
     @Op(name = "Zoom Level", min = 1, max = 5, inc = 0.1f)
     public float zoomLevel = 1;
-    @Op(name = "On CTRL only")
-    public boolean onCTRLOnly = false;
+    @Op(name = "Zoom Key", isKeybind = true)
+    public int zoomKey = GLFW.GLFW_KEY_LEFT_CONTROL;
 
     private double savedFOV;
     boolean resetFOV = true;
@@ -34,7 +36,7 @@ public class Zoom extends Feature {
     @EventListener(events = {EventPlayerPackets.class})
     private void runMethod(EventPlayerPackets eventPlayerPackets) {
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            if((InputUtil.isKeyPressed(Wrapper.INSTANCE.getWindow().getHandle(), 341) || !onCTRLOnly) && Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
+            if(KeyboardHelper.INSTANCE.isPressed(zoomKey) && Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
                 if(resetFOV)
                 {
                     this.resetFOV = false;
