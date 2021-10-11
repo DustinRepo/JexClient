@@ -81,6 +81,11 @@ public class JexOptionButton extends Button {
                     Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor(), 0x00ffffff, 1);
                 }
                 break;
+            case KEYBIND:
+                int key = ((KeybindOption)this.getOption()).getValue();
+                String s = EventAPI.getInstance().alreadyRegistered(this) ? "Press a key..." : this.getOption().getName() + ": " + (key == 0 ? "None" : KeyboardHelper.INSTANCE.getKeyName(key));
+                FontHelper.INSTANCE.drawCenteredString(matrixStack, s, this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
+                break;
             case COLOR:
             case INT:
             case FLOAT:
@@ -121,6 +126,9 @@ public class JexOptionButton extends Button {
                         EventAPI.getInstance().register(this);
                     if (ClickGui.doesPlayClickSound())
                         Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                }
+                if (this.getOption() instanceof KeybindOption) {
+                    EventAPI.getInstance().register(this);
                 }
                 if (this.getOption() instanceof FloatOption || this.getOption() instanceof IntOption || this.getOption() instanceof ColorOption) {
                     isSliding = true;
@@ -288,37 +296,46 @@ public class JexOptionButton extends Button {
             return;
         }
         int keyCode = eventKeyPressed.getKey();
-        StringOption stringOption = (StringOption)option;
-        if (Screen.isPaste(keyCode)) {
-            stringOption.setValue(stringOption.getValue() + MinecraftClient.getInstance().keyboard.getClipboard());
-            return;
-        }
-        switch (keyCode) {
-            case GLFW.GLFW_KEY_ENTER:
-            case GLFW.GLFW_KEY_ESCAPE:
-                while (EventAPI.getInstance().alreadyRegistered(this))
-                    EventAPI.getInstance().unregister(this);
-                break;
-            case GLFW.GLFW_KEY_SPACE:
-                stringOption.setValue(stringOption.getValue() + " ");
-                break;
-            case GLFW.GLFW_KEY_BACKSPACE:
-                if (stringOption.getValue().isEmpty())
+        if (this.getOption() instanceof KeybindOption keybindOption) {
+            if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_ESCAPE) {
+                keybindOption.setValue(keyCode);
+            } else {
+                keybindOption.setValue(0);
+            }
+            while (EventAPI.getInstance().alreadyRegistered(this))
+                EventAPI.getInstance().unregister(this);
+        } else if (this.getOption() instanceof StringOption stringOption) {
+            if (Screen.isPaste(keyCode)) {
+                stringOption.setValue(stringOption.getValue() + MinecraftClient.getInstance().keyboard.getClipboard());
+                return;
+            }
+            switch (keyCode) {
+                case GLFW.GLFW_KEY_ENTER:
+                case GLFW.GLFW_KEY_ESCAPE:
+                    while (EventAPI.getInstance().alreadyRegistered(this))
+                        EventAPI.getInstance().unregister(this);
                     break;
-                String str = stringOption.getValue().substring(0, stringOption.getValue().length() - 1);
-                stringOption.setValue(str);
-                break;
-            default:
-                String keyName = InputUtil.fromKeyCode(keyCode, eventKeyPressed.getScancode()).getTranslationKey().replace("key.keyboard.", "");
-                if (keyName.length() == 1) {
-                    if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
-                        keyName = keyName.toUpperCase();
-                        if (isInt(keyName))
-                            keyName = getFromNumKey(Integer.parseInt(keyName));
+                case GLFW.GLFW_KEY_SPACE:
+                    stringOption.setValue(stringOption.getValue() + " ");
+                    break;
+                case GLFW.GLFW_KEY_BACKSPACE:
+                    if (stringOption.getValue().isEmpty())
+                        break;
+                    String str = stringOption.getValue().substring(0, stringOption.getValue().length() - 1);
+                    stringOption.setValue(str);
+                    break;
+                default:
+                    String keyName = InputUtil.fromKeyCode(keyCode, eventKeyPressed.getScancode()).getTranslationKey().replace("key.keyboard.", "");
+                    if (keyName.length() == 1) {
+                        if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
+                            keyName = keyName.toUpperCase();
+                            if (isInt(keyName))
+                                keyName = getFromNumKey(Integer.parseInt(keyName));
+                        }
+                        stringOption.setValue(stringOption.getValue() + keyName);
                     }
-                    stringOption.setValue(stringOption.getValue() + keyName);
-                }
-                break;
+                    break;
+            }
         }
     }
 

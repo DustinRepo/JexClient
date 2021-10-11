@@ -15,6 +15,7 @@ import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -412,8 +413,8 @@ public class JexGui extends Screen {
     public void addExtraButtons(Feature feature) {
         float oneThird = (windowWidth / 3) - 2;
         float topLineY = y + 15;
-        String keyString = feature.getKey() == 0 ? "<>" : (GLFW.glfwGetKeyName(feature.getKey(), 0) == null ? InputUtil.fromKeyCode(feature.getKey(), 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(feature.getKey(), 0).toUpperCase()).replace("key.keyboard.", "").replace(".", "_");
-        Button keyButton = new Button(null,"Key: " + (keyString.equalsIgnoreCase("0") ? "<>" : keyString.toUpperCase()), x + 3 + (oneThird * 2), topLineY + 1 + buttonHeight, (windowWidth / 3) - 1, 15, null);
+        String keyString = feature.getKey() == 0 ? "None" : KeyboardHelper.INSTANCE.getKeyName(feature.getKey());
+        Button keyButton = new Button(null,"Key: " + keyString.toUpperCase(), x + 3 + (oneThird * 2), topLineY + 1 + buttonHeight, (windowWidth / 3) - 1, 15, null);
         buttonHeight += keyButton.getHeight();
         Button visibleButton = new Button(null,"Visible: " + feature.isVisible(), x + 3 + (oneThird * 2), topLineY + 1 + buttonHeight, (windowWidth / 3) - 1, 15, null);
         buttonHeight += visibleButton.getHeight();
@@ -430,10 +431,10 @@ public class JexGui extends Screen {
 
                 if (event.getKey() == GLFW.GLFW_KEY_ESCAPE || event.getKey() == GLFW.GLFW_KEY_ENTER) {
                     feature.setKey(0);
-                    thisButton.setName("Key: <>");
+                    thisButton.setName("Key: None");
                 } else {
                     feature.setKey(event.getKey());
-                    thisButton.setName("Key: " + (GLFW.glfwGetKeyName(event.getKey(), event.getScancode()) == null ? InputUtil.fromKeyCode(event.getKey(), event.getScancode()).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(event.getKey(), event.getScancode()).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_"));
+                    thisButton.setName("Key: " + KeyboardHelper.INSTANCE.getKeyName(event.getKey()));
                 }
                 while (EventAPI.getInstance().alreadyRegistered(this))
                     EventAPI.getInstance().unregister(this);
@@ -444,7 +445,7 @@ public class JexGui extends Screen {
             @Override
             public void invoke() {
                 Button thisButton = keyButton;
-                thisButton.setName("\2479Key: ...");
+                thisButton.setName("Press a key...");
                 EventAPI.getInstance().register(this);
             }
         };

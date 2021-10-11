@@ -62,6 +62,7 @@ public enum OptionManager {
                             int max = (int) anot.max();
                             int inc = (int) anot.inc();
                             boolean isColor = anot.isColor();
+                            boolean isKeybind = anot.isKeybind();
                             if (isColor) {
                                 OpType type = OpType.COLOR;
                                 ColorOption intOption = new ColorOption(name);
@@ -78,6 +79,14 @@ public enum OptionManager {
 
                                 intOption.setValue(color.getRGB());
                                 this.getOptions().add(intOption);
+                            } else if (isKeybind) {
+                                OpType type = OpType.KEYBIND;
+                                KeybindOption keybindOption = new KeybindOption(name);
+                                keybindOption.type = type;
+                                keybindOption.field = field;
+                                keybindOption.fieldName = field.getName();
+                                keybindOption.feature = mod;
+                                this.getOptions().add(keybindOption);
                             } else {
                                 OpType type = OpType.INT;
                                 IntOption intOption = new IntOption(name, min, max, inc);
@@ -195,6 +204,7 @@ public enum OptionManager {
 
                     OpChild anot = field.getAnnotation(OpChild.class);
                     boolean isColor = anot.isColor();
+                    boolean isKeybind = anot.isKeybind();
                     String name = anot.name();
                     if (isColor) {
                         OpType type = OpType.COLOR;
@@ -219,6 +229,20 @@ public enum OptionManager {
                             this.getOptions().add(intOption);
                             return true;
                         }
+                    } else if (isKeybind) {
+                        OpType type = OpType.KEYBIND;
+                        KeybindOption keybindOption = new KeybindOption(name);
+                        keybindOption.type = type;
+                        keybindOption.field = field;
+                        keybindOption.fieldName = field.getName();
+                        keybindOption.feature = mod;
+                        keybindOption.dependency = anot.dependency();
+                        if (getOption(anot.parent(), mod) != null) {
+                            keybindOption.parent = getOption(anot.parent(), mod);
+                            getOption(anot.parent(), mod).getChildren().add(keybindOption);
+                            this.getOptions().add(keybindOption);
+                            return true;
+                        }
                     } else {
                         int min = (int) anot.min();
                         int max = (int) anot.max();
@@ -230,7 +254,6 @@ public enum OptionManager {
                         intOption.fieldName = field.getName();
                         intOption.feature = mod;
                         intOption.dependency = anot.dependency();
-
                         if (getOption(anot.parent(), mod) != null) {
                             intOption.parent = getOption(anot.parent(), mod);
                             getOption(anot.parent(), mod).getChildren().add(intOption);

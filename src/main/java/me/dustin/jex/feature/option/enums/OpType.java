@@ -6,5 +6,6 @@ public enum OpType {
     INT,
     COLOR,
     BOOL,
-    STRING
+    STRING,
+    KEYBIND
 }

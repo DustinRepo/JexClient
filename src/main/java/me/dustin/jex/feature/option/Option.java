@@ -102,8 +102,7 @@ public class Option {
         try {
             if (this instanceof StringOption)
                 this.setValue(value);
-            if (this instanceof StringArrayOption) {
-                StringArrayOption castOption = (StringArrayOption)this;
+            if (this instanceof StringArrayOption castOption) {
                 if (contains(castOption.getAll(), value)) {
                     Timer timer = new Timer();
                     while (!castOption.getValue().equalsIgnoreCase(value)) {
@@ -115,8 +114,7 @@ public class Option {
                     }
                 }
             }
-            if (this instanceof ColorOption) {
-                ColorOption colorOption = (ColorOption) this;
+            if (this instanceof ColorOption colorOption) {
                 Color color = Render2DHelper.INSTANCE.hex2Rgb(value);
                 float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
 
@@ -126,7 +124,7 @@ public class Option {
 
                 colorOption.setValue(color.getRGB());
             }
-            if (this instanceof IntOption) {
+            if (this instanceof IntOption || this instanceof KeybindOption) {
                 this.setValue(Integer.valueOf(value));
             }
             if (this instanceof FloatOption) {

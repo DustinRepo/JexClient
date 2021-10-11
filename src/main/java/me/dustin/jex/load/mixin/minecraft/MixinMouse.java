@@ -1,6 +1,8 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import me.dustin.events.core.Event;
+import me.dustin.jex.JexClient;
+import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.Mouse;
@@ -16,9 +18,13 @@ public class MixinMouse {
     public void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
         if (window == Wrapper.INSTANCE.getWindow().getHandle()) {
             boolean bl = action == 1;
-            if (bl)
-                if (((Event)(new EventMouseButton(button, Wrapper.INSTANCE.getLocalPlayer() == null ? EventMouseButton.ClickType.IN_MENU : EventMouseButton.ClickType.IN_GAME).run())).isCancelled())
+            if (bl) {
+                if (button >= 2) {
+                    new EventKeyPressed(10000 + button, 0, Wrapper.INSTANCE.getMinecraft().currentScreen != null ? EventKeyPressed.PressType.IN_MENU : EventKeyPressed.PressType.IN_GAME).run();
+                }
+                if (((Event) (new EventMouseButton(button, Wrapper.INSTANCE.getMinecraft().currentScreen != null ? EventMouseButton.ClickType.IN_MENU : EventMouseButton.ClickType.IN_GAME).run())).isCancelled())
                     ci.cancel();
+            }
         }
     }
 

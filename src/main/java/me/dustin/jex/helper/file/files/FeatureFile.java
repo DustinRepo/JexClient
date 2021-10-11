@@ -16,12 +16,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
-import me.dustin.jex.feature.option.types.BoolOption;
-import me.dustin.jex.feature.option.types.ColorOption;
-import me.dustin.jex.feature.option.types.FloatOption;
-import me.dustin.jex.feature.option.types.IntOption;
-import me.dustin.jex.feature.option.types.StringArrayOption;
-import me.dustin.jex.feature.option.types.StringOption;
+import me.dustin.jex.feature.option.types.*;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -44,24 +39,20 @@ public class FeatureFile {
                         try {
                             JsonObject optionObject = new JsonObject();
                             optionObject.addProperty("name", option.getName());
-                            if (option instanceof BoolOption) {
-                                BoolOption boolOption = (BoolOption) option;
+                            if (option instanceof BoolOption boolOption) {
                                 optionObject.addProperty("value", boolOption.getValue());
-                            } else if (option instanceof FloatOption) {
-                                FloatOption boolOption = (FloatOption) option;
-                                optionObject.addProperty("value", boolOption.getValue());
-                            } else if (option instanceof IntOption) {
-                                IntOption boolOption = (IntOption) option;
-                                optionObject.addProperty("value", boolOption.getValue());
-                            } else if (option instanceof StringArrayOption) {
-                                StringArrayOption boolOption = (StringArrayOption) option;
-                                optionObject.addProperty("value", boolOption.getValue());
-                            } else if (option instanceof StringOption) {
-                                StringOption boolOption = (StringOption) option;
-                                optionObject.addProperty("value", boolOption.getValue());
-                            } else if (option instanceof ColorOption) {
-                                ColorOption boolOption = (ColorOption) option;
-                                optionObject.addProperty("value", Integer.toHexString(boolOption.getValue()));
+                            } else if (option instanceof FloatOption floatOption) {
+                                optionObject.addProperty("value", floatOption.getValue());
+                            } else if (option instanceof IntOption intOption) {
+                                optionObject.addProperty("value", intOption.getValue());
+                            } else if (option instanceof KeybindOption keybindOption) {
+                                optionObject.addProperty("value", keybindOption.getValue());
+                            } else if (option instanceof StringArrayOption stringArrayOption) {
+                                optionObject.addProperty("value", stringArrayOption.getValue());
+                            } else if (option instanceof StringOption stringOption) {
+                                optionObject.addProperty("value", stringOption.getValue());
+                            } else if (option instanceof ColorOption colorOption) {
+                                optionObject.addProperty("value", Integer.toHexString(colorOption.getValue()));
                             }
                             options.add(optionObject);
                         } catch (Exception e) {

@@ -164,10 +164,10 @@ public class ModuleButton extends Button {
 
                 if (event.getKey() == GLFW.GLFW_KEY_ESCAPE || event.getKey() == GLFW.GLFW_KEY_ENTER) {
                     moduleButton.getFeature().setKey(0);
-                    thisButton.setName("Key: <>");
+                    thisButton.setName("Key: None");
                 } else {
                     moduleButton.getFeature().setKey(event.getKey());
-                    thisButton.setName("Key: " + (GLFW.glfwGetKeyName(event.getKey(), event.getScancode()) == null ? InputUtil.fromKeyCode(event.getKey(), event.getScancode()).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(event.getKey(), event.getScancode()).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_"));
+                    thisButton.setName("Key: " + KeyboardHelper.INSTANCE.getKeyName(event.getKey()));
                 }
                 while (EventAPI.getInstance().alreadyRegistered(this))
                     EventAPI.getInstance().unregister(this);
@@ -178,14 +178,14 @@ public class ModuleButton extends Button {
             @Override
             public void invoke() {
                 Button thisButton = this.button.getChildren().get(this.button.getChildren().size() - 2);
-                thisButton.setName("\2479Key: ...");
+                thisButton.setName("Press a key...");
                 EventAPI.getInstance().register(this);
             }
 
 
         };
-        String keyString = feature.getKey() == 0 ? "<>" : (GLFW.glfwGetKeyName(feature.getKey(), 0) == null ? InputUtil.fromKeyCode(feature.getKey(), 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(feature.getKey(), 0).toUpperCase()).replace("key.keyboard.", "").replace(".", "_");
-        this.getChildren().add(new Button(this.getWindow(), "Key: " + (keyString.equalsIgnoreCase("0") ? "<>" : keyString.toUpperCase()), this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), keybind));
+        String keyString = feature.getKey() == 0 ? "None" : KeyboardHelper.INSTANCE.getKeyName(feature.getKey());
+        this.getChildren().add(new Button(this.getWindow(), "Key: " + keyString.toUpperCase(), this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), keybind));
         buttonsHeight += this.getHeight();
         ButtonListener visible = new ButtonListener(this) {
             @Override
