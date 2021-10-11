@@ -290,6 +290,7 @@ public class OptionButton extends Button {
             } else {
                 keybindOption.setValue(0);
             }
+            FeatureFile.write();
             while (EventAPI.getInstance().alreadyRegistered(this))
                 EventAPI.getInstance().unregister(this);
         } else if (this.getOption() instanceof StringOption stringOption) {

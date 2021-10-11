@@ -304,6 +304,7 @@ public class JexOptionButton extends Button {
             }
             while (EventAPI.getInstance().alreadyRegistered(this))
                 EventAPI.getInstance().unregister(this);
+            FeatureFile.write();
         } else if (this.getOption() instanceof StringOption stringOption) {
             if (Screen.isPaste(keyCode)) {
                 stringOption.setValue(stringOption.getValue() + MinecraftClient.getInstance().keyboard.getClipboard());
