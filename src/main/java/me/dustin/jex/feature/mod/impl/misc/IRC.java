@@ -35,6 +35,7 @@ public class IRC extends Feature {
 
     private boolean drawButtons = true;
     public boolean ircChatOverride;
+    public boolean renderAboveChat = true;
     public static ChatHud ircChatHud = new ChatHud(Wrapper.INSTANCE.getMinecraft());
 
     private static ArrayList<String> messageList = new ArrayList<>();
@@ -70,10 +71,7 @@ public class IRC extends Feature {
             if (eventDrawScreen.getMode() == EventDrawScreen.Mode.POST) {
                 IChatScreen iChatScreen = (IChatScreen) chatScreen;
                 String chatString = iChatScreen.getText();
-                if (!chatString.isEmpty() && !chatString.startsWith(CommandManagerJex.INSTANCE.getPrefix()) && !chatString.startsWith(sendPrefix) && !chatString.startsWith("/")) {
-                    FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"),iChatScreen.getWidget().x - 2, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
-                }
-                if (chatString.isEmpty()) {
+                if (renderAboveChat) {
                     FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"), iChatScreen.getWidget().x + 84, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
                 }
                 if (chatString.startsWith(sendPrefix) || ircChatOverride) {

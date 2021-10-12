@@ -6,6 +6,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.load.impl.ICommandSuggestor;
 import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import org.jetbrains.annotations.Nullable;
@@ -27,13 +28,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Mixin(CommandSuggestor.class)
-public abstract class MixinCommandSuggestor {
+public abstract class MixinCommandSuggestor implements ICommandSuggestor {
 
     @Shadow @Final private TextFieldWidget textField;
 
     @Shadow @Nullable private CompletableFuture<Suggestions> pendingSuggestions;
 
     @Shadow @Final private static Pattern BACKSLASH_S_PATTERN;
+
+    @Shadow private boolean windowActive;
+
+    @Shadow @Nullable private CommandSuggestor.SuggestionWindow window;
 
     @Redirect(method = "refresh", at = @At(value = "INVOKE", target = "com/mojang/brigadier/StringReader.peek()C"))
     public char refresh(StringReader stringReader) {
@@ -115,6 +120,11 @@ public abstract class MixinCommandSuggestor {
 
             return i;
         }
+    }
+
+    @Override
+    public boolean isWindowActive() {
+        return this.window != null;
     }
 
     public CommandSuggestor getThis() {

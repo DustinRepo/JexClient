@@ -6,6 +6,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.misc.IRC;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IChatScreen;
+import me.dustin.jex.load.impl.ICommandSuggestor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.CommandSuggestor;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,6 +29,7 @@ public class MixinChatScreen implements IChatScreen {
 
     @Shadow private CommandSuggestor commandSuggestor;
 
+    @Shadow @Final private String originalChatText;
     private ButtonWidget normalChatButton;
     private ButtonWidget ircChatButton;
     private IRC ircMod;
@@ -36,10 +39,14 @@ public class MixinChatScreen implements IChatScreen {
         CommandManagerJex.INSTANCE.jexCommandSuggestor = new CommandSuggestor(Wrapper.INSTANCE.getMinecraft(), (ChatScreen)(Object)this, this.chatField, Wrapper.INSTANCE.getTextRenderer(), false, true, 1, 10, true, -805306368);
         CommandManagerJex.INSTANCE.jexCommandSuggestor.refresh();
         ircMod = (IRC)Feature.get(IRC.class);
-        normalChatButton = new ButtonWidget(chatField.x - 2, chatField.y - 22, 40, 18, new LiteralText("Chat"), button -> {
+        normalChatButton = new ButtonWidget(chatField.x - 2, chatField.y - 22, 40, 18, new LiteralText(ircMod.ircChatOverride ? "\2477Chat": "\247bChat"), button -> {
+            ircChatButton.setMessage(new LiteralText("\2477IRC"));
+            normalChatButton.setMessage(new LiteralText("\247bChat"));
             ircMod.ircChatOverride = false;
         });
-        ircChatButton = new ButtonWidget(chatField.x - 2 + 42, chatField.y - 22, 40, 18, new LiteralText("IRC"), button -> {
+        ircChatButton = new ButtonWidget(chatField.x - 2 + 42, chatField.y - 22, 40, 18, new LiteralText(ircMod.ircChatOverride ? "\247cIRC" : "\2477IRC"), button -> {
+            normalChatButton.setMessage(new LiteralText("\2477Chat"));
+            ircChatButton.setMessage(new LiteralText("\247cIRC"));
             ircMod.ircChatOverride = true;
         });
     }
@@ -48,9 +55,10 @@ public class MixinChatScreen implements IChatScreen {
     public void onChatFieldUpdate(String chatText, CallbackInfo ci) {
         if (this.chatField == null || CommandManagerJex.INSTANCE.jexCommandSuggestor == null) return;
         String string = this.chatField.getText();
-        CommandManagerJex.INSTANCE.jexCommandSuggestor.setWindowActive(string.startsWith(CommandManagerJex.INSTANCE.getPrefix()));
+        CommandManagerJex.INSTANCE.jexCommandSuggestor.setWindowActive(!string.equals(this.originalChatText));
         CommandManagerJex.INSTANCE.jexCommandSuggestor.refresh();
-        if (string.startsWith(CommandManagerJex.INSTANCE.getPrefix())) {
+        ICommandSuggestor jex = (ICommandSuggestor) CommandManagerJex.INSTANCE.jexCommandSuggestor;
+        if (jex.isWindowActive()) {
             this.commandSuggestor.setWindowActive(false);
             this.commandSuggestor.refresh();
         }
@@ -64,7 +72,11 @@ public class MixinChatScreen implements IChatScreen {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/CommandSuggestor.render(Lnet/minecraft/client/util/math/MatrixStack;II)V"))
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (ircMod.getState() && ircMod.ircManager.isConnected() && chatField.getText().isEmpty()) {
+        ICommandSuggestor jex = (ICommandSuggestor) CommandManagerJex.INSTANCE.jexCommandSuggestor;
+        ICommandSuggestor mc = (ICommandSuggestor) this.commandSuggestor;
+        ircMod.renderAboveChat = !(jex.isWindowActive() || mc.isWindowActive());
+
+        if (ircMod.renderAboveChat && ircMod.ircManager.isConnected()) {
             normalChatButton.render(matrices, mouseX, mouseY, delta);
             ircChatButton.render(matrices, mouseX, mouseY, delta);
         }
@@ -104,7 +116,7 @@ public class MixinChatScreen implements IChatScreen {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (ircMod.getState() && ircMod.ircManager.isConnected() && chatField.getText().isEmpty()) {
+        if (ircMod.getState() && ircMod.renderAboveChat && ircMod.ircManager.isConnected()) {
             normalChatButton.mouseClicked(mouseX, mouseY, button);
             ircChatButton.mouseClicked(mouseX, mouseY, button);
         }
@@ -128,4 +140,5 @@ public class MixinChatScreen implements IChatScreen {
     public TextFieldWidget getWidget() {
         return this.chatField;
     }
+
 }
