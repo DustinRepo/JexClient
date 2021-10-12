@@ -73,7 +73,7 @@ public class CustomWidgets extends Feature {
                 int hovered = hoverChecks.get(widget);
                 if (widget.isHovered() && widget.active) {
                     if (hovered < 10)
-                        hovered+=2;
+                        hovered+=3;
                 } else if (hovered > 0) {
                     hovered-=1.3f;
                 }
