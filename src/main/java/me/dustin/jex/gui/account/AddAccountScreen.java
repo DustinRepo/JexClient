@@ -5,7 +5,7 @@ import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.gui.account.impl.GuiPasswordField;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.MicrosoftLogin;
+import me.dustin.jex.helper.network.login.MicrosoftLogin;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.gui.screen.Screen;

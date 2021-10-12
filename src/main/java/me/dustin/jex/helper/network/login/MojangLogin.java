@@ -1,4 +1,4 @@
-package me.dustin.jex.helper.network;
+package me.dustin.jex.helper.network.login;
 
 import java.net.Proxy;
 import java.util.UUID;
@@ -15,13 +15,8 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IMinecraft;
 import net.minecraft.client.util.Session;
 
-public enum Login {
-
+public enum MojangLogin {
     INSTANCE;
-
-    public Session login(String email, String password) {
-        return login(email, password, true);
-    }
 
     public Session login(String email, String password, boolean setSession) {
         Session session = null;
@@ -42,7 +37,8 @@ public enum Login {
         } else {
             session = new Session(email, UUID.randomUUID().toString(), "fakeToken", "legacy");
             try {
-                ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
+                if (setSession)
+                    ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
             } catch (Exception e) {
 
             }
@@ -51,54 +47,30 @@ public enum Login {
     }
 
 
-    public String loginToAccount(String email, String password) {
+    public boolean login(String email, String password) throws AuthenticationException {
         if (email.contains("@")) {
             UserAuthentication auth = new YggdrasilUserAuthentication(new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString()), UUID.randomUUID().toString(), Agent.MINECRAFT);
             auth.setUsername(email);
             auth.setPassword(password);
-            try {
-                auth.logIn();
-                String username = auth.getSelectedProfile().getName();
-                UUID uuid = auth.getSelectedProfile().getId();
-                String token = auth.getAuthenticatedToken();
-                Session session = new Session(username, uuid.toString(), token, email.contains("@") ? "mojang" : "legacy");
-                ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
-            } catch (AuthenticationException e) {
-                return e.getMessage();
-            }
+            auth.logIn();
+            String username = auth.getSelectedProfile().getName();
+            UUID uuid = auth.getSelectedProfile().getId();
+            String token = auth.getAuthenticatedToken();
+            Session session = new Session(username, uuid.toString(), token, email.contains("@") ? "mojang" : "legacy");
+            ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
         } else {
             Session session = new Session(email, UUID.randomUUID().toString(), "fakeToken", "legacy");
-            try {
-                ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
-            } catch (Exception e) {
-            }
+            ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
         }
-        return "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+        return true;
     }
 
 
-    public String loginToAccount(MinecraftAccount account) {
-        account.loginCount++;
-        account.lastUsed = System.currentTimeMillis();
-        if (account instanceof MinecraftAccount.MojangAccount mojangAccount) {
-            String s = mojangAccount.isCracked() ? loginToAccount(account.getUsername(), "") : loginToAccount(mojangAccount.getEmail(), mojangAccount.getPassword());
-            AltFile.write();
-            return s;
-        } else if (account instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-            new MicrosoftLogin(true).login(microsoftAccount.accessToken, microsoftAccount.refreshToken);
-            AltFile.write();
-            return "Logging in...";
-        }
-        return "";
+    public boolean login(MinecraftAccount.MojangAccount mojangAccount) throws AuthenticationException {
+        mojangAccount.loginCount++;
+        mojangAccount.lastUsed = System.currentTimeMillis();
+        boolean bl = login(mojangAccount.getEmail(), mojangAccount.getPassword());
+        AltFile.write();
+        return bl;
     }
-	 
-
-	    /*public Session fromFile(File file)
-	    {
-	        if(!file.exists())
-	            return null;
-	        String email = FileHelper.INSTANCE.readFile(file.getPath()).get(0);
-	        String password = FileHelper.INSTANCE.readFile(file.getPath()).get(1);
-	        return login(email, password);
-	    }*/
 }

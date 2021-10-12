@@ -1,12 +1,11 @@
 package me.dustin.jex.gui.account;
 
+import com.mojang.authlib.exceptions.AuthenticationException;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
-import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.gui.account.impl.GuiPasswordField;
-import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.Login;
-import me.dustin.jex.helper.network.MicrosoftLogin;
+import me.dustin.jex.helper.network.login.MojangLogin;
+import me.dustin.jex.helper.network.login.MicrosoftLogin;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -62,9 +61,14 @@ public class DirectLoginScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, new LiteralText("Login"), button -> {
 			this.errorMessage = "Logging in...";
 			MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
-			if (Login.INSTANCE.loginToAccount(mojangAccount).contains("Logged in as")) {
-				Wrapper.INSTANCE.getMinecraft().openScreen(parent);
-			} else {
+			try {
+				if (MojangLogin.INSTANCE.login(mojangAccount)) {
+					Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+				} else {
+					this.errorMessage = "\247cError, could not log in.";
+				}
+			} catch (AuthenticationException e) {
+				e.printStackTrace();
 				this.errorMessage = "\247cError, could not log in.";
 			}
 		}));

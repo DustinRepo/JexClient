@@ -1,4 +1,4 @@
-package me.dustin.jex.helper.network;
+package me.dustin.jex.helper.network.login;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
@@ -15,6 +15,7 @@ import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.util.Session;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
@@ -26,6 +27,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MicrosoftLogin {
 
@@ -34,38 +36,68 @@ public class MicrosoftLogin {
         this.saveAccount = saveAccount;
     }
 
-    public void login(String accessToken, String refreshToken) {
-        new Thread(() -> {
-            try {
-                verifyStore(accessToken, refreshToken);
-                JexClient.INSTANCE.getLogger().info("Refreshing login tokens");
-                if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
-                    accountManagerScreen.outputString = "Refreshing login tokens";
-                }
-                URI uri = new URI("https://login.live.com/oauth20_token.srf");
-
-                Map<Object, Object> map = Maps.newHashMap();
-                map.put("client_id", "54fd49e4-2103-4044-9603-2b028c814ec3");
-                map.put("refresh_token", refreshToken);
-                map.put("grant_type", "refresh_token");
-                map.put("redirect_uri", "http://localhost:59125");
-
-                HttpRequest request = HttpRequest.newBuilder(uri).POST(ofFormData(map)).build();
-
-                HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
-                    if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
-                        String body = resp.body();
-                        JsonObject object = JsonHelper.INSTANCE.gson.fromJson(body, JsonObject.class);
-                        String accessToken1 = object.get("access_token").getAsString();
-                        String refreshToken1 = object.get("refresh_token").getAsString();
-                        authenticateXboxLive(accessToken1, refreshToken1);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
+    public boolean login(String accessToken, String refreshToken) {
+        try {
+            verifyStore(accessToken, refreshToken);
+            JexClient.INSTANCE.getLogger().info("Refreshing login tokens");
+            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
+                accountManagerScreen.outputString = "Refreshing login tokens";
             }
-        }).start();
+            URI uri = new URI("https://login.live.com/oauth20_token.srf");
+
+            Map<Object, Object> map = Maps.newHashMap();
+            map.put("client_id", "54fd49e4-2103-4044-9603-2b028c814ec3");
+            map.put("refresh_token", refreshToken);
+            map.put("grant_type", "refresh_token");
+            map.put("redirect_uri", "http://localhost:59125");
+
+            AtomicBoolean pass = new AtomicBoolean(false);
+            HttpRequest request = HttpRequest.newBuilder(uri).POST(ofFormData(map)).build();
+            HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
+                if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
+                    String body = resp.body();
+                    JsonObject object = JsonHelper.INSTANCE.gson.fromJson(body, JsonObject.class);
+                    String accessToken1 = object.get("access_token").getAsString();
+                    String refreshToken1 = object.get("refresh_token").getAsString();
+                    pass.set(authenticateXboxLive(accessToken1, refreshToken1));
+                }
+            });
+            return pass.get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+
+    public void refreshTokens(MinecraftAccount.MicrosoftAccount microsoftAccount) {
+        try {
+            verifyStore(microsoftAccount.accessToken, microsoftAccount.refreshToken);
+            JexClient.INSTANCE.getLogger().info("Refreshing login tokens");
+            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
+                accountManagerScreen.outputString = "Refreshing login tokens";
+            }
+            URI uri = new URI("https://login.live.com/oauth20_token.srf");
+
+            Map<Object, Object> map = Maps.newHashMap();
+            map.put("client_id", "54fd49e4-2103-4044-9603-2b028c814ec3");
+            map.put("refresh_token", microsoftAccount.refreshToken);
+            map.put("grant_type", "refresh_token");
+            map.put("redirect_uri", "http://localhost:59125");
+
+            HttpRequest request = HttpRequest.newBuilder(uri).POST(ofFormData(map)).build();
+            HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
+                if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
+                    String body = resp.body();
+                    JsonObject object = JsonHelper.INSTANCE.gson.fromJson(body, JsonObject.class);
+                    microsoftAccount.accessToken = object.get("access_token").getAsString();
+                    microsoftAccount.refreshToken = object.get("refresh_token").getAsString();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     HttpServer server;
     public void startLoginProcess() {
         new Thread(() -> {
@@ -151,7 +183,7 @@ public class MicrosoftLogin {
         }
     }
 
-    private void authenticateXboxLive(String accessToken, String refreshToken) {
+    private boolean authenticateXboxLive(String accessToken, String refreshToken) {
         JexClient.INSTANCE.getLogger().info("Authenticating Xbox Live");
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Authenticating Xbox Live";
@@ -168,14 +200,14 @@ public class MicrosoftLogin {
                     "RelyingParty", "http://auth.xboxlive.com",
                     "TokenType", "JWT"
             );
-
+            AtomicBoolean pass = new AtomicBoolean(false);
             HttpRequest request = HttpRequest.newBuilder(uri).header("Content-Type", "application/json").header("Accept", "application/json").POST(ofJSONData(data)).build();
             HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
                 if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
                     String body = resp.body();
                     JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(body, JsonObject.class);
                     String xblToken = jsonObject.get("Token").getAsString();
-                    xstsAuthenticate(xblToken, refreshToken);
+                    pass.set(xstsAuthenticate(xblToken, refreshToken));
                 } else {
                     JexClient.INSTANCE.getLogger().info("Status code: " + resp.statusCode() + " : " + resp.body());
                     if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
@@ -183,12 +215,14 @@ public class MicrosoftLogin {
                     }
                 }
             });
+            return pass.get();
         } catch (URISyntaxException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    private void xstsAuthenticate(String token, String refreshToken) {
+    private boolean xstsAuthenticate(String token, String refreshToken) {
         JexClient.INSTANCE.getLogger().info("Authenticating XSTS");
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Authenticating XSTS";
@@ -204,7 +238,7 @@ public class MicrosoftLogin {
                     "RelyingParty", "rp://api.minecraftservices.com/",
                     "TokenType", "JWT"
             );
-
+            AtomicBoolean pass = new AtomicBoolean(false);
             HttpRequest request = HttpRequest.newBuilder(uri).header("Content-Type", "application/json").header("Accept", "application/json").POST(ofJSONData(data)).build();
 
             HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
@@ -215,7 +249,7 @@ public class MicrosoftLogin {
                     JsonObject claims = jsonObject.get("DisplayClaims").getAsJsonObject();
                     JsonArray xui = claims.get("xui").getAsJsonArray();
                     String uhs = (xui.get(0)).getAsJsonObject().get("uhs").getAsString();
-                    authenticateMinecraft(uhs, xblXsts, refreshToken);
+                    pass.set(authenticateMinecraft(uhs, xblXsts, refreshToken));
                 } else {
                     JexClient.INSTANCE.getLogger().info(resp.body());
                     if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
@@ -223,12 +257,14 @@ public class MicrosoftLogin {
                     }
                 }
             });
+            return pass.get();
         } catch (URISyntaxException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    private void authenticateMinecraft(String userHash, String newToken, String refreshToken) {
+    private boolean authenticateMinecraft(String userHash, String newToken, String refreshToken) {
         JexClient.INSTANCE.getLogger().info("Authenticating with Minecraft");
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Authenticating with Minecraft";
@@ -238,14 +274,15 @@ public class MicrosoftLogin {
             Map<Object, Object> data = Map.of(
                     "identityToken", "XBL3.0 x=" + userHash + ";" + newToken
             );
-            HttpRequest request = HttpRequest.newBuilder(uri).header("Content-Type", "application/json").header("Accept", "application/json").POST(ofJSONData(data)).build();
+            AtomicBoolean pass = new AtomicBoolean(false);
 
+            HttpRequest request = HttpRequest.newBuilder(uri).header("Content-Type", "application/json").header("Accept", "application/json").POST(ofJSONData(data)).build();
             HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
                 if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
                     String body = resp.body();
                     JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(body, JsonObject.class);
                     String mcAccessToken = jsonObject.get("access_token").getAsString();
-                    verifyStore(mcAccessToken, refreshToken);
+                    pass.set(verifyStore(mcAccessToken, refreshToken));
                 } else {
                     JexClient.INSTANCE.getLogger().info(resp.body());
                     if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
@@ -253,23 +290,26 @@ public class MicrosoftLogin {
                     }
                 }
             });
+            return pass.get();
         } catch (URISyntaxException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    private void verifyStore(String token, String refreshToken) {
+    private boolean verifyStore(String token, String refreshToken) {
         JexClient.INSTANCE.getLogger().info("Verifying with MS Store");
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Verifying with MS Store";
         }
         try {
             URI uri = new URI("https://api.minecraftservices.com/entitlements/mcstore");
-            HttpRequest request = HttpRequest.newBuilder(uri).header("Authorization", "Bearer " + token).GET().build();
+            AtomicBoolean pass = new AtomicBoolean(false);
 
+            HttpRequest request = HttpRequest.newBuilder(uri).header("Authorization", "Bearer " + token).GET().build();
             HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
                 if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
-                    verifyProfile(token, refreshToken);
+                    pass.set(verifyProfile(token, refreshToken));
                 } else {
                     JexClient.INSTANCE.getLogger().info(resp.body());
                     if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
@@ -277,12 +317,14 @@ public class MicrosoftLogin {
                     }
                 }
             });
+            return pass.get();
         } catch (URISyntaxException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    private void verifyProfile(String token, String refresh) {
+    private boolean verifyProfile(String token, String refresh) {
         JexClient.INSTANCE.getLogger().info("Grabbing Minecraft profile");
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Grabbing Minecraft Profile";
@@ -293,9 +335,9 @@ public class MicrosoftLogin {
         }
         try {
             URI uri = new URI("https://api.minecraftservices.com/minecraft/profile");
+            AtomicBoolean pass = new AtomicBoolean(false);
 
             HttpRequest request = HttpRequest.newBuilder(uri).header("Authorization", "Bearer " + token).GET().build();
-
             HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
                 if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
                     String body = resp.body();
@@ -303,6 +345,7 @@ public class MicrosoftLogin {
                     String name = jsonObject.get("name").getAsString();
                     String uuid = jsonObject.get("id").getAsString();
                     setSession(name, uuid, token, refresh);
+                    pass.set(true);
                 } else {
                     JexClient.INSTANCE.getLogger().info(resp.body());
                     if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
@@ -310,8 +353,10 @@ public class MicrosoftLogin {
                     }
                 }
             });
+            return pass.get();
         } catch (URISyntaxException e) {
             e.printStackTrace();
+            return false;
         }
     }
 

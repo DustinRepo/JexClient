@@ -5,8 +5,8 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.helper.file.files.AltFile;
-import me.dustin.jex.helper.network.Login;
-import me.dustin.jex.helper.network.MCAPIHelper;
+import me.dustin.jex.helper.network.login.MojangLogin;
+import me.dustin.jex.helper.network.login.MicrosoftLogin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.main.Main;
 import net.minecraft.client.util.Session;
@@ -14,8 +14,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-
-import java.util.UUID;
 
 @Mixin(Main.class)
 public class MixinMain {
@@ -33,9 +31,10 @@ public class MixinMain {
                         return;
                     }
                     JexClient.INSTANCE.getLogger().info("Logging in to Microsoft account with name " + microsoftAccount.username);
+                    new MicrosoftLogin(false).refreshTokens(microsoftAccount);
                     args.setAll(microsoftAccount.username, uuid, microsoftAccount.accessToken, "mojang");
                 } else if (mcAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
-                    Session session = Login.INSTANCE.login(mojangAccount.getEmail(), mojangAccount.getPassword(), false);
+                    Session session = MojangLogin.INSTANCE.login(mojangAccount.getEmail(), mojangAccount.getPassword(), false);
                     JexClient.INSTANCE.getLogger().info("Logging in to Mojang account with name " + session.getUsername());
                     args.setAll(session.getUsername(), UUIDTypeAdapter.fromUUID(session.getProfile().getId()), session.getAccessToken(), "mojang");
                 } else {

@@ -8,9 +8,9 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.Login;
+import me.dustin.jex.helper.network.login.MojangLogin;
 import me.dustin.jex.helper.network.MCAPIHelper;
-import me.dustin.jex.helper.network.MicrosoftLogin;
+import me.dustin.jex.helper.network.login.MicrosoftLogin;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
@@ -22,7 +22,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -273,27 +272,31 @@ public class AccountManagerScreen extends Screen {
     }
 
     public void login(AccountButton button) {
-        if (button.getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
-            new Thread("Login") {
+        new Thread("Login") {
                 @Override
                 public void run() {
-                    outputString = "Logging in...";
-                    outputString = Login.INSTANCE.loginToAccount(button.getAccount());
-                    if (outputString.contains("Logged in")) {
-                        button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
-                    }
-                    if (outputString.equalsIgnoreCase("Cannot contact authentication server")) {
-                        MCAPIHelper.APIStatus authServer = MCAPIHelper.INSTANCE.getStatus(MCAPIHelper.APIServer.AUTHSERVER);
-                        if (authServer == MCAPIHelper.APIStatus.RED)
-                            outputString = "Authentication servers offline.";
-                        if (authServer == MCAPIHelper.APIStatus.GREEN)
-                            outputString = "Your IP may be temp banned from logging in.";
+                    if (button.getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
+                        outputString = "Logging in...";
+                        try {
+                            if (MojangLogin.INSTANCE.login(mojangAccount)) {
+                                button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
+                                outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+                            } else
+                                outputString = "Login failed";
+                        }catch (Exception e) {
+                            MCAPIHelper.APIStatus authServer = MCAPIHelper.INSTANCE.getStatus(MCAPIHelper.APIServer.AUTHSERVER);
+                            if (authServer == MCAPIHelper.APIStatus.RED)
+                                outputString = "Authentication servers offline.";
+                            else if (authServer == MCAPIHelper.APIStatus.GREEN)
+                                outputString = "Your IP may be temp banned from logging in.";
+                            else
+                                outputString = "Login failed";
+                        }
+                    } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
+                        new MicrosoftLogin(true).login(microsoftAccount.accessToken, microsoftAccount.refreshToken);
                     }
                 }
-            }.start();
-        } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-            new MicrosoftLogin(true).login(microsoftAccount.accessToken, microsoftAccount.refreshToken);
-        }
+        }.start();
     }
 
     public void loadAccountButtons(String searchField) {
