@@ -27,6 +27,9 @@ public class Feature {
         this.description = this.getClass().getAnnotation(Feature.Manifest.class).description();
         this.featureCategory = this.getClass().getAnnotation(Feature.Manifest.class).category();
         this.key = this.getClass().getAnnotation(Feature.Manifest.class).key();
+        this.visible = this.getClass().getAnnotation(Feature.Manifest.class).visible();
+        if (this.getClass().getAnnotation(Feature.Manifest.class).enabled())
+            setState(true);
         this.visible = true;
     }
 
@@ -156,6 +159,8 @@ public class Feature {
         Feature.Category category();
         String description();
         int key() default 0;
+        boolean enabled() default false;
+        boolean visible() default true;
     }
 
 }

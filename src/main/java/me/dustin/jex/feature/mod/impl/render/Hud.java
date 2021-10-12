@@ -48,7 +48,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-@Feature.Manifest(name = "HUD", category = Feature.Category.VISUAL, description = "Renders an in-game HUD")
+@Feature.Manifest(name = "HUD", category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
 public class Hud extends Feature {
 
     @Op(name = "Client Color", isColor = true)
@@ -144,11 +144,6 @@ public class Hud extends Feature {
     private float lagOMeterY = -11;
     private float coordsY = -999;
     private ArrayList<Feature> mods = new ArrayList<>();
-
-    public Hud() {
-        this.setState(true);
-        this.setVisible(false);
-    }
 
     @EventListener(events = {EventRender2D.class})
     private void runRenderMethod(EventRender2D eventRender2D) {

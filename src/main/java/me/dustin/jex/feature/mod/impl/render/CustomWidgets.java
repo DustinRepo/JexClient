@@ -22,12 +22,8 @@ import net.minecraft.util.math.MathHelper;
 import java.util.HashMap;
 import java.util.Map;
 
-@Feature.Manifest(name = "CustomWidgets", category = Feature.Category.VISUAL, description = "Change the visuals on widgets like buttons from Minecraft")
+@Feature.Manifest(name = "CustomWidgets", category = Feature.Category.VISUAL, description = "Change the visuals on widgets like buttons from Minecraft", enabled = true, visible = false)
 public class CustomWidgets extends Feature {
-
-    public CustomWidgets() {
-        this.setState(true);
-    }
 
     private Map<ClickableWidget, Integer> hoverChecks = new HashMap<>();
     private Map<ClickableWidget, Float> offsets = new HashMap<>();
