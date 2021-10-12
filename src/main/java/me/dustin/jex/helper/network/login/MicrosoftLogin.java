@@ -71,7 +71,6 @@ public class MicrosoftLogin {
 
     public void refreshTokens(MinecraftAccount.MicrosoftAccount microsoftAccount) {
         try {
-            verifyStore(microsoftAccount.accessToken, microsoftAccount.refreshToken);
             JexClient.INSTANCE.getLogger().info("Refreshing login tokens");
             if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
                 accountManagerScreen.outputString = "Refreshing login tokens";
