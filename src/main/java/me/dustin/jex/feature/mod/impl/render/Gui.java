@@ -23,7 +23,7 @@ public class Gui extends Feature {
     public String mode = "Window";
 
     @OpChild(name = "Max Window Height", min = 200, max = 800, inc = 5, parent = "Mode", dependency = "Window")
-    public int maxWindowHeight = 310;
+    public int maxWindowHeight = 295;
     @OpChild(name = "Colors", all = {"Customize", "Client"}, parent = "Mode", dependency = "Window")
     public String colorScheme = "Customize";
 
