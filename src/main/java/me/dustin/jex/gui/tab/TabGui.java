@@ -2,11 +2,13 @@ package me.dustin.jex.gui.tab;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventKeyPressed;
+import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Hud;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -20,6 +22,7 @@ public enum TabGui {
     private boolean categoryOpen;
 
     private float hoverY, spotHoverY;
+    private float lastHoverY, lastModHoverY;
 
     private float modHoverY, modSpotHoverY;
 
@@ -27,6 +30,10 @@ public enum TabGui {
         int categoryCount = 0;
         spotHoverY = y + (categorySelect * buttonHeight);
         modSpotHoverY = y + (modSelect * buttonHeight);
+
+        float hoverY = lastHoverY + ((this.hoverY - lastHoverY) * Wrapper.INSTANCE.getMinecraft().getTickDelta());
+        float modHoverY = lastModHoverY + ((this.modHoverY - lastModHoverY) * Wrapper.INSTANCE.getMinecraft().getTickDelta());
+
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (Feature.Category.values().length * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
         for (Feature.Category category : Feature.Category.values()) {
             int offset = 1;
@@ -146,16 +153,15 @@ public enum TabGui {
 
     private Timer timer = new Timer();
 
-    @EventListener(events = {EventRender3D.class})
-    private void updatePositions(EventRender3D eventRender3D) {
-        if (!timer.hasPassed(50))
-            return;
-            timer.reset();
+    @EventListener(events = EventTick.class)
+    private void tick(EventTick eventTick) {
+        this.lastHoverY = hoverY;
+        this.lastModHoverY = modHoverY;
         float distance = Math.abs(hoverY - spotHoverY);
         if (distance < 3) {
             hoverY = spotHoverY;
         }
-        float speed = 0.75f;
+        float speed = 0.45f;
         if (hoverY > spotHoverY) {
             hoverY -= distance * speed;
         } else if (hoverY < spotHoverY) {
@@ -171,5 +177,4 @@ public enum TabGui {
             modHoverY += modDistance * speed;
         }
     }
-
 }
