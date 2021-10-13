@@ -7,6 +7,7 @@ import me.dustin.jex.event.misc.EventDisplayScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRenderWidget;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -24,6 +25,11 @@ import java.util.Map;
 
 @Feature.Manifest(name = "CustomWidgets", category = Feature.Category.VISUAL, description = "Change the visuals on widgets like buttons from Minecraft", enabled = true, visible = false)
 public class CustomWidgets extends Feature {
+
+    @Op(name = "Shrink Speed", min = 1, max = 10, inc = 0.1f)
+    public float shrinkSpeed = 4;
+    @Op(name = "Grow Speed", min = 1, max = 10, inc = 0.1f)
+    public float growSpeed = 1.2f;
 
     private Map<ClickableWidget, Integer> hoverChecks = new HashMap<>();
     private Map<ClickableWidget, Float> offsets = new HashMap<>();
@@ -73,9 +79,9 @@ public class CustomWidgets extends Feature {
                 int hovered = hoverChecks.get(widget);
                 if (widget.isHovered() && widget.active) {
                     if (hovered < 10)
-                        hovered+=3;
+                        hovered+=shrinkSpeed;
                 } else if (hovered > 0) {
-                    hovered-=1.3f;
+                    hovered-=growSpeed;
                 }
                 hovered = MathHelper.clamp(hovered, 0, 10);
                 hoverChecks.replace(widget, hovered);
