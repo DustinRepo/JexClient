@@ -72,9 +72,6 @@ public class MicrosoftLogin {
     public void refreshTokens(MinecraftAccount.MicrosoftAccount microsoftAccount) {
         try {
             JexClient.INSTANCE.getLogger().info("Refreshing login tokens");
-            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
-                accountManagerScreen.outputString = "Refreshing login tokens";
-            }
             URI uri = new URI("https://login.live.com/oauth20_token.srf");
 
             Map<Object, Object> map = Maps.newHashMap();

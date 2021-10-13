@@ -11,7 +11,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.client.gui.screen.TitleScreen;
 
-@Feature.Manifest(name = "CustomMainMenu", category = Feature.Category.VISUAL, description = "The custom main menu for Jex")
+@Feature.Manifest(name = "CustomMainMenu", category = Feature.Category.VISUAL, description = "The custom main menu for Jex", enabled = true, visible = false)
 public class CustomMainMenu extends Feature {
 
     @Op(name = "Background")
@@ -20,10 +20,6 @@ public class CustomMainMenu extends Feature {
     public boolean scroll;
     @OpChild(name = "Delay (Seconds)", min = 1, max = 60, parent = "Scroll")
     public int scrollDelay = 5;
-    public CustomMainMenu() {
-        this.setState(true);
-        this.setVisible(false);
-    }
 
     @EventListener(events = {EventTick.class, EventDisplayScreen.class})
     private void runMethod(Event event) {

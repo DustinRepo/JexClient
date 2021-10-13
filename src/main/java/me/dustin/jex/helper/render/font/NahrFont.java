@@ -9,6 +9,7 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import org.apache.commons.codec.binary.Base64;
@@ -382,7 +383,10 @@ public class NahrFont {
     }
 
     public final String stripControlCodes(String s) {
-        return this.patternControlCode.matcher(s).replaceAll("");
+        for (Formatting value : Formatting.values()) {
+            s = s.replace("\247" + value.getCode(), "");
+        }
+        return s;
     }
 
     public final String stripUnsupported(String s) {

@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.io.FileNotFoundException;
 
 public enum Render2DHelper {
     INSTANCE;

@@ -30,7 +30,6 @@ public class Feature {
         this.visible = this.getClass().getAnnotation(Feature.Manifest.class).visible();
         if (this.getClass().getAnnotation(Feature.Manifest.class).enabled())
             setState(true);
-        this.visible = true;
     }
 
     public static Feature get(Class<? extends Feature> clazz) {

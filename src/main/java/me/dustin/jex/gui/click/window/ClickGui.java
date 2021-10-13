@@ -120,8 +120,6 @@ public class ClickGui extends Screen {
             }
             windows.add(configWindow = new Window("Config", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
             count++;
-            windows.add(radarWindow = new RadarWindow("Radar", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
-            count++;
             GuiFile.read();
             //focused = configWindow;
 

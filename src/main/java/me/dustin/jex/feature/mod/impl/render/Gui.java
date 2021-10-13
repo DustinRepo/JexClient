@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.gui.click.jex.JexGui;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.helper.misc.Wrapper;

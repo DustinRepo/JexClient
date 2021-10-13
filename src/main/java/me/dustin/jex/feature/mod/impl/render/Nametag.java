@@ -134,9 +134,11 @@ public class Nametag extends Feature {
                             float newY = ((posY - ((10 * scale) * enchCount) + 0.5f) / scale);
                             float newerX = (newX / scale);
                             String name = getEnchantName(compoundTag);
+                            if (compoundTag.getString("id").equalsIgnoreCase("minecraft:binding_curse") || compoundTag.getString("id").equalsIgnoreCase("minecraft:vanishing_curse"))
+                                name = "\247c" + name;
                             float nameWidth = FontHelper.INSTANCE.getStringWidth(name, customFont || CustomFont.INSTANCE.getState());
                             Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), newerX, newY - 1, newerX + nameWidth, newY + 9, 0x35000000);
-                            FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX, newY, enchantColor, customFont);
+                            FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX + 1.5f, newY, enchantColor, customFont);
                             enchCount++;
                         } catch (Exception ignored) {}
                     }
