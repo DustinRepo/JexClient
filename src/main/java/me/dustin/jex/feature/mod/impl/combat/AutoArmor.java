@@ -83,15 +83,4 @@ public class AutoArmor extends Feature {
             }
         }
     }
-
-    public int getArmorSlot(ArmorItem armorItem) {
-        return switch (armorItem.getSlotType()) {
-            case FEET -> 8;
-            case LEGS -> 7;
-            case CHEST -> 6;
-            case HEAD -> 5;
-            default -> -1;
-        };
-    }
-
 }
