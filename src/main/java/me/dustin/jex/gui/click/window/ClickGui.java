@@ -9,7 +9,6 @@ import me.dustin.jex.helper.file.files.FeatureFile;
 import me.dustin.jex.helper.file.files.GuiFile;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.impl.ModuleButton;
-import me.dustin.jex.gui.click.window.impl.RadarWindow;
 import me.dustin.jex.gui.click.window.impl.Window;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
@@ -40,7 +39,6 @@ public class ClickGui extends Screen {
     private Button clickSoundButton = null;
     public Gui guiModule;
     Window configWindow;
-    public RadarWindow radarWindow;
     private ButtonListener save = new ButtonListener() {
         @Override
         public void invoke() {

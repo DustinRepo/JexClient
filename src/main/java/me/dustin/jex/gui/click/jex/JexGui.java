@@ -191,7 +191,6 @@ public class JexGui extends Screen {
             featureScrollbar.render(matrices);
         if (optionsScrollbar != null)
             optionsScrollbar.render(matrices);
-        Gui.clickgui.radarWindow.draw(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         lastwidth = width;
         lastheight = height;
@@ -312,7 +311,6 @@ public class JexGui extends Screen {
             }
         }
         optionButtons.forEach(jexGuiButton -> jexGuiButton.click(mouseX, mouseY, button));
-        Gui.clickgui.radarWindow.click(mouseX, mouseY, button);
         if (featureScrollbar != null) {
             float contentHeight = (featureButtons.get(featureButtons.size() - 1).getY() + (featureButtons.get(featureButtons.size() - 1).getHeight())) - featureButtons.get(0).getY();
             featureScrollbar.setContentHeight(contentHeight);

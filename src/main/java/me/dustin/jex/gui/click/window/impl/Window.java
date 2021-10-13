@@ -57,7 +57,7 @@ public class Window {
             float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
             scrollbar = new Scrollbar(getX() + getWidth() - 1, getY() + getHeight(), 1, scrollBarHeight, viewportHeight, contentHeight, -1);
         }
-        float contentHeight = buttons.isEmpty() ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
+        float contentHeight = getVeryBottomButton() == null ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
         scrollbar.setContentHeight(contentHeight);
         scrollbar.setViewportHeight(maxHeight);
         if (isOpen()) {
