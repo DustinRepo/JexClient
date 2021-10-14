@@ -89,9 +89,10 @@ public class ModuleButton extends Button {
             }
         }
         getChildren().forEach(button -> {
-            float maxHeight = Math.min(Render2DHelper.INSTANCE.getScaledHeight() - this.getY() - 35, Gui.INSTANCE.maxWindowHeight);
-            if (button.isVisible() && button.getY() < this.getWindow().getY() + this.getWindow().getHeight() + maxHeight)
+            float maxHeight = Math.min(Render2DHelper.INSTANCE.getScaledHeight() - getWindow().getY() - 35, Gui.INSTANCE.maxWindowHeight);
+            if (button.isVisible() && button.getY() < this.getWindow().getY() + this.getWindow().getHeight() + maxHeight) {
                 button.click(double_1, double_2, int_1);
+            }
         });
     }
 

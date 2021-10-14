@@ -29,8 +29,6 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.CustomMainMenu;
-import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -231,7 +229,6 @@ public class JexTitleScreen extends Screen {
             FontHelper.INSTANCE.drawWithShadow(matrices, splashText, 2 / h, (j1 + 44) / h, ColorHelper.INSTANCE.getClientColor());
             matrices.pop();
 
-
             if (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH) {
                 String updateString = "Jex Client is outdated. You can open the Jex Options screen in Options to update to Build " + UpdateManager.INSTANCE.getLatestVersion();
                 float strWidth = FontHelper.INSTANCE.getStringWidth(updateString);
@@ -248,7 +245,6 @@ public class JexTitleScreen extends Screen {
                     FontHelper.INSTANCE.drawWithShadow(matrices, backgroundString, width - FontHelper.INSTANCE.getStringWidth(backgroundString) - 2, height - 30, -1);
                 }
             }
-
 
             Iterator<?> var12 = this.children().iterator();
 
@@ -279,9 +275,7 @@ public class JexTitleScreen extends Screen {
                 FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Also join the Discord!", 37, bottom + 22, -1);
             }
             Render2DHelper.INSTANCE.fillAndBorder(matrices, left, top, right, bottom, ColorHelper.INSTANCE.getClientColor(), 0x40000000, 1);
-
             super.render(matrices, mouseX, mouseY, delta);
-
         }
     }
 
