@@ -9,6 +9,7 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.Identifier;
 
 public enum ShaderHelper {
@@ -80,11 +81,11 @@ public enum ShaderHelper {
 
     }
 
-    public static void loadCustomMCShaders() {
+    public static void loadCustomMCShaders(ResourceFactory factory) {
         try {
-            rainbowEnchantShader = new Shader(Wrapper.INSTANCE.getMinecraft().getResourcePackProvider().getPack(), "jex:rainbow_enchant", VertexFormats.POSITION_TEXTURE);
-            translucentShader = new Shader(Wrapper.INSTANCE.getMinecraft().getResourcePackProvider().getPack(), "jex:translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-            testShader = new Shader(Wrapper.INSTANCE.getMinecraft().getResourcePackProvider().getPack(), "jex:test", VertexFormats.POSITION_COLOR);
+            rainbowEnchantShader = new Shader(factory, "jex:rainbow_enchant", VertexFormats.POSITION_TEXTURE);
+            translucentShader = new Shader(factory, "jex:translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+            testShader = new Shader(factory, "jex:test", VertexFormats.POSITION_COLOR);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -83,7 +83,7 @@ public abstract class MixinGameRenderer implements IGameRenderer {
 
     @Inject(method = "preloadShaders", at = @At("RETURN"))
     public void preLoadShaders1(ResourceFactory factory, CallbackInfo ci) {
-        ShaderHelper.loadCustomMCShaders();
+        ShaderHelper.loadCustomMCShaders(factory);
     }
 
     @Inject(method = "getRenderTypeTranslucentShader", at = @At("HEAD"), cancellable = true)
