@@ -69,7 +69,7 @@ public enum MojangLogin {
     public boolean login(MinecraftAccount.MojangAccount mojangAccount) throws AuthenticationException {
         mojangAccount.loginCount++;
         mojangAccount.lastUsed = System.currentTimeMillis();
-        boolean bl = login(mojangAccount.getEmail(), mojangAccount.getPassword());
+        boolean bl = login(mojangAccount.isCracked() ? mojangAccount.getUsername() : mojangAccount.getEmail(), mojangAccount.getPassword());
         AltFile.write();
         return bl;
     }
