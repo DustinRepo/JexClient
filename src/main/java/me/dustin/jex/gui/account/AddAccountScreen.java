@@ -26,12 +26,6 @@ public class AddAccountScreen extends Screen {
 		super(new LiteralText("Add Account"));
 		this.editingAccount = editingAccount;
 		this.parent = parent;
-
-		if (editingAccount != null) {
-			username.setText(editingAccount.getUsername());
-			email.setText(editingAccount.getEmail());
-			password.setText(editingAccount.getPassword());
-		}
 	}
 
 	@Override
@@ -48,6 +42,12 @@ public class AddAccountScreen extends Screen {
 		username = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 12, 200, 20, new LiteralText("Username"));
 		email = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 47, 200, 20, new LiteralText("Email"));
 		password = new GuiPasswordField(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 82, 200, 20, new LiteralText("Password"));
+		if (editingAccount != null) {
+			username.setText(editingAccount.getUsername());
+			email.setText(editingAccount.getEmail());
+			password.setText(editingAccount.getPassword());
+		}
+
 		username.changeFocus(true);
 		username.setMaxLength(16);
 		this.email.setMaxLength(100);
@@ -64,7 +64,7 @@ public class AddAccountScreen extends Screen {
 			microsoftLogin.stopLoginProcess();
 		}));
 
-		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, editingAccount == null ? new LiteralText("Add") : new LiteralText("Edit"), button -> {
+		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, editingAccount == null ? new LiteralText("Add") : new LiteralText("Save"), button -> {
 			MinecraftAccount.MojangAccount account;
 			if (email.getText().equalsIgnoreCase("") || password.getText().equalsIgnoreCase("")) {
 				account = new MinecraftAccount.MojangAccount(username.getText());
@@ -81,9 +81,10 @@ public class AddAccountScreen extends Screen {
 			Wrapper.INSTANCE.getMinecraft().openScreen(parent);
 		}));
 
-		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, new LiteralText("Microsoft Account"), button -> {
-			microsoftLogin.startLoginProcess();
-		}));
+		if (editingAccount == null)
+			this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, new LiteralText("Microsoft Account"), button -> {
+				microsoftLogin.startLoginProcess();
+			}));
 		super.init();
 	}
 
