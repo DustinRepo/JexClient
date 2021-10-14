@@ -16,7 +16,7 @@ public class TabGuiElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().tabGui)
+        if (!isVisible())
             return;
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen) {
             if (isHovered())
@@ -31,9 +31,7 @@ public class TabGuiElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().tabGui)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().tabGui;
     }
 }

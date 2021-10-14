@@ -14,7 +14,7 @@ public class ServerElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().serverName)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("Server\247f: \2477%s", WorldHelper.INSTANCE.getCurrentServerName() + " " + (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() == null ? SharedConstants.getGameVersion().getName() : Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().version.getString()));
@@ -24,9 +24,7 @@ public class ServerElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().serverName)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().serverName;
     }
 }

@@ -22,10 +22,9 @@ public class ArrayListElement extends HudElement {
     private int rainbowScroll = 0;
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().showArrayList)
+        if (!isVisible())
             return;
         super.render(matrixStack);
-
         if (mods.isEmpty())
             mods.addAll(FeatureManager.INSTANCE.getFeatures());
 
@@ -57,10 +56,8 @@ public class ArrayListElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().showArrayList)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().showArrayList;
     }
 
     @Override

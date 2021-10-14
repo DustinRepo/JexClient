@@ -15,7 +15,7 @@ public class DirectionElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().direction)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("Direction\247f: \2477%s %s", StringUtils.capitalize(Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing().getName()), getDirection());
@@ -25,10 +25,8 @@ public class DirectionElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().direction)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().direction;
     }
 
     private String getDirection() {

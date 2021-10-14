@@ -19,7 +19,7 @@ public class ArmorElement extends HudElement{
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().armor)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         int count = 0;
@@ -55,10 +55,8 @@ public class ArmorElement extends HudElement{
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().armor)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().armor;
     }
 
     private String getEnchantName(NbtCompound compoundTag) {

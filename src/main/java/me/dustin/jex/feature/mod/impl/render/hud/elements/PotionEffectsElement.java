@@ -24,7 +24,7 @@ public class PotionEffectsElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().potionEffects)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         float longestString = 0;
@@ -59,10 +59,8 @@ public class PotionEffectsElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().potionEffects)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().potionEffects;
     }
 
     private String getAmpString(StatusEffectInstance effectInstance) {

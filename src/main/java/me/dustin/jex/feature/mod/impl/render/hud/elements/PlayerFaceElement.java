@@ -12,7 +12,7 @@ public class PlayerFaceElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().drawFace)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         if (Wrapper.INSTANCE.getMinecraft().getNetworkHandler() != null && Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()) != null) {
@@ -23,9 +23,7 @@ public class PlayerFaceElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().drawFace)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().drawFace;
     }
 }

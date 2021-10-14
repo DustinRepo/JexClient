@@ -12,7 +12,7 @@ public class PlayerCountElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().playerCount)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("Player Count\247f: \2477%d", Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList() == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerList().size());
@@ -22,9 +22,7 @@ public class PlayerCountElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().playerCount)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().playerCount;
     }
 }

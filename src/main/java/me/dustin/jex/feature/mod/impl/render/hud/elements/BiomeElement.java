@@ -16,7 +16,7 @@ public class BiomeElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().biome)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String biome = Wrapper.INSTANCE.getWorld().getRegistryManager().get(Registry.BIOME_KEY).getId(Wrapper.INSTANCE.getWorld().getBiome(Wrapper.INSTANCE.getLocalPlayer().getBlockPos())).getPath().replace("_", " ");
@@ -28,9 +28,7 @@ public class BiomeElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().biome)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().biome;
     }
 }

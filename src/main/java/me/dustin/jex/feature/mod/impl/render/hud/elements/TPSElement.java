@@ -13,7 +13,7 @@ public class TPSElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().tps)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("TPS\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS());
@@ -26,9 +26,7 @@ public class TPSElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().tps)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().tps;
     }
 }

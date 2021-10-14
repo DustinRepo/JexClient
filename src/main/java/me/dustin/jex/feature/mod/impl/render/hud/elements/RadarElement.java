@@ -26,7 +26,7 @@ public class RadarElement extends HudElement{
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!Radar.INSTANCE.getState())
+        if (!isVisible())
             return;
         super.render(matrixStack);
         if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen))
@@ -71,6 +71,11 @@ public class RadarElement extends HudElement{
         FontHelper.INSTANCE.drawWithShadow(matrixStack, "E", this.getX() + this.getWidth() - 1 - FontHelper.INSTANCE.getStringWidth("E"), this.getY() + (this.getWidth() / 2) - 5, -1);
     }
 
+    @Override
+    public boolean isVisible() {
+        return Radar.INSTANCE.getState();
+    }
+
     private void drawPointer(MatrixStack matrixStack) {
         Matrix4f matrix4f = matrixStack.peek().getModel();
         Color color1 = ColorHelper.INSTANCE.getColor(ColorHelper.INSTANCE.getClientColor());
@@ -87,12 +92,5 @@ public class RadarElement extends HudElement{
         BufferRenderer.draw(bufferBuilder);
 
         Render2DHelper.INSTANCE.end2DRender();
-    }
-
-    @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!Radar.INSTANCE.getState())
-            return;
-        super.click(mouseX, mouseY, mouseButton);
     }
 }

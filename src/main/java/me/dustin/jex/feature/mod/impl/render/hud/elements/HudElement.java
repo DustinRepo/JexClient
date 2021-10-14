@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.helper.file.files.HudElementsFile;
@@ -38,6 +39,8 @@ public class HudElement {
     }
 
     public void render(MatrixStack matrixStack) {
+        if (!isVisible())
+            return;
         handleElement();
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen) {
             if (isHovered())
@@ -50,6 +53,8 @@ public class HudElement {
     }
 
     public void click(int mouseX, int mouseY, int mouseButton) {
+        if (!isVisible())
+            return;
         if (isHovered()) {
             if (mouseButton == 0) {
                 isDragging = true;
@@ -111,23 +116,17 @@ public class HudElement {
         ArrayList<HudElement> colliding = getCollidingElements();
         if (!colliding.isEmpty()) {
             for (HudElement hudElement : colliding) {
-                boolean right = hudElement.x > this.x;
-                boolean top = hudElement.y > this.y;
+                if (!hudElement.isVisible())
+                    continue;
 
-                boolean side = Math.abs(hudElement.x - this.x) > Math.abs(hudElement.y - this.y);
-
-                if (side) {
-                    if (right) {
-                        this.setX(hudElement.getX() - this.getWidth());
-                    } else {
-                        this.setX(hudElement.getX() + hudElement.getWidth());
-                    }
-                } else {
-                    if (top) {
-                        this.setY(hudElement.getY() - this.getHeight());
-                    } else {
-                        this.setY(hudElement.getY() + hudElement.getHeight());
-                    }
+                if (hudElement.getY() < this.getY() + this.getHeight() && hudElement.getY() > this.getY()) {//bottom touching
+                    this.setY(hudElement.getY() - this.getHeight());
+                } else if (hudElement.getY() + hudElement.getHeight() > this.getY() && hudElement.getY() + hudElement.getHeight() < this.getY() + this.getHeight()) {//top touching
+                    this.setY(hudElement.getY() + hudElement.getHeight());
+                } else if (hudElement.getX() + hudElement.getWidth() > this.getX() && hudElement.getX() + hudElement.getWidth() < this.getX() + this.getWidth()) { //left side touching
+                    this.setX(hudElement.getX() + hudElement.getWidth());
+                } else if (hudElement.getX() < this.getX() + this.getWidth() && hudElement.getX() > this.getX()) {//right side touching
+                    this.setX(hudElement.getX() - this.getWidth());
                 }
             }
         }
@@ -139,24 +138,19 @@ public class HudElement {
             ArrayList<HudElement> exempt = new ArrayList<>();
             exempt.add(this);
             for (HudElement hudElement : colliding) {
-                boolean right = hudElement.x > this.x;
-                boolean top = hudElement.y > this.y;
-
-                boolean side = Math.abs(hudElement.x - this.x) > Math.abs(hudElement.y - this.y);
-
-                if (side) {
-                    if (right) {
-                        hudElement.setX(this.getX() + this.getWidth());
-                    } else {
-                        hudElement.setX(this.getX() - hudElement.getWidth());
-                    }
+                if (!hudElement.isVisible())
+                    continue;
+                if (hudElement.getY() < this.getY() + this.getHeight() && hudElement.getY() > this.getY() && isTopSide() && this.getHeight() > this.lastHeight) {//bottom touching
+                    hudElement.setY(this.getY() + this.getHeight());
                     hudElement.checkCollisionsMoveOthers(exempt);
-                } else {
-                    if (top) {
-                        hudElement.setY(this.getY() + this.getHeight());
-                    } else {
-                        hudElement.setY(this.getY() - hudElement.getHeight());
-                    }
+                } else if (hudElement.getY() + hudElement.getHeight() > this.getY() && hudElement.getY() + hudElement.getHeight() < this.getY() + this.getHeight() && !isTopSide() && this.getHeight() > this.lastHeight) {//top touching
+                    hudElement.setY(this.getY() - hudElement.getHeight());
+                    hudElement.checkCollisionsMoveOthers(exempt);
+                } else if (hudElement.getX() + hudElement.getWidth() > this.getX() && hudElement.getX() + hudElement.getWidth() < this.getX() + this.getWidth() && !isLeftSide() && this.getWidth() > this.lastWidth) { //left side touching
+                    hudElement.setX(this.getX() - hudElement.getWidth());
+                    hudElement.checkCollisionsMoveOthers(exempt);
+                } else if (hudElement.getX() < this.getX() + this.getWidth() && hudElement.getX() > this.getX() && isLeftSide() && this.getWidth() > this.lastWidth) {//right side touching
+                    hudElement.setX(this.getX() + this.getWidth());
                     hudElement.checkCollisionsMoveOthers(exempt);
                 }
             }
@@ -165,30 +159,24 @@ public class HudElement {
 
     public void checkCollisionsMoveOthers(ArrayList<HudElement> exempt) {
         ArrayList<HudElement> colliding = getCollidingElements();
+        exempt.add(this);
         if (!colliding.isEmpty()) {
             for (HudElement hudElement : colliding) {
+                if (!hudElement.isVisible())
+                    continue;
                 if (exempt.contains(hudElement))
                     continue;
-                boolean right = hudElement.x > this.x;
-                boolean top = hudElement.y > this.y;
-
-                boolean side = Math.abs(hudElement.x - this.x) > Math.abs(hudElement.y - this.y);
-
-                if (side) {
-                    if (right) {
-                        hudElement.setX(this.getX() + this.getWidth());
-                    } else {
-                        hudElement.setX(this.getX() - hudElement.getWidth());
-                    }
-                    exempt.add(this);
+                if (hudElement.getY() < this.getY() + this.getHeight() && hudElement.getY() > this.getY() && isTopSide() && this.getHeight() > this.lastHeight) {//bottom touching
+                    hudElement.setY(this.getY() + this.getHeight());
                     hudElement.checkCollisionsMoveOthers(exempt);
-                } else {
-                    if (top) {
-                        hudElement.setY(this.getY() + this.getHeight());
-                    } else {
-                        hudElement.setY(this.getY() - hudElement.getHeight());
-                    }
-                    exempt.add(this);
+                } else if (hudElement.getY() + hudElement.getHeight() > this.getY() && hudElement.getY() + hudElement.getHeight() < this.getY() + this.getHeight() && !isTopSide() && this.getHeight() > this.lastHeight) {//top touching
+                    hudElement.setY(this.getY() - hudElement.getHeight());
+                    hudElement.checkCollisionsMoveOthers(exempt);
+                } else if (hudElement.getX() + hudElement.getWidth() > this.getX() && hudElement.getX() + hudElement.getWidth() < this.getX() + this.getWidth() && !isLeftSide() && this.getWidth() > this.lastWidth) { //left side touching
+                    hudElement.setX(this.getX() - hudElement.getWidth());
+                    hudElement.checkCollisionsMoveOthers(exempt);
+                } else if (hudElement.getX() < this.getX() + this.getWidth() && hudElement.getX() > this.getX() && isLeftSide() && this.getWidth() > this.lastWidth) {//right side touching
+                    hudElement.setX(this.getX() + this.getWidth());
                     hudElement.checkCollisionsMoveOthers(exempt);
                 }
             }
@@ -207,24 +195,19 @@ public class HudElement {
         }
         if (!noLongerColliding.isEmpty()) {
             for (HudElement hudElement : noLongerColliding) {
-                boolean right = hudElement.x > this.x;
-                boolean top = hudElement.y > this.y;
-
-                boolean side = Math.abs(hudElement.x - this.x) > Math.abs(hudElement.y - this.y);
-
-                if (side) {
-                    if (right) {
-                        hudElement.setX(this.getX() + this.getWidth());
-                    } else {
-                        hudElement.setX(this.getX() - hudElement.getWidth());
-                    }
+                if (!hudElement.isVisible())
+                    continue;
+                if (hudElement.getY() <= this.lastY + this.lastHeight && hudElement.getY() > this.lastY && isTopSide() && this.getHeight() < this.lastHeight) {//bottom touching
+                    hudElement.setY(this.getY() + this.getHeight());
                     hudElement.bringOldCollisions(exempt);
-                } else {
-                    if (top) {
-                        hudElement.setY(this.getY() + this.getHeight());
-                    } else {
-                        hudElement.setY(this.getY() - hudElement.getHeight());
-                    }
+                } else if (hudElement.getY() + hudElement.getHeight() >= this.lastY && hudElement.getY() + hudElement.getHeight() < this.lastY + this.lastHeight && !isTopSide() && this.getHeight() < this.lastHeight) {//top touching
+                    hudElement.setY(this.getY() - hudElement.getHeight());
+                    hudElement.bringOldCollisions(exempt);
+                } else if (hudElement.getX() + hudElement.getWidth() >= this.lastX && hudElement.getX() + hudElement.getWidth() < this.lastX + this.lastWidth && !isLeftSide() && this.getWidth() < this.lastWidth) { //left side touching
+                    hudElement.setX(this.getX() - hudElement.getWidth());
+                    hudElement.bringOldCollisions(exempt);
+                } else if (hudElement.getX() <= this.lastX + this.lastWidth && hudElement.getX() > this.lastX && isLeftSide() && this.getWidth() < this.lastWidth) {//right side touching
+                    hudElement.setX(this.getX() + this.getWidth());
                     hudElement.bringOldCollisions(exempt);
                 }
             }
@@ -235,34 +218,28 @@ public class HudElement {
         ArrayList<HudElement> noLongerColliding = new ArrayList<>();
         ArrayList<HudElement> colliding = getCollidingElements();
         ArrayList<HudElement> wascolliding = getWereCollidingElements();
+        exempt.add(this);
         for (HudElement hudElement : wascolliding) {
             if (!colliding.contains(hudElement))
                 noLongerColliding.add(hudElement);
         }
         if (!noLongerColliding.isEmpty()) {
             for (HudElement hudElement : noLongerColliding) {
+                if (!hudElement.isVisible())
+                    continue;
                 if (exempt.contains(hudElement))
                     continue;
-                boolean right = hudElement.x > this.x;
-                boolean top = hudElement.y > this.y;
-
-                boolean side = Math.abs(hudElement.x - this.x) > Math.abs(hudElement.y - this.y);
-
-                if (side) {
-                    if (right) {
-                        hudElement.setX(this.getX() + this.getWidth());
-                    } else {
-                        hudElement.setX(this.getX() - hudElement.getWidth());
-                    }
-                    exempt.add(this);
+                if (hudElement.getY() <= this.lastY + this.lastHeight && hudElement.getY() > this.lastY && isTopSide() && this.getHeight() < this.lastHeight) {//bottom touching
+                    hudElement.setY(this.getY() + this.getHeight());
                     hudElement.bringOldCollisions(exempt);
-                } else {
-                    if (top) {
-                        hudElement.setY(this.getY() + this.getHeight());
-                    } else {
-                        hudElement.setY(this.getY() - hudElement.getHeight());
-                    }
-                    exempt.add(this);
+                } else if (hudElement.getY() + hudElement.getHeight() >= this.lastY && hudElement.getY() + hudElement.getHeight() < this.lastY + this.lastHeight && !isTopSide() && this.getHeight() < this.lastHeight) {//top touching
+                    hudElement.setY(this.getY() - hudElement.getHeight());
+                    hudElement.bringOldCollisions(exempt);
+                } else if (hudElement.getX() + hudElement.getWidth() >= this.lastX && hudElement.getX() + hudElement.getWidth() < this.lastX + this.lastWidth && !isLeftSide() && this.getWidth() < this.lastWidth) { //left side touching
+                    hudElement.setX(this.getX() - hudElement.getWidth());
+                    hudElement.bringOldCollisions(exempt);
+                } else if (hudElement.getX() <= this.lastX + this.lastWidth && hudElement.getX() > this.lastX && isLeftSide() && this.getWidth() < this.lastWidth) {//right side touching
+                    hudElement.setX(this.getX() + this.getWidth());
                     hudElement.bringOldCollisions(exempt);
                 }
             }
@@ -272,7 +249,7 @@ public class HudElement {
     public ArrayList<HudElement> getCollidingElements() {
         ArrayList<HudElement> list = new ArrayList<>();
         for (HudElement hudElement : getHud().hudElements) {
-            if (hudElement == this)
+            if (hudElement == this || !hudElement.isVisible())
                 continue;
             if (hudElement.getX() + hudElement.getWidth() >= this.getX() && hudElement.getX() <= this.getX() + this.getWidth()) {
                 if (hudElement.getY() + hudElement.getHeight() >= this.getY() && hudElement.getY() <= this.getY() + this.getHeight())
@@ -285,7 +262,7 @@ public class HudElement {
     public ArrayList<HudElement> getWereCollidingElements() {
         ArrayList<HudElement> list = new ArrayList<>();
         for (HudElement hudElement : getHud().hudElements) {
-            if (hudElement == this)
+            if (hudElement == this || !hudElement.isVisible())
                 continue;
             if (hudElement.getX() + hudElement.getWidth() >= this.lastX && hudElement.getX() <= lastX + this.lastWidth) {
                 if (hudElement.getY() + hudElement.getHeight() >= this.lastY && hudElement.getY() <= lastY + this.lastHeight)
@@ -294,6 +271,8 @@ public class HudElement {
         }
         return list;
     }
+
+    public boolean isVisible(){ return false; }
 
     public boolean isHovered() {
         return Render2DHelper.INSTANCE.isHovered(getX(), getY(), Math.max(getWidth(), getMinWidth()), Math.max(getHeight(), getMinHeight()));
@@ -328,6 +307,7 @@ public class HudElement {
     }
 
     public void setX(float x) {
+        this.lastX = x;
         this.x = x;
     }
 
@@ -336,6 +316,7 @@ public class HudElement {
     }
 
     public void setY(float y) {
+        this.lastY = y;
         this.y = y;
     }
 

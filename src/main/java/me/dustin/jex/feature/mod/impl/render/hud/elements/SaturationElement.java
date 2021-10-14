@@ -12,7 +12,7 @@ public class SaturationElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().saturation)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("Saturation\247f: \2477%s", Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getSaturationLevel());
@@ -22,9 +22,7 @@ public class SaturationElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().saturation)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().saturation;
     }
 }

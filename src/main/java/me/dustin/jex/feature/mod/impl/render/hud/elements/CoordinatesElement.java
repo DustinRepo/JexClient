@@ -15,10 +15,9 @@ public class CoordinatesElement extends HudElement{
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().coords)
+        if (!isVisible())
             return;
         super.render(matrixStack);
-        int count = 0;
         float longest = 0;
 
         Vec3d pos = Wrapper.INSTANCE.getLocalPlayer().getPos();
@@ -50,9 +49,7 @@ public class CoordinatesElement extends HudElement{
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().coords)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().coords;
     }
 }

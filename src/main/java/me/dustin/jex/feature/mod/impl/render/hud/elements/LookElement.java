@@ -15,7 +15,7 @@ public class LookElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().yawAndPitch)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("Look\247f: \2477%.2f \2477%.2f", MathHelper.wrapDegrees(PlayerHelper.INSTANCE.getYaw()), MathHelper.wrapDegrees(PlayerHelper.INSTANCE.getPitch()));
@@ -25,9 +25,7 @@ public class LookElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().yawAndPitch)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().yawAndPitch;
     }
 }

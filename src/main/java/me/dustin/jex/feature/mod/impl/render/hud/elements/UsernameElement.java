@@ -12,7 +12,7 @@ public class UsernameElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().showUsername)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("Username\247f: \2477%s", Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
@@ -22,9 +22,7 @@ public class UsernameElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().showUsername)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().showUsername;
     }
 }

@@ -14,7 +14,7 @@ public class BuildInfoElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().buildInfo)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("Build Info: \2477%s %s", JexClient.INSTANCE.getBuildMetaData().equals("${buildVersion}") ? "Built Improperly" : JexClient.INSTANCE.getBuildMetaData(), FabricLoader.getInstance().isDevelopmentEnvironment() ? "(\247rDev\2477)" : "(\247rRelease\2477)");
@@ -24,9 +24,7 @@ public class BuildInfoElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().buildInfo)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().buildInfo;
     }
 }

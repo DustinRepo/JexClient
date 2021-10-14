@@ -14,7 +14,7 @@ public class SpeedElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().speed)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("Speed\247f:\2477 %s", generateSpeedText());
@@ -24,10 +24,8 @@ public class SpeedElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().speed)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().speed;
     }
 
     private String generateSpeedText() {

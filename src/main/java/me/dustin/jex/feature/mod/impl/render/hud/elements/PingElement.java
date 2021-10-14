@@ -14,7 +14,7 @@ public class PingElement extends HudElement {
 
     @Override
     public void render(MatrixStack matrixStack) {
-        if (!getHud().info || !getHud().ping)
+        if (!isVisible())
             return;
         super.render(matrixStack);
         String str = String.format("Ping\247f: \2477%d", Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()) == null ? 0 : Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getLocalPlayer().getUuid()).getLatency());
@@ -24,9 +24,7 @@ public class PingElement extends HudElement {
     }
 
     @Override
-    public void click(int mouseX, int mouseY, int mouseButton) {
-        if (!getHud().info || !getHud().ping)
-            return;
-        super.click(mouseX, mouseY, mouseButton);
+    public boolean isVisible() {
+        return getHud().info && getHud().ping;
     }
 }
