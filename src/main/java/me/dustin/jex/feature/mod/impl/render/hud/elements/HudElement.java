@@ -352,6 +352,38 @@ public class HudElement {
         this.height = height;
     }
 
+    public float getLastWidth() {
+        return lastWidth;
+    }
+
+    public void setLastWidth(float lastWidth) {
+        this.lastWidth = lastWidth;
+    }
+
+    public float getLastHeight() {
+        return lastHeight;
+    }
+
+    public void setLastHeight(float lastHeight) {
+        this.lastHeight = lastHeight;
+    }
+
+    public float getLastX() {
+        return lastX;
+    }
+
+    public void setLastX(float lastX) {
+        this.lastX = lastX;
+    }
+
+    public float getLastY() {
+        return lastY;
+    }
+
+    public void setLastY(float lastY) {
+        this.lastY = lastY;
+    }
+
     public static Hud getHud() {
         if (hud == null)
             hud = (Hud)Feature.get(Hud.class);

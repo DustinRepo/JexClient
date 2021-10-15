@@ -7,6 +7,8 @@ import me.dustin.jex.feature.mod.impl.render.hud.elements.HudElement;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
+import me.dustin.jex.helper.render.Render2DHelper;
+import net.minecraft.util.math.MathHelper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,6 +30,8 @@ public class HudElementsFile {
             jsonObject.addProperty("Y", hudElement.isTopSide() ? hudElement.getY() : hudElement.getY() + hudElement.getHeight() - hudElement.getMinHeight());
             jsonObject.addProperty("TopSide", hudElement.isTopSide());
             jsonObject.addProperty("LeftSide", hudElement.isLeftSide());
+            jsonObject.addProperty("Width", hudElement.getWidth());
+            jsonObject.addProperty("Height", hudElement.getHeight());
             jsonArray.add(jsonObject);
 
             ArrayList<String> stringList = new ArrayList<>(Arrays.asList(JsonHelper.INSTANCE.prettyGson.toJson(jsonArray).split("\n")));
@@ -67,6 +71,49 @@ public class HudElementsFile {
                     hudElement.setY(y);
                     hudElement.setLeftSide(leftSide);
                     hudElement.setTopSide(topSide);
+                    if (object.get("Height") != null) {
+                        float width = object.get("Width").getAsFloat();
+                        float height = object.get("Height").getAsFloat();
+                        hudElement.setWidth(width);
+                        hudElement.setHeight(height);
+
+                        if (!hudElement.isLeftSide()) {
+                            if (hudElement.getLastWidth() > width) {
+                                float dif = hudElement.getLastWidth() - width;
+                                x += dif;
+                                hudElement.setX(x);
+                                hudElement.setLastX(x);
+                                hudElement.setLastWidth(width);
+                            } else if (hudElement.getLastWidth() < width) {
+                                float dif = width - hudElement.getLastWidth();
+                                x -= dif;
+                                hudElement.setX(x);
+                                hudElement.setLastX(x);
+                                hudElement.setLastWidth(width);
+                            }
+                        }
+                        if (!hudElement.isTopSide()) {
+                            if (hudElement.getLastHeight() > height) {
+                                float dif = hudElement.getLastHeight() - height;
+                                y += dif;
+                                hudElement.setY(y);
+                                hudElement.setLastY(y);
+                                hudElement.setLastHeight(height);
+                            } else if (hudElement.getLastHeight() < height) {
+                                float dif = height - hudElement.getLastHeight();
+                                y -= dif;
+                                hudElement.setY(y);
+                                hudElement.setLastY(y);
+                                hudElement.setLastHeight(height);
+                            }
+                        }
+                        hudElement.setLastWidth(hudElement.getWidth());
+                        hudElement.setLastHeight(hudElement.getHeight());
+                        hudElement.setX(MathHelper.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
+                        hudElement.setY(MathHelper.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
+                        hudElement.setLastX(hudElement.getX());
+                        hudElement.setLastY(hudElement.getY());
+                    }
                 }
             }
         } catch (Exception e) {
