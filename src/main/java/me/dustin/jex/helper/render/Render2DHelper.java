@@ -43,12 +43,6 @@ public enum Render2DHelper {
         RenderSystem.enableDepthTest();
     }
 
-    public void setup2DProjection() {
-        Matrix4x4 ortho = Matrix4x4.ortho2DMatrix(0, Render2DHelper.INSTANCE.getScaledWidth(), Render2DHelper.INSTANCE.getScaledHeight(), 0, -0.1f, 1000.f);
-        ShaderHelper.INSTANCE.setProjectionMatrix(ortho);
-        ShaderHelper.INSTANCE.setModelViewMatrix(Matrix4x4.copyFromRowMajor(RenderSystem.getModelViewMatrix()));
-    }
-
     public double getScaleFactor() {
         return Wrapper.INSTANCE.getWindow().getScaleFactor();
     }

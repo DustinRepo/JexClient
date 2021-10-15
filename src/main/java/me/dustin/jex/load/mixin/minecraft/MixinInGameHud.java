@@ -26,7 +26,6 @@ public class MixinInGameHud {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/scoreboard/Scoreboard.getObjectiveForSlot(I)Lnet/minecraft/scoreboard/ScoreboardObjective;"))
     public void draw(MatrixStack matrixStack, float float_1, CallbackInfo ci) {
         try {
-            Render2DHelper.INSTANCE.setup2DProjection();
             new EventRender2D(matrixStack).run();
         }catch (Exception e) {
             e.printStackTrace();

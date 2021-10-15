@@ -66,7 +66,6 @@ public abstract class MixinGameRenderer implements IGameRenderer {
         matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(d));
         loadProjectionMatrix(matrixStack.peek().getModel());
         //Sets up 3D render space for shaders
-        Render3DHelper.INSTANCE.setup3DProj(partialTicks);
 
         this.bobViewWhenHurt(matrixStack, partialTicks);
         Render3DHelper.INSTANCE.applyCameraRots(matrixStack);
@@ -139,7 +138,6 @@ public abstract class MixinGameRenderer implements IGameRenderer {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V"))
     public void renderForEvent(float float_1, long long_1, boolean boolean_1, CallbackInfo ci) {
-        Render2DHelper.INSTANCE.setup2DProjection();
         new EventRender2DNoScale().run();
     }
 

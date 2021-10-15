@@ -136,13 +136,6 @@ public enum Render3DHelper {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
     }
 
-    public void setup3DProj(float partialTicks) {
-        double d = Wrapper.INSTANCE.getIGameRenderer().getFOV(partialTicks);
-        Matrix4f projection = Wrapper.INSTANCE.getGameRenderer().getBasicProjectionMatrix(d);
-        ShaderHelper.INSTANCE.setProjectionMatrix(Matrix4x4.copyFromColumnMajor(projection));
-        ShaderHelper.INSTANCE.setModelViewMatrix(Matrix4x4.copyFromColumnMajor(RenderSystem.getModelViewMatrix()));
-    }
-
     public void drawSphere(MatrixStack matrixStack, float radius, int gradation, int color, boolean testDepth, Vec3d pos) {
         Matrix4f matrix4f = matrixStack.peek().getModel();
         Color color1 = ColorHelper.INSTANCE.getColor(color);
