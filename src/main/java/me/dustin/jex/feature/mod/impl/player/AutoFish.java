@@ -35,6 +35,8 @@ public class AutoFish extends Feature {
     public boolean sound = true;
     @OpChild(name = "Distance Check", parent = "Sound")
     public boolean distanceCheck = false;
+    @Op(name = "Don't Reel")
+    public boolean dontReel = false;
     @Op(name = "Re-Reel")
     public boolean recast = true;
     @OpChild(name = "Delay", max = 2000, parent = "Re-Reel")
@@ -53,7 +55,7 @@ public class AutoFish extends Feature {
 
     @EventListener(events = {EventPacketReceive.class, EventPlayerPackets.class, EventJoinWorld.class, EventRender3D.class})
     public void run(Event event) {
-        if (event instanceof EventRender3D eventRender3D) {
+        if (event instanceof EventRender3D eventRender3D && showIfOpenWater) {
             FishingBobberEntity hook = getHook();
             if (hook != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.FISHING_ROD) {
                 Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(hook, eventRender3D.getPartialTicks());
@@ -125,6 +127,7 @@ public class AutoFish extends Feature {
     }
 
     void reel() {
+        if (dontReel) return;
         if (PlayerHelper.INSTANCE.mainHandStack() != null && PlayerHelper.INSTANCE.mainHandStack().getItem() == Items.FISHING_ROD) {
             PlayerHelper.INSTANCE.useItem(Hand.MAIN_HAND);
             PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
