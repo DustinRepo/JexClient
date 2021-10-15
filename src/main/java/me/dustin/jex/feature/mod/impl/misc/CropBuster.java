@@ -24,6 +24,8 @@ import net.minecraft.util.math.Vec3d;
 @Feature.Manifest(name = "CropBuster", category = Feature.Category.MISC, description = "Destroy any fully grown crops nearby")
 public class CropBuster extends Feature {
 
+    @Op(name = "Check Age")
+    public boolean checkAge = true;
     @Op(name = "Break Delay (MS)", max = 1000, inc = 10)
     public int breakDelay = 100;
 
@@ -79,7 +81,7 @@ public class CropBuster extends Feature {
         Block block = WorldHelper.INSTANCE.getBlock(blockPos);
         if (block instanceof CropBlock cropBlock) {
             int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
-            if (age == cropBlock.getMaxAge()) {
+            if (!checkAge || age == cropBlock.getMaxAge()) {
                 return true;
             }
         } else if (block == Blocks.MELON || block == Blocks.PUMPKIN) {
