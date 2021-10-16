@@ -55,8 +55,7 @@ public class LawnBot extends Feature {//WIP mod
                 Block block = WorldHelper.INSTANCE.getBlock(pos);
                 float distance = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos));
                 if (block == Blocks.AIR && distance <= 5) {
-                    Wrapper.INSTANCE.getLocalPlayer().getInventory().selectedSlot = grassHotbarSlot;
-                    NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(grassHotbarSlot));
+                    InventoryHelper.INSTANCE.setSlot(grassHotbarSlot, true, true);
                     PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, false);
                     return;
                 } else if (block != Blocks.MYCELIUM) {

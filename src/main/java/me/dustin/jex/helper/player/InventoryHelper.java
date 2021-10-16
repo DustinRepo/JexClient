@@ -1,7 +1,10 @@
 package me.dustin.jex.helper.player;
 
 import com.google.common.collect.Maps;
+import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -12,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
@@ -102,6 +106,18 @@ public enum InventoryHelper {
 
     public void windowClick(ScreenHandler container, int slot, SlotActionType action, int clickData) {
         Wrapper.INSTANCE.getInteractionManager().clickSlot(container.syncId, slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
+    }
+
+    public void setSlot(int slot, boolean actual, boolean packet) {
+        if (slot == getInventory().selectedSlot)
+            return;
+        if (actual) {
+            getInventory().selectedSlot = slot;
+        }
+        if (packet) {
+            NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(slot));
+            lastSlotSent = slot;
+        }
     }
 
     public HashMap<Integer, ItemStack> getStacksFromShulker(ItemStack shulkerBox) {
@@ -197,5 +213,16 @@ public enum InventoryHelper {
             stacks.put(i - 9, getInventory().getStack(i));
         }
         return stacks;
+    }
+
+    private int lastSlotSent = -1;
+
+    @EventListener(events = {EventPacketSent.class})
+    private void runMethod(EventPacketSent eventPacketSent) {
+        if (eventPacketSent.getPacket() instanceof UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket) {
+            if (updateSelectedSlotC2SPacket.getSelectedSlot() == lastSlotSent)
+                eventPacketSent.cancel();
+            lastSlotSent = updateSelectedSlotC2SPacket.getSelectedSlot();
+        }
     }
 }

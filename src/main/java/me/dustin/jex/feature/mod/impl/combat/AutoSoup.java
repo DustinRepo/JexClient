@@ -43,14 +43,12 @@ public class AutoSoup extends Feature {
                         throwing = true;
 
                         savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-                        NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(getFirstSoup()));
-                        InventoryHelper.INSTANCE.getInventory().selectedSlot = getFirstSoup();
+                        InventoryHelper.INSTANCE.setSlot(getFirstSoup(), true, true);
                         timer.reset();
                     } else {
                         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstSoup() < 9 ? getFirstSoup() + 36 : getFirstSoup(), SlotActionType.SWAP, 8);
                         savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-                        NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(8));
-                        InventoryHelper.INSTANCE.getInventory().selectedSlot = 8;
+                        InventoryHelper.INSTANCE.setSlot(8, true, true);
                         throwing = true;
                         timer.reset();
                     }
@@ -62,8 +60,7 @@ public class AutoSoup extends Feature {
                     if (getFirstSoup() != -1) {
                         if (getFirstSoup() < 9) {
                             NetworkHelper.INSTANCE.sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND));
-                            NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(savedSlot));
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+                            InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                             throwing = false;
                             timer.reset();
                         } else {

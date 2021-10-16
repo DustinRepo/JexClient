@@ -56,8 +56,7 @@ public class AutoWeapon extends Feature {
 
             }
             if (slot != -1 && slot != InventoryHelper.INSTANCE.getInventory().selectedSlot) {
-                NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(slot));
-                InventoryHelper.INSTANCE.getInventory().selectedSlot = slot;
+                InventoryHelper.INSTANCE.setSlot(slot, true, true);
             }
     }
     private boolean isGoodItem(Item item) {

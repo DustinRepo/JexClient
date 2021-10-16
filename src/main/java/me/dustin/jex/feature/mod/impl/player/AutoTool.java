@@ -60,16 +60,14 @@ public class AutoTool extends Feature {
                     savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                 }
                 if (slot != -1 && slot != InventoryHelper.INSTANCE.getInventory().selectedSlot) {
-                    NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(slot));
-                    InventoryHelper.INSTANCE.getInventory().selectedSlot = slot;
+                    InventoryHelper.INSTANCE.setSlot(slot, true, true);
                 }
                 attackingBlock = true;
             }
         } else if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
             if (!Wrapper.INSTANCE.getInteractionManager().isBreakingBlock() && attackingBlock) {
                 if (returnToSlot) {
-                    InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
-                    NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(savedSlot));
+                    InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                 }
                 attackingBlock = false;
             }

@@ -88,9 +88,9 @@ public class FastAnvilDupe extends Feature {
                                     }
                                 } else {
                                     PlayerHelper.INSTANCE.setPitch(90);
-                                    NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(xpBottleSlot));
+                                    InventoryHelper.INSTANCE.setSlot(xpBottleSlot, false, true);
                                     Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
-                                    NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot));
+                                    InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
                                 }
                             }
                             pickedUp = false;

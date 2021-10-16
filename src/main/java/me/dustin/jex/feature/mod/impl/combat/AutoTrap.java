@@ -61,7 +61,7 @@ public class AutoTrap extends Feature {
                 }
                 PlayerEntity player = getPlayerToTrap();
                 if (player != null) {
-                    InventoryHelper.INSTANCE.getInventory().selectedSlot = obby;
+                    InventoryHelper.INSTANCE.setSlot(obby, true, true);
 
                     ArrayList<BlockPos> placePos = new ArrayList<>();
                     placePos.add(player.getBlockPos().north());
@@ -75,7 +75,7 @@ public class AutoTrap extends Feature {
                     placePos.add(player.getBlockPos().up().up());
                     if (placeDelay != 0) {
                         if (stage == placePos.size()) {
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+                            InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                             this.setState(false);
                             return;
                         }
@@ -94,7 +94,8 @@ public class AutoTrap extends Feature {
                                 PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, true);
                             }
                         }
-                        InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+
+                        InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                         this.setState(false);
                         timer.reset();
                         this.stage = 0;

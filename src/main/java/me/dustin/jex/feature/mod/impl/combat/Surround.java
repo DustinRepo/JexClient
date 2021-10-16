@@ -83,7 +83,7 @@ public class Surround extends Feature {
 					Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z);
 					NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z, true));
 				}
-				InventoryHelper.INSTANCE.getInventory().selectedSlot = obby;
+				InventoryHelper.INSTANCE.setSlot(obby, true, true);
 				ArrayList<BlockPos> placePos = new ArrayList<>();
 				BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
 				placePos.add(playerPos.north());
@@ -92,7 +92,7 @@ public class Surround extends Feature {
 				placePos.add(playerPos.west());
 				if (placeDelay != 0) {
 					if (stage == placePos.size()) {
-						InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+						InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
 						if (autoTurnOff)
 							this.setState(false);
 						return;
@@ -112,7 +112,7 @@ public class Surround extends Feature {
 							PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, true);
 						}
 					}
-					InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+					InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
 					if (autoTurnOff)
 						this.setState(false);
 					timer.reset();

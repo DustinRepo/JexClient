@@ -63,7 +63,7 @@ public class Scaffold extends Feature {
                                 }
                             }
                             if (getBlockFromHotbar() != -1) {
-                                InventoryHelper.INSTANCE.getInventory().selectedSlot = getBlockFromHotbar();
+                                InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
                                 place(blockInfo, (EventPlayerPackets) event);
                                 emptyNearBlocks.remove(blockInfo);
                                 if (delay > 0 && placeMode.equalsIgnoreCase("Pre"))

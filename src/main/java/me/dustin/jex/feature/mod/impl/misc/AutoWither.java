@@ -49,13 +49,11 @@ public class AutoWither extends Feature {
                         originPos = originPos.east();//east
                     if (stage >= 3) {
                         if (InventoryHelper.INSTANCE.getInventory().selectedSlot != skulls) {
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = skulls;
-                            NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(skulls));
+                            InventoryHelper.INSTANCE.setSlot(skulls, true, true);
                         }
                     } else {
                         if (InventoryHelper.INSTANCE.getInventory().selectedSlot != soulSand) {
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = soulSand;
-                            NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(soulSand));
+                            InventoryHelper.INSTANCE.setSlot(soulSand, true, true);
                         }
                     }
                     PlayerHelper.INSTANCE.placeBlockInPos(getBlockPos(originPos, stage), Hand.MAIN_HAND, true);
@@ -65,8 +63,7 @@ public class AutoWither extends Feature {
                         creatingWither = false;
                         packet = null;
                         stage = 0;
-                        InventoryHelper.INSTANCE.getInventory().selectedSlot = soulSand;
-                        NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(soulSand));
+                        InventoryHelper.INSTANCE.setSlot(soulSand, true, true);
                     }
                 }
             }
