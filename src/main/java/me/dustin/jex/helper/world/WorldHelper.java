@@ -18,7 +18,6 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorType;
 import net.minecraft.entity.Entity;
@@ -33,15 +32,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -187,12 +182,12 @@ public enum WorldHelper {
     }
 
     public IntegratedServer createIntegratedServer(Thread thread, long seed, GeneratorType generatorType) {
-        String worldName = "structure_find";
+        String worldName = "jex_finder";
         LevelStorage.Session session2;
         try {
             session2 = Wrapper.INSTANCE.getMinecraft().getLevelStorage().createSession(worldName);
         } catch (IOException var21) {
-            JexClient.INSTANCE.getLogger().warn((String)"Failed to read level {} data {}", (Object)worldName, (Object)var21);
+            JexClient.INSTANCE.getLogger().warn((String)"Failed to read level {} data {}", worldName, var21);
             SystemToast.addWorldAccessFailureToast(Wrapper.INSTANCE.getMinecraft(), worldName);
             Wrapper.INSTANCE.getMinecraft().setScreen(null);
             return null;
@@ -202,20 +197,16 @@ public enum WorldHelper {
         MinecraftClient.IntegratedResourceManager integratedResourceManager2;
         LevelInfo levelInfo = new LevelInfo(worldName, GameMode.CREATIVE, false, Difficulty.HARD, true, new GameRules(), DataPackSettings.SAFE_MODE);
 
-        Function<LevelStorage.Session, DataPackSettings> dataPackSettingsGetter = session -> {
-            return DataPackSettings.SAFE_MODE;
-        };
-        Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> savePropertiesGetter = (session, impl, resourceManager, dataPackSettings) -> {
-            return new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
-        };
+        Function<LevelStorage.Session, DataPackSettings> dataPackSettingsGetter = session -> DataPackSettings.SAFE_MODE;
+        Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> savePropertiesGetter = (session, impl, resourceManager, dataPackSettings) -> new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
         try {
-            integratedResourceManager2 = Wrapper.INSTANCE.getMinecraft().createIntegratedResourceManager(registryTracker, dataPackSettingsGetter, savePropertiesGetter, false, session2);
+            integratedResourceManager2 = Wrapper.INSTANCE.getMinecraft().createIntegratedResourceManager(registryTracker, dataPackSettingsGetter, savePropertiesGetter, true, session2);
         } catch (Exception var20) {
-            JexClient.INSTANCE.getLogger().warn("Failed to load datapacks, can't proceed with server load", (Throwable)var20);
+            JexClient.INSTANCE.getLogger().warn("Failed to load datapacks, can't proceed with server load", var20);
             try {
                 session2.close();
             } catch (IOException var16) {
-                JexClient.INSTANCE.getLogger().warn("Failed to unlock access to level {} {}", (Object)worldName, (Object)var16);
+                JexClient.INSTANCE.getLogger().warn("Failed to unlock access to level {} {}", worldName, var16);
             }
 
             return null;
@@ -234,6 +225,32 @@ public enum WorldHelper {
         if (integratedServer.setupServer()) {
             return integratedServer;
         }
+        cleanupIntegratedServer();
         return null;
+    }
+
+    public void cleanupIntegratedServer() {
+        try {
+            LevelStorage.Session session = Wrapper.INSTANCE.getMinecraft().getLevelStorage().createSession("jex_finder");
+
+            try {
+                session.deleteSessionLock();
+            } catch (Throwable var7) {
+                if (session != null) {
+                    try {
+                        session.close();
+                    } catch (Throwable var6) {
+                        var7.addSuppressed(var6);
+                    }
+                }
+
+                throw var7;
+            }
+
+            session.close();
+        } catch (IOException var8) {
+            SystemToast.addWorldDeleteFailureToast(Wrapper.INSTANCE.getMinecraft(), "jex_finder");
+            JexClient.INSTANCE.getLogger().error("Failed to delete world {}", "jex_finder", var8);
+        }
     }
 }
