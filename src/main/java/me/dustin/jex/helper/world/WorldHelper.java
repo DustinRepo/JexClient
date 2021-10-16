@@ -1,7 +1,14 @@
 package me.dustin.jex.helper.world;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
+import com.mojang.authlib.GameProfileRepository;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.datafixers.util.Function4;
+import com.mojang.serialization.Lifecycle;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.Block;
@@ -9,19 +16,45 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.WorldGenerationProgressTracker;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.world.GeneratorType;
 import net.minecraft.entity.Entity;
+import net.minecraft.resource.DataPackSettings;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.QueueingWorldGenerationProgressListener;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
+import net.minecraft.world.SaveProperties;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.level.LevelInfo;
+import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.level.storage.LevelStorage;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Iterator;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
 
 public enum WorldHelper {
     INSTANCE;
+    private Queue<Runnable> var10001 = Queues.newConcurrentLinkedQueue();
     private ConcurrentMap<BlockPos, BlockEntity> blockEntities = Maps.newConcurrentMap();
 
     public Block getBlock(BlockPos pos) {
@@ -151,5 +184,56 @@ public enum WorldHelper {
             }
         }
         return false;
+    }
+
+    public IntegratedServer createIntegratedServer(Thread thread, long seed, GeneratorType generatorType) {
+        String worldName = "structure_find";
+        LevelStorage.Session session2;
+        try {
+            session2 = Wrapper.INSTANCE.getMinecraft().getLevelStorage().createSession(worldName);
+        } catch (IOException var21) {
+            JexClient.INSTANCE.getLogger().warn((String)"Failed to read level {} data {}", (Object)worldName, (Object)var21);
+            SystemToast.addWorldAccessFailureToast(Wrapper.INSTANCE.getMinecraft(), worldName);
+            Wrapper.INSTANCE.getMinecraft().openScreen(null);
+            return null;
+        }
+        DynamicRegistryManager.Impl registryTracker = DynamicRegistryManager.create();
+        GeneratorOptions generatorOptions = generatorType.createDefaultOptions(registryTracker, seed, true, false);
+        MinecraftClient.IntegratedResourceManager integratedResourceManager2;
+        LevelInfo levelInfo = new LevelInfo(worldName, GameMode.CREATIVE, false, Difficulty.HARD, true, new GameRules(), DataPackSettings.SAFE_MODE);
+
+        Function<LevelStorage.Session, DataPackSettings> dataPackSettingsGetter = session -> {
+            return DataPackSettings.SAFE_MODE;
+        };
+        Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> savePropertiesGetter = (session, impl, resourceManager, dataPackSettings) -> {
+            return new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
+        };
+        try {
+            integratedResourceManager2 = Wrapper.INSTANCE.getMinecraft().createIntegratedResourceManager(registryTracker, dataPackSettingsGetter, savePropertiesGetter, false, session2);
+        } catch (Exception var20) {
+            JexClient.INSTANCE.getLogger().warn("Failed to load datapacks, can't proceed with server load", (Throwable)var20);
+            try {
+                session2.close();
+            } catch (IOException var16) {
+                JexClient.INSTANCE.getLogger().warn("Failed to unlock access to level {} {}", (Object)worldName, (Object)var16);
+            }
+
+            return null;
+        }
+        SaveProperties saveProperties = integratedResourceManager2.getSaveProperties();
+        integratedResourceManager2.getServerResourceManager().loadRegistryTags();
+        YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Wrapper.INSTANCE.getMinecraft().getNetworkProxy());
+        MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
+        GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
+        UserCache userCache = new UserCache(gameProfileRepository, new File(Wrapper.INSTANCE.getMinecraft().runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
+
+        IntegratedServer integratedServer = new IntegratedServer(thread, Wrapper.INSTANCE.getMinecraft(), registryTracker, session2, integratedResourceManager2.getResourcePackManager(), integratedResourceManager2.getServerResourceManager(), saveProperties, minecraftSessionService, gameProfileRepository, userCache, (i) -> {
+            WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i);
+            return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, var10001::add);
+        });
+        if (integratedServer.setupServer()) {
+            return integratedServer;
+        }
+        return null;
     }
 }
