@@ -35,7 +35,7 @@ public class SpeedMine extends Feature {
     @EventListener(events = {EventPlayerPackets.class, EventClickBlock.class})
     public void run(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets) {
-            if (eventPlayerPackets.getMode() != EventPlayerPackets.Mode.PRE)
+            if (eventPlayerPackets.getMode() != EventPlayerPackets.Mode.PRE || Wrapper.INSTANCE.getLocalPlayer().isCreative())
                 return;
             switch (mode) {
                 case "Progress", "Instant" -> {
@@ -59,6 +59,8 @@ public class SpeedMine extends Feature {
                 Wrapper.INSTANCE.getIInteractionManager().setBlockBreakingCooldown(breakCooldown);
             this.setSuffix(mode);
         } else if (event instanceof EventClickBlock eventClickBlock && mode.equalsIgnoreCase("Instant")) {
+            if (Wrapper.INSTANCE.getLocalPlayer().isCreative())
+                return;
             for (int i = 0; i < 10; i++) {
                 NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, eventClickBlock.getBlockPos(), eventClickBlock.getFace()));
                 NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, eventClickBlock.getBlockPos(), eventClickBlock.getFace()));
