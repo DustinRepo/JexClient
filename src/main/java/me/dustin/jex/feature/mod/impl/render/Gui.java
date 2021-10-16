@@ -44,8 +44,8 @@ public class Gui extends Feature {
     @Override
     public void onEnable() {
         switch (mode.toLowerCase()) {
-            case "jex" -> Wrapper.INSTANCE.getMinecraft().openScreen(jexGui);
-            case "window" -> Wrapper.INSTANCE.getMinecraft().openScreen(clickgui);
+            case "jex" -> Wrapper.INSTANCE.getMinecraft().setScreen(jexGui);
+            case "window" -> Wrapper.INSTANCE.getMinecraft().setScreen(clickgui);
         }
         this.toggleState();
     }

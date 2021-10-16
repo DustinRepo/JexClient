@@ -39,13 +39,13 @@ public class ProxyScreen extends Screen {
         this.addDrawableChild(connectButton = new ButtonWidget(width / 2 - 100, height / 2, 200, 20, new LiteralText("Connect to Proxy"), button -> {
             HostAndPort hostAndPort = HostAndPort.fromString(proxyField.getText());
             ProxyHelper.INSTANCE.connectToProxy(this.socks5 ? ProxyHelper.SocksType.FIVE : ProxyHelper.SocksType.FOUR, hostAndPort.getHost(), hostAndPort.getPort());
-            Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(new TitleScreen()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(new TitleScreen()));
         }));
         this.addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 25, 200, 20, new LiteralText("Disconnect from Proxy"), button -> {
             ProxyHelper.INSTANCE.disconnectFromProxy();
         }));
         this.addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 50, 200, 20, new LiteralText("Close"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(new TitleScreen()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(new TitleScreen()));
         }));
         super.init();
     }

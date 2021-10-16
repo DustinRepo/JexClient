@@ -60,7 +60,7 @@ public class AddAccountScreen extends Screen {
 		this.addSelectableChild(password);
 		MicrosoftLogin microsoftLogin = new MicrosoftLogin(true);
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, new LiteralText("Cancel"), button -> {
-			Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 			microsoftLogin.stopLoginProcess();
 		}));
 
@@ -78,7 +78,7 @@ public class AddAccountScreen extends Screen {
 			} else
 				MinecraftAccountManager.INSTANCE.getAccounts().add(account);
 			AltFile.write();
-			Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 		}));
 
 		if (editingAccount == null)

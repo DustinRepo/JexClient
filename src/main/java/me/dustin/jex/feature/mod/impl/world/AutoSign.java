@@ -2,7 +2,7 @@ package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.misc.EventDisplayScreen;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -21,14 +21,14 @@ public class AutoSign extends Feature {
 
     public Text[] signText = {new LiteralText("     "), new LiteralText(""), new LiteralText(""), new LiteralText("")};
 
-    @EventListener(events = {EventTick.class, EventDisplayScreen.class, EventPacketReceive.class})
+    @EventListener(events = {EventTick.class, EventSetScreen.class, EventPacketReceive.class})
     private void runMethod(Event event) {
         if (event instanceof EventTick) {
             if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld() == null) {
                 this.setState(false);
             }
-        } else if (event instanceof EventDisplayScreen) {
-            if (!signText[0].asString().equalsIgnoreCase("     ") && ((EventDisplayScreen) event).getScreen() instanceof SignEditScreen) {
+        } else if (event instanceof EventSetScreen) {
+            if (!signText[0].asString().equalsIgnoreCase("     ") && ((EventSetScreen) event).getScreen() instanceof SignEditScreen) {
                 event.setCancelled(true);
             }
         } else if (event instanceof EventPacketReceive eventPacketReceive) {

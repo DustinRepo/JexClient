@@ -51,14 +51,14 @@ public class AutoTotem extends Feature {
         if (checkHealth && health < Wrapper.INSTANCE.getLocalPlayer().getHealth())
             return;
         if (openInventory)
-            Wrapper.INSTANCE.getMinecraft().openScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));
 
         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);
         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 45, SlotActionType.PICKUP);
 
         if (openInventory) {
             NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.syncId));
-            Wrapper.INSTANCE.getMinecraft().openScreen(null);
+            Wrapper.INSTANCE.getMinecraft().setScreen(null);
         }
     }
 }

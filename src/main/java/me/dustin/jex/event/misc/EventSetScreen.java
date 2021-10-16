@@ -3,11 +3,11 @@ package me.dustin.jex.event.misc;
 import me.dustin.events.core.Event;
 import net.minecraft.client.gui.screen.Screen;
 
-public class EventDisplayScreen extends Event {
+public class EventSetScreen extends Event {
 
     private Screen screen;
 
-    public EventDisplayScreen(Screen screen) {
+    public EventSetScreen(Screen screen) {
         this.screen = screen;
     }
 

@@ -1,6 +1,7 @@
 package me.dustin.jex.helper.network.login;
 
 import java.net.Proxy;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.mojang.authlib.Agent;
@@ -29,13 +30,14 @@ public enum MojangLogin {
                 String username = auth.getSelectedProfile().getName();
                 UUID uuid = auth.getSelectedProfile().getId();
                 String token = auth.getAuthenticatedToken();
-                session = new Session(username, uuid.toString(), token, email.contains("@") ? "mojang" : "legacy");
+
+                session = new Session(username, uuid.toString(), token, Optional.of(""), Optional.of(""), Session.AccountType.MOJANG);
                 ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
             } catch (AuthenticationException e) {
                 e.printStackTrace();
             }
         } else {
-            session = new Session(email, UUID.randomUUID().toString(), "fakeToken", "legacy");
+            session = new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY);
             try {
                 if (setSession)
                     ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
@@ -56,10 +58,10 @@ public enum MojangLogin {
             String username = auth.getSelectedProfile().getName();
             UUID uuid = auth.getSelectedProfile().getId();
             String token = auth.getAuthenticatedToken();
-            Session session = new Session(username, uuid.toString(), token, email.contains("@") ? "mojang" : "legacy");
+            Session session = new Session(username, uuid.toString(), token, Optional.of(""), Optional.of(""), Session.AccountType.MOJANG);
             ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
         } else {
-            Session session = new Session(email, UUID.randomUUID().toString(), "fakeToken", "legacy");
+            Session session = new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY);
             ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
         }
         return true;

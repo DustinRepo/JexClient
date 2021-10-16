@@ -1,9 +1,7 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.minecraft.SocialInteractionsService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import me.dustin.jex.event.misc.EventDisplayScreen;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.misc.EventScheduleStop;
 import me.dustin.jex.event.misc.EventTick;
@@ -59,11 +57,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Mutable
     @Shadow @Final private MinecraftSessionService sessionService;
 
-    @Mutable
-    @Shadow @Final private SocialInteractionsService socialInteractionsService;
-
-    @Shadow protected abstract SocialInteractionsService createSocialInteractionsService(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs);
-
     @Shadow @Final private static Logger LOGGER;
 
     @Override
@@ -106,11 +99,11 @@ public abstract class MixinMinecraftClient implements IMinecraft {
         EventJoinWorld eventJoinWorld = new EventJoinWorld().run();
     }
 
-    @Inject(method = "openScreen", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
     public void openScreen(Screen screen, CallbackInfo cir) {
-        EventDisplayScreen eventDisplayScreen = new EventDisplayScreen(screen).run();
-        screen = eventDisplayScreen.getScreen();
-        if (eventDisplayScreen.isCancelled())
+        EventSetScreen eventSetScreen = new EventSetScreen(screen).run();
+        screen = eventSetScreen.getScreen();
+        if (eventSetScreen.isCancelled())
             cir.cancel();
 
     }

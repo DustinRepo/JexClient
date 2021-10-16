@@ -381,9 +381,9 @@ public class MicrosoftLogin {
             AltFile.write();
         }
         Wrapper.INSTANCE.getMinecraft().execute(() -> {
-            Wrapper.INSTANCE.getIMinecraft().setSession(new Session(name, uuid, token, "mojang"));
+            Wrapper.INSTANCE.getIMinecraft().setSession(new Session(name, uuid, token, Optional.of(""), Optional.of(""), Session.AccountType.MSA));
             if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AddAccountScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DirectLoginScreen)
-                Wrapper.INSTANCE.getMinecraft().openScreen(new AccountManagerScreen());
+                Wrapper.INSTANCE.getMinecraft().setScreen(new AccountManagerScreen());
             else if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
                 accountManagerScreen.outputString = "Logged in as " + name;
             }

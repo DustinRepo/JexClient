@@ -54,7 +54,7 @@ public class DirectLoginScreen extends Screen {
 		this.addSelectableChild(password);
 		MicrosoftLogin microsoftLogin = new MicrosoftLogin(false);
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, new LiteralText("Cancel"), button -> {
-			Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 			microsoftLogin.stopLoginProcess();
 		}));
 
@@ -63,7 +63,7 @@ public class DirectLoginScreen extends Screen {
 			MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
 			try {
 				if (MojangLogin.INSTANCE.login(mojangAccount)) {
-					Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+					Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 				} else {
 					this.errorMessage = "\247cError, could not log in.";
 				}

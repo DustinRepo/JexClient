@@ -303,13 +303,13 @@ public class WaypointEditScreen extends Screen {
             waypoint.setY(Float.parseFloat(yPos.getText()));
             waypoint.setZ(Float.parseFloat(zPos.getText()));
             WaypointFile.write();
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen(serverName.getText()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen(serverName.getText()));
         }
     };
     private ButtonListener cancelListener = new ButtonListener() {
         @Override
         public void invoke() {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen(serverName.getText()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen(serverName.getText()));
         }
     };
 

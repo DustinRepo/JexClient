@@ -2,7 +2,7 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.misc.EventDisplayScreen;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventDrawScreen;
@@ -27,7 +27,7 @@ public class AutoReconnect extends Feature {
     public Timer timer = new Timer();
     private ServerInfo serverEntry;
 
-    @EventListener(events = {EventTick.class, EventDisplayScreen.class, EventJoinWorld.class, EventDrawScreen.class})
+    @EventListener(events = {EventTick.class, EventSetScreen.class, EventJoinWorld.class, EventDrawScreen.class})
     private void runMethod(Event event) {
         if (event instanceof EventTick) {
             if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen && serverEntry != null) {
@@ -37,8 +37,8 @@ public class AutoReconnect extends Feature {
                 }
             } else
                 timer.reset();
-        } else if (event instanceof EventDisplayScreen) {
-            if (((EventDisplayScreen) event).getScreen() instanceof DisconnectedScreen)
+        } else if (event instanceof EventSetScreen) {
+            if (((EventSetScreen) event).getScreen() instanceof DisconnectedScreen)
                 timer.reset();
         } else if (event instanceof EventJoinWorld) {
             if (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() != null) {

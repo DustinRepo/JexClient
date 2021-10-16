@@ -5,10 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
-import me.dustin.jex.event.misc.EventDisplayScreen;
 import me.dustin.jex.event.misc.EventTick;
-import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.feature.command.core.Command;
@@ -18,28 +15,18 @@ import me.dustin.jex.feature.mod.impl.player.AutoTool;
 import me.dustin.jex.feature.mod.impl.player.SpeedMine;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-
-import java.util.ArrayList;
-import java.util.Optional;
 
 @Cmd(name = "dupe", alias = {"d"}, description = "Relog. Put items you want to dupe in a shulker. Stare at shulker and type .dupe. Wait for items to dupe.")
 public class CommandDupe extends Command {

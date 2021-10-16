@@ -67,7 +67,7 @@ public class AccountManagerScreen extends Screen {
         });
         editButton = new ButtonWidget((int) (midX + 3), (height / 2) - 56, 150, 20, new LiteralText("Edit"), button -> {
             if (getSelected().getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
-                Wrapper.INSTANCE.getMinecraft().openScreen(new AddAccountScreen(mojangAccount, this));
+                Wrapper.INSTANCE.getMinecraft().setScreen(new AddAccountScreen(mojangAccount, this));
             }
         });
 
@@ -84,13 +84,13 @@ public class AccountManagerScreen extends Screen {
             login(accountButtons.get(rand.nextInt(accountButtons.size())));
         });
         ButtonWidget addAccountButton = new ButtonWidget((int) (midX - 151), height - 50, 150, 20, new LiteralText("Direct Login"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new DirectLoginScreen(this));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new DirectLoginScreen(this));
         });
         ButtonWidget directLoginButton = new ButtonWidget((int) (midX + 1), height - 50, 150, 20, new LiteralText("Add Account"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new AddAccountScreen(null, this));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new AddAccountScreen(null, this));
         });
         cancelButton = new ButtonWidget((int) (midX - 151), height - 28, 302, 20, new LiteralText("Cancel"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(new TitleScreen()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(new TitleScreen()));
         });
         importButton = new ButtonWidget(2, 2, 50, 15, new LiteralText("Import"), button -> {
             if (new File(ModFileHelper.INSTANCE.getJexDirectory(), "Accounts-Unencrypted.json").exists()) {

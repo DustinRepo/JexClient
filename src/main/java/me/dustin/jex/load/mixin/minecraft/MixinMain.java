@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 @Mixin(Main.class)
 public class MixinMain {
 
-    @ModifyArgs(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/Session;<init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"), method = "main")
+    @ModifyArgs(at = @At(value = "INVOKE", target = "net/minecraft/client/util/Session.<init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Optional;Ljava/util/Optional;Lnet/minecraft/client/util/Session$AccountType;)V"), method = "main")
     private static void modifySession(Args args) {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             AltFile.read();
@@ -32,11 +32,17 @@ public class MixinMain {
                     }
                     JexClient.INSTANCE.getLogger().info("Logging in to Microsoft account with name " + microsoftAccount.username);
                     new MicrosoftLogin(false).refreshTokens(microsoftAccount);
-                    args.setAll(microsoftAccount.username, uuid, microsoftAccount.accessToken, "mojang");
+                    args.set(0, microsoftAccount.username);
+                    args.set(1, uuid);
+                    args.set(2, microsoftAccount.accessToken);
+                    args.set(5, Session.AccountType.MSA);
                 } else if (mcAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
                     Session session = MojangLogin.INSTANCE.login(mojangAccount.getEmail(), mojangAccount.getPassword(), false);
                     JexClient.INSTANCE.getLogger().info("Logging in to Mojang account with name " + session.getUsername());
-                    args.setAll(session.getUsername(), UUIDTypeAdapter.fromUUID(session.getProfile().getId()), session.getAccessToken(), "mojang");
+                    args.set(0, session.getUsername());
+                    args.set(1, session.getUuid());
+                    args.set(2, session.getAccessToken());
+                    args.set(5, session.getAccountType());
                 } else {
                     JexClient.INSTANCE.getLogger().info("Account not recognized, can not log in.");
                 }

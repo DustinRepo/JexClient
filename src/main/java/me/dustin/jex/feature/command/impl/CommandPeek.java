@@ -29,7 +29,7 @@ public class CommandPeek extends Command {
             return;
         }
         if (Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
-            Wrapper.INSTANCE.getMinecraft().openScreen(shulkerBoxScreen);
+            Wrapper.INSTANCE.getMinecraft().setScreen(shulkerBoxScreen);
             while (EventAPI.getInstance().alreadyRegistered(this))
                 EventAPI.getInstance().unregister(this);
         }

@@ -163,16 +163,16 @@ public class JexTitleScreen extends Screen {
     private void initWidgetsNormal(int y, int spacingY) {
         JexTitleScreen titleScreen = this;
         this.addDrawableChild(new ButtonWidget(2, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new SelectWorldScreen(titleScreen));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new SelectWorldScreen(titleScreen));
         }));
         this.addDrawableChild(new ButtonWidget(2, y + spacingY * 1, 175, 20, new TranslatableText("menu.multiplayer"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(titleScreen));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(titleScreen));
         }));
         this.addDrawableChild(new ButtonWidget(2, y + spacingY * 2, 150, 20, new TranslatableText("menu.online"), button -> {
             titleScreen.switchToRealms();
         }));
         this.addDrawableChild(new ButtonWidget(2, y + spacingY * 3, 125, 20, new TranslatableText("menu.options"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
         }));
         this.addDrawableChild(new ButtonWidget(2, y + spacingY * 4, 100, 20, new TranslatableText("menu.quit"), button -> {
             Wrapper.INSTANCE.getMinecraft().scheduleStop();
@@ -180,7 +180,7 @@ public class JexTitleScreen extends Screen {
     }
 
     private void switchToRealms() {
-        this.client.openScreen(new RealmsMainScreen(this));
+        this.client.setScreen(new RealmsMainScreen(this));
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -327,7 +327,7 @@ public class JexTitleScreen extends Screen {
         NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
         for (int x = 0; x < image1.getWidth(); x++) {
             for (int y = 0; y < image1.getHeight(); y++) {
-                imgNew.setPixelColor(x, y, image1.getPixelColor(x, y));
+                imgNew.setColor(x, y, image1.getColor(x, y));
             }
         }
 

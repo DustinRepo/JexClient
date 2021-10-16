@@ -29,7 +29,7 @@ public class AutoDisconnect extends Feature {
                     case "Disconnect" -> {
                         Wrapper.INSTANCE.getWorld().disconnect();
                         Wrapper.INSTANCE.getMinecraft().disconnect();
-                        Wrapper.INSTANCE.getMinecraft().openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), new LiteralText("Disconnected"), new LiteralText("Disconnected because your health was below a set amount")));
+                        Wrapper.INSTANCE.getMinecraft().setScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), new LiteralText("Disconnected"), new LiteralText("Disconnected because your health was below a set amount")));
                     }
                     case "Chars" -> NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket("\247r"));
                     case "Invalid Pos" -> NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, false));

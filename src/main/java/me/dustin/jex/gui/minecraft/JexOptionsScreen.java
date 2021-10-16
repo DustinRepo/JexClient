@@ -56,13 +56,13 @@ public class JexOptionsScreen extends Screen {
             updating = true;
         });
         clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, new LiteralText("Open ClickGUI"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(Gui.clickgui);
+            Wrapper.INSTANCE.getMinecraft().setScreen(Gui.clickgui);
         });
         xrayButton = new ButtonWidget(centerX - 75, topY + 75, 150, 20, new LiteralText("Xray Block Selection"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new XraySelectScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new XraySelectScreen());
         });
         searchButton = new ButtonWidget(centerX - 75, topY + 100, 150, 20, new LiteralText("Search Block Selection"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new SearchSelectScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new SearchSelectScreen());
         });
         reloadAddonsButton = new ButtonWidget(centerX - 75, topY + 125, 150, 20, new LiteralText("Reload Capes and Hats"), button -> {
             Addon.clearAddons();
@@ -76,7 +76,7 @@ public class JexOptionsScreen extends Screen {
             timer.reset();
         });
         waypointScreenButton = new ButtonWidget(centerX - 230, topY + 25, 150, 20, new LiteralText("Waypoint Screen"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
         });
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 

@@ -97,7 +97,7 @@ public enum JexClient {
         if (event instanceof EventKeyPressed eventKeyPressed) {
             if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {
                 if (eventKeyPressed.getKey() == GLFW.GLFW_KEY_INSERT)
-                    Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
+                    Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
                 FeatureManager.INSTANCE.getFeatures().forEach(module -> {
                     if (module.getKey() == eventKeyPressed.getKey()) {
                         module.toggleState();

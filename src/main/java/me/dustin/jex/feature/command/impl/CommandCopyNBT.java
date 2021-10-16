@@ -16,8 +16,8 @@ public class CommandCopyNBT extends Command {
     public void registerCommand() {
         dispatcher.register(literal(this.name).executes(this).then(literal("display").executes(context -> {
             ItemStack itemStack = context.getSource().getPlayer().getMainHandStack();
-            assert itemStack.getTag() != null;
-            String nbt = itemStack.getTag().toString();
+            assert itemStack.getNbt() != null;
+            String nbt = itemStack.getNbt().toString();
             Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(nbt.replace("\247", "\\247"));
             ChatHelper.INSTANCE.addClientMessage(nbt);
             ChatHelper.INSTANCE.addClientMessage("NBT Copied to clipboard");
@@ -32,8 +32,8 @@ public class CommandCopyNBT extends Command {
             return 0;
         }
         ItemStack itemStack = context.getSource().getPlayer().getMainHandStack();
-        assert itemStack.getTag() != null;
-        String nbt = itemStack.getTag().toString();
+        assert itemStack.getNbt() != null;
+        String nbt = itemStack.getNbt().toString();
         Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(nbt.replace("\247", "\\247"));
         ChatHelper.INSTANCE.addClientMessage("NBT Copied to clipboard");
         return 1;

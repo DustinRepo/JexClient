@@ -43,7 +43,7 @@ public class Trajectories extends Feature {
     }
 
     public static boolean isCharged(ItemStack stack) {
-        NbtCompound compoundTag = stack.getTag();
+        NbtCompound compoundTag = stack.getNbt();
         return compoundTag != null && compoundTag.getBoolean("Charged");
     }
 
@@ -62,7 +62,7 @@ public class Trajectories extends Feature {
                 ItemStack itemStack = new ItemStack(Items.ARROW);
                 ArrowItem arrowItem = (ArrowItem) itemStack.getItem();
                 PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(Wrapper.INSTANCE.getWorld(), itemStack, Wrapper.INSTANCE.getLocalPlayer());
-                persistentProjectileEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, f * 3.0F, 0);
+                persistentProjectileEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, f * 3.0F, 0);
                 for (int j = 0; j < 200; j++) {
                     persistentProjectileEntity.tick();
                     positions.add(persistentProjectileEntity.getPos());
@@ -95,7 +95,7 @@ public class Trajectories extends Feature {
             } else if (mainStack.getItem() instanceof SnowballItem) {
                 SnowballEntity snowballEntity = new SnowballEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 snowballEntity.setItem(mainStack);
-                snowballEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
+                snowballEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
                 IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) snowballEntity;
                 for (int j = 0; j < 200; j++) {
                     snowballEntity.tick();
@@ -115,7 +115,7 @@ public class Trajectories extends Feature {
             } else if (mainStack.getItem() instanceof EnderPearlItem) {
                 EnderPearlEntity enderPearlEntity = new EnderPearlEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 enderPearlEntity.setItem(mainStack);
-                enderPearlEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
+                enderPearlEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
                 IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) enderPearlEntity;
                 for (int j = 0; j < 200; j++) {
                     enderPearlEntity.tick();
@@ -135,7 +135,7 @@ public class Trajectories extends Feature {
             } else if (mainStack.getItem() instanceof ThrowablePotionItem) {
                 PotionEntity potionEntity = new PotionEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 potionEntity.setItem(mainStack);
-                potionEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), -20.0F, 0.5F, 0);
+                potionEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), -20.0F, 0.5F, 0);
                 IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) potionEntity;
                 for (int j = 0; j < 200; j++) {
                     potionEntity.tick();
@@ -155,7 +155,7 @@ public class Trajectories extends Feature {
             } else if (mainStack.getItem() instanceof TridentItem) {
                 int j1 = EnchantmentHelper.getRiptide(mainStack);
                 TridentEntity tridentEntity = new TridentEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), mainStack);
-                tridentEntity.setProperties(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 2.5F + (float) j1 * 0.5F, 0);
+                tridentEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 2.5F + (float) j1 * 0.5F, 0);
                 for (int j = 0; j < 200; j++) {
                     tridentEntity.tick();
                     positions.add(tridentEntity.getPos());
