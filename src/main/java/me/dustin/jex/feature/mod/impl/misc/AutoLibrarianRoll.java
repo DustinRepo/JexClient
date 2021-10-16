@@ -2,7 +2,6 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.misc.EventDisplayScreen;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -138,8 +137,7 @@ public class AutoLibrarianRoll extends Feature {
                         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, lecternInvSlot < 9 ? lecternInvSlot + 36 : lecternInvSlot, SlotActionType.SWAP, 8);
                         return;
                     } else {
-                        InventoryHelper.INSTANCE.getInventory().selectedSlot = lecternHotbarSlot;
-                        NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(lecternHotbarSlot));
+                        InventoryHelper.INSTANCE.setSlot(lecternHotbarSlot, true, true);
                         NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
                         PlayerHelper.INSTANCE.placeBlockInPos(lecternPos, Hand.MAIN_HAND, false);
                         NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));

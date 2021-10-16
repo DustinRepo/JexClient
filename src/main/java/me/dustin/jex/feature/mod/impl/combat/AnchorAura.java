@@ -86,10 +86,10 @@ public class AnchorAura extends Feature {
                         int glowstone = InventoryHelper.INSTANCE.getFromHotbar(Items.GLOWSTONE);
                         if (glowstone != -1) {
                             int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = glowstone;
+                            InventoryHelper.INSTANCE.setSlot(glowstone, true, true);
                             Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(anchor.getX(), anchor.getY(), anchor.getZ()), Direction.UP, anchor, false));
                             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+                            InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                             attackTimer.reset();
                             return;
                         }

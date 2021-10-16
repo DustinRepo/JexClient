@@ -31,7 +31,7 @@ public class AutoPot extends Feature {
 	public boolean throwing = false;
 	int savedSlot;
 	private Timer timer = new Timer();
-	
+
 	@EventListener(events = { EventPlayerPackets.class })
 	public void run(Event event) {
 		if (event instanceof EventPlayerPackets playerPacketEvent) {
@@ -49,16 +49,14 @@ public class AutoPot extends Feature {
 						playerPacketEvent.setPitch(90);
 						playerPacketEvent.setYaw(PlayerHelper.INSTANCE.getYaw());
 						savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-						NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(getFirstPotion()));
-						InventoryHelper.INSTANCE.getInventory().selectedSlot = getFirstPotion();
+						InventoryHelper.INSTANCE.setSlot(getFirstPotion(), true, true);
 						timer.reset();
 					} else {
 						InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstPotion() < 9 ? getFirstPotion() + 36 : getFirstPotion(), SlotActionType.SWAP, 8);
 						playerPacketEvent.setPitch(90);
 						playerPacketEvent.setYaw(PlayerHelper.INSTANCE.getYaw());
 						savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-						NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(8));
-						InventoryHelper.INSTANCE.getInventory().selectedSlot = 8;
+						InventoryHelper.INSTANCE.setSlot(8, true, true);
 						throwing = true;
 						timer.reset();
 					}
@@ -70,8 +68,7 @@ public class AutoPot extends Feature {
 					if (getFirstPotion() != -1) {
 						if (getFirstPotion() < 9) {
 							NetworkHelper.INSTANCE.sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND));
-							NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(savedSlot));
-							InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+							InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
 							throwing = false;
 							timer.reset();
 						} else {

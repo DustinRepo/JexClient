@@ -33,7 +33,7 @@ public class BucketCatch extends Feature {
             if (placedBucket && Wrapper.INSTANCE.getLocalPlayer().fallDistance < fallDistance) {
                 int bucket = InventoryHelper.INSTANCE.getFromHotbar(Items.BUCKET);
                 if (bucket != -1) {
-                    InventoryHelper.INSTANCE.getInventory().selectedSlot = bucket;
+                    InventoryHelper.INSTANCE.setSlot(bucket, true, true);
                     if (rotate)
                         PlayerHelper.INSTANCE.setPitch(90);
                     eventPlayerPackets.setPitch(90);
@@ -49,7 +49,7 @@ public class BucketCatch extends Feature {
             if (!placedBucket && Wrapper.INSTANCE.getLocalPlayer().fallDistance >= fallDistance && EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) <= 3.5f && !placedBucket) {
                 int waterBucketSlot = InventoryHelper.INSTANCE.getFromHotbar(Items.WATER_BUCKET);
                 if (waterBucketSlot != -1) {
-                    InventoryHelper.INSTANCE.getInventory().selectedSlot = waterBucketSlot;
+                    InventoryHelper.INSTANCE.setSlot(waterBucketSlot, true, true);
                     if (rotate)
                         PlayerHelper.INSTANCE.setPitch(90);
                     eventPlayerPackets.setPitch(90);

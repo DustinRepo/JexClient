@@ -88,9 +88,9 @@ public class FastAnvilDupe extends Feature {
                                     }
                                 } else {
                                     PlayerHelper.INSTANCE.setPitch(90);
-                                    NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(xpBottleSlot));
+                                    InventoryHelper.INSTANCE.setSlot(xpBottleSlot, false, true);
                                     Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
-                                    NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot));
+                                    InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
                                 }
                             }
                             pickedUp = false;
@@ -167,8 +167,8 @@ public class FastAnvilDupe extends Feature {
                 FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Filled Inventory?", midX + 90, midY - 60, !InventoryHelper.INSTANCE.isInventoryFull() ? 0xffff0000 : 0xff00ff00);
                 FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Duping Item\2477: \247f" + (dupingItem == null ? "None" : dupingItem.getName().getString()), midX + 90, midY - 50, ColorHelper.INSTANCE.getClientColor());
             }
-        } else if (event instanceof EventDisplayScreen eventDisplayScreen) {
-            if (eventDisplayScreen.getScreen() == null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AnvilScreen && !(KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_ESCAPE) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_E))) {
+        } else if (event instanceof EventDisplayScreen eventSetScreen) {
+            if (eventSetScreen.getScreen() == null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AnvilScreen && !(KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_ESCAPE) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_E))) {
                 pickedUp = false;
                 if (!openNext)
                     return;

@@ -84,7 +84,7 @@ public class AntiLiquid extends Feature {
                                 NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
                             }
                             eventPlayerPackets.setRotation(PlayerHelper.INSTANCE.getRotations(PlayerHelper.INSTANCE.getPlacingLookPos(pos, illegalPlace), Wrapper.INSTANCE.getLocalPlayer()));
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = getBlockFromHotbar();
+                            InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
                             if (placeMode.equalsIgnoreCase("Pre")) {
                                 PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlace);
                             }

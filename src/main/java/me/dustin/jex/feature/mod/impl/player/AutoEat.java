@@ -69,7 +69,7 @@ public class AutoEat extends Feature {
                         savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         if (BaritoneHelper.INSTANCE.baritoneExists())
                             BaritoneHelper.INSTANCE.pause();
-                        InventoryHelper.INSTANCE.getInventory().selectedSlot = getBestFood().slot;
+                        InventoryHelper.INSTANCE.setSlot(getBestFood().slot, true, true);
                         lastFood = Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel();
                         isEating = true;
                     }
@@ -77,9 +77,9 @@ public class AutoEat extends Feature {
                         if (lastFood < Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
                             isEating = false;
                             if (pressKey)
-                            Wrapper.INSTANCE.getOptions().keyUse.setPressed(false);
+                                Wrapper.INSTANCE.getOptions().keyUse.setPressed(false);
                             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
-                            InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+                            InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                         }
                         lastFood = Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel();
                         if (BaritoneHelper.INSTANCE.baritoneExists()) {
@@ -88,13 +88,13 @@ public class AutoEat extends Feature {
                     }
                     if (isEating) {
                         if (pressKey)
-                        Wrapper.INSTANCE.getOptions().keyUse.setPressed(true);
+                            Wrapper.INSTANCE.getOptions().keyUse.setPressed(true);
                         Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
                     }
                 } else if (isEating) {
                     isEating = false;
                     NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
-                    InventoryHelper.INSTANCE.getInventory().selectedSlot = savedSlot;
+                    InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                 }
                 wasEating = isEating;
             }

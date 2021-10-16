@@ -31,6 +31,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.irc.IRCManager;
 import me.dustin.jex.helper.network.JexServerHelper;
 import me.dustin.jex.helper.network.ProxyHelper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.EntityPositionHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -82,6 +83,7 @@ public enum JexClient {
         EventAPI.getInstance().register(ProxyHelper.INSTANCE);
         EventAPI.getInstance().register(WorldHelper.INSTANCE);
         EventAPI.getInstance().register(PlayerHelper.INSTANCE);
+        EventAPI.getInstance().register(InventoryHelper.INSTANCE);
         EventAPI.getInstance().register(ColorHelper.INSTANCE);
         EventAPI.getInstance().register(EntityPositionHelper.INSTANCE);
         EventAPI.getInstance().register(JexServerHelper.INSTANCE);
