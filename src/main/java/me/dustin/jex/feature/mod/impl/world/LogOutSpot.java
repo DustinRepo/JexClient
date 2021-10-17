@@ -23,7 +23,7 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
 import net.minecraft.util.math.Vec3d;
 
-@Manifest(name = "LogOutSpot", category = Category.WORLD, description = "Shows you where players have logged out at")
+@Manifest(category = Category.WORLD, description = "Shows you where players have logged out at")
 public class LogOutSpot extends Feature {
 	
 	private ArrayList<PlayerData> logOutList = new ArrayList<>();

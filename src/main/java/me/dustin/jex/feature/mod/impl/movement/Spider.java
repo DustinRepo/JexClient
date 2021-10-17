@@ -10,7 +10,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(name = "Spider", category = Feature.Category.MOVEMENT, description = "Climb up walls like a spider.")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Climb up walls like a spider.")
 public class Spider extends Feature {
 
 	@Op(name = "Mode", all = { "Vanilla", "NCP" })

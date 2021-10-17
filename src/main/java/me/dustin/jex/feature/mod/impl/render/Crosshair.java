@@ -15,7 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
-@Feature.Manifest(name = "Crosshair", category = Feature.Category.VISUAL, description = "Draw a custom crosshair on-screen.")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Draw a custom crosshair on-screen.")
 public class Crosshair extends Feature {
 
 	@Op(name = "Color", isColor = true)

@@ -9,7 +9,7 @@ import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 
 import java.nio.charset.StandardCharsets;
 
-@Feature.Manifest(name = "VanillaSpoof", category = Feature.Category.MISC, description = "Tell the server you are a vanilla player")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Tell the server you are a vanilla player")
 public class VanillaSpoof extends Feature {
 
     @EventListener(events = {EventPacketSent.class})

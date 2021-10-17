@@ -7,8 +7,8 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(name = "FallSpeed", category = Feature.Category.MOVEMENT, description = "Fall faster")
-public class FastFall extends Feature {
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Fall faster")
+public class FallSpeed extends Feature {
 
     @Op(name = "Fall Distance", min = 0, max = 10, inc = 0.5f)
     public float fallDistance = 3;

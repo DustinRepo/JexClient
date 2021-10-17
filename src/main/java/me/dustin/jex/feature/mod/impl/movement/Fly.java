@@ -23,7 +23,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.stream.Stream;
 
-@Feature.Manifest(name = "Fly", category = Feature.Category.MOVEMENT, description = "Fly in survival", key = GLFW.GLFW_KEY_F)
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Fly in survival", key = GLFW.GLFW_KEY_F)
 public class Fly extends Feature {
 
     @Op(name = "Speed", min = 0.1f, max = 5f, inc = 0.1f)

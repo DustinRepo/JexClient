@@ -15,7 +15,7 @@ import net.minecraft.world.chunk.Chunk;
 
 import java.awt.*;
 
-@Feature.Manifest(name = "StorageESP", category = Feature.Category.VISUAL, description = "Show storage blocks through walls")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show storage blocks through walls")
 public class StorageESP extends Feature {
 
     @Op(name = "Mode", all = {"Box", "Shader"})

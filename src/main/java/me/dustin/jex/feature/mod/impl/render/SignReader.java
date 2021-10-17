@@ -20,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.HashMap;
 
-@Feature.Manifest(name = "SignReader", category = Feature.Category.VISUAL, description = "Display the text of a hovered sign on screen.")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Display the text of a hovered sign on screen.")
 public class SignReader extends Feature {
 
     @Op(name = "Scale", min = 0.1f, max = 2, inc = 0.05f)

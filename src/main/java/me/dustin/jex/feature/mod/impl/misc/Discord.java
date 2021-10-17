@@ -10,7 +10,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 
 import java.util.Objects;
 
-@Feature.Manifest(name = "DiscordRPC", category = Feature.Category.MISC, description = "Show on Discord that you are using Jex Client", enabled = true, visible = false)
+@Feature.Manifest(category = Feature.Category.MISC, description = "Show on Discord that you are using Jex Client", enabled = true, visible = false)
 public class Discord extends Feature {
 
     @Op(name = "Show Server IP")

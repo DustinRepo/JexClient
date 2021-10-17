@@ -25,7 +25,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-@Feature.Manifest(name = "AutoEZ", category = Feature.Category.COMBAT, description = "Automatically send messages when you kill players. Configurable messages in .minecraft/JexClient/KillMessages.json")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically send messages when you kill players. Configurable messages in .minecraft/JexClient/KillMessages.json")
 public class AutoEZ extends Feature {
 
     @Op(name = "Max Kill Detect Delay(MS)", min = 100, max = 500, inc = 10)

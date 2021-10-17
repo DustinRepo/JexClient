@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
-@Feature.Manifest(name = "ShulkerToolTip", category = Feature.Category.VISUAL, description = "Show the contents of a shulker box as a tooltip.")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show the contents of a shulker box as a tooltip.")
 public class ShulkerToolTip extends Feature {
 
     private final Identifier SHULKER_GUI = new Identifier("textures/gui/container/shulker_box.png");

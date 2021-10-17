@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feature.Manifest(name = "AutoArmor", category = Feature.Category.COMBAT, description = "Puts on the best armor in your inventory automatically.")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Puts on the best armor in your inventory automatically.")
 public class AutoArmor extends Feature {
 
     @Op(name = "Delay (MS)", max = 1000)

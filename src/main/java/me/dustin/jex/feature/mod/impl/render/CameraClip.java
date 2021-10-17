@@ -4,7 +4,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventClipCamera;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(name = "CameraClip", category = Feature.Category.VISUAL, description = "Remove the restriction forcing cameras close near a wall")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Remove the restriction forcing cameras close near a wall")
 public class CameraClip extends Feature {
 
     @EventListener(events = {EventClipCamera.class})

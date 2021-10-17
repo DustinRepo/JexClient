@@ -11,7 +11,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feature.Manifest(name = "MendingSaver", category = Feature.Category.MISC, description = "Save your mending tools from breaking by putting them away automatically.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Save your mending tools from breaking by putting them away automatically.")
 public class MendingSaver extends Feature {
 
     @Op(name = "Notify")

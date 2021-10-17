@@ -34,7 +34,7 @@ import org.lwjgl.glfw.GLFW;
 import java.awt.*;
 import java.util.*;
 
-@Feature.Manifest(name = "HUD", category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
 public class Hud extends Feature {
 
     @Op(name = "Client Color", isColor = true)

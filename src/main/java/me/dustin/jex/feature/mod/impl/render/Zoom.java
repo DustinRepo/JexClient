@@ -9,7 +9,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(name = "Zoom", category = Feature.Category.VISUAL, description = "Zoom in like Optifine")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Zoom in like Optifine")
 public class Zoom extends Feature {
 
     @Op(name = "Zoom Level", min = 1, max = 5, inc = 0.1f)

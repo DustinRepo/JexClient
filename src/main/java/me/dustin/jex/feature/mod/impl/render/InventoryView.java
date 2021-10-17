@@ -15,7 +15,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 
-@Feature.Manifest(name = "InventoryView", category = Feature.Category.VISUAL, description = "Show your inventory on your HUD")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show your inventory on your HUD")
 public class InventoryView extends Feature {
 
     @Op(name = "Location", all = {"Top", "Bottom"})

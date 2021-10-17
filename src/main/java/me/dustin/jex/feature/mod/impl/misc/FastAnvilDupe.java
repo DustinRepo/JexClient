@@ -41,7 +41,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "FastAnvilDupe", category = Feature.Category.MISC, description = "Speeds up the current anvil dupe. Patched in 1.17.1")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Speeds up the current anvil dupe. Patched in 1.17.1")
 public class FastAnvilDupe extends Feature {
 
     @Op(name = "Mark Damaged")

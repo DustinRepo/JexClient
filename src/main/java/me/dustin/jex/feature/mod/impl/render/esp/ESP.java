@@ -20,7 +20,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-@Feature.Manifest(name = "ESP", category = Feature.Category.VISUAL, description = "Mark entities/players through walls")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Mark entities/players through walls")
 public class ESP extends Feature {
     public static ESP INSTANCE;
     @Op(name = "Mode", all = {"Shader", "2D", "Box Outline", "Box"})

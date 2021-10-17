@@ -8,7 +8,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(name = "Sneak", category = Feature.Category.PLAYER, description = "Sneak around to hide your nametag", key = GLFW.GLFW_KEY_Z)
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Sneak around to hide your nametag", key = GLFW.GLFW_KEY_Z)
 public class Sneak extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

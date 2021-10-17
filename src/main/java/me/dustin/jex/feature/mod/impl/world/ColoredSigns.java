@@ -5,7 +5,7 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 
-@Feature.Manifest(name = "ColoredSigns", category = Feature.Category.WORLD, description = "Color coded signs. Use & for the color code")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Color coded signs. Use & for the color code")
 public class ColoredSigns extends Feature {
 
     @EventListener(events = {EventPacketSent.class})

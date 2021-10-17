@@ -10,7 +10,7 @@ import net.minecraft.item.AirBlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feature.Manifest(name = "AutoMend", category = Feature.Category.MISC, description = "Automatically hold a mending item in your offhand until it has full durability")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically hold a mending item in your offhand until it has full durability")
 public class AutoMend extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

@@ -16,7 +16,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
-@Feature.Manifest(name = "OldBlocking", category = Feature.Category.VISUAL, description = "Get the pre-1.9 block animation when blocking with a shield.")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Get the pre-1.9 block animation when blocking with a shield.")
 public class OldBlocking extends Feature {
 
     @Op(name = "Mode", all = {"Swords", "Tools", "All Items"})

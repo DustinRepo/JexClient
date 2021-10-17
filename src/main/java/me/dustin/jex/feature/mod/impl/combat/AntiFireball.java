@@ -10,7 +10,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.util.Hand;
 
-@Feature.Manifest(name = "AntiFireball", category = Feature.Category.COMBAT, description = "Knock away fireballs from ghasts")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Knock away fireballs from ghasts")
 public class AntiFireball extends Feature {
 
     @Op(name = "Range", min = 1, max = 6, inc = 0.1f)

@@ -6,7 +6,7 @@ import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.misc.EventServerTurn;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(name = "NoTurn", category = Feature.Category.PLAYER, description = "Ignore the server telling you to look somewhere.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Ignore the server telling you to look somewhere.")
 public class NoTurn extends Feature {
 
     boolean reconnected;

@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
-@Feature.Manifest(name = "Tracers", category = Feature.Category.VISUAL, description = "Draw a line to entities in range.")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Draw a line to entities in range.")
 public class Tracers extends Feature {
 
     @Op(name = "Spine")

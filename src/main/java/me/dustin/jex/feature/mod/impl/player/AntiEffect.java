@@ -7,7 +7,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.entity.effect.StatusEffects;
 
-@Feature.Manifest(name = "AntiEffect", category = Feature.Category.PLAYER, description = "Remove certain negative effects from yourself.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Remove certain negative effects from yourself.")
 public class AntiEffect extends Feature {
 
     @Op(name = "Blindness")

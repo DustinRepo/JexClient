@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-@Feature.Manifest(name = "ArmorDerp", category = Feature.Category.MISC, description = "Spam switch between armor in your inventory")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Spam switch between armor in your inventory")
 public class ArmorDerp extends Feature {
 
     @Op(name = "Delay (MS)", max = 1000, inc = 10)

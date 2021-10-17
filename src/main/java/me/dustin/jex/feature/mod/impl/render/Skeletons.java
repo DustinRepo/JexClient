@@ -20,7 +20,7 @@ import net.minecraft.util.math.*;
 
 import java.awt.*;
 
-@Feature.Manifest(name = "Skeletons", category = Feature.Category.VISUAL, description = "Draw player skeletons")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Draw player skeletons")
 public class Skeletons extends Feature {//it looks cool as fuck but seriously fuck this was a massive pain in the ass
 
     @Op(name = "Color", isColor = true)

@@ -21,7 +21,7 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-@Feature.Manifest(name = "AutoTotem", category = Feature.Category.COMBAT, description = "Keep a Totem in your offhand at all times.")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Keep a Totem in your offhand at all times.")
 public class AutoTotem extends Feature {
 
     @Op(name = "Check Health")

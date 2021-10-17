@@ -21,7 +21,7 @@ import net.minecraft.world.RaycastContext;
 import java.util.ArrayList;
 import java.util.Random;
 
-@Feature.Manifest(name = "SuperheroFX", category = Feature.Category.VISUAL, description = "Add comic \"Pow!\" and others to the game")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Add comic \"Pow!\" and others to the game")
 public class SuperheroFX extends Feature{
 
     @Op(name = "Visible Only")

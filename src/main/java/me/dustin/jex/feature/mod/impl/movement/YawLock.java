@@ -6,7 +6,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.player.PlayerHelper;
 
-@Feature.Manifest(name = "YawLock", category = Feature.Category.MOVEMENT, description = "Keep your yaw locked to walk straight.")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Keep your yaw locked to walk straight.")
 public class YawLock extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

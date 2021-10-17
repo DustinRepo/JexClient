@@ -5,7 +5,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(name = "AutoRespawn", category = Feature.Category.MISC, description = "Respawn without having to click anything.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Respawn without having to click anything.")
 public class AutoRespawn extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

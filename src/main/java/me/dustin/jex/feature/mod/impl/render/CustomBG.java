@@ -20,7 +20,7 @@ import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.Matrix4f;
 
-@Feature.Manifest(name = "CustomBG", category = Feature.Category.VISUAL, description = "Draws a custom background rather than the simple dark one")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Draws a custom background rather than the simple dark one")
 public class CustomBG extends Feature {
 
     @Op(name = "InGame Only")

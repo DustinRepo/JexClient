@@ -24,7 +24,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-@Feature.Manifest(name = "AutoEat", category = Feature.Category.PLAYER, description = "Eat food when hunger is low.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Eat food when hunger is low.")
 public class AutoEat extends Feature {
 
     public static boolean isEating;

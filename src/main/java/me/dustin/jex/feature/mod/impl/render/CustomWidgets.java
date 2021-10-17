@@ -23,7 +23,7 @@ import net.minecraft.util.math.MathHelper;
 import java.util.HashMap;
 import java.util.Map;
 
-@Feature.Manifest(name = "CustomWidgets", category = Feature.Category.VISUAL, description = "Change the visuals on widgets like buttons from Minecraft", enabled = true, visible = false)
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the visuals on widgets like buttons from Minecraft", enabled = true, visible = false)
 public class CustomWidgets extends Feature {
 
     @Op(name = "Shrink Speed", min = 1, max = 10, inc = 0.1f)

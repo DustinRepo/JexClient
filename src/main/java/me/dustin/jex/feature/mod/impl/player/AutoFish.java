@@ -28,7 +28,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.ConcurrentModificationException;
 
-@Feature.Manifest(name = "AutoFish", category = Feature.Category.PLAYER, description = "Automatically detect a fish on the hook")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically detect a fish on the hook")
 public class AutoFish extends Feature {
 
     @Op(name = "Sound")

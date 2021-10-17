@@ -18,7 +18,7 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 
-@Feature.Manifest(name = "AutoReconnect", category = Feature.Category.MISC, description = "Reconnect automatically.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Reconnect automatically.")
 public class AutoReconnect extends Feature {
 
     @Op(name = "Delay", min = 1000, max = 20000, inc = 500)
@@ -37,8 +37,8 @@ public class AutoReconnect extends Feature {
                 }
             } else
                 timer.reset();
-        } else if (event instanceof EventDisplayScreen) {
-            if (((EventDisplayScreen) event).getScreen() instanceof DisconnectedScreen)
+        } else if (event instanceof EventDisplayScreen eventDisplayScreen) {
+            if (eventDisplayScreen.getScreen() instanceof DisconnectedScreen)
                 timer.reset();
         } else if (event instanceof EventJoinWorld) {
             if (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() != null) {

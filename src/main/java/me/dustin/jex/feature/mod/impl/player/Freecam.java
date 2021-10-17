@@ -27,7 +27,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.UUID;
 
-@Feature.Manifest(name = "Freecam", category = Feature.Category.PLAYER, description = "Take a look around like a ghost.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Take a look around like a ghost.")
 public class Freecam extends Feature {
 
     @Op(name = "Stealth")

@@ -13,7 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feature.Manifest(name = "ChestStealer", category = Feature.Category.WORLD, description = "Automatically steal from chests when opened.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically steal from chests when opened.")
 public class ChestStealer extends Feature {
 
     @Op(name = "Delay", max = 1000, inc = 10)

@@ -16,7 +16,7 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 
 import java.util.Map;
 
-@Feature.Manifest(name = "AutoWeapon", category = Feature.Category.COMBAT, description = "Automatically swap to the best weapon when attacking.")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically swap to the best weapon when attacking.")
 public class AutoWeapon extends Feature {
 
     @Op(name = "Living Only")

@@ -9,7 +9,7 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
-@Feature.Manifest(name = "Criticals", category = Feature.Category.COMBAT, description = "Automatically deal critical strikes when attacking.")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically deal critical strikes when attacking.")
 public class Criticals extends Feature {
 
     @Op(name = "Living Only")

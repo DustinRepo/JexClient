@@ -28,7 +28,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Feature.Manifest(name = "Waypoints", category = Feature.Category.WORLD, description = "Display Waypoints to mark areas.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Display Waypoints to mark areas.")
 public class Waypoints extends Feature {
 
 	public static ArrayList<String> servers = new ArrayList<>();

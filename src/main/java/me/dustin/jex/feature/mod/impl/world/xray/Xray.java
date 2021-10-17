@@ -22,7 +22,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "Xray", category = Feature.Category.WORLD, description = "Have 200 iq while mining. Not cheating I promise.", key = GLFW.GLFW_KEY_X)
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Have 200 iq while mining. Not cheating I promise.", key = GLFW.GLFW_KEY_X)
 public class Xray extends Feature {
     public static Xray INSTANCE;
 

@@ -16,7 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Feature.Manifest(name = "CustomFont", category = Feature.Category.VISUAL, description = "Change the font in aspects of the game. Disable then re-enable to reload fonts from folder (.minecraft/JexClient/fonts)")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the font in aspects of the game. Disable then re-enable to reload fonts from folder (.minecraft/JexClient/fonts)")
 public class CustomFont extends Feature {
     public static CustomFont INSTANCE;
 

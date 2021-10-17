@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
-@Feature.Manifest(name = "MobOwners", category = Feature.Category.VISUAL, description = "Show the names of the owners of tamed mobs")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show the names of the owners of tamed mobs")
 public class OwnerTags extends Feature {
 
     @Op(name = "Draw Faces")

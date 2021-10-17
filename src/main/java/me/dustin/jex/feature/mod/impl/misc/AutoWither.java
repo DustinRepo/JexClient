@@ -16,7 +16,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-@Feature.Manifest(name = "AutoWither", category = Feature.Category.MISC, description = "Automatically create withers by just placing soul sand")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically create withers by just placing soul sand")
 public class AutoWither extends Feature {
 
     int stage = 0;

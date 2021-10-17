@@ -20,7 +20,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.Random;
 
-@Feature.Manifest(name = "CreativeDrop", category = Feature.Category.MISC, description = "Drop all items from your inventory in creative.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Drop all items from your inventory in creative.")
 public class CreativeDrop extends Feature {
 
     @Op(name = "Drop Delay (MS)", max = 1000, inc = 10)

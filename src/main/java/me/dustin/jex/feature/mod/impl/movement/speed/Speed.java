@@ -12,7 +12,7 @@ import me.dustin.jex.feature.mod.impl.movement.speed.impl.VanillaSpeed;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 
-@Feature.Manifest(name = "Speed", category = Feature.Category.MOVEMENT, description = "Sanic gotta go fast.")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Sanic gotta go fast.")
 public class Speed extends Feature {
 
     @Op(name = "Mode", all = {"Vanilla", "Strafe"})

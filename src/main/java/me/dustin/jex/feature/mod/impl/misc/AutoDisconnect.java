@@ -13,7 +13,7 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.text.LiteralText;
 
-@Feature.Manifest(name = "AutoDisconnect", category = Feature.Category.MISC, description = "Automatically disconnect when your health gets below a certain value")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically disconnect when your health gets below a certain value")
 public class AutoDisconnect extends Feature {
 
     @Op(name = "Mode", all = {"Disconnect", "Chars", "Invalid Pos"})

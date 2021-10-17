@@ -5,7 +5,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(name = "AntiHunger", category = Feature.Category.PLAYER, description = "Lose less hunger while sprinting.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Lose less hunger while sprinting.")
 public class AntiHunger extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

@@ -25,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(name = "Roaster", category = Feature.Category.COMBAT, description = "Roast your friends.")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Roast your friends.")
 public class Roaster extends Feature {
 
     @Op(name = "Player")

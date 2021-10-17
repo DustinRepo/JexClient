@@ -23,8 +23,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "Aura", category = Feature.Category.COMBAT, description = "Attack entities around you.", key = GLFW.GLFW_KEY_R)
-public class Killaura extends Feature {
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Attack entities around you.", key = GLFW.GLFW_KEY_R)
+public class KillAura extends Feature {
 
     @Op(name = "Mode", all = {"Single", "Multi"})
     public String mode = "Single";
@@ -92,7 +92,7 @@ public class Killaura extends Feature {
     public ArrayList<PlayerEntity> touchedGround = new ArrayList<>();
     public ArrayList<PlayerEntity> swung = new ArrayList<>();
 
-    public Killaura() {
+    public KillAura() {
         new SingleAura();
         new MultiAura();
     }

@@ -26,7 +26,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(name = "Scaffold", category = Feature.Category.MOVEMENT, description = "Place blocks under yourself automatically.")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Place blocks under yourself automatically.")
 public class Scaffold extends Feature {
 
     @Op(name = "Place Mode", all = {"Post", "Pre"})

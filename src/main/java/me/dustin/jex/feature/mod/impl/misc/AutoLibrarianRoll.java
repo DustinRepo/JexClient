@@ -44,7 +44,7 @@ import net.minecraft.village.VillagerProfession;
 import java.util.HashMap;
 import java.util.Map;
 
-@Feature.Manifest(name = "AutoLibrarianRoll", category = Feature.Category.MISC, description = "Automatically break lecterns matched to a villager until it has the trade you want")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically break lecterns matched to a villager until it has the trade you want")
 public class AutoLibrarianRoll extends Feature {
 
     @Op(name = "Price Mode", all = {"Normal", "Adjusted"})

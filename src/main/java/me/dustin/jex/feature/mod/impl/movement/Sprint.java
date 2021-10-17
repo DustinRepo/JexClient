@@ -10,7 +10,7 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(name = "Sprint", category = Feature.Category.MOVEMENT, description = "Automatically sprint", key = GLFW.GLFW_KEY_V)
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Automatically sprint", key = GLFW.GLFW_KEY_V)
 public class Sprint extends Feature {
 
     @Op(name = "Multi Dir")

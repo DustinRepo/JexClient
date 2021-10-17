@@ -27,8 +27,8 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "LawnBot", category = Feature.Category.WORLD, description = "Replaces mycelium with grass blocks")
-public class LawnBot extends Feature {//WIP mod
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Replaces mycelium with grass blocks")
+public class LawnBot extends Feature {
 
     private me.dustin.jex.helper.misc.Timer timer = new me.dustin.jex.helper.misc.Timer();
 

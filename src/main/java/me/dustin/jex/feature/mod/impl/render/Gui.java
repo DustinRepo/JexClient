@@ -10,7 +10,7 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(name = "Gui", category = Feature.Category.VISUAL, description = "Opens the ClickGui.", key = GLFW.GLFW_KEY_RIGHT_SHIFT)
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Opens the ClickGui.", key = GLFW.GLFW_KEY_RIGHT_SHIFT)
 public class Gui extends Feature {
     public static Gui INSTANCE;
     public static ClickGui clickgui = new ClickGui(new LiteralText("Click Gui"));

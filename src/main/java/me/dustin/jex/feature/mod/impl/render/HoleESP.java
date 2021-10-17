@@ -17,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 import java.awt.*;
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "HoleESP", category = Feature.Category.VISUAL, description = "Automatically show holes for safe crystal-ing")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Automatically show holes for safe crystal-ing")
 public class HoleESP extends Feature {
 
     @Op(name = "Fade Box")

@@ -7,7 +7,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.client.util.math.MatrixStack;
 
-@Feature.Manifest(name = "ItemScale", category = Feature.Category.VISUAL, description = "Change the scale and positioning of items in your hands")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the scale and positioning of items in your hands")
 public class ItemScale extends Feature {
 
     @Op(name = "Right Hand")

@@ -25,7 +25,7 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
 
-@Feature.Manifest(name = "Announcer", category = Feature.Category.MISC, description = "Fastest way to get muted! Fully customizable with files in the Jex folder")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Fastest way to get muted! Fully customizable with files in the Jex folder")
 public class Announcer extends Feature {
 
     @Op(name = "Message Delay", min = 50, max = 5000, inc = 10)

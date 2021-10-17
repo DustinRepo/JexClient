@@ -28,7 +28,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-@Feature.Manifest(name = "AutoCope", category = Feature.Category.COMBAT, description = "Automatically send messages when you die to a player. Configurable messages in .minecraft/JexClient/CopeMessages.json")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically send messages when you die to a player. Configurable messages in .minecraft/JexClient/CopeMessages.json")
 public class AutoCope extends Feature {
 
     private ArrayList<String> messages = new ArrayList<>();

@@ -24,7 +24,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(name = "TunnelFinder", category = Feature.Category.VISUAL, description = "Find tunnels in the nether that might lead to bases.")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Find tunnels in the nether that might lead to bases.")
 public class TunnelFinder extends Feature {
 
     @Op(name = "Color", isColor = true)

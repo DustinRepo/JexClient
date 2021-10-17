@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Feature.Manifest(name = "Messages", category = Feature.Category.MISC, description = "Modify messages you send in chat")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Modify messages you send in chat")
 public class Messages extends Feature {
 
     @Op(name = "Mode", all = {"Fancy", "Upside-Down", "Backwards", "Random Capital"})

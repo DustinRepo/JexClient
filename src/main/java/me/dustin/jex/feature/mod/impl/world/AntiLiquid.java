@@ -34,7 +34,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(name = "AntiLiquid", category = Feature.Category.WORLD, description = "Place blocks under yourself automatically when walking on liquids.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Place blocks under yourself automatically when walking on liquids.")
 public class AntiLiquid extends Feature {
 
     @Op(name = "Place Mode", all = {"Post", "Pre"})

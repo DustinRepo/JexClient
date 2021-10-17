@@ -16,7 +16,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
-@Feature.Manifest(name = "BucketCatch", category = Feature.Category.MOVEMENT, description = "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time")
 public class BucketCatch extends Feature {
 
     @Op(name = "Fall Distance", min = 3, max = 10)

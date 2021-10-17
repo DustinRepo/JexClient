@@ -37,7 +37,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@Feature.Manifest(name = "Nametags", category = Feature.Category.VISUAL, description = "Render names above players with more info.")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Render names above players with more info.")
 public class Nametag extends Feature {
 
     @Op(name = "Custom Font")
