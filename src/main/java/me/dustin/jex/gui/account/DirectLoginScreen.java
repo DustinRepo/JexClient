@@ -23,7 +23,7 @@ public class DirectLoginScreen extends Screen {
 	private String errorMessage = "";
 
 	public DirectLoginScreen(Screen parent) {
-		super(new LiteralText("Add Account"));
+		super(new LiteralText("Direct Login"));
 		this.parent = parent;
 	}
 
@@ -61,6 +61,7 @@ public class DirectLoginScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, new LiteralText("Login"), button -> {
 			this.errorMessage = "Logging in...";
 			MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
+			mojangAccount.setCracked(!email.getText().contains("@"));
 			try {
 				if (MojangLogin.INSTANCE.login(mojangAccount)) {
 					Wrapper.INSTANCE.getMinecraft().setScreen(parent);
