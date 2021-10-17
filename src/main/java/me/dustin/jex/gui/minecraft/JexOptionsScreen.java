@@ -52,7 +52,7 @@ public class JexOptionsScreen extends Screen {
             ClientSettingsFile.write();
         });
         downloadInstallerButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, new LiteralText("Update Jex to " + UpdateManager.INSTANCE.getLatestVersion()), button -> {
-            Update.INSTANCE.update(UpdateManager.INSTANCE.getLatestVersion());
+            Update.INSTANCE.update();
             updating = true;
         });
         clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, new LiteralText("Open ClickGUI"), button -> {

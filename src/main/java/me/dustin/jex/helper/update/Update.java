@@ -16,7 +16,7 @@ public enum Update {
     private String progressText;
     private float progress;
 
-    public void update(String jexVer) {
+    public void update() {
         if (SharedConstants.getGameVersion().getName().contains("w") && (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_MC || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH)) {
             progressText = "Error. New version for another snapshot, and can not run on this Fabric version";
             return;
@@ -68,18 +68,16 @@ public enum Update {
                 this.progress = (float) (sumCount / size);
             }
         }
-        if (in != null)
-            try {
-                in.close();
-            } catch (IOException e3) {
-                e3.printStackTrace();
-            }
-        if (out != null)
-            try {
-                out.close();
-            } catch (IOException e4) {
-                e4.printStackTrace();
-            }
+        try {
+            in.close();
+        } catch (IOException e3) {
+            e3.printStackTrace();
+        }
+        try {
+            out.close();
+        } catch (IOException e4) {
+            e4.printStackTrace();
+        }
     }
 
     public String getProgressText() {

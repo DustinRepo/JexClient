@@ -30,21 +30,20 @@ public class Discord extends Feature {
         presence = new DiscordRichPresence();
         presence.startTimestamp = System.currentTimeMillis() / 1000; // epoch second
         presence.largeImageKey = "jex";
-        presence.largeImageText = "Jex Client " + JexClient.INSTANCE.getVersion();
-        presence.details = "Jex Client " + JexClient.INSTANCE.getVersion();
+        presence.largeImageText = "Jex Client " + JexClient.INSTANCE.getVersion().version();
+        presence.details = "Jex Client " + JexClient.INSTANCE.getVersion().version();
         presence.state = getDetails();
         lib.Discord_UpdatePresence(presence);
         // in a worker thread
         (discordThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                if (presence == null)return;
-                presence.details = "Jex Client " + JexClient.INSTANCE.getVersion();
-                presence.state = getDetails();
-                lib.Discord_UpdatePresence(presence);
-                //lib.Discord_RunCallbacks();
                 try {
+                    if (presence == null)return;
+                    presence.details = "Jex Client " + JexClient.INSTANCE.getVersion().version();
+                    presence.state = getDetails();
+                    lib.Discord_UpdatePresence(presence);
                     Thread.sleep(2000);
-                } catch (InterruptedException ignored) {}
+                } catch (Exception ignored) {}
             }
         }, "RPC-Callback-Handler")).start();
     }

@@ -221,7 +221,7 @@ public class JexTitleScreen extends Screen {
             Render2DHelper.INSTANCE.shaderColor(ColorHelper.INSTANCE.getClientColor());
             drawTexture(matrices, 2, (int) j1, 0.0F, 0.0F, 250, 50, 250, 50);
 
-            this.splashText = isMinceraft ? "Minceraft" : "Build " + JexClient.INSTANCE.getVersion() + " for MC" + SharedConstants.getGameVersion().getName();
+            this.splashText = isMinceraft ? "Minceraft" : "Build " + JexClient.INSTANCE.getVersion().version() + " for MC" + SharedConstants.getGameVersion().getName();
             matrices.push();
             float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * 6.2831855F) * 0.1F);
             h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
@@ -230,7 +230,7 @@ public class JexTitleScreen extends Screen {
             matrices.pop();
 
             if (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH) {
-                String updateString = "Jex Client is outdated. You can open the Jex Options screen in Options to update to Build " + UpdateManager.INSTANCE.getLatestVersion();
+                String updateString = "Jex Client is outdated. You can open the Jex Options screen in Options to update to Build " + UpdateManager.INSTANCE.getLatestVersion().version();
                 float strWidth = FontHelper.INSTANCE.getStringWidth(updateString);
                 Render2DHelper.INSTANCE.fillAndBorder(matrices, (midX) - (strWidth / 2) - 2, -1, (midX) + (strWidth / 2) + 2, 15, ColorHelper.INSTANCE.getClientColor(), 0x80000000, 1);
                 FontHelper.INSTANCE.drawCenteredString(matrices, updateString, midX, 2, ColorHelper.INSTANCE.getClientColor());
