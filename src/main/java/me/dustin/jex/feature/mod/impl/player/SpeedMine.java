@@ -19,7 +19,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.system.CallbackI;
 
-@Feature.Manifest(name = "Speedmine", category = Feature.Category.PLAYER, description = "Break blocks faster")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Break blocks faster")
 public class SpeedMine extends Feature {
 
     @Op(name = "Mode", all = {"Progress", "Instant", "Haste"})

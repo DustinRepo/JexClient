@@ -18,7 +18,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(name = "EntityRider", category = Feature.Category.WORLD, description = "Change how ridable entities work.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Change how ridable entities work.")
 public class EntityRider extends Feature {
 
     @Op(name = "Horse")

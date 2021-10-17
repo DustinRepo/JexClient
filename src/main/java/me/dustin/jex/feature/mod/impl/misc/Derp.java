@@ -12,7 +12,7 @@ import net.minecraft.util.Hand;
 
 import java.util.Random;
 
-@Feature.Manifest(name = "Derp", category = Feature.Category.MISC, description = "Randomly look around for other players")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Randomly look around for other players")
 public class Derp extends Feature {
 
     @Op(name = "Mode", all = {"Random", "Pitch Roll", "Yaw Roll", "Both Roll"})

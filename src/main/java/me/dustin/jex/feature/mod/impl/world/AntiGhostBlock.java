@@ -7,7 +7,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.util.math.Direction;
 
-@Feature.Manifest(name = "AntiGhostBlock", category = Feature.Category.WORLD, description = "Prevent the game from creating ghost blocks.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Prevent the game from creating ghost blocks.")
 public class AntiGhostBlock extends Feature {
 
     @EventListener(events = {EventBreakBlock.class})

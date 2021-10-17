@@ -22,7 +22,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
-@Manifest(name = "BarrierView", category = Category.VISUAL, description = "See barriers as if you are in creative")
+@Manifest(category = Category.VISUAL, description = "See barriers as if you are in creative")
 public class BarrierView extends Feature {
 	
 	@Op(name = "Color", isColor = true)

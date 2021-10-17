@@ -9,7 +9,7 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(name = "DepthStrider", category = Feature.Category.MOVEMENT, description = "Move through water like you have Depth Strider boots on")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Move through water like you have Depth Strider boots on")
 public class DepthStrider extends Feature {
 
     @Op(name = "Level", min = 1, max = 3)

@@ -17,7 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
-@Feature.Manifest(name = "SpawnHighlighter", category = Feature.Category.VISUAL, description = "Show all blocks near you that mobs can spawn on.")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show all blocks near you that mobs can spawn on.")
 public class SpawnHighlighter extends Feature {
 
 	@Op(name = "Radius", min = 10, max = 50, inc = 1)

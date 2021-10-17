@@ -18,7 +18,7 @@ import net.minecraft.item.Items;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "HolidayEvents", category = Feature.Category.VISUAL, description = "Have holiday events like christmas chests show year-round")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Have holiday events like christmas chests show year-round")
 public class HolidayEvents extends Feature {
 
     @Op(name = "Christmas Chest")

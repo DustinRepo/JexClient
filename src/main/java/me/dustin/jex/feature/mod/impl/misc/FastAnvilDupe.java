@@ -2,8 +2,8 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventKeyPressed;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRender3D;
@@ -41,7 +41,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "FastAnvilDupe", category = Feature.Category.MISC, description = "Speeds up the current anvil dupe. Patched in 1.17.1")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Speeds up the current anvil dupe. Patched in 1.17.1")
 public class FastAnvilDupe extends Feature {
 
     @Op(name = "Mark Damaged")

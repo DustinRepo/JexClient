@@ -18,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
-@Feature.Manifest(name = "BlockOverlay", category = Feature.Category.VISUAL, description = "Change the block outline and have an overlay show your break progress")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the block outline and have an overlay show your break progress")
 public class BlockOverlay extends Feature {
 
     @Op(name = "Outline Color", isColor = true)

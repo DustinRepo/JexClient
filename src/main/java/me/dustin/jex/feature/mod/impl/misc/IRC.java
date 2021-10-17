@@ -27,7 +27,7 @@ import org.jibble.pircbot.User;
 import java.util.ArrayList;
 import java.util.StringJoiner;
 
-@Feature.Manifest(name = "IRC", category = Feature.Category.MISC, description = "Connect to an IRC server to chat with other Jex users", visible = false)
+@Feature.Manifest(category = Feature.Category.MISC, description = "Connect to an IRC server to chat with other Jex users", visible = false)
 public class IRC extends Feature {
 
     @Op(name = "Send Prefix", maxStringLength = 2)

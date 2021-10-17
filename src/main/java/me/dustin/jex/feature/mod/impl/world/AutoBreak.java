@@ -19,7 +19,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 
-@Feature.Manifest(name = "AutoBreak", category = Feature.Category.WORLD, description = "Set a block to auto re-break when a new block is there.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Set a block to auto re-break when a new block is there.")
 public class AutoBreak extends Feature {
 
 	@Op(name = "Show Position")

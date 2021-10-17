@@ -32,7 +32,7 @@ import net.minecraft.util.math.Vec3d;
 import java.awt.*;
 import java.util.List;
 
-@Feature.Manifest(name = "CrystalAura", category = Feature.Category.COMBAT, description = "Auto place/destroy End Crystals")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Auto place/destroy End Crystals")
 public class CrystalAura extends Feature {
 
 	@Op(name = "Mode", all = { "Suicidal", "Risky", "Safe" })

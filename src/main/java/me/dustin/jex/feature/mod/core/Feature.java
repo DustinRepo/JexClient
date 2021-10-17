@@ -22,8 +22,8 @@ public class Feature {
     private Feature.Category featureCategory;
 
     public Feature() {
-        this.name = this.getClass().getAnnotation(Feature.Manifest.class).name();
-        this.displayName = this.getClass().getAnnotation(Feature.Manifest.class).name();
+        this.name = this.getClass().getSimpleName();
+        this.displayName = this.getClass().getSimpleName();
         this.description = this.getClass().getAnnotation(Feature.Manifest.class).description();
         this.featureCategory = this.getClass().getAnnotation(Feature.Manifest.class).category();
         this.key = this.getClass().getAnnotation(Feature.Manifest.class).key();
@@ -154,7 +154,6 @@ public class Feature {
     }
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Manifest {
-        String name();
         Feature.Category category();
         String description();
         int key() default 0;

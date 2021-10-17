@@ -9,7 +9,7 @@ import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(name = "Velocity", category = Feature.Category.COMBAT, description = "Remove all knockback from the player.")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Remove all knockback from the player.")
 public class Velocity extends Feature {
 
     @Op(name = "Percent", min = -300, max = 300, inc = 10)

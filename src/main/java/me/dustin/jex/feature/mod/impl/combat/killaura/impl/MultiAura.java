@@ -6,6 +6,7 @@ import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
@@ -15,7 +16,6 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.AutoPot;
-import me.dustin.jex.feature.mod.impl.combat.killaura.Killaura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -28,11 +28,11 @@ import java.util.ArrayList;
 
 public class MultiAura extends FeatureExtension {
 
-    private Killaura killaura;
+    private KillAura killaura;
     private ArrayList<LivingEntity> targets = new ArrayList<>();
 
     public MultiAura() {
-        super("Multi", Killaura.class);
+        super("Multi", KillAura.class);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class MultiAura extends FeatureExtension {
     @Override
     public void pass(Event event1) {
         if (killaura == null) {
-            killaura = (Killaura) Feature.get(Killaura.class);
+            killaura = (KillAura) Feature.get(KillAura.class);
         }
         if (((AutoPot) Feature.get(AutoPot.class)).throwing)
             return;

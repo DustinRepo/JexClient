@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-@Feature.Manifest(name = "Radar", category = Feature.Category.WORLD, description = "Draws a Radar on your HUD telling you where entities are")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Draws a Radar on your HUD telling you where entities are")
 public class Radar extends Feature {
     public static Radar INSTANCE;
     @Op(name = "Waypoints")

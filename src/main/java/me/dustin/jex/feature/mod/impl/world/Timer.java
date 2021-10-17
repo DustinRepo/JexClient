@@ -7,7 +7,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(name = "Timer", category = Feature.Category.WORLD, description = "Speed up or slow down the game")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Speed up or slow down the game")
 public class Timer extends Feature {
 
     @Op(name = "Speed", min = 0.1f, max = 5, inc = 0.1f)

@@ -16,7 +16,7 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 
-@Feature.Manifest(name = "AutoSoup", category = Feature.Category.COMBAT, description = "Eats soup when your health gets below a certain amount.")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Eats soup when your health gets below a certain amount.")
 public class AutoSoup extends Feature {
 
     @Op(name = "Health", min = 1, max = 20)

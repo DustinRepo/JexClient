@@ -16,7 +16,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-@Feature.Manifest(name = "AutoSign", category = Feature.Category.WORLD, description = "Automatically write to signs.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically write to signs.")
 public class AutoSign extends Feature {
 
     public Text[] signText = {new LiteralText("     "), new LiteralText(""), new LiteralText(""), new LiteralText("")};
@@ -27,8 +27,8 @@ public class AutoSign extends Feature {
             if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld() == null) {
                 this.setState(false);
             }
-        } else if (event instanceof EventSetScreen) {
-            if (!signText[0].asString().equalsIgnoreCase("     ") && ((EventSetScreen) event).getScreen() instanceof SignEditScreen) {
+        } else if (event instanceof EventSetScreen eventSetScreen) {
+            if (!signText[0].asString().equalsIgnoreCase("     ") && eventSetScreen.getScreen() instanceof SignEditScreen) {
                 event.setCancelled(true);
             }
         } else if (event instanceof EventPacketReceive eventPacketReceive) {

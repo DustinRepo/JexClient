@@ -11,7 +11,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.client.gui.screen.TitleScreen;
 
-@Feature.Manifest(name = "CustomMainMenu", category = Feature.Category.VISUAL, description = "The custom main menu for Jex", enabled = true, visible = false)
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "The custom main menu for Jex", enabled = true, visible = false)
 public class CustomMainMenu extends Feature {
 
     @Op(name = "Background")

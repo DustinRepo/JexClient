@@ -11,7 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
 
-@Feature.Manifest(name = "FastLadder", category = Feature.Category.MOVEMENT, description = "Move faster on ladders")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Move faster on ladders")
 public class FastLadder extends Feature {
 
     @Op(name = "SkipLadder")

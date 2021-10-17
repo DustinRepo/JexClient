@@ -19,7 +19,7 @@ import net.minecraft.screen.slot.SlotActionType;
 
 import java.util.List;
 
-@Feature.Manifest(name = "SpeedCrafter", category = Feature.Category.MISC, description = "Automatically turn ingots into blocks by opening a crafting table.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically turn ingots into blocks by opening a crafting table.")
 public class SpeedCrafter extends Feature {
 
     @Op(name = "Delay", max = 500)

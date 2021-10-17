@@ -23,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "AutoTrap", category = Feature.Category.COMBAT, description = "Automatically trap people in boxes of obsidian")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically trap people in boxes of obsidian")
 public class AutoTrap extends Feature {
 
     @Op(name = "Rotate")

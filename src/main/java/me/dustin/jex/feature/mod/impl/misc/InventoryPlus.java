@@ -7,7 +7,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 
-@Feature.Manifest(name = "InventoryPlus", category = Feature.Category.MISC, description = "Keep items in your crafting space in inventory.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Keep items in your crafting space in inventory.")
 public class InventoryPlus extends Feature {
 
     @EventListener(events = {EventPacketSent.class})

@@ -16,7 +16,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 
-@Feature.Manifest(name = "AutoTool", category = Feature.Category.PLAYER, description = "Switch to the best tool for your needs.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Switch to the best tool for your needs.")
 public class AutoTool extends Feature {
 
     @Op(name = "Return to Original Slot")

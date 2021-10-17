@@ -12,7 +12,7 @@ import net.minecraft.client.render.entity.PlayerModelPart;
 import java.util.ArrayList;
 import java.util.Random;
 
-@Feature.Manifest(name = "SkinBlink", category = Feature.Category.MISC, description = "Make your skin flash your layers on and off")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Make your skin flash your layers on and off")
 public class SkinBlink extends Feature {
 
     @Op(name = "Mode", all = {"Random", "Full Flash", "Custom"})

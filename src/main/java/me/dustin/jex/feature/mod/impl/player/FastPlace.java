@@ -6,7 +6,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IMinecraft;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(name = "FastPlace", category = Feature.Category.PLAYER, description = "Place fast.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Place fast.")
 public class FastPlace extends Feature {
 
 	@EventListener(events = { EventPlayerPackets.class })

@@ -13,7 +13,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.Jesus;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(name = "CompatSwim", category = Feature.Category.MOVEMENT, description = "Change swim speed to work on pre 1.13 servers with anticheats")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Change swim speed to work on pre 1.13 servers with anticheats")
 public class CompatSwim extends Feature {
 
     @EventListener(events = {EventMove.class, EventPlayerPackets.class}, priority = EventPriority.HIGH)

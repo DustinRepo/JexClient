@@ -10,8 +10,8 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
-@Feature.Manifest(name = "Nofall", category = Feature.Category.PLAYER, description = "Remove fall damage.")
-public class Nofall extends Feature {
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Remove fall damage.")
+public class NoFall extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})
     private void runEvent(EventPlayerPackets eventPlayerPackets) {

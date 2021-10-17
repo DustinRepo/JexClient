@@ -24,7 +24,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-@Feature.Manifest(name = "AutoEat", category = Feature.Category.PLAYER, description = "Eat food when hunger is low.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Eat food when hunger is low.")
 public class AutoEat extends Feature {
 
     public static boolean isEating;
@@ -77,7 +77,7 @@ public class AutoEat extends Feature {
                         if (lastFood < Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
                             isEating = false;
                             if (pressKey)
-                            Wrapper.INSTANCE.getOptions().keyUse.setPressed(false);
+                                Wrapper.INSTANCE.getOptions().keyUse.setPressed(false);
                             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
                             InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                         }
@@ -88,7 +88,7 @@ public class AutoEat extends Feature {
                     }
                     if (isEating) {
                         if (pressKey)
-                        Wrapper.INSTANCE.getOptions().keyUse.setPressed(true);
+                            Wrapper.INSTANCE.getOptions().keyUse.setPressed(true);
                         Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
                     }
                 } else if (isEating) {

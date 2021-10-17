@@ -6,7 +6,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.client.option.KeyBinding;
 
-@Feature.Manifest(name = "AutoWalk", category = Feature.Category.PLAYER, description = "Automatically hold W")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically hold W")
 public class AutoWalk extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

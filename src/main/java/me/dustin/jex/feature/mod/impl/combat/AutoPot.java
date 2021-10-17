@@ -17,7 +17,7 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 
-@Feature.Manifest(name = "AutoPot", category = Feature.Category.COMBAT, description = "Uses health potions when health goes below selected amount.")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Uses health potions when health goes below selected amount.")
 public class AutoPot extends Feature {
 
 	@Op(name = "Health", min = 1, max = 20)
@@ -31,7 +31,7 @@ public class AutoPot extends Feature {
 	public boolean throwing = false;
 	int savedSlot;
 	private Timer timer = new Timer();
-	
+
 	@EventListener(events = { EventPlayerPackets.class })
 	public void run(Event event) {
 		if (event instanceof EventPlayerPackets playerPacketEvent) {

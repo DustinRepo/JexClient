@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
-@Feature.Manifest(name = "Search", category = Feature.Category.VISUAL, description = "Search for a specific block. use \".help search\"")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Search for a specific block. use \".help search\"")
 public class Search extends Feature {
 
     private static ConcurrentMap<Block, Integer> blocks = Maps.newConcurrentMap();

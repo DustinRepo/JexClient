@@ -19,7 +19,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feature.Manifest(name = "InventorySort", category = Feature.Category.MISC, description = "Sort your inventory with a middle click while it's open.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Sort your inventory with a middle click while it's open.")
 public class InventorySort extends Feature {
 
     @Op(name = "Sort Key", isKeybind = true)

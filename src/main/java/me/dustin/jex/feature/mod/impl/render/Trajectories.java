@@ -30,7 +30,7 @@ import net.minecraft.util.math.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "Trajectories", category = Feature.Category.VISUAL, description = "Show a trajectory line for things like bows and snowballs")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show a trajectory line for things like bows and snowballs")
 public class Trajectories extends Feature {
 
     @Op(name = "Miss Color", isColor = true)

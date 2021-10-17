@@ -13,7 +13,7 @@ import net.minecraft.client.gl.GlUniform;
 
 import java.awt.*;
 
-@Feature.Manifest(name = "EnchantColor", category = Feature.Category.VISUAL, description = "Change the color of the enchanment glint (or make it rainbow!)")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the color of the enchanment glint (or make it rainbow!)")
 public class EnchantColor extends Feature{
 
     @Op(name = "Mode", all = {"Shader Rainbow", "Customize"})
@@ -43,8 +43,6 @@ public class EnchantColor extends Feature{
     private void runMethod(EventGetGlintShaders eventGetGlintShaders) {
         if (glintColorU == null || crazyRainbowU == null || saturationU == null || mathModeU == null) {
             IShader iShader = (IShader) ShaderHelper.getRainbowEnchantShader();
-            if (iShader == null)
-                return;
             glintColorU = iShader.getCustomUniform("GlintColor");
             crazyRainbowU = iShader.getCustomUniform("CrazyRainbow");
             saturationU = iShader.getCustomUniform("Saturation");

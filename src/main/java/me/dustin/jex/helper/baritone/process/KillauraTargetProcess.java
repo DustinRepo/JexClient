@@ -5,16 +5,16 @@ import baritone.api.pathing.goals.GoalRunAway;
 import baritone.api.process.IBaritoneProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
+import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.mod.impl.combat.killaura.Killaura;
 import net.minecraft.entity.LivingEntity;
 
 public class KillauraTargetProcess implements IBaritoneProcess {
 
     private LivingEntity target;
-    private Killaura killaura;
+    private KillAura killaura;
 
-    public void followUntilDead(LivingEntity target, Killaura killaura) {
+    public void followUntilDead(LivingEntity target, KillAura killaura) {
         this.target = target;
         this.killaura = killaura;
     }

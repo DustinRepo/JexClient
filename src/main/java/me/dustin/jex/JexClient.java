@@ -10,7 +10,7 @@ import me.dustin.jex.event.misc.*;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
-import me.dustin.jex.feature.mod.impl.combat.killaura.Killaura;
+import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.misc.Discord;
 import me.dustin.jex.feature.mod.impl.misc.Fakelag;
 import me.dustin.jex.feature.mod.impl.movement.Step;
@@ -28,7 +28,6 @@ import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.irc.IRCManager;
 import me.dustin.jex.helper.network.JexServerHelper;
 import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -115,8 +114,8 @@ public enum JexClient {
         } else if (event instanceof EventTick) {
             Wrapper.INSTANCE.getWindow().setTitle("Jex Client " + getVersion().version());
             if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-                if (Feature.get(Killaura.class).getState())
-                    Feature.get(Killaura.class).setState(false);
+                if (Feature.get(KillAura.class).getState())
+                    Feature.get(KillAura.class).setState(false);
                 if (Feature.get(Freecam.class).getState())
                     Feature.get(Freecam.class).setState(false);
                 if (Feature.get(Fakelag.class).getState())

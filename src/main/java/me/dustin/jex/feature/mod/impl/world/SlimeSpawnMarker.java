@@ -25,7 +25,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@Feature.Manifest(name = "SlimeSpawnMarker", category = Feature.Category.WORLD, description = "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk. Good for finding Slime Chunks on servers without the seed.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk. Good for finding Slime Chunks on servers without the seed.")
 public class SlimeSpawnMarker extends Feature {
 
     @Op(name = "Notify player")

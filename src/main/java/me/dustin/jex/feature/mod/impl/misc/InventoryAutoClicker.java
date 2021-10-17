@@ -12,8 +12,13 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(name = "InvAutoClicker", category = Feature.Category.MISC, description = "Hold shift+click or ctrl+q to automatically do them.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Hold shift+click or ctrl+q to automatically do them.")
 public class InventoryAutoClicker extends Feature {
+
+    public InventoryAutoClicker() {
+        this.setName("InvAutoClicker");
+        this.setDisplayName("InvAutoClicker");
+    }
 
     @EventListener(events = {EventPlayerPackets.class})
     private void runMethod(EventPlayerPackets eventPlayerPackets) {

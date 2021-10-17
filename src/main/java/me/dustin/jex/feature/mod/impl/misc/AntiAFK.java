@@ -10,7 +10,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.util.Hand;
 
-@Feature.Manifest(name = "AntiAFK", category = Feature.Category.MISC, description = "Prevent yourself from being detected as AFK and potentially kicked")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Prevent yourself from being detected as AFK and potentially kicked")
 public class AntiAFK extends Feature {
 
     @Op(name = "Mode", all = {"Swing", "Jump", "Chat"})

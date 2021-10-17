@@ -7,7 +7,7 @@ import me.dustin.jex.event.world.EventWaterVelocity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(name = "NoPush", category = Feature.Category.PLAYER, description = "Don't let others push you around.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Don't let others push you around.")
 public class NoPush extends Feature {
 
     @Op(name = "Mobs")

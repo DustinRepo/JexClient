@@ -2,8 +2,8 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventJoinWorld;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
@@ -18,7 +18,7 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 
-@Feature.Manifest(name = "AutoReconnect", category = Feature.Category.MISC, description = "Reconnect automatically.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Reconnect automatically.")
 public class AutoReconnect extends Feature {
 
     @Op(name = "Delay", min = 1000, max = 20000, inc = 500)
@@ -37,8 +37,8 @@ public class AutoReconnect extends Feature {
                 }
             } else
                 timer.reset();
-        } else if (event instanceof EventSetScreen) {
-            if (((EventSetScreen) event).getScreen() instanceof DisconnectedScreen)
+        } else if (event instanceof EventSetScreen eventSetScreen) {
+            if (eventSetScreen.getScreen() instanceof DisconnectedScreen)
                 timer.reset();
         } else if (event instanceof EventJoinWorld) {
             if (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() != null) {

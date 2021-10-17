@@ -12,7 +12,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 
-@Feature.Manifest(name = "NoSlow", category = Feature.Category.MOVEMENT, description = "Prevent actions from slowing you down")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Prevent actions from slowing you down")
 public class NoSlow extends Feature {
 
 	@Op(name = "Use Item")

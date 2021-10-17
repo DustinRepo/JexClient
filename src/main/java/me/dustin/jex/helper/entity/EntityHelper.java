@@ -1,7 +1,7 @@
 package me.dustin.jex.helper.entity;
 
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.combat.killaura.Killaura;
+import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -27,7 +27,7 @@ public enum EntityHelper {
     public boolean isAuraBlocking() {
         if (AutoEat.isEating)
             return false;
-        Killaura killaura = (Killaura) Feature.get(Killaura.class);
+        KillAura killaura = (KillAura) Feature.get(KillAura.class);
         if (killaura.getState()) {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                 if (killaura.isValid(entity, false) && (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.autoblockDistance || Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.reach)) {

@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(name = "EndPortalFinder", category = Feature.Category.WORLD, description = "Find end portals with just two eye of ender. Math from https://www.omnicalculator.com/other/end-portal-finder")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Find end portals with just two eye of ender. Math from https://www.omnicalculator.com/other/end-portal-finder")
 public class EndPortalFinder extends Feature {
 
 	double[] portalPos = null;

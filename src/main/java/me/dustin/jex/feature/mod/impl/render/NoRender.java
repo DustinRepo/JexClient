@@ -14,7 +14,7 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.boss.WitherEntity;
 
-@Feature.Manifest(name = "NoRender", category = Feature.Category.VISUAL, description = "Don't render specific entities/blocks to improve fps")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Don't render specific entities/blocks to improve fps")
 public class NoRender extends Feature {
 
     @Op(name = "Items")

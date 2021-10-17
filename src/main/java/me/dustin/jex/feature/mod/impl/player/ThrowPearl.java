@@ -15,7 +15,7 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(name = "ThrowPearl", category = Feature.Category.PLAYER, description = "Automatically throw ender pearl from hotbar on button press.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically throw ender pearl from hotbar on button press.")
 public class ThrowPearl extends Feature {
 
     @Op(name = "Throw Key", isKeybind = true)

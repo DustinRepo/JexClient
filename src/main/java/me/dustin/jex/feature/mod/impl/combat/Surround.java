@@ -23,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(name = "Surround", category = Feature.Category.COMBAT, description = "Automatically place obsidian around your feet to defend from crystals")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically place obsidian around your feet to defend from crystals")
 public class Surround extends Feature {
 
 	@Op(name = "Auto Turn Off")

@@ -9,7 +9,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 
-@Feature.Manifest(name = "WorldTime", category = Feature.Category.WORLD, description = "Change the World time")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Change the World time")
 public class WorldTime extends Feature {
 
     @Op(name = "Time", max = 24000)

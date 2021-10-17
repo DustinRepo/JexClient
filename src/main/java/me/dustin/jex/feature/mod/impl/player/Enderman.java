@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(name = "Enderman", category = Feature.Category.PLAYER, description = "Select how to deal with enderman.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Select how to deal with enderman.")
 public class Enderman extends Feature {
 
     @Op(name = "Mode", all = {"Look At", "Look Away"})

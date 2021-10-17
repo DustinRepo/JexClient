@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-@Feature.Manifest(name = "Trail", category = Feature.Category.VISUAL, description = "Render a configurable list of particles as a trail behind you. Use command .trail to configure")
+@Feature.Manifest(category = Feature.Category.VISUAL, description = "Render a configurable list of particles as a trail behind you. Use command .trail to configure")
 public class Trail extends Feature {
 
     @Op(name = "Show on Friends")

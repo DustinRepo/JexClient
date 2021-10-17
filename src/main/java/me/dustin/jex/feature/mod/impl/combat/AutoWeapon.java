@@ -16,7 +16,7 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 
 import java.util.Map;
 
-@Feature.Manifest(name = "AutoWeapon", category = Feature.Category.COMBAT, description = "Automatically swap to the best weapon when attacking.")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically swap to the best weapon when attacking.")
 public class AutoWeapon extends Feature {
 
     @Op(name = "Living Only")
@@ -30,34 +30,34 @@ public class AutoWeapon extends Feature {
             return;
         if (livingOnly && !(eventAttackEntity.getEntity() instanceof LivingEntity))
             return;
-            int slot = -1;
-            float str = 1;
-            ItemStack stack = null;
-            for (int i = 0; i < 9; i++) {
-                ItemStack stackInSlot = InventoryHelper.INSTANCE.getInventory().getStack(i);
-                if (stackInSlot != null) {
-                    if (!isGoodItem(stackInSlot.getItem()))
-                        continue;
-                    float damage = getAdjustedDamage(stackInSlot);
+        int slot = -1;
+        float str = 1;
+        ItemStack stack = null;
+        for (int i = 0; i < 9; i++) {
+            ItemStack stackInSlot = InventoryHelper.INSTANCE.getInventory().getStack(i);
+            if (stackInSlot != null) {
+                if (!isGoodItem(stackInSlot.getItem()))
+                    continue;
+                float damage = getAdjustedDamage(stackInSlot);
 
-                    if (damage > str) {
+                if (damage > str) {
+                    str = damage;
+                    slot = i;
+                    stack = stackInSlot;
+                }
+                if (damage == str && str != 1) {
+                    if (InventoryHelper.INSTANCE.compareEnchants(stack, stackInSlot, Enchantments.SHARPNESS)) {
                         str = damage;
                         slot = i;
                         stack = stackInSlot;
                     }
-                    if (damage == str && str != 1) {
-                        if (InventoryHelper.INSTANCE.compareEnchants(stack, stackInSlot, Enchantments.SHARPNESS)) {
-                            str = damage;
-                            slot = i;
-                            stack = stackInSlot;
-                        }
-                    }
                 }
+            }
 
-            }
-            if (slot != -1 && slot != InventoryHelper.INSTANCE.getInventory().selectedSlot) {
-                InventoryHelper.INSTANCE.setSlot(slot, true, true);
-            }
+        }
+        if (slot != -1 && slot != InventoryHelper.INSTANCE.getInventory().selectedSlot) {
+            InventoryHelper.INSTANCE.setSlot(slot, true, true);
+        }
     }
     private boolean isGoodItem(Item item) {
         return switch (mode.toLowerCase()) {

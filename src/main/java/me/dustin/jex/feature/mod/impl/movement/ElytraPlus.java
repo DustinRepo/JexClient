@@ -14,7 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(name = "ElytraPlus", category = Feature.Category.MOVEMENT, description = "Change how the Elytra flies.")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Change how the Elytra flies.")
 public class ElytraPlus extends Feature {
 
     @Op(name = "Auto Elytra")

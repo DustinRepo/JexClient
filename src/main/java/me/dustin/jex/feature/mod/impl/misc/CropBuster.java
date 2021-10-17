@@ -21,7 +21,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(name = "CropBuster", category = Feature.Category.MISC, description = "Destroy any fully grown crops nearby")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Destroy any fully grown crops nearby")
 public class CropBuster extends Feature {
 
     @Op(name = "Check Age")

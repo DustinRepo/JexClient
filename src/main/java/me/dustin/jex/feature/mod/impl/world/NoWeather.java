@@ -4,7 +4,7 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRenderRain;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(name = "NoWeather", category = Feature.Category.WORLD, description = "Remove rain and snow")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Remove rain and snow")
 public class NoWeather extends Feature {
 
     @EventListener(events = {EventRenderRain.class})

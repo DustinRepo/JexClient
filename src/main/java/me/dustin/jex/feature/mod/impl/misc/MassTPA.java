@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
-@Feature.Manifest(name = "MassTPA", description = "Send a TPA to everyone until one is accepted", category = Feature.Category.MISC)
+@Feature.Manifest(description = "Send a TPA to everyone until one is accepted", category = Feature.Category.MISC)
 public class MassTPA extends Feature {
 
     @Op(name = "Delay (MS)", max = 5000, inc = 10)

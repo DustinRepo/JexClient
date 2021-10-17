@@ -20,7 +20,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(name = "AirPlace", category = Feature.Category.WORLD, description = "Gives you the ability to place blocks in the air. (Anticheats usually block this)")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Gives you the ability to place blocks in the air. (Anticheats usually block this)")
 public class AirPlace extends Feature {
 
 	@Op(name = "Liquids")

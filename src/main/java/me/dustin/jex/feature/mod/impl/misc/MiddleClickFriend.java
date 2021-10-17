@@ -12,7 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 
-@Feature.Manifest(name = "MiddleClickFriend", category = Feature.Category.MISC, description = "Middle click people to add them as friends.")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Middle click people to add them as friends.")
 public class MiddleClickFriend extends Feature {
 
     @EventListener(events = {EventMouseButton.class})

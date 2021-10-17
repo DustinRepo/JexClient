@@ -12,7 +12,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
-@Feature.Manifest(name = "SpawnSphere", category = Feature.Category.WORLD, description = "Show a 128 block radius sphere around an area to see all spots mobs could spawn in that radius.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Show a 128 block radius sphere around an area to see all spots mobs could spawn in that radius.")
 public class SpawnSphere extends Feature {
 
     @Op(name = "Sphere Color", isColor = true)

@@ -26,7 +26,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(name = "Scaffold", category = Feature.Category.MOVEMENT, description = "Place blocks under yourself automatically.")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Place blocks under yourself automatically.")
 public class Scaffold extends Feature {
 
     @Op(name = "Place Mode", all = {"Post", "Pre"})
@@ -49,28 +49,28 @@ public class Scaffold extends Feature {
             if (((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE) {
                 blockHitResult = null;
                 BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
-                    if (AutoEat.isEating)
-                        return;
-                        getNearBlocks(below);
-                    for (BlockInfo blockInfo : emptyNearBlocks) {
-                        if (blockInfo != null) {
-                            if (getBlockFromHotbar() == -1) {
-                                if (InventoryHelper.INSTANCE.isHotbarFull()) {
-                                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 44, SlotActionType.THROW);
-                                }
-                                if (getBlockFromInv() != -1) {
-                                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), SlotActionType.QUICK_MOVE);
-                                }
+                if (AutoEat.isEating)
+                    return;
+                getNearBlocks(below);
+                for (BlockInfo blockInfo : emptyNearBlocks) {
+                    if (blockInfo != null) {
+                        if (getBlockFromHotbar() == -1) {
+                            if (InventoryHelper.INSTANCE.isHotbarFull()) {
+                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 44, SlotActionType.THROW);
                             }
-                            if (getBlockFromHotbar() != -1) {
-                                InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
-                                place(blockInfo, (EventPlayerPackets) event);
-                                emptyNearBlocks.remove(blockInfo);
-                                if (delay > 0 && placeMode.equalsIgnoreCase("Pre"))
-                                    return;
+                            if (getBlockFromInv() != -1) {
+                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), SlotActionType.QUICK_MOVE);
                             }
                         }
+                        if (getBlockFromHotbar() != -1) {
+                            InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
+                            place(blockInfo, (EventPlayerPackets) event);
+                            emptyNearBlocks.remove(blockInfo);
+                            if (delay > 0 && placeMode.equalsIgnoreCase("Pre"))
+                                return;
+                        }
                     }
+                }
             } else if (blockHitResult != null) {
                 if (!timer.hasPassed(delay)) {
                     return;

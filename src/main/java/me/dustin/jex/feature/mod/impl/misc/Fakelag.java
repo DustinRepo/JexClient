@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.UUID;
 
-@Feature.Manifest(name = "Fakelag", category = Feature.Category.MISC, description = "Pretend to lag")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Pretend to lag")
 public class Fakelag extends Feature {
 
     @Op(name = "Catch when", all = {"Both", "OnGround", "In Air"})

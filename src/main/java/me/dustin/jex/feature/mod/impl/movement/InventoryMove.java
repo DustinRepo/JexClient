@@ -11,7 +11,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
 
-@Feature.Manifest(name = "InvMove", category = Feature.Category.MOVEMENT, description = "Move while in your inventory.")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Move while in your inventory.")
 public class InventoryMove extends Feature {
 
     @EventListener(events = {EventPlayerPackets.class})

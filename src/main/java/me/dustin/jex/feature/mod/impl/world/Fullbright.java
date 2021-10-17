@@ -5,7 +5,7 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(name = "Fullbright", category = Feature.Category.WORLD, description = "Goodbye, darkness. You were never my friend.")
+@Feature.Manifest(category = Feature.Category.WORLD, description = "Goodbye, darkness. You were never my friend.")
 public class Fullbright extends Feature {
 
 

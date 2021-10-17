@@ -23,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(name = "Jesus", category = Feature.Category.PLAYER, description = "Walk on water like Jesus.", key = GLFW.GLFW_KEY_J)
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Walk on water like Jesus.", key = GLFW.GLFW_KEY_J)
 public class Jesus extends Feature {
 
     @Op(name = "Mode", all = {"Solid", "Dolphin"})

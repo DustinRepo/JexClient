@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-@Feature.Manifest(name = "Spammer", category = Feature.Category.MISC, description = "Spam the chat")
+@Feature.Manifest(category = Feature.Category.MISC, description = "Spam the chat")
 public class Spammer extends Feature {
 
     private static String baseFileStr =

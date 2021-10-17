@@ -33,7 +33,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
-@Feature.Manifest(name = "AnchorAura", category = Feature.Category.COMBAT, description = "Automatically place/charge/explode respawn anchors near players")
+@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically place/charge/explode respawn anchors near players")
 public class AnchorAura extends Feature {
 
     @Op(name = "Mode", all = {"Suicidal", "Risky", "Safe"})

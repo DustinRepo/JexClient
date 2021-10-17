@@ -18,7 +18,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-@Feature.Manifest(name = "Blink", category = Feature.Category.PLAYER, description = "Delay your movements to the server, making it seem like you teleported.")
+@Feature.Manifest(category = Feature.Category.PLAYER, description = "Delay your movements to the server, making it seem like you teleported.")
 public class Blink extends Feature {
 
 	@Op(name = "Buffer Packets")

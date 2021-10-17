@@ -17,7 +17,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 import java.util.Random;
 
-@Feature.Manifest(name = "Step", category = Feature.Category.MOVEMENT, description = "Step up blocks")
+@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Step up blocks")
 public class Step extends Feature {
 
     @Op(name = "Mode", all = {"Vanilla", "Packet"})
