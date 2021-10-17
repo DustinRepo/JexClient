@@ -7,7 +7,7 @@ import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.movement.speed.impl.NCPSpeed;
+import me.dustin.jex.feature.mod.impl.movement.speed.impl.StrafeSpeed;
 import me.dustin.jex.feature.mod.impl.movement.speed.impl.VanillaSpeed;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -15,18 +15,20 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 @Feature.Manifest(name = "Speed", category = Feature.Category.MOVEMENT, description = "Sanic gotta go fast.")
 public class Speed extends Feature {
 
-    @Op(name = "Mode", all = {"Vanilla", "Floaty"})
+    @Op(name = "Mode", all = {"Vanilla", "Strafe"})
     public String mode = "Vanilla";
 
     @OpChild(name = "Vanilla Speed", min = 0.3f, max = 3, inc = 0.01f, parent = "Mode", dependency = "Vanilla")
     public float vanillaSpeed = 0.6f;
-    @OpChild(name = "Auto Hop", min = 0.3f, max = 3, inc = 0.01f, parent = "Mode", dependency = "Vanilla")
-    public boolean autoHop;
+    @OpChild(name = "Strafe Speed", min = 0.3f, max = 3, inc = 0.01f, parent = "Mode", dependency = "Strafe")
+    public float strafeSpeed = 0.6f;
+    @OpChild(name = "Hop Amount", min = 0.05f, max = 1, inc = 0.01f, parent = "Mode", dependency = "Strafe")
+    public float hopAmount = 0.42f;
 
     private String lastMode;
 
     public Speed() {
-        new NCPSpeed();
+        new StrafeSpeed();
         new VanillaSpeed();
     }
 
