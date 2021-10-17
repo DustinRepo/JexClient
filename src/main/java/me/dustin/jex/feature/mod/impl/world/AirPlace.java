@@ -11,7 +11,9 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.BlockOverlay;
 import me.dustin.jex.feature.option.annotate.Op;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -21,6 +23,8 @@ import net.minecraft.util.math.Vec3d;
 @Feature.Manifest(name = "AirPlace", category = Feature.Category.WORLD, description = "Gives you the ability to place blocks in the air. (Anticheats usually block this)")
 public class AirPlace extends Feature {
 
+	@Op(name = "Liquids")
+	public boolean liquids = true;
 	@Op(name = "Reach", min = 3, max = 6, inc = 0.1f)
 	public float reach = 4.5f;
 
@@ -30,23 +34,27 @@ public class AirPlace extends Feature {
 			if (eventMouseButton.getButton() == 1 && eventMouseButton.getClickType() == EventMouseButton.ClickType.IN_GAME) {
 				HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
 				if (hitResult instanceof BlockHitResult blockHitResult) {
-					if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) == Blocks.AIR) {
+					if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()))) {
 						Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
 						Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 						event.cancel();
 					}
 				}
 			}
-		} else if (event instanceof EventRender3D) {
+		} else if (event instanceof EventRender3D eventRender3D) {
 			HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
 			if (hitResult instanceof BlockHitResult blockHitResult) {
-				if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) == Blocks.AIR) {
+				if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()))) {
 					Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
 					Box box = new Box(renderPos.getX(), renderPos.getY(), renderPos.getZ(), renderPos.getX() + 1, renderPos.getY() + 1, renderPos.getZ() + 1);
-					Render3DHelper.INSTANCE.drawBoxOutline(((EventRender3D) event).getMatrixStack(), box, Feature.get(BlockOverlay.class).getState() ? ColorHelper.INSTANCE.getClientColor() : 0xff000000);
+					Render3DHelper.INSTANCE.drawBoxOutline(eventRender3D.getMatrixStack(), box, Feature.get(BlockOverlay.class).getState() ? ColorHelper.INSTANCE.getClientColor() : 0xff000000);
 				}
 			}
 		}
+	}
+
+	private boolean canReplaceBlock(Block block) {
+		return block == Blocks.AIR || (liquids && block instanceof FluidBlock);
 	}
 
 }
