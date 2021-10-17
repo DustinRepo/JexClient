@@ -53,8 +53,8 @@ public class WatermarkElement extends HudElement {
         Render2DHelper.INSTANCE.drawArc(x, y, 15, ColorHelper.INSTANCE.getClientColor(), 0, 360, 1, matrixStack);
         FontHelper.INSTANCE.draw(matrixStack, "Jex", newX, y - 9, ColorHelper.INSTANCE.getClientColor());
         matrixStack.scale(0.75f, 0.75f, 1);
-        float newX1 = x - (FontHelper.INSTANCE.getStringWidth(JexClient.INSTANCE.getVersion()) / (2 / 0.75f));
-        FontHelper.INSTANCE.draw(matrixStack, JexClient.INSTANCE.getVersion(), newX1 / 0.75f, y / 0.75f + 1, ColorHelper.INSTANCE.getClientColor());
+        float newX1 = x - (FontHelper.INSTANCE.getStringWidth(JexClient.INSTANCE.getVersion().version()) / (2 / 0.75f));
+        FontHelper.INSTANCE.draw(matrixStack, JexClient.INSTANCE.getVersion().version(), newX1 / 0.75f, y / 0.75f + 1, ColorHelper.INSTANCE.getClientColor());
         matrixStack.scale(1 / 0.75f, 1 / 0.75f, 1);
         matrixStack.translate(x, y, 0);
 

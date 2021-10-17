@@ -3,6 +3,7 @@ package me.dustin.jex.helper.update;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import me.dustin.jex.JexClient;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.SharedConstants;
 
@@ -12,7 +13,7 @@ import java.net.URL;
 public enum UpdateManager {
     INSTANCE;
     private Status status;
-    private String latestVersion;
+    private JexVersion latestVersion;
     private String latestMCVersion;
     private String latestSnapshotVersion;
 
@@ -24,18 +25,22 @@ public enum UpdateManager {
 
                 JsonObject updateResponse = new Gson().fromJson(response, JsonObject.class);
                 latestMCVersion = updateResponse.get("mcVersion").getAsString();
-                latestVersion = updateResponse.get("version").getAsString();
+                latestVersion = new JexVersion(updateResponse.get("version").getAsString());
                 latestSnapshotVersion = updateResponse.get("snapVersion").getAsString();
 
                 boolean isCurrentlySnapshot = SharedConstants.getGameVersion().getName().contains("w");
-                boolean isVersionSame = JexClient.INSTANCE.getVersion().equalsIgnoreCase(latestVersion);
+                boolean isVersionSame = JexClient.INSTANCE.getVersion().version().equalsIgnoreCase(latestVersion.version());
                 boolean isMCVersionSame = SharedConstants.getGameVersion().getName().equalsIgnoreCase(isCurrentlySnapshot ? latestSnapshotVersion : latestMCVersion);
                 if (isVersionSame && isMCVersionSame)
                     status = Status.UP_TO_DATE;
                 if (isVersionSame && !isMCVersionSame)
                     status = Status.OUTDATED_MC;
-                if (isMCVersionSame && !isVersionSame)
-                    status = Status.OUTDATED;
+                if (isMCVersionSame && !isVersionSame) {
+                    if (latestVersion.compareTo(JexClient.INSTANCE.getVersion()) > 0)
+                        status = Status.OUTDATED;
+                    else
+                        status = Status.BETA;
+                }
                 if (!isMCVersionSame && !isVersionSame)
                     status = Status.OUTDATED_BOTH;
             } catch (IOException e) {
@@ -48,7 +53,7 @@ public enum UpdateManager {
         return status;
     }
 
-    public String getLatestVersion() {
+    public JexVersion getLatestVersion() {
         return latestVersion;
     }
 
@@ -57,6 +62,6 @@ public enum UpdateManager {
     }
 
     public static enum Status {
-        OUTDATED, OUTDATED_MC, OUTDATED_BOTH, UP_TO_DATE, ERROR;
+        OUTDATED, OUTDATED_MC, OUTDATED_BOTH, UP_TO_DATE, BETA, ERROR
     }
 }

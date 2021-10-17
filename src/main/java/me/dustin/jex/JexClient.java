@@ -34,6 +34,7 @@ import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.EntityPositionHelper;
+import me.dustin.jex.helper.update.JexVersion;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.seed.SeedCracker;
 import me.dustin.jex.load.impl.IKeyboard;
@@ -57,6 +58,7 @@ public enum JexClient {
     private boolean autoSaveModules = false;
     private boolean soundOnLaunch = true;
     private final Logger logger = LogManager.getFormatterLogger("Jex");
+    private JexVersion version;
 
     public void initializeClient() {
         getLogger().info("Loading Jex Client");
@@ -111,7 +113,7 @@ public enum JexClient {
                 });
             }
         } else if (event instanceof EventTick) {
-            Wrapper.INSTANCE.getWindow().setTitle("Jex Client " + getVersion());
+            Wrapper.INSTANCE.getWindow().setTitle("Jex Client " + getVersion().version());
             if (Wrapper.INSTANCE.getLocalPlayer() == null) {
                 if (Feature.get(Killaura.class).getState())
                     Feature.get(Killaura.class).setState(false);
@@ -140,12 +142,17 @@ public enum JexClient {
         return FabricLoader.getInstance().getModContainer("jex").orElse(null);
     }
 
-    public String getVersion() {
-        if(this.getModContainer().getMetadata().getVersion().getFriendlyString().equals("${version}")) {
-            return "0.0.0-unknown";
-        } else {
-            return this.getModContainer().getMetadata().getVersion().getFriendlyString();
+    public JexVersion getVersion() {
+        if (version == null) {
+            String v;
+            if (this.getModContainer().getMetadata().getVersion().getFriendlyString().equals("${version}")) {
+                v = "0.0.0-unknown";
+            } else {
+                v = this.getModContainer().getMetadata().getVersion().getFriendlyString();
+            }
+            version = new JexVersion(v);
         }
+        return version;
     }
 
     public String getBuildMetaData() {

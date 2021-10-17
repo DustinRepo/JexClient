@@ -48,7 +48,7 @@ public enum JexServerHelper {
         }
         public void sendConnectionPayload() {
             PacketByteBuf packetByteBuf = PacketByteBufs.create();
-            packetByteBuf.writeString("jexversion:" + JexClient.INSTANCE.getVersion());
+            packetByteBuf.writeString("jexversion:" + JexClient.INSTANCE.getVersion().version());
             NetworkHelper.INSTANCE.sendPacket(new CustomPayloadC2SPacket(new Identifier("jex", "connect"), packetByteBuf));
         }
     }
