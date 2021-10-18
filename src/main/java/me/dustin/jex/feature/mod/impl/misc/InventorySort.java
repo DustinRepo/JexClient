@@ -8,6 +8,7 @@ import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.ChatHelper;
+import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -23,7 +24,7 @@ import net.minecraft.screen.slot.SlotActionType;
 public class InventorySort extends Feature {
 
     @Op(name = "Sort Key", isKeybind = true)
-    public int sortKey = 10002;
+    public int sortKey = KeyboardHelper.INSTANCE.MIDDLE_CLICK;
 
     private Timer timeOutTimer = new Timer();
 

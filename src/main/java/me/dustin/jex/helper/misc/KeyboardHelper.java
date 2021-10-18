@@ -8,6 +8,10 @@ import java.util.Locale;
 public enum KeyboardHelper {
     INSTANCE;
 
+    public final int MIDDLE_CLICK = 10002;
+    public final int MB4 = 10002;
+    public final int MB5 = 10002;
+
     public boolean isPressed(int key) {
         if (key > 10000)
             return MouseHelper.INSTANCE.isMouseButtonDown(key - 10000);
@@ -17,7 +21,7 @@ public enum KeyboardHelper {
     public String getKeyName(int key) {
         if (key > 10000) {
             int mousebutton = key - 10000;
-            if (mousebutton == 2) {
+            if (key == MIDDLE_CLICK) {
                 return "Middle-Click";
             }
             return "MB" + (mousebutton + 1);
@@ -28,14 +32,14 @@ public enum KeyboardHelper {
 
     public int getKeyFromName(String keyName) {
         if (keyName.equalsIgnoreCase("Middle-Click")) {
-            return 10002;
+            return MIDDLE_CLICK;
         }
         else if (keyName.toLowerCase().startsWith("mb")) {
             try {
                 String n = keyName.toLowerCase().replace("mb", "");
                 int i = Integer.parseInt(n) - 1;
                 if (i > 2)
-                return 10000 + i;
+                    return 10000 + i;
             } catch (Exception e) {}
         }
         keyName = keyName.replace("_", ".");

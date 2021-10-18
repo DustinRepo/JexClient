@@ -187,7 +187,7 @@ public enum WorldHelper {
         try {
             session2 = Wrapper.INSTANCE.getMinecraft().getLevelStorage().createSession(worldName);
         } catch (IOException var21) {
-            JexClient.INSTANCE.getLogger().warn((String)"Failed to read level {} data {}", worldName, var21);
+            JexClient.INSTANCE.getLogger().warn("Failed to read level {} data {}", worldName, var21);
             SystemToast.addWorldAccessFailureToast(Wrapper.INSTANCE.getMinecraft(), worldName);
             Wrapper.INSTANCE.getMinecraft().setScreen(null);
             return null;
