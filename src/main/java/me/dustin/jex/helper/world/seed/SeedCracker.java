@@ -59,8 +59,7 @@ public enum SeedCracker {
 
                 ChatHelper.INSTANCE.addClientMessage("Finished dungeon search and looking for world seeds.");
 
-                for (Iterator<Long> iterator = decoratorSeeds.iterator(); iterator.hasNext(); ) {
-                    long decoratorSeed = (Long) iterator.next();
+                for (long decoratorSeed : decoratorSeeds) {
                     LCG failedDungeon = Rand.JAVA_LCG.combine(-5L);
 
                     for (int i = 0; i < 8; i++) {
