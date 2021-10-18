@@ -61,6 +61,7 @@ public class CommandFind extends Command {
                     default -> integratedServer.getOverworld();
                 };
                 if (serverWorld != null) {
+                    JexClient.INSTANCE.getLogger().info(serverWorld.getStructureAccessor().getStructureAt(startPos, StructureFeature.VILLAGE));
                     BlockPos pos = serverWorld.locateStructure(structureFeature, startPos, 100, false);
                     if (pos != null) {
                         String posString = "BlockPos: X: \247b" + pos.getX() + (pos.getY() == 0 ? "" : " \2477Y: \247b" + pos.getY()) + " \2477Z: \247b" + pos.getZ();

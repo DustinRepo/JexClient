@@ -61,6 +61,8 @@ public class CommandDungeonSeedCracker extends Command {
         if (blocksList.size() > 10) {
             ChatHelper.INSTANCE.addClientMessage("Attempting to crack seed from dungeon at BlockPos: " + spawnerPos + " (This can take a while)");
             SeedCracker.INSTANCE.crackSeed(spawnerPos, blocksList, new ArrayList<>(possibleSeeds));
+        } else {
+            ChatHelper.INSTANCE.addClientMessage("Dungeon doesn't have enough cobblestone/mossy cobblestone. Please choose another");
         }
         return 1;
     }
