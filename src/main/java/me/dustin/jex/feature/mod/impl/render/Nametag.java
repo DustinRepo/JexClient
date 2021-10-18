@@ -219,7 +219,9 @@ public class Nametag extends Feature {
     public String getNameString(Entity entity) {
         String name = entity.getDisplayName().asString();
         if (name.trim().isEmpty())
-            name = entity.getName().getString();
+            name = entity.getName().asString();
+        if (entity instanceof PlayerEntity && FriendHelper.INSTANCE.isFriend(entity.getName().asString()))
+            name = FriendHelper.INSTANCE.getFriendViaName(entity.getName().asString()).alias();
         if (entity instanceof ItemEntity itemEntity) {
             if (itemEntity.getStack().getCount() > 1)
                 name += " \247fx" + itemEntity.getStack().getCount();
