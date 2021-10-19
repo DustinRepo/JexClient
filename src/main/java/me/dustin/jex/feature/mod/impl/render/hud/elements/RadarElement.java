@@ -59,12 +59,14 @@ public class RadarElement extends HudElement{
             });
             matrixStack.pop();
         }
-        matrixStack.push();
-        matrixStack.translate(this.getX() + midPos + 0.5, this.getY() + midPos + 0.5, 0);
-        Render2DHelper.INSTANCE.fill(matrixStack, -0.5f, -0.5f, 0.5f, 0.5f, ColorHelper.INSTANCE.getClientColor());
-        matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), PlayerHelper.INSTANCE.getYaw() + 180, true));
-        drawPointer(matrixStack);
-        matrixStack.pop();
+        try {
+            matrixStack.push();
+            matrixStack.translate(this.getX() + midPos + 0.5, this.getY() + midPos + 0.5, 0);
+            Render2DHelper.INSTANCE.fill(matrixStack, -0.5f, -0.5f, 0.5f, 0.5f, ColorHelper.INSTANCE.getClientColor());
+            matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), PlayerHelper.INSTANCE.getYaw() + 180, true));
+            drawPointer(matrixStack);
+            matrixStack.pop();
+        }catch (Exception e) { matrixStack.pop(); }
         FontHelper.INSTANCE.drawCenteredString(matrixStack, "N", this.getX() + midPos + 1, this.getY() + 2, -1);
         FontHelper.INSTANCE.drawCenteredString(matrixStack, "S", this.getX() + midPos + 1, this.getY() + this.getHeight() - 11, -1);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, "W", this.getX() + 3, this.getY() + (this.getWidth() / 2) - 5, -1);
