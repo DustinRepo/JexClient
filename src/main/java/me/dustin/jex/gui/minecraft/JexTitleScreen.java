@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import me.dustin.jex.gui.changelog.ChangelogScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.text.LiteralText;
@@ -176,6 +177,9 @@ public class JexTitleScreen extends Screen {
         }));
         this.addDrawableChild(new ButtonWidget(2, y + spacingY * 4, 100, 20, new TranslatableText("menu.quit"), button -> {
             Wrapper.INSTANCE.getMinecraft().scheduleStop();
+        }));
+        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, new TranslatableText("Changelog"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new ChangelogScreen());
         }));
     }
 

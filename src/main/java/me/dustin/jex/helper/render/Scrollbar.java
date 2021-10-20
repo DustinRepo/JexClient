@@ -1,6 +1,7 @@
 package me.dustin.jex.helper.render;
 
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.MathHelper;
 
 public class Scrollbar {
     
@@ -24,12 +25,13 @@ public class Scrollbar {
         updateHeight();
         if (contentHeight > viewportHeight) {
             Render2DHelper.INSTANCE.fill(matrixStack, x, viewportY, x + width, viewportY + viewportHeight, 0xff353535);
+            y = MathHelper.clamp(y, viewportY, viewportY + viewportHeight - height);
             Render2DHelper.INSTANCE.fill(matrixStack, x, y, x + width, y + height, color);
         }
     }
 
     public boolean isHovered() {
-        return Render2DHelper.INSTANCE.isHovered(x,y,width,height);
+        return Render2DHelper.INSTANCE.isHovered(x,viewportY,width,viewportHeight);
     }
 
     public float getX() {

@@ -3,6 +3,7 @@ package me.dustin.jex.gui.minecraft;
 import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.impl.render.Gui;
+import me.dustin.jex.gui.changelog.ChangelogScreen;
 import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
 import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
@@ -32,6 +33,7 @@ public class JexOptionsScreen extends Screen {
     private ButtonWidget searchButton;
     private ButtonWidget waypointScreenButton;
     private ButtonWidget reloadAddonsButton;
+    private ButtonWidget changelogButton;
     private static Timer timer = new Timer();
     private boolean updating = false;
     public JexOptionsScreen() {
@@ -51,9 +53,8 @@ public class JexOptionsScreen extends Screen {
             CommandManagerJex.INSTANCE.setPrefix(prefixField.getText());
             ClientSettingsFile.write();
         });
-        downloadInstallerButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, new LiteralText("Update Jex to " + UpdateManager.INSTANCE.getLatestVersion()), button -> {
-            Update.INSTANCE.update();
-            updating = true;
+        waypointScreenButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, new LiteralText("Waypoint Screen"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
         });
         clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, new LiteralText("Open ClickGUI"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(Gui.clickgui);
@@ -68,15 +69,19 @@ public class JexOptionsScreen extends Screen {
             Addon.clearAddons();
             if (Wrapper.INSTANCE.getWorld() != null) {
                 Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                    if (entity instanceof PlayerEntity) {
-                        Addon.loadAddons((PlayerEntity)entity);
+                    if (entity instanceof PlayerEntity playerEntity) {
+                        Addon.loadAddons(playerEntity);
                     }
                 });
             }
             timer.reset();
         });
-        waypointScreenButton = new ButtonWidget(centerX - 230, topY + 25, 150, 20, new LiteralText("Waypoint Screen"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
+        downloadInstallerButton = new ButtonWidget(centerX - 230, topY + 25, 150, 20, new LiteralText("Update Jex to " + UpdateManager.INSTANCE.getLatestVersion().version()), button -> {
+            Update.INSTANCE.update();
+            updating = true;
+        });
+        changelogButton = new ButtonWidget(centerX - 230, topY + 50, 150, 20, new LiteralText("Changelog"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new ChangelogScreen());
         });
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 
@@ -87,6 +92,7 @@ public class JexOptionsScreen extends Screen {
         this.addDrawableChild(searchButton);
         this.addDrawableChild(reloadAddonsButton);
         this.addDrawableChild(waypointScreenButton);
+        this.addDrawableChild(changelogButton);
         this.addSelectableChild(prefixField);
         super.init();
     }
