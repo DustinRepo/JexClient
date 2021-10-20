@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.account;
 
+import me.dustin.jex.gui.changelog.changelog.JexChangelog;
 import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.account.MinecraftAccountManager;
@@ -44,6 +45,7 @@ public class AccountManagerScreen extends Screen {
 
     public String outputString;
     private Scrollbar scrollbar;
+    private boolean movingScrollbar;
 
     public AccountManagerScreen() {
         super(new LiteralText("Account Manager"));
@@ -130,14 +132,19 @@ public class AccountManagerScreen extends Screen {
         if (!accountButtons.isEmpty()) {
             float contentHeight = (accountButtons.get(accountButtons.size() - 1).getY() + (accountButtons.get(accountButtons.size() - 1).getHeight())) - accountButtons.get(0).getY();
             float viewportHeight = 200;
-            this.scrollbar = new Scrollbar((width / 2.f), (height / 2.f) - 102, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
+            this.scrollbar = new Scrollbar((width / 2.f) - 1, (height / 2.f) - 101, 3, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
         }
         super.init();
     }
 
-
     @Override
     public void tick() {
+        if (movingScrollbar) {
+            if (MouseHelper.INSTANCE.isMouseButtonDown(0))
+                moveScrollbar();
+            else
+                movingScrollbar = false;
+        }
         searchTextField.tick();
         super.tick();
     }
@@ -186,14 +193,20 @@ public class AccountManagerScreen extends Screen {
             FontHelper.INSTANCE.drawWithShadow(matrixStack, lastLoginString, width / 2.f + 6, height / 2.f + 23, -1);
         }
 
-        if (scrollbar != null)
+        if (scrollbar != null) {
+            float contentHeight = (accountButtons.get(accountButtons.size() - 1).getY() + (accountButtons.get(accountButtons.size() - 1).getHeight())) - accountButtons.get(0).getY();
+            scrollbar.setContentHeight(contentHeight);
             scrollbar.render(matrixStack);
+        }
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean save = super.mouseClicked(mouseX, mouseY, button);
+        if (scrollbar.isHovered()) {
+            movingScrollbar = true;
+        }
         accountButtons.forEach(accountButton -> {
             if (isInButtons())
                 accountButton.setSelected(accountButton.isHovered());
@@ -311,6 +324,31 @@ public class AccountManagerScreen extends Screen {
             float buttonY = ((height / 2.f) - 100) + (yCount * 41);
             accountButtons.add(new AccountButton(account, buttonX, buttonY));
             yCount++;
+        }
+    }
+
+    private void moveScrollbar() {
+        float mouseY = MouseHelper.INSTANCE.getMouseY();
+        float scrollBarHoldingArea = scrollbar.getY() + (scrollbar.getHeight() / 2.f);
+        float dif = mouseY - scrollBarHoldingArea;
+        if (dif > 1.5f) {
+            for (int i = 0; i < Math.abs(dif); i++) {
+                if (scrollbar.getY() + scrollbar.getHeight() < scrollbar.getViewportY() + scrollbar.getViewportHeight()) {
+                    scrollbar.moveDown();
+                    for (AccountButton button : accountButtons) {
+                        button.setY(button.getY() - 1);
+                    }
+                }
+            }
+        } else if (dif < -1.5f) {
+            for (int i = 0; i < Math.abs(dif); i++) {
+                if (scrollbar.getY() > scrollbar.getViewportY()) {
+                    scrollbar.moveUp();
+                    for (AccountButton button : accountButtons) {
+                        button.setY(button.getY() + 1);
+                    }
+                }
+            }
         }
     }
 }
