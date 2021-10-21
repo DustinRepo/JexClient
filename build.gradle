@@ -89,7 +89,7 @@ shadowJar {
 
 remapJar {
     input.set(shadowJar.archiveFile)
-    archiveName = "JexClient.jar"
+    archiveName = "JexClient-Snap.jar"
 }
 
 jar {
