@@ -421,9 +421,9 @@ public class OptionButton extends Button {
 
             //hue slider
             Render2DHelper.INSTANCE.bindTexture(colorSlider);
-            DrawableHelper.drawTexture(matrixStack, (int) this.getX() + (int) this.getWidth() - 10, (int) this.getY() + 15, 0, 0, 5, 80, 10, 80);
+            DrawableHelper.drawTexture(matrixStack, (int) this.getX() + (int) this.getWidth() - 5, (int) this.getY() + 15, 0, 0, 5, 80, 10, 80);
             //hue cursor
-            Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 10, this.getY() + 15 + huepos - 1, (this.getX() + this.getWidth() - 10) + 5, this.getY() + 15 + huepos + 1, -1);
+            Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 5, this.getY() + 15 + huepos - 1, this.getX() + this.getWidth(), this.getY() + 15 + huepos + 1, -1);
 
             FontHelper.INSTANCE.drawWithShadow(matrixStack, property.getName(), this.getX() + 3, this.getY() + 3, v.getValue());
         }
@@ -509,7 +509,7 @@ public class OptionButton extends Button {
 
     void handleSliders(ColorOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
-            if (MouseHelper.INSTANCE.getMouseX() > this.getX() + 100) {
+            if (MouseHelper.INSTANCE.getMouseX() > this.getX() + this.getWidth() - 6) {
                 float position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
                 float percent = position / 79 * 100;
                 float increment = 1;

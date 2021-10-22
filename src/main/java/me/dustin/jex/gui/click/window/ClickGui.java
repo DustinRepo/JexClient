@@ -110,7 +110,7 @@ public class ClickGui extends Screen {
         if (windows.isEmpty()) {
             guiModule = (Gui) Feature.get(Gui.class);
             int count = 0;
-            float windowWidth = 120;
+            float windowWidth = 100;
             float windowHeight = 15;
             for (Feature.Category category : Feature.Category.values()) {
                 windows.add(new Window(category.name(), 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
@@ -131,7 +131,7 @@ public class ClickGui extends Screen {
             childCount++;
             configWindow.getButtons().add(clickSoundButton = new Button(configWindow, "Play Click Sounds: " + (playClickSounds ? "\247aON" : "\247cOFF"), configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, clickSoundListener));
             childCount++;
-            configWindow.getButtons().add(launchSoundButton = new Button(configWindow, "Game Launch Alert: " + (JexClient.INSTANCE.playSoundOnLaunch() ? "\247aON" : "\247cOFF"), configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, launchSoundListener));
+            configWindow.getButtons().add(launchSoundButton = new Button(configWindow, "Launch Alert: " + (JexClient.INSTANCE.playSoundOnLaunch() ? "\247aON" : "\247cOFF"), configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, launchSoundListener));
             childCount++;
             configWindow.getButtons().add(new Button(configWindow, "Xray Block Select", configWindow.getX() + 1, (configWindow.getY() + configWindow.getHeight()) + (configWindow.getHeight() * childCount), windowWidth - 2, windowHeight, xrayButtonListener));
             childCount++;
