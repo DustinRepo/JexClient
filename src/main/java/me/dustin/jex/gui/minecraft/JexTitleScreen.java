@@ -63,7 +63,7 @@ public class JexTitleScreen extends Screen {
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
-    private static final Identifier JEX_TITLE_TEXTURE = new Identifier("jex", "gui/mc/jex-logo.png");
+    private static final Identifier JEX_TITLE_TEXTURE = new Identifier("jex", "gui/jex/jex-logo.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     public static int background = 0;
     private static ArrayList<Background> backgrounds = new ArrayList<>();
@@ -72,12 +72,10 @@ public class JexTitleScreen extends Screen {
     private final boolean doBackgroundFade;
     @Nullable
     private String splashText;
-    private Screen realmsNotificationGui;
     private long backgroundFadeStart;
 
     private CustomMainMenu customMainMenu;
     private Timer timer = new Timer();
-    private boolean isDonator;
 
     public JexTitleScreen() {
         this(false);
@@ -93,19 +91,7 @@ public class JexTitleScreen extends Screen {
         MCAPIHelper.INSTANCE.downloadPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
     }
 
-    public static CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
-        return CompletableFuture.allOf(textureManager.loadTextureAsync(MINECRAFT_TITLE_TEXTURE, executor), textureManager.loadTextureAsync(EDITION_TITLE_TEXTURE, executor), textureManager.loadTextureAsync(PANORAMA_OVERLAY, executor), PANORAMA_CUBE_MAP.loadTexturesAsync(textureManager, executor));
-    }
-
-    private boolean areRealmsNotificationsEnabled() {
-        return this.client.options.realmsNotifications && this.realmsNotificationGui != null;
-    }
-
     public void tick() {
-        if (this.areRealmsNotificationsEnabled()) {
-            //this.realmsNotificationGui.tick();
-        }
-
     }
 
     public boolean isPauseScreen() {
@@ -200,7 +186,7 @@ public class JexTitleScreen extends Screen {
             }
             timer.reset();
         }
-        isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+        boolean isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
         int midX = Render2DHelper.INSTANCE.getScaledWidth() / 2;
         float f = this.doBackgroundFade ? (float) (Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
         fill(matrices, 0, 0, this.width, this.height, -1);
@@ -285,13 +271,6 @@ public class JexTitleScreen extends Screen {
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return super.mouseClicked(mouseX, mouseY, button);
-    }
-
-    public void removed() {
-        if (this.realmsNotificationGui != null) {
-            this.realmsNotificationGui.removed();
-        }
-
     }
 
     public boolean backgroundExists(String name) {
