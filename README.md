@@ -14,10 +14,17 @@
 ![](https://forthebadge.com/images/badges/kinda-sfw.svg)
 ![](https://forthebadge.com/images/badges/built-by-neckbeards.svg)
 # Jex Utility Client
-https://jexclient.com/
+Jex Client is a Minecraft Utility Client made for Anarchy servers. It has support for mods like custom Baritone Processes, ViaFabric compatibility, a Sodium compatible Xray, and more
+
+You can download Jex Client at https://jexclient.com/ or in the releases tab
+## Things needed:
+1. [Git](https://git-scm.com/downloads)
+2. [Java 16 JDK](https://www.oracle.com/java/technologies/javase/jdk16-archive-downloads.html)
+3. A Java IDE, like [Intellij](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
 
 ## Setup Intellij:
-Simply open build.gradle as an Intellij project
+Simply open build.gradle as an Intellij project.
+If you don't see run profiles after it finishes loading, close and re-open the project
 
 ## Setup Eclipse:
 1. Download the repo and run the command "gradlew eclipse" (use a ./ before command if using PowerShell)
