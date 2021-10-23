@@ -31,13 +31,17 @@ public class MixinMain {
                         return;
                     }
                     JexClient.INSTANCE.getLogger().info("Logging in to Microsoft account with name " + microsoftAccount.username);
-                    new MicrosoftLogin(false).refreshTokens(microsoftAccount);
-                    args.set(0, microsoftAccount.username);
-                    args.set(1, uuid);
-                    args.set(2, microsoftAccount.accessToken);
-                    args.set(5, Session.AccountType.MSA);
+                    if (new MicrosoftLogin(microsoftAccount).login()) {
+                        new MicrosoftLogin(microsoftAccount.getEmail(), microsoftAccount.getPassword(), microsoftAccount.accessToken, microsoftAccount.accessToken, true).login();
+                        args.set(0, microsoftAccount.username);
+                        args.set(1, uuid);
+                        args.set(2, microsoftAccount.accessToken);
+                        args.set(5, Session.AccountType.MSA);
+                    }
                 } else if (mcAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
                     Session session = MojangLogin.INSTANCE.login(mojangAccount.getEmail(), mojangAccount.getPassword(), false);
+                    if (session == null)
+                        return;
                     JexClient.INSTANCE.getLogger().info("Logging in to Mojang account with name " + session.getUsername());
                     args.set(0, session.getUsername());
                     args.set(1, session.getUuid());

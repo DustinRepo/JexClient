@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.account;
 
-import me.dustin.jex.gui.changelog.changelog.JexChangelog;
 import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.account.MinecraftAccountManager;
@@ -9,9 +8,9 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.login.MicrosoftLogin;
 import me.dustin.jex.helper.network.login.MojangLogin;
 import me.dustin.jex.helper.network.MCAPIHelper;
-import me.dustin.jex.helper.network.login.MicrosoftLogin;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
@@ -306,7 +305,7 @@ public class AccountManagerScreen extends Screen {
                             outputString = "Login failed";
                     }
                 } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-                    new MicrosoftLogin(true).login(microsoftAccount.accessToken, microsoftAccount.refreshToken);
+                    new MicrosoftLogin(microsoftAccount.getEmail(), microsoftAccount.getPassword(), microsoftAccount.accessToken, microsoftAccount.refreshToken, true).login();
                 }
             }
         }.start();
