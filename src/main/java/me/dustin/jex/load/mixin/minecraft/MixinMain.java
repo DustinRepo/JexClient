@@ -5,8 +5,8 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.helper.file.files.AltFile;
-import me.dustin.jex.helper.network.login.MojangLogin;
 import me.dustin.jex.helper.network.login.MicrosoftLogin;
+import me.dustin.jex.helper.network.login.MojangLogin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.main.Main;
 import net.minecraft.client.util.Session;
@@ -31,12 +31,14 @@ public class MixinMain {
                         return;
                     }
                     JexClient.INSTANCE.getLogger().info("Logging in to Microsoft account with name " + microsoftAccount.username);
-                    new MicrosoftLogin(false).refreshTokens(microsoftAccount);
-                    args.setAll(microsoftAccount.username, uuid, microsoftAccount.accessToken, "mojang");
+                    if (new MicrosoftLogin(microsoftAccount).login())
+                        args.setAll(microsoftAccount.username, uuid, microsoftAccount.accessToken, "mojang");
                 } else if (mcAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
                     Session session = MojangLogin.INSTANCE.login(mojangAccount.getEmail(), mojangAccount.getPassword(), false);
-                    JexClient.INSTANCE.getLogger().info("Logging in to Mojang account with name " + session.getUsername());
-                    args.setAll(session.getUsername(), UUIDTypeAdapter.fromUUID(session.getProfile().getId()), session.getAccessToken(), "mojang");
+                    if (session != null) {
+                        JexClient.INSTANCE.getLogger().info("Logging in to Mojang account with name " + session.getUsername());
+                        args.setAll(session.getUsername(), UUIDTypeAdapter.fromUUID(session.getProfile().getId()), session.getAccessToken(), "mojang");
+                    }
                 } else {
                     JexClient.INSTANCE.getLogger().info("Account not recognized, can not log in.");
                 }

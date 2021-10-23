@@ -4,8 +4,8 @@ import com.mojang.authlib.exceptions.AuthenticationException;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.impl.GuiPasswordField;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.login.MojangLogin;
 import me.dustin.jex.helper.network.login.MicrosoftLogin;
+import me.dustin.jex.helper.network.login.MojangLogin;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -14,6 +14,8 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 
+import java.util.UUID;
+
 public class DirectLoginScreen extends Screen {
 
 	TextFieldWidget username;
@@ -21,6 +23,7 @@ public class DirectLoginScreen extends Screen {
 	GuiPasswordField password;
 	private Screen parent;
 	private String errorMessage = "";
+	private boolean isMicrosoft;
 
 	public DirectLoginScreen(Screen parent) {
 		super(new LiteralText("Direct Login"));
@@ -52,30 +55,37 @@ public class DirectLoginScreen extends Screen {
 		this.addSelectableChild(username);
 		this.addSelectableChild(email);
 		this.addSelectableChild(password);
-		MicrosoftLogin microsoftLogin = new MicrosoftLogin(false);
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, new LiteralText("Cancel"), button -> {
 			Wrapper.INSTANCE.getMinecraft().openScreen(parent);
-			microsoftLogin.stopLoginProcess();
 		}));
 
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, new LiteralText("Login"), button -> {
 			this.errorMessage = "Logging in...";
-			MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
-			mojangAccount.setCracked(!email.getText().contains("@"));
-			try {
-				if (MojangLogin.INSTANCE.login(mojangAccount)) {
-					Wrapper.INSTANCE.getMinecraft().openScreen(parent);
-				} else {
+			if (isMicrosoft) {
+				MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(username.getText(), email.getText(), password.getText(), "", "", UUID.randomUUID().toString());
+				if (!new MicrosoftLogin(microsoftAccount).login()) {
 					this.errorMessage = "\247cError, could not log in.";
 				}
-			} catch (AuthenticationException e) {
-				e.printStackTrace();
-				this.errorMessage = "\247cError, could not log in.";
+			} else {
+				MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
+				mojangAccount.setCracked(!email.getText().contains("@"));
+				try {
+					if (MojangLogin.INSTANCE.login(mojangAccount)) {
+						Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+					} else {
+						this.errorMessage = "\247cError, could not log in.";
+					}
+				} catch (AuthenticationException e) {
+					e.printStackTrace();
+					this.errorMessage = "\247cError, could not log in.";
+				}
 			}
 		}));
 
-		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, new LiteralText("Microsoft Account"), button -> {
-			microsoftLogin.startLoginProcess();
+
+		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, new LiteralText("\2476Mojang Account"), button -> {
+			isMicrosoft = !isMicrosoft;
+			button.setMessage(new LiteralText(isMicrosoft ? "\247aMicrosoft Account" : "\2476Mojang Account"));
 		}));
 		super.init();
 	}

@@ -26,9 +26,9 @@ public class AltFile {
         for (MinecraftAccount alt : MinecraftAccountManager.INSTANCE.getAccounts()) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("name", alt.getUsername());
+            jsonObject.addProperty("email", alt.getEmail());
+            jsonObject.addProperty("password", EncryptHelper.INSTANCE.encrypt(HWID.INSTANCE.getHWID(), alt.getPassword()));
             if (alt instanceof MinecraftAccount.MojangAccount mojangAccount) {
-                jsonObject.addProperty("email", mojangAccount.getEmail());
-                jsonObject.addProperty("password", EncryptHelper.INSTANCE.encrypt(HWID.INSTANCE.getHWID(), mojangAccount.getPassword()));
                 jsonObject.addProperty("cracked", mojangAccount.isCracked());
                 jsonObject.addProperty("Microsoft", false);
             } else if (alt instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
@@ -62,9 +62,9 @@ public class AltFile {
         for (MinecraftAccount alt : MinecraftAccountManager.INSTANCE.getAccounts()) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("name", alt.getUsername());
+            jsonObject.addProperty("email", alt.getEmail());
+            jsonObject.addProperty("password", alt.getPassword());
             if (alt instanceof MinecraftAccount.MojangAccount mojangAccount) {
-                jsonObject.addProperty("email", mojangAccount.getEmail());
-                jsonObject.addProperty("password", mojangAccount.getPassword());
                 jsonObject.addProperty("cracked", mojangAccount.isCracked());
                 jsonObject.addProperty("Microsoft", false);
             } else if (alt instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
@@ -107,15 +107,17 @@ public class AltFile {
                 boolean microsoft = false;
                 int loginCount = 0;
                 long lastUsed = -1L;
+                if (object.get("email") == null)
+                    continue;
                 if (object.get("Microsoft") != null) {
                     microsoft = object.get("Microsoft").getAsBoolean();
                     loginCount = object.get("loginCount").getAsInt();
                     lastUsed = object.get("lastUsed").getAsLong();
                 }
+                String email = object.get("email").getAsString();
+                String password = object.get("password").getAsString();
                 String name = object.get("name").getAsString();
                 if (!microsoft) {
-                    String email = object.get("email").getAsString();
-                    String password = object.get("password").getAsString();
                     boolean cracked = object.get("cracked").getAsBoolean();
                     MinecraftAccount.MojangAccount account = new MinecraftAccount.MojangAccount(name, email, password);
                     account.lastUsed = lastUsed;
@@ -127,7 +129,7 @@ public class AltFile {
                     String refreshToken = object.get("refreshToken").getAsString();
                     String uuid = object.get("uuid") == null ? "null" : object.get("uuid").getAsString();
 
-                    MinecraftAccount.MicrosoftAccount account = new MinecraftAccount.MicrosoftAccount(name, accessToken, refreshToken, uuid);
+                    MinecraftAccount.MicrosoftAccount account = new MinecraftAccount.MicrosoftAccount(name, email, password, accessToken, refreshToken, uuid);
                     account.lastUsed = lastUsed;
                     account.loginCount = loginCount;
                     MinecraftAccountManager.INSTANCE.getAccounts().add(account);
@@ -158,10 +160,12 @@ public class AltFile {
                     loginCount = object.get("loginCount").getAsInt();
                     lastUsed = object.get("lastUsed").getAsLong();
                 }
+                if (object.get("email") == null)
+                    continue;
+                String email = object.get("email").getAsString();
+                String password = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), object.get("password").getAsString());
                 String name = object.get("name").getAsString();
                 if (!microsoft) {
-                    String email = object.get("email").getAsString();
-                    String password = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), object.get("password").getAsString());
                     boolean cracked = object.get("cracked").getAsBoolean();
                     MinecraftAccount.MojangAccount account = new MinecraftAccount.MojangAccount(name, email, password);
                     account.setCracked(cracked);
@@ -172,7 +176,7 @@ public class AltFile {
                     String accessToken = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), object.get("accessToken").getAsString());
                     String refreshToken = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), object.get("refreshToken").getAsString());
                     String uuid = object.get("uuid") == null ? "null" : object.get("uuid").getAsString();
-                    MinecraftAccount.MicrosoftAccount account = new MinecraftAccount.MicrosoftAccount(name, accessToken, refreshToken, uuid);
+                    MinecraftAccount.MicrosoftAccount account = new MinecraftAccount.MicrosoftAccount(name, email, password, accessToken, refreshToken, uuid);
                     account.lastUsed = lastUsed;
                     account.loginCount = loginCount;
                     MinecraftAccountManager.INSTANCE.getAccounts().add(account);

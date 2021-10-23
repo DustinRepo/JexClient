@@ -8,6 +8,13 @@ import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.Header;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -37,6 +44,30 @@ public enum WebHelper {
         }
         input.close();
         return buffer.toString();
+    }
+
+    public String readURL(String url, Map<String, String> headers) {
+        try {
+            CloseableHttpClient httpClient    = HttpClientBuilder.create().build();
+            HttpGet get          = new HttpGet(url);
+            headers.forEach(get::setHeader);
+            CloseableHttpResponse response = httpClient.execute(get);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 200 && statusCode < 300) {
+                BufferedReader input = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                StringBuilder buffer = new StringBuilder();
+                for (String line; (line = input.readLine()) != null; ) {
+                    buffer.append(line);
+                    buffer.append("\n");
+                }
+                input.close();
+                return buffer.toString();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public String sendPOST(URL url, Map<?, ?> args) {
@@ -85,6 +116,34 @@ public enum WebHelper {
             e.printStackTrace();
         }
         return response;
+    }
+
+    public String sendPOST(String url, String jsonData, Map<String, String> headers) {
+        try {
+            CloseableHttpClient httpClient    = HttpClientBuilder.create().build();
+            HttpPost post          = new HttpPost(url);
+            StringEntity postingString = new StringEntity(jsonData);
+            post.setEntity(postingString);
+            headers.forEach(post::setHeader);
+            CloseableHttpResponse response = httpClient.execute(post);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 200 && statusCode < 300) {
+                BufferedReader input = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+                StringBuilder buffer = new StringBuilder();
+                for (String line; (line = input.readLine()) != null; ) {
+                    buffer.append(line);
+                    buffer.append("\n");
+                }
+                input.close();
+                String resp = buffer.toString();
+                return resp;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void uploadToImgur(File file) {
