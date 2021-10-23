@@ -63,6 +63,7 @@ public enum WebHelper {
                 input.close();
                 return buffer.toString();
             } else {
+                JexClient.INSTANCE.getLogger().info("ERROR: HTTP Status code " + statusCode);
                 return null;
             }
         } catch (Exception e) {
@@ -138,6 +139,7 @@ public enum WebHelper {
                 String resp = buffer.toString();
                 return resp;
             } else {
+                JexClient.INSTANCE.getLogger().info("ERROR: HTTP Status code " + statusCode);
                 return null;
             }
         } catch (Exception e) {

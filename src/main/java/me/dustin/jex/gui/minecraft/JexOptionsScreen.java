@@ -34,6 +34,7 @@ public class JexOptionsScreen extends Screen {
     private ButtonWidget waypointScreenButton;
     private ButtonWidget reloadAddonsButton;
     private ButtonWidget changelogButton;
+    private ButtonWidget personalSettingsButton;
     private static Timer timer = new Timer();
     private boolean updating = false;
     public JexOptionsScreen() {
@@ -83,6 +84,9 @@ public class JexOptionsScreen extends Screen {
         changelogButton = new ButtonWidget(centerX - 230, topY + 50, 150, 20, new LiteralText("Changelog"), button -> {
             Wrapper.INSTANCE.getMinecraft().openScreen(new ChangelogScreen());
         });
+        personalSettingsButton = new ButtonWidget(centerX - 230, topY + 75, 150, 20, new LiteralText("Personal Cosmetics"), button -> {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new JexPersonalizationScreen(this));
+        });
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 
         this.addDrawableChild(setPrefixButton);
@@ -93,6 +97,7 @@ public class JexOptionsScreen extends Screen {
         this.addDrawableChild(reloadAddonsButton);
         this.addDrawableChild(waypointScreenButton);
         this.addDrawableChild(changelogButton);
+        this.addDrawableChild(personalSettingsButton);
         this.addSelectableChild(prefixField);
         super.init();
     }
