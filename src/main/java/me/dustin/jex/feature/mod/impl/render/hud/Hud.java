@@ -236,23 +236,18 @@ public class Hud extends Feature {
             immediate.draw();
         }
     }
-
+    private static Gui gui;
     public static int getCategoryColor(Feature.Category category) {
-        switch (category) {
-            case MOVEMENT:
-                return new Color(141, 95, 255).getRGB();
-            case VISUAL:
-                return new Color(255, 92, 252).getRGB();
-            case PLAYER:
-                return new Color(64, 255, 83).getRGB();
-            case MISC:
-                return new Color(247, 255, 65).getRGB();
-            case WORLD:
-                return new Color(74, 84, 255).getRGB();
-            case COMBAT:
-                return new Color(255, 61, 56).getRGB();
-        }
-        return -1;
+        if (gui == null)
+            gui = (Gui)Feature.get(Gui.class);
+        return switch (category) {
+            case MOVEMENT -> gui.movementColor;
+            case VISUAL -> gui.visualColor;
+            case PLAYER -> gui.playerColor;
+            case MISC -> gui.miscColor;
+            case WORLD -> gui.worldColor;
+            case COMBAT -> gui.combatColor;
+        };
     }
 
     public HudElement getElement(String name) {

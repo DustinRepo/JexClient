@@ -10,6 +10,8 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
 
+import java.awt.*;
+
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Opens the ClickGui.", key = GLFW.GLFW_KEY_RIGHT_SHIFT)
 public class Gui extends Feature {
     public static Gui INSTANCE;
@@ -29,17 +31,17 @@ public class Gui extends Feature {
     public String colorScheme = "Customize";
 
     @OpChild(name = "Combat", parent = "Colors", dependency = "Customize", isColor = true)
-    public int combatColor = Hud.getCategoryColor(Feature.Category.COMBAT);
+    public int combatColor = new Color(255, 61, 56).getRGB();
     @OpChild(name = "Player", parent = "Colors", dependency = "Customize", isColor = true)
-    public int playerColor = Hud.getCategoryColor(Feature.Category.PLAYER);
+    public int playerColor = new Color(64, 255, 83).getRGB();
     @OpChild(name = "Movement", parent = "Colors", dependency = "Customize", isColor = true)
-    public int movementColor = Hud.getCategoryColor(Feature.Category.MOVEMENT);
+    public int movementColor = new Color(141, 95, 255).getRGB();
     @OpChild(name = "Visual", parent = "Colors", dependency = "Customize", isColor = true)
-    public int visualColor = Hud.getCategoryColor(Feature.Category.VISUAL);
+    public int visualColor = new Color(255, 92, 252).getRGB();
     @OpChild(name = "World", parent = "Colors", dependency = "Customize", isColor = true)
-    public int worldColor = Hud.getCategoryColor(Feature.Category.WORLD);
+    public int worldColor = new Color(74, 84, 255).getRGB();
     @OpChild(name = "Misc", parent = "Colors", dependency = "Customize", isColor = true)
-    public int miscColor = Hud.getCategoryColor(Feature.Category.MISC);
+    public int miscColor = new Color(247, 255, 65).getRGB();
 
     @Override
     public void onEnable() {
