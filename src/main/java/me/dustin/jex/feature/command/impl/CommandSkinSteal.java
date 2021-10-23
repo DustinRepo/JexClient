@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;
@@ -22,17 +23,17 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-@Cmd(name = "skinsteal", syntax = ".skinsteal <name>", description = "Download a player's skin by name. Puts into .minecraft/JexClient/skins", alias = {"skin"})
+@Cmd(name = "skinsteal", syntax = ".skinsteal <name> <upload(optional)>", description = "Download a player's skin by name. Puts into .minecraft/JexClient/skins", alias = {"skin"})
 public class CommandSkinSteal extends Command {
 
+    private boolean setSkin;
     @Override
     public void registerCommand() {
-        CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("player", PlayerNameArgumentType.playerName()).executes(this)));
+        CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("player", PlayerNameArgumentType.playerName()).executes(context -> run(context, false)).then(literal("upload").executes(context -> run(context, true)))));
         dispatcher.register(literal("skin").redirect(node));
     }
 
-    @Override
-    public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
+    public int run(CommandContext<FabricClientCommandSource> context, boolean setSkin) throws CommandSyntaxException {
             String name = PlayerNameArgumentType.getPlayerName(context, "player");
             ChatHelper.INSTANCE.addClientMessage("Downloading skin of " + name + "...");
             new Thread(() -> {
@@ -80,10 +81,23 @@ public class CommandSkinSteal extends Command {
                     fos.write(response);
                     fos.close();
                     ChatHelper.INSTANCE.addClientMessage(StringUtils.capitalize(name) + "'s skin downloaded.");
+
+                    JexClient.INSTANCE.getLogger().info(setSkin);
+                    if (setSkin) {
+                        if (MCAPIHelper.INSTANCE.setPlayerSkin(skinURL, MCAPIHelper.SkinVariant.CLASSIC))
+                            ChatHelper.INSTANCE.addClientMessage("Skin uploaded to Minecraft. Please relog to see the changes");
+                        else
+                            ChatHelper.INSTANCE.addClientMessage("Could not upload skin to Minecraft.");
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }).start();
         return 1;
+    }
+
+    @Override
+    public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
+        return 0;
     }
 }
