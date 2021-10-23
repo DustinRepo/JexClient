@@ -46,7 +46,7 @@ public class Cape {
             }
 
             capeImage.close();
-            Identifier id = new Identifier("jex", "capes/self");
+            Identifier id = new Identifier("jex", "capes/self.png");
             applyTexture(id, imgNew);
             if (capes.containsKey("self"))
                 capes.replace("self", id);

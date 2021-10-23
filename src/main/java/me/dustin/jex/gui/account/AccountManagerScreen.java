@@ -225,9 +225,9 @@ public class AccountManagerScreen extends Screen {
         if (amount > 0) {
             AccountButton topButton = accountButtons.get(0);
             if (topButton == null) return false;
-            if (topButton.getY() < ((height / 2) - 100)) {
+            if (topButton.getY() < ((height / 2.f) - 100)) {
                 for (int i = 0; i < 20; i++) {
-                    if (topButton.getY() < ((height / 2) - 100)) {
+                    if (topButton.getY() < ((height / 2.f) - 100)) {
                         for (AccountButton button : accountButtons) {
                             button.setY(button.getY() + 1);
                         }
@@ -239,9 +239,9 @@ public class AccountManagerScreen extends Screen {
         } else if (amount < 0) {
             AccountButton bottomButton = accountButtons.get(accountButtons.size() - 1);
             if (bottomButton == null) return false;
-            if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 100)) {
+            if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2.f) + 100)) {
                 for (int i = 0; i < 20; i++) {
-                    if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 100)) {
+                    if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2.f) + 100)) {
                         for (AccountButton button : accountButtons) {
                             button.setY(button.getY() - 1);
                         }
@@ -296,13 +296,7 @@ public class AccountManagerScreen extends Screen {
                         } else
                             outputString = "Login failed";
                     }catch (Exception e) {
-                        MCAPIHelper.APIStatus authServer = MCAPIHelper.INSTANCE.getStatus(MCAPIHelper.APIServer.AUTHSERVER);
-                        if (authServer == MCAPIHelper.APIStatus.RED)
-                            outputString = "Authentication servers offline.";
-                        else if (authServer == MCAPIHelper.APIStatus.GREEN)
-                            outputString = "Your IP may be temp banned from logging in.";
-                        else
-                            outputString = "Login failed";
+                        outputString = "Login failed";
                     }
                 } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
                     new MicrosoftLogin(microsoftAccount.getEmail(), microsoftAccount.getPassword(), microsoftAccount.accessToken, microsoftAccount.refreshToken, true).login();

@@ -30,6 +30,7 @@ import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.JexServerHelper;
+import me.dustin.jex.helper.network.login.MicrosoftLogin;
 import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -95,7 +96,6 @@ public enum JexClient {
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();
         JexChangelog.loadChangelogList();
-        Cape.setPersonalCape(new File(ModFileHelper.INSTANCE.getJexDirectory(), "cape.png"));
         getLogger().info("Jex load finished.");
     }
 

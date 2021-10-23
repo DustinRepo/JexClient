@@ -9,11 +9,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.gui.changelog.ChangelogScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
@@ -72,10 +72,12 @@ public class JexTitleScreen extends Screen {
     private final boolean doBackgroundFade;
     @Nullable
     private String splashText;
+    private Screen realmsNotificationGui;
     private long backgroundFadeStart;
 
     private CustomMainMenu customMainMenu;
     private Timer timer = new Timer();
+    private boolean isDonator;
 
     public JexTitleScreen() {
         this(false);
@@ -92,6 +94,7 @@ public class JexTitleScreen extends Screen {
     }
 
     public void tick() {
+        capeYaw+=2;
     }
 
     public boolean isPauseScreen() {
@@ -115,7 +118,7 @@ public class JexTitleScreen extends Screen {
         this.textRenderer.getWidth("Copyright Mojang AB. Do not distribute!");
         int j = this.height / 4 + 48;
 
-        this.initWidgetsNormal(j, 24);
+        this.initWidgetsNormal(j);
 
         if (customMainMenu.customBackground) {
             if (!backgrounds.isEmpty()) {
@@ -147,21 +150,21 @@ public class JexTitleScreen extends Screen {
         this.client.setConnectedToRealms(false);
     }
 
-    private void initWidgetsNormal(int y, int spacingY) {
+    private void initWidgetsNormal(int y) {
         JexTitleScreen titleScreen = this;
         this.addDrawableChild(new ButtonWidget(2, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new SelectWorldScreen(titleScreen));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + spacingY * 1, 175, 20, new TranslatableText("menu.multiplayer"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24, 175, 20, new TranslatableText("menu.multiplayer"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(titleScreen));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + spacingY * 2, 150, 20, new TranslatableText("menu.online"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24 * 2, 150, 20, new TranslatableText("menu.online"), button -> {
             titleScreen.switchToRealms();
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + spacingY * 3, 125, 20, new TranslatableText("menu.options"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24 * 3, 125, 20, new TranslatableText("menu.options"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + spacingY * 4, 100, 20, new TranslatableText("menu.quit"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24 * 4, 100, 20, new TranslatableText("menu.quit"), button -> {
             Wrapper.INSTANCE.getMinecraft().scheduleStop();
         }));
         this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, new TranslatableText("Changelog"), button -> {
@@ -172,6 +175,8 @@ public class JexTitleScreen extends Screen {
     private void switchToRealms() {
         this.client.setScreen(new RealmsMainScreen(this));
     }
+
+    float capeYaw = 0;
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (this.backgroundFadeStart == 0L && this.doBackgroundFade) {
@@ -186,7 +191,7 @@ public class JexTitleScreen extends Screen {
             }
             timer.reset();
         }
-        boolean isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+        isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
         int midX = Render2DHelper.INSTANCE.getScaledWidth() / 2;
         float f = this.doBackgroundFade ? (float) (Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
         fill(matrices, 0, 0, this.width, this.height, -1);
@@ -236,13 +241,11 @@ public class JexTitleScreen extends Screen {
                 }
             }
 
-            Iterator<?> var12 = this.children().iterator();
-
-            while (var12.hasNext()) {
-                ClickableWidget abstractButtonWidget = (ClickableWidget) var12.next();
+            for (net.minecraft.client.gui.Element element : this.children()) {
+                ClickableWidget abstractButtonWidget = (ClickableWidget) element;
                 abstractButtonWidget.setAlpha(g);
             }
-            float top = this.height / 4 + 45;
+            float top = this.height / 4.f + 45;
             float bottom = top + (24 * 5) + 2;
             float left = -1;
             float right = 205;
@@ -254,13 +257,15 @@ public class JexTitleScreen extends Screen {
                 Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
                 try {
                     if (response.getCape() != null && !response.getCape().isEmpty() && !response.getCape().equalsIgnoreCase("null")) {
-                        Render2DHelper.INSTANCE.bindTexture(new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")));
+                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")), capeYaw, 0);
                     } else {
-                        Render2DHelper.INSTANCE.bindTexture(new Identifier("jex", "cape/jex_cape.png"));
+                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("jex", "cape/jex_cape.png"), capeYaw, 0);
                     }
-                    DrawableHelper.drawTexture(matrices, 2, (int) bottom + 35, 2.5f, 4, 32, 64, 198, 128);
                 }catch (Exception e) {}
             } else {
+                if (Cape.capes.containsKey("self")) {
+                    Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, Cape.capes.get("self"), capeYaw, 0);
+                }
                 FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Account not linked. You can link your account for a free Jex Cape", 37, bottom + 12, -1);
                 FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Also join the Discord!", 37, bottom + 22, -1);
             }
@@ -271,6 +276,13 @@ public class JexTitleScreen extends Screen {
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    public void removed() {
+        if (this.realmsNotificationGui != null) {
+            this.realmsNotificationGui.removed();
+        }
+
     }
 
     public boolean backgroundExists(String name) {

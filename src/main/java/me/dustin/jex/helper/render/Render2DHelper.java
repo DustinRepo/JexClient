@@ -1,6 +1,7 @@
 package me.dustin.jex.helper.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.math.vector.Vector3D;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -251,7 +253,7 @@ public enum Render2DHelper {
 
     public boolean isOnScreen(Vec3d pos) {
         if (pos.getZ() > -1 && pos.getZ() < 1) {
-                return true;
+            return true;
         }
         return false;
     }
@@ -305,6 +307,23 @@ public enum Render2DHelper {
             }
 
         }
+    }
+
+    public void draw3DCape(MatrixStack matrixStack, float x, float y, Identifier identifier, float yaw, float pitch) {
+        matrixStack.push();
+        matrixStack.translate(x + 16, y + 30, 64);
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 1, 0), yaw, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), pitch, true));
+        //
+        bindTexture(identifier);
+        //front of cape
+        DrawableHelper.drawTexture(matrixStack, -16, -30, 2.5f, 4, 32, 60, 198, 124);
+        //back of cape
+        matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), 180, true));
+        DrawableHelper.drawTexture(matrixStack, -16, -30, 34.5f, 4, 32, 60, 198, 124);
+        matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), -180, true));
+        //
+        matrixStack.pop();
     }
 
     private void renderGuiQuad(BufferBuilder buffer, float x, float y, float width, float height, int red, int green, int blue, int alpha) {

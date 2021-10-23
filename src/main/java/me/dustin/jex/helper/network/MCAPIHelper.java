@@ -1,9 +1,11 @@
 package me.dustin.jex.helper.network;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.collect.Maps;
@@ -12,8 +14,10 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 
@@ -22,23 +26,65 @@ public enum MCAPIHelper {
 
     private final String NAME_API_URL = "https://api.mojang.com/users/profiles/minecraft/%s";
     private final String UUID_API_URL = "https://api.mojang.com/user/profiles/%s/names";
-    private final String PROFILE_REQUEST_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
-    private final String STATUS_URL = "https://status.mojang.com/check";
+    private final String CHANGE_SKIN_URL = "https://api.minecraftservices.com/minecraft/profile/skins";
+    private final String CHECK_MIGRATION_STATUS_URL = "https://api.minecraftservices.com/rollout/v1/msamigration";
 
     private static final Identifier STEVE_SKIN = new Identifier("textures/entity/steve.png");
 
-    private HashMap<UUID, String> uuidMap = Maps.newHashMap();
-    private HashMap<UUID, Identifier> playerSkins = Maps.newHashMap();
-    private HashMap<String, UUID> nameMap = Maps.newHashMap();
-    private HashMap<APIServer, APIStatus> serverStatusMap = Maps.newHashMap();
-    private ArrayList<String> avatarsRequested = new ArrayList<>();
-    private Timer timer = new Timer();
+    private final HashMap<UUID, String> uuidMap = Maps.newHashMap();
+    private final HashMap<UUID, Identifier> playerSkins = Maps.newHashMap();
+    private final HashMap<String, UUID> nameMap = Maps.newHashMap();
+    private final ArrayList<String> avatarsRequested = new ArrayList<>();
+
+    public boolean setPlayerSkin(String skinURL, SkinVariant skinVariant) {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + Wrapper.INSTANCE.getMinecraft().getSession().getAccessToken());
+        headers.put("Content-Type", "application/json");
+        Map<String, String> jsonData = new HashMap<>();
+        jsonData.put("variant", skinVariant.name().toLowerCase());
+        jsonData.put("url", skinURL);
+        String response = WebHelper.INSTANCE.sendPOST(CHANGE_SKIN_URL, JsonHelper.INSTANCE.gson.toJson(jsonData), headers);
+        if (response != null && !response.isEmpty()) {
+            JsonArray skins = JsonHelper.INSTANCE.prettyGson.fromJson(response, JsonObject.class).getAsJsonArray("skins");
+            if (skins != null) {
+                MinecraftClient.getInstance().getSkinProvider().loadSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile(), (type, identifier, minecraftProfileTexture) -> {
+                    if (type == MinecraftProfileTexture.Type.SKIN) {
+                        UUID uuid = Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId();
+                        if (playerSkins.containsKey(uuid))
+                            playerSkins.replace(uuid, identifier);
+                        else
+                            playerSkins.put(uuid, identifier);
+                    }
+
+                }, true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canMigrateAccount() {
+        String accessToken = Wrapper.INSTANCE.getMinecraft().getSession().getAccessToken();
+        if (accessToken == null || accessToken.isEmpty() || accessToken.equalsIgnoreCase("fakeToken"))
+            return false;
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + accessToken);
+        String response = WebHelper.INSTANCE.readURL(CHECK_MIGRATION_STATUS_URL, headers);
+        try {
+            JsonObject jsonObject = JsonHelper.INSTANCE.prettyGson.fromJson(response, JsonObject.class);
+            String feature = jsonObject.get("feature").getAsString();
+            if (feature.equalsIgnoreCase("msamigration")) {
+                return jsonObject.get("rollout").getAsBoolean();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     public String getNameFromUUID(UUID uuid) {
         if (uuid == null)
             return "UUID null";
-        if (getStatus(APIServer.API_MOJANG) == APIStatus.RED)
-            return "API Server down";
         if (uuidMap.containsKey(uuid))
             return uuidMap.get(uuid);
         String result = null;
@@ -48,7 +94,7 @@ public enum MCAPIHelper {
         }
         if (result == null)
             return "Player Not found";
-        JsonArray nameArray = JsonHelper.INSTANCE.gson.fromJson(result.toString(), JsonArray.class);
+        JsonArray nameArray = JsonHelper.INSTANCE.gson.fromJson(result, JsonArray.class);
         try {
             JsonObject object = nameArray.get(nameArray.size() - 1).getAsJsonObject();
 
@@ -106,80 +152,7 @@ public enum MCAPIHelper {
         return STEVE_SKIN;
     }
 
-    public APIStatus getStatus(APIServer server) {
-        updateStatus();
-        if (!serverStatusMap.containsKey(server))
-            return APIStatus.RED;
-        return serverStatusMap.get(server);
-    }
-
-    private void updateStatus() {
-        if (!timer.hasPassed(30000))
-            return;
-        serverStatusMap.clear();
-        String result = null;
-        try {
-            result = WebHelper.INSTANCE.readURL(new URL(STATUS_URL));
-        } catch (IOException e) {
-        }
-        if (result == null)
-            return;
-        JsonArray nameArray = JsonHelper.INSTANCE.gson.fromJson(result, JsonArray.class);
-        for (int i = 0; i < nameArray.size(); i++) {
-            JsonObject object1 = nameArray.get(i).getAsJsonObject();
-            String serverName = object1.toString().split("\"")[1];
-            String response = object1.get(serverName).getAsString();
-
-            serverStatusMap.put(getServer(serverName), APIStatus.valueOf(response.toUpperCase()));
-        }
-        timer.reset();
-    }
-
-    private APIServer getServer(String server) {
-        switch (server) {
-            case "minecraft.net":
-                return APIServer.MINECRAFT_NET;
-            case "session.minecraft.net":
-                return APIServer.SESSION;
-            case "account.mojang.com":
-                return APIServer.ACCOUNT;
-            case "authserver.mojang.com"://
-                return APIServer.AUTHSERVER;
-            case "sessionserver.mojang.com"://
-                return APIServer.SESSIONSERVER;
-            case "api.mojang.com"://
-                return APIServer.API_MOJANG;
-            case "textures.minecraft.net"://
-                return APIServer.TEXTURES;
-            case "mojang.com"://
-                return APIServer.MOJANG_COM;
-        }
-        return null;
-    }
-
-
-    public enum APIStatus {
-        GREEN, YELLOW, RED
-    }
-
-    public enum APIServer {
-        MINECRAFT_NET("Minecraft.net"),
-        SESSION("session.Minecraft.net"),
-        ACCOUNT("account.Mojang.com"),
-        AUTHSERVER("authserver.Mojang.com"),
-        SESSIONSERVER("sessionserver.Mojang.com"),
-        API_MOJANG("api.Mojang.com"),
-        TEXTURES("textures.Minecraft.net"),
-        MOJANG_COM("Mojang.com");
-
-        private final String name;
-
-        APIServer(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
+    public enum SkinVariant {
+        CLASSIC, SLIM
     }
 }

@@ -28,6 +28,10 @@ public class Hat {
         }
     }
 
+    public static void clearHat(String uuid) {
+        Hat.hatPlayers.remove(getInfo(uuid));
+    }
+
     public static HatType getHatType(String type) {
         for (HatType hat : HatType.values()) {
             if (hat.name().equalsIgnoreCase(type))
