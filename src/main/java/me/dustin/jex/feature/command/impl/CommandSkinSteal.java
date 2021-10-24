@@ -46,8 +46,7 @@ public class CommandSkinSteal extends Command {
                     //going to explain what happens so I don't forget
                     //request their minecraft profile, all so we can get a base64 encoded string that contains ANOTHER json that then has the skin URL
                     String PROFILE_REQUEST_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
-                    String profileResponse = null;
-                    profileResponse = WebHelper.INSTANCE.readURL(new URL(String.format(PROFILE_REQUEST_URL, uuid.toString().replace("-", ""))));
+                    String profileResponse = WebHelper.INSTANCE.readURL(new URL(String.format(PROFILE_REQUEST_URL, uuid.toString().replace("-", ""))));
 
                     JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(profileResponse, JsonObject.class);
                     //Get the properties array which has what we need
@@ -82,7 +81,6 @@ public class CommandSkinSteal extends Command {
                     fos.close();
                     ChatHelper.INSTANCE.addClientMessage(StringUtils.capitalize(name) + "'s skin downloaded.");
 
-                    JexClient.INSTANCE.getLogger().info(setSkin);
                     if (setSkin) {
                         if (MCAPIHelper.INSTANCE.setPlayerSkin(skinURL, MCAPIHelper.SkinVariant.CLASSIC))
                             ChatHelper.INSTANCE.addClientMessage("Skin uploaded to Minecraft. Please relog to see the changes");

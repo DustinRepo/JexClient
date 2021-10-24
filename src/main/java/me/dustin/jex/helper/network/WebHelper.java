@@ -48,8 +48,8 @@ public enum WebHelper {
 
     public String readURL(String url, Map<String, String> headers) {
         try {
-            CloseableHttpClient httpClient    = HttpClientBuilder.create().build();
-            HttpGet get          = new HttpGet(url);
+            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+            HttpGet get = new HttpGet(url);
             headers.forEach(get::setHeader);
             CloseableHttpResponse response = httpClient.execute(get);
             int statusCode = response.getStatusLine().getStatusCode();
@@ -121,8 +121,8 @@ public enum WebHelper {
 
     public String sendPOST(String url, String jsonData, Map<String, String> headers) {
         try {
-            CloseableHttpClient httpClient    = HttpClientBuilder.create().build();
-            HttpPost post          = new HttpPost(url);
+            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+            HttpPost post = new HttpPost(url);
             StringEntity postingString = new StringEntity(jsonData);
             post.setEntity(postingString);
             headers.forEach(post::setHeader);
