@@ -30,15 +30,20 @@ public class MixinMain {
                         JexClient.INSTANCE.getLogger().info("UUID null, can not log in");
                         return;
                     }
+
                     JexClient.INSTANCE.getLogger().info("Logging in to Microsoft account with name " + microsoftAccount.username);
-                    if (new MicrosoftLogin(microsoftAccount).login())
-                        args.setAll(microsoftAccount.username, uuid, microsoftAccount.accessToken, "mojang");
+                    Session session = new MicrosoftLogin(microsoftAccount, session1 -> {}).loginNoThread();
+                    if (session != null)
+                        args.setAll(session.getUsername(), session.getUuid(), session.getAccessToken(), "msa");
+                    else
+                        JexClient.INSTANCE.getLogger().info("Unable to login");
                 } else if (mcAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
-                    Session session = MojangLogin.INSTANCE.login(mojangAccount.getEmail(), mojangAccount.getPassword(), false);
+                    Session session = MojangLogin.login(mojangAccount.getEmail(), mojangAccount.getPassword());
                     if (session != null) {
                         JexClient.INSTANCE.getLogger().info("Logging in to Mojang account with name " + session.getUsername());
-                        args.setAll(session.getUsername(), UUIDTypeAdapter.fromUUID(session.getProfile().getId()), session.getAccessToken(), "mojang");
-                    }
+                        args.setAll(session.getUsername(), session.getUuid(), session.getAccessToken(), "mojang");
+                    } else
+                        JexClient.INSTANCE.getLogger().info("Unable to login");
                 } else {
                     JexClient.INSTANCE.getLogger().info("Account not recognized, can not log in.");
                 }

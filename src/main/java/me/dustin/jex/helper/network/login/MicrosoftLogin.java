@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,30 +30,34 @@ public class MicrosoftLogin {
 
     private String email, password, accessToken, refreshToken;
     private boolean saveAccount;
+    private Consumer<Session> sessionConsumer;
 
-    public MicrosoftLogin(MinecraftAccount.MicrosoftAccount microsoftAccount) {
+    public MicrosoftLogin(MinecraftAccount.MicrosoftAccount microsoftAccount, Consumer<Session> sessionConsumer) {
         this.email = microsoftAccount.getEmail();
         this.password = microsoftAccount.getPassword();
         this.accessToken = microsoftAccount.accessToken;
         this.refreshToken = microsoftAccount.refreshToken;
         this.saveAccount = true;
+        this.sessionConsumer = sessionConsumer;
     }
 
-    public MicrosoftLogin(String email, String password, String accessToken, String refreshToken, boolean saveAccount) {
+    public MicrosoftLogin(String email, String password, String accessToken, String refreshToken, boolean saveAccount, Consumer<Session> sessionConsumer) {
         this.email = email;
         this.password = password;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.saveAccount = saveAccount;
+        this.sessionConsumer = sessionConsumer;
     }
 
-    public boolean login() {
+    public Session loginNoThread() {
         String code;
         if (accessToken == null || refreshToken == null || accessToken.isEmpty() || refreshToken.isEmpty()) {
             code = getLoginCode(email, password);
         } else {
-            if (verifyStore(accessToken, refreshToken)) {//quick login
-                return true;
+            Session session = verifyStore(accessToken, refreshToken);
+            if (session != null) {//quick login
+                return session;
             } else {
                 code = getLoginCode(email, password);
             }
@@ -63,11 +68,35 @@ public class MicrosoftLogin {
         if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "\247cInvalid login info";
         }
-        return false;
+        return null;
     }
 
-    private boolean getAccessToken(String code) {
-        JexClient.INSTANCE.getLogger().info(code);
+    public void login() {
+        new Thread(() -> {
+            String code;
+            if (accessToken == null || refreshToken == null || accessToken.isEmpty() || refreshToken.isEmpty()) {
+                code = getLoginCode(email, password);
+            } else {
+                Session session = verifyStore(accessToken, refreshToken);
+                if (session != null) {//quick login
+                    sessionConsumer.accept(session);
+                    return;
+                } else {
+                    code = getLoginCode(email, password);
+                }
+            }
+            if (code != null) {
+                sessionConsumer.accept(getAccessToken(code));
+                return;
+            }
+            if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
+                accountManagerScreen.outputString = "\247cInvalid login info";
+            }
+            sessionConsumer.accept(getAccessToken(null));
+        }).start();
+    }
+
+    private Session getAccessToken(String code) {
         JexClient.INSTANCE.getLogger().info("Grabbing Access Token");
         if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Grabbing Access Token";
@@ -94,10 +123,10 @@ public class MicrosoftLogin {
                 }
             }
         } catch (Exception e) {}
-        return false;
+        return null;
     }
 
-    private boolean authenticateXboxLive(String accessToken, String refreshToken) {
+    private Session authenticateXboxLive(String accessToken, String refreshToken) {
         JexClient.INSTANCE.getLogger().info("Authenticating Xbox Live");
         if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Authenticating Xbox Live";
@@ -124,10 +153,10 @@ public class MicrosoftLogin {
                 accountManagerScreen.outputString = "Error Authenticating Xbox Live";
             }
         }
-        return false;
+        return null;
     }
 
-    private boolean xstsAuthenticate(String token, String refreshToken) {
+    private Session xstsAuthenticate(String token, String refreshToken) {
         JexClient.INSTANCE.getLogger().info("Authenticating XSTS");
         if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Authenticating XSTS";
@@ -158,10 +187,10 @@ public class MicrosoftLogin {
                 accountManagerScreen.outputString = "Error Authenticating XSTS";
             }
         }
-        return false;
+        return null;
     }
 
-    private boolean authenticateMinecraft(String userHash, String newToken, String refreshToken) {
+    private Session authenticateMinecraft(String userHash, String newToken, String refreshToken) {
         JexClient.INSTANCE.getLogger().info("Authenticating with Minecraft");
         if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Authenticating with Minecraft";
@@ -183,10 +212,10 @@ public class MicrosoftLogin {
                 accountManagerScreen.outputString = "Error Authenticating with Minecraft";
             }
         }
-        return false;
+        return null;
     }
 
-    private boolean verifyStore(String token, String refreshToken) {
+    private Session verifyStore(String token, String refreshToken) {
         JexClient.INSTANCE.getLogger().info("Verifying with MS Store");
         if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Verifying with MS Store";
@@ -201,10 +230,10 @@ public class MicrosoftLogin {
                 accountManagerScreen.outputString = "Error Verifying MS Store";
             }
         }
-        return false;
+        return null;
     }
 
-    private boolean verifyProfile(String token, String refresh) {
+    private Session verifyProfile(String token, String refresh) {
         JexClient.INSTANCE.getLogger().info("Grabbing Minecraft profile");
         if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Grabbing Minecraft Profile";
@@ -221,51 +250,40 @@ public class MicrosoftLogin {
             JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(resp, JsonObject.class);
             String name = jsonObject.get("name").getAsString();
             String uuid = jsonObject.get("id").getAsString();
-            setSession(name, uuid, token, refresh);
-            return true;
+            if (saveAccount)
+                SetAccount(name, uuid, token, refresh);
+            JexClient.INSTANCE.getLogger().info("Login success. Name: " + name);
+            return new Session(name, uuid, token, "msa");
         } else {
             if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
                 accountManagerScreen.outputString = "Error Grabbing Minecraft Profile";
             }
         }
-        return false;
+        return null;
     }
 
-    private void setSession(String name, String uuid, String token, String refresh) {
-        if (saveAccount) {
-            MinecraftAccount mcAccount = MinecraftAccountManager.INSTANCE.getAccount(name);
-            if (mcAccount != null) {
-                if (mcAccount instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-                    microsoftAccount.setUsername(name);
-                    microsoftAccount.accessToken = token;
-                    microsoftAccount.refreshToken = refresh;
-                    microsoftAccount.uuid = uuid;
-                } else
-                    MinecraftAccountManager.INSTANCE.getAccounts().remove(mcAccount);
+    private void SetAccount(String name, String uuid, String token, String refresh) {
+        MinecraftAccount mcAccount = MinecraftAccountManager.INSTANCE.getAccount(name);
+        if (mcAccount != null) {
+            if (mcAccount instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
+                microsoftAccount.setUsername(name);
+                microsoftAccount.accessToken = token;
+                microsoftAccount.refreshToken = refresh;
+                microsoftAccount.uuid = uuid;
+            } else
+                MinecraftAccountManager.INSTANCE.getAccounts().remove(mcAccount);
+        } else {
+            if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen && accountManagerScreen.getSelected() != null && accountManagerScreen.getSelected().getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
+                microsoftAccount.setUsername(name);
+                microsoftAccount.accessToken = token;
+                microsoftAccount.refreshToken = refresh;
+                microsoftAccount.uuid = uuid;
             } else {
-                if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen && accountManagerScreen.getSelected() != null && accountManagerScreen.getSelected().getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-                    microsoftAccount.setUsername(name);
-                    microsoftAccount.accessToken = token;
-                    microsoftAccount.refreshToken = refresh;
-                    microsoftAccount.uuid = uuid;
-                } else {
-                    MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(name, email, password, token, refresh, uuid);
-                    MinecraftAccountManager.INSTANCE.getAccounts().add(microsoftAccount);
-                }
+                MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(name, email, password, token, refresh, uuid);
+                MinecraftAccountManager.INSTANCE.getAccounts().add(microsoftAccount);
             }
-            AltFile.write();
         }
-        if (Wrapper.INSTANCE.getMinecraft() == null)
-            return;
-        Wrapper.INSTANCE.getMinecraft().execute(() -> {
-            Wrapper.INSTANCE.getIMinecraft().setSession(new Session(name, uuid, token, "mojang"));
-            if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AddAccountScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DirectLoginScreen)
-                Wrapper.INSTANCE.getMinecraft().openScreen(new AccountManagerScreen());
-            else if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
-                accountManagerScreen.outputString = "Logged in as " + name;
-            }
-        });
-        JexClient.INSTANCE.getLogger().info("Login success. Name: " + name);
+        AltFile.write();
     }
 
     private String getLoginCode(String email, String password) {

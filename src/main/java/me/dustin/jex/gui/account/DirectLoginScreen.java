@@ -63,22 +63,23 @@ public class DirectLoginScreen extends Screen {
 			this.errorMessage = "Logging in...";
 			if (isMicrosoft) {
 				MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(username.getText(), email.getText(), password.getText(), "", "", UUID.randomUUID().toString());
-				if (!new MicrosoftLogin(microsoftAccount).login()) {
-					this.errorMessage = "\247cError, could not log in.";
-				}
+				new MicrosoftLogin(microsoftAccount, session -> {
+					if (session != null) {
+						Wrapper.INSTANCE.getIMinecraft().setSession(session);
+						Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+					} else
+						this.errorMessage = "\247cError, could not log in.";
+				}).login();
 			} else {
 				MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
 				mojangAccount.setCracked(!email.getText().contains("@"));
-				try {
-					if (MojangLogin.INSTANCE.login(mojangAccount)) {
+				new MojangLogin(mojangAccount, session -> {
+					if (session != null) {
+						Wrapper.INSTANCE.getIMinecraft().setSession(session);
 						Wrapper.INSTANCE.getMinecraft().openScreen(parent);
-					} else {
+					} else
 						this.errorMessage = "\247cError, could not log in.";
-					}
-				} catch (AuthenticationException e) {
-					e.printStackTrace();
-					this.errorMessage = "\247cError, could not log in.";
-				}
+				}).login();
 			}
 		}));
 
