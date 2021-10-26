@@ -1,78 +1,72 @@
 package me.dustin.jex.helper.network.login;
 
 import java.net.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
-import com.mojang.authlib.Agent;
-import com.mojang.authlib.UserAuthentication;
-import com.mojang.authlib.exceptions.AuthenticationException;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
+import com.google.gson.JsonObject;
 
 import me.dustin.jex.gui.account.account.MinecraftAccount;
+import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.WebHelper;
 import me.dustin.jex.load.impl.IMinecraft;
 import net.minecraft.client.util.Session;
 
-public enum MojangLogin {
-    INSTANCE;
+public class MojangLogin {
 
-    public Session login(String email, String password, boolean setSession) {
-        Session session = null;
-        if (email.contains("@")) {
-            UserAuthentication auth = new YggdrasilUserAuthentication(new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString()), UUID.randomUUID().toString(), Agent.MINECRAFT);
-            auth.setUsername(email);
-            auth.setPassword(password);
-            try {
-                auth.logIn();
-                String username = auth.getSelectedProfile().getName();
-                UUID uuid = auth.getSelectedProfile().getId();
-                String token = auth.getAuthenticatedToken();
+    private static final String AUTHENTICATE_URL = "https://authserver.mojang.com/authenticate";
+    private String email, password;
+    private boolean cracked;
+    private Consumer<Session> sessionConsumer;
 
-                session = new Session(username, uuid.toString(), token, Optional.of(""), Optional.of(""), Session.AccountType.MOJANG);
-                ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
-            } catch (AuthenticationException e) {
-                e.printStackTrace();
-            }
-        } else {
-            session = new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY);
-            try {
-                if (setSession)
-                    ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
-            } catch (Exception e) {
-
-            }
-        }
-        return session;
+    public MojangLogin(String email, String password, Consumer<Session> sessionConsumer) {
+        this.email = email;
+        this.password = password;
+        this.cracked = !email.contains("@");
+        this.sessionConsumer = sessionConsumer;
     }
 
-
-    public boolean login(String email, String password) throws AuthenticationException {
-        if (email.contains("@")) {
-            UserAuthentication auth = new YggdrasilUserAuthentication(new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString()), UUID.randomUUID().toString(), Agent.MINECRAFT);
-            auth.setUsername(email);
-            auth.setPassword(password);
-            auth.logIn();
-            String username = auth.getSelectedProfile().getName();
-            UUID uuid = auth.getSelectedProfile().getId();
-            String token = auth.getAuthenticatedToken();
-            Session session = new Session(username, uuid.toString(), token, Optional.of(""), Optional.of(""), Session.AccountType.MOJANG);
-            ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
-        } else {
-            Session session = new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY);
-            ((IMinecraft) Wrapper.INSTANCE.getMinecraft()).setSession(session);
-        }
-        return true;
+    public MojangLogin(MinecraftAccount.MojangAccount mojangAccount, Consumer<Session> sessionConsumer) {
+        this.email = mojangAccount.getEmail();
+        this.password = mojangAccount.getPassword();
+        this.cracked = mojangAccount.isCracked();
+        this.sessionConsumer = sessionConsumer;
     }
 
+    public static Session login(String email, String password) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("agent", "Minecraft");
+        jsonObject.addProperty("username", email);
+        jsonObject.addProperty("password", password);
+        jsonObject.addProperty("requestUser", true);
+        Map<String, String> header = new HashMap<>();
+        header.put("Content-Type", "application/json");
+        String resp = WebHelper.INSTANCE.sendPOST(AUTHENTICATE_URL, jsonObject.toString(), header);
 
-    public boolean login(MinecraftAccount.MojangAccount mojangAccount) throws AuthenticationException {
-        mojangAccount.loginCount++;
-        mojangAccount.lastUsed = System.currentTimeMillis();
-        boolean bl = login(mojangAccount.isCracked() ? mojangAccount.getUsername() : mojangAccount.getEmail(), mojangAccount.getPassword());
-        AltFile.write();
-        return bl;
+        if (resp != null && !resp.isEmpty()) {
+            JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(resp, JsonObject.class);
+            JsonObject selectedProfile = object.get("selectedProfile").getAsJsonObject();
+            String name = selectedProfile.get("name").getAsString();
+            String uuid = selectedProfile.get("id").getAsString();
+            String accessToken = object.get("accessToken").getAsString();
+            return new Session(name, uuid, accessToken, Optional.of(""), Optional.of(""), Session.AccountType.MOJANG);
+        }
+        return null;
+    }
+
+    public void login() {
+        new Thread(() -> {
+            Session session;
+            if (!cracked)
+                session = login(this.email, this.password);
+            else
+                session = new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY);
+            sessionConsumer.accept(session);
+        }).start();
     }
 }

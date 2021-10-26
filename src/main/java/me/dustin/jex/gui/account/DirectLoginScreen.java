@@ -45,7 +45,7 @@ public class DirectLoginScreen extends Screen {
 		username = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 12, 200, 20, new LiteralText("Username"));
 		email = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 47, 200, 20, new LiteralText("Email"));
 		password = new GuiPasswordField(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 82, 200, 20, new LiteralText("Password"));
-		username.setTextFieldFocused(true);
+		username.changeFocus(true);
 		username.setMaxLength(16);
 		this.email.setMaxLength(100);
 		this.password.setMaxLength(250);
@@ -63,22 +63,23 @@ public class DirectLoginScreen extends Screen {
 			this.errorMessage = "Logging in...";
 			if (isMicrosoft) {
 				MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(username.getText(), email.getText(), password.getText(), "", "", UUID.randomUUID().toString());
-				if (!new MicrosoftLogin(microsoftAccount).login()) {
-					this.errorMessage = "\247cError, could not log in.";
-				}
+				new MicrosoftLogin(microsoftAccount, session -> {
+					if (session != null) {
+						Wrapper.INSTANCE.getIMinecraft().setSession(session);
+						Wrapper.INSTANCE.getMinecraft().setScreen(parent);
+					} else
+						this.errorMessage = "\247cError, could not log in.";
+				}).login();
 			} else {
 				MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
 				mojangAccount.setCracked(!email.getText().contains("@"));
-				try {
-					if (MojangLogin.INSTANCE.login(mojangAccount)) {
+				new MojangLogin(mojangAccount, session -> {
+					if (session != null) {
+						Wrapper.INSTANCE.getIMinecraft().setSession(session);
 						Wrapper.INSTANCE.getMinecraft().setScreen(parent);
-					} else {
+					} else
 						this.errorMessage = "\247cError, could not log in.";
-					}
-				} catch (AuthenticationException e) {
-					e.printStackTrace();
-					this.errorMessage = "\247cError, could not log in.";
-				}
+				}).login();
 			}
 		}));
 

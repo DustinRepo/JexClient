@@ -5,8 +5,8 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.helper.file.files.AltFile;
-import me.dustin.jex.helper.network.login.MojangLogin;
 import me.dustin.jex.helper.network.login.MicrosoftLogin;
+import me.dustin.jex.helper.network.login.MojangLogin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.main.Main;
 import net.minecraft.client.util.Session;
@@ -31,22 +31,17 @@ public class MixinMain {
                         return;
                     }
                     JexClient.INSTANCE.getLogger().info("Logging in to Microsoft account with name " + microsoftAccount.username);
-                    if (new MicrosoftLogin(microsoftAccount).login()) {
-                        new MicrosoftLogin(microsoftAccount.getEmail(), microsoftAccount.getPassword(), microsoftAccount.accessToken, microsoftAccount.accessToken, true).login();
-                        args.set(0, microsoftAccount.username);
-                        args.set(1, uuid);
-                        args.set(2, microsoftAccount.accessToken);
-                        args.set(5, Session.AccountType.MSA);
-                    }
+                    Session session = new MicrosoftLogin(microsoftAccount, session1 -> {}).loginNoThread();
+                    if (session != null)
+                        args.setAll(session.getUsername(), session.getUuid(), session.getAccessToken(), session.getXuid(), session.getClientId(), session.getAccountType());
+                     else
+                        JexClient.INSTANCE.getLogger().info("Unable to login");
                 } else if (mcAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
-                    Session session = MojangLogin.INSTANCE.login(mojangAccount.getEmail(), mojangAccount.getPassword(), false);
-                    if (session == null)
-                        return;
-                    JexClient.INSTANCE.getLogger().info("Logging in to Mojang account with name " + session.getUsername());
-                    args.set(0, session.getUsername());
-                    args.set(1, session.getUuid());
-                    args.set(2, session.getAccessToken());
-                    args.set(5, session.getAccountType());
+                    Session session = MojangLogin.login(mojangAccount.getEmail(), mojangAccount.getPassword());
+                    if (session != null)
+                        args.setAll(session.getUsername(), session.getUuid(), session.getAccessToken(), session.getXuid(), session.getClientId(), session.getAccountType());
+                     else
+                        JexClient.INSTANCE.getLogger().info("Unable to login");
                 } else {
                     JexClient.INSTANCE.getLogger().info("Account not recognized, can not log in.");
                 }

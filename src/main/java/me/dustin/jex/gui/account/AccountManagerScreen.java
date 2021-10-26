@@ -284,25 +284,28 @@ public class AccountManagerScreen extends Screen {
     }
 
     public void login(AccountButton button) {
-        new Thread("Login") {
-            @Override
-            public void run() {
-                if (button.getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
-                    outputString = "Logging in...";
-                    try {
-                        if (MojangLogin.INSTANCE.login(mojangAccount)) {
-                            button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
-                            outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
-                        } else
-                            outputString = "Login failed";
-                    }catch (Exception e) {
-                        outputString = "Login failed";
-                    }
-                } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-                    new MicrosoftLogin(microsoftAccount.getEmail(), microsoftAccount.getPassword(), microsoftAccount.accessToken, microsoftAccount.refreshToken, true).login();
+        if (button.getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
+            outputString = "Logging in...";
+            new MojangLogin(mojangAccount, session -> {
+                if (session == null) {
+                    outputString = "Login failed";
+                } else {
+                    Wrapper.INSTANCE.getIMinecraft().setSession(session);
+                    button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
+                    outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
                 }
-            }
-        }.start();
+            }).login();
+        } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
+            new MicrosoftLogin(microsoftAccount.getEmail(), microsoftAccount.getPassword(), microsoftAccount.accessToken, microsoftAccount.refreshToken, true, session -> {
+                if (session == null) {
+                    outputString = "Login failed";
+                } else {
+                    Wrapper.INSTANCE.getIMinecraft().setSession(session);
+                    button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
+                    outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+                }
+            }).login();
+        }
     }
 
     public void loadAccountButtons(String searchField) {
