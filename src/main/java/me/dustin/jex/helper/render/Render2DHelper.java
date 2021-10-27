@@ -66,7 +66,7 @@ public enum Render2DHelper {
     }
 
     private void drawTexture(MatrixStack matrices, float x0, float y0, float x1, float y1, int z, float regionWidth, float regionHeight, float u, float v, int textureWidth, int textureHeight) {
-        drawTexturedQuad(matrices.peek().getModel(), x0, y0, x1, y1, z, (u + 0.0F) / (float)textureWidth, (u + (float)regionWidth) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)regionHeight) / (float)textureHeight);
+        drawTexturedQuad(matrices.peek().getPositionMatrix(), x0, y0, x1, y1, z, (u + 0.0F) / (float)textureWidth, (u + (float)regionWidth) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)regionHeight) / (float)textureHeight);
     }
 
     public void drawTexturedQuad(Matrix4f matrices, float x0, float x1, float y0, float y1, float z, float u0, float u1, float v0, float v1) {
@@ -82,7 +82,7 @@ public enum Render2DHelper {
     }
 
     public void fill(MatrixStack matrixStack, float x1, float y1, float x2, float y2, int color) {
-        Matrix4f matrix = matrixStack.peek().getModel();
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
         float j;
         if (x1 < x2) {
             j = x1;
@@ -275,7 +275,7 @@ public enum Render2DHelper {
                 String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
                 matrixStack.translate(0.0D, 0.0D, (double)(Wrapper.INSTANCE.getMinecraft().getItemRenderer().zOffset + 200.0F));
                 VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-                renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 16777215, true, matrixStack.peek().getModel(), immediate, false, 0, 15728880);
+                renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 16777215, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, 15728880);
                 immediate.draw();
             }
 
@@ -368,7 +368,7 @@ public enum Render2DHelper {
     public Vec3d getHeadPos(Entity entity, float partialTicks, MatrixStack matrixStack) {
         Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks).add(0, entity.getHeight() + 0.2, 0);
         Vector4f vector4f = new Vector4f((float)bound.x, (float)bound.y, (float)bound.z, 1.f);
-        vector4f.transform(matrixStack.peek().getModel());
+        vector4f.transform(matrixStack.peek().getPositionMatrix());
         Vec3d twoD = to2D(vector4f.getX(), vector4f.getY(), vector4f.getZ());
         return new Vec3d(twoD.x, twoD.y, twoD.z);
     }
@@ -382,7 +382,7 @@ public enum Render2DHelper {
     public Vec3d getPos(Entity entity, float yOffset, float partialTicks, MatrixStack matrixStack) {
         Vec3d bound = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, partialTicks).add(0, yOffset, 0);
         Vector4f vector4f = new Vector4f((float)bound.x, (float)bound.y, (float)bound.z, 1.f);
-        vector4f.transform(matrixStack.peek().getModel());
+        vector4f.transform(matrixStack.peek().getPositionMatrix());
         Vec3d twoD = to2D(vector4f.getX(), vector4f.getY(), vector4f.getZ());
         return new Vec3d(twoD.x, twoD.y, twoD.z);
     }

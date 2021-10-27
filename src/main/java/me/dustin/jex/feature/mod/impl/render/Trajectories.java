@@ -168,7 +168,7 @@ public class Trajectories extends Feature {
 
             if (!positions.isEmpty()) {
                 MatrixStack matrixStack = eventRender3D.getMatrixStack();
-                Matrix4f matrix4f = matrixStack.peek().getModel();
+                Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
                 for (int i = 0; i < positions.size(); i++) {
                     if (i != positions.size() - 1) {
 

@@ -51,7 +51,7 @@ public class OutlineBox extends FeatureExtension {
 						eventRender3D.getMatrixStack().multiply(new Quaternion(new Vec3f(0, -1, 0), yaw, true));
 						eventRender3D.getMatrixStack().translate(-vec.x, -vec.y, -vec.z);
 
-						Matrix4f matrix4f = eventRender3D.getMatrixStack().peek().getModel();
+						Matrix4f matrix4f = eventRender3D.getMatrixStack().peek().getPositionMatrix();
 						Color color1 = ColorHelper.INSTANCE.getColor(ESP.INSTANCE.getColor(entity));
 						float minX = (float) bb.minX;
 						float minY = (float) bb.minY;

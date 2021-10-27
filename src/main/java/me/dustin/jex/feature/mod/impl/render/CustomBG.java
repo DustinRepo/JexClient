@@ -36,7 +36,7 @@ public class CustomBG extends Feature {
         if (inGameOnly && Wrapper.INSTANCE.getLocalPlayer() == null)
             return;
         eventRenderBackground.cancel();
-        Matrix4f matrix4f = eventRenderBackground.getMatrixStack().peek().getModel();
+        Matrix4f matrix4f = eventRenderBackground.getMatrixStack().peek().getPositionMatrix();
         if (timer.hasPassed(20)) {
             if (up) {
                 if (a < .49f)

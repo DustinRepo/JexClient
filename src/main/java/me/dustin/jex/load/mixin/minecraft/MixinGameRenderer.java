@@ -63,19 +63,19 @@ public abstract class MixinGameRenderer implements IGameRenderer {
         RenderSystem.clearColor(1, 1, 1, 1);
         MatrixStack matrixStack = new MatrixStack();
         double d = this.getFov(camera, partialTicks, true);
-        matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(d));
-        loadProjectionMatrix(matrixStack.peek().getModel());
+        matrixStack.peek().getPositionMatrix().multiply(this.getBasicProjectionMatrix(d));
+        loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
         //Sets up 3D render space for shaders
 
         this.bobViewWhenHurt(matrixStack, partialTicks);
         Render3DHelper.INSTANCE.applyCameraRots(matrixStack);
-        loadProjectionMatrix(matrixStack.peek().getModel());
+        loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
         new EventRender3D.EventRender3DNoBob(matrixStack, partialTicks).run();
         Render3DHelper.INSTANCE.fixCameraRots(matrixStack);
         if (this.client.options.bobView) {
             bobView(matrixStack, partialTicks);
         }
-        loadProjectionMatrix(matrixStack.peek().getModel());
+        loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
 
         new EventRender3D(matrixStack1, partialTicks).run();
     }
