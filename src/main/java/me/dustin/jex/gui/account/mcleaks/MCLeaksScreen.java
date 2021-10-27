@@ -1,5 +1,7 @@
 package me.dustin.jex.gui.account.mcleaks;
 
+import me.dustin.events.api.EventAPI;
+import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCLeaksHelper;
 import me.dustin.jex.helper.network.WebHelper;
@@ -7,8 +9,10 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.Session;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 
@@ -40,6 +44,8 @@ public class MCLeaksScreen extends Screen {
         restoreButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 96 + 18, 128, 20, new LiteralText(this.sessionRestored ? "Session restored!" : "Restore Session"), button -> {
             MCLeaksHelper.INSTANCE.activeAccount = null;
             Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, true));
+            while(EventAPI.getInstance().alreadyRegistered(MCLeaksHelper.INSTANCE))
+                EventAPI.getInstance().unregister(MCLeaksHelper.INSTANCE);
         });
         useTokenButton = new ButtonWidget(this.width / 2 - 18, this.height / 4 + 96 + 18, 168, 20, new LiteralText("Redeem Token"), button -> {
             if (this.tokenField.getText().length() != 16) {
@@ -50,6 +56,7 @@ public class MCLeaksScreen extends Screen {
             button.setMessage(new LiteralText("Please wait ..."));
             MCLeaksHelper.MCLeaksAccount account = MCLeaksHelper.INSTANCE.getAccount(tokenField.getText());
             if (account != null) {
+                EventAPI.getInstance().register(MCLeaksHelper.INSTANCE);
                 MCLeaksHelper.INSTANCE.setActiveAccount(account);
                 Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, false, "\247aYour token was redeemed successfully!"));
             } else {
