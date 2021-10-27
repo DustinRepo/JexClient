@@ -12,6 +12,7 @@ import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.util.Session;
 
@@ -52,6 +53,7 @@ public class MicrosoftLogin {
     }
 
     public Session loginNoThread() {
+        NetworkHelper.INSTANCE.resetSessionService();
         String code;
         if (accessToken == null || refreshToken == null || accessToken.isEmpty() || refreshToken.isEmpty()) {
             code = getLoginCode(email, password);
@@ -74,6 +76,7 @@ public class MicrosoftLogin {
 
     public void login() {
         new Thread(() -> {
+            NetworkHelper.INSTANCE.resetSessionService();
             String code;
             if (accessToken == null || refreshToken == null || accessToken.isEmpty() || refreshToken.isEmpty()) {
                 code = getLoginCode(email, password);
