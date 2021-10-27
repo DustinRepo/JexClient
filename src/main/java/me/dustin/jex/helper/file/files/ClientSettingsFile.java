@@ -12,6 +12,7 @@ import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.TheAlteningHelper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,6 +33,7 @@ public class ClientSettingsFile {
         jsonObject.addProperty("launch-sound", JexClient.INSTANCE.playSoundOnLaunch());
         jsonObject.addProperty("personal-cape", JexPersonalizationScreen.setCape);
         jsonObject.addProperty("personal-hat", JexPersonalizationScreen.setHat);
+        jsonObject.addProperty("altening-api-key", TheAlteningHelper.INSTANCE.getApiKey());
 
         ArrayList<String> stringList = new ArrayList<>();
         for (String s : JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")) {
@@ -71,6 +73,10 @@ public class ClientSettingsFile {
                 }
                 Hat.setHat(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""), hat);
                 JexPersonalizationScreen.setHat = hat;
+            }
+            if (object.get("altening-api-key") != null) {
+                String apiKey = object.get("altening-api-key").getAsString();
+                TheAlteningHelper.INSTANCE.setApiKey(apiKey);
             }
         } catch (Exception e) {
 

@@ -8,10 +8,13 @@ import java.util.function.Consumer;
 
 import com.google.gson.JsonObject;
 
+import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
+import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import me.dustin.jex.load.impl.IMinecraft;
 import net.minecraft.client.util.Session;
@@ -60,6 +63,7 @@ public class MojangLogin {
 
     public void login() {
         new Thread(() -> {
+            NetworkHelper.INSTANCE.resetSessionService();
             Session session;
             if (!cracked)
                 session = login(this.email, this.password);

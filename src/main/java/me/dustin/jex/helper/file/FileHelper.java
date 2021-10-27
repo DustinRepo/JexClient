@@ -1,7 +1,15 @@
 package me.dustin.jex.helper.file;
 
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.util.Identifier;
+import org.apache.commons.codec.binary.Base64;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +19,37 @@ import java.util.zip.ZipInputStream;
 public enum FileHelper {
 
     INSTANCE;
+
+    public NativeImage readTexture(String textureBase64) {
+        try {
+            byte[] imgBytes = Base64.decodeBase64(textureBase64);
+            ByteArrayInputStream bais = new ByteArrayInputStream(imgBytes);
+            return NativeImage.read(bais);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
+    public void applyTexture(Identifier identifier, NativeImage nativeImage) {
+        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(nativeImage)));
+    }
+
+    public String imageToBase64String(BufferedImage image, String type) {
+        String ret;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(image, type, bos);
+            byte[] bytes = bos.toByteArray();
+            Base64 encoder = new Base64();
+            ret = encoder.encodeAsString(bytes);
+            ret = ret.replace(System.lineSeparator(), "");
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+        return ret;
+    }
 
     public List<String> readFile(File path, String name) {
         File file = new File(path, name);

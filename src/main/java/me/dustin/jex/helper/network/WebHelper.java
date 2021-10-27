@@ -46,6 +46,25 @@ public enum WebHelper {
         return buffer.toString();
     }
 
+    public String readURL(String url) {
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(10 * 1000);
+            BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder buffer = new StringBuilder();
+            for (String line; (line = input.readLine()) != null; ) {
+                buffer.append(line);
+                buffer.append("\n");
+            }
+            input.close();
+            return buffer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public String readURL(String url, Map<String, String> headers) {
         try {
             CloseableHttpClient httpClient = HttpClientBuilder.create().build();

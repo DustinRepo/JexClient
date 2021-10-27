@@ -1,6 +1,7 @@
 package me.dustin.jex.addon.cape;
 
 import com.google.common.collect.Maps;
+import me.dustin.jex.helper.file.FileHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -29,7 +30,7 @@ public class Cape {
             Graphics2D g = newImage.createGraphics();
             g.drawImage(in, 0, 0, null);
             g.dispose();
-            NativeImage capeImage = readTexture(imageToBase64String(newImage, "png"));
+            NativeImage capeImage = FileHelper.INSTANCE.readTexture(FileHelper.INSTANCE.imageToBase64String(newImage, "png"));
             int imageWidth = 64;
             int imageHeight = 32;
 
@@ -47,7 +48,7 @@ public class Cape {
 
             capeImage.close();
             Identifier id = new Identifier("jex", "capes/self.png");
-            applyTexture(id, imgNew);
+            FileHelper.INSTANCE.applyTexture(id, imgNew);
             if (capes.containsKey("self"))
                 capes.replace("self", id);
             else
@@ -58,7 +59,7 @@ public class Cape {
     }
 
     public static void parseCape(String cape, String uuid) {
-        NativeImage capeImage = readTexture(cape);
+        NativeImage capeImage = FileHelper.INSTANCE.readTexture(cape);
         int imageWidth = 64;
         int imageHeight = 32;
 
@@ -76,39 +77,8 @@ public class Cape {
 
         capeImage.close();
         Identifier id = new Identifier("jex", "capes/" + uuid);
-        applyTexture(id, imgNew);
+        FileHelper.INSTANCE.applyTexture(id, imgNew);
         capes.put(uuid, id);
-    }
-
-    private static NativeImage readTexture(String textureBase64) {
-        try {
-            byte[] imgBytes = Base64.decodeBase64(textureBase64);
-            ByteArrayInputStream bais = new ByteArrayInputStream(imgBytes);
-            return NativeImage.read(bais);
-        } catch (IOException e) {
-            e.printStackTrace();
-
-            return null;
-        }
-    }
-
-    private static String imageToBase64String(BufferedImage image, String type) {
-        String ret = null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(image, type, bos);
-            byte[] bytes = bos.toByteArray();
-            Base64 encoder = new Base64();
-            ret = encoder.encodeAsString(bytes);
-            ret = ret.replace(System.lineSeparator(), "");
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
-        return ret;
-    }
-
-    private static void applyTexture(Identifier identifier, NativeImage nativeImage) {
-        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(nativeImage)));
     }
 
 }

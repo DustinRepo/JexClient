@@ -260,7 +260,7 @@ public class AccountManagerScreen extends Screen {
     }
 
     public boolean isInButtons() {
-        return MouseHelper.INSTANCE.getMouseX() > (width / 2) - 150 && MouseHelper.INSTANCE.getMouseX() >= height / 2 - 100 && MouseHelper.INSTANCE.getMouseX() <= width / 2 && MouseHelper.INSTANCE.getMouseY() <= height / 2 + 100;
+        return MouseHelper.INSTANCE.getMouseX() > (width / 2) - 150 && MouseHelper.INSTANCE.getMouseY() >= height / 2 - 100 && MouseHelper.INSTANCE.getMouseX() <= width / 2 && MouseHelper.INSTANCE.getMouseY() <= height / 2 + 100;
     }
 
     public AccountButton getSelected() {
