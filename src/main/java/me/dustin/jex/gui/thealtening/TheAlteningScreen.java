@@ -50,6 +50,7 @@ public class TheAlteningScreen extends Screen {
     private boolean movingScrollbar2;
 
     private String logInStatus = "";
+    private String tokenStatus = "Use Generated Token:";
 
     private TheAlteningHelper.TheAlteningAccount generatedAccount;
 
@@ -101,9 +102,9 @@ public class TheAlteningScreen extends Screen {
                 if (session != null) {
                     JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                    logInStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
+                    tokenStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
                 } else {
-                    logInStatus = "Invalid Token";
+                    tokenStatus = "Invalid Token";
                 }
                 this.tokenWidget.setText("");
             });
@@ -113,9 +114,8 @@ public class TheAlteningScreen extends Screen {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.favoriteAcc(generatedAccount)) {
                     this.favoriteAccounts.add(generatedAccount);
-                    String s = generatedAccount.username + " favorited.";
                     this.updateAPIKey();
-                    this.logInStatus = s;
+                    this.logInStatus = generatedAccount.username + " favorited.";
                     generatedAccount = null;
                 }
             }
@@ -125,17 +125,16 @@ public class TheAlteningScreen extends Screen {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.privateAcc(generatedAccount)) {
                     this.privateAccounts.add(generatedAccount);
-                    String s = generatedAccount.username + " privated.";
                     this.updateAPIKey();
-                    this.logInStatus = s;
+                    this.logInStatus = generatedAccount.username + " privated.";
                     generatedAccount = null;
                 }
             }
         });
-        getTokenButton = new ButtonWidget(width - 122, 2, 120, 20, new LiteralText("Get Free Token"), button -> {
+        getTokenButton = new ButtonWidget(width - 127, 2, 125, 20, new LiteralText("Get Free Token"), button -> {
             WebHelper.INSTANCE.openLink("https://thealtening.com/free/free-minecraft-alts");
         });
-        signUpButton = new ButtonWidget(width - 122, 25, 120, 20, new LiteralText("Sign Up For TheAltening"), button -> {
+        signUpButton = new ButtonWidget(width - 127, 25, 125, 20, new LiteralText("Sign Up For TheAltening"), button -> {
             WebHelper.INSTANCE.openLink("https://thealtening.com/?i=wohc9");
         });
         ButtonWidget cancelButton = new ButtonWidget(width / 2 - 100, height - 22, 200, 20, new LiteralText("Cancel"), button -> {
@@ -166,8 +165,8 @@ public class TheAlteningScreen extends Screen {
         Render2DHelper.INSTANCE.fillAndBorder(matrices, (width / 2.f) - 154, 45, (width / 2.f) + 156, 263, 0xff000000, 0x50cccccc, 1);
 
         Scissor.INSTANCE.cut(0, 60, width, 200);
-        favorites.forEach(theTheAlteningAccountButton -> theTheAlteningAccountButton.draw(matrices));
-        privates.forEach(theTheAlteningAccountButton -> theTheAlteningAccountButton.draw(matrices));
+        favorites.forEach(theAlteningAccountButton -> theAlteningAccountButton.draw(matrices));
+        privates.forEach(theAlteningAccountButton -> theAlteningAccountButton.draw(matrices));
         if (scrollbar1 != null)
             scrollbar1.render(matrices);
         if (scrollbar2 != null)
@@ -195,7 +194,7 @@ public class TheAlteningScreen extends Screen {
         FontHelper.INSTANCE.drawWithShadow(matrices, "API Key:", width / 2.f - 150, 1, -1);
         FontHelper.INSTANCE.drawWithShadow(matrices, "Favorites:", width / 2.f - 148, 50, -1);
         FontHelper.INSTANCE.drawWithShadow(matrices, "Privates:", width / 2.f + 4, 50, -1);
-        FontHelper.INSTANCE.drawWithShadow(matrices, "Login with Token:", width / 2.f - 150, 355, 0xff606060);
+        FontHelper.INSTANCE.drawWithShadow(matrices, tokenStatus, width / 2.f - 150, 355, 0xff606060);
         FontHelper.INSTANCE.drawCenteredString(matrices, logInStatus, width / 2.f, 35, 0xff606060);
 
         if (TheAlteningHelper.INSTANCE.getLicense() != null) {
