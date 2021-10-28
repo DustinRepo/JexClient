@@ -48,17 +48,7 @@ public enum WebHelper {
 
     public String readURL(String url) {
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(10 * 1000);
-            BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder buffer = new StringBuilder();
-            for (String line; (line = input.readLine()) != null; ) {
-                buffer.append(line);
-                buffer.append("\n");
-            }
-            input.close();
-            return buffer.toString();
+            return readURL(new URL(url));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -165,6 +155,47 @@ public enum WebHelper {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public String sendPOSTWithRequestProperties(String url, String s, Map<?, ?> requestProperties) {
+        String response = "";
+        try {
+            URLConnection con = new URL(url).openConnection();
+            HttpURLConnection http = (HttpURLConnection) con;
+            http.setRequestMethod("POST");
+            http.setDoOutput(true);
+
+
+            byte[] out = s.getBytes(StandardCharsets.UTF_8);
+            int length = out.length;
+
+            http.setFixedLengthStreamingMode(length);
+            if (requestProperties.isEmpty()) {
+                http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            } else {
+                for (Object key : requestProperties.keySet()) {
+                    String str = (String)key;
+                    String str2 = (String)requestProperties.get(key);
+                    http.setRequestProperty(str, str2);
+                }
+            }
+            http.connect();
+            try (OutputStream os = http.getOutputStream()) {
+                os.write(out);
+            }
+
+            BufferedReader input = new BufferedReader(new InputStreamReader(http.getInputStream()));
+            StringBuilder buffer = new StringBuilder();
+            for (String line; (line = input.readLine()) != null; ) {
+                buffer.append(line);
+                buffer.append("\n");
+            }
+            input.close();
+            response = buffer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     public void uploadToImgur(File file) {

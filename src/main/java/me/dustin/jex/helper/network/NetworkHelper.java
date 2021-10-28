@@ -41,4 +41,7 @@ public enum NetworkHelper {
         Wrapper.INSTANCE.getIMinecraft().setSessionService(TheAlteningHelper.INSTANCE.getTheAlteningSessionService());
     }
 
+    public YggdrasilMinecraftSessionService getStoredSessionService() {
+        return storedSessionService;
+    }
 }
