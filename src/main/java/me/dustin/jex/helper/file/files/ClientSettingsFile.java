@@ -12,7 +12,7 @@ import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.TheAlteningHelper;
+import me.dustin.jex.helper.network.login.thealtening.TheAlteningHelper;
 
 import java.io.BufferedReader;
 import java.io.File;

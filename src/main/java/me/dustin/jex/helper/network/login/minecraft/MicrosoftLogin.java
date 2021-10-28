@@ -1,12 +1,10 @@
-package me.dustin.jex.helper.network.login;
+package me.dustin.jex.helper.network.login.minecraft;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.AccountManagerScreen;
-import me.dustin.jex.gui.account.AddAccountScreen;
-import me.dustin.jex.gui.account.DirectLoginScreen;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.helper.file.JsonHelper;
@@ -52,7 +50,7 @@ public class MicrosoftLogin {
     }
 
     public Session loginNoThread() {
-        NetworkHelper.INSTANCE.resetSessionService();
+        NetworkHelper.INSTANCE.setMinecraftSessionService();
         String code;
         if (accessToken == null || refreshToken == null || accessToken.isEmpty() || refreshToken.isEmpty()) {
             code = getLoginCode(email, password);
@@ -75,7 +73,7 @@ public class MicrosoftLogin {
 
     public void login() {
         new Thread(() -> {
-            NetworkHelper.INSTANCE.resetSessionService();
+            NetworkHelper.INSTANCE.setMinecraftSessionService();
             String code;
             if (accessToken == null || refreshToken == null || accessToken.isEmpty() || refreshToken.isEmpty()) {
                 code = getLoginCode(email, password);

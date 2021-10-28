@@ -1,4 +1,4 @@
-package me.dustin.jex.helper.network;
+package me.dustin.jex.helper.network.login.mcleaks;
 
 import com.google.gson.JsonObject;
 import me.dustin.events.core.annotate.EventListener;
@@ -6,6 +6,7 @@ import me.dustin.jex.event.packet.EventHello;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.text.LiteralText;
 

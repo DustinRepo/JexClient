@@ -77,16 +77,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     }
 
     @Override
-    public int getFPS() {
-        return this.fpsCounter;
-    }
-
-    @Override
-    public BufferBuilderStorage getBufferBuilderStorage() {
-        return this.bufferBuilders;
-    }
-
-    @Override
     public RenderTickCounter getRenderTickCounter() {
         return this.renderTickCounter;
     }
@@ -126,4 +116,7 @@ public abstract class MixinMinecraftClient implements IMinecraft {
         new EventScheduleStop().run();
     }
 
+    public void setSessionService(MinecraftSessionService sessionService) {
+        this.sessionService = sessionService;
+    }
 }

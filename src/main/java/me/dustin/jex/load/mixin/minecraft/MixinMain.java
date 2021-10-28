@@ -1,12 +1,11 @@
 package me.dustin.jex.load.mixin.minecraft;
 
-import com.mojang.util.UUIDTypeAdapter;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.helper.file.files.AltFile;
-import me.dustin.jex.helper.network.login.MicrosoftLogin;
-import me.dustin.jex.helper.network.login.MojangLogin;
+import me.dustin.jex.helper.network.login.minecraft.MicrosoftLogin;
+import me.dustin.jex.helper.network.login.minecraft.MojangLogin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.main.Main;
 import net.minecraft.client.util.Session;

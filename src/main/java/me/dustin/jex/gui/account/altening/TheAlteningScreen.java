@@ -4,7 +4,7 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.TheAlteningHelper;
+import me.dustin.jex.helper.network.login.thealtening.TheAlteningHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
@@ -18,12 +18,7 @@ import net.minecraft.text.LiteralText;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class TheAlteningScreen extends Screen {
     public TheAlteningScreen(Screen parent) {
@@ -78,9 +73,9 @@ public class TheAlteningScreen extends Screen {
             if (getSelected() != null) {
                 TheAlteningHelper.INSTANCE.login(getSelected().getAccount(), session -> {
                     if (session != null) {
-                        JexClient.INSTANCE.getLogger().info("Logged in to Altening account named " + session.getUsername());
+                        JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
                         Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                        logInStatus = "Logged in to Altening account named \247b" + session.getUsername();
+                        logInStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
                     } else {
                         logInStatus = "Unable to login";
                     }
@@ -91,9 +86,9 @@ public class TheAlteningScreen extends Screen {
            if (generatedAccount != null) {
                TheAlteningHelper.INSTANCE.login(generatedAccount, session -> {
                    if (session != null) {
-                       JexClient.INSTANCE.getLogger().info("Logged in to Altening account named " + session.getUsername());
+                       JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
                        Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                       logInStatus = "Logged in to Altening account named \247b" + session.getUsername();
+                       logInStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
                    } else {
                        logInStatus = "Unable to login";
                    }
@@ -103,11 +98,11 @@ public class TheAlteningScreen extends Screen {
         loginTokenButton = new ButtonWidget(width / 2 + 52, 365, 100, 20, new LiteralText("Login With Token"), button -> {
            TheAlteningHelper.INSTANCE.login(this.tokenWidget.getText(), session -> {
                if (session != null) {
-                   JexClient.INSTANCE.getLogger().info("Logged in to Altening account named " + session.getUsername());
+                   JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
                    Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                   logInStatus = "Logged in to Altening account named \247b" + session.getUsername();
+                   logInStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
                } else {
-                   logInStatus = "Unable to login";
+                   logInStatus = "Invalid Token";
                }
                this.tokenWidget.setText("");
            });
@@ -117,8 +112,8 @@ public class TheAlteningScreen extends Screen {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.favoriteAcc(generatedAccount)) {
                     this.favoriteAccounts.add(generatedAccount);
-                    this.logInStatus = generatedAccount.username + " favorited.";
                     this.updateAPIKey();
+                    this.logInStatus = generatedAccount.username + " favorited.";
                     generatedAccount = null;
                 }
             }
@@ -128,16 +123,16 @@ public class TheAlteningScreen extends Screen {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.privateAcc(generatedAccount)) {
                     this.privateAccounts.add(generatedAccount);
-                    this.logInStatus = generatedAccount.username + " privated.";
                     this.updateAPIKey();
+                    this.logInStatus = generatedAccount.username + " privated.";
                     generatedAccount = null;
                 }
             }
         });
-        getTokenButton = new ButtonWidget(width - 102, 2, 100, 20, new LiteralText("Get Free Token"), button -> {
+        getTokenButton = new ButtonWidget(width - 127, 2, 125, 20, new LiteralText("Get Free Token"), button -> {
             WebHelper.INSTANCE.openLink("https://thealtening.com/free/free-minecraft-alts");
         });
-        signUpButton = new ButtonWidget(width - 102, 25, 100, 20, new LiteralText("Sign Up For Altening"), button -> {
+        signUpButton = new ButtonWidget(width - 127, 25, 125, 20, new LiteralText("Sign Up For TheAltening"), button -> {
             WebHelper.INSTANCE.openLink("https://thealtening.com/?i=wohc9");
         });
         ButtonWidget cancelButton = new ButtonWidget(width / 2 - 100, height - 22, 200, 20, new LiteralText("Cancel"), button -> {
