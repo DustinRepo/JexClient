@@ -2,7 +2,7 @@ package me.dustin.jex.load.mixin.minecraft;
 
 import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
-import me.dustin.jex.gui.account.account.MinecraftAccountManager;
+import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
 import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.network.login.minecraft.MicrosoftLogin;
 import me.dustin.jex.helper.network.login.minecraft.MojangLogin;

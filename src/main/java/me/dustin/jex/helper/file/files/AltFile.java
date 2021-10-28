@@ -3,7 +3,7 @@ package me.dustin.jex.helper.file.files;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
-import me.dustin.jex.gui.account.account.MinecraftAccountManager;
+import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
