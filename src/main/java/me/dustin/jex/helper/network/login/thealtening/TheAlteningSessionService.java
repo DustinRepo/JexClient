@@ -49,7 +49,7 @@ public class TheAlteningSessionService extends HttpMinecraftSessionService {
 
         try {
             makeRequest(new URL(JOIN_URL), request, Response.class);
-        } catch (MalformedURLException | AuthenticationException e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
     }
