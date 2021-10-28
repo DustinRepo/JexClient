@@ -116,7 +116,7 @@ public enum TheAlteningHelper {
 
     public void login(String token, Consumer<Session> sessionConsumer) {
         new Thread(() -> {
-            NetworkHelper.INSTANCE.setTheAlteningSessionService();
+            NetworkHelper.INSTANCE.setSessionService(NetworkHelper.SessionService.THEALTENING);
             YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) getTheAlteningAuth().createUserAuthentication(Agent.MINECRAFT);
             auth.setUsername(token);
             auth.setPassword("JexClient");

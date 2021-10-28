@@ -22,26 +22,28 @@ public enum NetworkHelper {
         }
     }
 
-    public void storeSessionService() {
-        if (this.storedSessionService == null)
-            this.storedSessionService = (YggdrasilMinecraftSessionService)Wrapper.INSTANCE.getMinecraft().getSessionService();
-    }
-
-    public void setMinecraftSessionService() {
-        if (storedSessionService == null)
-            return;
-        Wrapper.INSTANCE.getIMinecraft().setSessionService(storedSessionService);
-        storedSessionService = null;
-    }
-
-    public void setTheAlteningSessionService() {
-        if (storedSessionService != null)
-            return;
-        storeSessionService();
-        Wrapper.INSTANCE.getIMinecraft().setSessionService(TheAlteningHelper.INSTANCE.getTheAlteningSessionService());
+    public void setSessionService(SessionService sessionService) {
+        switch (sessionService) {
+            case MOJANG -> {
+                if (storedSessionService == null)
+                    return;
+                Wrapper.INSTANCE.getIMinecraft().setSessionService(storedSessionService);
+                storedSessionService = null;
+            }
+            case THEALTENING -> {
+                if (storedSessionService != null)
+                    return;
+                this.storedSessionService = (YggdrasilMinecraftSessionService)Wrapper.INSTANCE.getMinecraft().getSessionService();
+                Wrapper.INSTANCE.getIMinecraft().setSessionService(TheAlteningHelper.INSTANCE.getTheAlteningSessionService());
+            }
+        }
     }
 
     public YggdrasilMinecraftSessionService getStoredSessionService() {
         return storedSessionService;
+    }
+
+    public enum SessionService {
+        MOJANG, THEALTENING;
     }
 }
