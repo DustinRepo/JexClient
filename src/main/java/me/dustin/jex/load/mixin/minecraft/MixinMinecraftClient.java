@@ -46,8 +46,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
 
     @Shadow @Final private BufferBuilderStorage bufferBuilders;
 
-    @Shadow @Final private SocialInteractionsManager socialInteractionsManager;
-
     @Shadow @Final private RenderTickCounter renderTickCounter;
 
     @Shadow @Final public GameOptions options;
@@ -57,8 +55,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Mutable
     @Shadow @Final private MinecraftSessionService sessionService;
 
-    @Shadow @Final private static Logger LOGGER;
-
     @Override
     public void setSession(Session session) {
         this.session = session;
@@ -67,16 +63,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Override
     public void setRightClickDelayTimer(int timer) {
         this.itemUseCooldown = timer;
-    }
-
-    @Override
-    public int getFPS() {
-        return this.fpsCounter;
-    }
-
-    @Override
-    public BufferBuilderStorage getBufferBuilderStorage() {
-        return this.bufferBuilders;
     }
 
     @Override
@@ -119,4 +105,8 @@ public abstract class MixinMinecraftClient implements IMinecraft {
         new EventScheduleStop().run();
     }
 
+    @Override
+    public void setSessionService(MinecraftSessionService sessionService) {
+        this.sessionService = sessionService;
+    }
 }

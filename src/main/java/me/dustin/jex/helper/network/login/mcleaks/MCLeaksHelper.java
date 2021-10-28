@@ -1,9 +1,10 @@
-package me.dustin.jex.helper.network;
+package me.dustin.jex.helper.network.login.mcleaks;
 
 import com.google.gson.JsonObject;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventHello;
 import me.dustin.jex.helper.file.JsonHelper;
+import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.text.LiteralText;
 
 import java.util.HashMap;

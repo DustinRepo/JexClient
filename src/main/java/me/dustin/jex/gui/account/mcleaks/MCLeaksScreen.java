@@ -1,18 +1,15 @@
 package me.dustin.jex.gui.account.mcleaks;
 
 import me.dustin.events.api.EventAPI;
-import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.MCLeaksHelper;
+import me.dustin.jex.helper.network.login.mcleaks.MCLeaksHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.Session;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 

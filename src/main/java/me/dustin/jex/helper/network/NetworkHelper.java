@@ -1,16 +1,14 @@
 package me.dustin.jex.helper.network;
 
-import com.mojang.authlib.yggdrasil.YggdrasilEnvironment;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.login.thealtening.TheAlteningHelper;
 import net.minecraft.network.Packet;
-
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public enum NetworkHelper {
     INSTANCE;
+
+    private YggdrasilMinecraftSessionService storedSessionService;
 
     public void sendPacket(Packet<?> packet) {
         try {
@@ -24,43 +22,21 @@ public enum NetworkHelper {
         }
     }
 
-    public void resetSessionService() {
-        if (Wrapper.INSTANCE.getMinecraft() == null)
+    public void storeSessionService() {
+        if (this.storedSessionService == null)
+            this.storedSessionService = (YggdrasilMinecraftSessionService)Wrapper.INSTANCE.getMinecraft().getSessionService();
+    }
+
+    public void setMinecraftSessionService() {
+        if (storedSessionService == null)
             return;
-        YggdrasilMinecraftSessionService service = (YggdrasilMinecraftSessionService)Wrapper.INSTANCE.getMinecraft().getSessionService();
-        setBaseUrl(service, YggdrasilEnvironment.PROD.getEnvironment().getSessionHost() + "/session/minecraft/");
-        setJoinUrl(service, YggdrasilEnvironment.PROD.getEnvironment().getSessionHost() + "/session/minecraft/join");
-        setCheckUrl(service, YggdrasilEnvironment.PROD.getEnvironment().getSessionHost() + "/session/minecraft/hasJoined");
+        Wrapper.INSTANCE.getIMinecraft().setSessionService(storedSessionService);
+        storedSessionService = null;
     }
 
-    public void setBaseUrl(YggdrasilMinecraftSessionService service, String url) {
-        try {
-            Field field = service.getClass().getDeclaredField("baseUrl");
-            field.setAccessible(true);
-            field.set(service, url);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setJoinUrl(YggdrasilMinecraftSessionService service, String url) {
-        try {
-            Field field = service.getClass().getDeclaredField("joinUrl");
-            field.setAccessible(true);
-            field.set(service, new URL(url));
-        } catch (IllegalAccessException | NoSuchFieldException | MalformedURLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setCheckUrl(YggdrasilMinecraftSessionService service, String url) {
-        try {
-            Field field = service.getClass().getDeclaredField("checkUrl");
-            field.setAccessible(true);
-            field.set(service, new URL(url));
-        } catch (IllegalAccessException | NoSuchFieldException | MalformedURLException e) {
-            e.printStackTrace();
-        }
+    public void setTheAlteningSessionService() {
+        storeSessionService();
+        Wrapper.INSTANCE.getIMinecraft().setSessionService(TheAlteningHelper.INSTANCE.getTheAlteningSessionService());
     }
 
 }

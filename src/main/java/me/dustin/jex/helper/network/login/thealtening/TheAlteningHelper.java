@@ -1,16 +1,16 @@
-package me.dustin.jex.helper.network;
+package me.dustin.jex.helper.network.login.thealtening;
 
 import com.google.gson.JsonArray;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.Environment;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.Session;
 import net.minecraft.util.Identifier;
@@ -39,14 +39,15 @@ public enum TheAlteningHelper {
     private final String ACCOUNT_URL = "https://api.mojang.com";
     private final String SESSION_URL = "http://sessionserver.thealtening.com";
     private final String SERVICES_URL = "https://api.minecraftservices.com";
-    private final String BASE_URL = SESSION_URL + "/session/minecraft/";
-    private final String JOIN_URL = SESSION_URL + "/session/minecraft/join";
-    private final String CHECK_URL = SESSION_URL + "/session/minecraft/hasJoined";
 
-    private final Identifier STEVE_SKIN = new Identifier("textures/entity/steve.png");
+    private YggdrasilAuthenticationService THE_ALTENING_AUTH;
+    private TheAlteningSessionService THE_ALTENING_SESSION_SERVICE;
 
     private String apiKey = "";
     private TheAlteningLicense license;
+    private final ArrayList<TheAlteningAccount> avatarsRequested = new ArrayList<>();
+    private final HashMap<TheAlteningAccount, Identifier> skins = new HashMap<>();
+    private final Identifier STEVE_SKIN = new Identifier("textures/entity/steve.png");
 
     public String getApiKey() {
         return apiKey;
@@ -55,9 +56,6 @@ public enum TheAlteningHelper {
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
-
-    private final ArrayList<TheAlteningAccount> avatarsRequested = new ArrayList<>();
-    private final HashMap<TheAlteningAccount, Identifier> skins = new HashMap<>();
 
     public TheAlteningAccount generateAccount() {
         String GENERATE_URL = String.format(this.GENERATE_URL, this.getApiKey());
@@ -119,14 +117,10 @@ public enum TheAlteningHelper {
 
     public void login(String token, Consumer<Session> sessionConsumer) {
         new Thread(() -> {
-            YggdrasilMinecraftSessionService service = (YggdrasilMinecraftSessionService)Wrapper.INSTANCE.getMinecraft().getSessionService();
-            NetworkHelper.INSTANCE.setBaseUrl(service, BASE_URL);
-            NetworkHelper.INSTANCE.setJoinUrl(service, JOIN_URL);
-            NetworkHelper.INSTANCE.setCheckUrl(service, CHECK_URL);
-            YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) new YggdrasilAuthenticationService(Proxy.NO_PROXY, "", Environment.create(AUTH_URL, ACCOUNT_URL, SESSION_URL, SERVICES_URL, "Altening")).createUserAuthentication(Agent.MINECRAFT);
+            NetworkHelper.INSTANCE.setTheAlteningSessionService();
+            YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) getTheAlteningAuth().createUserAuthentication(Agent.MINECRAFT);
             auth.setUsername(token);
             auth.setPassword("JexClient");
-
             try {
                 auth.logIn();
                 sessionConsumer.accept(new Session(auth.getSelectedProfile().getName(), auth.getSelectedProfile().getId().toString(), auth.getAuthenticatedToken(), Optional.of(""), Optional.of(""), Session.AccountType.MOJANG));
@@ -162,7 +156,7 @@ public enum TheAlteningHelper {
                     }
 
                     image.close();
-                    Identifier id = new Identifier("jex", "altening/" + account.username.replace("*", "").toLowerCase() + ".png");
+                    Identifier id = new Identifier("jex", "thealtening/" + account.username.replace("*", "").toLowerCase() + ".png");
                     FileHelper.INSTANCE.applyTexture(id, imgNew);
                     skins.replace(account, id);
                 } catch (Exception e) {
@@ -179,6 +173,18 @@ public enum TheAlteningHelper {
 
     public TheAlteningLicense getLicense() {
         return this.license;
+    }
+
+    public YggdrasilAuthenticationService getTheAlteningAuth() {
+        if (THE_ALTENING_AUTH == null)
+            THE_ALTENING_AUTH = new YggdrasilAuthenticationService(Proxy.NO_PROXY, "", Environment.create(AUTH_URL, ACCOUNT_URL, SESSION_URL, SERVICES_URL, "TheAltening"));
+        return THE_ALTENING_AUTH;
+    }
+
+    public TheAlteningSessionService getTheAlteningSessionService() {
+        if (THE_ALTENING_SESSION_SERVICE == null)
+            THE_ALTENING_SESSION_SERVICE = new TheAlteningSessionService(getTheAlteningAuth());
+        return THE_ALTENING_SESSION_SERVICE;
     }
 
     public class TheAlteningLicense {
