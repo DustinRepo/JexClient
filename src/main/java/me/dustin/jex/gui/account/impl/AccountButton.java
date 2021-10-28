@@ -1,8 +1,6 @@
 package me.dustin.jex.gui.account.impl;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
-import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
