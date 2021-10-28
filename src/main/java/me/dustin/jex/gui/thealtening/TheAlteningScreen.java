@@ -1,6 +1,7 @@
-package me.dustin.jex.gui.account.altening;
+package me.dustin.jex.gui.thealtening;
 
 import me.dustin.jex.JexClient;
+import me.dustin.jex.gui.thealtening.impl.TheAlteningAccountButton;
 import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -28,8 +29,8 @@ public class TheAlteningScreen extends Screen {
 
     private Screen parent;
 
-    private ArrayList<AlteningAccountButton> favorites = new ArrayList<>();
-    private ArrayList<AlteningAccountButton> privates = new ArrayList<>();
+    private ArrayList<TheAlteningAccountButton> favorites = new ArrayList<>();
+    private ArrayList<TheAlteningAccountButton> privates = new ArrayList<>();
     private TextFieldWidget apiKeyWidget;
     private ButtonWidget loginButton;
     private ButtonWidget loginGeneratedButton;
@@ -165,8 +166,8 @@ public class TheAlteningScreen extends Screen {
         Render2DHelper.INSTANCE.fillAndBorder(matrices, (width / 2.f) - 154, 45, (width / 2.f) + 156, 263, 0xff000000, 0x50cccccc, 1);
 
         Scissor.INSTANCE.cut(0, 60, width, 200);
-        favorites.forEach(alteningAccountButton -> alteningAccountButton.draw(matrices));
-        privates.forEach(alteningAccountButton -> alteningAccountButton.draw(matrices));
+        favorites.forEach(theTheAlteningAccountButton -> theTheAlteningAccountButton.draw(matrices));
+        privates.forEach(theTheAlteningAccountButton -> theTheAlteningAccountButton.draw(matrices));
         if (scrollbar1 != null)
             scrollbar1.render(matrices);
         if (scrollbar2 != null)
@@ -250,16 +251,16 @@ public class TheAlteningScreen extends Screen {
         return false;
     }
 
-    public boolean scroll(double amount, ArrayList<AlteningAccountButton> list, Scrollbar scrollbar) {
+    public boolean scroll(double amount, ArrayList<TheAlteningAccountButton> list, Scrollbar scrollbar) {
         if (list.isEmpty())
             return false;
         if (amount > 0) {
-            AlteningAccountButton topButton = list.get(0);
+            TheAlteningAccountButton topButton = list.get(0);
             if (topButton == null) return false;
             if (topButton.getY() < 60) {
                 for (int i = 0; i < 20; i++) {
                     if (topButton.getY() < 60) {
-                        for (AlteningAccountButton button : list) {
+                        for (TheAlteningAccountButton button : list) {
                             button.setY(button.getY() + 1);
                         }
                         if (scrollbar != null)
@@ -268,12 +269,12 @@ public class TheAlteningScreen extends Screen {
                 }
             }
         } else if (amount < 0) {
-            AlteningAccountButton bottomButton = list.get(list.size() - 1);
+            TheAlteningAccountButton bottomButton = list.get(list.size() - 1);
             if (bottomButton == null) return false;
             if (bottomButton.getY() + bottomButton.getHeight() > 260) {
                 for (int i = 0; i < 20; i++) {
                     if (bottomButton.getY() + bottomButton.getHeight() > 260) {
-                        for (AlteningAccountButton button : list) {
+                        for (TheAlteningAccountButton button : list) {
                             button.setY(button.getY() - 1);
                         }
                         if (scrollbar != null)
@@ -299,14 +300,14 @@ public class TheAlteningScreen extends Screen {
         this.generatedAccount = null;
         int favoriteCount = 0;
         for (TheAlteningHelper.TheAlteningAccount favorite : favoriteAccounts) {
-            AlteningAccountButton accountButton = new AlteningAccountButton(favorite, width / 2.f - 150, 60 + (31 * favoriteCount));
+            TheAlteningAccountButton accountButton = new TheAlteningAccountButton(favorite, width / 2.f - 150, 60 + (31 * favoriteCount));
             this.favorites.add(accountButton);
             favoriteCount++;
         }
 
         int privateCount = 0;
         for (TheAlteningHelper.TheAlteningAccount private_ : privateAccounts) {
-            AlteningAccountButton accountButton = new AlteningAccountButton(private_, width / 2.f + 2, 60 + (31 * privateCount));
+            TheAlteningAccountButton accountButton = new TheAlteningAccountButton(private_, width / 2.f + 2, 60 + (31 * privateCount));
             this.privates.add(accountButton);
             privateCount++;
         }
@@ -345,7 +346,7 @@ public class TheAlteningScreen extends Screen {
         super.tick();
     }
 
-    private void moveScrollbar(Scrollbar scrollbar, ArrayList<AlteningAccountButton> list) {
+    private void moveScrollbar(Scrollbar scrollbar, ArrayList<TheAlteningAccountButton> list) {
         float mouseY = MouseHelper.INSTANCE.getMouseY();
         float scrollBarHoldingArea = scrollbar.getY() + (scrollbar.getHeight() / 2.f);
         float dif = mouseY - scrollBarHoldingArea;
@@ -353,7 +354,7 @@ public class TheAlteningScreen extends Screen {
             for (int i = 0; i < Math.abs(dif); i++) {
                 if (scrollbar.getY() + scrollbar.getHeight() < scrollbar.getViewportY() + scrollbar.getViewportHeight()) {
                     scrollbar.moveDown();
-                    for (AlteningAccountButton button : list) {
+                    for (TheAlteningAccountButton button : list) {
                         button.setY(button.getY() - 1);
                     }
                 }
@@ -362,7 +363,7 @@ public class TheAlteningScreen extends Screen {
             for (int i = 0; i < Math.abs(dif); i++) {
                 if (scrollbar.getY() > scrollbar.getViewportY()) {
                     scrollbar.moveUp();
-                    for (AlteningAccountButton button : list) {
+                    for (TheAlteningAccountButton button : list) {
                         button.setY(button.getY() + 1);
                     }
                 }
@@ -370,13 +371,13 @@ public class TheAlteningScreen extends Screen {
         }
     }
 
-    private AlteningAccountButton getSelected() {
-        for (AlteningAccountButton button : favorites) {
+    private TheAlteningAccountButton getSelected() {
+        for (TheAlteningAccountButton button : favorites) {
             if (button.isSelected())
                 return button;
         }
 
-        for (AlteningAccountButton button : privates) {
+        for (TheAlteningAccountButton button : privates) {
             if (button.isSelected())
                 return button;
         }

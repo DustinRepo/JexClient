@@ -1,8 +1,8 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import me.dustin.jex.gui.account.AccountManagerScreen;
-import me.dustin.jex.gui.account.altening.TheAlteningScreen;
-import me.dustin.jex.gui.account.mcleaks.MCLeaksScreen;
+import me.dustin.jex.gui.thealtening.TheAlteningScreen;
+import me.dustin.jex.gui.mcleaks.MCLeaksScreen;
 import me.dustin.jex.gui.minecraft.ProxyScreen;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gui.screen.Screen;

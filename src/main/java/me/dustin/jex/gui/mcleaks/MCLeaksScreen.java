@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.account.mcleaks;
+package me.dustin.jex.gui.mcleaks;
 
 import me.dustin.events.api.EventAPI;
 import me.dustin.jex.helper.misc.Wrapper;

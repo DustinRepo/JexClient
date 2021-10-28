@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.account.altening;
+package me.dustin.jex.gui.thealtening.impl;
 
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.network.login.thealtening.TheAlteningHelper;
@@ -10,7 +10,7 @@ import net.minecraft.util.Formatting;
 
 import java.util.UUID;
 
-public class AlteningAccountButton {
+public class TheAlteningAccountButton {
 
     private float x, y, width, height;
     private TheAlteningHelper.TheAlteningAccount account;
@@ -18,7 +18,7 @@ public class AlteningAccountButton {
 
     private UUID uuid;
 
-    public AlteningAccountButton(TheAlteningHelper.TheAlteningAccount account, float x, float y) {
+    public TheAlteningAccountButton(TheAlteningHelper.TheAlteningAccount account, float x, float y) {
         this.account = account;
         this.x = x;
         this.y = y;
