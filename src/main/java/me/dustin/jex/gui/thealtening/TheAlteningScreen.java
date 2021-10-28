@@ -114,8 +114,9 @@ public class TheAlteningScreen extends Screen {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.favoriteAcc(generatedAccount)) {
                     this.favoriteAccounts.add(generatedAccount);
+                    String s = "\247b" + generatedAccount.username + " \247rfavorited.";
                     this.updateAPIKey();
-                    this.logInStatus = generatedAccount.username + " favorited.";
+                    this.logInStatus = s;
                     generatedAccount = null;
                 }
             }
@@ -125,8 +126,9 @@ public class TheAlteningScreen extends Screen {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.privateAcc(generatedAccount)) {
                     this.privateAccounts.add(generatedAccount);
+                    String s = "\247b" + generatedAccount.username + " \247rprivated.";
                     this.updateAPIKey();
-                    this.logInStatus = generatedAccount.username + " privated.";
+                    this.logInStatus = s;
                     generatedAccount = null;
                 }
             }
