@@ -35,6 +35,8 @@ public enum NetworkHelper {
     }
 
     public void setTheAlteningSessionService() {
+        if (storedSessionService != null)
+            return;
         storeSessionService();
         Wrapper.INSTANCE.getIMinecraft().setSessionService(TheAlteningHelper.INSTANCE.getTheAlteningSessionService());
     }
