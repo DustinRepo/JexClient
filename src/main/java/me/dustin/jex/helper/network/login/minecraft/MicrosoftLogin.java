@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.gui.account.AccountManagerScreen;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
-import me.dustin.jex.gui.account.account.MinecraftAccountManager;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.misc.Wrapper;

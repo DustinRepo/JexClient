@@ -1,9 +1,10 @@
-package me.dustin.jex.gui.account.account;
+package me.dustin.jex.helper.network.login.minecraft;
+
+import me.dustin.jex.gui.account.account.MinecraftAccount;
 
 import java.util.ArrayList;
 
 public enum MinecraftAccountManager {
-
     INSTANCE;
 
     private ArrayList<MinecraftAccount> minecraftAccounts = new ArrayList<>();
