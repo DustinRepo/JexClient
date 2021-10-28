@@ -50,7 +50,7 @@ public class MicrosoftLogin {
     }
 
     public Session loginNoThread() {
-        NetworkHelper.INSTANCE.setMinecraftSessionService();
+        NetworkHelper.INSTANCE.setSessionService(NetworkHelper.SessionService.MOJANG);
         String code;
         if (accessToken == null || refreshToken == null || accessToken.isEmpty() || refreshToken.isEmpty()) {
             code = getLoginCode(email, password);
@@ -73,7 +73,7 @@ public class MicrosoftLogin {
 
     public void login() {
         new Thread(() -> {
-            NetworkHelper.INSTANCE.setMinecraftSessionService();
+            NetworkHelper.INSTANCE.setSessionService(NetworkHelper.SessionService.MOJANG);
             String code;
             if (accessToken == null || refreshToken == null || accessToken.isEmpty() || refreshToken.isEmpty()) {
                 code = getLoginCode(email, password);

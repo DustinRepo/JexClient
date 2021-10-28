@@ -57,14 +57,13 @@ public class MojangLogin {
     }
 
     public void login() {
+        if (!cracked)
         new Thread(() -> {
-            NetworkHelper.INSTANCE.setMinecraftSessionService();
-            Session session;
-            if (!cracked)
-                session = login(this.email, this.password);
-            else
-                session = new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY);
+            NetworkHelper.INSTANCE.setSessionService(NetworkHelper.SessionService.MOJANG);
+            Session session = login(this.email, this.password);
             sessionConsumer.accept(session);
         }).start();
+        else
+            sessionConsumer.accept(new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY));
     }
 }
