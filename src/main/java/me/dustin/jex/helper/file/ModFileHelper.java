@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.file;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.files.*;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.impl.world.xray.Xray;
@@ -35,6 +36,9 @@ public enum ModFileHelper {
 
     public void closeGame() {
         ClientSettingsFile.write();
+        HudElementsFile.write();
+        if (JexClient.INSTANCE.isAutoSaveEnabled())
+            FeatureFile.write();
     }
 
     public boolean isFirstTimeLoading() {
