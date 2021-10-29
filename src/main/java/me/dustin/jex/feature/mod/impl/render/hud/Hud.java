@@ -41,6 +41,8 @@ public class Hud extends Feature {
     public int clientColor = 0xff00a1ff;
     @OpChild(name = "Rainbow", parent = "Client Color")
     public boolean rainbowClientColor;
+    @Op(name = "Collision")
+    public boolean collision = true;
     @Op(name = "Constrict Elements Key", isKeybind = true)
     public int constrictKey = GLFW.GLFW_KEY_LEFT_CONTROL;
     @Op(name = "Watermark")

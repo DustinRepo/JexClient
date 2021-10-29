@@ -113,6 +113,8 @@ public class HudElement {
     }
 
     public void checkCollisions() {
+        if (!hud.collision)
+            return;
         ArrayList<HudElement> colliding = getCollidingElements();
         if (!colliding.isEmpty()) {
             for (HudElement hudElement : colliding) {
@@ -133,6 +135,8 @@ public class HudElement {
     }
 
     public void checkCollisionsMoveOthers() {
+        if (!hud.collision)
+            return;
         ArrayList<HudElement> colliding = getCollidingElements();
         if (!colliding.isEmpty()) {
             ArrayList<HudElement> exempt = new ArrayList<>();
@@ -158,6 +162,8 @@ public class HudElement {
     }
 
     public void checkCollisionsMoveOthers(ArrayList<HudElement> exempt) {
+        if (!hud.collision)
+            return;
         ArrayList<HudElement> colliding = getCollidingElements();
         exempt.add(this);
         if (!colliding.isEmpty()) {
@@ -184,6 +190,8 @@ public class HudElement {
     }
 
     public void bringOldCollisions() {
+        if (!hud.collision)
+            return;
         ArrayList<HudElement> noLongerColliding = new ArrayList<>();
         ArrayList<HudElement> colliding = getCollidingElements();
         ArrayList<HudElement> wascolliding = getWereCollidingElements();
@@ -215,6 +223,8 @@ public class HudElement {
     }
 
     public void bringOldCollisions(ArrayList<HudElement> exempt) {
+        if (!hud.collision)
+            return;
         ArrayList<HudElement> noLongerColliding = new ArrayList<>();
         ArrayList<HudElement> colliding = getCollidingElements();
         ArrayList<HudElement> wascolliding = getWereCollidingElements();
