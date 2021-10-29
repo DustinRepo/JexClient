@@ -17,6 +17,7 @@ public class ProxyScreen extends Screen {
 
     private ButtonWidget proxyTypeButton;
     private ButtonWidget connectButton;
+    private ButtonWidget disconnectButton;
     private TextFieldWidget proxyField;
     private boolean socks5 = true;
 
@@ -41,7 +42,7 @@ public class ProxyScreen extends Screen {
             ProxyHelper.INSTANCE.connectToProxy(this.socks5 ? ProxyHelper.SocksType.FIVE : ProxyHelper.SocksType.FOUR, hostAndPort.getHost(), hostAndPort.getPort());
             Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(new TitleScreen()));
         }));
-        this.addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 25, 200, 20, new LiteralText("Disconnect from Proxy"), button -> {
+        this.addDrawableChild(disconnectButton = new ButtonWidget(width / 2 - 100, height / 2 + 25, 200, 20, new LiteralText("Disconnect from Proxy"), button -> {
             ProxyHelper.INSTANCE.disconnectFromProxy();
         }));
         this.addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 50, 200, 20, new LiteralText("Close"), button -> {
@@ -60,6 +61,7 @@ public class ProxyScreen extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         connectButton.active = ServerAddress.isValid(proxyField.getText()) && proxyField.getText().contains(":");
+        disconnectButton.active = ProxyHelper.INSTANCE.isConnectedToProxy();
         proxyField.render(matrices, mouseX, mouseY, delta);
         FontHelper.INSTANCE.drawCenteredString(matrices, "Proxy hostname:port", width / 2.f, height / 2.f - 38, -1);
         if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
