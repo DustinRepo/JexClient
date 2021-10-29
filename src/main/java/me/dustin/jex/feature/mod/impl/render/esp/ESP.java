@@ -20,6 +20,8 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
+import java.awt.*;
+
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Mark entities/players through walls")
 public class ESP extends Feature {
     public static ESP INSTANCE;
@@ -41,6 +43,8 @@ public class ESP extends Feature {
 
     @OpChild(name = "Player Color", isColor = true, parent = "Player")
     public int playerColor = 0xffff0000;
+    @OpChild(name = "Color on Distance", parent = "Player Color")
+    public boolean colorOnDistance;
     @OpChild(name = "Friend Color", isColor = true, parent = "Player Color")
     public int friendColor = 0xff0080ff;
     @OpChild(name = "Hostile Color", isColor = true, parent = "Hostile")
@@ -106,15 +110,17 @@ public class ESP extends Feature {
         return false;
     }
 
-
-
     public int getColor(Entity entity) {
         if (entity instanceof ItemEntity)
             return itemColor;
         if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendColor;
-        if (entity instanceof PlayerEntity)
+        if (entity instanceof PlayerEntity) {
+            if (colorOnDistance) {
+                return getColor(entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64).getRGB();
+            }
             return playerColor;
+        }
 
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
             if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
@@ -124,6 +130,16 @@ public class ESP extends Feature {
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostileColor;
         return -1;
+    }
+
+    public Color getColor(double power) {
+        if (power > 1)
+            power = 1;
+        double H = power * 0.35; // Hue (note 0.35 = Green, see huge chart below)
+        double S = 0.9; // Saturation
+        double B = 0.9; // Brightness
+
+        return Color.getHSBColor((float) H, (float) S, (float) B);
     }
 
 

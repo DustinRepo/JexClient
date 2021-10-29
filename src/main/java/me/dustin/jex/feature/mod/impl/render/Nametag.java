@@ -242,7 +242,7 @@ public class Nametag extends Feature {
             return ESP.INSTANCE.passiveColor;
         if (player instanceof PlayerEntity) {
             if (FriendHelper.INSTANCE.isFriend(player.getName().asString()))
-                return ColorHelper.INSTANCE.getClientColor();
+                return ESP.INSTANCE.friendColor;
             else if (player.isInvisible())
                 return new Color(200, 70, 0).getRGB();
             else if (player.isSneaking())
