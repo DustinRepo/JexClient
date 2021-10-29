@@ -29,7 +29,7 @@ public class MojangLogin {
     }
 
     public MojangLogin(MinecraftAccount.MojangAccount mojangAccount, Consumer<Session> sessionConsumer) {
-        this.email = mojangAccount.getEmail();
+        this.email = mojangAccount.isCracked() ? mojangAccount.getUsername() : mojangAccount.getEmail();
         this.password = mojangAccount.getPassword();
         this.cracked = mojangAccount.isCracked();
         this.sessionConsumer = sessionConsumer;
