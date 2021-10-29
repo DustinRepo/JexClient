@@ -384,7 +384,7 @@ public class NavigatorOptionButton extends Button {
 
             handleSliders(v);
 
-            Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX(), this.getY() + (this.getHeight() / 2.f) - 2, this.getX() + this.getWidth(), this.getY() + (this.getHeight() / 2.f) + 2, 0x70696969, 0x00ffffff);
+            Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX(), this.getY() + (this.getHeight() / 2.f) - 2, this.getX() + this.getWidth(), this.getY() + (this.getHeight() / 2.f) + 2, 0xff696969, 0x00ffffff);
             Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX() + pos - 4, this.getY() + (this.getHeight() / 2.f) - 4, this.getX() + pos + 4, this.getY() + (this.getHeight() / 2.f) + 4, 0x70696969, Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(ColorHelper.INSTANCE.getClientColor())).darker().getRGB() & 0xc0ffffff);
             FontHelper.INSTANCE.drawCenteredString(matrixStack, property.getName() + ": " + ((FloatOption) property).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
         }
@@ -401,7 +401,7 @@ public class NavigatorOptionButton extends Button {
 
             handleSliders(v);
 
-            Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX(), this.getY() + (this.getHeight() / 2.f) - 2, this.getX() + this.getWidth(), this.getY() + (this.getHeight() / 2.f) + 2, 0x70696969, 0x00ffffff);
+            Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX(), this.getY() + (this.getHeight() / 2.f) - 2, this.getX() + this.getWidth(), this.getY() + (this.getHeight() / 2.f) + 2, 0xff696969, 0x00ffffff);
             Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX() + pos - 4, this.getY() + (this.getHeight() / 2.f) - 4, this.getX() + pos + 4, this.getY() + (this.getHeight() / 2.f) + 4, 0x70696969, Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(ColorHelper.INSTANCE.getClientColor())).darker().getRGB() & 0xc0ffffff);
             FontHelper.INSTANCE.drawCenteredString(matrixStack, property.getName() + ": " + ((IntOption) property).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
         }
