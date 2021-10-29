@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.core;
 
 import com.google.common.collect.Maps;
 import me.dustin.events.api.EventAPI;
+import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
@@ -116,6 +117,10 @@ public class Feature {
     }
 
     public void setSuffix(String suffix) {
+        if (!Hud.INSTANCE.suffixes) {
+            this.setDisplayName(this.getName());
+            return;
+        }
         if (suffix.isEmpty()) {
             this.setDisplayName(this.getName());
             return;
