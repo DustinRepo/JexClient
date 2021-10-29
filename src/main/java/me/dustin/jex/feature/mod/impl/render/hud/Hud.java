@@ -36,7 +36,7 @@ import java.util.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
 public class Hud extends Feature {
-
+    public static Hud INSTANCE;
     @Op(name = "Client Color", isColor = true)
     public int clientColor = 0xff00a1ff;
     @OpChild(name = "Rainbow", parent = "Client Color")
@@ -53,6 +53,8 @@ public class Hud extends Feature {
     public boolean drawFace = true;
     @Op(name = "Array List")
     public boolean showArrayList = true;
+    @OpChild(name = "Suffixes", parent = "Array List")
+    public boolean suffixes = true;
     @OpChild(name = "Color", parent = "Array List", all = {"Client Color", "Rainbow", "Category"})
     public String colorMode = "Client Color";
     @OpChild(name = "Rainbow Speed", parent = "Color", min = 1, max = 20, dependency = "Rainbow")
@@ -119,10 +121,12 @@ public class Hud extends Feature {
     public String timeMode = "Second";
 
     private float lagOMeterY = -11;
-
     public ArrayList<HudElement> hudElements = new ArrayList<>();
-
     private boolean gaveEditorMessage;
+
+    public Hud() {
+        INSTANCE = this;
+    }
 
     @Override
     public void onEnable() {
