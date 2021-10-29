@@ -168,6 +168,7 @@ public class ModuleButton extends Button {
                 if (event.getKey() == GLFW.GLFW_KEY_ESCAPE || event.getKey() == GLFW.GLFW_KEY_ENTER) {
                     moduleButton.getFeature().setKey(0);
                     thisButton.setName("Key: None");
+                    event.cancel();
                 } else {
                     moduleButton.getFeature().setKey(event.getKey());
                     thisButton.setName("Key: " + KeyboardHelper.INSTANCE.getKeyName(event.getKey()));

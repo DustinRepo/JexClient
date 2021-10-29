@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
+import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -75,36 +76,28 @@ public class ArrayListElement extends HudElement {
     }
 
     public static int getCategoryColor(Feature.Category category) {
-        switch (category) {
-            case MOVEMENT:
-                return new Color(141, 95, 255).getRGB();
-            case VISUAL:
-                return new Color(255, 92, 252).getRGB();
-            case PLAYER:
-                return new Color(64, 255, 83).getRGB();
-            case MISC:
-                return new Color(247, 255, 65).getRGB();
-            case WORLD:
-                return new Color(74, 84, 255).getRGB();
-            case COMBAT:
-                return new Color(255, 61, 56).getRGB();
-        }
-        return -1;
+        Gui gui = (Gui)Feature.get(Gui.class);
+        return switch (category) {
+            case MOVEMENT -> gui.movementColor;
+            case VISUAL -> gui.visualColor;
+            case PLAYER -> gui.playerColor;
+            case MISC -> gui.miscColor;
+            case WORLD -> gui.worldColor;
+            case COMBAT -> gui.combatColor;
+        };
     }
 
     private void reorderArrayList(ArrayList<Feature> mods) {
-        Collections.sort(mods, new Comparator<Feature>() {
-            public int compare(Feature mod, Feature mod1) {
-                String name1 = mod.getDisplayName();
-                String name2 = mod1.getDisplayName();
-                if (FontHelper.INSTANCE.getStringWidth(name1) > FontHelper.INSTANCE.getStringWidth(name2)) {
-                    return -1;
-                }
-                if (FontHelper.INSTANCE.getStringWidth(name1) < FontHelper.INSTANCE.getStringWidth(name2)) {
-                    return 1;
-                }
-                return 0;
+        Collections.sort(mods, (mod, mod1) -> {
+            String name1 = mod.getDisplayName();
+            String name2 = mod1.getDisplayName();
+            if (FontHelper.INSTANCE.getStringWidth(name1) > FontHelper.INSTANCE.getStringWidth(name2)) {
+                return -1;
             }
+            if (FontHelper.INSTANCE.getStringWidth(name1) < FontHelper.INSTANCE.getStringWidth(name2)) {
+                return 1;
+            }
+            return 0;
         });
     }
 }

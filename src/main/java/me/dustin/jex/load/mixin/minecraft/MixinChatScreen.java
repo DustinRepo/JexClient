@@ -57,11 +57,6 @@ public class MixinChatScreen implements IChatScreen {
         String string = this.chatField.getText();
         CommandManagerJex.INSTANCE.jexCommandSuggestor.setWindowActive(!string.equals(this.originalChatText));
         CommandManagerJex.INSTANCE.jexCommandSuggestor.refresh();
-        ICommandSuggestor jex = (ICommandSuggestor) CommandManagerJex.INSTANCE.jexCommandSuggestor;
-        if (jex.isWindowActive()) {
-            this.commandSuggestor.setWindowActive(false);
-            this.commandSuggestor.refresh();
-        }
     }
 
     @Inject(method = "setChatFromHistory", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/CommandSuggestor.setWindowActive(Z)V"))
@@ -121,7 +116,7 @@ public class MixinChatScreen implements IChatScreen {
             ircChatButton.mouseClicked(mouseX, mouseY, button);
         }
         if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()) && CommandManagerJex.INSTANCE.jexCommandSuggestor != null)
-            if (CommandManagerJex.INSTANCE.jexCommandSuggestor.mouseClicked((double)((int)mouseX), (double)((int)mouseY), button)) {
+            if (CommandManagerJex.INSTANCE.jexCommandSuggestor.mouseClicked(mouseX, mouseY, button)) {
                 cir.setReturnValue(true);
             }
     }

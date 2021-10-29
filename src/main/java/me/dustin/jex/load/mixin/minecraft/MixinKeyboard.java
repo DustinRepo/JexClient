@@ -15,10 +15,13 @@ public abstract class MixinKeyboard implements IKeyboard {
 
     @Shadow protected abstract void onChar(long window, int codePoint, int modifiers);
 
-    @Inject(method = "onKey", at = @At("HEAD"))
+    @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void onKeyListener(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
-        if (action == 1)
-            new EventKeyPressed(key, scancode, Wrapper.INSTANCE.getMinecraft().currentScreen == null ? EventKeyPressed.PressType.IN_GAME : EventKeyPressed.PressType.IN_MENU).run();
+        if (action == 1) {
+            EventKeyPressed eventKeyPressed = new EventKeyPressed(key, scancode, Wrapper.INSTANCE.getMinecraft().currentScreen == null ? EventKeyPressed.PressType.IN_GAME : EventKeyPressed.PressType.IN_MENU).run();
+            if (eventKeyPressed.isCancelled())
+                ci.cancel();
+        }
     }
 
     @Override

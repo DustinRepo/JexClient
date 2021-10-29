@@ -429,6 +429,7 @@ public class JexGui extends Screen {
                 if (event.getKey() == GLFW.GLFW_KEY_ESCAPE || event.getKey() == GLFW.GLFW_KEY_ENTER) {
                     feature.setKey(0);
                     thisButton.setName("Key: None");
+                    event.cancel();
                 } else {
                     feature.setKey(event.getKey());
                     thisButton.setName("Key: " + KeyboardHelper.INSTANCE.getKeyName(event.getKey()));

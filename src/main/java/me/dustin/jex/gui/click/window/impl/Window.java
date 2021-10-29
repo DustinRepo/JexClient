@@ -56,10 +56,11 @@ public class Window {
             float viewportHeight = maxHeight;
             float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
             scrollbar = new Scrollbar(getX() + getWidth() - 1, getY() + getHeight(), 1, scrollBarHeight, viewportHeight, contentHeight, -1);
+        }else {
+            float contentHeight = getVeryBottomButton().getY() + getVeryBottomButton().getHeight() - buttons.get(0).getY();
+            scrollbar.setContentHeight(contentHeight);
+            scrollbar.setViewportHeight(maxHeight);
         }
-        float contentHeight = getVeryBottomButton() == null ? 0 : (getVeryBottomButton().getY() + getVeryBottomButton().getHeight()) - buttons.get(0).getY();
-        scrollbar.setContentHeight(contentHeight);
-        scrollbar.setViewportHeight(maxHeight);
         if (isOpen()) {
             Scissor.INSTANCE.cut((int) this.getX(), (int) this.getY() + (int) this.getHeight(), (int) this.getWidth(), (int) maxHeight + 1);
             if (this.getVeryBottomButton() != null) {
@@ -322,22 +323,6 @@ public class Window {
                 return category;
         }
         return null;
-    }
-
-    public Button getTopVisible() {
-        for (Button button : this.getButtons())
-            if (button.getY() > this.getY() + this.getHeight() && button.isVisible())
-                return button;
-        return null;
-    }
-
-    public Button getBottomVisible() {
-        Button b = null;
-        for (Button button : this.getButtons())
-            if (button.getY() > this.getY() + this.getHeight() && button.isVisible())
-                b = button;
-
-         return b;
     }
 
     public int getColor() {

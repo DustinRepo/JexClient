@@ -20,7 +20,9 @@ public class MixinMouse {
             boolean bl = action == 1;
             if (bl) {
                 if (button >= 2) {
-                    new EventKeyPressed(10000 + button, 0, Wrapper.INSTANCE.getMinecraft().currentScreen != null ? EventKeyPressed.PressType.IN_MENU : EventKeyPressed.PressType.IN_GAME).run();
+                    EventKeyPressed eventKeyPressed = new EventKeyPressed(10000 + button, 0, Wrapper.INSTANCE.getMinecraft().currentScreen != null ? EventKeyPressed.PressType.IN_MENU : EventKeyPressed.PressType.IN_GAME).run();
+                    if (eventKeyPressed.isCancelled())
+                        ci.cancel();
                 }
                 if (((Event) (new EventMouseButton(button, Wrapper.INSTANCE.getMinecraft().currentScreen != null ? EventMouseButton.ClickType.IN_MENU : EventMouseButton.ClickType.IN_GAME).run())).isCancelled())
                     ci.cancel();
