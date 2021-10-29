@@ -28,7 +28,7 @@ public class MojangLogin {
     }
 
     public MojangLogin(MinecraftAccount.MojangAccount mojangAccount, Consumer<Session> sessionConsumer) {
-        this.email = mojangAccount.getEmail();
+        this.email = mojangAccount.isCracked() ? mojangAccount.getUsername() : mojangAccount.getEmail();
         this.password = mojangAccount.getPassword();
         this.cracked = mojangAccount.isCracked();
         this.sessionConsumer = sessionConsumer;
@@ -62,7 +62,8 @@ public class MojangLogin {
             Session session = login(this.email, this.password);
             sessionConsumer.accept(session);
         }).start();
-        else
-            sessionConsumer.accept(new Session(email, UUID.randomUUID().toString(), "fakeToken", "legacy"));
+        else {
+            sessionConsumer.accept(new Session(this.email, UUID.randomUUID().toString(), "fakeToken", "legacy"));
+        }
     }
 }
