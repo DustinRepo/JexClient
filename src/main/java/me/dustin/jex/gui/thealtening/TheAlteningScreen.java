@@ -16,6 +16,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -104,7 +105,7 @@ public class TheAlteningScreen extends Screen {
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
                     tokenStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
                 } else {
-                    tokenStatus = "Invalid Token";
+                    tokenStatus = Formatting.RED + "Invalid Token";
                 }
                 this.tokenWidget.setText("");
             });
@@ -188,7 +189,7 @@ public class TheAlteningScreen extends Screen {
             FontHelper.INSTANCE.drawCenteredString(matrices, "Generated Account:", width / 2.f, 267, 0xff606060);
             FontHelper.INSTANCE.drawWithShadow(matrices, "Username: \247a" +  generatedAccount.username, width / 2.f - 97, 277, 0xff606060);
             FontHelper.INSTANCE.drawWithShadow(matrices, "Token: \247b" + generatedAccount.token, width / 2.f - 97, 287, 0xff606060);
-            FontHelper.INSTANCE.drawWithShadow(matrices, "Limit: " + (generatedAccount.limit ? "\247atrue" : "\247cfalse"), width / 2.f + 99 - (FontHelper.INSTANCE.getStringWidth("Limit: " + (generatedAccount.limit ? "\247atrue" : "\247cfalse"))), 277, 0xff606060);
+            FontHelper.INSTANCE.drawWithShadow(matrices, "Limit: " + (generatedAccount.limit ? Formatting.GREEN + "true" : Formatting.RED + "false"), width / 2.f + 99 - (FontHelper.INSTANCE.getStringWidth("Limit: " + (generatedAccount.limit ? "\247atrue" : "\247cfalse"))), 277, 0xff606060);
 
             Render2DHelper.INSTANCE.bindTexture(TheAlteningHelper.INSTANCE.getSkin(generatedAccount));
             Render2DHelper.INSTANCE.drawTexture(matrices, width / 2.f + 102, 265, 0, 0, 18, 32, 18, 32);
@@ -201,11 +202,11 @@ public class TheAlteningScreen extends Screen {
 
         if (TheAlteningHelper.INSTANCE.getLicense() != null) {
             TheAlteningHelper.TheAlteningLicense license = TheAlteningHelper.INSTANCE.getLicense();
-            FontHelper.INSTANCE.drawWithShadow(matrices, "Has License: " + (license.hasLicense ? "\247atrue" : "\247cfalse"), 2, 2, -1);
+            FontHelper.INSTANCE.drawWithShadow(matrices, "Has License: " + (license.hasLicense ? Formatting.GREEN + "true" : Formatting.RED + "false"), 2, 2, -1);
             if (TheAlteningHelper.INSTANCE.hasValidLicense()) {
-                FontHelper.INSTANCE.drawWithShadow(matrices, "License Type: \247b" + StringUtils.capitalize(license.licenseType), 2, 12, -1);
+                FontHelper.INSTANCE.drawWithShadow(matrices, "License Type:" + Formatting.AQUA + StringUtils.capitalize(license.licenseType), 2, 12, -1);
                 if (license.expires != null)
-                    FontHelper.INSTANCE.drawWithShadow(matrices, "Expires: \247b" + license.expires.split("T")[0], 2, 22, -1);
+                    FontHelper.INSTANCE.drawWithShadow(matrices, "Expires:" + Formatting.AQUA + license.expires.split("T")[0], 2, 22, -1);
             }
         }
         apiKeyWidget.render(matrices, mouseX, mouseY, delta);
