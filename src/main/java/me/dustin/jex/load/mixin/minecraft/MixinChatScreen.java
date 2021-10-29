@@ -57,11 +57,6 @@ public class MixinChatScreen implements IChatScreen {
         String string = this.chatField.getText();
         CommandManagerJex.INSTANCE.jexCommandSuggestor.setWindowActive(!string.equals(this.originalChatText));
         CommandManagerJex.INSTANCE.jexCommandSuggestor.refresh();
-        ICommandSuggestor jex = (ICommandSuggestor) CommandManagerJex.INSTANCE.jexCommandSuggestor;
-        if (jex.isWindowActive()) {
-            this.commandSuggestor.setWindowActive(false);
-            this.commandSuggestor.refresh();
-        }
     }
 
     @Inject(method = "setChatFromHistory", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/CommandSuggestor.setWindowActive(Z)V"))

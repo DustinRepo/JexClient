@@ -2,6 +2,7 @@ package me.dustin.jex.gui.minecraft;
 
 import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.gui.changelog.ChangelogScreen;
 import me.dustin.jex.helper.file.files.ClientSettingsFile;
@@ -58,7 +59,7 @@ public class JexOptionsScreen extends Screen {
             Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
         });
         clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, new LiteralText("Open ClickGUI"), button -> {
-            Wrapper.INSTANCE.getMinecraft().setScreen(Gui.clickgui);
+            Feature.get(Gui.class).setState(true);
         });
         xrayButton = new ButtonWidget(centerX - 75, topY + 75, 150, 20, new LiteralText("Xray Block Selection"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new XraySelectScreen());

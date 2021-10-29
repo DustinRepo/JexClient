@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.gui.click.jex.JexGui;
+import me.dustin.jex.gui.click.navigator.Navigator;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -22,7 +23,7 @@ public class Gui extends Feature {
         INSTANCE = this;
     }
 
-    @Op(name = "Mode", all = {"Window", "Jex"})
+    @Op(name = "Mode", all = {"Window", "Navigator", "Jex"})
     public String mode = "Window";
 
     @OpChild(name = "Max Window Height", min = 200, max = 800, inc = 5, parent = "Mode", dependency = "Window")
@@ -48,6 +49,7 @@ public class Gui extends Feature {
         switch (mode.toLowerCase()) {
             case "jex" -> Wrapper.INSTANCE.getMinecraft().setScreen(jexGui);
             case "window" -> Wrapper.INSTANCE.getMinecraft().setScreen(clickgui);
+            case "navigator" -> Wrapper.INSTANCE.getMinecraft().setScreen(new Navigator());
         }
         this.toggleState();
     }

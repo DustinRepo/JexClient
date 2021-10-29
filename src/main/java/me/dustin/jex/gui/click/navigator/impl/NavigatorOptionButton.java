@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.click.jex.impl;
+package me.dustin.jex.gui.click.navigator.impl;
 
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -6,22 +6,22 @@ import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.feature.option.Option;
+import me.dustin.jex.feature.option.enums.OpType;
+import me.dustin.jex.feature.option.types.*;
 import me.dustin.jex.gui.click.jex.JexGui;
+import me.dustin.jex.gui.click.navigator.NavigatorOptionScreen;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.impl.Button;
+import me.dustin.jex.helper.file.files.FeatureFile;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.option.Option;
-import me.dustin.jex.feature.option.enums.OpType;
-import me.dustin.jex.feature.option.types.*;
+import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -37,22 +37,21 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 import org.lwjgl.glfw.GLFW;
 
-import java.awt.*;
 import java.util.ArrayList;
 
-public class JexOptionButton extends Button {
+public class NavigatorOptionButton extends Button {
 
     Timer timer = new Timer();
     int togglePos = 0;
     int cogSpin = 0;
     private Option option;
     private boolean isSliding;
-    private JexOptionButton masterButton;
-    private JexOptionButton parentButton;
+    private NavigatorOptionButton masterButton;
+    private NavigatorOptionButton parentButton;
     private Identifier colorSlider = new Identifier("jex", "gui/click/colorslider.png");
     private int buttonsHeight;
 
-    public JexOptionButton(Option option, float x, float y, float width, float height) {
+    public NavigatorOptionButton(Option option, float x, float y, float width, float height) {
         super(null, option.getName(), x, y, width, height, null);
         this.option = option;
     }
@@ -70,7 +69,10 @@ public class JexOptionButton extends Button {
 
         switch (this.getOption().getType()) {
             case BOOL:
-                FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName(), this.getX() + 3, this.getY() + 4, ((BoolOption) option).getValue() ? ColorHelper.INSTANCE.getClientColor() : 0xffaaaaaa);
+                Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX() + 2, this.getY() + 2, this.getX() + this.getHeight() - 4, this.getY() + this.getHeight() - 4, 0xff656565, 0x00ffffff);
+                if (((BoolOption) option).getValue())
+                    Render2DHelper.INSTANCE.drawCheckmark(matrixStack, this.getX() + 2, this.getY() + 2, ColorHelper.INSTANCE.getClientColor());
+                FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName(), this.getX() + 14, this.getY() + 4, -1);
                 break;
             case STRINGARRAY:
                 FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName() + ": \247f" + ((StringArrayOption) this.getOption()).getValue(), this.getX() + 3, this.getY() + 4, 0xffaaaaaa);
@@ -85,7 +87,7 @@ public class JexOptionButton extends Button {
             case KEYBIND:
                 int key = ((KeybindOption)this.getOption()).getValue();
                 String s = EventAPI.getInstance().alreadyRegistered(this) ? "Press a key..." : this.getOption().getName() + ": " + (key == 0 ? "None" : KeyboardHelper.INSTANCE.getKeyName(key));
-                FontHelper.INSTANCE.drawCenteredString(matrixStack, s, this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
+                FontHelper.INSTANCE.drawWithShadow(matrixStack, s, this.getX() + 2, this.getY() + 3, 0xffaaaaaa);
                 break;
             case COLOR:
             case INT:
@@ -186,7 +188,7 @@ public class JexOptionButton extends Button {
         buttonsHeight = 0;
         option.getChildren().forEach(option ->
         {
-            JexOptionButton optionButton = new JexOptionButton(option, this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, option instanceof ColorOption ? 100 : 15);
+            NavigatorOptionButton optionButton = new NavigatorOptionButton(option, this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, option instanceof ColorOption ? 100 : 15);
             optionButton.masterButton = this.masterButton == null ? this : this.masterButton;
             optionButton.parentButton = this;
 
@@ -225,8 +227,8 @@ public class JexOptionButton extends Button {
 
     public ArrayList<Button> allButtonsAfter(Button button1) {
         ArrayList<Button> buttons = new ArrayList<>();
-        for (Button button : JexGui.INSTANCE.optionButtons) {
-            if (JexGui.INSTANCE.optionButtons.indexOf(button) > JexGui.INSTANCE.optionButtons.indexOf(button1) && button.isVisible()) {
+        for (Button button : NavigatorOptionScreen.options) {
+            if (NavigatorOptionScreen.options.indexOf(button) > NavigatorOptionScreen.options.indexOf(button1) && button.isVisible()) {
                 buttons.add(button);
                 buttons = addAllChildren(buttons, button);
             }
@@ -234,21 +236,11 @@ public class JexOptionButton extends Button {
         return buttons;
     }
 
-    public Button get(Feature feature) {
-        Button moduleButton = null;
-        for (Button button : JexGui.INSTANCE.featureButtons)
-            if (button instanceof Button) {
-                if (((Button) button).getName().equalsIgnoreCase(feature.getName()))
-                    moduleButton = (Button) button;
-            }
-        return moduleButton;
-    }
-
     public void close() {
         this.getChildren().forEach(button -> {
-            if (button instanceof JexOptionButton) {
+            if (button instanceof NavigatorOptionButton) {
                 if (button.isOpen())
-                    ((JexOptionButton) button).close();
+                    ((NavigatorOptionButton) button).close();
             }
         });
         allButtonsAfter().forEach(button -> {
@@ -387,12 +379,13 @@ public class JexOptionButton extends Button {
 
             float startV = v.getValue() - v.getMin();
 
-            float pos = ((float) (startV) / (v.getMax() - v.getMin())) * (this.getWidth());
+            float pos = (startV / (v.getMax() - v.getMin())) * (this.getWidth());
 
 
             handleSliders(v);
 
-            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(ColorHelper.INSTANCE.getClientColor())).darker().getRGB());
+            Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX(), this.getY() + (this.getHeight() / 2.f) - 2, this.getX() + this.getWidth(), this.getY() + (this.getHeight() / 2.f) + 2, 0x70696969, 0x00ffffff);
+            Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX() + pos - 4, this.getY() + (this.getHeight() / 2.f) - 4, this.getX() + pos + 4, this.getY() + (this.getHeight() / 2.f) + 4, 0x70696969, Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(ColorHelper.INSTANCE.getClientColor())).darker().getRGB() & 0xc0ffffff);
             FontHelper.INSTANCE.drawCenteredString(matrixStack, property.getName() + ": " + ((FloatOption) property).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
         }
         if (property instanceof IntOption) {
@@ -408,7 +401,8 @@ public class JexOptionButton extends Button {
 
             handleSliders(v);
 
-            Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + pos, this.getY() + this.getHeight(), Color.decode("0x" + Integer.toHexString(ColorHelper.INSTANCE.getClientColor()).substring(2)).darker().getRGB());
+            Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX(), this.getY() + (this.getHeight() / 2.f) - 2, this.getX() + this.getWidth(), this.getY() + (this.getHeight() / 2.f) + 2, 0x70696969, 0x00ffffff);
+            Render2DHelper.INSTANCE.outlineAndFill(matrixStack, this.getX() + pos - 4, this.getY() + (this.getHeight() / 2.f) - 4, this.getX() + pos + 4, this.getY() + (this.getHeight() / 2.f) + 4, 0x70696969, Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(ColorHelper.INSTANCE.getClientColor())).darker().getRGB() & 0xc0ffffff);
             FontHelper.INSTANCE.drawCenteredString(matrixStack, property.getName() + ": " + ((IntOption) property).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
         }
 
@@ -436,7 +430,7 @@ public class JexOptionButton extends Button {
             Render2DHelper.INSTANCE.bindTexture(colorSlider);
             DrawableHelper.drawTexture(matrixStack, (int) this.getX() + (int) this.getWidth() - 10, (int) this.getY() + 15, 0, 0, 5, 80, 10, 80);
             //hue cursor
-            Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 11, this.getY() + 15 + huepos - 1, (this.getX() + this.getWidth() - 10) + 4, this.getY() + 15 + huepos + 1, -1);
+            Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 10, this.getY() + 15 + huepos - 1, (this.getX() + this.getWidth() - 10) + 5, this.getY() + 15 + huepos + 1, 0xff000000);
 
             FontHelper.INSTANCE.drawWithShadow(matrixStack, property.getName(), this.getX() + 3, this.getY() + 3, v.getValue());
         }
@@ -490,8 +484,7 @@ public class JexOptionButton extends Button {
             float position = MouseHelper.INSTANCE.getMouseX() - this.getX();
             float percent = MathHelper.clamp(position / this.getWidth(), 0, 1);
             float increment = v.getInc();
-
-            float value =  v.getMin() + (percent * (v.getMax() - v.getMin()));
+            float value = v.getMin() + percent * (v.getMax() - v.getMin());
             v.setValue((float) ((float) Math.round(value * (1.0D / increment)) / (1.0D / increment)));
             v.setValue((float) ClientMathHelper.INSTANCE.round(v.getValue(), 2));
         }
@@ -499,7 +492,7 @@ public class JexOptionButton extends Button {
 
     void handleSliders(ColorOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
-            if (MouseHelper.INSTANCE.getMouseX() > this.getX() + 100) {
+            if (MouseHelper.INSTANCE.getMouseX() > this.getX() + (this.getWidth() / 2.f)) {
                 float position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
                 float percent = position / 79 * 100;
                 float increment = 1;

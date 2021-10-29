@@ -161,6 +161,72 @@ public enum Render2DHelper {
         RenderSystem.disableBlend();
     }
 
+    public void outlineAndFill(MatrixStack matrixStack, float x, float y, float x2, float y2, int bcolor, int icolor) {
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        float f = (float)(icolor >> 24 & 255) / 255.0F;
+        float g = (float)(icolor >> 16 & 255) / 255.0F;
+        float h = (float)(icolor >> 8 & 255) / 255.0F;
+        float k = (float)(icolor & 255) / 255.0F;
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.vertex(matrix, x, y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x2, y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x2, y, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x, y, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        bufferBuilder.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        f = (float)(bcolor >> 24 & 255) / 255.0F;
+        g = (float)(bcolor >> 16 & 255) / 255.0F;
+        h = (float)(bcolor >> 8 & 255) / 255.0F;
+        k = (float)(bcolor & 255) / 255.0F;
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.vertex(matrix, x, y, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x, y2, 0.0F).color(g, h, k, f).next();
+
+        bufferBuilder.vertex(matrix, x, y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x2, y2, 0.0F).color(g, h, k, f).next();
+
+        bufferBuilder.vertex(matrix, x2, y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x2, y, 0.0F).color(g, h, k, f).next();
+
+        bufferBuilder.vertex(matrix, x2, y, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x, y, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+    }
+
+    public void drawCheckmark(MatrixStack matrixStack, float x, float y, int color) {
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        float f = (float)(color >> 24 & 255) / 255.0F;
+        float g = (float)(color >> 16 & 255) / 255.0F;
+        float h = (float)(color >> 8 & 255) / 255.0F;
+        float k = (float)(color & 255) / 255.0F;
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.vertex(matrix, x, y + 5, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x + 3, y + 8, 0.0F).color(g, h, k, f).next();
+
+        bufferBuilder.vertex(matrix, x + 3, y + 8, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x + 9, y - 1, 0.0F).color(g, h, k, f).next();
+
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+    }
+
     public void drawFullCircle(int cx, int cy, double r, int c, MatrixStack matrixStack) {
         float f = (c >> 24 & 0xFF) / 255.0F;
         float f1 = (c >> 16 & 0xFF) / 255.0F;
