@@ -181,7 +181,7 @@ public class TheAlteningScreen extends Screen {
         this.loginButton.active = getSelected() != null;
         this.loginTokenButton.active = !this.tokenWidget.getText().isEmpty();
         this.setApiKeyButton.active = !this.apiKeyWidget.getText().isEmpty();
-        this.generateButton.active = TheAlteningHelper.INSTANCE.getLicense() != null;
+        this.generateButton.active = TheAlteningHelper.INSTANCE.getLicense() != null && TheAlteningHelper.INSTANCE.hasValidLicense() && !"starter".equalsIgnoreCase(TheAlteningHelper.INSTANCE.getLicense().licenseType);
 
         if (generatedAccount != null) {
             Render2DHelper.INSTANCE.fillAndBorder(matrices, width / 2.f - 100, 265, width / 2.f + 100, 300, 0xff000000, 0x50404040, 1);
@@ -202,8 +202,11 @@ public class TheAlteningScreen extends Screen {
         if (TheAlteningHelper.INSTANCE.getLicense() != null) {
             TheAlteningHelper.TheAlteningLicense license = TheAlteningHelper.INSTANCE.getLicense();
             FontHelper.INSTANCE.drawWithShadow(matrices, "Has License: " + (license.hasLicense ? "\247atrue" : "\247cfalse"), 2, 2, -1);
-            FontHelper.INSTANCE.drawWithShadow(matrices, "License Type: \247b" + StringUtils.capitalize(license.licenseType), 2, 12, -1);
-            FontHelper.INSTANCE.drawWithShadow(matrices, "Expires: \247b" + license.expires.split("T")[0], 2, 22, -1);
+            if (TheAlteningHelper.INSTANCE.hasValidLicense()) {
+                FontHelper.INSTANCE.drawWithShadow(matrices, "License Type: \247b" + StringUtils.capitalize(license.licenseType), 2, 12, -1);
+                if (license.expires != null)
+                    FontHelper.INSTANCE.drawWithShadow(matrices, "Expires: \247b" + license.expires.split("T")[0], 2, 22, -1);
+            }
         }
         apiKeyWidget.render(matrices, mouseX, mouseY, delta);
         tokenWidget.render(matrices, mouseX, mouseY, delta);
@@ -294,37 +297,38 @@ public class TheAlteningScreen extends Screen {
     public void updateAPIKey() {
         logInStatus = "Loading Altening profile";
         TheAlteningHelper.INSTANCE.fetchLicense();
-        favoriteAccounts = TheAlteningHelper.INSTANCE.getFavorites();
-        privateAccounts = TheAlteningHelper.INSTANCE.getPrivates();
-        this.favorites.clear();
-        this.privates.clear();
-        this.generatedAccount = null;
-        int favoriteCount = 0;
-        for (TheAlteningHelper.TheAlteningAccount favorite : favoriteAccounts) {
-            TheAlteningAccountButton accountButton = new TheAlteningAccountButton(favorite, width / 2.f - 150, 60 + (31 * favoriteCount));
-            this.favorites.add(accountButton);
-            favoriteCount++;
-        }
+        if (TheAlteningHelper.INSTANCE.hasValidLicense()) {
+            favoriteAccounts = TheAlteningHelper.INSTANCE.getFavorites();
+            privateAccounts = TheAlteningHelper.INSTANCE.getPrivates();
+            this.favorites.clear();
+            this.privates.clear();
+            this.generatedAccount = null;
+            int favoriteCount = 0;
+            for (TheAlteningHelper.TheAlteningAccount favorite : favoriteAccounts) {
+                TheAlteningAccountButton accountButton = new TheAlteningAccountButton(favorite, width / 2.f - 150, 60 + (31 * favoriteCount));
+                this.favorites.add(accountButton);
+                favoriteCount++;
+            }
 
-        int privateCount = 0;
-        for (TheAlteningHelper.TheAlteningAccount private_ : privateAccounts) {
-            TheAlteningAccountButton accountButton = new TheAlteningAccountButton(private_, width / 2.f + 2, 60 + (31 * privateCount));
-            this.privates.add(accountButton);
-            privateCount++;
-        }
+            int privateCount = 0;
+            for (TheAlteningHelper.TheAlteningAccount private_ : privateAccounts) {
+                TheAlteningAccountButton accountButton = new TheAlteningAccountButton(private_, width / 2.f + 2, 60 + (31 * privateCount));
+                this.privates.add(accountButton);
+                privateCount++;
+            }
 
-        if (!favorites.isEmpty()) {
-            float contentHeight = (favorites.get(favorites.size() - 1).getY() + (favorites.get(favorites.size() - 1).getHeight())) - favorites.get(0).getY();
-            float viewportHeight = 200;
-            this.scrollbar1 = new Scrollbar((width / 2.f) - 2, 60, 3, 200, viewportHeight, contentHeight, -1);
-        }
+            if (!favorites.isEmpty()) {
+                float contentHeight = (favorites.get(favorites.size() - 1).getY() + (favorites.get(favorites.size() - 1).getHeight())) - favorites.get(0).getY();
+                float viewportHeight = 200;
+                this.scrollbar1 = new Scrollbar((width / 2.f) - 2, 60, 3, 200, viewportHeight, contentHeight, -1);
+            }
 
-        if (!privates.isEmpty()) {
-            float contentHeight = (privates.get(privates.size() - 1).getY() + (privates.get(privates.size() - 1).getHeight())) - privates.get(0).getY();
-            float viewportHeight = 200;
-            this.scrollbar2 = new Scrollbar((width / 2.f) + 150, 60, 3, 200, viewportHeight, contentHeight, -1);
+            if (!privates.isEmpty()) {
+                float contentHeight = (privates.get(privates.size() - 1).getY() + (privates.get(privates.size() - 1).getHeight())) - privates.get(0).getY();
+                float viewportHeight = 200;
+                this.scrollbar2 = new Scrollbar((width / 2.f) + 150, 60, 3, 200, viewportHeight, contentHeight, -1);
+            }
         }
-
         logInStatus = "TheAltening profile \247b" + TheAlteningHelper.INSTANCE.getLicense().username + " \247rloaded.";
     }
 

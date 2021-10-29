@@ -170,6 +170,10 @@ public enum TheAlteningHelper {
         return Wrapper.INSTANCE.getMinecraft().getSession().getAccessToken().startsWith("alt_");
     }
 
+    public boolean hasValidLicense() {
+        return getLicense() != null && getLicense().hasLicense;
+    }
+
     public TheAlteningLicense getLicense() {
         return this.license;
     }
