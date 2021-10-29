@@ -87,13 +87,8 @@ public class Fly extends Feature {
 
     @Override
     public void onEnable() {
-        super.onEnable();
-    }
-
-    @Override
-    public void onDisable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null)
             Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
-        super.onDisable();
+        super.onEnable();
     }
 }
