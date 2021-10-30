@@ -62,7 +62,7 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
         float yaw = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsYaw.get(itemEntity), itemRotationsYaw.get(itemEntity));
 
         if (itemEntity.isOnGround())
-            matrixStack.translate(0, 0, bakedModel.hasDepth() ? 0.04 : 0.151f);
+            matrixStack.translate(0, bakedModel.hasDepth() ? -0.04 : -0.151f, 0);
 
         matrixStack.multiply(new Quaternion(new Vec3f(itemPitchNeg.get(itemEntity) ? -1 : 1, 0, 0), pitch, true));
         matrixStack.multiply(new Quaternion(new Vec3f(0, 0, itemRollNeg.get(itemEntity) ? -1 : 1), roll, true));
@@ -109,7 +109,7 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
                     if (!itemEntity.isOnGround()) {
                         itemRotationsYaw.replace(itemEntity, itemRotationsYaw.get(itemEntity) + yawSpeed);
                     } else
-                        itemRotationsYaw.replace(itemEntity, itemRotationsYaw.get(itemEntity) > 0 ? -180 : 0.f);
+                        itemRotationsYaw.replace(itemEntity, 0.f);
                 }
             });
         itemRotationsRoll.keySet().removeIf(Objects::isNull);
