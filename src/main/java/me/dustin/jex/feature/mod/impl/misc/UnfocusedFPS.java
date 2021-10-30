@@ -6,7 +6,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
 
-@Feature.Manifest(description = "Limit the FPS while Minecraft isn't in focus to save resources", category = Feature.Category.MISC, enabled = true, visible = false)
+@Feature.Manifest(description = "Limit the FPS while Minecraft isn't in focus to save resources", category = Feature.Category.MISC, enabled = true)
 public class UnfocusedFPS extends Feature {
 
     @Op(name = "Unfocused FPS", min = 1, max = 25)
