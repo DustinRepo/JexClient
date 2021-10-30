@@ -31,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
@@ -52,6 +53,8 @@ public class Nametag extends Feature {
     public boolean passives = false;
     @Op(name = "Items")
     public boolean items = false;
+    @Op(name = "Distance")
+    public boolean distance = true;
     @Op(name = "Show Inv")
     public boolean showInv = true;
     @OpChild(name = "Backgrounds", parent = "Show Inv")
@@ -225,6 +228,9 @@ public class Nametag extends Feature {
         if (entity instanceof ItemEntity itemEntity) {
             if (itemEntity.getStack().getCount() > 1)
                 name += " \247fx" + itemEntity.getStack().getCount();
+        }
+        if (distance) {
+            name += String.format(" %s[%s%.2f%s]%s", Formatting.GRAY, Formatting.WHITE, Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity), Formatting.GRAY, Formatting.RESET);
         }
         if (entity instanceof LivingEntity)
             if (health && !healthMode.equalsIgnoreCase("Bar")) {
