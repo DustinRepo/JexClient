@@ -67,6 +67,7 @@ public class CrystalAura extends Feature {
 
 	@EventListener(events = { EventPlayerPackets.class })
 	public void run(EventPlayerPackets event) {
+		boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.END_CRYSTAL;
 		if (event.getMode() == EventPlayerPackets.Mode.PRE) {
 			this.setSuffix(mode);
 			if (placePos != null) {
@@ -75,7 +76,7 @@ public class CrystalAura extends Feature {
 			}
 
 			if (timer.hasPassed(delay))
-				if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.END_CRYSTAL))) {
+				if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.END_CRYSTAL) || offhand)) {
 					Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 						if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().asString())) {
 							BlockPos placingPos = getOpenBlockPos(entityPlayer);
@@ -106,8 +107,8 @@ public class CrystalAura extends Feature {
 		} else {
 			if (placePos != null) {
 				BlockHitResult blockHitResult = new BlockHitResult(new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()), Direction.UP, placePos, false);
-				NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-				Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+				NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND, blockHitResult));
+				Wrapper.INSTANCE.getLocalPlayer().swingHand(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
 				placePos = null;
 			}
 		}
@@ -174,12 +175,12 @@ public class CrystalAura extends Feature {
 		float minDistance = 0;
 		float range = attackDistance;
 		switch (mode) {
-		case "Risky":
-			minDistance = 4.5f;
-			break;
-		case "Safe":
-			minDistance = 8;
-			break;
+			case "Risky":
+				minDistance = 4.5f;
+				break;
+			case "Safe":
+				minDistance = 8;
+				break;
 		}
 
 		if (Wrapper.INSTANCE.getLocalPlayer().getY() <= (enderCrystalEntity.getY() - 1))
