@@ -471,9 +471,7 @@ public class NavigatorOptionButton extends Button {
             float position = MouseHelper.INSTANCE.getMouseX() - this.getX();
             float percent = MathHelper.clamp(position / this.getWidth(), 0, 1);
             float increment = v.getInc();
-
             int value =  v.getMin() + (int)(percent * (v.getMax() - v.getMin()));
-
             v.setValue((int) ((int) Math.round(value * (1.0D / increment)) / (1.0D / increment)));
             v.setValue((int) ClientMathHelper.INSTANCE.round(v.getValue(), 2));
         }
@@ -494,44 +492,17 @@ public class NavigatorOptionButton extends Button {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
             if (MouseHelper.INSTANCE.getMouseX() > this.getX() + (this.getWidth() / 2.f)) {
                 float position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
-                float percent = position / 79 * 100;
-                float increment = 1;
-                if (percent > 100) {
-                    percent = 100;
-                }
-                if (percent < 0) {
-                    percent = 0;
-                }
-                float value = (percent / 100) * ((270) + increment);
-                if (value > 270) {
-                    value = 270;
-                }
-                if (value < 0) {
-                    value = 0;
-                }
+                float percent = MathHelper.clamp(position / 79, 0, 1);
+                float value = percent * 270;
                 v.setH((int) value);
             } else {
                 float position = MouseHelper.INSTANCE.getMouseX() - (this.getX() + 5);
-                float percent = position / 80 * 100;
-                if (percent > 100) {
-                    percent = 100;
-                }
-                if (percent < 0) {
-                    percent = 0;
-                }
-                v.setS(percent / 100);
+                float percent = MathHelper.clamp(position / 80, 0, 1);
+                v.setS(percent);
 
                 position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
-                percent = position / 79 * 100;
-                percent = 100 - percent;
-                if (percent > 100) {
-                    percent = 100;
-                }
-                if (percent < 0) {
-                    percent = 0;
-                }
-
-                v.setB(percent / 100);
+                percent = MathHelper.clamp(position / 79, 0, 1);
+                v.setB(1 - percent);
             }
             v.setValue(ColorHelper.INSTANCE.getColorViaHue(v.getH(), v.getS(), v.getB()).getRGB());
         }
