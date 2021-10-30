@@ -24,7 +24,7 @@ import java.util.Random;
 public class ItemPhysics extends Feature {//fancier version that's not just flat items on the ground like the fabric mod
 
     @Op(name = "Roll Spin Speed", max = 50)
-    public int rollSpeed = 25;
+    public int rollSpeed = 0;
     @Op(name = "Pitch Spin Speed", max = 50)
     public int pitchSpeed = 25;
     @Op(name = "Yaw Spin Speed", max = 50)
