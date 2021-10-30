@@ -3,10 +3,7 @@ package me.dustin.jex.load.mixin.minecraft;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.SocialInteractionsService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import me.dustin.jex.event.misc.EventDisplayScreen;
-import me.dustin.jex.event.misc.EventJoinWorld;
-import me.dustin.jex.event.misc.EventScheduleStop;
-import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.event.misc.*;
 import me.dustin.jex.event.render.EventHasOutline;
 import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.load.impl.IMinecraft;
@@ -43,13 +40,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Shadow
     private int itemUseCooldown;
 
-    @Shadow
-    private int fpsCounter;
-
-    @Shadow @Final private BufferBuilderStorage bufferBuilders;
-
-    @Shadow @Final private SocialInteractionsManager socialInteractionsManager;
-
     @Shadow @Final private RenderTickCounter renderTickCounter;
 
     @Shadow @Final public GameOptions options;
@@ -58,13 +48,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
 
     @Mutable
     @Shadow @Final private MinecraftSessionService sessionService;
-
-    @Mutable
-    @Shadow @Final private SocialInteractionsService socialInteractionsService;
-
-    @Shadow protected abstract SocialInteractionsService createSocialInteractionsService(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs);
-
-    @Shadow @Final private static Logger LOGGER;
 
     @Override
     public void setSession(Session session) {
@@ -93,13 +76,19 @@ public abstract class MixinMinecraftClient implements IMinecraft {
 
     @Inject(method = "joinWorld", at = @At("HEAD"))
     public void joinWorld(ClientWorld clientWorld, CallbackInfo ci) {
-        EventJoinWorld eventJoinWorld = new EventJoinWorld().run();
+        new EventJoinWorld().run();
+    }
+
+    @Inject(method = "getFramerateLimit", at = @At("HEAD"), cancellable = true)
+    public void framerateLimit(CallbackInfoReturnable<Integer> cir) {
+        EventGetFramerateLimit eventGetFramerateLimit = new EventGetFramerateLimit().run();
+        if (eventGetFramerateLimit.getLimit() != -1)
+            cir.setReturnValue(eventGetFramerateLimit.getLimit());
     }
 
     @Inject(method = "openScreen", at = @At("HEAD"), cancellable = true)
     public void openScreen(Screen screen, CallbackInfo cir) {
         EventDisplayScreen eventDisplayScreen = new EventDisplayScreen(screen).run();
-        screen = eventDisplayScreen.getScreen();
         if (eventDisplayScreen.isCancelled())
             cir.cancel();
 
