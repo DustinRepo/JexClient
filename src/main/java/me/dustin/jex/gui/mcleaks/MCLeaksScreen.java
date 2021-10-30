@@ -46,7 +46,7 @@ public class MCLeaksScreen extends Screen {
         });
         useTokenButton = new ButtonWidget(this.width / 2 - 18, this.height / 4 + 96 + 18, 168, 20, new LiteralText("Redeem Token"), button -> {
             if (this.tokenField.getText().length() != 16) {
-                Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, false, "\247cThe token has to be 16 characters long!"));
+                Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, false, Formatting.RED + "The token has to be 16 characters long!"));
                 return;
             }
             button.active = false;
@@ -55,9 +55,9 @@ public class MCLeaksScreen extends Screen {
             if (account != null) {
                 EventAPI.getInstance().register(MCLeaksHelper.INSTANCE);
                 MCLeaksHelper.INSTANCE.setActiveAccount(account);
-                Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, false, "\247aYour token was redeemed successfully!"));
+                Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, false, Formatting.GREEN + "Your token was redeemed successfully!"));
             } else {
-                Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, false, "\247cInvalid token!"));
+                Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, false, Formatting.RED + "Invalid token!"));
             }
         });
         ButtonWidget getTokenButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 120 + 18, 158, 20, new LiteralText("Get Token"), button -> {
@@ -89,8 +89,12 @@ public class MCLeaksScreen extends Screen {
         FontHelper.INSTANCE.drawCenteredString(matrices, Formatting.WHITE + "- " + Formatting.AQUA + "MCLeaks" + Formatting.WHITE + "." + Formatting.AQUA + "net " + Formatting.WHITE + "-", this.width / 2.f, 17, 16777215);
         FontHelper.INSTANCE.drawCenteredString(matrices, "Free minecraft accounts", this.width / 2.f, 32, 16777215);
 
+        String status = Formatting.GOLD + "No Token redeemed. Using " + Formatting.YELLOW + Wrapper.INSTANCE.getMinecraft().getSession().getUsername() + Formatting.GOLD + " to login!";
+        if (MCLeaksHelper.INSTANCE.activeAccount != null) {
+            status = Formatting.GREEN + "Token active. Using " + Formatting.AQUA + MCLeaksHelper.INSTANCE.activeAccount.mcname + Formatting.GREEN + " to login!";
+        }
         FontHelper.INSTANCE.drawCenteredString(matrices, "Status:", this.width / 2.f, 68, 16777215);
-        FontHelper.INSTANCE.drawCenteredString(matrices, MCLeaksHelper.INSTANCE.activeAccount != null ? "Active" : "Inactive", this.width / 2.f, 78, 16777215);
+        FontHelper.INSTANCE.drawCenteredString(matrices, status, this.width / 2.f, 78, 16777215);
 
         FontHelper.INSTANCE.drawWithShadow(matrices, "Token", this.width / 2.f - 100, 115, 10526880);
 
