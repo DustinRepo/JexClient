@@ -15,6 +15,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
+import org.lwjgl.system.CallbackI;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -60,15 +61,13 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
         float pitch = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsPitch.get(itemEntity), itemRotationsPitch.get(itemEntity));
         float yaw = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsYaw.get(itemEntity), itemRotationsYaw.get(itemEntity));
 
-        if (!itemEntity.isOnGround()) {
-            matrixStack.multiply(new Quaternion(new Vec3f(itemPitchNeg.get(itemEntity) ? -1 : 1, 0, 0), pitch, true));
-            matrixStack.multiply(new Quaternion(new Vec3f(0, 0, itemRollNeg.get(itemEntity) ? -1 : 1), roll, true));
-            matrixStack.multiply(new Quaternion(new Vec3f(0, itemYawNeg.get(itemEntity) ? -1 : 1, 0), yaw, true));
-        } else {
-            matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90, true));
-            matrixStack.multiply(new Quaternion(new Vec3f(0, 0, itemRollNeg.get(itemEntity) ? -1 : 1), roll, true));
+        if (itemEntity.isOnGround())
             matrixStack.translate(0, 0, bakedModel.hasDepth() ? 0.04 : 0.151f);
-        }
+
+        matrixStack.multiply(new Quaternion(new Vec3f(itemPitchNeg.get(itemEntity) ? -1 : 1, 0, 0), pitch, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 0, itemRollNeg.get(itemEntity) ? -1 : 1), roll, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(0, itemYawNeg.get(itemEntity) ? -1 : 1, 0), yaw, true));
+
         matrixStack.translate(0, -(itemEntity.getHeight() / 1.5f), 0);
 
         matrixStack.multiply(Vec3f.NEGATIVE_Y.getRadialQuaternion(n));
@@ -104,11 +103,13 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
                     prevItemRotationsPitch.replace(itemEntity, itemRotationsPitch.get(itemEntity));
                     if (!itemEntity.isOnGround()) {
                         itemRotationsPitch.replace(itemEntity, itemRotationsPitch.get(itemEntity) + pitchSpeed);
-                    }
+                    } else
+                        itemRotationsPitch.replace(itemEntity, 90.f);
                     prevItemRotationsYaw.replace(itemEntity, itemRotationsYaw.get(itemEntity));
                     if (!itemEntity.isOnGround()) {
                         itemRotationsYaw.replace(itemEntity, itemRotationsYaw.get(itemEntity) + yawSpeed);
-                    }
+                    } else
+                        itemRotationsYaw.replace(itemEntity, itemRotationsYaw.get(itemEntity) > 0 ? -180 : 0.f);
                 }
             });
         itemRotationsRoll.keySet().removeIf(Objects::isNull);
