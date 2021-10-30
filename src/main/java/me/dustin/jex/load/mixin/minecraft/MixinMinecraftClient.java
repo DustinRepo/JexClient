@@ -1,10 +1,7 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import me.dustin.jex.event.misc.EventSetScreen;
-import me.dustin.jex.event.misc.EventJoinWorld;
-import me.dustin.jex.event.misc.EventScheduleStop;
-import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.event.misc.*;
 import me.dustin.jex.event.render.EventHasOutline;
 import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.load.impl.IMinecraft;
@@ -40,11 +37,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
 
     @Shadow
     private int itemUseCooldown;
-
-    @Shadow
-    private int fpsCounter;
-
-    @Shadow @Final private BufferBuilderStorage bufferBuilders;
 
     @Shadow @Final private RenderTickCounter renderTickCounter;
 
@@ -82,13 +74,19 @@ public abstract class MixinMinecraftClient implements IMinecraft {
 
     @Inject(method = "joinWorld", at = @At("HEAD"))
     public void joinWorld(ClientWorld clientWorld, CallbackInfo ci) {
-        EventJoinWorld eventJoinWorld = new EventJoinWorld().run();
+        new EventJoinWorld().run();
+    }
+
+    @Inject(method = "getFramerateLimit", at = @At("HEAD"), cancellable = true)
+    public void framerateLimit(CallbackInfoReturnable<Integer> cir) {
+        EventGetFramerateLimit eventGetFramerateLimit = new EventGetFramerateLimit().run();
+        if (eventGetFramerateLimit.getLimit() != -1)
+            cir.setReturnValue(eventGetFramerateLimit.getLimit());
     }
 
     @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
     public void openScreen(Screen screen, CallbackInfo cir) {
         EventSetScreen eventSetScreen = new EventSetScreen(screen).run();
-        screen = eventSetScreen.getScreen();
         if (eventSetScreen.isCancelled())
             cir.cancel();
 
