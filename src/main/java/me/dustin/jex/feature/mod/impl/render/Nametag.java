@@ -230,7 +230,7 @@ public class Nametag extends Feature {
                 name += " \247fx" + itemEntity.getStack().getCount();
         }
         if (distance) {
-            name += String.format(" %s[%s%.2f%s]%s", Formatting.GRAY, Formatting.WHITE, Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity), Formatting.GRAY, Formatting.RESET);
+            name += String.format(" %s[%s%.1f%s]%s", Formatting.GRAY, Formatting.WHITE, Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity), Formatting.GRAY, Formatting.RESET);
         }
         if (entity instanceof LivingEntity)
             if (health && !healthMode.equalsIgnoreCase("Bar")) {
