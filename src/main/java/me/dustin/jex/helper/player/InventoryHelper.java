@@ -111,8 +111,11 @@ public enum InventoryHelper {
     }
 
     public void moveToOffhand(int slot) {
+        boolean hasOffhand = Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.AIR;
         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);
         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 45, SlotActionType.PICKUP);
+        if (hasOffhand)
+            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);
     }
 
     public void setSlot(int slot, boolean actual, boolean packet) {
