@@ -39,6 +39,7 @@
     "minecraft.MixinHorseBaseEntity",
     "minecraft.MixinInGameHud",
     "minecraft.MixinInGameOverlayRenderer",
+    "minecraft.MixinItemEntityRenderer",
     "minecraft.MixinItemRenderer",
     "minecraft.MixinKeybinding",
     "minecraft.MixinKeyboard",
