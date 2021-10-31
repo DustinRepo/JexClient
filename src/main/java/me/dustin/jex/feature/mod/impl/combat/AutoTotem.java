@@ -39,9 +39,6 @@ public class AutoTotem extends Feature {
     @EventListener(events = {EventPlayerPackets.class})
     public void runEvent(EventPlayerPackets event) {
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-            AutoGapple autoGapple = (AutoGapple)Feature.get(AutoGapple.class);
-            if (autoGapple.takeFromInv && autoGapple.putInto.equalsIgnoreCase("offhand") && autoGapple.isEating())
-                return;
             int totemCount = InventoryHelper.INSTANCE.countItems(Items.TOTEM_OF_UNDYING);
             int firstTotem = InventoryHelper.INSTANCE.getFromHotbar(Items.TOTEM_OF_UNDYING);
             if (firstTotem == -1)
