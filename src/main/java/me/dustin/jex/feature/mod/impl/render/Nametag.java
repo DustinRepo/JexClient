@@ -226,6 +226,7 @@ public class Nametag extends Feature {
         if (entity instanceof PlayerEntity && FriendHelper.INSTANCE.isFriend(entity.getName().asString()))
             name = FriendHelper.INSTANCE.getFriendViaName(entity.getName().asString()).alias();
         if (entity instanceof ItemEntity itemEntity) {
+            name = entity.getDisplayName().getString();
             if (itemEntity.getStack().getCount() > 1)
                 name += " \247fx" + itemEntity.getStack().getCount();
         }
