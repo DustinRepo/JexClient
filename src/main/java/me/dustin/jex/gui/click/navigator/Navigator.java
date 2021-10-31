@@ -53,7 +53,7 @@ public class Navigator extends Screen {
             ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }));
         this.addDrawableChild(new ButtonWidget(2, height - 44, 100, 20, new LiteralText("Save"), button -> {
-            ConfigManager.INSTANCE.get(FeatureFile.class).write();
+            FeatureFile.saveButton();
         }));
         this.addDrawableChild(new ButtonWidget(2, height - 66, 100, 20, new LiteralText("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")), button -> {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());

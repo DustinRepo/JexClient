@@ -14,6 +14,7 @@ import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.feature.option.types.*;
 import me.dustin.jex.file.core.ConfigFile;
+import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.YamlHelper;
@@ -44,6 +45,28 @@ public class FeatureFile extends ConfigFile {
         }
 
         YamlHelper.INSTANCE.writeFile(yamlMap, getFile());
+    }
+
+    public static void saveButton() {
+        Map<String, Object> yamlMap = new HashMap<>();
+        for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
+            Map<String, Object> featureMap = new HashMap<>();
+            featureMap.put("key", feature.getKey());
+            featureMap.put("state", feature.getState());
+            featureMap.put("visible", feature.isVisible());
+            if (OptionManager.INSTANCE.hasOption(feature)) {
+                Map<String, Object> optionsMap = new HashMap<>();
+                for (Option option : OptionManager.get().getOptions()) {
+                    if (option.getFeature() == feature) {
+                        optionsMap.put(option.getName(), option instanceof ColorOption ? Integer.toHexString((int)option.getRawValue()) : option.getRawValue());
+                    }
+                }
+                featureMap.put("Options", optionsMap);
+            }
+            yamlMap.put(feature.getName(), featureMap);
+        }
+
+        YamlHelper.INSTANCE.writeFile(yamlMap, ConfigManager.INSTANCE.get(FeatureFile.class).getFile());
     }
 
     @Override
