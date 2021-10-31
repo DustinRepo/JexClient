@@ -6,7 +6,7 @@ import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.gui.click.window.ClickGui;
-import me.dustin.jex.gui.minecraft.JexPersonalizationScreen;
+import me.dustin.jex.gui.jex.JexPersonalizationScreen;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;

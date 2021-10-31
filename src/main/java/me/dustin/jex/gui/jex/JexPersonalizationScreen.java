@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.minecraft;
+package me.dustin.jex.gui.jex;
 
 import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;

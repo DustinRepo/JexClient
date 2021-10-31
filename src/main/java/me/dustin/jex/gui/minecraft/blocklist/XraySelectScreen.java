@@ -3,7 +3,7 @@ package me.dustin.jex.gui.minecraft.blocklist;
 
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.helper.file.files.XrayFile;
-import me.dustin.jex.gui.minecraft.JexOptionsScreen;
+import me.dustin.jex.gui.jex.JexOptionsScreen;
 import me.dustin.jex.gui.minecraft.blocklist.button.BlockButton;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
