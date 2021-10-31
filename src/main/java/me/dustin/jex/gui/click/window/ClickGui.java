@@ -43,7 +43,7 @@ public class ClickGui extends Screen {
     private ButtonListener save = new ButtonListener() {
         @Override
         public void invoke() {
-            ConfigManager.INSTANCE.get(FeatureFile.class).write();
+            FeatureFile.saveButton();
         }
     };
     private ButtonListener load = new ButtonListener() {
