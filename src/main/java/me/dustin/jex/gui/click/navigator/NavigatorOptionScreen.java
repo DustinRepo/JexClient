@@ -6,11 +6,12 @@ import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.feature.option.types.ColorOption;
 import me.dustin.jex.feature.option.types.StringOption;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorFeatureVisibleButton;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorKeybindButton;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorOptionButton;
 import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.helper.file.files.FeatureFile;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -112,7 +113,7 @@ public class NavigatorOptionScreen extends Screen {
             if (isHoveredToggleButton()) {
                 feature.toggleState();
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
             }
             if (Render2DHelper.INSTANCE.isHovered(navigator.navigatorX, navigator.navigatorY, navigator.navigatorWidth, navigator.navigatorHeight - 26)) {
                 options.forEach(button1 -> button1.click(mouseX, mouseX, button));

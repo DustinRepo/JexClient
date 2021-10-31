@@ -17,8 +17,9 @@ import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.feature.mod.impl.render.CustomFont;
 import me.dustin.jex.feature.mod.impl.render.Gui;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.changelog.changelog.JexChangelog;
-import me.dustin.jex.helper.file.files.FeatureFile;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
@@ -106,8 +107,7 @@ public enum JexClient {
                 FeatureManager.INSTANCE.getFeatures().forEach(module -> {
                     if (module.getKey() == eventKeyPressed.getKey()) {
                         module.toggleState();
-                        if (JexClient.INSTANCE.isAutoSaveEnabled())
-                            FeatureFile.write();
+                        ConfigManager.INSTANCE.get(FeatureFile.class).write();
                     }
                 });
             }

@@ -6,7 +6,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.FeatureArgumentType;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -28,13 +29,13 @@ public class CommandBind extends Command {
             }
             feature.setKey(key);
             ChatHelper.INSTANCE.addClientMessage("\247b" + feature.getName() + " \2477has been bound to \247b" + keyName);
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
             return 1;
         })))).then(literal("clear").then(argument("feature", FeatureArgumentType.feature()).executes(context -> {
             Feature feature = FeatureArgumentType.getFeature(context, "feature");
             feature.setKey(0);
             ChatHelper.INSTANCE.addClientMessage("\247b" + feature.getName() + " \2477has been unbound");
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
             return 1;
         }))));
     }

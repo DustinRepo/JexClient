@@ -8,8 +8,6 @@ import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import me.dustin.jex.helper.file.files.SearchFile;
-import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -52,13 +50,10 @@ public class Search extends Feature {
 
     private Thread thread;
     private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
-    public Search() {
-        File searchFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "Search.json");
-        if (!searchFile.exists()) {
-            blocks.put(Blocks.DIAMOND_ORE, new Color(0, 150, 255).getRGB());
-            blocks.put(Blocks.NETHER_PORTAL, new Color(106, 0, 255).getRGB());
-            SearchFile.write();
-        }
+
+    public static void firstLoad() {
+        blocks.put(Blocks.DIAMOND_ORE, new Color(0, 150, 255).getRGB());
+        blocks.put(Blocks.NETHER_PORTAL, new Color(106, 0, 255).getRGB());
     }
 
     public static ConcurrentMap<Block, Integer> getBlocks() {

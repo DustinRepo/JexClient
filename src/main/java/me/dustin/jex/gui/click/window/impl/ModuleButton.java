@@ -4,7 +4,8 @@ import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -18,7 +19,6 @@ import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.option.types.ColorOption;
 import me.dustin.jex.feature.option.types.StringOption;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Quaternion;
@@ -70,12 +70,12 @@ public class ModuleButton extends Button {
                     if (ClickGui.doesPlayClickSound())
                         Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.2F));
                     if (JexClient.INSTANCE.isAutoSaveEnabled())
-                        FeatureFile.write();
+                        ConfigManager.INSTANCE.get(FeatureFile.class).write();
                     return;
                 }
                 this.getFeature().toggleState();
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
                 if (ClickGui.doesPlayClickSound())
                     Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 return;
@@ -176,7 +176,7 @@ public class ModuleButton extends Button {
                 while (EventAPI.getInstance().alreadyRegistered(this))
                     EventAPI.getInstance().unregister(this);
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
             }
 
             @Override
@@ -197,7 +197,7 @@ public class ModuleButton extends Button {
                 ((ModuleButton) this.button).getFeature().setVisible(!((ModuleButton) this.button).getFeature().isVisible());
                 this.button.getChildren().get(this.button.getChildren().size() - 1).setName("Visible: " + ((ModuleButton) this.button).getFeature().isVisible());
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
             }
         };
         this.getChildren().add(new Button(this.getWindow(), "Visible: " + this.getFeature().isVisible(), this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight, this.getWidth() - 2, this.getHeight(), visible));

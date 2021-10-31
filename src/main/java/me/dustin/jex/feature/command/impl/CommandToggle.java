@@ -6,7 +6,8 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.FeatureArgumentType;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
@@ -24,7 +25,7 @@ public class CommandToggle extends Command {
         Feature feature = FeatureArgumentType.getFeature(context, "feature");
         feature.toggleState();
         if (JexClient.INSTANCE.isAutoSaveEnabled())
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
         ChatHelper.INSTANCE.addClientMessage(String.format("%s %s", feature.getName(), feature.getState() ? "\247a\247lON" : "\2474\247lOFF"));
         return 1;
     }

@@ -2,8 +2,9 @@ package me.dustin.jex.gui.jex;
 
 import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
-import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FileBrowser;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -45,7 +46,7 @@ public class JexPersonalizationScreen extends Screen {
             File cape = fileBrowser.getSelectedFiles().get(0);
             setCape = cape.getPath();
             Cape.setPersonalCape(cape);
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }
     };
 
@@ -58,7 +59,7 @@ public class JexPersonalizationScreen extends Screen {
             File cape = fileBrowser.getSelectedFiles().get(0);
             setCape = cape.getPath();
             Cape.setPersonalCape(cape);
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
         prevHatButton = new ButtonWidget((int)midX + 8, 137, 40, 20, new LiteralText("<"), button -> {
             selectedHat--;
@@ -79,7 +80,7 @@ public class JexPersonalizationScreen extends Screen {
                 Hat.setHat(uuid, hatType.name());
                 setHat = hatType.name();
             }
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
         fileBrowser = new FileBrowser(LAST_PATH, midX - 255 + 2, 15, 250, 200, doubleClickListener, ".png", ".jpg");
         fileBrowser.setMultiSelect(false);

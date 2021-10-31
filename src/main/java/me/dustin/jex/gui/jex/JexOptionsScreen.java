@@ -4,8 +4,9 @@ import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Gui;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.changelog.ChangelogScreen;
-import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
 import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
@@ -53,7 +54,7 @@ public class JexOptionsScreen extends Screen {
         prefixField.setVisible(true);
         setPrefixButton = new ButtonWidget(centerX + 1, topY, 54, 20, new LiteralText("Set Prefix"), button -> {
             CommandManagerJex.INSTANCE.setPrefix(prefixField.getText());
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
         waypointScreenButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, new LiteralText("Waypoint Screen"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());

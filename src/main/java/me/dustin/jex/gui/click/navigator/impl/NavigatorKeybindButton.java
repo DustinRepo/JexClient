@@ -5,8 +5,9 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.helper.file.files.FeatureFile;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -58,6 +59,6 @@ public class NavigatorKeybindButton extends Button {
         while (EventAPI.getInstance().alreadyRegistered(this))
             EventAPI.getInstance().unregister(this);
         if (JexClient.INSTANCE.isAutoSaveEnabled())
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
     }
 }

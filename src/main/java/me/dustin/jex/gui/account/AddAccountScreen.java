@@ -1,6 +1,7 @@
 package me.dustin.jex.gui.account;
 
-import me.dustin.jex.helper.file.files.AltFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
 import me.dustin.jex.gui.account.impl.GuiPasswordField;
@@ -84,7 +85,7 @@ public class AddAccountScreen extends Screen {
 				} else
 					MinecraftAccountManager.INSTANCE.getAccounts().add(account);
 			}
-			AltFile.write();
+			ConfigManager.INSTANCE.get(AltFile.class).write();
 			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 		}));
 

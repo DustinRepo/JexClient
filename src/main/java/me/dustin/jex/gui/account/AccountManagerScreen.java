@@ -1,6 +1,7 @@
 package me.dustin.jex.gui.account;
 
-import me.dustin.jex.helper.file.files.AltFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
 import me.dustin.jex.gui.account.impl.AccountButton;
@@ -52,7 +53,7 @@ public class AccountManagerScreen extends Screen {
     @Override
     public void init() {
         MinecraftAccountManager.INSTANCE.getAccounts().clear();
-        AltFile.read();
+        ConfigManager.INSTANCE.get(AltFile.class).read();
 
         float midX = width / 2;
 
@@ -77,7 +78,7 @@ public class AccountManagerScreen extends Screen {
             MinecraftAccountManager.INSTANCE.getAccounts().remove(getSelected().getAccount());
             accountButtons.remove(getSelected());
             loadAccountButtons(searchTextField.getText());
-            AltFile.write();
+            ConfigManager.INSTANCE.get(AltFile.class).write();
         });
         randomButton = new ButtonWidget((int) (midX + 3), (height / 2) - 12, 150, 20, new LiteralText("Random"), button -> {
             Random rand = new Random();
@@ -95,15 +96,15 @@ public class AccountManagerScreen extends Screen {
         importButton = new ButtonWidget(2, 2, 50, 15, new LiteralText("Import"), button -> {
             if (new File(ModFileHelper.INSTANCE.getJexDirectory(), "Accounts-Unencrypted.json").exists()) {
                 MinecraftAccountManager.INSTANCE.getAccounts().clear();
-                AltFile.importFile();
-                AltFile.write();
+                ((AltFile)ConfigManager.INSTANCE.get(AltFile.class)).importFile();
+                ConfigManager.INSTANCE.get(AltFile.class).write();
                 loadAccountButtons("");
                 outputString = "Imported alts from file.";
             } else
                 outputString = "Could not import file. Please make sure it is named Accounts-Unencrypted.json";
         });
         exportButton = new ButtonWidget(width - 52, 2, 50, 15, new LiteralText("Export"), button -> {
-            AltFile.exportFile();
+            ((AltFile)ConfigManager.INSTANCE.get(AltFile.class)).exportFile();
             outputString = "Exported alts to Accounts-Unencrypted.json";
         });
         searchTextField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) midX - 150, (height / 2) - 124, 250, 20, new LiteralText(""));

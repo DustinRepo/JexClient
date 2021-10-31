@@ -1,8 +1,9 @@
 package me.dustin.jex.gui.thealtening;
 
 import me.dustin.jex.JexClient;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.thealtening.impl.TheAlteningAccountButton;
-import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.login.thealtening.TheAlteningHelper;
@@ -70,7 +71,7 @@ public class TheAlteningScreen extends Screen {
             TheAlteningHelper.INSTANCE.setApiKey(this.apiKeyWidget.getText());
             apiKeyWidget.setText(TheAlteningHelper.INSTANCE.getApiKey().substring(0, 4) + "****-****-****");
             updateAPIKey();
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
         loginButton = new ButtonWidget(width / 2 - 152, 330, 150, 20, new LiteralText("Login to Selected"), button -> {
             if (getSelected() != null) {

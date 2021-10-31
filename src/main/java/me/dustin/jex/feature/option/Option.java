@@ -98,6 +98,18 @@ public class Option {
         }
     }
 
+    public Object getRawValue() {
+        for (Field f : this.getFeature().getClass().getDeclaredFields()) {
+            if (f.getName().equalsIgnoreCase(this.getFieldName())) {
+                try {
+                    return f.get(this.getFeature());
+                } catch (Exception e) {
+                }
+            }
+        }
+        return null;
+    }
+
     public void parseValue(String value) {
         try {
             if (this instanceof StringOption)

@@ -14,6 +14,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import me.dustin.jex.addon.cape.Cape;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.changelog.ChangelogScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
@@ -31,7 +33,6 @@ import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.CustomMainMenu;
 import me.dustin.jex.helper.file.ModFileHelper;
-import me.dustin.jex.helper.file.files.ClientSettingsFile;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -115,7 +116,6 @@ public class JexTitleScreen extends Screen {
             this.splashText = this.client.getSplashTextLoader().get();
         }
 
-        this.textRenderer.getWidth("Copyright Mojang AB. Do not distribute!");
         int j = this.height / 4 + 48;
 
         this.initWidgetsNormal(j);
@@ -127,14 +127,14 @@ public class JexTitleScreen extends Screen {
                     if (JexTitleScreen.background > backgrounds.size() - 1) {
                         JexTitleScreen.background = 0;
                     }
-                    ClientSettingsFile.write();
+                    ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
                 }));
                 this.addDrawableChild(new ButtonWidget(this.width - 44, this.height - 22, 20, 20, new LiteralText("<"), button -> {
                     JexTitleScreen.background -= 1;
                     if (JexTitleScreen.background < 0) {
                         JexTitleScreen.background = backgrounds.size() - 1;
                     }
-                    ClientSettingsFile.write();
+                    ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
                 }));
             } else {
                 this.addDrawableChild(new ButtonWidget(this.width - 152, this.height - 22, 150, 20, new LiteralText("Open Backgrounds Folder"), button -> {

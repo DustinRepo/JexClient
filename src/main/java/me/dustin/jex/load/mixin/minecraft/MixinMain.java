@@ -1,9 +1,9 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import me.dustin.jex.JexClient;
+import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
-import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.network.login.minecraft.MicrosoftLogin;
 import me.dustin.jex.helper.network.login.minecraft.MojangLogin;
 import net.fabricmc.loader.api.FabricLoader;
@@ -20,7 +20,7 @@ public class MixinMain {
     @ModifyArgs(at = @At(value = "INVOKE", target = "net/minecraft/client/util/Session.<init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Optional;Ljava/util/Optional;Lnet/minecraft/client/util/Session$AccountType;)V"), method = "main")
     private static void modifySession(Args args) {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            AltFile.read();
+            new AltFile().read();
             if (!MinecraftAccountManager.INSTANCE.getAccounts().isEmpty()) {
                 MinecraftAccount mcAccount = MinecraftAccountManager.INSTANCE.getAccounts().get(0);
                 if (mcAccount instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {

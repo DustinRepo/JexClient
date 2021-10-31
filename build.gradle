@@ -42,6 +42,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.reflections/reflections
     dependency group: 'org.reflections', name: 'reflections', version: '0.10.2'
     dependency group: 'pircbot', name: 'pircbot', version: '1.5.0'
+    dependency group: 'org.yaml', name: 'snakeyaml', version: '1.29'
 
     dependency files('lib/java-discord-rpc-2.0.1-all.jar')
     implementation files('lib/baritone-1.6.3-dev.jar')

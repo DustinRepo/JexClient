@@ -1,7 +1,11 @@
 package me.dustin.jex.helper.file;
 
 import me.dustin.jex.JexClient;
-import me.dustin.jex.helper.file.files.*;
+import me.dustin.jex.feature.mod.impl.render.Search;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
+import me.dustin.jex.file.impl.SearchFile;
+import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.impl.world.xray.Xray;
 import net.fabricmc.loader.api.FabricLoader;
@@ -15,30 +19,27 @@ public enum ModFileHelper {
     private boolean firstLoad;
 
     public void gameBootLoad() {
+        ConfigManager.INSTANCE.init();
+
         File jexDir = getJexDirectory();
         if (!jexDir.exists()) { //First load.
             firstLoad = true;
             jexDir.mkdirs();
+
+            Xray.firstLoad();
+            Search.firstLoad();
+            ConfigManager.INSTANCE.get(XrayFile.class).write();
+            ConfigManager.INSTANCE.get(SearchFile.class).write();
             return;
         }
-        File xrayFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "Xray.json");
-        if (!xrayFile.exists()) {
-            Xray.firstLoad();
-            XrayFile.write();
-        }
-        ClientSettingsFile.read();
-        FeatureFile.read();
-        FriendFile.read();
-        SearchFile.read();
-        WaypointFile.read();
-        XrayFile.read();
+        ConfigManager.INSTANCE.getConfigFiles().forEach(configFile -> {
+            if (configFile.doesReadOnBoot())
+                configFile.read();
+        });
     }
 
     public void closeGame() {
-        ClientSettingsFile.write();
-        HudElementsFile.write();
-        if (JexClient.INSTANCE.isAutoSaveEnabled())
-            FeatureFile.write();
+        ConfigManager.INSTANCE.saveAll();
     }
 
     public boolean isFirstTimeLoading() {

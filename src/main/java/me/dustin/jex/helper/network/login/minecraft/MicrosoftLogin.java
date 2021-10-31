@@ -4,10 +4,11 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.dustin.jex.JexClient;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.AccountManagerScreen;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.file.JsonHelper;
-import me.dustin.jex.helper.file.files.AltFile;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.network.WebHelper;
@@ -284,7 +285,10 @@ public class MicrosoftLogin {
                 MinecraftAccountManager.INSTANCE.getAccounts().add(microsoftAccount);
             }
         }
-        AltFile.write();
+        if (ConfigManager.INSTANCE.get(AltFile.class) == null)
+            new AltFile().write();
+        else
+            ConfigManager.INSTANCE.get(AltFile.class).write();
     }
 
     private String getLoginCode(String email, String password) {

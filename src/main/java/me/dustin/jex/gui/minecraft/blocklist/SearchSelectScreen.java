@@ -2,7 +2,8 @@ package me.dustin.jex.gui.minecraft.blocklist;
 
 
 import me.dustin.jex.addon.hat.Hat;
-import me.dustin.jex.helper.file.files.SearchFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.SearchFile;
 import me.dustin.jex.gui.jex.JexOptionsScreen;
 import me.dustin.jex.gui.minecraft.blocklist.button.BlockButton;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -67,7 +68,7 @@ public class SearchSelectScreen extends Screen {
                 loadBlocks();
             else
                 loadBlocks(searchField.getText());
-            SearchFile.write();
+            ConfigManager.INSTANCE.get(SearchFile.class).write();
         });
         addSearchBlockButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Add To Search"), button -> {
             getSelectedNotAllowed().forEach(blockButton -> {
@@ -79,7 +80,7 @@ public class SearchSelectScreen extends Screen {
                 loadBlocks();
             else
                 loadBlocks(searchField.getText());
-            SearchFile.write();
+            ConfigManager.INSTANCE.get(SearchFile.class).write();
         });
 
         doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, new LiteralText("Done"), button -> {

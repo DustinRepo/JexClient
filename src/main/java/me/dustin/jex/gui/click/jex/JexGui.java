@@ -6,10 +6,10 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.CustomFont;
-import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
-import me.dustin.jex.helper.file.files.ClientSettingsFile;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.ClientSettingsFile;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.jex.impl.JexOptionButton;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.impl.Button;
@@ -56,13 +56,13 @@ public class JexGui extends Screen {
     private ButtonListener save = new ButtonListener() {
         @Override
         public void invoke() {
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
         }
     };
     private ButtonListener load = new ButtonListener() {
         @Override
         public void invoke() {
-            FeatureFile.read();
+            ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }
     };
     private ButtonListener autoSaveListener = new ButtonListener() {
@@ -70,7 +70,7 @@ public class JexGui extends Screen {
         public void invoke() {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
             autoSaveButton.setName("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? "\247aON" : "\247cOFF"));
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }
     };
     private ButtonListener launchSoundListener = new ButtonListener() {
@@ -78,7 +78,7 @@ public class JexGui extends Screen {
         public void invoke() {
             JexClient.INSTANCE.setPlaySoundOnLaunch(!JexClient.INSTANCE.playSoundOnLaunch());
             launchSoundButton.setName("Game Launch Alert: " + (JexClient.INSTANCE.playSoundOnLaunch() ? "\247aON" : "\247cOFF"));
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }
     };
     private ButtonListener clickSoundListener = new ButtonListener() {
@@ -86,7 +86,7 @@ public class JexGui extends Screen {
         public void invoke() {
             ClickGui.setDoesPlayClickSound(!ClickGui.doesPlayClickSound());
             clickSoundButton.setName("Play Click Sounds: " + (ClickGui.doesPlayClickSound() ? "\247aON" : "\247cOFF"));
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }
     };
     public JexGui(Text title) {
@@ -301,7 +301,7 @@ public class JexGui extends Screen {
                     feature.toggleState();
                     featureButton.setTextColor(feature.getState() ? -1 : 0xffaaaaaa);
                     if (JexClient.INSTANCE.isAutoSaveEnabled()) {
-                        FeatureFile.write();
+                        ConfigManager.INSTANCE.get(FeatureFile.class).write();
                     }
                 }
                 if (featureButton.isPlayClick())
@@ -437,7 +437,7 @@ public class JexGui extends Screen {
                 while (EventAPI.getInstance().alreadyRegistered(this))
                     EventAPI.getInstance().unregister(this);
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
             }
 
             @Override
@@ -453,7 +453,7 @@ public class JexGui extends Screen {
                 feature.setVisible(!feature.isVisible());
                 visibleButton.setName("Visible: " + feature.isVisible());
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
             }
         };
         keyButton.setBackgroundColor(0x00000000);

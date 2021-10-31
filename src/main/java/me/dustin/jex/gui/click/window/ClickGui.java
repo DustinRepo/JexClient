@@ -4,9 +4,10 @@ package me.dustin.jex.gui.click.window;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Gui;
-import me.dustin.jex.helper.file.files.ClientSettingsFile;
-import me.dustin.jex.helper.file.files.FeatureFile;
-import me.dustin.jex.helper.file.files.GuiFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.ClientSettingsFile;
+import me.dustin.jex.file.impl.FeatureFile;
+import me.dustin.jex.file.impl.GuiFile;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.impl.ModuleButton;
 import me.dustin.jex.gui.click.window.impl.Window;
@@ -42,13 +43,13 @@ public class ClickGui extends Screen {
     private ButtonListener save = new ButtonListener() {
         @Override
         public void invoke() {
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
         }
     };
     private ButtonListener load = new ButtonListener() {
         @Override
         public void invoke() {
-            FeatureFile.read();
+            ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }
     };
     private ButtonListener autoSaveListener = new ButtonListener() {
@@ -56,7 +57,7 @@ public class ClickGui extends Screen {
         public void invoke() {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
             autoSaveButton.setName("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? "\247aON" : "\247cOFF"));
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }
     };
     private ButtonListener launchSoundListener = new ButtonListener() {
@@ -64,7 +65,7 @@ public class ClickGui extends Screen {
         public void invoke() {
             JexClient.INSTANCE.setPlaySoundOnLaunch(!JexClient.INSTANCE.playSoundOnLaunch());
             launchSoundButton.setName("Game Launch Alert: " + (JexClient.INSTANCE.playSoundOnLaunch() ? "\247aON" : "\247cOFF"));
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }
     };
     private ButtonListener clickSoundListener = new ButtonListener() {
@@ -72,7 +73,7 @@ public class ClickGui extends Screen {
         public void invoke() {
             playClickSounds = !playClickSounds;
             clickSoundButton.setName("Play Click Sounds: " + (playClickSounds ? "\247aON" : "\247cOFF"));
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }
     };
     private ButtonListener xrayButtonListener = new ButtonListener() {
@@ -118,7 +119,7 @@ public class ClickGui extends Screen {
             }
             windows.add(configWindow = new Window("Config", 2, 2 + ((windowHeight + 2) * count), windowWidth, windowHeight));
             count++;
-            GuiFile.read();
+            ConfigManager.INSTANCE.get(GuiFile.class).read();
             //focused = configWindow;
 
             int childCount = 0;
@@ -155,7 +156,7 @@ public class ClickGui extends Screen {
 
     @Override
     public void onClose() {
-        GuiFile.write();
+        ConfigManager.INSTANCE.get(GuiFile.class).write();
         super.onClose();
     }
 
