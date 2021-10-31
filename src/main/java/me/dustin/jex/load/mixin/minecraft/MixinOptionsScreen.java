@@ -1,6 +1,6 @@
 package me.dustin.jex.load.mixin.minecraft;
 
-import me.dustin.jex.gui.minecraft.JexOptionsScreen;
+import me.dustin.jex.gui.jex.JexOptionsScreen;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;

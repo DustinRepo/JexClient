@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.minecraft;
+package me.dustin.jex.gui.proxy;
 
 import com.google.common.net.HostAndPort;
 import me.dustin.jex.helper.misc.Wrapper;

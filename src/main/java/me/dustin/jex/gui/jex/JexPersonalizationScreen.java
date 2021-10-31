@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.minecraft;
+package me.dustin.jex.gui.jex;
 
 import io.netty.util.internal.StringUtil;
 import me.dustin.jex.JexClient;
