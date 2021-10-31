@@ -7,7 +7,8 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.jex.JexGui;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.impl.Button;
@@ -134,8 +135,7 @@ public class JexOptionButton extends Button {
                 if (this.getOption() instanceof FloatOption || this.getOption() instanceof IntOption || this.getOption() instanceof ColorOption) {
                     isSliding = true;
                 }
-                if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                ConfigManager.INSTANCE.get(FeatureFile.class).write();
                 return;
             }
             if (int_1 == 1) {
@@ -305,7 +305,7 @@ public class JexOptionButton extends Button {
             }
             while (EventAPI.getInstance().alreadyRegistered(this))
                 EventAPI.getInstance().unregister(this);
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
         } else if (this.getOption() instanceof StringOption stringOption) {
             if (Screen.isPaste(keyCode)) {
                 stringOption.setValue(stringOption.getValue() + MinecraftClient.getInstance().keyboard.getClipboard());
@@ -381,7 +381,7 @@ public class JexOptionButton extends Button {
             if (!MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
                 isSliding = false;
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
             }
             FloatOption v = (FloatOption) property;
 

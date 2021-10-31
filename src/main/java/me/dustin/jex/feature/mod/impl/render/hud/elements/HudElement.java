@@ -1,9 +1,9 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
-import me.dustin.jex.helper.file.files.HudElementsFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.HudElementsFile;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -62,7 +62,7 @@ public class HudElement {
                 yDif = getY() - MouseHelper.INSTANCE.getMouseY();
             } else if (mouseButton == 1) {
                 setTopSide(!isTopSide());
-                HudElementsFile.write();
+                ConfigManager.INSTANCE.get(HudElementsFile.class).write();
             }
         }
     }
@@ -74,7 +74,7 @@ public class HudElement {
         if (this.isDragging) {
             if (!MouseHelper.INSTANCE.isMouseButtonDown(0)) {
                 this.isDragging = false;
-                HudElementsFile.write();
+                ConfigManager.INSTANCE.get(HudElementsFile.class).write();
             } else {
                 x = xDif + MouseHelper.INSTANCE.getMouseX();
                 y = yDif + MouseHelper.INSTANCE.getMouseY();

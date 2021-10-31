@@ -5,17 +5,13 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.feature.option.types.ColorOption;
-import me.dustin.jex.feature.option.types.FloatOption;
-import me.dustin.jex.feature.option.types.IntOption;
 import me.dustin.jex.feature.option.types.StringOption;
-import me.dustin.jex.gui.click.jex.impl.JexOptionButton;
-import me.dustin.jex.gui.click.navigator.impl.NavigatorFeatureButton;
+import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorFeatureVisibleButton;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorKeybindButton;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorOptionButton;
 import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.helper.file.files.ClientSettingsFile;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -27,7 +23,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
@@ -117,8 +112,7 @@ public class NavigatorOptionScreen extends Screen {
         if (!fade) {
             if (isHoveredToggleButton()) {
                 feature.toggleState();
-                if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                ConfigManager.INSTANCE.get(FeatureFile.class).write();
             }
             if (Render2DHelper.INSTANCE.isHovered(navigator.navigatorX, navigator.navigatorY, navigator.navigatorWidth, navigator.navigatorHeight - 26)) {
                 options.forEach(button1 -> button1.click(mouseX, mouseX, button));

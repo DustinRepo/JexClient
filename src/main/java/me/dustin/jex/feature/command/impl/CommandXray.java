@@ -7,7 +7,8 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.BlockStateArgumentType;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.world.xray.Xray;
-import me.dustin.jex.helper.file.files.XrayFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
@@ -26,7 +27,7 @@ public class CommandXray extends Command {
                     Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
                 }
                 ChatHelper.INSTANCE.addClientMessage("\247b" + block.getName().getString() + "\2477 has been added to Xray.");
-                XrayFile.write();
+                ConfigManager.INSTANCE.get(XrayFile.class).write();
             } else {
                 ChatHelper.INSTANCE.addClientMessage("Xray already contains \247c" + block.getName().getString() + "\2477.");
             }
@@ -39,7 +40,7 @@ public class CommandXray extends Command {
                     Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
                 }
                 ChatHelper.INSTANCE.addClientMessage("\247c" + block.getName().getString() + "\2477 has been removed from Xray.");
-                XrayFile.write();
+                ConfigManager.INSTANCE.get(XrayFile.class).write();
             } else {
                 ChatHelper.INSTANCE.addClientMessage("Xray does not contain \247c" + block.getName().getString() + "\2477.");
             }

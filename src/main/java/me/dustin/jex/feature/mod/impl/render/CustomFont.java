@@ -2,7 +2,8 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import com.google.common.collect.Maps;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.render.font.NahrFont;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -49,7 +50,7 @@ public class CustomFont extends Feature {
                     ChatHelper.INSTANCE.addClientMessage("Font not found. Reverting to last found");
                     font = origFont.getFont().getFontName();
                 }
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
         } else {
             FontHelper.INSTANCE.setClientFont(new NahrFont(font, 18, 1.2f));
         }

@@ -11,12 +11,13 @@ import me.dustin.jex.event.render.EventRender2DItem;
 import me.dustin.jex.event.render.EventRenderEffects;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.hud.elements.*;
+import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.gui.click.jex.JexGui;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.impl.Window;
 import me.dustin.jex.gui.tab.TabGui;
 import me.dustin.jex.helper.file.ModFileHelper;
-import me.dustin.jex.helper.file.files.HudElementsFile;
+import me.dustin.jex.file.impl.HudElementsFile;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.*;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -31,7 +32,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.*;
 import org.lwjgl.glfw.GLFW;
 
-import java.awt.*;
 import java.util.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
@@ -219,7 +219,7 @@ public class Hud extends Feature {
         hudElements.add(new TabGuiElement(0, 133, 55, 55));
         hudElements.add(new ArmorElement((Render2DHelper.INSTANCE.getScaledWidth() / 2.f) + 5, Render2DHelper.INSTANCE.getScaledHeight() - 50, 16, 16));
         hudElements.add(new RadarElement(Render2DHelper.INSTANCE.getScaledWidth() - 120 - 100, 0, 120, 120));
-        HudElementsFile.read(this);
+        ConfigManager.INSTANCE.get(HudElementsFile.class).read();
     }
 
     public void drawLagometer(EventRender2D eventRender2D) {

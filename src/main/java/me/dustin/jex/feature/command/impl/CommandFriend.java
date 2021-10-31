@@ -6,7 +6,8 @@ import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.FriendArgumentType;
 import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;
-import me.dustin.jex.helper.file.files.FriendFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FriendFile;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
@@ -25,7 +26,7 @@ public class CommandFriend extends Command {
             }
             FriendHelper.INSTANCE.removeFriend(friendName);
             ChatHelper.INSTANCE.addClientMessage("Removed \247c" + friendName);
-            FriendFile.write();
+            ConfigManager.INSTANCE.get(FriendFile.class).write();
             return 1;
         }))).then(literal("add").then(argument("name", PlayerNameArgumentType.playerName()).executes(context -> {
             String name = PlayerNameArgumentType.getPlayerName(context, "name");
@@ -36,7 +37,7 @@ public class CommandFriend extends Command {
             } else {
                 FriendHelper.INSTANCE.addFriend(name, alias);
                 ChatHelper.INSTANCE.addClientMessage("Added \247b" + name + " \2477as \247b" + alias);
-                FriendFile.write();
+                ConfigManager.INSTANCE.get(FriendFile.class).write();
             }
             return 1;
         }).then(argument("alias", PlayerNameArgumentType.playerName()).executes(context -> {
@@ -48,7 +49,7 @@ public class CommandFriend extends Command {
             } else {
                 FriendHelper.INSTANCE.addFriend(name, alias);
                 ChatHelper.INSTANCE.addClientMessage("Added \247b" + name + " \2477as \247b" + alias);
-                FriendFile.write();
+                ConfigManager.INSTANCE.get(FriendFile.class).write();
             }
             return 1;
         })))).then(literal("list").executes(context -> {

@@ -2,7 +2,8 @@ package me.dustin.jex.gui.minecraft.blocklist;
 
 
 import me.dustin.jex.addon.hat.Hat;
-import me.dustin.jex.helper.file.files.XrayFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.gui.jex.JexOptionsScreen;
 import me.dustin.jex.gui.minecraft.blocklist.button.BlockButton;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -67,7 +68,7 @@ public class XraySelectScreen extends Screen {
                 loadBlocks();
             else
                 loadBlocks(searchField.getText());
-            XrayFile.write();
+            ConfigManager.INSTANCE.get(XrayFile.class).write();
             if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Feature.get(Xray.class).getState())
                 Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
         });
@@ -81,7 +82,7 @@ public class XraySelectScreen extends Screen {
                 loadBlocks();
             else
                 loadBlocks(searchField.getText());
-            XrayFile.write();
+            ConfigManager.INSTANCE.get(XrayFile.class).write();
             if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Feature.get(Xray.class).getState())
                 Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
         });

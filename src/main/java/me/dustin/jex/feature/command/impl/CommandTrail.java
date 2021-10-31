@@ -7,6 +7,8 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.ParticleTypeArgumentType;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Trail;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.TrailsFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.particle.ParticleType;
@@ -19,33 +21,32 @@ public class CommandTrail extends Command {
 
     @Override
     public void registerCommand() {
-        Trail trail = (Trail) Feature.get(Trail.class);
         dispatcher.register(literal(this.name).then(literal("add").then(argument("particle", ParticleTypeArgumentType.particleType()).executes(context -> {
 
             ParticleType<?> particleType = ParticleTypeArgumentType.getParticleType(context, "particle");
             String particleName = Registry.PARTICLE_TYPE.getId(particleType).toString();
-            if (trail.particles.contains(particleType)) {
+            if (Trail.getParticles().contains(particleType)) {
                 ChatHelper.INSTANCE.addClientMessage("This trail is already enabled");
                 return 0;
             }
-            trail.particles.add(particleType);
+            Trail.getParticles().add(particleType);
             ChatHelper.INSTANCE.addClientMessage("\247b" + particleName + "\2477 has been added to Trail");
-            trail.write();
+            ConfigManager.INSTANCE.get(TrailsFile.class).write();
             return 1;
         }))).then(literal("del").then(argument("particle", ParticleTypeArgumentType.particleType()).executes(context -> {
             ParticleType<?> particleType = ParticleTypeArgumentType.getParticleType(context, "particle");
             String particleName = Registry.PARTICLE_TYPE.getId(particleType).toString();
-            if (!trail.particles.contains(particleType)) {
+            if (!Trail.getParticles().contains(particleType)) {
                 ChatHelper.INSTANCE.addClientMessage("This trail is already disabled");
                 return 0;
             }
-            trail.particles.remove(particleType);
+            Trail.getParticles().remove(particleType);
             ChatHelper.INSTANCE.addClientMessage("\247b" + particleName + "\2477 has been removed from Trail");
-            trail.write();
+            ConfigManager.INSTANCE.get(TrailsFile.class).write();
             return 1;
         }))).then(literal("list").executes(context -> {
             StringJoiner stringJoiner = new StringJoiner("\n");
-            trail.particles.forEach(particleType -> {
+            Trail.getParticles().forEach(particleType -> {
                 String particleName = Registry.PARTICLE_TYPE.getId(particleType).toString();
                 stringJoiner.add(particleName);
             });

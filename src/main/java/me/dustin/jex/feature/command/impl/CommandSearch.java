@@ -7,7 +7,8 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.BlockStateArgumentType;
 import me.dustin.jex.feature.command.core.arguments.ColorArgumentType;
 import me.dustin.jex.feature.mod.impl.render.Search;
-import me.dustin.jex.helper.file.files.SearchFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.SearchFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
@@ -29,7 +30,7 @@ public class CommandSearch extends Command {
                 else {
                     Search.getBlocks().put(block, color);
                     ChatHelper.INSTANCE.addClientMessage("\247b" + block.getName().getString() + "\2477 added to Search list");
-                    SearchFile.write();
+                    ConfigManager.INSTANCE.get(SearchFile.class).write();
                 }
             }
             return 1;
@@ -40,7 +41,7 @@ public class CommandSearch extends Command {
             else {
                 Search.getBlocks().remove(block);
                 ChatHelper.INSTANCE.addClientMessage("\247c" + block.getName().getString() + "\2477 deleted from Search list");
-                SearchFile.write();
+                ConfigManager.INSTANCE.get(SearchFile.class).write();
             }
             return 1;
         }))).then(literal("list").executes(this)));

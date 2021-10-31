@@ -3,14 +3,11 @@ package me.dustin.jex.gui.click.navigator;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorFeatureButton;
-import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.gui.click.window.impl.ModuleButton;
-import me.dustin.jex.gui.click.window.impl.Window;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
-import me.dustin.jex.gui.thealtening.impl.TheAlteningAccountButton;
-import me.dustin.jex.helper.file.files.ClientSettingsFile;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -24,7 +21,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -54,15 +50,15 @@ public class Navigator extends Screen {
         searchBar.setTextFieldFocused(true);
 
         this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, new LiteralText("Load"), button -> {
-            FeatureFile.read();
+            ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }));
         this.addDrawableChild(new ButtonWidget(2, height - 44, 100, 20, new LiteralText("Save"), button -> {
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
         }));
         this.addDrawableChild(new ButtonWidget(2, height - 66, 100, 20, new LiteralText("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")), button -> {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
             button.setMessage(new LiteralText("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")));
-            ClientSettingsFile.write();
+            ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }));
 
         super.init();
@@ -208,7 +204,7 @@ public class Navigator extends Screen {
                     public void invoke() {
                         feature.toggleState();
                         if (JexClient.INSTANCE.isAutoSaveEnabled())
-                            FeatureFile.write();
+                            ConfigManager.INSTANCE.get(FeatureFile.class).write();
                     }
                 });
                 this.featureButtons.add(navigatorFeatureButton);

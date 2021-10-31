@@ -2,7 +2,8 @@ package me.dustin.jex.gui.waypoints;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
-import me.dustin.jex.helper.file.files.WaypointFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.WaypointFile;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -302,7 +303,7 @@ public class WaypointEditScreen extends Screen {
             waypoint.setX(Float.parseFloat(xPos.getText()));
             waypoint.setY(Float.parseFloat(yPos.getText()));
             waypoint.setZ(Float.parseFloat(zPos.getText()));
-            WaypointFile.write();
+            ConfigManager.INSTANCE.get(WaypointFile.class).write();
             Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen(serverName.getText()));
         }
     };

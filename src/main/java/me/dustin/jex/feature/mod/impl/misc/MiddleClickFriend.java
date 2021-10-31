@@ -2,7 +2,8 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventMouseButton;
-import me.dustin.jex.helper.file.files.FriendFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FriendFile;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -31,7 +32,7 @@ public class MiddleClickFriend extends Feature {
                         FriendHelper.INSTANCE.addFriend(name, name);
                         ChatHelper.INSTANCE.addClientMessage("Added \247b" + name);
                     }
-                    FriendFile.write();
+                    ConfigManager.INSTANCE.get(FriendFile.class).write();
                 }
             }
         }

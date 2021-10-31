@@ -8,7 +8,8 @@ import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.ColorArgumentType;
 import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
-import me.dustin.jex.helper.file.files.WaypointFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.WaypointFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -31,7 +32,7 @@ public class CommandWaypoint extends Command {
             float y = (float) Wrapper.INSTANCE.getLocalPlayer().getY();
             float z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ();
             Waypoints.waypoints.add(new Waypoints.Waypoint(name, server, x, y, z, WorldHelper.INSTANCE.getDimensionID().toString(), color));
-            WaypointFile.write();
+            ConfigManager.INSTANCE.get(WaypointFile.class).write();
             ChatHelper.INSTANCE.addClientMessage("Added waypoint " + name + ".");
             return 1;
         }))).then(argument("pos", Vec3ArgumentType.vec3()).then(argument("color", ColorArgumentType.color()).executes(context -> {
@@ -44,7 +45,7 @@ public class CommandWaypoint extends Command {
             float y = (float) pos.getY();
             float z = (float) pos.getZ();
             Waypoints.waypoints.add(new Waypoints.Waypoint(name, server, x, y, z, WorldHelper.INSTANCE.getDimensionID().toString(), color));
-            WaypointFile.write();
+            ConfigManager.INSTANCE.get(WaypointFile.class).write();
             ChatHelper.INSTANCE.addClientMessage("Added waypoint " + name + ".");
             return 1;
         }))))).then(literal("del").then(argument("name", StringArgumentType.string()).executes(context -> {
@@ -54,7 +55,7 @@ public class CommandWaypoint extends Command {
             Waypoints.Waypoint waypoint = Waypoints.get(name, server);
             if (waypoint != null) {
                 Waypoints.waypoints.remove(waypoint);
-                WaypointFile.write();
+                ConfigManager.INSTANCE.get(WaypointFile.class).write();
                 ChatHelper.INSTANCE.addClientMessage("Removed waypoint " + name + ".");
             } else {
                 ChatHelper.INSTANCE.addClientMessage("That waypoint does not exist on this server!");

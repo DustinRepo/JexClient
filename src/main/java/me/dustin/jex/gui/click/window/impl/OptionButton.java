@@ -6,7 +6,8 @@ import me.dustin.events.api.EventAPI;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
-import me.dustin.jex.helper.file.files.FeatureFile;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -129,7 +130,7 @@ public class OptionButton extends Button {
                     isSliding = true;
                 }
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
                 return;
             }
             if (int_1 == 1) {
@@ -291,7 +292,7 @@ public class OptionButton extends Button {
             } else {
                 keybindOption.setValue(0);
             }
-            FeatureFile.write();
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
             while (EventAPI.getInstance().alreadyRegistered(this))
                 EventAPI.getInstance().unregister(this);
         } else if (this.getOption() instanceof StringOption stringOption) {
@@ -369,7 +370,7 @@ public class OptionButton extends Button {
             if (!MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
                 isSliding = false;
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
-                    FeatureFile.write();
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
             }
             FloatOption v = (FloatOption) property;
 
