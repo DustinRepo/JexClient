@@ -47,6 +47,8 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Mutable
     @Shadow @Final private MinecraftSessionService sessionService;
 
+    @Shadow public abstract void setScreen(@Nullable Screen screen);
+
     @Override
     public void setSession(Session session) {
         this.session = session;
@@ -87,8 +89,11 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
     public void openScreen(Screen screen, CallbackInfo cir) {
         EventSetScreen eventSetScreen = new EventSetScreen(screen).run();
-        if (eventSetScreen.isCancelled())
+        if (eventSetScreen.isCancelled()) {
             cir.cancel();
+            if (eventSetScreen.getScreen() != screen)
+                setScreen(eventSetScreen.getScreen());
+        }
 
     }
 

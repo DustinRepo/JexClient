@@ -43,6 +43,7 @@
     "minecraft.MixinItemRenderer",
     "minecraft.MixinKeybinding",
     "minecraft.MixinKeyboard",
+    "minecraft.MixinLivingEntity",
     "minecraft.MixinLlamaEntity",
     "minecraft.MixinMain",
     "minecraft.MixinMinecraftClient",
