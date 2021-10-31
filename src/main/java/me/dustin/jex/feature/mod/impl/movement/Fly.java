@@ -68,7 +68,7 @@ public class Fly extends Feature {
                 eventMove.setY(-speed);
             }
             if (glide && !jumping) {
-              eventMove.setY(-glideSpeed);
+                eventMove.setY(-glideSpeed);
             }
         } else if (event instanceof EventPacketSent eventPacketSent && flyCheckBypass) {
             if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
@@ -86,9 +86,9 @@ public class Fly extends Feature {
     }
 
     @Override
-    public void onEnable() {
+    public void onDisable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null)
             Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
-        super.onEnable();
+        super.onDisable();
     }
 }
