@@ -168,7 +168,7 @@ public enum Render3DHelper {
 
     public void drawBoxWithDepthTest(MatrixStack matrixstack, Box bb, int color) {
         setup3DRender(false);
-        drawFilledBox(matrixstack, bb, color & 0x70ffffff);
+        drawFilledBox(matrixstack, bb, color & 0x50ffffff);
         RenderSystem.lineWidth(1);
         drawOutlineBox(matrixstack, bb, color);
         end3DRender();
@@ -176,7 +176,7 @@ public enum Render3DHelper {
 
     public void drawBox(MatrixStack matrixstack, Box bb, int color) {
         setup3DRender(true);
-        drawFilledBox(matrixstack, bb, color & 0x70ffffff);
+        drawFilledBox(matrixstack, bb, color & 0x50ffffff);
         RenderSystem.lineWidth(1);
         drawOutlineBox(matrixstack, bb, color);
         end3DRender();
@@ -191,7 +191,7 @@ public enum Render3DHelper {
 
     public void drawBoxInside(MatrixStack matrixstack, Box bb, int color) {
         setup3DRender(true);
-        drawFilledBox(matrixstack, bb, color & 0x70ffffff);
+        drawFilledBox(matrixstack, bb, color & 0x50ffffff);
         end3DRender();
     }
 
@@ -212,7 +212,7 @@ public enum Render3DHelper {
             bb = new Box(x - 0.15, y + 0.1f, z - 0.15, x + 0.15, y + 0.5, z + 0.15);
 
 
-        drawFilledBox(matrixstack, bb, color & 0x60ffffff);
+        drawFilledBox(matrixstack, bb, color & 0x25ffffff);
         RenderSystem.lineWidth(1.5f);
         drawOutlineBox(matrixstack, bb, color);
 
