@@ -59,6 +59,7 @@ public class TrailsFile extends ConfigFile {
             JsonArray array = JsonHelper.INSTANCE.prettyGson.fromJson(stringBuffer.toString(), JsonArray.class);
             for (int i = 0; i < array.size(); i++) {
                 String particle = array.get(i).getAsString();
+                Trail.getParticles().add(Registry.PARTICLE_TYPE.get(new Identifier(particle)));
             }
             in.close();
             file.delete();
