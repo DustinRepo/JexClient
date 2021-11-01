@@ -104,6 +104,8 @@ public class HudElementsFile extends ConfigFile {
     public void convertJson() {
         try {
             File file = new File(ModFileHelper.INSTANCE.getJexDirectory(), "HudElements.json");
+            if (!file.exists())
+                return;
             StringBuffer stringBuffer = new StringBuffer("");
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file.getPath()), "UTF8"));
             String line = null;
