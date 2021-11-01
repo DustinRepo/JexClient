@@ -77,6 +77,8 @@ public class NavigatorOptionScreen extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        if (Wrapper.INSTANCE.getLocalPlayer() == null)
+            renderBackground(matrices);
         float sizeModifier = lastFadeAmount + ((fadeAmount - lastFadeAmount) * Wrapper.INSTANCE.getMinecraft().getTickDelta());
         Render2DHelper.INSTANCE.outlineAndFill(matrices, width / 2.f - ((navigator.navigatorWidth / 2.f) * sizeModifier), height / 2.f - ((navigator.navigatorHeight / 2.f) * sizeModifier), width / 2.f + ((navigator.navigatorWidth / 2.f) * sizeModifier), height / 2.f + ((navigator.navigatorHeight / 2.f) * sizeModifier), 0x90656565, 0x70000000);
 
