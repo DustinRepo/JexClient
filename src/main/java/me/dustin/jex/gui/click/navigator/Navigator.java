@@ -78,6 +78,8 @@ public class Navigator extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        if (Wrapper.INSTANCE.getLocalPlayer() == null)
+            renderBackground(matrices);
         Scissor.INSTANCE.cut((int)navigatorX, (int)navigatorY, (int)navigatorWidth, (int)navigatorHeight);
         featureButtons.forEach(navigatorFeatureButton -> {
             if (navigatorFeatureButton.getY() + navigatorFeatureButton.getHeight() > navigatorY && navigatorFeatureButton.getY() < navigatorY + navigatorHeight)
