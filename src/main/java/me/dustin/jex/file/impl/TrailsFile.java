@@ -61,6 +61,8 @@ public class TrailsFile extends ConfigFile {
                 String particle = array.get(i).getAsString();
             }
             in.close();
+            file.delete();
+            write();
         } catch (Exception e) {
             e.printStackTrace();
         }
