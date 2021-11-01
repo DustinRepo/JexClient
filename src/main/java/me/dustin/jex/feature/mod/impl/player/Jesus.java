@@ -57,7 +57,7 @@ public class Jesus extends Feature {
                     Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVehicle().getVelocity();
                     Wrapper.INSTANCE.getLocalPlayer().getVehicle().setVelocity(orig.getX(), 0.3, orig.getZ());
                 }
-                if (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer()) && Wrapper.INSTANCE.getLocalPlayer().isOnGround() && !Wrapper.INSTANCE.getLocalPlayer().isSneaking()) {
+                if (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer()) && !Wrapper.INSTANCE.getLocalPlayer().isOnGround() && !Wrapper.INSTANCE.getLocalPlayer().isSneaking()) {
                     Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
                     Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), 0.1, orig.getZ());
                 }
@@ -83,17 +83,15 @@ public class Jesus extends Feature {
         if (event instanceof EventBlockCollisionShape eventBox) {
             if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld() == null || mode.equalsIgnoreCase("Dolphin"))
                 return;
-            Block block = eventBox.getBlock();
             if (WorldHelper.INSTANCE.isWaterlogged(eventBox.getBlockPos())) {
                 FluidState fluidState = WorldHelper.INSTANCE.getFluidState(eventBox.getBlockPos());
-                if (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer()) || Wrapper.INSTANCE.getLocalPlayer().isSneaking() || Wrapper.INSTANCE.getLocalPlayer().fallDistance > 3)
+                if (Wrapper.INSTANCE.getLocalPlayer().isSubmergedInWater() || (eventBox.getBlockPos().getY() < Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5f && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer())) || Wrapper.INSTANCE.getLocalPlayer().isSneaking() || Wrapper.INSTANCE.getLocalPlayer().fallDistance > 3)
                     return;
                 if (fluidState.getLevel() == 8) {
                     Box waterBox = new Box(0.1f, 0, 0.1f, 0.9f, Wrapper.INSTANCE.getLocalPlayer().isRiding() ? 0.92f : 1, 0.9f);
                     eventBox.setVoxelShape(VoxelShapes.cuboid(waterBox));
                 } else
                     eventBox.setVoxelShape(fluidState.getShape(Wrapper.INSTANCE.getWorld(), eventBox.getBlockPos()));
-
                 eventBox.cancel();
             }
         }
