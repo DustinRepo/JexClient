@@ -98,7 +98,8 @@ public class AccountManagerScreen extends Screen {
             Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(new TitleScreen()));
         });
         importButton = new ButtonWidget(2, 2, 50, 15, new LiteralText("Import"), button -> {
-            if (new File(ModFileHelper.INSTANCE.getJexDirectory(), "Accounts-Unencrypted.json").exists()) {
+            File file = new File(ModFileHelper.INSTANCE.getJexDirectory() + File.separator + "config","Accounts-Unencrypted.yml");
+            if (file.exists()) {
                 MinecraftAccountManager.INSTANCE.getAccounts().clear();
                 ((AltFile)ConfigManager.INSTANCE.get(AltFile.class)).importFile();
                 ConfigManager.INSTANCE.get(AltFile.class).write();
@@ -109,7 +110,7 @@ public class AccountManagerScreen extends Screen {
         });
         exportButton = new ButtonWidget(width - 52, 2, 50, 15, new LiteralText("Export"), button -> {
             ((AltFile)ConfigManager.INSTANCE.get(AltFile.class)).exportFile();
-            outputString = "Exported alts to Accounts-Unencrypted.json";
+            outputString = "Exported alts to config/Accounts-Unencrypted.json";
         });
         searchTextField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) midX - 150, (height / 2) - 124, 250, 20, new LiteralText(""));
         searchTextField.setVisible(true);

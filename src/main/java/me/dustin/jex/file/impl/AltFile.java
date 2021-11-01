@@ -37,6 +37,8 @@ public class AltFile extends ConfigFile {
             } else if (minecraftAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
                 accountMap.put("cracked", mojangAccount.isCracked());
             }
+            accountMap.put("loginCount", minecraftAccount.loginCount);
+            accountMap.put("lastUsed", minecraftAccount.lastUsed);
             yamlMap.put(minecraftAccount.getUsername(), accountMap);
         });
 
@@ -53,12 +55,17 @@ public class AltFile extends ConfigFile {
             Map<String, Object> altData = (Map<String, Object>) o;
             String accountType = String.valueOf(altData.get("account-type"));
             String email = String.valueOf(altData.get("email"));
-            String password = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), String.valueOf(altData.get("password")));
+            String password = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), (String)altData.get("password"));
+            long lastUsed = (long)altData.get("lastUsed");
+            int loginCount =(int)altData.get("loginCount");
+
             if ("msa".equalsIgnoreCase(accountType)) {
                 String accessToken = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), String.valueOf(altData.get("accessToken")));
                 String refreshToken = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), String.valueOf(altData.get("refreshToken")));
                 String uuid = String.valueOf(altData.get("uuid"));
                 MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(s, email, password, accessToken, refreshToken, uuid);
+                microsoftAccount.lastUsed = lastUsed;
+                microsoftAccount.loginCount = loginCount;
                 MinecraftAccountManager.INSTANCE.getAccounts().add(microsoftAccount);
             } else if ("mojang".equalsIgnoreCase(accountType)){
                 boolean cracked = (boolean)altData.get("cracked");
@@ -67,13 +74,15 @@ public class AltFile extends ConfigFile {
                     mojangAccount = new MinecraftAccount.MojangAccount(s);
                 else
                     mojangAccount = new MinecraftAccount.MojangAccount(s, email, password);
+                mojangAccount.lastUsed = lastUsed;
+                mojangAccount.loginCount = loginCount;
                 MinecraftAccountManager.INSTANCE.getAccounts().add(mojangAccount);
             }
         });
     }
 
     public void exportFile() {
-        File file = new File("Accounts-Unencrypted.yml");
+        File file = new File(ModFileHelper.INSTANCE.getJexDirectory() + File.separator + "config","Accounts-Unencrypted.yml");
         Map<String, Object> yamlMap = new HashMap<>();
 
         MinecraftAccountManager.INSTANCE.getAccounts().forEach(minecraftAccount -> {
@@ -88,6 +97,8 @@ public class AltFile extends ConfigFile {
             } else if (minecraftAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
                 accountMap.put("cracked", mojangAccount.isCracked());
             }
+            accountMap.put("loginCount", minecraftAccount.loginCount);
+            accountMap.put("lastUsed", minecraftAccount.lastUsed);
             yamlMap.put(minecraftAccount.getUsername(), accountMap);
         });
 
@@ -96,19 +107,26 @@ public class AltFile extends ConfigFile {
     }
 
     public void importFile() {
-        File file = new File(ModFileHelper.INSTANCE.getJexDirectory(), "Accounts-Unencrypted.yml");
+        File file = new File(ModFileHelper.INSTANCE.getJexDirectory() + File.separator + "config","Accounts-Unencrypted.yml");
         Map<String, Object> parsedYaml = YamlHelper.INSTANCE.readFile(file);
+
+        if (parsedYaml == null || parsedYaml.isEmpty())
+            return;
 
         parsedYaml.forEach((s, o) -> {
             Map<String, Object> altData = (Map<String, Object>) o;
             String accountType = (String)altData.get("account-type");
             String email = (String)altData.get("email");
             String password = (String)altData.get("password");
+            long lastUsed = (long)altData.get("lastUsed");
+            int loginCount =(int)altData.get("loginCount");
             if ("msa".equalsIgnoreCase(accountType)) {
                 String accessToken = (String)altData.get("accessToken");
                 String refreshToken = (String)altData.get("refreshToken");
                 String uuid = (String)altData.get("uuid");
                 MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(s, email, password, accessToken, refreshToken, uuid);
+                microsoftAccount.lastUsed = lastUsed;
+                microsoftAccount.loginCount = loginCount;
                 MinecraftAccountManager.INSTANCE.getAccounts().add(microsoftAccount);
             } else if ("mojang".equalsIgnoreCase(accountType)){
                 boolean cracked = (boolean)altData.get("cracked");
@@ -117,6 +135,8 @@ public class AltFile extends ConfigFile {
                     mojangAccount = new MinecraftAccount.MojangAccount(s);
                 else
                     mojangAccount = new MinecraftAccount.MojangAccount(s, email, password);
+                mojangAccount.lastUsed = lastUsed;
+                mojangAccount.loginCount = loginCount;
                 MinecraftAccountManager.INSTANCE.getAccounts().add(mojangAccount);
             }
         });
@@ -129,7 +149,7 @@ public class AltFile extends ConfigFile {
                 return;
             StringBuffer stringBuffer = new StringBuffer("");
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
-            String line = null;
+            String line;
             while ((line = in.readLine()) != null) {
                 stringBuffer.append(line);
             }
