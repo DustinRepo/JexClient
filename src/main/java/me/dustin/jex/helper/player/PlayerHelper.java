@@ -112,17 +112,17 @@ public enum PlayerHelper {
         setPitch(getPitch() + add);
     }
 
-    public void setVelocityX(float x) {
+    public void setVelocityX(double x) {
         Vec3d velo = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
         Wrapper.INSTANCE.getLocalPlayer().setVelocity(x, velo.y, velo.z);
     }
 
-    public void setVelocityY(float y) {
+    public void setVelocityY(double y) {
         Vec3d velo = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
         Wrapper.INSTANCE.getLocalPlayer().setVelocity(velo.x, y, velo.z);
     }
 
-    public void setVelocityZ(float z) {
+    public void setVelocityZ(double z) {
         Vec3d velo = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
         Wrapper.INSTANCE.getLocalPlayer().setVelocity(velo.x, velo.y, z);
     }
