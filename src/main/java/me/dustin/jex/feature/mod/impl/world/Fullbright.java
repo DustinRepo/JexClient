@@ -2,12 +2,15 @@ package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Goodbye, darkness. You were never my friend.")
 public class Fullbright extends Feature {
 
+    @Op(name = "Reset Gamma", max = 1, inc = 0.05f)
+    public float resetGamma = 1;
 
     @EventListener(events = {EventTick.class})
     private void tick(EventTick eventTick) {
@@ -15,7 +18,7 @@ public class Fullbright extends Feature {
             return;
         double gamma = Wrapper.INSTANCE.getOptions().gamma;
         if (!getState()) {
-            if (gamma > 1)
+            if (gamma > resetGamma)
                 Wrapper.INSTANCE.getOptions().gamma -= 0.5f;
             else {
                 super.onDisable();
