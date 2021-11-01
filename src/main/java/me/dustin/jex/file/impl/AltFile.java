@@ -56,7 +56,8 @@ public class AltFile extends ConfigFile {
             String accountType = String.valueOf(altData.get("account-type"));
             String email = String.valueOf(altData.get("email"));
             String password = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), (String)altData.get("password"));
-            long lastUsed = (long)altData.get("lastUsed");
+            //this is stupid as fuck but snakeyaml likes to crash any other way. Call it an int "can not convert long to int", call it a long "can not convert from int to long"
+            long lastUsed = Long.parseLong(String.valueOf(altData.get("lastUsed")));
             int loginCount =(int)altData.get("loginCount");
 
             if ("msa".equalsIgnoreCase(accountType)) {
@@ -118,7 +119,7 @@ public class AltFile extends ConfigFile {
             String accountType = (String)altData.get("account-type");
             String email = (String)altData.get("email");
             String password = (String)altData.get("password");
-            long lastUsed = (long)altData.get("lastUsed");
+            long lastUsed = Long.parseLong(String.valueOf(altData.get("lastUsed")));
             int loginCount =(int)altData.get("loginCount");
             if ("msa".equalsIgnoreCase(accountType)) {
                 String accessToken = (String)altData.get("accessToken");
