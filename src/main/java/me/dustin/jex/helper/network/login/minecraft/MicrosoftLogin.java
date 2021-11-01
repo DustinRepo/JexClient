@@ -285,7 +285,7 @@ public class MicrosoftLogin {
                 MinecraftAccountManager.INSTANCE.getAccounts().add(microsoftAccount);
             }
         }
-        if (ConfigManager.INSTANCE.get(AltFile.class) == null)
+        if (ConfigManager.INSTANCE.get(AltFile.class) != null)
             new AltFile().write();
     }
 
