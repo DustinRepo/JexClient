@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 public class Addon {
 
@@ -86,10 +87,12 @@ public class Addon {
 			loadAddons(uuid);
 			return null;
 		}
-		for (AddonResponse response : responses) {
-			if (response != null && response.getUuid() != null && response.getUuid().equalsIgnoreCase(uuid))
-				return response;
-		}
+		try {
+			for (AddonResponse response : responses) {
+				if (response != null && response.getUuid() != null && response.getUuid().equalsIgnoreCase(uuid))
+					return response;
+			}
+		} catch (ConcurrentModificationException e) {}
 		return null;
 	}
 
