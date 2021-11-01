@@ -287,8 +287,6 @@ public class MicrosoftLogin {
         }
         if (ConfigManager.INSTANCE.get(AltFile.class) == null)
             new AltFile().write();
-        else
-            ConfigManager.INSTANCE.get(AltFile.class).write();
     }
 
     private String getLoginCode(String email, String password) {
