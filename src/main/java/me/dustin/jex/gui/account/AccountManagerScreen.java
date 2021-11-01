@@ -1,5 +1,7 @@
 package me.dustin.jex.gui.account;
 
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.misc.IRC;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
@@ -15,6 +17,7 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -293,6 +296,8 @@ public class AccountManagerScreen extends Screen {
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
                     button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
                     outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+                    if (FabricLoader.getInstance().isDevelopmentEnvironment())
+                        ((IRC) Feature.get(IRC.class)).ircManager.putNick(session.getUsername());
                 }
             }).login();
         } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
@@ -303,6 +308,8 @@ public class AccountManagerScreen extends Screen {
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
                     button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
                     outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+                    if (FabricLoader.getInstance().isDevelopmentEnvironment())
+                        ((IRC) Feature.get(IRC.class)).ircManager.putNick(session.getUsername());
                 }
             }).login();
         }
