@@ -3,10 +3,11 @@ package me.dustin.jex.feature.mod.impl.player;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.events.core.enums.EventPriority;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.event.world.EventFluidCollisionShape;
+import me.dustin.jex.event.world.EventBlockCollisionShape;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -15,8 +16,8 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.block.Block;
-import net.minecraft.block.FluidBlock;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -32,7 +33,7 @@ public class Jesus extends Feature {
     public boolean allowJump = true;
     private int ticks;
 
-    @EventListener(events = {EventPlayerPackets.class, EventFluidCollisionShape.class, EventMove.class, EventPacketSent.class}, priority = EventPriority.LOW)
+    @EventListener(events = {EventPlayerPackets.class, EventBlockCollisionShape.class, EventMove.class, EventPacketSent.class}, priority = EventPriority.LOW)
     public void run(Event event) {
         BaritoneHelper.INSTANCE.setAssumeJesus(true);
         if (event instanceof EventMove) {
@@ -79,17 +80,18 @@ public class Jesus extends Feature {
 
             }
         }
-        if (event instanceof EventFluidCollisionShape eventBox) {
+        if (event instanceof EventBlockCollisionShape eventBox) {
             if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld() == null || mode.equalsIgnoreCase("Dolphin"))
                 return;
-            Block block = eventBox.getBlock();
-            if (block instanceof FluidBlock) {
-                Box waterBox = new Box(0.1f, 0, 0.1f, 0.9f, Wrapper.INSTANCE.getLocalPlayer().isRiding() ? 0.92f : 1, 0.9f);
+            if (WorldHelper.INSTANCE.isWaterlogged(eventBox.getBlockPos())) {
+                FluidState fluidState = WorldHelper.INSTANCE.getFluidState(eventBox.getBlockPos());
                 if (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer()) || Wrapper.INSTANCE.getLocalPlayer().isSneaking() || Wrapper.INSTANCE.getLocalPlayer().fallDistance > 3)
-                    eventBox.setVoxelShape(VoxelShapes.empty());
-                else
+                    return;
+                if (fluidState.getLevel() == 8) {
+                    Box waterBox = new Box(0.1f, 0, 0.1f, 0.9f, Wrapper.INSTANCE.getLocalPlayer().isRiding() ? 0.92f : 1, 0.9f);
                     eventBox.setVoxelShape(VoxelShapes.cuboid(waterBox));
-
+                } else
+                eventBox.setVoxelShape(fluidState.getShape(Wrapper.INSTANCE.getWorld(), eventBox.getBlockPos()));
                 eventBox.cancel();
             }
         }
@@ -97,7 +99,7 @@ public class Jesus extends Feature {
             if (sent.getMode() != EventPacketSent.Mode.PRE)
                 return;
             if (sent.getPacket() instanceof PlayerMoveC2SPacket) {
-                if (WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer())) {
+                if (WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer()) || WorldHelper.INSTANCE.isTouchingLiquidBlockSpace(Wrapper.INSTANCE.getLocalPlayer())) {
                     if (ticks >= 4) {
                         PlayerMoveC2SPacket origPacket = (PlayerMoveC2SPacket) sent.getPacket();
                         PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(origPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), origPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.02, origPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), origPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), origPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), origPacket.isOnGround());

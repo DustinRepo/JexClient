@@ -11,16 +11,15 @@ import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FluidBlock;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorType;
 import net.minecraft.entity.Entity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
@@ -45,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public enum WorldHelper {
@@ -62,6 +62,17 @@ public enum WorldHelper {
         if (Wrapper.INSTANCE.getWorld() == null)
             return null;
         return Wrapper.INSTANCE.getWorld().getBlockState(pos);
+    }
+
+    public boolean isWaterlogged(BlockPos pos) {
+        BlockState blockState = getBlockState(pos);
+        if (blockState == null)
+            return false;
+        return blockState.getBlock().getFluidState(blockState) != Fluids.EMPTY.getDefaultState();
+    }
+
+    public FluidState getFluidState(BlockPos pos) {
+        return getBlock(pos).getFluidState(getBlockState(pos));
     }
 
     public Identifier getDimensionID() {
@@ -138,6 +149,37 @@ public enum WorldHelper {
         boolean onLiquid = false;
         int y = (int) boundingBox.minY;
         for (int x = MathHelper.floor(boundingBox.minX); x < MathHelper.floor(boundingBox.maxX + 1.0D); x++) {
+            for (int z = MathHelper.floor(boundingBox.minZ); z < MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
+                BlockPos blockPos = new BlockPos(x, y, z);
+                Block block = getBlock(new BlockPos(x, y, z));
+                if (block != Blocks.AIR) {
+                    if (!isWaterlogged(blockPos))
+                        return false;
+                    FluidState fluidState = getFluidState(blockPos);
+                    Box blockBB = fluidState.getShape(Wrapper.INSTANCE.getWorld(), blockPos).getBoundingBox().offset(blockPos);
+                    if (boundingBox.minX < blockBB.maxX &&
+                        boundingBox.maxX > blockBB.minX &&
+                        boundingBox.minY < blockBB.maxY &&
+                        boundingBox.maxY > blockBB.minY &&
+                        boundingBox.minZ < blockBB.maxZ &&
+                        boundingBox.maxZ > blockBB.minZ) {
+                        onLiquid = true;
+                    }
+                }
+            }
+        }
+        return onLiquid;
+    }
+
+    public boolean isTouchingLiquidBlockSpace(Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+        Box boundingBox = entity.getBoundingBox();
+        boundingBox = boundingBox.expand(-0.01D, -0.0D, -0.01D).offset(0.0D, -0.01D, 0.0D);
+        boolean onLiquid = false;
+        int y = (int) boundingBox.minY;
+        for (int x = MathHelper.floor(boundingBox.minX); x < MathHelper.floor(boundingBox.maxX + 1.0D); x++) {
             for (int z = MathHelper.floor(boundingBox.minZ); z <
                     MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
                 Block block = getBlock(new BlockPos(x, y, z));
@@ -156,14 +198,14 @@ public enum WorldHelper {
         if (entity == null) {
             return false;
         }
-        Box par1AxisAlignedBB = entity.getBoundingBox();
-        par1AxisAlignedBB = par1AxisAlignedBB.expand(-0, -0.081D, -0.081D);
-        int var4 = MathHelper.floor(par1AxisAlignedBB.minX);
-        int var5 = MathHelper.floor(par1AxisAlignedBB.maxX + 1.0D);
-        int var6 = MathHelper.floor(par1AxisAlignedBB.minY);
-        int var7 = MathHelper.floor(par1AxisAlignedBB.maxY + 0.8D);
-        int var8 = MathHelper.floor(par1AxisAlignedBB.minZ);
-        int var9 = MathHelper.floor(par1AxisAlignedBB.maxZ + 1.0D);
+        Box boundingBox = entity.getBoundingBox();
+        boundingBox = boundingBox.expand(-0, -0.081D, -0.081D);
+        int var4 = MathHelper.floor(boundingBox.minX);
+        int var5 = MathHelper.floor(boundingBox.maxX + 1.0D);
+        int var6 = MathHelper.floor(boundingBox.minY);
+        int var7 = MathHelper.floor(boundingBox.maxY + 0.8D);
+        int var8 = MathHelper.floor(boundingBox.minZ);
+        int var9 = MathHelper.floor(boundingBox.maxZ + 1.0D);
         if (Wrapper.INSTANCE.getWorld().getChunk(
                 new BlockPos(entity.getX(), entity.getY(), entity.getZ())) == null) {
             return false;
@@ -171,9 +213,19 @@ public enum WorldHelper {
         for (int var12 = var4; var12 < var5; var12++) {
             for (int var13 = var6; var13 < var7; var13++) {
                 for (int var14 = var8; var14 < var9; var14++) {
-                    Block var15 = getBlock(new BlockPos(var12, var13, var14));
+                    BlockPos blockPos = new BlockPos(var12, var13, var14);
+                    Block var15 = getBlock(blockPos);
                     if ((var15 instanceof FluidBlock)) {
-                        return true;
+                        FluidState fluidState = getFluidState(blockPos);
+                        Box blockBB = fluidState.getShape(Wrapper.INSTANCE.getWorld(), blockPos).getBoundingBox().offset(blockPos);
+                        if (boundingBox.minX < blockBB.maxX &&
+                            boundingBox.maxX > blockBB.minX &&
+                            boundingBox.minY < blockBB.maxY &&
+                            boundingBox.maxY > blockBB.minY &&
+                            boundingBox.minZ < blockBB.maxZ &&
+                            boundingBox.maxZ > blockBB.minZ) {
+                            return true;
+                        }
                     }
                 }
             }
