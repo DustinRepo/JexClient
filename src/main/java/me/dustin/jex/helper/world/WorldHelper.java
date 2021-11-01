@@ -68,7 +68,7 @@ public enum WorldHelper {
         BlockState blockState = getBlockState(pos);
         if (blockState == null)
             return false;
-        return blockState.getBlock().getFluidState(blockState) != Fluids.EMPTY.getDefaultState();
+        return blockState.getFluidState() != Fluids.EMPTY.getDefaultState();
     }
 
     public FluidState getFluidState(BlockPos pos) {
