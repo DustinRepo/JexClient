@@ -298,6 +298,8 @@ public class AccountManagerScreen extends Screen {
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
                     button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
                     outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+                    mojangAccount.loginCount++;
+                    mojangAccount.lastUsed = System.currentTimeMillis();
                     if (FabricLoader.getInstance().isDevelopmentEnvironment())
                         ((IRC) Feature.get(IRC.class)).ircManager.putNick(session.getUsername());
                 }
@@ -310,6 +312,8 @@ public class AccountManagerScreen extends Screen {
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
                     button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
                     outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+                    microsoftAccount.loginCount++;
+                    microsoftAccount.lastUsed = System.currentTimeMillis();
                     if (FabricLoader.getInstance().isDevelopmentEnvironment())
                         ((IRC) Feature.get(IRC.class)).ircManager.putNick(session.getUsername());
                 }

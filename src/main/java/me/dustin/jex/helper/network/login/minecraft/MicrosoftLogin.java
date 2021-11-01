@@ -238,10 +238,6 @@ public class MicrosoftLogin {
         JexClient.INSTANCE.getLogger().info("Grabbing Minecraft profile");
         if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
             accountManagerScreen.outputString = "Grabbing Minecraft Profile";
-            if (accountManagerScreen.getSelected() != null && accountManagerScreen.getSelected().getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-                microsoftAccount.loginCount++;
-                microsoftAccount.lastUsed = System.currentTimeMillis();
-            }
         }
         Map<String, String> header = new HashMap<>();
         header.put("Authorization", "Bearer " + token);
