@@ -27,17 +27,7 @@ public class IRCManager extends PircBot {
 
     public IRCManager(String username)
     {
-        try
-        {
-            String firstname = username.substring(0, 1);
-            int i = Integer.parseInt(firstname);
-            JexClient.INSTANCE.getLogger().info("[IRC] Usernames can not begin with numbers");
-            username = "MC" + username;
-        }
-        catch (NumberFormatException e)
-        {
-        }
-        this.username = username;
+        putNick(username);
     }
 
     public void connect()
@@ -64,6 +54,17 @@ public class IRCManager extends PircBot {
             JexClient.INSTANCE.getLogger().info("Joined channel");
             ChatHelper.INSTANCE.addClientMessage("Joined channel");
         }).start();
+    }
+
+    public void putNick(String username) {
+        try
+        {
+            String firstname = username.substring(0, 1);
+            int i = Integer.parseInt(firstname);
+            JexClient.INSTANCE.getLogger().info("[IRC] Usernames can not begin with numbers");
+            username = "MC" + username;
+        } catch (NumberFormatException e) {}
+        this.username = username;
     }
 
     @Override
