@@ -28,7 +28,7 @@ public class Ghost extends Feature {
             }
         }
         else if (event instanceof EventJoinWorld eventJoinWorld) {
-            if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= 0) {
+            if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getHealth() <= 0) {
                 Wrapper.INSTANCE.getLocalPlayer().setHealth(1);
                 Wrapper.INSTANCE.getMinecraft().setScreen(null);
             }
