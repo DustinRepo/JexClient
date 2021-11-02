@@ -1,6 +1,5 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.file.core.ConfigManager;
@@ -59,8 +58,8 @@ public class HudElement {
         if (isHovered()) {
             if (mouseButton == 0) {
                 isDragging = true;
-                xDif = getX() - MouseHelper.INSTANCE.getMouseX();
-                yDif = getY() - MouseHelper.INSTANCE.getMouseY();
+                xDif = getX() - (float)MouseHelper.INSTANCE.getMouseX_D();
+                yDif = getY() - (float)MouseHelper.INSTANCE.getMouseY_D();
             } else if (mouseButton == 1) {
                 setTopSide(!isTopSide());
                 ConfigManager.INSTANCE.get(HudElementsFile.class).write();
