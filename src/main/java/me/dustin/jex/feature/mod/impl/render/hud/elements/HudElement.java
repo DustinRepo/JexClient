@@ -58,8 +58,8 @@ public class HudElement {
         if (isHovered()) {
             if (mouseButton == 0) {
                 isDragging = true;
-                xDif = getX() - MouseHelper.INSTANCE.getMouseX();
-                yDif = getY() - MouseHelper.INSTANCE.getMouseY();
+                xDif = getX() - (float)MouseHelper.INSTANCE.getMouseX_D();
+                yDif = getY() - (float)MouseHelper.INSTANCE.getMouseY_D();
             } else if (mouseButton == 1) {
                 setTopSide(!isTopSide());
                 ConfigManager.INSTANCE.get(HudElementsFile.class).write();
