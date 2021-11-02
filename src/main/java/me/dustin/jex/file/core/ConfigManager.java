@@ -1,5 +1,6 @@
 package me.dustin.jex.file.core;
 
+import me.dustin.jex.file.impl.AltFile;
 import org.reflections.Reflections;
 
 import java.util.ArrayList;
@@ -24,7 +25,10 @@ public enum ConfigManager {
     }
 
     public void saveAll() {
-        getConfigFiles().forEach(ConfigFile::write);
+        getConfigFiles().forEach(configFile -> {
+            if (!(configFile instanceof AltFile))
+                configFile.write();
+        });
     }
 
     public ArrayList<ConfigFile> getConfigFiles() {
