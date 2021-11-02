@@ -9,6 +9,7 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.YamlHelper;
 import me.dustin.jex.helper.math.EncryptHelper;
 import me.dustin.jex.helper.misc.HWID;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
 
 import java.io.BufferedReader;
@@ -57,7 +58,10 @@ public class AltFile extends ConfigFile {
             String email = String.valueOf(altData.get("email"));
             String password = EncryptHelper.INSTANCE.decrypt(HWID.INSTANCE.getHWID(), (String)altData.get("password"));
             //this is stupid as fuck but snakeyaml likes to crash any other way. Call it an int "can not convert long to int", call it a long "can not convert from int to long"
-            long lastUsed = Long.parseLong(String.valueOf(altData.get("lastUsed")));
+            long lastUsed;
+            try {lastUsed = Long.parseLong(String.valueOf(altData.get("lastUsed"))); } catch (Exception e) {
+                lastUsed = 0;
+            }
             int loginCount =(int)altData.get("loginCount");
 
             if ("msa".equalsIgnoreCase(accountType)) {
