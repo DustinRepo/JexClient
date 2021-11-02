@@ -72,7 +72,7 @@ public enum WorldHelper {
     }
 
     public FluidState getFluidState(BlockPos pos) {
-        return getBlock(pos).getFluidState(getBlockState(pos));
+        return getBlockState(pos).getFluidState();
     }
 
     public Identifier getDimensionID() {
