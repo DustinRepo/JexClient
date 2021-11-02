@@ -95,4 +95,5 @@ remapJar {
 
 jar {
     from "LICENSE"
+    manifest.attributes("Main-Class": "me.dustin.jex.frame.JexFrame")
 }

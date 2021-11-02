@@ -38,6 +38,7 @@ public enum CommandManagerJex {
     public static final CommandDispatcher<FabricClientCommandSource> DISPATCHER = new CommandDispatcher<>();
 
     public void registerCommands() {
+        EventAPI.getInstance().unregister(this);
         this.getCommands().clear();
         Reflections reflections = new Reflections("me.dustin.jex.feature.command.impl");
         Set<Class<? extends Command>> allClasses = reflections.getSubTypesOf(Command.class);
