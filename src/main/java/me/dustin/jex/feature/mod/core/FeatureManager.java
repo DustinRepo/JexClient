@@ -1,5 +1,7 @@
 package me.dustin.jex.feature.mod.core;
 
+import me.dustin.events.api.EventAPI;
+import me.dustin.events.core.Event;
 import me.dustin.jex.helper.file.ClassHelper;
 import org.reflections.Reflections;
 
@@ -11,16 +13,11 @@ public enum FeatureManager {
     private final ArrayList<Feature> features = new ArrayList<>();
 
     public void initializeFeatureManager() {
+        this.getFeatures().forEach(feature -> feature.setState(false));
         this.getFeatures().clear();
 
         //TODO: better method of doing this without a library
         Reflections reflections = new Reflections("me.dustin.jex.feature.mod.impl");
-        ArrayList<Class<?>> classes = new ArrayList<>();
-        try {//works in intellij but not when built
-            classes = ClassHelper.INSTANCE.getClassesOther("me.dustin.jex.feature.mod.impl", Feature.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         Set<Class<? extends Feature>> allClasses = reflections.getSubTypesOf(Feature.class);
         allClasses.forEach(clazz -> {
             try {

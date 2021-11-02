@@ -15,15 +15,17 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import java.util.Map;
 
 @Mixin(Shader.class)
-public class MixinShader implements IShader {
+public class MixinShaderWithOptifine implements IShader {
 
-    @Shadow @Final private String name;
+    @Shadow
+    @Final
+    private String name;
 
     private Map<String, GlUniform> customUniforms = Maps.newHashMap();
 
     //fuck optifabric, this method needs to be static with it, but not without
-    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/util/Identifier.<init> (Ljava/lang/String;)V"), index = 0)
-    public String renameID(String originalID) {
+    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/util/Identifier.<init>(Ljava/lang/String;)V"), index = 0)
+    private static String renameID(String originalID) {
         if (originalID.contains("jex:")) {
             //remove original one with the id split in the middle of the name
             String newString = originalID.replace("jex:","");
@@ -33,7 +35,7 @@ public class MixinShader implements IShader {
         return originalID;
     }
 
-    @ModifyArg(method = "loadProgram", at = @At(value = "INVOKE", target = "net/minecraft/util/Identifier.<init> (Ljava/lang/String;)V"), index = 0)
+    @ModifyArg(method = "loadProgram", at = @At(value = "INVOKE", target = "net/minecraft/util/Identifier.<init>(Ljava/lang/String;)V"), index = 0)
     private static String renameIDOfHelpers(String originalID) {
         if (originalID.contains("jex:")) {
             //remove original one with the id split in the middle of the name

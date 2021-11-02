@@ -95,7 +95,8 @@ public class FeatureFile extends ConfigFile {
                         }
                         option.parseValue(String.valueOf(o1));
                     });
-                feature.setState(state);
+                if (feature.getState() != state)
+                    feature.setState(state);
                 feature.setKey(key);
                 feature.setVisible(visible);
             }
