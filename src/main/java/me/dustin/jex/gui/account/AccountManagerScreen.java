@@ -197,7 +197,7 @@ public class AccountManagerScreen extends Screen {
             FontHelper.INSTANCE.drawWithShadow(matrixStack, lastLoginString, width / 2.f + 6, height / 2.f + 23, -1);
         }
 
-        if (scrollbar != null) {
+        if (scrollbar != null && !accountButtons.isEmpty()) {
             float contentHeight = (accountButtons.get(accountButtons.size() - 1).getY() + (accountButtons.get(accountButtons.size() - 1).getHeight())) - accountButtons.get(0).getY();
             scrollbar.setContentHeight(contentHeight);
             scrollbar.render(matrixStack);
