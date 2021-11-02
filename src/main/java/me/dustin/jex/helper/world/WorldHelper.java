@@ -184,7 +184,7 @@ public enum WorldHelper {
                     MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
                 Block block = getBlock(new BlockPos(x, y, z));
                 if (block != Blocks.AIR) {
-                    if (!(block instanceof FluidBlock)) {
+                    if (!isWaterlogged(new BlockPos(x, y, z))) {
                         return false;
                     }
                     onLiquid = true;
