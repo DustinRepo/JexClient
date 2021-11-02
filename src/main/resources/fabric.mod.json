@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "jex",
-  "version": "${version}",
+  "version": "0.5.1",
   "name": "Jex Client",
-  "description": "A Utility Client mod to be used on Anarchy servers.",
+  "description": "A 1.17.1 Utility Client mod to be used on Anarchy servers.",
   "authors": [
     "Untrusted/Dustin - Main Dev",
     "sl - Code Contributor",
