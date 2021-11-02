@@ -205,9 +205,9 @@ public class Hud extends Feature {
         hudElements.add(new ArrayListElement(Render2DHelper.INSTANCE.getScaledWidth() - 20, 0, 20, 10));
         hudElements.add(new WatermarkElement(0, 0, 34, 34));
         hudElements.add(new PlayerFaceElement(34, 0, 34, 34));
-        hudElements.add(new UsernameElement(68, 0, 30, 11));
-        hudElements.add(new TPSElement(68, 22, 30, 11));
-        hudElements.add(new FPSElement(68, 11, 30, 11));
+        hudElements.add(new UsernameElement(69, 0, 30, 11));
+        hudElements.add(new TPSElement(69, 22, 30, 11));
+        hudElements.add(new FPSElement(69, 11, 30, 11));
         hudElements.add(new ServerElement(0, 34, 20, 11));
         hudElements.add(new PingElement(0, 45, 20, 11));
         hudElements.add(new LookElement(0, 56, 20, 11));
