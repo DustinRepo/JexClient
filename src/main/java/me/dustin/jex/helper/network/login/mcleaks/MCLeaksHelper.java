@@ -2,13 +2,19 @@ package me.dustin.jex.helper.network.login.mcleaks;
 
 import com.google.gson.JsonObject;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.packet.EventHello;
+import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.helper.file.JsonHelper;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.WebHelper;
+import net.minecraft.client.util.Session;
+import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.text.LiteralText;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public enum MCLeaksHelper {
     INSTANCE;
@@ -17,6 +23,7 @@ public enum MCLeaksHelper {
     private static final String JOIN_SERVER_URL = "https://auth.mcleaks.net/v1/joinserver";
 
     public MCLeaksAccount activeAccount;
+    public Session storedSession;
 
     public MCLeaksAccount getAccount(String token) {
         JsonObject object = new JsonObject();
@@ -36,6 +43,10 @@ public enum MCLeaksHelper {
 
     public void setActiveAccount(MCLeaksAccount activeAccount) {
         this.activeAccount = activeAccount;
+        if (storedSession == null) {
+            storedSession = Wrapper.INSTANCE.getMinecraft().getSession();
+        }
+        Wrapper.INSTANCE.getIMinecraft().setSession(new Session(activeAccount.mcname, "", "", Optional.of(""), Optional.of(""), Session.AccountType.MOJANG));
     }
 
     private boolean login(String server, int port, String serverHash) {
@@ -50,6 +61,7 @@ public enum MCLeaksHelper {
             header.put("Content-Type", "application/json");
             header.put("Accepts", "application/json");
             String resp = WebHelper.INSTANCE.sendPOST(JOIN_SERVER_URL, jsonObject.toString(), header);
+            JexClient.INSTANCE.getLogger().info(jsonObject.toString());
             if (resp != null && resp.contains("success") && resp.contains("true"))
                 return true;
         }
@@ -59,18 +71,26 @@ public enum MCLeaksHelper {
     @EventListener(events = {EventHello.class})
     private void receiveHello(EventHello eventHello) {
         if (activeAccount != null) {
-            String address = eventHello.getClientConnection().getAddress().toString();
+            String address = Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
             int port = 25565;
             if (address.contains(":")) {
-                address = address.split(":")[0];
+                String address1 = address.split(":")[0];
                 port = Integer.parseInt(address.split(":")[1]);
+                address = address1;
             }
             boolean success = login(address, port, eventHello.getServerhash());
             if (!success) {
                 eventHello.getClientConnection().disconnect(new LiteralText("Bad MCLeaks response"));
                 eventHello.cancel();
             }
+            JexClient.INSTANCE.getLogger().info("MCLeaks gave success to server: " + address + ":" + port + " name: " + activeAccount.mcname + " serverhash: " + eventHello.getServerhash());
         }
+    }
+
+    public void restoreSession() {
+        MCLeaksHelper.INSTANCE.activeAccount = null;
+        Wrapper.INSTANCE.getIMinecraft().setSession(MCLeaksHelper.INSTANCE.storedSession);
+        MCLeaksHelper.INSTANCE.storedSession = null;
     }
 
     public static class MCLeaksAccount {
