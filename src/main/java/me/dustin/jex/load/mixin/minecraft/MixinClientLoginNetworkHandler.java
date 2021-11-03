@@ -25,18 +25,11 @@ public class MixinClientLoginNetworkHandler {
 
     @Shadow @Final private ClientConnection connection;
 
-    @Inject(method = "onHello", at = @At(value = "INVOKE", target = "net/minecraft/text/TranslatableText.<init>(Ljava/lang/String;)V"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
-    public void onHelloPacket(LoginHelloS2CPacket packet, CallbackInfo ci) {
-        try {
-            SecretKey secretKey = NetworkEncryptionUtils.generateKey();
-            PublicKey publicKey = packet.getPublicKey();
-            String string2 = (new BigInteger(NetworkEncryptionUtils.generateServerId(packet.getServerId(), publicKey, secretKey))).toString(16);
-            EventHello eventHello = new EventHello(this.connection, string2).run();
-            if (eventHello.isCancelled())
-                ci.cancel();
-        } catch (NetworkEncryptionException var8) {
-            throw new IllegalStateException("Protocol error", var8);
-        }
+    @Inject(method = "onHello", at = @At(value = "INVOKE", target = "net/minecraft/network/packet/c2s/login/LoginKeyC2SPacket.<init>(Ljavax/crypto/SecretKey;Ljava/security/PublicKey;[B)V"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
+    public void onHelloPacket(LoginHelloS2CPacket packet, CallbackInfo ci, Cipher cipher3, Cipher cipher4, String string2, SecretKey secretKey, PublicKey publicKey) {
+        EventHello eventHello = new EventHello(this.connection, string2).run();
+        if (eventHello.isCancelled())
+            ci.cancel();
     }
 
 }

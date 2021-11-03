@@ -8,10 +8,13 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.Session;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.UUID;
 
 public class MCLeaksScreen extends Screen {
     private Screen parent;
@@ -22,6 +25,8 @@ public class MCLeaksScreen extends Screen {
     private String message;
 
     private boolean sessionRestored;
+
+    private Screen settingScreen;
 
     public MCLeaksScreen(Screen parent, boolean sessionRestored) {
         super(new LiteralText("MCLeaks"));
@@ -39,7 +44,7 @@ public class MCLeaksScreen extends Screen {
     @Override
     protected void init() {
         restoreButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 96 + 18, 128, 20, new LiteralText(this.sessionRestored ? "Session restored!" : "Restore Session"), button -> {
-            MCLeaksHelper.INSTANCE.activeAccount = null;
+            MCLeaksHelper.INSTANCE.restoreSession();
             Wrapper.INSTANCE.getMinecraft().openScreen(new MCLeaksScreen(this.parent, true));
             while(EventAPI.getInstance().alreadyRegistered(MCLeaksHelper.INSTANCE))
                 EventAPI.getInstance().unregister(MCLeaksHelper.INSTANCE);
@@ -51,14 +56,17 @@ public class MCLeaksScreen extends Screen {
             }
             button.active = false;
             button.setMessage(new LiteralText("Please wait ..."));
-            MCLeaksHelper.MCLeaksAccount account = MCLeaksHelper.INSTANCE.getAccount(tokenField.getText());
-            if (account != null) {
-                EventAPI.getInstance().register(MCLeaksHelper.INSTANCE);
-                MCLeaksHelper.INSTANCE.setActiveAccount(account);
-                Wrapper.INSTANCE.getMinecraft().openScreen(new MCLeaksScreen(this.parent, false, Formatting.GREEN + "Your token was redeemed successfully!"));
-            } else {
-                Wrapper.INSTANCE.getMinecraft().openScreen(new MCLeaksScreen(this.parent, false, Formatting.RED + "Invalid token!"));
-            }
+            new Thread(() -> {
+                MCLeaksHelper.MCLeaksAccount account = MCLeaksHelper.INSTANCE.getAccount(tokenField.getText());
+                if (account != null) {
+                    if (!EventAPI.getInstance().alreadyRegistered(MCLeaksHelper.INSTANCE))
+                        EventAPI.getInstance().register(MCLeaksHelper.INSTANCE);
+                    MCLeaksHelper.INSTANCE.setActiveAccount(account);
+                    settingScreen = new MCLeaksScreen(this.parent, false, Formatting.GREEN + "Your token was redeemed successfully!");
+                } else {
+                    settingScreen = new MCLeaksScreen(this.parent, false, Formatting.RED + "Invalid token!");
+                }
+            }).start();
         });
         ButtonWidget getTokenButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 120 + 18, 158, 20, new LiteralText("Get Token"), button -> {
             WebHelper.INSTANCE.openLink("https://mcleaks.net/");
@@ -77,6 +85,11 @@ public class MCLeaksScreen extends Screen {
 
     @Override
     public void tick() {
+        if (settingScreen != null) {
+            Wrapper.INSTANCE.getMinecraft().openScreen(settingScreen);
+            settingScreen = null;
+            return;
+        }
         tokenField.tick();
         super.tick();
     }
