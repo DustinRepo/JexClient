@@ -76,7 +76,7 @@ public class MixinClientPlayNetworkHandler {
         ci.cancel();
     }
 
-    @Inject(method = "onVelocityUpdate", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onEntityVelocityUpdate", at = @At("HEAD"), cancellable = true)
     public void onVelocityUpdate1(EntityVelocityUpdateS2CPacket packet, CallbackInfo ci) {
         NetworkThreadUtils.forceMainThread(packet, (ClientPlayNetworkHandler)(Object)this, this.client);
         Entity entity = this.world.getEntityById(packet.getId());

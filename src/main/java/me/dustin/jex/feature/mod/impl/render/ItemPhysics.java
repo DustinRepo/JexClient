@@ -56,7 +56,7 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
             return;
         matrixStack.translate(0, itemEntity.getHeight() / 1.5f, 0);
 
-        BakedModel bakedModel = Wrapper.INSTANCE.getMinecraft().getItemRenderer().getHeldItemModel(itemEntity.getStack(), itemEntity.world, null, itemEntity.getId());
+        BakedModel bakedModel = Wrapper.INSTANCE.getMinecraft().getItemRenderer().getModel(itemEntity.getStack(), itemEntity.world, null, itemEntity.getId());
         float roll = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsRoll.get(itemEntity), itemRotationsRoll.get(itemEntity));
         float pitch = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsPitch.get(itemEntity), itemRotationsPitch.get(itemEntity));
         float yaw = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsYaw.get(itemEntity), itemRotationsYaw.get(itemEntity));
