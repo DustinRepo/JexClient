@@ -9,6 +9,7 @@ import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
+import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 
 public class StrafeSpeed extends FeatureExtension {
 
@@ -20,7 +21,7 @@ public class StrafeSpeed extends FeatureExtension {
     public void pass(Event event) {
         if (event instanceof EventMove eventMove) {
             Speed speed = ((Speed) Feature.get(Speed.class));
-            if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround())
+            if ((BaritoneHelper.INSTANCE.isBaritoneRunning() || PathProcessor.lockedControls) && !Wrapper.INSTANCE.getLocalPlayer().isOnGround())
                 return;
             PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.strafeSpeed);
         } else if (event instanceof EventPlayerPackets eventPlayerPackets) {
