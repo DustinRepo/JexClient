@@ -43,19 +43,18 @@ public class JexFrame {
             try {
                 File thisjar = new File(JexFrame.class.getProtectionDomain().getCodeSource().getLocation().toURI());
                 File tempMixinsFile = new File("jex.mixins.json");
-                extractMixinsFile(thisjar, tempMixinsFile);
+                File tempFabricFile = new File("fabric.mod.json");
+                if (!tempMixinsFile.exists())
+                    tempMixinsFile.createNewFile();
+                if (!tempFabricFile.exists())
+                    tempFabricFile.createNewFile();
+                extractFiles(thisjar);
                 Thread.sleep(250);
-                String jsondata = readFile(tempMixinsFile);
-                System.out.println("jsonData from file: " + jsondata);
-                if (jsondata.contains("\"minecraft.MixinShader\"")) {
-                    jsondata = jsondata.replace("\"minecraft.MixinShader\"", "\"minecraft.MixinShaderWithOptifine\"");
-                }
-                ArrayList<String> stringList = new ArrayList<>(Arrays.asList(jsondata.split("\n")));
-                writeFile(tempMixinsFile, stringList);
+                rewriteFiles(tempMixinsFile, tempFabricFile);
 
-                System.out.println("Rezipping: " + jsondata);
                 reZip(thisjar.getAbsolutePath());
                 tempMixinsFile.delete();
+                tempFabricFile.delete();
                 JOptionPane.showMessageDialog(frame, "Done! There is now a JexClient-Optifine.jar in the same folder as this jar.\nYou can drop that in your mods folder. Don't forget to also put the Optifabric and Optifine jars in there too!");
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -63,8 +62,23 @@ public class JexFrame {
         });
     }
 
+    public void rewriteFiles(File tempMixinsFile, File tempFabricFile) {
+        String jsondata = readFile(tempMixinsFile);
+        if (jsondata.contains("\"minecraft.MixinShader\"")) {
+            jsondata = jsondata.replace("\"minecraft.MixinShader\"", "\"minecraft.MixinShaderWithOptifine\"");
+        }
+        ArrayList<String> stringList = new ArrayList<>(Arrays.asList(jsondata.split("\n")));
+        writeFile(tempMixinsFile, stringList);
+
+        jsondata = readFile(tempFabricFile);
+        jsondata = jsondata.replace("\"depends\": {", "\"depends\": {\n    \"optifabric\": \"*\",");
+        stringList = new ArrayList<>(Arrays.asList(jsondata.split("\n")));
+        writeFile(tempFabricFile, stringList);
+    }
+
     public void reZip(String zipFilePath) {
         File tempMixinsFile = new File("jex.mixins.json");
+        File tempFabricFile = new File("fabric.mod.json");
         try (ZipFile srcFile = new ZipFile(zipFilePath)) {
             try (ZipOutputStream destFile = new ZipOutputStream(Files.newOutputStream(Paths.get(new File("JexClient-Optifine.jar").toURI())))) {
                 Enumeration<? extends ZipEntry> entries = srcFile.entries();
@@ -76,6 +90,10 @@ public class JexFrame {
 
                     if (src.getName().contains("jex.mixins.json")) {
                         try (InputStream content = new FileInputStream(tempMixinsFile)) {
+                            content.transferTo(destFile);
+                        }
+                    } else if (src.getName().contains("fabric.mod.json")) {
+                        try (InputStream content = new FileInputStream(tempFabricFile)) {
                             content.transferTo(destFile);
                         }
                     } else {
@@ -92,17 +110,15 @@ public class JexFrame {
         }
     }
 
-    public void extractMixinsFile(File file, File tempMixinsFile) {
+    public void extractFiles(File file) {
         byte[] buffer = new byte[1024];
         try {
-            if (!tempMixinsFile.exists())
-                tempMixinsFile.createNewFile();
             FileInputStream fileInputStream = new FileInputStream(file);
             ZipInputStream zipInputStream = new ZipInputStream(fileInputStream);
             ZipEntry ze = zipInputStream.getNextEntry();
             while (ze != null) {
-                if (ze.getName().contains("jex.mixins.json")) {
-                    FileOutputStream fos = new FileOutputStream(tempMixinsFile);
+                if (ze.getName().contains("jex.mixins.json") || ze.getName().contains("fabric.mod.json")) {
+                    FileOutputStream fos = new FileOutputStream(ze.getName());
                     int len;
                     while ((len = zipInputStream.read(buffer)) > 0) {
                         fos.write(buffer, 0, len);
