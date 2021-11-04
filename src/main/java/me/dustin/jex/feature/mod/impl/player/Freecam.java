@@ -64,9 +64,9 @@ public class Freecam extends Feature {
                 PlayerHelper.INSTANCE.setMoveSpeed(move, speed);
             }
             move.setY(0);
-            if (((IKeyBinding) Wrapper.INSTANCE.getOptions().keySneak).getPressed())
+            if (Wrapper.INSTANCE.getOptions().keySneak.isPressed())
                 move.setY(-speed);
-            if (((IKeyBinding) Wrapper.INSTANCE.getOptions().keyJump).getPressed())
+            if (Wrapper.INSTANCE.getOptions().keyJump.isPressed())
                 move.setY(speed);
         }
         if (event instanceof EventPlayerUpdates) {

@@ -14,7 +14,7 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Sanic gotta go fast.")
 public class Speed extends Feature {
-
+    public static Speed INSTANCE;
     @Op(name = "Mode", all = {"Vanilla", "Strafe"})
     public String mode = "Vanilla";
 
@@ -30,6 +30,7 @@ public class Speed extends Feature {
     public Speed() {
         new StrafeSpeed();
         new VanillaSpeed();
+        INSTANCE = this;
     }
 
     @EventListener(events = {EventMove.class, EventPlayerPackets.class, EventPacketSent.class})
