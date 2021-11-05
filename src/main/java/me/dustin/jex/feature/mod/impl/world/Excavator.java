@@ -44,8 +44,8 @@ public class Excavator extends Feature {
     public boolean renderPath = true;
     @Op(name = "Render Area Box")
     public boolean renderAreaBox = true;
-    @Op(name = "LogOut when Done")
-    public boolean logoutWhenDone;
+    //@Op(name = "LogOut when Done") crashes atm, no clue why
+    public boolean logoutWhenDone = false;
     @Op(name = "Sort Delay")
     public int sortDelay = 350;
 
@@ -84,6 +84,7 @@ public class Excavator extends Feature {
                     if (logoutWhenDone) {
                         NetworkHelper.INSTANCE.disconnect(Formatting.AQUA + "Excavator", Formatting.GREEN + "Excavator has finished.");
                     }
+                    return;
                 }
 
                 if (pathFinder != null) {
@@ -116,19 +117,11 @@ public class Excavator extends Feature {
             if (renderPath && pathFinder != null)
                 pathFinder.renderPath(eventRender3D.getMatrixStack(), false, false);
 
-            if (miningArea != null) {
-                if (renderAreaBox) {
-                    Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(miningArea.getAreaBB().minX, miningArea.getAreaBB().minY, miningArea.getAreaBB().minZ));
-                    Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(miningArea.getAreaBB().maxX, miningArea.getAreaBB().maxY, miningArea.getAreaBB().maxZ));
-                    Box miningAreaBox = new Box(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
-                    Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), miningAreaBox, 0xffffff00);
-                }
-                BlockPos closestBlock = miningArea.getClosest();
-                if (closestBlock == null)
-                    return;
-                Vec3d closestVec = Render3DHelper.INSTANCE.getRenderPosition(closestBlock);
-                Box closestBox = new Box(closestVec.x, closestVec.y, closestVec.z, closestVec.x + 1, closestVec.y + 1, closestVec.z + 1);
-                Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), closestBox, ColorHelper.INSTANCE.getClientColor());
+            if (miningArea != null && renderAreaBox) {
+                Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(miningArea.getAreaBB().minX, miningArea.getAreaBB().minY, miningArea.getAreaBB().minZ));
+                Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(miningArea.getAreaBB().maxX, miningArea.getAreaBB().maxY, miningArea.getAreaBB().maxZ));
+                Box miningAreaBox = new Box(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
+                Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), miningAreaBox, 0xffffff00);
             }else
             if (tempPos != null) {//draws yellow box on first set pos
                 Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos);
