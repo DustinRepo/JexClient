@@ -191,19 +191,5 @@ public class WalkPathProcessor extends PathProcessor
 		}
 		return PlayerHelper.INSTANCE.getBaseMoveSpeed();
 	}
-
-	public float getHorizontalAngleToLookVec(Vec3d vec)
-	{
-		RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), vec);
-		return MathHelper.wrapDegrees(PlayerHelper.INSTANCE.getYaw()) - rotationVector.getYaw();
-	}
-
-	public float getYaw(Vec3d pos)
-	{
-		double xD = Wrapper.INSTANCE.getLocalPlayer().getX() - pos.getX();
-		double zD = Wrapper.INSTANCE.getLocalPlayer().getZ() - pos.getZ();
-		double yaw = Math.atan2(zD, xD);
-		return (float)Math.toDegrees(yaw) + 90.0F;
-	}
 }
 

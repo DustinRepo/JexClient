@@ -9,6 +9,7 @@ package me.dustin.jex.helper.world.wurstpathfinder;
 
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Fly;
+import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -34,9 +35,7 @@ public class FlyPathProcessor extends PathProcessor
 		Vec3d posVec = Wrapper.INSTANCE.getLocalPlayer().getPos();
 		BlockPos nextPos = path.get(index);
 		int posIndex = path.indexOf(pos);
-		Box nextBox = new Box(nextPos.getX() + 0.3, nextPos.getY(),
-			nextPos.getZ() + 0.3, nextPos.getX() + 0.7, nextPos.getY() + 0.2,
-			nextPos.getZ() + 0.7);
+		Box nextBox = new Box(nextPos.getX() + 0.3, nextPos.getY(), nextPos.getZ() + 0.3, nextPos.getX() + 0.7, nextPos.getY() + 0.2, nextPos.getZ() + 0.7);
 		
 		if(posIndex == -1)
 			ticksOffPath++;
@@ -74,14 +73,6 @@ public class FlyPathProcessor extends PathProcessor
 		boolean z = posVec.z < nextBox.minZ || posVec.z > nextBox.maxZ;
 		boolean horizontal = x || z;
 		
-		// face next position
-		if(horizontal)
-		{
-			facePosition(nextPos);
-			if(Math.abs(MathHelper.wrapDegrees(getHorizontalAngleToLookVec(Vec3d.ofCenter(nextPos)))) > 1)
-				return;
-		}
-		
 		// skip mid-air nodes
 		Vec3i offset = nextPos.subtract(pos);
 		while(index < path.size() - 1
@@ -105,12 +96,34 @@ public class FlyPathProcessor extends PathProcessor
 		// horizontal movement
 		if(horizontal)
 		{
-			if(!creativeFlying && Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= ((Fly) Feature.get(Fly.class)).speed)
-			{
+			float yaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
+			PlayerHelper.INSTANCE.setVelocityX(0);
+			PlayerHelper.INSTANCE.setVelocityZ(0);
+			double newx = -Math.sin(yaw * 3.1415927F / 180.0F) * moveSpeed();
+			double newz = Math.cos(yaw * 3.1415927F / 180.0F) * moveSpeed();
+			if(Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()){
+				newx *= 0.4;
+				newz *= 0.4;
+			}
+			//fix for speed going way past the point
+			if (Feature.get(Fly.class).getState()) {
+				if (!creativeFlying && Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= ((Fly) Feature.get(Fly.class)).speed) {
+					PlayerHelper.INSTANCE.setVelocityX(0);
+					PlayerHelper.INSTANCE.setVelocityZ(0);
+					Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
+					return;
+				}
+			}
+			//fix for player going way past the point even with speed disabled (speed potions, soul speed, etc)
+			if (Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= Math.abs(Math.abs(newx) + Math.abs(newz))) {
+				PlayerHelper.INSTANCE.setVelocityX(0);
+				PlayerHelper.INSTANCE.setVelocityZ(0);
 				Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 				return;
 			}
-			
+			PlayerHelper.INSTANCE.setVelocityX(newx);
+			PlayerHelper.INSTANCE.setVelocityZ(newz);
+
 			Wrapper.INSTANCE.getOptions().keyForward.setPressed(true);
 			
 			if(Wrapper.INSTANCE.getLocalPlayer().horizontalCollision)
@@ -138,6 +151,13 @@ public class FlyPathProcessor extends PathProcessor
 				Wrapper.INSTANCE.getOptions().keyForward.setPressed(true);
 			}
 		}
+	}
+
+	public double moveSpeed() {
+		if (Speed.INSTANCE.getState()) {
+			return ((Fly)Feature.get(Fly.class)).speed;
+		}
+		return PlayerHelper.INSTANCE.getBaseMoveSpeed();
 	}
 
 	public float getHorizontalAngleToLookVec(Vec3d vec)
