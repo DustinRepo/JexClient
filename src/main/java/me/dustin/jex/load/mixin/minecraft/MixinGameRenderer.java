@@ -27,19 +27,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinGameRenderer implements IGameRenderer {
 
     @Shadow
-    private int ticks;
-    @Shadow
     @Final
     private Camera camera;
-    @Shadow
-    @Final
-    private MinecraftClient client;
 
     @Shadow
     public abstract void loadProjectionMatrix(Matrix4f matrix4f);
-
-    @Shadow
-    protected abstract void bobView(MatrixStack matrixStack, float f);
 
     @Shadow
     protected abstract void bobViewWhenHurt(MatrixStack matrixStack, float f);
@@ -72,9 +64,6 @@ public abstract class MixinGameRenderer implements IGameRenderer {
         loadProjectionMatrix(matrixStack.peek().getModel());
         new EventRender3D.EventRender3DNoBob(matrixStack, partialTicks).run();
         Render3DHelper.INSTANCE.fixCameraRots(matrixStack);
-        if (this.client.options.bobView) {
-            bobView(matrixStack, partialTicks);
-        }
         loadProjectionMatrix(matrixStack.peek().getModel());
 
         new EventRender3D(matrixStack1, partialTicks).run();
