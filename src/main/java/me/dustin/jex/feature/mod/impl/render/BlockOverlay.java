@@ -4,6 +4,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventBlockOutlineColor;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -31,23 +32,24 @@ public class BlockOverlay extends Feature {
     @OpChild(name = "Progress Based Color", parent = "Overlay Color")
     public boolean progressColor = false;
 
-    @EventListener(events = {EventRender3D.class, EventBlockOutlineColor.class})
+    public BlockHitResult clickedBlock;
+
+    @EventListener(events = {EventRender3D.class, EventBlockOutlineColor.class, EventClickBlock.class})
     private void runMethod(Event event) {
         if (event instanceof EventRender3D eventRender3D) {
-            HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), eventRender3D.getPartialTicks(), false);
-            if (result instanceof BlockHitResult blockHitResult) {
-                if (WorldHelper.INSTANCE.getBlock(((BlockHitResult) result).getBlockPos()) instanceof AirBlock)
-                    return;
-                Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
-                if (Wrapper.INSTANCE.getInteractionManager().isBreakingBlock() && progressOverlay) {
-                    float breakProgress = Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() / 2;
-                    Box box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
-                    Render3DHelper.INSTANCE.drawBoxInside(eventRender3D.getMatrixStack(), box, progressColor ? getColor(1 - (breakProgress * 2)).getRGB() : overlayColor);
-                }
+            if (WorldHelper.INSTANCE.getBlock(clickedBlock.getBlockPos()) instanceof AirBlock)
+                return;
+            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(clickedBlock.getBlockPos());
+            if (Wrapper.INSTANCE.getInteractionManager().isBreakingBlock() && progressOverlay) {
+                float breakProgress = Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() / 2;
+                Box box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
+                Render3DHelper.INSTANCE.drawBoxInside(eventRender3D.getMatrixStack(), box, progressColor ? getColor(1 - (breakProgress * 2)).getRGB() : overlayColor);
             }
         } else if (event instanceof EventBlockOutlineColor eventBlockOutlineColor) {
             eventBlockOutlineColor.setColor(outlineColor);
             eventBlockOutlineColor.cancel();
+        } else if (event instanceof EventClickBlock eventClickBlock) {
+            this.clickedBlock = new BlockHitResult(Vec3d.of(eventClickBlock.getBlockPos()), eventClickBlock.getFace(), eventClickBlock.getBlockPos(), false);
         }
     }
     public Color getColor(double power) {
