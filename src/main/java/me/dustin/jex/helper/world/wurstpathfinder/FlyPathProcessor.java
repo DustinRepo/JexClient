@@ -124,8 +124,6 @@ public class FlyPathProcessor extends PathProcessor
 			PlayerHelper.INSTANCE.setVelocityX(newx);
 			PlayerHelper.INSTANCE.setVelocityZ(newz);
 
-			Wrapper.INSTANCE.getOptions().keyForward.setPressed(true);
-
 			if(Wrapper.INSTANCE.getLocalPlayer().horizontalCollision)
 				if(posVec.y > nextBox.maxY)
 					Wrapper.INSTANCE.getOptions().keySneak.setPressed(true);

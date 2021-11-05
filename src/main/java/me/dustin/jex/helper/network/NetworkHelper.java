@@ -3,7 +3,12 @@ package me.dustin.jex.helper.network;
 import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.login.thealtening.TheAlteningHelper;
+import net.minecraft.client.gui.screen.DisconnectedScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.network.Packet;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 
 public enum NetworkHelper {
     INSTANCE;
@@ -41,6 +46,12 @@ public enum NetworkHelper {
 
     public YggdrasilMinecraftSessionService getStoredSessionService() {
         return storedSessionService;
+    }
+
+    public void disconnect(String reason, String message) {
+        Wrapper.INSTANCE.getWorld().disconnect();
+        Wrapper.INSTANCE.getMinecraft().disconnect();
+        Wrapper.INSTANCE.getMinecraft().openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), new LiteralText(reason), new LiteralText(message)));
     }
 
     public enum SessionService {
