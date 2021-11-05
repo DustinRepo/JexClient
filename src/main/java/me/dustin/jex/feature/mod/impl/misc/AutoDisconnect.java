@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Automatically disconnect when your health gets below a certain value")
 public class AutoDisconnect extends Feature {
@@ -26,11 +27,7 @@ public class AutoDisconnect extends Feature {
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE && Wrapper.INSTANCE.getLocalPlayer().age >= 150) {
             if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= health) {
                 switch (mode) {
-                    case "Disconnect" -> {
-                        Wrapper.INSTANCE.getWorld().disconnect();
-                        Wrapper.INSTANCE.getMinecraft().disconnect();
-                        Wrapper.INSTANCE.getMinecraft().setScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), new LiteralText("Disconnected"), new LiteralText("Disconnected because your health was below a set amount")));
-                    }
+                    case "Disconnect" -> NetworkHelper.INSTANCE.disconnect("Disconnected", "Disconnected because your health was below a set amount");
                     case "Chars" -> NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket("\247r"));
                     case "Invalid Pos" -> NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, false));
                 }

@@ -123,8 +123,6 @@ public class FlyPathProcessor extends PathProcessor
 			}
 			PlayerHelper.INSTANCE.setVelocityX(newx);
 			PlayerHelper.INSTANCE.setVelocityZ(newz);
-
-			Wrapper.INSTANCE.getOptions().keyForward.setPressed(true);
 			
 			if(Wrapper.INSTANCE.getLocalPlayer().horizontalCollision)
 				if(posVec.y > nextBox.maxY)
@@ -158,11 +156,5 @@ public class FlyPathProcessor extends PathProcessor
 			return ((Fly)Feature.get(Fly.class)).speed;
 		}
 		return PlayerHelper.INSTANCE.getBaseMoveSpeed();
-	}
-
-	public float getHorizontalAngleToLookVec(Vec3d vec)
-	{
-		RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), vec);
-		return MathHelper.wrapDegrees(PlayerHelper.INSTANCE.getYaw()) - rotationVector.getYaw();
 	}
 }

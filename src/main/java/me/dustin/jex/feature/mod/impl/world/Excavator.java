@@ -12,7 +12,9 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
+import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -20,6 +22,11 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.screen.DisconnectedScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -37,6 +44,10 @@ public class Excavator extends Feature {
     public boolean renderPath = true;
     @Op(name = "Render Area Box")
     public boolean renderAreaBox = true;
+    //@Op(name = "LogOut when Done") crashes atm, no clue why
+    public boolean logoutWhenDone = false;
+    @Op(name = "Sort Delay")
+    public int sortDelay = 350;
 
     private ExcavatorPathFinder pathFinder;
     private PathProcessor pathProcessor;
@@ -44,6 +55,7 @@ public class Excavator extends Feature {
     public static MiningArea miningArea;
 
     private BlockPos tempPos;
+    private Timer sortTimer = new Timer();
 
     @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventMouseButton.class, EventRender2D.class})
     private void runMethod(Event event) {
@@ -69,6 +81,10 @@ public class Excavator extends Feature {
                 } else if (miningArea.empty()) {
                     ChatHelper.INSTANCE.addClientMessage("Excavator finished.");
                     setState(false);
+                    if (logoutWhenDone) {
+                        NetworkHelper.INSTANCE.disconnect(Formatting.AQUA + "Excavator", Formatting.GREEN + "Excavator has finished.");
+                    }
+                    return;
                 }
 
                 if (pathFinder != null) {
@@ -161,6 +177,7 @@ public class Excavator extends Feature {
     }
 
     public static class MiningArea {
+        private final Excavator excavator;
         private final BlockPos pos1;
         private final BlockPos pos2;
         private final Box areaBB;
@@ -173,6 +190,7 @@ public class Excavator extends Feature {
             this.pos1 = pos1;
             this.pos2 = pos2;
             this.areaBB = new Box(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
+            this.excavator = (Excavator) Feature.get(Excavator.class);
 
             for (int x = min.getX(); x <= max.getX(); x++) {
                 for (int y = min.getY(); y <= max.getY(); y++) {
@@ -193,8 +211,10 @@ public class Excavator extends Feature {
         }
 
         public BlockPos getClosest() {
-            if (Wrapper.INSTANCE.getLocalPlayer().age % 20 == 1)
+            if (excavator.sortTimer.hasPassed(excavator.sortDelay)) {
                 sortList();
+                excavator.sortTimer.reset();
+            }
             for (BlockPos blockPos : blockPosList) {
                 //able to be clicked
                 if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
