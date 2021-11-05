@@ -27,19 +27,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinGameRenderer implements IGameRenderer {
 
     @Shadow
-    private int ticks;
-    @Shadow
     @Final
     private Camera camera;
-    @Shadow
-    @Final
-    private MinecraftClient client;
 
     @Shadow
     public abstract void loadProjectionMatrix(Matrix4f matrix4f);
-
-    @Shadow
-    protected abstract void bobView(MatrixStack matrixStack, float f);
 
     @Shadow
     protected abstract void bobViewWhenHurt(MatrixStack matrixStack, float f);
@@ -56,6 +48,10 @@ public abstract class MixinGameRenderer implements IGameRenderer {
 
     @Shadow @Nullable private static Shader renderTypeTranslucentShader;
 
+    @Shadow @Final private MinecraftClient client;
+
+    @Shadow protected abstract void bobView(MatrixStack matrices, float f);
+
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", at = @At(value = "INVOKE", target = "com/mojang/blaze3d/systems/RenderSystem.clear(IZ)V"))
     private void onRenderWorld(float partialTicks, long finishTimeNano, MatrixStack matrixStack1, CallbackInfo ci) {
         if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null)
@@ -65,7 +61,6 @@ public abstract class MixinGameRenderer implements IGameRenderer {
         double d = this.getFov(camera, partialTicks, true);
         matrixStack.peek().getPositionMatrix().multiply(this.getBasicProjectionMatrix(d));
         loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
-        //Sets up 3D render space for shaders
 
         this.bobViewWhenHurt(matrixStack, partialTicks);
         Render3DHelper.INSTANCE.applyCameraRots(matrixStack);
