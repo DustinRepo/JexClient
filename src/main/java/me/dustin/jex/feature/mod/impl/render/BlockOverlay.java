@@ -40,7 +40,7 @@ public class BlockOverlay extends Feature {
             if (clickedBlock == null || WorldHelper.INSTANCE.getBlock(clickedBlock.getBlockPos()) instanceof AirBlock)
                 return;
             Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(clickedBlock.getBlockPos());
-            if (Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() > 0) {
+            if (Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() > 0 && Wrapper.INSTANCE.getInteractionManager().isBreakingBlock()) {
                 float breakProgress = Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() / 2;
                 Box box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
                 Render3DHelper.INSTANCE.drawBoxInside(eventRender3D.getMatrixStack(), box, progressColor ? getColor(1 - (breakProgress * 2)).getRGB() : overlayColor);
