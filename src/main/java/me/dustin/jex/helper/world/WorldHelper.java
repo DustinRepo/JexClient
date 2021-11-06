@@ -95,6 +95,18 @@ public enum WorldHelper {
         return Wrapper.INSTANCE.getWorld().getBlockState(blockPos).getBlock();
     }
 
+    public ArrayList<BlockPos> getBlocksInBox(Box box) {
+        ArrayList<BlockPos> blocks = new ArrayList<>();
+        for (int x = (int)box.minX; x <= box.maxX; x++) {
+            for (int y = (int)box.minY; y <= box.maxY; y++) {
+                for (int z = (int)box.minZ; z <= box.maxZ; z++) {
+                    blocks.add(new BlockPos(x, y, z));
+                }
+            }
+        }
+        return blocks;
+    }
+
     public Block getBlockAboveEntity(Entity entity) {
         return getBlockAboveEntity(entity, -2.5f);
     }
@@ -116,9 +128,7 @@ public enum WorldHelper {
         if (Wrapper.INSTANCE.getWorld() == null)
             blockEntities.clear();
         else {
-            Iterator<BlockEntity> it = blockEntities.values().iterator();
-            while (it.hasNext()) {
-                BlockEntity blockEntity = it.next();
+            for (BlockEntity blockEntity : blockEntities.values()) {
                 if (Wrapper.INSTANCE.getWorld().getBlockEntity(blockEntity.getPos()) == null)
                     removeBlockEntity(blockEntity.getPos());
             }
@@ -158,11 +168,11 @@ public enum WorldHelper {
                     FluidState fluidState = getFluidState(blockPos);
                     Box blockBB = fluidState.getShape(Wrapper.INSTANCE.getWorld(), blockPos).getBoundingBox().offset(blockPos);
                     if (boundingBox.minX < blockBB.maxX &&
-                        boundingBox.maxX > blockBB.minX &&
-                        boundingBox.minY < blockBB.maxY &&
-                        boundingBox.maxY > blockBB.minY &&
-                        boundingBox.minZ < blockBB.maxZ &&
-                        boundingBox.maxZ > blockBB.minZ) {
+                            boundingBox.maxX > blockBB.minX &&
+                            boundingBox.minY < blockBB.maxY &&
+                            boundingBox.maxY > blockBB.minY &&
+                            boundingBox.minZ < blockBB.maxZ &&
+                            boundingBox.maxZ > blockBB.minZ) {
                         onLiquid = true;
                     }
                 }
@@ -219,11 +229,11 @@ public enum WorldHelper {
                         FluidState fluidState = getFluidState(blockPos);
                         Box blockBB = fluidState.getShape(Wrapper.INSTANCE.getWorld(), blockPos).getBoundingBox().offset(blockPos);
                         if (boundingBox.minX < blockBB.maxX &&
-                            boundingBox.maxX > blockBB.minX &&
-                            boundingBox.minY < blockBB.maxY &&
-                            boundingBox.maxY > blockBB.minY &&
-                            boundingBox.minZ < blockBB.maxZ &&
-                            boundingBox.maxZ > blockBB.minZ) {
+                                boundingBox.maxX > blockBB.minX &&
+                                boundingBox.minY < blockBB.maxY &&
+                                boundingBox.maxY > blockBB.minY &&
+                                boundingBox.minZ < blockBB.maxZ &&
+                                boundingBox.maxZ > blockBB.minZ) {
                             return true;
                         }
                     }
