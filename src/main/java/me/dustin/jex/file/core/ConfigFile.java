@@ -15,6 +15,8 @@ public abstract class ConfigFile {
         String fileName = this.getClass().getAnnotation(CFG.class).fileName();
         String folder = this.getClass().getAnnotation(CFG.class).folder();
         File parentFolder = folder.isEmpty() ? ModFileHelper.INSTANCE.getJexDirectory() : new File(ModFileHelper.INSTANCE.getJexDirectory(), folder);
+        if (!parentFolder.exists())
+            parentFolder.mkdirs();
         this.file = new File(parentFolder, fileName);
         this.bootRead = this.getClass().getAnnotation(CFG.class).bootRead();
     }
