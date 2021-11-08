@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,7 +23,7 @@ public class MixinOptionsScreen extends Screen {
 
     @Inject(method = "init", at = @At("RETURN"))
     public void init(CallbackInfo ci) {
-        this.addDrawableChild(new ButtonWidget(2, 2, 80, 20, new LiteralText("Jex Options"), button -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 143, 200, 20, new LiteralText(Formatting.BOLD + "" + Formatting.AQUA + "Jex Options"),button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexOptionsScreen());
         }));
     }
