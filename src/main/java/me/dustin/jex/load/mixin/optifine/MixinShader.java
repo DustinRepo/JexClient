@@ -1,4 +1,4 @@
-package me.dustin.jex.load.mixin.minecraft;
+package me.dustin.jex.load.mixin.optifine;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import java.util.Map;
 
 @Mixin(Shader.class)
-public class MixinShaderWithOptifine implements IShader {
+public class MixinShader implements IShader {
 
     @Shadow
     @Final

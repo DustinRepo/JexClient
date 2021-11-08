@@ -95,5 +95,6 @@ remapJar {
 
 jar {
     from "LICENSE"
-    manifest.attributes("Main-Class": "me.dustin.jex.frame.JexFrame")
+    //no longer needed as the JFrame was only used for converting to Optifabric support, something which is done automatically now
+    //manifest.attributes("Main-Class": "me.dustin.jex.frame.JexFrame")
 }

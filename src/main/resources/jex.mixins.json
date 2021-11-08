@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "me.dustin.jex.load.mixin",
   "compatibilityLevel": "JAVA_16",
+  "plugin": "me.dustin.jex.load.JexMixinConfigPlugin",
   "mixins": [
   ],
   "client": [
@@ -67,6 +68,7 @@
     "minecraft.MixinSplashScreen",
     "minecraft.MixinWorldChunk",
     "minecraft.MixinWorldRenderer",
+    "optifine.MixinShader",
     "sodium.MixinBlockOcclusionCache",
     "sodium.MixinBlockRenderer",
     "sodium.MixinFluidRenderer",
