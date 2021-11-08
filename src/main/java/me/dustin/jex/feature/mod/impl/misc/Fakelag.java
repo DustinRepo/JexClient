@@ -83,8 +83,12 @@ public class Fakelag extends Feature {
 
     @Override
     public void onDisable() {
-        if (Wrapper.INSTANCE.getLocalPlayer() != null)
-            packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
+        if (Wrapper.INSTANCE.getLocalPlayer() != null) {
+            try {
+                packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
+            } catch (Exception e) {}
+            packets.clear();
+        }
         removeFakePlayer();
         fakePlayerEntity = null;
         super.onDisable();
