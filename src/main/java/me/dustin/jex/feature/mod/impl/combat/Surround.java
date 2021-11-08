@@ -62,27 +62,7 @@ public class Surround extends Feature {
 						this.setState(false);
 					return;
 				}
-				double fracX = MathHelper.fractionalPart(Wrapper.INSTANCE.getLocalPlayer().getX());
-				double fracZ = MathHelper.fractionalPart(Wrapper.INSTANCE.getLocalPlayer().getZ());
-				if (fracX < 0.3) {
-					double x = Wrapper.INSTANCE.getLocalPlayer().getX() - fracX + 0.3;
-					Wrapper.INSTANCE.getLocalPlayer().setPos(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
-					NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
-				} else if (fracX > 0.7) {
-					double x = Wrapper.INSTANCE.getLocalPlayer().getX() - fracX + 0.7;
-					Wrapper.INSTANCE.getLocalPlayer().setPos(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
-					NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(x, Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
-				}
-
-				if (fracZ < 0.3) {
-					double z = Wrapper.INSTANCE.getLocalPlayer().getZ() - fracZ + 0.3;
-					Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z);
-					NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z, true));
-				} else if (fracZ > 0.7) {
-					double z = Wrapper.INSTANCE.getLocalPlayer().getZ() - fracZ + 0.7;
-					Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z);
-					NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), z, true));
-				}
+				PlayerHelper.INSTANCE.centerOnBlock();
 				InventoryHelper.INSTANCE.setSlot(obby, true, true);
 				ArrayList<BlockPos> placePos = new ArrayList<>();
 				BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
