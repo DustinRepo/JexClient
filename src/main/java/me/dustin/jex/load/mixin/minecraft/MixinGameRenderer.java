@@ -48,6 +48,10 @@ public abstract class MixinGameRenderer implements IGameRenderer {
 
     @Shadow @Nullable private static Shader renderTypeTranslucentShader;
 
+    @Shadow @Final private MinecraftClient client;
+
+    @Shadow protected abstract void bobView(MatrixStack matrices, float f);
+
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", at = @At(value = "INVOKE", target = "com/mojang/blaze3d/systems/RenderSystem.clear(IZ)V"))
     private void onRenderWorld(float partialTicks, long finishTimeNano, MatrixStack matrixStack1, CallbackInfo ci) {
         if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null)
@@ -64,6 +68,9 @@ public abstract class MixinGameRenderer implements IGameRenderer {
         loadProjectionMatrix(matrixStack.peek().getModel());
         new EventRender3D.EventRender3DNoBob(matrixStack, partialTicks).run();
         Render3DHelper.INSTANCE.fixCameraRots(matrixStack);
+        if (this.client.options.bobView) {
+            bobView(matrixStack, partialTicks);
+        }
         loadProjectionMatrix(matrixStack.peek().getModel());
 
         new EventRender3D(matrixStack1, partialTicks).run();
