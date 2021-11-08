@@ -1,18 +1,17 @@
-package me.dustin.jex.gui.minecraft.blocklist;
+package me.dustin.jex.gui.jex.selection;
 
 
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.file.core.ConfigManager;
-import me.dustin.jex.file.impl.XrayFile;
+import me.dustin.jex.file.impl.SearchFile;
 import me.dustin.jex.gui.jex.JexOptionsScreen;
-import me.dustin.jex.gui.minecraft.blocklist.button.BlockButton;
+import me.dustin.jex.gui.jex.selection.button.BlockButton;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.world.xray.Xray;
+import me.dustin.jex.feature.mod.impl.render.Search;
 import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -25,20 +24,21 @@ import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.Random;
 
-public class XraySelectScreen extends Screen {
+public class SearchSelectScreen extends Screen {
 
     private ArrayList<BlockButton> allowedBlocks = new ArrayList<>();
     private ArrayList<BlockButton> notAllowedBlocks = new ArrayList<>();
     private TextFieldWidget searchField;
     private ButtonWidget searchButton;
-    private ButtonWidget addXrayButton;
-    private ButtonWidget removeXrayButton;
+    private ButtonWidget addSearchBlockButton;
+    private ButtonWidget removeSearchBlockButton;
     private ButtonWidget doneButton;
     private Scrollbar leftScrollbar;
     private Scrollbar rightScrollbar;
-    public XraySelectScreen() {
-        super(new LiteralText("Xray Selection"));
+    public SearchSelectScreen() {
+        super(new LiteralText("Search Selection"));
     }
 
     @Override
@@ -58,9 +58,9 @@ public class XraySelectScreen extends Screen {
                 loadBlocks(searchField.getText());
         });
 
-        removeXrayButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Remove From Xray"), button -> {
+        removeSearchBlockButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Remove From Search"), button -> {
             getSelectedAllowed().forEach(blockButton -> {
-                Xray.blockList.remove(blockButton.getBlock());
+                Search.getBlocks().remove(blockButton.getBlock());
                 allowedBlocks.remove(blockButton);
                 notAllowedBlocks.add(blockButton);
             });
@@ -68,13 +68,11 @@ public class XraySelectScreen extends Screen {
                 loadBlocks();
             else
                 loadBlocks(searchField.getText());
-            ConfigManager.INSTANCE.get(XrayFile.class).write();
-            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Feature.get(Xray.class).getState())
-                Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
+            ConfigManager.INSTANCE.get(SearchFile.class).write();
         });
-        addXrayButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Add To Xray"), button -> {
+        addSearchBlockButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Add To Search"), button -> {
             getSelectedNotAllowed().forEach(blockButton -> {
-                Xray.blockList.add(blockButton.getBlock());
+                Search.getBlocks().put(blockButton.getBlock(), ColorHelper.INSTANCE.getColorViaHue(new Random().nextFloat() * 270).getRGB());
                 allowedBlocks.add(blockButton);
                 notAllowedBlocks.remove(blockButton);
             });
@@ -82,9 +80,7 @@ public class XraySelectScreen extends Screen {
                 loadBlocks();
             else
                 loadBlocks(searchField.getText());
-            ConfigManager.INSTANCE.get(XrayFile.class).write();
-            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Feature.get(Xray.class).getState())
-                Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
+            ConfigManager.INSTANCE.get(SearchFile.class).write();
         });
 
         doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, new LiteralText("Done"), button -> {
@@ -93,8 +89,8 @@ public class XraySelectScreen extends Screen {
 
         this.addSelectableChild(searchField);
         this.addDrawableChild(searchButton);
-        this.addDrawableChild(addXrayButton);
-        this.addDrawableChild(removeXrayButton);
+        this.addDrawableChild(addSearchBlockButton);
+        this.addDrawableChild(removeSearchBlockButton);
         this.addDrawableChild(doneButton);
         super.init();
     }
@@ -109,9 +105,8 @@ public class XraySelectScreen extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
 
-        this.addXrayButton.active = !getSelectedNotAllowed().isEmpty();
-        this.removeXrayButton.active = !getSelectedAllowed().isEmpty();
-
+        this.addSearchBlockButton.active = !getSelectedNotAllowed().isEmpty();
+        this.removeSearchBlockButton.active = !getSelectedAllowed().isEmpty();
         float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 - 200;
         float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
 
@@ -286,7 +281,7 @@ public class XraySelectScreen extends Screen {
         for (Block block : Registry.BLOCK) {
             if (block == Blocks.AIR || block == Hat.cowboyHat || block == Hat.halo || block == Hat.topHat || block == Hat.crown || block == Hat.propeller)
                 continue;
-            if (Xray.blockList.contains(block)) {
+            if (Search.getBlocks().keySet().contains(block)) {
                 float y = startY + (buttonHeight * allowedCount);
                 allowedBlocks.add(new BlockButton(block, block.getTranslationKey(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 allowedCount++;
@@ -328,7 +323,7 @@ public class XraySelectScreen extends Screen {
                 blockName = blockName.split(":")[1];
             if (!blockName.replace("_", " ").toLowerCase().contains(searchField.getText().toLowerCase()))
                 continue;
-            if (Xray.blockList.contains(block)) {
+            if (Search.getBlocks().keySet().contains(block)) {
                 float y = startY + (buttonHeight * allowedCount);
                 allowedBlocks.add(new BlockButton(block, block.getTranslationKey(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 allowedCount++;
@@ -341,12 +336,12 @@ public class XraySelectScreen extends Screen {
         if (!allowedBlocks.isEmpty()) {
             float contentHeight = (allowedBlocks.get(allowedBlocks.size() - 1).getY() + (allowedBlocks.get(allowedBlocks.size() - 1).getHeight())) - allowedBlocks.get(0).getY();
             float viewportHeight = 250;
-            this.leftScrollbar = new Scrollbar((width / 2.f) - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 126, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
+            this.leftScrollbar = new Scrollbar((width / 2.f), (height / 2.f) - 102, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
         }
         if (!notAllowedBlocks.isEmpty()) {
             float contentHeight = (notAllowedBlocks.get(notAllowedBlocks.size() - 1).getY() + (notAllowedBlocks.get(notAllowedBlocks.size() - 1).getHeight())) - notAllowedBlocks.get(0).getY();
             float viewportHeight = 250;
-            this.rightScrollbar = new Scrollbar((width / 2.f) + 200, Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 126, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
+            this.rightScrollbar = new Scrollbar((width / 2.f), (height / 2.f) - 102, 2, 200, viewportHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
         }
     }
 }

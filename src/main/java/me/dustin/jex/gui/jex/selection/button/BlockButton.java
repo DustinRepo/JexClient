@@ -1,4 +1,4 @@
-package me.dustin.jex.gui.minecraft.blocklist.button;
+package me.dustin.jex.gui.jex.selection.button;
 
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
