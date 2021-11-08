@@ -23,7 +23,7 @@ public class MixinOptionsScreen extends Screen {
 
     @Inject(method = "init", at = @At("RETURN"))
     public void init(CallbackInfo ci) {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 143, 200, 20, new LiteralText(Formatting.BOLD + "" + Formatting.AQUA + "Jex Options"),button -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 143, 200, 20, new LiteralText(Formatting.AQUA + "Jex Options"),button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexOptionsScreen());
         }));
     }

@@ -1,11 +1,11 @@
-package me.dustin.jex.gui.minecraft.blocklist;
+package me.dustin.jex.gui.jex.selection;
 
 
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.SearchFile;
 import me.dustin.jex.gui.jex.JexOptionsScreen;
-import me.dustin.jex.gui.minecraft.blocklist.button.BlockButton;
+import me.dustin.jex.gui.jex.selection.button.BlockButton;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;

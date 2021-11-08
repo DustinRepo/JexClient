@@ -7,8 +7,9 @@ import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.changelog.ChangelogScreen;
-import me.dustin.jex.gui.minecraft.blocklist.SearchSelectScreen;
-import me.dustin.jex.gui.minecraft.blocklist.XraySelectScreen;
+import me.dustin.jex.gui.jex.selection.SearchSelectScreen;
+import me.dustin.jex.gui.jex.selection.XraySelectScreen;
+import me.dustin.jex.gui.jex.selection.AutoDropSelectScreen;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -33,6 +34,7 @@ public class JexOptionsScreen extends Screen {
     private ButtonWidget downloadInstallerButton;
     private ButtonWidget xrayButton;
     private ButtonWidget searchButton;
+    private ButtonWidget autoDropButton;
     private ButtonWidget waypointScreenButton;
     private ButtonWidget reloadAddonsButton;
     private ButtonWidget changelogButton;
@@ -56,29 +58,7 @@ public class JexOptionsScreen extends Screen {
             CommandManagerJex.INSTANCE.setPrefix(prefixField.getText());
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
-        waypointScreenButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, new LiteralText("Waypoint Screen"), button -> {
-            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
-        });
-        clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, new LiteralText("Open ClickGUI"), button -> {
-            Feature.get(Gui.class).setState(true);
-        });
-        xrayButton = new ButtonWidget(centerX - 75, topY + 75, 150, 20, new LiteralText("Xray Block Selection"), button -> {
-            Wrapper.INSTANCE.getMinecraft().setScreen(new XraySelectScreen());
-        });
-        searchButton = new ButtonWidget(centerX - 75, topY + 100, 150, 20, new LiteralText("Search Block Selection"), button -> {
-            Wrapper.INSTANCE.getMinecraft().setScreen(new SearchSelectScreen());
-        });
-        reloadAddonsButton = new ButtonWidget(centerX - 75, topY + 125, 150, 20, new LiteralText("Reload Capes and Hats"), button -> {
-            Addon.clearAddons();
-            if (Wrapper.INSTANCE.getWorld() != null) {
-                Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                    if (entity instanceof PlayerEntity playerEntity) {
-                        Addon.loadAddons(playerEntity);
-                    }
-                });
-            }
-            timer.reset();
-        });
+        //left
         downloadInstallerButton = new ButtonWidget(centerX - 230, topY + 25, 150, 20, new LiteralText("Update Jex to " + UpdateManager.INSTANCE.getLatestVersion().version()), button -> {
             Update.INSTANCE.update();
             updating = true;
@@ -91,11 +71,43 @@ public class JexOptionsScreen extends Screen {
         });
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 
+
+        //middle
+        waypointScreenButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, new LiteralText("Waypoint Screen"), button -> {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
+        });
+        clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, new LiteralText("Open ClickGUI"), button -> {
+            Feature.get(Gui.class).setState(true);
+        });
+        reloadAddonsButton = new ButtonWidget(centerX - 75, topY + 75, 150, 20, new LiteralText("Reload Capes and Hats"), button -> {
+            Addon.clearAddons();
+            if (Wrapper.INSTANCE.getWorld() != null) {
+                Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+                    if (entity instanceof PlayerEntity playerEntity) {
+                        Addon.loadAddons(playerEntity);
+                    }
+                });
+            }
+            timer.reset();
+        });
+
+        //right
+        xrayButton = new ButtonWidget(centerX + 80, topY + 25, 150, 20, new LiteralText("Xray Block Selection"), button -> {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new XraySelectScreen());
+        });
+        searchButton = new ButtonWidget(centerX + 80, topY + 50, 150, 20, new LiteralText("Search Block Selection"), button -> {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new SearchSelectScreen());
+        });
+        autoDropButton = new ButtonWidget(centerX + 80, topY + 75, 150, 20, new LiteralText("AutoDrop Selection"), button -> {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new AutoDropSelectScreen());
+        });
+
         this.addDrawableChild(setPrefixButton);
         this.addDrawableChild(clickGuiButton);
         this.addDrawableChild(downloadInstallerButton);
         this.addDrawableChild(xrayButton);
         this.addDrawableChild(searchButton);
+        this.addDrawableChild(autoDropButton);
         this.addDrawableChild(reloadAddonsButton);
         this.addDrawableChild(waypointScreenButton);
         this.addDrawableChild(changelogButton);
