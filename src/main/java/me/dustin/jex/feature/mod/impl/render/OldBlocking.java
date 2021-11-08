@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.enums.EventPriority;
 import me.dustin.jex.event.render.EventRenderHeldItem;
 import me.dustin.jex.event.render.EventRenderItem;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -22,7 +23,7 @@ public class OldBlocking extends Feature {
     @Op(name = "Mode", all = {"Swords", "Tools", "All Items"})
     public String mode = "Swords";
 
-    @EventListener(events = {EventRenderItem.class})
+    @EventListener(events = {EventRenderItem.class}, priority = EventPriority.LOWEST)
     private void runMethod(EventRenderItem eventRenderItem) {
         if (eventRenderItem.getType().isFirstPerson()) {
             MatrixStack matrixStack = eventRenderItem.getMatrixStack();
