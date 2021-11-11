@@ -94,7 +94,6 @@ public enum JexClient {
         EventAPI.getInstance().register(ColorHelper.INSTANCE);
         EventAPI.getInstance().register(EntityPositionHelper.INSTANCE);
         EventAPI.getInstance().register(JexServerHelper.INSTANCE);
-        EventAPI.getInstance().register(SeedCracker.INSTANCE);
         getLogger().info("Checking for update");
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();
