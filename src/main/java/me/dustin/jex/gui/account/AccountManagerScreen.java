@@ -208,7 +208,7 @@ public class AccountManagerScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean save = super.mouseClicked(mouseX, mouseY, button);
-        if (scrollbar.isHovered()) {
+        if (scrollbar != null && scrollbar.isHovered()) {
             movingScrollbar = true;
         }
         accountButtons.forEach(accountButton -> {
