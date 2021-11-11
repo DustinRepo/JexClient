@@ -32,7 +32,7 @@ public class WalkPathProcessor extends PathProcessor
 	{
 		super(path);
 	}
-	
+
 	@Override
 	public void process()
 	{
@@ -42,17 +42,17 @@ public class WalkPathProcessor extends PathProcessor
 			pos = pos.add(0, 0.2f, 0);
 		PathPos nextPos = path.get(index);
 		int posIndex = path.indexOf(pos);
-		
+
 		if(posIndex == -1)
 			ticksOffPath++;
 		else
 			ticksOffPath = 0;
-		
+
 		// update index
 		if(pos.equals(nextPos))
 		{
 			index++;
-			
+
 			// disable when done
 			if(index >= path.size())
 				done = true;
@@ -61,26 +61,26 @@ public class WalkPathProcessor extends PathProcessor
 		if(posIndex > index)
 		{
 			index = posIndex + 1;
-			
+
 			// disable when done
 			if(index >= path.size())
 				done = true;
 			return;
 		}
-		
+
 		lockControls();
 		Wrapper.INSTANCE.getLocalPlayer().getAbilities().flying = false;
 		float yaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
-		
+
 		if(Feature.get(Jesus.class).getState())
 		{
 			// wait for Jesus to swim up
 			if(Wrapper.INSTANCE.getLocalPlayer().getY() < nextPos.getY() && (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater() || Wrapper.INSTANCE.getLocalPlayer().isInLava()))
 				return;
-			
+
 			// manually swim down if using Jesus
 			if(Wrapper.INSTANCE.getLocalPlayer().getY() - nextPos.getY() > 0.5
-				&& (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()
+					&& (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()
 					|| Wrapper.INSTANCE.getLocalPlayer().isInLava()
 					|| WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer())))
 				Wrapper.INSTANCE.getOptions().keySneak.setPressed(true);
@@ -112,7 +112,7 @@ public class WalkPathProcessor extends PathProcessor
 
 			if(index > 0 && path.get(index - 1).isJumping() || pos.getY() < nextPos.getY())
 				Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
-			
+
 			// vertical movement
 		}else if(pos.getY() != nextPos.getY())
 			// go up
@@ -128,21 +128,21 @@ public class WalkPathProcessor extends PathProcessor
 				{
 					// directional jump
 					if(index < path.size() - 1
-						&& !nextPos.up().equals(path.get(index + 1)))
+							&& !nextPos.up().equals(path.get(index + 1)))
 						index++;
-					
+
 					// jump up
 					Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
 				}
-				
+
 				// go down
 			}else
 			{
 				// skip mid-air nodes and go straight to the bottom
 				while(index < path.size() - 1
-					&& path.get(index).down().equals(path.get(index + 1)))
+						&& path.get(index).down().equals(path.get(index + 1)))
 					index++;
-				
+
 				// walk off the edge
 				if(Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
 					PlayerHelper.INSTANCE.setVelocityX(0);
@@ -190,6 +190,14 @@ public class WalkPathProcessor extends PathProcessor
 				return Speed.INSTANCE.strafeSpeed;
 		}
 		return PlayerHelper.INSTANCE.getBaseMoveSpeed();
+	}
+
+	public float getYaw(Vec3d pos)
+	{
+		double xD = Wrapper.INSTANCE.getLocalPlayer().getX() - pos.getX();
+		double zD = Wrapper.INSTANCE.getLocalPlayer().getZ() - pos.getZ();
+		double yaw = Math.atan2(zD, xD);
+		return (float)Math.toDegrees(yaw) + 90.0F;
 	}
 }
 
