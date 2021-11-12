@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.enums.EventPriority;
+import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -22,12 +24,12 @@ public class AutoDisconnect extends Feature {
     @Op(name = "Health", min = 1, max = 10)
     public int health = 5;
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE && Wrapper.INSTANCE.getLocalPlayer().age >= 150) {
+    @EventListener(events = {EventTick.class}, priority = EventPriority.LOWEST)
+    private void runMethod(EventTick eventTick) {
+        if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().age >= 150) {
             if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= health) {
                 switch (mode) {
-                    case "Disconnect" -> NetworkHelper.INSTANCE.disconnect("Disconnected", "Disconnected because your health was below a set amount");
+                    case "Disconnect" -> NetworkHelper.INSTANCE.disconnect("AutoDisconnect", Formatting.RED + "Disconnected because your health was below a set amount");
                     case "Chars" -> NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket("\247r"));
                     case "Invalid Pos" -> NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, false));
                 }

@@ -4,10 +4,14 @@ import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.login.thealtening.TheAlteningHelper;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.network.Packet;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public enum NetworkHelper {
@@ -49,9 +53,24 @@ public enum NetworkHelper {
     }
 
     public void disconnect(String reason, String message) {
+        boolean bl = Wrapper.INSTANCE.getMinecraft().isInSingleplayer();
+        boolean bl2 = Wrapper.INSTANCE.getMinecraft().isConnectedToRealms();
         Wrapper.INSTANCE.getWorld().disconnect();
-        Wrapper.INSTANCE.getMinecraft().disconnect();
-        Wrapper.INSTANCE.getMinecraft().openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), new LiteralText(reason), new LiteralText(message)));
+        if (bl) {
+            Wrapper.INSTANCE.getMinecraft().disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+        } else {
+            Wrapper.INSTANCE.getMinecraft().disconnect();
+        }
+
+        TitleScreen titleScreen = new TitleScreen();
+        if (bl) {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new DisconnectedScreen(titleScreen, Text.of(reason), Text.of(message)));
+        } else if (bl2) {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new DisconnectedScreen(new RealmsMainScreen(titleScreen), Text.of(reason), Text.of(message)));
+        } else {
+            Wrapper.INSTANCE.getMinecraft().openScreen(new DisconnectedScreen(new MultiplayerScreen(titleScreen), Text.of(reason), Text.of(message)));
+        }
+
     }
 
     public enum SessionService {
