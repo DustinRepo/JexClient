@@ -4,24 +4,15 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
+import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
-import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.util.collection.ReusableStream;
-import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.stream.Stream;
 
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Fly in survival", key = GLFW.GLFW_KEY_F)
 public class Fly extends Feature {
@@ -37,20 +28,22 @@ public class Fly extends Feature {
     @OpChild(name = "Glide Speed", min = 0.01f, max = 2, inc = 0.01f, parent = "Glide")
     public float glideSpeed = 0.034f;
 
-    float lastStrideDist;
+    private float lastStrideDist;
     private float strideDistance;
+    private float savedMoveSpeed = -1;
 
-    @EventListener(events = {EventMove.class, EventPacketSent.class})
+    @EventListener(events = {EventPlayerPackets.class, EventPacketSent.class})
     private void runMove(Event event) {
-        if (event instanceof EventMove eventMove) {
-            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed);
-            eventMove.setY(0);
+        if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
+            if (savedMoveSpeed == -1) {
+                savedMoveSpeed = Wrapper.INSTANCE.getLocalPlayer().flyingSpeed;
+            }
             boolean jumping = Wrapper.INSTANCE.getOptions().keyJump.isPressed();
             boolean sneaking = Wrapper.INSTANCE.getOptions().keySneak.isPressed();
 
             if (walkAnimation) {
                 float g;
-                if (!Wrapper.INSTANCE.getLocalPlayer().isDead() && !Wrapper.INSTANCE.getLocalPlayer().isSwimming() && (eventMove.getX() != 0 || eventMove.getZ() != 0)) {
+                if (!Wrapper.INSTANCE.getLocalPlayer().isDead() && !Wrapper.INSTANCE.getLocalPlayer().isSwimming()) {
                     g = Math.min(0.1F, (float)Wrapper.INSTANCE.getLocalPlayer().getVelocity().horizontalLength());
                 } else {
                     g = 0.0F;
@@ -62,13 +55,18 @@ public class Fly extends Feature {
                 Wrapper.INSTANCE.getLocalPlayer().prevStrideDistance = lastStrideDist;
             }
 
+            if (Wrapper.INSTANCE.getLocalPlayer().input.movementForward == 0 && Wrapper.INSTANCE.getLocalPlayer().input.movementSideways == 0)
+                Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
+            Wrapper.INSTANCE.getLocalPlayer().flyingSpeed = speed;
+
+            PlayerHelper.INSTANCE.setVelocityY(0);
             if (jumping) {
-                eventMove.setY(speed);
+                PlayerHelper.INSTANCE.setVelocityY(speed);
             } else if (sneaking) {
-                eventMove.setY(-speed);
+                PlayerHelper.INSTANCE.setVelocityY(-speed);
             }
             if (glide && !jumping) {
-                eventMove.setY(-glideSpeed);
+                PlayerHelper.INSTANCE.setVelocityY(-glideSpeed);
             }
         } else if (event instanceof EventPacketSent eventPacketSent && flyCheckBypass) {
             if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
@@ -76,19 +74,19 @@ public class Fly extends Feature {
             if (eventPacketSent.getPacket() instanceof PlayerMoveC2SPacket playerMoveC2SPacket) {
                 if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {
                     if (EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 2) {
-                        PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.05, playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
+                        PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.1, playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
                         eventPacketSent.setPacket(modified);
                     }
                 }
             }
         }
-
     }
 
     @Override
     public void onDisable() {
-        if (Wrapper.INSTANCE.getLocalPlayer() != null)
-            Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
+        if (Wrapper.INSTANCE.getLocalPlayer() != null && savedMoveSpeed != -1)
+            Wrapper.INSTANCE.getLocalPlayer().flyingSpeed = savedMoveSpeed;
+        savedMoveSpeed = -1;
         super.onDisable();
     }
 }

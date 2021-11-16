@@ -1,7 +1,9 @@
 package me.dustin.jex.helper.player;
 
 import com.google.common.collect.Maps;
+import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -112,10 +114,10 @@ public enum InventoryHelper {
 
     public void moveToOffhand(int slot) {
         boolean hasOffhand = Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.AIR;
-        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);
-        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 45, SlotActionType.PICKUP);
+        windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);
+        windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 45, SlotActionType.PICKUP);
         if (hasOffhand)
-            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);
+            windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);
     }
 
     public void setSlot(int slot, boolean actual, boolean packet) {
@@ -205,7 +207,7 @@ public enum InventoryHelper {
     public int countItems(Item item) {
         int count = 0;
         for (int i = 0; i < 44; i++) {
-            ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
+            ItemStack itemStack = getInventory().getStack(i);
             if (itemStack != null && itemStack.getItem() == item)
                 count+=itemStack.getCount();
         }
@@ -227,12 +229,16 @@ public enum InventoryHelper {
 
     private int lastSlotSent = -1;
 
-    @EventListener(events = {EventPacketSent.class})
-    private void runMethod(EventPacketSent eventPacketSent) {
-        if (eventPacketSent.getPacket() instanceof UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket) {
-            if (updateSelectedSlotC2SPacket.getSelectedSlot() == lastSlotSent)
-                eventPacketSent.cancel();
-            lastSlotSent = updateSelectedSlotC2SPacket.getSelectedSlot();
+    @EventListener(events = {EventPacketSent.class, EventJoinWorld.class})
+    private void runMethod(Event event) {
+        if (event instanceof EventPacketSent eventPacketSent) {
+            if (eventPacketSent.getPacket() instanceof UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket) {
+                if (updateSelectedSlotC2SPacket.getSelectedSlot() == lastSlotSent)
+                    eventPacketSent.cancel();
+                lastSlotSent = updateSelectedSlotC2SPacket.getSelectedSlot();
+            }
+        } else if (event instanceof EventJoinWorld) {
+            lastSlotSent = -1;
         }
     }
 }

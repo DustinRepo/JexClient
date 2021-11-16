@@ -34,10 +34,10 @@ public class Discord extends Feature {
     }
 
     public boolean isOnRaspberryPi() {
-        //might as well just catch all ARM devices since discord does not support ARM and by extension, neither does the RPC.
-        if (System.getProperty("os.arch").toLowerCase().contains("arm"))
-            return true;
         if (Util.getOperatingSystem() == Util.OperatingSystem.LINUX) {
+            //might as well just catch all ARM devices since discord does not support ARM and by extension, neither does the Rich Presence.
+            if (System.getProperty("os.arch").toLowerCase().contains("arm"))
+                return true;
             final File file = new File("/etc", "os-release");
             try (FileInputStream fis = new FileInputStream(file); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fis))) {
                 String string;
