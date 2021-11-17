@@ -30,14 +30,10 @@ public class Fly extends Feature {
 
     private float lastStrideDist;
     private float strideDistance;
-    private float savedMoveSpeed = -1;
 
     @EventListener(events = {EventPlayerPackets.class, EventPacketSent.class})
     private void runMove(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (savedMoveSpeed == -1) {
-                savedMoveSpeed = Wrapper.INSTANCE.getLocalPlayer().flyingSpeed;
-            }
             boolean jumping = Wrapper.INSTANCE.getOptions().keyJump.isPressed();
             boolean sneaking = Wrapper.INSTANCE.getOptions().keySneak.isPressed();
 
@@ -55,11 +51,9 @@ public class Fly extends Feature {
                 Wrapper.INSTANCE.getLocalPlayer().prevStrideDistance = lastStrideDist;
             }
 
-            if (Wrapper.INSTANCE.getLocalPlayer().input.movementForward == 0 && Wrapper.INSTANCE.getLocalPlayer().input.movementSideways == 0)
-                Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
             Wrapper.INSTANCE.getLocalPlayer().flyingSpeed = speed;
+            Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
 
-            PlayerHelper.INSTANCE.setVelocityY(0);
             if (jumping) {
                 PlayerHelper.INSTANCE.setVelocityY(speed);
             } else if (sneaking) {
@@ -80,13 +74,5 @@ public class Fly extends Feature {
                 }
             }
         }
-    }
-
-    @Override
-    public void onDisable() {
-        if (Wrapper.INSTANCE.getLocalPlayer() != null && savedMoveSpeed != -1)
-            Wrapper.INSTANCE.getLocalPlayer().flyingSpeed = savedMoveSpeed;
-        savedMoveSpeed = -1;
-        super.onDisable();
     }
 }
