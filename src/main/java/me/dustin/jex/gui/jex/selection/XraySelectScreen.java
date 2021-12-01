@@ -88,7 +88,7 @@ public class XraySelectScreen extends Screen {
         });
 
         doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, new LiteralText("Done"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new JexOptionsScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new JexOptionsScreen());
         });
 
         this.addSelectableChild(searchField);

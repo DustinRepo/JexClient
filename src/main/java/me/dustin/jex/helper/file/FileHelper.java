@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.file;
 
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -67,18 +68,20 @@ public enum FileHelper {
         return new ArrayList<>();
     }
 
-    public void writeFile(File file, List<String> content) {
+    public String readFile(File file) {
+        StringBuilder sb = new StringBuilder();
         try {
-            PrintWriter printWriter = new PrintWriter(file);
-            StringBuilder stringBuilder = new StringBuilder();
-            content.forEach(string -> {
-                stringBuilder.append(string + "\r\n");
-            });
-            printWriter.print(stringBuilder);
-            printWriter.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
+            String inString;
+            while ((inString = in.readLine()) != null) {
+                sb.append(inString);
+                sb.append("\n");
+            }
+            in.close();
+            return sb.toString();
+        } catch (IOException e) {
         }
+        return "";
     }
 
     public void writeFile(File path, String name, List<String> content) {

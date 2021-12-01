@@ -222,7 +222,7 @@ public class Excavator extends Feature {
             int blocks = 0;
             for (BlockPos blockPos : blockPosList) {
                 if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty())
-                    blocks++;
+                   blocks++;
             }
             return blocks;
         }

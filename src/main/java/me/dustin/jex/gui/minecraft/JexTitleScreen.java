@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.file.core.ConfigManager;
@@ -51,6 +53,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -150,27 +153,27 @@ public class JexTitleScreen extends Screen {
     private void initWidgetsNormal(int y) {
         JexTitleScreen titleScreen = this;
         this.addDrawableChild(new ButtonWidget(2, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new SelectWorldScreen(titleScreen));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new SelectWorldScreen(titleScreen));
         }));
         this.addDrawableChild(new ButtonWidget(2, y + 24, 175, 20, new TranslatableText("menu.multiplayer"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new MultiplayerScreen(titleScreen));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(titleScreen));
         }));
         this.addDrawableChild(new ButtonWidget(2, y + 24 * 2, 150, 20, new TranslatableText("menu.online"), button -> {
             titleScreen.switchToRealms();
         }));
         this.addDrawableChild(new ButtonWidget(2, y + 24 * 3, 125, 20, new TranslatableText("menu.options"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
         }));
         this.addDrawableChild(new ButtonWidget(2, y + 24 * 4, 100, 20, new TranslatableText("menu.quit"), button -> {
             Wrapper.INSTANCE.getMinecraft().scheduleStop();
         }));
         this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, new TranslatableText("Changelog"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new ChangelogScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new ChangelogScreen());
         }));
     }
 
     private void switchToRealms() {
-        this.client.openScreen(new RealmsMainScreen(this));
+        this.client.setScreen(new RealmsMainScreen(this));
     }
 
     float capeYaw = 0;
@@ -319,7 +322,7 @@ public class JexTitleScreen extends Screen {
         NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
         for (int x = 0; x < image1.getWidth(); x++) {
             for (int y = 0; y < image1.getHeight(); y++) {
-                imgNew.setPixelColor(x, y, image1.getPixelColor(x, y));
+                imgNew.setColor(x, y, image1.getColor(x, y));
             }
         }
 

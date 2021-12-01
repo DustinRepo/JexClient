@@ -64,11 +64,11 @@ public enum NetworkHelper {
 
         TitleScreen titleScreen = new TitleScreen();
         if (bl) {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new DisconnectedScreen(titleScreen, Text.of(reason), Text.of(message)));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new DisconnectedScreen(titleScreen, Text.of(reason), Text.of(message)));
         } else if (bl2) {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new DisconnectedScreen(new RealmsMainScreen(titleScreen), Text.of(reason), Text.of(message)));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new DisconnectedScreen(new RealmsMainScreen(titleScreen), Text.of(reason), Text.of(message)));
         } else {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new DisconnectedScreen(new MultiplayerScreen(titleScreen), Text.of(reason), Text.of(message)));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new DisconnectedScreen(new MultiplayerScreen(titleScreen), Text.of(reason), Text.of(message)));
         }
 
     }

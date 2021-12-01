@@ -62,7 +62,7 @@ public class BarrierView extends Feature {
 			int color = blockStorage.color();
 			Render3DHelper.INSTANCE.drawOutlineBox(eventRender3D.getMatrixStack(), box, color, false);
 			Color color1 = ColorHelper.INSTANCE.getColor(color);
-			Matrix4f matrix4f = eventRender3D.getMatrixStack().peek().getModel();
+			Matrix4f matrix4f = eventRender3D.getMatrixStack().peek().getPositionMatrix();
 			bufferBuilder.vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 			bufferBuilder.vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 			bufferBuilder.vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();

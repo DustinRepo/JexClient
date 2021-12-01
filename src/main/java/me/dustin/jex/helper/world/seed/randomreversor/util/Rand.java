@@ -1,8 +1,8 @@
 package me.dustin.jex.helper.world.seed.randomreversor.util;
 
-import java.lang.reflect.Field;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.*;
+import java.util.concurrent.atomic.*;
+import java.lang.reflect.*;
 
 public class Rand
 {
@@ -45,7 +45,7 @@ public class Rand
         }
         if (random.getClass() == Random.class) {
             try {
-                final AtomicLong seed = (AtomicLong) SeedFieldHolder.FIELD.get(random);
+                final AtomicLong seed = (AtomicLong)SeedFieldHolder.FIELD.get(random);
                 return ofInternalSeed(seed.get());
             }
             catch (ReflectiveOperationException e) {

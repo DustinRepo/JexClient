@@ -33,6 +33,15 @@ public class JexMixinConfigPlugin implements IMixinConfigPlugin {
             LOGGER.info("Optifabric not loaded. Ignoring " + mixinClassName + " that injects into " + targetClassName);
             return false;
         }
+        //I use @Psuedo for sodium classes but someone experienced a weird crash so this is an extra fail-safe
+        if (!FabricLoader.getInstance().isModLoaded("sodium")) {
+            if (mixinClassName.contains("sodium.")) {
+                LOGGER.info("Sodium not loaded. Ignoring " + mixinClassName + " that injects into " + targetClassName);
+                return false;
+            }
+        } else if (mixinClassName.contains("sodium.")){
+            LOGGER.info("Sodium loaded. Using " + mixinClassName + " that injects into " + targetClassName);
+        }
         return true;
     }
 

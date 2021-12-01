@@ -72,11 +72,11 @@ public class AutoTotem extends Feature {
 
     public void moveTotem(int slot) {
         if (openInventory)
-            Wrapper.INSTANCE.getMinecraft().openScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));
         InventoryHelper.INSTANCE.moveToOffhand(slot);
         if (openInventory) {
             NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.syncId));
-            Wrapper.INSTANCE.getMinecraft().openScreen(null);
+            Wrapper.INSTANCE.getMinecraft().setScreen(null);
         }
     }
 

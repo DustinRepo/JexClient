@@ -100,7 +100,7 @@ public class AutoLibrarianRoll extends Feature {
                         }
                     });
                     NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(merchantScreenHandler.syncId));
-                    Wrapper.INSTANCE.getMinecraft().openScreen(null);
+                    Wrapper.INSTANCE.getMinecraft().setScreen(null);
                     checkedTrades = true;
                 }
             }

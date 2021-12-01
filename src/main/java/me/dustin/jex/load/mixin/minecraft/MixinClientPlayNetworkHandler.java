@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
+import me.dustin.jex.helper.world.seed.SeedCracker;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;
@@ -15,10 +16,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.NetworkThreadUtils;
-import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -78,7 +76,7 @@ public class MixinClientPlayNetworkHandler {
         ci.cancel();
     }
 
-    @Inject(method = "onVelocityUpdate", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onEntityVelocityUpdate", at = @At("HEAD"), cancellable = true)
     public void onVelocityUpdate1(EntityVelocityUpdateS2CPacket packet, CallbackInfo ci) {
         NetworkThreadUtils.forceMainThread(packet, (ClientPlayNetworkHandler)(Object)this, this.client);
         Entity entity = this.world.getEntityById(packet.getId());
@@ -90,5 +88,4 @@ public class MixinClientPlayNetworkHandler {
             entity.setVelocityClient((double)eventPlayerVelocity.getVelocityX() / 8000.0D, (double)eventPlayerVelocity.getVelocityY() / 8000.0D, (double)eventPlayerVelocity.getVelocityZ() / 8000.0D);
         }
     }
-
 }

@@ -22,6 +22,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public enum TheAlteningHelper {
@@ -122,7 +123,7 @@ public enum TheAlteningHelper {
             auth.setPassword("JexClient");
             try {
                 auth.logIn();
-                sessionConsumer.accept(new Session(auth.getSelectedProfile().getName(), auth.getSelectedProfile().getId().toString(), auth.getAuthenticatedToken(), "mojang"));
+                sessionConsumer.accept(new Session(auth.getSelectedProfile().getName(), auth.getSelectedProfile().getId().toString(), auth.getAuthenticatedToken(), Optional.of(""), Optional.of(""), Session.AccountType.MOJANG));
                 return;
             } catch (AuthenticationException e) {
                 e.printStackTrace();
@@ -150,7 +151,7 @@ public enum TheAlteningHelper {
                     NativeImage imgNew = new NativeImage(image.getWidth(), image.getHeight(), true);
                     for (int x = 0; x < image.getWidth(); x++) {
                         for (int y = 0; y < image.getHeight(); y++) {
-                            imgNew.setPixelColor(x, y, image.getPixelColor(x, y));
+                            imgNew.setColor(x, y, image.getColor(x, y));
                         }
                     }
 

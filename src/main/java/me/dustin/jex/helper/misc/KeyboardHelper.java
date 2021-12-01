@@ -39,7 +39,7 @@ public enum KeyboardHelper {
                 String n = keyName.toLowerCase().replace("mb", "");
                 int i = Integer.parseInt(n) - 1;
                 if (i > 2)
-                return 10000 + i;
+                    return 10000 + i;
             } catch (Exception e) {}
         }
         keyName = keyName.replace("_", ".");

@@ -2,7 +2,7 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.misc.EventDisplayScreen;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventConnect;
 import me.dustin.jex.event.render.EventDrawScreen;
@@ -28,18 +28,13 @@ public class AutoReconnect extends Feature {
 
     private ServerAddress serverAddress;
 
-    @EventListener(events = {EventTick.class, EventDisplayScreen.class, EventConnect.class, EventDrawScreen.class})
+    @EventListener(events = {EventTick.class, EventSetScreen.class, EventConnect.class, EventDrawScreen.class})
     private void runMethod(Event event) {
         if (event instanceof EventTick) {
-            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen && serverAddress != null) {
-                if (timer.hasPassed(delay)) {
-                    connect();
-                    timer.reset();
-                }
-            } else
+            if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen) || serverAddress == null)
                 timer.reset();
-        } else if (event instanceof EventDisplayScreen eventDisplayScreen) {
-            if (eventDisplayScreen.getScreen() instanceof DisconnectedScreen)
+        } else if (event instanceof EventSetScreen eventSetScreen) {
+            if (eventSetScreen.getScreen() instanceof DisconnectedScreen)
                 timer.reset();
         } else if (event instanceof EventConnect eventConnect) {
             this.serverAddress = eventConnect.getServerAddress();
@@ -49,6 +44,11 @@ public class AutoReconnect extends Feature {
                 timeLeft /= 1000;
                 String messageString = String.format("Reconnecting in %.1fs", timeLeft);
                 FontHelper.INSTANCE.drawCenteredString(eventDrawScreen.getMatrixStack(), messageString, Wrapper.INSTANCE.getWindow().getScaledWidth() / 2.f, 2, ColorHelper.INSTANCE.getClientColor());
+
+                if (timer.hasPassed(delay)) {
+                    connect();
+                    timer.reset();
+                }
             }
         }
     }

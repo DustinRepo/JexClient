@@ -43,7 +43,7 @@ public enum UpdateManager {
                 }
                 if (!isMCVersionSame && !isVersionSame)
                     status = Status.OUTDATED_BOTH;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 status = Status.ERROR;
             }
         }).start();

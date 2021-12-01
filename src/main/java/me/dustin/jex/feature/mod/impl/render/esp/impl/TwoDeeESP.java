@@ -117,7 +117,7 @@ public class TwoDeeESP extends FeatureExtension {
 
     public void drawBox(MatrixStack matrixStack, float x, float y, float x2, float y2, Entity entity) {
         int color = ESP.INSTANCE.getColor(entity) & 0x50ffffff;
-        Matrix4f matrix = matrixStack.peek().getModel();
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         float f = (float)(color >> 24 & 255) / 255.0F;
         float g = (float)(color >> 16 & 255) / 255.0F;
@@ -132,7 +132,7 @@ public class TwoDeeESP extends FeatureExtension {
     
     public void outlineBox(MatrixStack matrixStack, float x, float y, float x2, float y2, Entity entity) {
         int color = 0xff000000;
-        Matrix4f matrix = matrixStack.peek().getModel();
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         float f = (float)(color >> 24 & 255) / 255.0F;
         float g = (float)(color >> 16 & 255) / 255.0F;

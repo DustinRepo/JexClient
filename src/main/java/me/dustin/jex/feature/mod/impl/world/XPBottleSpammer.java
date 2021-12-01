@@ -12,8 +12,6 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 
-import java.security.Key;
-
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Spam XP Bottles on a button press")
 public class XPBottleSpammer extends Feature {
 

@@ -1,14 +1,8 @@
 package me.dustin.jex.helper.world.seed.randomreversor.math.optimize;
 
-import me.dustin.jex.helper.world.seed.randomreversor.math.component.BigFraction;
-import me.dustin.jex.helper.world.seed.randomreversor.math.component.BigMatrix;
-import me.dustin.jex.helper.world.seed.randomreversor.math.component.BigVector;
-import me.dustin.jex.helper.world.seed.randomreversor.math.component.GaussJordan;
-import me.dustin.jex.helper.world.seed.randomreversor.util.Pair;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import me.dustin.jex.helper.world.seed.randomreversor.util.*;
+import java.util.*;
+import me.dustin.jex.helper.world.seed.randomreversor.math.component.*;
 
 public class Optimize
 {

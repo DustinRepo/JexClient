@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Sprint;
+import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -479,6 +480,10 @@ public enum PlayerHelper {
 
     @EventListener(events = {EventPlayerPackets.class}, priority = EventPriority.HIGHEST)
     public void runPacketEvent(EventPlayerPackets eventPlayerPackets) {
+        if (!BaritoneHelper.INSTANCE.baritoneExists())
+            return;
+        if (!BaritoneHelper.INSTANCE.isBaritoneRunning())
+            return;
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
             this.yaw = eventPlayerPackets.getYaw();
             this.pitch = eventPlayerPackets.getPitch();

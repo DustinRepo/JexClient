@@ -2,8 +2,8 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.misc.EventDisplayScreen;
 import me.dustin.jex.event.misc.EventKeyPressed;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRender3D;
@@ -59,7 +59,7 @@ public class FastAnvilDupe extends Feature {
     private ArrayList<Box> renderBoxes = new ArrayList<>();
     private Timer timer = new Timer();
 
-    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventKeyPressed.class, EventDrawScreen.class, EventDisplayScreen.class})
+    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventKeyPressed.class, EventDrawScreen.class, EventSetScreen.class})
     private void runMethod(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
@@ -167,7 +167,7 @@ public class FastAnvilDupe extends Feature {
                 FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Filled Inventory?", midX + 90, midY - 60, !InventoryHelper.INSTANCE.isInventoryFull() ? 0xffff0000 : 0xff00ff00);
                 FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), "Duping Item\2477: \247f" + (dupingItem == null ? "None" : dupingItem.getName().getString()), midX + 90, midY - 50, ColorHelper.INSTANCE.getClientColor());
             }
-        } else if (event instanceof EventDisplayScreen eventSetScreen) {
+        } else if (event instanceof EventSetScreen eventSetScreen) {
             if (eventSetScreen.getScreen() == null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AnvilScreen && !(KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_ESCAPE) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_E))) {
                 pickedUp = false;
                 if (!openNext)

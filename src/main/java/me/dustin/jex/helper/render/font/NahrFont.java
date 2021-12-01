@@ -131,7 +131,7 @@ public class NahrFont {
         NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-                imgNew.setPixelColor(x, y, image.getPixelColor(x, y));
+                imgNew.setColor(x, y, image.getColor(x, y));
             }
         }
 
@@ -368,7 +368,7 @@ public class NahrFont {
     }
 
     private final void drawTexturedModalRect(MatrixStack matrixStack, float x, float y, float u, float v, float width, float height, int color) {
-        Matrix4f matrix4f = matrixStack.peek().getModel();
+        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
         float scale = 0.0039063F;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();

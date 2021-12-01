@@ -4,7 +4,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 public class Scrollbar {
-    
+
     private float x,y,width,height;
     private float viewportY, viewportHeight;
     private float contentHeight;

@@ -51,7 +51,7 @@ public class Fly extends Feature {
                 Wrapper.INSTANCE.getLocalPlayer().prevStrideDistance = lastStrideDist;
             }
 
-            Wrapper.INSTANCE.getLocalPlayer().flyingSpeed = speed;
+            Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = speed;
             Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
 
             if (jumping) {

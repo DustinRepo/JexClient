@@ -5,7 +5,6 @@ import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.block.Block;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

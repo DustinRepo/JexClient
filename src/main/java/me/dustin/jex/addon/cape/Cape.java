@@ -42,7 +42,7 @@ public class Cape {
             NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
             for (int x = 0; x < capeImage.getWidth(); x++) {
                 for (int y = 0; y < capeImage.getHeight(); y++) {
-                    imgNew.setPixelColor(x, y, capeImage.getPixelColor(x, y));
+                    imgNew.setColor(x, y, capeImage.getColor(x, y));
                 }
             }
 
@@ -71,7 +71,7 @@ public class Cape {
         NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
         for (int x = 0; x < capeImage.getWidth(); x++) {
             for (int y = 0; y < capeImage.getHeight(); y++) {
-                imgNew.setPixelColor(x, y, capeImage.getPixelColor(x, y));
+                imgNew.setColor(x, y, capeImage.getColor(x, y));
             }
         }
 

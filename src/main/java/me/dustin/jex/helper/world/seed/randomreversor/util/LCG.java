@@ -1,6 +1,6 @@
 package me.dustin.jex.helper.world.seed.randomreversor.util;
 
-import java.util.Objects;
+import java.util.*;
 
 public class LCG
 {

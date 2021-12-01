@@ -57,8 +57,7 @@ public class MixinShader implements IShader {
 
     @Override
     public GlUniform getCustomUniform(String name) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         return this.customUniforms.get(name);
     }
-
 }

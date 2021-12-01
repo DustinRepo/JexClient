@@ -107,7 +107,7 @@ public class AutoPot extends Feature {
 
 	public boolean isPotion(ItemStack itemStack) {
 		if (itemStack != null && itemStack.getItem() instanceof SplashPotionItem) {
-			if (itemStack.getTag().getString("Potion").equalsIgnoreCase("minecraft:healing") || itemStack.getTag().getString("Potion").equalsIgnoreCase("minecraft:strong_healing"))
+			if (itemStack.getNbt().getString("Potion").equalsIgnoreCase("minecraft:healing") || itemStack.getNbt().getString("Potion").equalsIgnoreCase("minecraft:strong_healing"))
 				return true;
 		}
 		return false;

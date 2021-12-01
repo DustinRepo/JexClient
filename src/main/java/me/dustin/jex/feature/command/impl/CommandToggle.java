@@ -24,7 +24,8 @@ public class CommandToggle extends Command {
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         Feature feature = FeatureArgumentType.getFeature(context, "feature");
         feature.toggleState();
-        ConfigManager.INSTANCE.get(FeatureFile.class).write();
+        if (JexClient.INSTANCE.isAutoSaveEnabled())
+            ConfigManager.INSTANCE.get(FeatureFile.class).write();
         ChatHelper.INSTANCE.addClientMessage(String.format("%s %s", feature.getName(), feature.getState() ? "\247a\247lON" : "\2474\247lOFF"));
         return 1;
     }

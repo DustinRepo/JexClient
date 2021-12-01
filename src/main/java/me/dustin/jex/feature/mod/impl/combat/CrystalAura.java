@@ -175,12 +175,12 @@ public class CrystalAura extends Feature {
 		float minDistance = 0;
 		float range = attackDistance;
 		switch (mode) {
-		case "Risky":
-			minDistance = 4.5f;
-			break;
-		case "Safe":
-			minDistance = 8;
-			break;
+			case "Risky":
+				minDistance = 4.5f;
+				break;
+			case "Safe":
+				minDistance = 8;
+				break;
 		}
 
 		if (Wrapper.INSTANCE.getLocalPlayer().getY() <= (enderCrystalEntity.getY() - 1))

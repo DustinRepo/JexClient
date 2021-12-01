@@ -53,7 +53,6 @@ public class HolidayEvents extends Feature {
 
     @Override
     public void onDisable() {
-        if (Wrapper.INSTANCE.getWorld() != null)
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof PlayerEntity || !(entity instanceof LivingEntity livingEntity))
                 return;

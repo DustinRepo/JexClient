@@ -225,23 +225,8 @@ public enum MCAPIHelper {
             if (feature.equalsIgnoreCase("msamigration")) {
                 return jsonObject.get("rollout").getAsBoolean();
             }
-        } catch (Exception e) {}
-        return false;
-    }
-
-    public boolean isMSAAccount() {
-        String accessToken = getAccessToken();
-        if (accessToken == null || accessToken.isEmpty() || accessToken.equalsIgnoreCase("fakeToken"))
-            return false;
-        String response = WebHelper.INSTANCE.readURL(CHECK_MIGRATION_STATUS_URL, genAuthHeader());
-        try {
-            JsonObject jsonObject = JsonHelper.INSTANCE.prettyGson.fromJson(response, JsonObject.class);
-            String feature = jsonObject.get("feature").getAsString();
-            if (feature.equalsIgnoreCase("msamigration")) {
-                return jsonObject.get("rollout").getAsBoolean();
-            }
-        } catch (NullPointerException e) {
-            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return false;
     }
@@ -283,18 +268,6 @@ public enum MCAPIHelper {
             e.printStackTrace();
         }
         return names;
-    }
-
-    public boolean verifySecurityLocation() {
-        //just tells me I don't have access even tho I do
-        /*String resp = WebHelper.INSTANCE.readURL(SECURITY_LOCATION_URL, genAuthHeader());
-        if (resp != null && resp.isEmpty())
-            return true;*/
-        //so workaround it is
-        String resp = WebHelper.INSTANCE.readURL(NAME_CHANGE_INFO_URL, genAuthHeader());
-        if (resp == null || resp.isEmpty())
-            return false;
-        return true;
     }
 
     public String getNameFromUUID(UUID uuid) {

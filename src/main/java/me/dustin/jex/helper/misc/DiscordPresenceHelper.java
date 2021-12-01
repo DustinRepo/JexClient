@@ -6,7 +6,6 @@ import club.minnced.discord.rpc.DiscordRichPresence;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.misc.Discord;
-import me.dustin.jex.helper.misc.Wrapper;
 
 import java.util.Objects;
 
@@ -54,8 +53,6 @@ public enum DiscordPresenceHelper {
             presence = null;
         }
     }
-
-
 
     private String getDetails() {
         StringBuilder sb = new StringBuilder();

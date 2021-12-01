@@ -147,11 +147,11 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
             me.closeHandledScreen();
     }
 
-    @Redirect(method = "updateNausea", at = @At(value = "INVOKE", target = "net/minecraft/client/MinecraftClient.openScreen(Lnet/minecraft/client/gui/screen/Screen;)V"))
+    @Redirect(method = "updateNausea", at = @At(value = "INVOKE", target = "net/minecraft/client/MinecraftClient.setScreen(Lnet/minecraft/client/gui/screen/Screen;)V"))
     public void nullScreenOverride(MinecraftClient minecraftClient, Screen screen) {
         EventPortalCloseGUI eventPortalCloseGUI = new EventPortalCloseGUI().run();
         if (!eventPortalCloseGUI.isCancelled())
-            minecraftClient.openScreen(screen);
+            minecraftClient.setScreen(screen);
     }
 
     @Inject(method = "tickMovement", at = @At("HEAD"), cancellable = true)

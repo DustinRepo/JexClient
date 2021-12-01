@@ -64,7 +64,7 @@ public class AddAccountScreen extends Screen {
 		this.addSelectableChild(email);
 		this.addSelectableChild(password);
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, new LiteralText("Cancel"), button -> {
-			Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 		}));
 
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, editingAccount == null ? new LiteralText("Add") : new LiteralText("Save"), button -> {
@@ -86,7 +86,7 @@ public class AddAccountScreen extends Screen {
 					MinecraftAccountManager.INSTANCE.getAccounts().add(account);
 			}
 			ConfigManager.INSTANCE.get(AltFile.class).write();
-			Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 		}));
 
 		if (editingAccount == null)

@@ -2,6 +2,7 @@ package me.dustin.jex.helper.network.login.minecraft;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -50,7 +51,7 @@ public class MojangLogin {
             String name = selectedProfile.get("name").getAsString();
             String uuid = selectedProfile.get("id").getAsString();
             String accessToken = object.get("accessToken").getAsString();
-            return new Session(name, uuid, accessToken, "mojang");
+            return new Session(name, uuid, accessToken, Optional.of(""), Optional.of(""), Session.AccountType.MOJANG);
         }
         return null;
     }
@@ -62,8 +63,7 @@ public class MojangLogin {
             Session session = login(this.email, this.password);
             sessionConsumer.accept(session);
         }).start();
-        else {
-            sessionConsumer.accept(new Session(this.email, UUID.randomUUID().toString(), "fakeToken", "legacy"));
-        }
+        else
+            sessionConsumer.accept(new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY));
     }
 }

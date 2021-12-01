@@ -45,13 +45,13 @@ public class MCLeaksScreen extends Screen {
     protected void init() {
         restoreButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 96 + 18, 128, 20, new LiteralText(this.sessionRestored ? "Session restored!" : "Restore Session"), button -> {
             MCLeaksHelper.INSTANCE.restoreSession();
-            Wrapper.INSTANCE.getMinecraft().openScreen(new MCLeaksScreen(this.parent, true));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, true));
             while(EventAPI.getInstance().alreadyRegistered(MCLeaksHelper.INSTANCE))
                 EventAPI.getInstance().unregister(MCLeaksHelper.INSTANCE);
         });
         useTokenButton = new ButtonWidget(this.width / 2 - 18, this.height / 4 + 96 + 18, 168, 20, new LiteralText("Redeem Token"), button -> {
             if (this.tokenField.getText().length() != 16) {
-                Wrapper.INSTANCE.getMinecraft().openScreen(new MCLeaksScreen(this.parent, false, Formatting.RED + "The token has to be 16 characters long!"));
+                Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, false, Formatting.RED + "The token has to be 16 characters long!"));
                 return;
             }
             button.active = false;
@@ -72,7 +72,7 @@ public class MCLeaksScreen extends Screen {
             WebHelper.INSTANCE.openLink("https://mcleaks.net/");
         });
         ButtonWidget cancelButton = new ButtonWidget(this.width / 2 + 12, this.height / 4 + 120 + 18, 138, 20, new LiteralText("Cancel"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+            Wrapper.INSTANCE.getMinecraft().setScreen(parent);
         });
         tokenField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), this.width / 2 - 100, 128, 200, 20, new LiteralText(""));
         this.addDrawableChild(restoreButton);
@@ -86,7 +86,7 @@ public class MCLeaksScreen extends Screen {
     @Override
     public void tick() {
         if (settingScreen != null) {
-            Wrapper.INSTANCE.getMinecraft().openScreen(settingScreen);
+            Wrapper.INSTANCE.getMinecraft().setScreen(settingScreen);
             settingScreen = null;
             return;
         }
@@ -120,7 +120,7 @@ public class MCLeaksScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+            Wrapper.INSTANCE.getMinecraft().setScreen(parent);
             return false;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

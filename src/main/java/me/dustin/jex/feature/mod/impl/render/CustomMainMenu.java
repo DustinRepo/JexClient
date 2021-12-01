@@ -2,7 +2,7 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.misc.EventDisplayScreen;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -21,15 +21,15 @@ public class CustomMainMenu extends Feature {
     @OpChild(name = "Delay (Seconds)", min = 1, max = 60, parent = "Scroll")
     public int scrollDelay = 5;
 
-    @EventListener(events = {EventTick.class, EventDisplayScreen.class})
+    @EventListener(events = {EventTick.class, EventSetScreen.class})
     private void runMethod(Event event) {
         if (event instanceof EventTick) {
             if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof TitleScreen)
-                Wrapper.INSTANCE.getMinecraft().openScreen(new JexTitleScreen());
+                Wrapper.INSTANCE.getMinecraft().setScreen(new JexTitleScreen());
         }
-        if (event instanceof EventDisplayScreen eventDisplayScreen) {
-            if (eventDisplayScreen.getScreen() instanceof TitleScreen) {
-                Wrapper.INSTANCE.getMinecraft().openScreen(new JexTitleScreen());
+        if (event instanceof EventSetScreen eventSetScreen) {
+            if (eventSetScreen.getScreen() instanceof TitleScreen) {
+                Wrapper.INSTANCE.getMinecraft().setScreen(new JexTitleScreen());
             }
         }
     }

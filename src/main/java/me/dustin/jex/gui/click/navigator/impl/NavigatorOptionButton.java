@@ -10,11 +10,11 @@ import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.enums.OpType;
 import me.dustin.jex.feature.option.types.*;
 import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.jex.JexGui;
 import me.dustin.jex.gui.click.navigator.NavigatorOptionScreen;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
@@ -137,7 +137,8 @@ public class NavigatorOptionButton extends Button {
                 if (this.getOption() instanceof FloatOption || this.getOption() instanceof IntOption || this.getOption() instanceof ColorOption) {
                     isSliding = true;
                 }
-                ConfigManager.INSTANCE.get(FeatureFile.class).write();
+                if (JexClient.INSTANCE.isAutoSaveEnabled())
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
                 return;
             }
             if (int_1 == 1) {
@@ -438,7 +439,7 @@ public class NavigatorOptionButton extends Button {
 
 
     protected void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
-        Matrix4f matrix = matrixStack.peek().getModel();
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float g = (float) (startColor >> 16 & 255) / 255.0F;
         float h = (float) (startColor >> 8 & 255) / 255.0F;
@@ -471,9 +472,7 @@ public class NavigatorOptionButton extends Button {
             float position = MouseHelper.INSTANCE.getMouseX() - this.getX();
             float percent = MathHelper.clamp(position / this.getWidth(), 0, 1);
             float increment = v.getInc();
-
             int value =  v.getMin() + (int)(percent * (v.getMax() - v.getMin()));
-
             v.setValue((int) ((int) Math.round(value * (1.0D / increment)) / (1.0D / increment)));
             v.setValue((int) ClientMathHelper.INSTANCE.round(v.getValue(), 2));
         }

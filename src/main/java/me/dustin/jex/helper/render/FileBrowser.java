@@ -1,6 +1,5 @@
 package me.dustin.jex.helper.render;
 
-import me.dustin.jex.gui.changelog.changelog.JexChangelog;
 import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.misc.KeyboardHelper;
@@ -12,7 +11,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FileBrowser {
 

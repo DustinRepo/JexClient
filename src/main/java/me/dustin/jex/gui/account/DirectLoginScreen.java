@@ -55,7 +55,7 @@ public class DirectLoginScreen extends Screen {
 		this.addSelectableChild(email);
 		this.addSelectableChild(password);
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, new LiteralText("Cancel"), button -> {
-			Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 		}));
 
 		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, new LiteralText("Login"), button -> {
@@ -65,7 +65,7 @@ public class DirectLoginScreen extends Screen {
 				new MicrosoftLogin(microsoftAccount, session -> {
 					if (session != null) {
 						Wrapper.INSTANCE.getIMinecraft().setSession(session);
-						Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+						Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 					} else
 						this.errorMessage = "\247cError, could not log in.";
 				}).login();
@@ -75,7 +75,7 @@ public class DirectLoginScreen extends Screen {
 				new MojangLogin(mojangAccount, session -> {
 					if (session != null) {
 						Wrapper.INSTANCE.getIMinecraft().setSession(session);
-						Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+						Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 					} else
 						this.errorMessage = "\247cError, could not log in.";
 				}).login();

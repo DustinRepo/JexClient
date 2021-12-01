@@ -327,6 +327,22 @@ public class Window {
         return null;
     }
 
+    public Button getTopVisible() {
+        for (Button button : this.getButtons())
+            if (button.getY() > this.getY() + this.getHeight() && button.isVisible())
+                return button;
+        return null;
+    }
+
+    public Button getBottomVisible() {
+        Button b = null;
+        for (Button button : this.getButtons())
+            if (button.getY() > this.getY() + this.getHeight() && button.isVisible())
+                b = button;
+
+         return b;
+    }
+
     public int getColor() {
         return color;
     }

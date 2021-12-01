@@ -80,7 +80,7 @@ public class OutlineStorageESP extends FeatureExtension {
         BlockState blockState = blockEntity.getCachedState();
 
         blockState.getOutlineShape(Wrapper.INSTANCE.getWorld(), blockEntity.getPos()).getBoundingBoxes().forEach(bb -> {
-            Matrix4f matrix4f = eventRender3D.getMatrixStack().peek().getModel();
+            Matrix4f matrix4f = eventRender3D.getMatrixStack().peek().getPositionMatrix();
             Color color1 = ColorHelper.INSTANCE.getColor(esp.getColor(blockEntity));
             Box box = bb.offset(Render3DHelper.INSTANCE.getRenderPosition(blockEntity.getPos().getX(), blockEntity.getPos().getY(), blockEntity.getPos().getZ()));
             float minX = (float)box.minX;

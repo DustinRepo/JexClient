@@ -1,23 +1,22 @@
 package me.dustin.jex.file.impl;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
-import me.dustin.jex.feature.option.types.*;
+import me.dustin.jex.feature.option.types.ColorOption;
 import me.dustin.jex.file.core.ConfigFile;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.YamlHelper;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @ConfigFile.CFG(fileName = "Features.yml", folder = "config")
 public class FeatureFile extends ConfigFile {

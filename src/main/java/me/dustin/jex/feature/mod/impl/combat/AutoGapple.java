@@ -51,7 +51,7 @@ public class AutoGapple extends Feature {
             StatusEffects.ABSORPTION,
             StatusEffects.REGENERATION,
             StatusEffects.RESISTANCE
-            ).collect(Collectors.toSet());
+    ).collect(Collectors.toSet());
 
 
     private boolean isEating;

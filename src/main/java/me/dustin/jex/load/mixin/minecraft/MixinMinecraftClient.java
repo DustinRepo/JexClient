@@ -1,8 +1,6 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.minecraft.SocialInteractionsService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import me.dustin.jex.event.misc.*;
 import me.dustin.jex.event.render.EventHasOutline;
 import me.dustin.jex.feature.command.ClientCommandInternals;
@@ -49,7 +47,7 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Mutable
     @Shadow @Final private MinecraftSessionService sessionService;
 
-    @Shadow public abstract void openScreen(@Nullable Screen screen);
+    @Shadow public abstract void setScreen(@Nullable Screen screen);
 
     @Override
     public void setSession(Session session) {
@@ -88,14 +86,15 @@ public abstract class MixinMinecraftClient implements IMinecraft {
             cir.setReturnValue(eventGetFramerateLimit.getLimit());
     }
 
-    @Inject(method = "openScreen", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "setScreen", at = @At("HEAD"), cancellable = true)
     public void openScreen(Screen screen, CallbackInfo cir) {
-        EventDisplayScreen eventDisplayScreen = new EventDisplayScreen(screen).run();
-        if (eventDisplayScreen.isCancelled()) {
+        EventSetScreen eventSetScreen = new EventSetScreen(screen).run();
+        if (eventSetScreen.isCancelled()) {
             cir.cancel();
-            if (eventDisplayScreen.getScreen() != screen)
-                openScreen(eventDisplayScreen.getScreen());
+            if (eventSetScreen.getScreen() != screen)
+                setScreen(eventSetScreen.getScreen());
         }
+
     }
 
     @Inject(method = "hasOutline", at = @At("HEAD"), cancellable = true)
@@ -109,6 +108,7 @@ public abstract class MixinMinecraftClient implements IMinecraft {
         new EventScheduleStop().run();
     }
 
+    @Override
     public void setSessionService(MinecraftSessionService sessionService) {
         this.sessionService = sessionService;
     }

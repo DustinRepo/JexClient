@@ -260,7 +260,7 @@ public class WaypointEditScreen extends Screen {
     }
 
     protected void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
-        Matrix4f matrix = matrixStack.peek().getModel();
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float g = (float) (startColor >> 16 & 255) / 255.0F;
         float h = (float) (startColor >> 8 & 255) / 255.0F;
@@ -304,13 +304,13 @@ public class WaypointEditScreen extends Screen {
             waypoint.setY(Float.parseFloat(yPos.getText()));
             waypoint.setZ(Float.parseFloat(zPos.getText()));
             ConfigManager.INSTANCE.get(WaypointFile.class).write();
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen(serverName.getText()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen(serverName.getText()));
         }
     };
     private ButtonListener cancelListener = new ButtonListener() {
         @Override
         public void invoke() {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen(serverName.getText()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen(serverName.getText()));
         }
     };
 

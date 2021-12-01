@@ -18,6 +18,7 @@ import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.option.Option;
@@ -135,7 +136,8 @@ public class JexOptionButton extends Button {
                 if (this.getOption() instanceof FloatOption || this.getOption() instanceof IntOption || this.getOption() instanceof ColorOption) {
                     isSliding = true;
                 }
-                ConfigManager.INSTANCE.get(FeatureFile.class).write();
+                if (JexClient.INSTANCE.isAutoSaveEnabled())
+                    ConfigManager.INSTANCE.get(FeatureFile.class).write();
                 return;
             }
             if (int_1 == 1) {
@@ -444,7 +446,7 @@ public class JexOptionButton extends Button {
 
 
     protected void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
-        Matrix4f matrix = matrixStack.peek().getModel();
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float g = (float) (startColor >> 16 & 255) / 255.0F;
         float h = (float) (startColor >> 8 & 255) / 255.0F;

@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -250,7 +251,7 @@ public class MicrosoftLogin {
             if (saveAccount)
                 SetAccount(name, uuid, token, refresh);
             JexClient.INSTANCE.getLogger().info("Login success. Name: " + name);
-            return new Session(name, uuid, token, "msa");
+            return new Session(name, uuid, token, Optional.of(""), Optional.of(""), Session.AccountType.MSA);
         } else {
             if (Wrapper.INSTANCE.getMinecraft() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof AccountManagerScreen accountManagerScreen) {
                 accountManagerScreen.outputString = "Error Grabbing Minecraft Profile";

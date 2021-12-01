@@ -79,13 +79,13 @@ public class ClickGui extends Screen {
     private ButtonListener xrayButtonListener = new ButtonListener() {
         @Override
         public void invoke() {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new XraySelectScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new XraySelectScreen());
         }
     };
     private ButtonListener searchButtonListener = new ButtonListener() {
         @Override
         public void invoke() {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new SearchSelectScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new SearchSelectScreen());
         }
     };
 

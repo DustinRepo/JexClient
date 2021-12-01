@@ -1,7 +1,6 @@
 package me.dustin.jex.feature.mod.impl.player;
 
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;

@@ -134,7 +134,7 @@ public enum InventoryHelper {
 
     public HashMap<Integer, ItemStack> getStacksFromShulker(ItemStack shulkerBox) {
         HashMap<Integer, ItemStack> stacks = Maps.newHashMap();
-        NbtCompound nbttagcompound = shulkerBox.getTag();
+        NbtCompound nbttagcompound = shulkerBox.getNbt();
         if (nbttagcompound == null) return stacks;
 
 

@@ -15,15 +15,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.MovementType;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.util.collection.ReusableStream;
-import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 @Mixin(Entity.class)
@@ -39,9 +35,6 @@ public abstract class MixinEntity {
 
     @Shadow
     public abstract AbstractTeam getScoreboardTeam();
-
-    @Shadow
-    protected abstract void setFlag(int index, boolean value);
 
     @Shadow
     public abstract boolean isSwimming();
@@ -56,94 +49,14 @@ public abstract class MixinEntity {
 
     @Shadow public World world;
 
-    @Shadow
-    public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, ShapeContext context, ReusableStream<VoxelShape> collisions) {
-        boolean bl = movement.x == 0.0D;
-        boolean bl2 = movement.y == 0.0D;
-        boolean bl3 = movement.z == 0.0D;
-        if ((!bl || !bl2) && (!bl || !bl3) && (!bl2 || !bl3)) {
-            ReusableStream<VoxelShape> reusableStream = new ReusableStream(Stream.concat(collisions.stream(), world.getBlockCollisions(entity, entityBoundingBox.stretch(movement))));
-            return adjustMovementForCollisions(movement, entityBoundingBox, reusableStream);
-        } else {
-            return adjustSingleAxisMovementForCollisions(movement, entityBoundingBox, world, context, collisions);
-        }
-    }
-
     @Shadow protected boolean onGround;
 
     @Shadow public float stepHeight;
 
-    @Shadow
-    public static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, ReusableStream<VoxelShape> collisions) {
-        double d = movement.x;
-        double e = movement.y;
-        double f = movement.z;
-        if (e != 0.0D) {
-            e = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entityBoundingBox, collisions.stream(), e);
-            if (e != 0.0D) {
-                entityBoundingBox = entityBoundingBox.offset(0.0D, e, 0.0D);
-            }
-        }
-
-        boolean bl = Math.abs(d) < Math.abs(f);
-        if (bl && f != 0.0D) {
-            f = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, entityBoundingBox, collisions.stream(), f);
-            if (f != 0.0D) {
-                entityBoundingBox = entityBoundingBox.offset(0.0D, 0.0D, f);
-            }
-        }
-
-        if (d != 0.0D) {
-            d = VoxelShapes.calculateMaxOffset(Direction.Axis.X, entityBoundingBox, collisions.stream(), d);
-            if (!bl && d != 0.0D) {
-                entityBoundingBox = entityBoundingBox.offset(d, 0.0D, 0.0D);
-            }
-        }
-
-        if (!bl && f != 0.0D) {
-            f = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, entityBoundingBox, collisions.stream(), f);
-        }
-
-        return new Vec3d(d, e, f);
-    }
-
-    @Shadow
-    public static Vec3d adjustSingleAxisMovementForCollisions(Vec3d movement, Box entityBoundingBox, WorldView world, ShapeContext context, ReusableStream<VoxelShape> collisions) {
-        double d = movement.x;
-        double e = movement.y;
-        double f = movement.z;
-        if (e != 0.0D) {
-            e = VoxelShapes.calculatePushVelocity(Direction.Axis.Y, entityBoundingBox, world, e, context, collisions.stream());
-            if (e != 0.0D) {
-                entityBoundingBox = entityBoundingBox.offset(0.0D, e, 0.0D);
-            }
-        }
-
-        boolean bl = Math.abs(d) < Math.abs(f);
-        if (bl && f != 0.0D) {
-            f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions.stream());
-            if (f != 0.0D) {
-                entityBoundingBox = entityBoundingBox.offset(0.0D, 0.0D, f);
-            }
-        }
-
-        if (d != 0.0D) {
-            d = VoxelShapes.calculatePushVelocity(Direction.Axis.X, entityBoundingBox, world, d, context, collisions.stream());
-            if (!bl && d != 0.0D) {
-                entityBoundingBox = entityBoundingBox.offset(d, 0.0D, 0.0D);
-            }
-        }
-
-        if (!bl && f != 0.0D) {
-            f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions.stream());
-        }
-
-        return new Vec3d(d, e, f);
-    }
-
     @Shadow public abstract void move(MovementType type, Vec3d movement);
 
     @Shadow private Box entityBounds;
+
 
     @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
     public void push(Entity entity, CallbackInfo ci) {
@@ -205,34 +118,29 @@ public abstract class MixinEntity {
     @Inject(method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
     public void move1(Vec3d movement, CallbackInfoReturnable<Vec3d> cir) {
         Box box = this.getBoundingBox();
-        ShapeContext shapeContext = ShapeContext.of((Entity)(Object)this);
-        VoxelShape voxelShape = this.world.getWorldBorder().asVoxelShape();
-        Stream<VoxelShape> stream = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(box.contract(1.0E-7D)), BooleanBiFunction.AND) ? Stream.empty() : Stream.of(voxelShape);
-        Stream<VoxelShape> stream2 = this.world.getEntityCollisions((Entity)(Object)this, box.stretch(movement), (entity) -> {
-            return true;
-        });
-        ReusableStream<VoxelShape> reusableStream = new ReusableStream(Stream.concat(stream2, stream));
-        Vec3d vec3d = movement.lengthSquared() == 0.0D ? movement : adjustMovementForCollisions((Entity)(Object)this, movement, box, this.world, shapeContext, reusableStream);
+        List<VoxelShape> list = this.world.getEntityCollisions((Entity)(Object)this, box.stretch(movement));
+        Vec3d vec3d = movement.lengthSquared() == 0.0D ? movement : Entity.adjustMovementForCollisions((Entity)(Object)this, movement, box, this.world, list);
         boolean bl = movement.x != vec3d.x;
         boolean bl2 = movement.y != vec3d.y;
         boolean bl3 = movement.z != vec3d.z;
         boolean bl4 = this.onGround || bl2 && movement.y < 0.0D;
         if (this.stepHeight > 0.0F && bl4 && (bl || bl3)) {
-            new EventStep((Entity)(Object)this, EventStep.Mode.PRE, 0).run();
-            Vec3d vec3d2 = adjustMovementForCollisions((Entity)(Object)this, new Vec3d(movement.x, (double)this.stepHeight, movement.z), box, this.world, shapeContext, reusableStream);
-            Vec3d vec3d3 = adjustMovementForCollisions((Entity)(Object)this, new Vec3d(0.0D, (double)this.stepHeight, 0.0D), box.stretch(movement.x, 0.0D, movement.z), this.world, shapeContext, reusableStream);
-            if (vec3d3.y < (double)this.stepHeight) {
-                Vec3d vec3d4 = adjustMovementForCollisions((Entity)(Object)this, new Vec3d(movement.x, 0.0D, movement.z), box.offset(vec3d3), this.world, shapeContext, reusableStream).add(vec3d3);
+            new EventStep((Entity) (Object) this, EventStep.Mode.PRE, 0).run();
+            Vec3d vec3d2 = Entity.adjustMovementForCollisions((Entity)(Object)this, new Vec3d(movement.x, (double) this.stepHeight, movement.z), box, this.world, list);
+            Vec3d vec3d3 = Entity.adjustMovementForCollisions((Entity)(Object)this, new Vec3d(0.0D, (double) this.stepHeight, 0.0D), box.stretch(movement.x, 0.0D, movement.z), this.world, list);
+            if (vec3d3.y < (double) this.stepHeight) {
+                Vec3d vec3d4 = Entity.adjustMovementForCollisions((Entity)(Object)this, new Vec3d(movement.x, 0.0D, movement.z), box.offset(vec3d3), this.world, list).add(vec3d3);
                 if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
                     vec3d2 = vec3d4;
                 }
             }
-            Vec3d savedVec = vec3d2.add(adjustMovementForCollisions((Entity)(Object)this, new Vec3d(0.0D, -vec3d2.y + movement.y, 0.0D), box.offset(vec3d2), this.world, shapeContext, reusableStream));
+
+            Vec3d savedVec = vec3d2.add(Entity.adjustMovementForCollisions((Entity) (Object) this, new Vec3d(0.0D, -vec3d2.y + movement.y, 0.0D), box.offset(vec3d2), this.world, list));
             if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
                 if (savedVec.y > 0.6f)
-                    new EventStep((Entity)(Object)this, EventStep.Mode.MID, savedVec.y).run();
+                    new EventStep((Entity) (Object) this, EventStep.Mode.MID, savedVec.y).run();
                 cir.setReturnValue(savedVec);
-                new EventStep((Entity)(Object)this, EventStep.Mode.END, savedVec.y).run();
+                new EventStep((Entity) (Object) this, EventStep.Mode.END, savedVec.y).run();
                 return;
             }
         }

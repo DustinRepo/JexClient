@@ -22,7 +22,7 @@ public class MixinShader implements IShader {
     private Map<String, GlUniform> customUniforms = Maps.newHashMap();
 
     //fuck optifabric, this method needs to be static with it, but not without
-    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/util/Identifier.<init>(Ljava/lang/String;)V"), index = 0)
+    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/util/Identifier.<init> (Ljava/lang/String;)V"), index = 0)
     public String renameID(String originalID) {
         if (originalID.contains("jex:")) {
             //remove original one with the id split in the middle of the name
@@ -33,7 +33,7 @@ public class MixinShader implements IShader {
         return originalID;
     }
 
-    @ModifyArg(method = "loadProgram", at = @At(value = "INVOKE", target = "net/minecraft/util/Identifier.<init>(Ljava/lang/String;)V"), index = 0)
+    @ModifyArg(method = "loadProgram", at = @At(value = "INVOKE", target = "net/minecraft/util/Identifier.<init> (Ljava/lang/String;)V"), index = 0)
     private static String renameIDOfHelpers(String originalID) {
         if (originalID.contains("jex:")) {
             //remove original one with the id split in the middle of the name
@@ -55,7 +55,7 @@ public class MixinShader implements IShader {
 
     @Override
     public GlUniform getCustomUniform(String name) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         return this.customUniforms.get(name);
     }
 }

@@ -79,7 +79,7 @@ public class RadarElement extends HudElement{
     }
 
     private void drawPointer(MatrixStack matrixStack) {
-        Matrix4f matrix4f = matrixStack.peek().getModel();
+        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
         Color color1 = ColorHelper.INSTANCE.getColor(ColorHelper.INSTANCE.getClientColor());
 
         Render2DHelper.INSTANCE.setup2DRender(false);

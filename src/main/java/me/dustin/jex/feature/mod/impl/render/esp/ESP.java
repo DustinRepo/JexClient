@@ -57,6 +57,8 @@ public class ESP extends Feature {
     public int itemColor = 0xffffffff;
     String lastMode;
 
+    public static boolean spoofOutline;
+
     public ESP() {
         new ShaderESP();
         new BoxESP();
@@ -139,5 +141,7 @@ public class ESP extends Feature {
 
         return Color.getHSBColor((float) H, (float) S, (float) B);
     }
+
+
 
 }

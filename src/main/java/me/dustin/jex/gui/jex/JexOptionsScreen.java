@@ -59,22 +59,22 @@ public class JexOptionsScreen extends Screen {
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
         //left
-        downloadInstallerButton = new ButtonWidget(centerX - 230, topY + 25, 150, 20, new LiteralText("Update Jex to " + UpdateManager.INSTANCE.getLatestVersion().version()), button -> {
+        downloadInstallerButton = new ButtonWidget(centerX - 230, topY + 25, 150, 20, new LiteralText("Update Jex to " + (UpdateManager.INSTANCE.getLatestVersion() != null ? UpdateManager.INSTANCE.getLatestVersion().version() : "null")), button -> {
             Update.INSTANCE.update();
             updating = true;
         });
         changelogButton = new ButtonWidget(centerX - 230, topY + 50, 150, 20, new LiteralText("Changelog"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new ChangelogScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new ChangelogScreen());
         });
         personalSettingsButton = new ButtonWidget(centerX - 230, topY + 75, 150, 20, new LiteralText("Personal Cosmetics"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new JexPersonalizationScreen(this));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new JexPersonalizationScreen(this));
         });
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 
 
         //middle
         waypointScreenButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, new LiteralText("Waypoint Screen"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
         });
         clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, new LiteralText("Open ClickGUI"), button -> {
             Feature.get(Gui.class).setState(true);
@@ -93,13 +93,13 @@ public class JexOptionsScreen extends Screen {
 
         //right
         xrayButton = new ButtonWidget(centerX + 80, topY + 25, 150, 20, new LiteralText("Xray Block Selection"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new XraySelectScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new XraySelectScreen());
         });
         searchButton = new ButtonWidget(centerX + 80, topY + 50, 150, 20, new LiteralText("Search Block Selection"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new SearchSelectScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new SearchSelectScreen());
         });
         autoDropButton = new ButtonWidget(centerX + 80, topY + 75, 150, 20, new LiteralText("AutoDrop Selection"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new AutoDropSelectScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new AutoDropSelectScreen());
         });
 
         this.addDrawableChild(setPrefixButton);

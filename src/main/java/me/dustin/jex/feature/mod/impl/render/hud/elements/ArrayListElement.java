@@ -88,16 +88,18 @@ public class ArrayListElement extends HudElement {
     }
 
     private void reorderArrayList(ArrayList<Feature> mods) {
-        Collections.sort(mods, (mod, mod1) -> {
-            String name1 = mod.getDisplayName();
-            String name2 = mod1.getDisplayName();
-            if (FontHelper.INSTANCE.getStringWidth(name1) > FontHelper.INSTANCE.getStringWidth(name2)) {
-                return -1;
+        Collections.sort(mods, new Comparator<Feature>() {
+            public int compare(Feature mod, Feature mod1) {
+                String name1 = mod.getDisplayName();
+                String name2 = mod1.getDisplayName();
+                if (FontHelper.INSTANCE.getStringWidth(name1) > FontHelper.INSTANCE.getStringWidth(name2)) {
+                    return -1;
+                }
+                if (FontHelper.INSTANCE.getStringWidth(name1) < FontHelper.INSTANCE.getStringWidth(name2)) {
+                    return 1;
+                }
+                return 0;
             }
-            if (FontHelper.INSTANCE.getStringWidth(name1) < FontHelper.INSTANCE.getStringWidth(name2)) {
-                return 1;
-            }
-            return 0;
         });
     }
 }

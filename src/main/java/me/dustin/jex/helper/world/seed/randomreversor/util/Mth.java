@@ -1,6 +1,6 @@
 package me.dustin.jex.helper.world.seed.randomreversor.util;
 
-import java.math.BigInteger;
+import java.math.*;
 
 public class Mth
 {

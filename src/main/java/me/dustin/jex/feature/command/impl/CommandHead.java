@@ -30,7 +30,7 @@ public class CommandHead extends Command {
         ItemStack itemStack = new ItemStack(Items.PLAYER_HEAD);
         NbtCompound tag = new NbtCompound();
         tag.putString("SkullOwner", playerName);
-        itemStack.setTag(tag);
+        itemStack.setNbt(tag);
         Wrapper.INSTANCE.getInteractionManager().clickCreativeStack(itemStack, 36);
         ChatHelper.INSTANCE.addClientMessage("Done! You now have " + playerName + "'s head.");
         return 1;

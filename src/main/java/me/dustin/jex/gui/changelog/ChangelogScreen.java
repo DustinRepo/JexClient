@@ -38,7 +38,7 @@ public class ChangelogScreen extends Screen {
         }
         scrollbar = new Scrollbar(Render2DHelper.INSTANCE.getScaledWidth() - 15, 10, 9, 0, Render2DHelper.INSTANCE.getScaledHeight() - 45, height - 15, 0xff696969);
         this.addDrawableChild(new ButtonWidget(width / 2 - 40, this.height - 22, 80, 20, new LiteralText("Back"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(new TitleScreen());
+            Wrapper.INSTANCE.getMinecraft().setScreen(new TitleScreen());
         }));
         super.init();
     }

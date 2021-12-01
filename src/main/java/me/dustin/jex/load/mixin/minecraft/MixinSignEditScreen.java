@@ -41,7 +41,7 @@ public class MixinSignEditScreen extends Screen {
 
     private void finishEditing() {
         this.sign.markDirty();
-        Wrapper.INSTANCE.getMinecraft().openScreen((Screen) null);
+        Wrapper.INSTANCE.getMinecraft().setScreen(null);
     }
 
 }

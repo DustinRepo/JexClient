@@ -7,7 +7,6 @@ import net.minecraft.util.Util;
 import org.lwjgl.opengl.GL11;
 
 public enum Scissor {
-
     INSTANCE;
 
     public void cut(int x, int y, int width, int height) {

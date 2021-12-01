@@ -1,11 +1,8 @@
 package me.dustin.jex.helper.world.seed.randomreversor.math.lattice;
 
-import me.dustin.jex.helper.world.seed.randomreversor.math.component.BigVector;
-
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Spliterator;
-import java.util.function.Consumer;
+import me.dustin.jex.helper.world.seed.randomreversor.math.component.*;
+import java.util.function.*;
+import java.util.*;
 
 class SearchSpliterator implements Spliterator<BigVector>
 {

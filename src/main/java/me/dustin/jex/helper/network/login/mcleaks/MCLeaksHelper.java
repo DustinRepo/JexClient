@@ -14,6 +14,7 @@ import net.minecraft.text.LiteralText;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public enum MCLeaksHelper {
     INSTANCE;
@@ -45,7 +46,7 @@ public enum MCLeaksHelper {
         if (storedSession == null) {
             storedSession = Wrapper.INSTANCE.getMinecraft().getSession();
         }
-        Wrapper.INSTANCE.getIMinecraft().setSession(new Session(activeAccount.mcname, "", "", "mojang"));
+        Wrapper.INSTANCE.getIMinecraft().setSession(new Session(activeAccount.mcname, "", "", Optional.of(""), Optional.of(""), Session.AccountType.MOJANG));
     }
 
     private boolean login(String server, int port, String serverHash) {

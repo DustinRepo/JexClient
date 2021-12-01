@@ -3,24 +3,16 @@ package me.dustin.jex.feature.mod.impl.combat;
 import com.google.gson.JsonArray;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
-import me.dustin.jex.event.misc.EventDisplayScreen;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.packet.EventPacketReceive;
-import me.dustin.jex.event.player.EventAttackEntity;
-import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.client.gui.screen.DeathScreen;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
-import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,9 +25,9 @@ public class AutoCope extends Feature {
 
     private ArrayList<String> messages = new ArrayList<>();
 
-    @EventListener(events = {EventPacketReceive.class, EventDisplayScreen.class})
+    @EventListener(events = {EventPacketReceive.class, EventSetScreen.class})
     private void runMethod(Event event) {
-        if (event instanceof EventDisplayScreen eventDisplayScreen) {
+        if (event instanceof EventSetScreen eventDisplayScreen) {
             if (eventDisplayScreen.getScreen() instanceof DeathScreen)
                 sendMessage();
         }

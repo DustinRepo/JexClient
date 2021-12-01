@@ -2,8 +2,7 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
-import me.dustin.jex.event.misc.EventDisplayScreen;
+import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRenderWidget;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -34,7 +33,7 @@ public class CustomWidgets extends Feature {
     private Map<ClickableWidget, Integer> hoverChecks = new HashMap<>();
     private Map<ClickableWidget, Float> offsets = new HashMap<>();
 
-    @EventListener(events = {EventRenderWidget.class, EventTick.class, EventDisplayScreen.class})
+    @EventListener(events = {EventRenderWidget.class, EventTick.class, EventSetScreen.class})
     private void runMethod(Event event) {
         if (event instanceof EventRenderWidget eventRenderWidget) {
             int hoverColor = ColorHelper.INSTANCE.setAlpha(ColorHelper.INSTANCE.getClientColor(), 150);
@@ -86,7 +85,7 @@ public class CustomWidgets extends Feature {
                 hovered = MathHelper.clamp(hovered, 0, 10);
                 hoverChecks.replace(widget, hovered);
             }
-        } else if (event instanceof EventDisplayScreen) {
+        } else if (event instanceof EventSetScreen) {
             hoverChecks.clear();
         }
     }

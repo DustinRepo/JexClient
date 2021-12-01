@@ -1,8 +1,7 @@
 package me.dustin.jex.helper.world.seed.randomreversor.math.decomposition;
 
 import me.dustin.jex.helper.world.seed.randomreversor.math.component.*;
-
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 public class LUDecomposition
 {

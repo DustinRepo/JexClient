@@ -87,29 +87,29 @@ public class TheAlteningScreen extends Screen {
             }
         });
         loginGeneratedButton = new ButtonWidget(width / 2 + 2, 330, 150, 20, new LiteralText("Login to Generated"), button -> {
-           if (generatedAccount != null) {
-               TheAlteningHelper.INSTANCE.login(generatedAccount, session -> {
-                   if (session != null) {
-                       JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
-                       Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                       logInStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
-                   } else {
-                       logInStatus = "Unable to login";
-                   }
-               });
-           }
+            if (generatedAccount != null) {
+                TheAlteningHelper.INSTANCE.login(generatedAccount, session -> {
+                    if (session != null) {
+                        JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
+                        Wrapper.INSTANCE.getIMinecraft().setSession(session);
+                        logInStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
+                    } else {
+                        logInStatus = "Unable to login";
+                    }
+                });
+            }
         });
         loginTokenButton = new ButtonWidget(width / 2 + 52, 365, 100, 20, new LiteralText("Login With Token"), button -> {
-           TheAlteningHelper.INSTANCE.login(this.tokenWidget.getText(), session -> {
-               if (session != null) {
-                   JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
-                   Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                   tokenStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
-               } else {
-                   tokenStatus = Formatting.RED + "Invalid Token";
-               }
-               this.tokenWidget.setText("");
-           });
+            TheAlteningHelper.INSTANCE.login(this.tokenWidget.getText(), session -> {
+                if (session != null) {
+                    JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
+                    Wrapper.INSTANCE.getIMinecraft().setSession(session);
+                    tokenStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
+                } else {
+                    tokenStatus = Formatting.RED + "Invalid Token";
+                }
+                this.tokenWidget.setText("");
+            });
         });
         generateButton = new ButtonWidget(width / 2 - 152, 305, 150, 20, new LiteralText("Generate"), button -> generatedAccount = TheAlteningHelper.INSTANCE.generateAccount());
         favoriteGeneratedButton = new ButtonWidget(width / 2 + 2, 305, 75, 20, new LiteralText("Favorite"), button -> {
@@ -142,7 +142,7 @@ public class TheAlteningScreen extends Screen {
             WebHelper.INSTANCE.openLink("https://thealtening.com/?i=wohc9");
         });
         ButtonWidget cancelButton = new ButtonWidget(width / 2 - 100, height - 22, 200, 20, new LiteralText("Cancel"), button -> {
-            Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+            Wrapper.INSTANCE.getMinecraft().setScreen(parent);
         });
         if (TheAlteningHelper.INSTANCE.isConnectedToAltening())
             logInStatus = "Logged in to TheAltening account named \247b" + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
@@ -218,7 +218,7 @@ public class TheAlteningScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            Wrapper.INSTANCE.getMinecraft().openScreen(parent);
+            Wrapper.INSTANCE.getMinecraft().setScreen(parent);
             return false;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

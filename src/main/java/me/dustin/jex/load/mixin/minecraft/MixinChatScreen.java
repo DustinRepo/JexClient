@@ -116,7 +116,7 @@ public class MixinChatScreen implements IChatScreen {
             ircChatButton.mouseClicked(mouseX, mouseY, button);
         }
         if (this.chatField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix()) && CommandManagerJex.INSTANCE.jexCommandSuggestor != null)
-            if (CommandManagerJex.INSTANCE.jexCommandSuggestor.mouseClicked(mouseX, mouseY, button)) {
+            if (CommandManagerJex.INSTANCE.jexCommandSuggestor.mouseClicked((double)((int)mouseX), (double)((int)mouseY), button)) {
                 cir.setReturnValue(true);
             }
     }

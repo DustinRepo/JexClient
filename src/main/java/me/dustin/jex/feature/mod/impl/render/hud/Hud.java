@@ -12,12 +12,12 @@ import me.dustin.jex.event.render.EventRenderEffects;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.hud.elements.*;
 import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.HudElementsFile;
 import me.dustin.jex.gui.click.jex.JexGui;
 import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.click.window.impl.Window;
 import me.dustin.jex.gui.tab.TabGui;
 import me.dustin.jex.helper.file.ModFileHelper;
-import me.dustin.jex.file.impl.HudElementsFile;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.*;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -32,6 +32,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.*;
 import org.lwjgl.glfw.GLFW;
 
+import java.awt.*;
 import java.util.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
@@ -238,7 +239,7 @@ public class Hud extends Feature {
             matrixStack.translate(0.0, 0.0, eventRender2DItem.getItemRenderer().zOffset + 200.0);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            eventRender2DItem.getFontRenderer().draw(Integer.toString(durability), eventRender2DItem.getX() * 2.0f, eventRender2DItem.getY() * 2.0f, staticColor ? 0xFFFFFF : color, true, matrixStack.peek().getModel(), immediate, false, 0, 15728880);
+            eventRender2DItem.getFontRenderer().draw(Integer.toString(durability), eventRender2DItem.getX() * 2.0f, eventRender2DItem.getY() * 2.0f, staticColor ? 0xFFFFFF : color, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, 15728880);
             immediate.draw();
         }
     }

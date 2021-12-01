@@ -1,8 +1,8 @@
 package me.dustin.jex.helper.world.seed.randomreversor.call;
 
-import me.dustin.jex.helper.world.seed.randomreversor.util.Rand;
-
 import java.util.function.Predicate;
+
+import me.dustin.jex.helper.world.seed.randomreversor.util.Rand;
 
 public class FilteredSkip
   extends Skip

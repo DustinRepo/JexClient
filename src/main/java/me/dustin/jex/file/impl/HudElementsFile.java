@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+
 @ConfigFile.CFG(fileName = "HudElements.yml", bootRead = false, folder = "config")
 public class HudElementsFile extends ConfigFile {
 

@@ -3,8 +3,8 @@ package me.dustin.jex.gui.click.navigator.impl;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.file.core.ConfigManager;
-import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.file.impl.FeatureFile;
+import me.dustin.jex.gui.click.window.impl.Button;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -31,7 +31,8 @@ public class NavigatorFeatureVisibleButton extends Button {
     public void click(double double_1, double double_2, int int_1) {
         if (isHovered() && int_1 == 0) {
             feature.setVisible(!feature.isVisible());
-            ConfigManager.INSTANCE.get(FeatureFile.class).write();
+            if (JexClient.INSTANCE.isAutoSaveEnabled())
+                ConfigManager.INSTANCE.get(FeatureFile.class).write();
         }
     }
 }

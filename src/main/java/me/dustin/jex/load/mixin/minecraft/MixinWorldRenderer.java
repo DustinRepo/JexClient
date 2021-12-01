@@ -98,8 +98,8 @@ public class MixinWorldRenderer implements IWorldRenderer {
                 q /= t;
                 r /= t;
                 s /= t;
-                vertexConsumer.vertex(entry.getModel(), (float)(k + d), (float)(l + e), (float)(m + f)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormal(), q, r, s).next();
-                vertexConsumer.vertex(entry.getModel(), (float)(n + d), (float)(o + e), (float)(p + f)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormal(), q, r, s).next();
+                vertexConsumer.vertex(entry.getPositionMatrix(), (float)(k + d), (float)(l + e), (float)(m + f)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormalMatrix(), q, r, s).next();
+                vertexConsumer.vertex(entry.getPositionMatrix(), (float)(n + d), (float)(o + e), (float)(p + f)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormalMatrix(), q, r, s).next();
             });
             ci.cancel();
         }

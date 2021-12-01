@@ -251,7 +251,7 @@ public enum WorldHelper {
         } catch (IOException var21) {
             JexClient.INSTANCE.getLogger().warn("Failed to read level {} data {}", worldName, var21);
             SystemToast.addWorldAccessFailureToast(Wrapper.INSTANCE.getMinecraft(), worldName);
-            Wrapper.INSTANCE.getMinecraft().openScreen(null);
+            Wrapper.INSTANCE.getMinecraft().setScreen(null);
             return null;
         }
         DynamicRegistryManager.Impl registryTracker = DynamicRegistryManager.create();

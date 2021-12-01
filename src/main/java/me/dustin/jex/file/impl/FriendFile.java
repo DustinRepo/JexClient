@@ -3,10 +3,10 @@ package me.dustin.jex.file.impl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.dustin.jex.file.core.ConfigFile;
-import me.dustin.jex.helper.file.YamlHelper;
-import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
+import me.dustin.jex.helper.file.YamlHelper;
+import me.dustin.jex.helper.player.FriendHelper;
 
 import java.io.BufferedReader;
 import java.io.File;

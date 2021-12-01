@@ -5,9 +5,9 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.ClientSettingsFile;
+import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorFeatureButton;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
-import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -106,7 +106,7 @@ public class Navigator extends Screen {
                 for (NavigatorFeatureButton featureButton : featureButtons) {
                     if (featureButton.isHovered()) {
                         this.searchBar = null;
-                        Wrapper.INSTANCE.getMinecraft().openScreen(new NavigatorOptionScreen(this, featureButton.getFeature()));
+                        Wrapper.INSTANCE.getMinecraft().setScreen(new NavigatorOptionScreen(this, featureButton.getFeature()));
                         return true;
                     }
                 }

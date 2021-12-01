@@ -433,7 +433,7 @@ public class OptionButton extends Button {
 
 
     protected void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
-        Matrix4f matrix = matrixStack.peek().getModel();
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float g = (float) (startColor >> 16 & 255) / 255.0F;
         float h = (float) (startColor >> 8 & 255) / 255.0F;
@@ -464,11 +464,22 @@ public class OptionButton extends Button {
     void handleSliders(IntOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
             float position = MouseHelper.INSTANCE.getMouseX() - this.getX();//.INSTANCE.INSTANCE.INSTANCE.INSTANCE.INSTANCE
-            float percent = MathHelper.clamp(position / this.getWidth(), 0, 1);
+            float percent = position / this.getWidth() * 100;
             float increment = v.getInc();
-
-            int value =  v.getMin() + (int)(percent * (v.getMax() - v.getMin()));
-
+            if (percent > 100) {
+                percent = 100;
+            }
+            if (percent < 0) {
+                percent = 0;
+            }
+            float value = (percent / 100) * ((v.getMax() - v.getMin()) + increment);
+            value += v.getMin();
+            if (value > v.getMax()) {
+                value = v.getMax();
+            }
+            if (value < v.getMin()) {
+                value = v.getMin();
+            }
             v.setValue((int) ((int) Math.round(value * (1.0D / increment)) / (1.0D / increment)));
             v.setValue((int) ClientMathHelper.INSTANCE.round(v.getValue(), 2));
         }
@@ -477,11 +488,22 @@ public class OptionButton extends Button {
     void handleSliders(FloatOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
             float position = MouseHelper.INSTANCE.getMouseX() - this.getX();
-            float percent = MathHelper.clamp(position / this.getWidth(), 0, 1);
+            float percent = position / this.getWidth() * 100;
             float increment = v.getInc();
-
-            float value =  v.getMin() + (percent * (v.getMax() - v.getMin()));
-
+            if (percent > 100) {
+                percent = 100;
+            }
+            if (percent < 0) {
+                percent = 0;
+            }
+            float value = (percent / 100) * ((v.getMax() - v.getMin()) + increment);
+            value += v.getMin();
+            if (value > v.getMax()) {
+                value = v.getMax();
+            }
+            if (value < v.getMin()) {
+                value = v.getMin();
+            }
             v.setValue((float) ((float) Math.round(value * (1.0D / increment)) / (1.0D / increment)));
             v.setValue((float) ClientMathHelper.INSTANCE.round(v.getValue(), 2));
         }

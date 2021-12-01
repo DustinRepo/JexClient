@@ -304,7 +304,7 @@ public class WaypointScreen extends Screen {
         @Override
         public void invoke() {
             Waypoints.Waypoint waypoint = getSelectedWaypoint().getWaypoint();
-            Wrapper.INSTANCE.getMinecraft().openScreen(new WaypointEditScreen(getSelectedServer().getName(), waypoint));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointEditScreen(getSelectedServer().getName(), waypoint));
         }
     };
 }

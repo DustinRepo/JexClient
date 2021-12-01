@@ -43,7 +43,7 @@ public class TrailsFile extends ConfigFile {
         });
         YamlHelper.INSTANCE.writeFile(yamlMap, getFile());
     }
-
+    
     public void convertJson() {
         File file = new File(ModFileHelper.INSTANCE.getJexDirectory(), "Trails.json");
         if (!file.exists())
