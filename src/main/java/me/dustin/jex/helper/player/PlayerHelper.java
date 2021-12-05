@@ -480,13 +480,14 @@ public enum PlayerHelper {
 
     @EventListener(events = {EventPlayerPackets.class}, priority = EventPriority.HIGHEST)
     public void runPacketEvent(EventPlayerPackets eventPlayerPackets) {
-        if (!BaritoneHelper.INSTANCE.baritoneExists())
-            return;
-        if (!BaritoneHelper.INSTANCE.isBaritoneRunning())
-            return;
         if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
             this.yaw = eventPlayerPackets.getYaw();
             this.pitch = eventPlayerPackets.getPitch();
+
+            if (!BaritoneHelper.INSTANCE.baritoneExists())
+                return;
+            if (!BaritoneHelper.INSTANCE.isBaritoneRunning())
+                return;
             Wrapper.INSTANCE.getLocalPlayer().headYaw = yaw;
             Wrapper.INSTANCE.getLocalPlayer().bodyYaw = yaw;
         }
