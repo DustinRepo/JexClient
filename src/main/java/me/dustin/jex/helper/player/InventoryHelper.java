@@ -7,10 +7,14 @@ import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.AirBlockItem;
@@ -22,6 +26,7 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.tag.FluidTags;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -225,6 +230,54 @@ public enum InventoryHelper {
             stacks.put(i - 9, getInventory().getStack(i));
         }
         return stacks;
+    }
+
+    public float getBlockBreakingSpeed(BlockState block, int slot) {
+        PlayerEntity player = Wrapper.INSTANCE.getLocalPlayer();
+        ItemStack stack = player.getInventory().getStack(slot);
+
+        float f = stack.getMiningSpeedMultiplier(block);
+        if (f > 1.0F) {
+            int i = EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, stack);
+            ItemStack itemStack = player.getInventory().getStack(slot);
+            if (i > 0 && !itemStack.isEmpty()) {
+                f += (float) (i * i + 1);
+            }
+        }
+
+        if (StatusEffectUtil.hasHaste(player)) {
+            f *= 1.0F + (float) (StatusEffectUtil.getHasteAmplifier(player) + 1) * 0.2F;
+        }
+
+        if (player.hasStatusEffect(StatusEffects.MINING_FATIGUE)) {
+            float k;
+            switch (player.getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) {
+                case 0:
+                    k = 0.3F;
+                    break;
+                case 1:
+                    k = 0.09F;
+                    break;
+                case 2:
+                    k = 0.0027F;
+                    break;
+                case 3:
+                default:
+                    k = 8.1E-4F;
+            }
+
+            f *= k;
+        }
+
+        if (player.isSubmergedIn(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(player)) {
+            f /= 5.0F;
+        }
+
+        if (!player.isOnGround()) {
+            f /= 5.0F;
+        }
+
+        return f;
     }
 
     private int lastSlotSent = -1;

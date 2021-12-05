@@ -5,6 +5,7 @@ import me.dustin.jex.event.player.EventGetReachDistance;
 import me.dustin.jex.event.player.EventHasExtendedReach;
 import me.dustin.jex.event.world.EventBreakBlock;
 import me.dustin.jex.event.world.EventClickBlock;
+import me.dustin.jex.event.world.EventPlayerInteractionTick;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.load.impl.IClientPlayerInteractionManager;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
@@ -25,6 +26,11 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
     @Shadow private float currentBreakingProgress;
 
     @Shadow private int blockBreakingCooldown;
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    public void tick1(CallbackInfo ci) {
+        new EventPlayerInteractionTick().run();
+    }
 
     @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
     public void attackBlock(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
