@@ -244,7 +244,7 @@ public enum WorldHelper {
     }
 
     public IntegratedServer createIntegratedServer(Thread thread, long seed, GeneratorType generatorType) {
-        String worldName = "jex_finder";
+        String worldName = "jex_finder" + seed;
         LevelStorage.Session session2;
         try {
             session2 = Wrapper.INSTANCE.getMinecraft().getLevelStorage().createSession(worldName);
@@ -287,7 +287,7 @@ public enum WorldHelper {
         if (integratedServer.setupServer()) {
             return integratedServer;
         }
-        cleanupIntegratedServer();
+        //cleanupIntegratedServer();
         return null;
     }
 

@@ -76,7 +76,7 @@ public class CommandFind extends Command {
                 JexClient.INSTANCE.getLogger().info("Shutting down integrated server");
                 integratedServer.shutdown();
                 JexClient.INSTANCE.getLogger().info("Cleaning up integrated server");
-                WorldHelper.INSTANCE.cleanupIntegratedServer();
+                //WorldHelper.INSTANCE.cleanupIntegratedServer();
             }
         }.start();
         return 1;
