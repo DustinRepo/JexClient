@@ -174,7 +174,7 @@ public class Search extends Feature {
                 BoxStorage boxStorage = new BoxStorage(box, blocks.get(block));
                 boxList.add(boxStorage);
             }
-            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), boxList);
+            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), boxList, true);
         } else if (event instanceof EventJoinWorld) {
             int distance = Wrapper.INSTANCE.getOptions().viewDistance;
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {

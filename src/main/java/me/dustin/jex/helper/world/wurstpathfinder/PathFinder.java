@@ -570,7 +570,7 @@ public class PathFinder {
 				boxes.add(new Render3DHelper.BoxStorage(box, ColorHelper.INSTANCE.getClientColor()));
 		}
 
-		Render3DHelper.INSTANCE.drawList(matrixStack, boxes);
+		Render3DHelper.INSTANCE.drawList(matrixStack, boxes, true);
 	}
 
 	public boolean isPathStillValid(int index)

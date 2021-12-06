@@ -128,7 +128,7 @@ public class AntiLiquid extends Feature {
                         foundPlacing = true;
                 }
             }
-            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), renderList);
+            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), renderList, true);
         }
     }
 

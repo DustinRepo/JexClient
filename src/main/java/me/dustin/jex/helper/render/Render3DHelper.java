@@ -226,8 +226,8 @@ public enum Render3DHelper {
         return (then + (now - then) * percent);
     }
 
-    public void drawList(MatrixStack matrixStack, ArrayList<BoxStorage> list) {
-		setup3DRender(true);
+    public void drawList(MatrixStack matrixStack, ArrayList<BoxStorage> list, boolean disableDepth) {
+		setup3DRender(disableDepth);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
     	list.forEach(blockStorage -> {

@@ -35,7 +35,7 @@ public class BoxStorageESP extends FeatureExtension {
                     list.add(new BoxStorage(box, storageESP.getColor(blockEntity)));
                 }
             });
-            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), list);
+            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), list, true);
         }
     }
 }
