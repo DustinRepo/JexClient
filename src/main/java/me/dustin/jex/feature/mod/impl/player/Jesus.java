@@ -85,7 +85,7 @@ public class Jesus extends Feature {
                 return;
             if (WorldHelper.INSTANCE.isWaterlogged(eventBox.getBlockPos())) {
                 FluidState fluidState = WorldHelper.INSTANCE.getFluidState(eventBox.getBlockPos());
-                if (Wrapper.INSTANCE.getLocalPlayer().isSubmergedInWater() || (eventBox.getBlockPos().getY() < Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5f && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer())) || Wrapper.INSTANCE.getLocalPlayer().isSneaking() || Wrapper.INSTANCE.getLocalPlayer().fallDistance > 3)
+                if (Wrapper.INSTANCE.getLocalPlayer().isSubmergedInWater() || Wrapper.INSTANCE.getLocalPlayer().isInLava() || (eventBox.getBlockPos().getY() < Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5f && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer())) || Wrapper.INSTANCE.getLocalPlayer().isSneaking() || Wrapper.INSTANCE.getLocalPlayer().fallDistance > 3)
                     return;
                 if (fluidState.getLevel() == 8) {
                     Box waterBox = new Box(0.1f, 0, 0.1f, 0.9f, Wrapper.INSTANCE.getLocalPlayer().isRiding() ? 0.92f : 1, 0.9f);
