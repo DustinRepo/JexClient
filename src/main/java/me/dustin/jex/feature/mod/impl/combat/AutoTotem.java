@@ -43,7 +43,8 @@ public class AutoTotem extends Feature {
             int firstTotem = InventoryHelper.INSTANCE.getFromHotbar(Items.TOTEM_OF_UNDYING);
             if (firstTotem == -1)
                 firstTotem = InventoryHelper.INSTANCE.getFromInv(Items.TOTEM_OF_UNDYING);
-
+            if (firstTotem == -1)
+                return;
             if (needsOffhandTotem()) {
                 if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING) {
                     if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.AIR)
