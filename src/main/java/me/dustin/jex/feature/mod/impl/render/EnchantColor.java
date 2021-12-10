@@ -43,13 +43,13 @@ public class EnchantColor extends Feature{
     private void runMethod(EventGetGlintShaders eventGetGlintShaders) {
         if (glintColorU == null || crazyRainbowU == null || saturationU == null || mathModeU == null) {
             IShader iShader = (IShader) ShaderHelper.getRainbowEnchantShader();
-            if (iShader == null)
-                return;
-            glintColorU = iShader.getCustomUniform("GlintColor");
-            crazyRainbowU = iShader.getCustomUniform("CrazyRainbow");
-            saturationU = iShader.getCustomUniform("Saturation");
-            alphaU = iShader.getCustomUniform("Alpha");
-            mathModeU = iShader.getCustomUniform("MathMode");
+            if (iShader != null) {
+                glintColorU = iShader.getCustomUniform("GlintColor");
+                crazyRainbowU = iShader.getCustomUniform("CrazyRainbow");
+                saturationU = iShader.getCustomUniform("Saturation");
+                alphaU = iShader.getCustomUniform("Alpha");
+                mathModeU = iShader.getCustomUniform("MathMode");
+            }
         }
         if (glintColorU != null) {
             Color setColor = rainbow ? ColorHelper.INSTANCE.getColorViaHue(col) : ColorHelper.INSTANCE.getColor(color);

@@ -7,6 +7,8 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.load.impl.IGameRenderer;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -14,6 +16,8 @@ import net.minecraft.client.render.Shader;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -76,9 +80,24 @@ public abstract class MixinGameRenderer implements IGameRenderer {
         new EventRender3D(matrixStack1, partialTicks).run();
     }
 
+    @Inject(method = "preloadShaders", at = @At("RETURN"))
+    public void preLoadShaders1(ResourceFactory factory, CallbackInfo ci) {
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+            @Override
+            public void reload(ResourceManager manager) {
+                ShaderHelper.loadCustomMCShaders(manager);
+            }
+
+            @Override
+            public Identifier getFabricId() {
+                return new Identifier("jex:shaders/core/");
+            }
+        });
+    }
+
     @Inject(method = "reload(Lnet/minecraft/resource/ResourceManager;)V", at = @At("HEAD"))
     private void hookReload(ResourceManager manager, CallbackInfo info) {
-        ShaderHelper.loadCustomMCShaders(Wrapper.INSTANCE.getMinecraft().getResourceManager());
+        ShaderHelper.loadCustomMCShaders(manager);
     }
 
     @Inject(method = "getRenderTypeTranslucentShader", at = @At("HEAD"), cancellable = true)
@@ -107,10 +126,6 @@ public abstract class MixinGameRenderer implements IGameRenderer {
         EventGetGlintShaders eventGetGlintShaders = new EventGetGlintShaders(renderTypeArmorGlintShader).run();
         if (eventGetGlintShaders.isCancelled())
             cir.setReturnValue(eventGetGlintShaders.getShader());
-    }
-
-    @Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "net/minecraft/util/profiler/Profiler.pop()V"))
-    public void renderWorldBottom(float tickDelta, long limitTime, MatrixStack matrix, CallbackInfo ci) {
     }
 
     @Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)

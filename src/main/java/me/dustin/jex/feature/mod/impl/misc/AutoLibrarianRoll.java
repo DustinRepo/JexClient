@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -26,6 +27,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
@@ -51,6 +53,8 @@ public class AutoLibrarianRoll extends Feature {
     public String priceMode = "Normal";
     @Op(name = "Max Price", min = 1, max = 75)
     public int price = 20;
+    @Op(name = "Auto Trade")
+    public boolean autoTrade = true;
 
     private VillagerEntity villager;
     private VillagerProfession lastProfession;
@@ -93,15 +97,40 @@ public class AutoLibrarianRoll extends Feature {
                                     tradeFound = true;
                                     doneVillagers.put(villager, lecternPos);
                                     this.setState(false);
+
+                                    if (autoTrade) {
+                                        int book = getItem(Items.BOOK) - 6;
+                                        if (book != -1) {
+                                            int emerald = getItem(Items.EMERALD) - 6;
+                                            if (emerald != -1) {
+                                                JexClient.INSTANCE.getLogger().info("Autotrading");
+                                                JexClient.INSTANCE.getLogger().info("Book slot: " + book + " Emerald slot: " + emerald);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, emerald, SlotActionType.PICKUP, 0);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 0, SlotActionType.PICKUP, 0);
+
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 1, SlotActionType.PICKUP, 0);
+
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 2, SlotActionType.PICKUP, 0);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
+                                            } else {
+                                                ChatHelper.INSTANCE.addClientMessage("No emeralds in inventory! Can not trade.");
+                                            }
+                                        } else {
+                                            ChatHelper.INSTANCE.addClientMessage("No books in inventory! Can not trade.");
+                                        }
+                                    }
                                 } else {
                                     ChatHelper.INSTANCE.addClientMessage("Enchantment found, but price is too high: " + count);
                                 }
                             }
                         }
                     });
-                    NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(merchantScreenHandler.syncId));
-                    Wrapper.INSTANCE.getMinecraft().setScreen(null);
-                    checkedTrades = true;
+                    if (!tradeFound) {
+                        NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(merchantScreenHandler.syncId));
+                        Wrapper.INSTANCE.getMinecraft().setScreen(null);
+                        checkedTrades = true;
+                    }
                 }
             }
             if (checkedTrades) {
@@ -194,6 +223,14 @@ public class AutoLibrarianRoll extends Feature {
         checkedTrades = false;
         lastProfession = null;
         super.onDisable();
+    }
+
+    private int getItem(Item item) {
+        for (int i = 3; i < 38; i++) {
+            if (InventoryHelper.INSTANCE.getInventory().getStack(i) != null && InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() == item)
+                return i;
+        }
+        return -1;
     }
 
     private BlockPos getLectern() {

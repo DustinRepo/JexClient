@@ -10,7 +10,6 @@ import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
-import me.dustin.jex.feature.mod.impl.misc.Discord;
 import me.dustin.jex.feature.mod.impl.misc.Fakelag;
 import me.dustin.jex.feature.mod.impl.movement.Step;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
@@ -27,7 +26,6 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
-import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.JexServerHelper;
@@ -37,8 +35,6 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.EntityPositionHelper;
 import me.dustin.jex.helper.update.JexVersion;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.helper.world.seed.SeedCracker;
-import me.dustin.jex.load.impl.IKeyboard;
 import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.helper.update.UpdateManager;
 import net.fabricmc.loader.api.FabricLoader;
@@ -80,7 +76,6 @@ public enum JexClient {
         OptionManager.INSTANCE.initializeOptionManager();
         getLogger().info("Initializing Commands");
         CommandManagerJex.INSTANCE.registerCommands();
-        //createJson();
         getLogger().info("Reading Config Files");
         ModFileHelper.INSTANCE.gameBootLoad();
 
@@ -99,6 +94,12 @@ public enum JexClient {
         CustomFont.INSTANCE.loadFont();
         JexChangelog.loadChangelogList();
         getLogger().info("Jex load finished.");
+
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            getLogger().info("Creating mods.json for website.");
+            createJson();
+        }
+
         loadedOnce = true;
     }
 
@@ -116,7 +117,8 @@ public enum JexClient {
                 });
             }
         } else if (event instanceof EventTick) {
-            Wrapper.INSTANCE.getWindow().setTitle("Jex Client " + getVersion().version());
+            //TODO: create an event for this in the setTitle method to avoid it flashing the title and make it optional
+            //Wrapper.INSTANCE.getWindow().setTitle("Jex Client " + getVersion().version());
             if (Wrapper.INSTANCE.getLocalPlayer() == null) {
                 if (Feature.get(KillAura.class).getState())
                     Feature.get(KillAura.class).setState(false);
@@ -132,9 +134,6 @@ public enum JexClient {
                 BaritoneHelper.INSTANCE.setAssumeJesus(Feature.get(Jesus.class).getState());
             }
         } else if (event instanceof EventScheduleStop) {
-            if (Feature.get(Discord.class).getState()) {
-                Feature.get(Discord.class).setState(false);
-            }
             ModFileHelper.INSTANCE.closeGame();
         } else if (event instanceof EventGameFinishedLoading && playSoundOnLaunch()) {
             Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F));

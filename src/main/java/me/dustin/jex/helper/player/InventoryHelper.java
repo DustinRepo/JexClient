@@ -69,6 +69,14 @@ public enum InventoryHelper {
         return true;
     }
 
+    public int get(Item item) {
+        for (int i = 0; i < 45; i++) {
+            if (getInventory().getStack(i) != null && getInventory().getStack(i).getItem() == item)
+                return i;
+        }
+        return -1;
+    }
+
     public int getFromHotbar(Item item) {
         for (int i = 0; i < 9; i++) {
             if (getInventory().getStack(i) != null && getInventory().getStack(i).getItem() == item)
