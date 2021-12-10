@@ -63,7 +63,7 @@ public class Jesus extends Feature {
                 }
                 if (WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer())) {
                     if (!Wrapper.INSTANCE.getLocalPlayer().isSneaking()) {
-                        if (Wrapper.INSTANCE.getOptions().keyJump.isPressed() && allowJump) {
+                        if (Wrapper.INSTANCE.getOptions().keyJump.isPressed() && allowJump && mode.equalsIgnoreCase("Dolphin")) {
                             if (ticks != 4) {
                                 Wrapper.INSTANCE.getLocalPlayer().jump();
                                 Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
@@ -83,10 +83,10 @@ public class Jesus extends Feature {
         if (event instanceof EventBlockCollisionShape eventBox) {
             if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld() == null || mode.equalsIgnoreCase("Dolphin"))
                 return;
+            if (Wrapper.INSTANCE.getLocalPlayer().isSubmergedInWater() || Wrapper.INSTANCE.getLocalPlayer().isInLava() || (eventBox.getBlockPos().getY() < Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5f && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer())) || Wrapper.INSTANCE.getLocalPlayer().isSneaking() || Wrapper.INSTANCE.getLocalPlayer().fallDistance > 3)
+                return;
             if (WorldHelper.INSTANCE.isWaterlogged(eventBox.getBlockPos())) {
                 FluidState fluidState = WorldHelper.INSTANCE.getFluidState(eventBox.getBlockPos());
-                if (Wrapper.INSTANCE.getLocalPlayer().isSubmergedInWater() || Wrapper.INSTANCE.getLocalPlayer().isInLava() || (eventBox.getBlockPos().getY() < Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5f && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer())) || Wrapper.INSTANCE.getLocalPlayer().isSneaking() || Wrapper.INSTANCE.getLocalPlayer().fallDistance > 3)
-                    return;
                 if (fluidState.getLevel() == 8) {
                     Box waterBox = new Box(0.1f, 0, 0.1f, 0.9f, Wrapper.INSTANCE.getLocalPlayer().isRiding() ? 0.92f : 1, 0.9f);
                     eventBox.setVoxelShape(VoxelShapes.cuboid(waterBox));
