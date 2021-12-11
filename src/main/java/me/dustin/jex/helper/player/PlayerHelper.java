@@ -355,6 +355,8 @@ public enum PlayerHelper {
     }
 
     public boolean isMoving() {
+        if (Wrapper.INSTANCE.getLocalPlayer() == null)
+            return false;
         return Wrapper.INSTANCE.getLocalPlayer().input.movementForward != 0 || Wrapper.INSTANCE.getLocalPlayer().input.movementSideways != 0;
     }
 

@@ -5,6 +5,7 @@ import baritone.api.IBaritone;
 import baritone.api.event.events.ChatEvent;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalBlock;
+import baritone.api.pathing.goals.GoalNear;
 import baritone.api.pathing.goals.GoalXZ;
 import baritone.api.utils.input.Input;
 import me.dustin.jex.helper.baritone.process.KillauraTargetProcess;
@@ -24,7 +25,7 @@ public class UnsafeBaritoneHelper {
     }
 
     protected static boolean isBaritoneRunning() {
-        return BaritoneHelper.INSTANCE.baritoneExists() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing();
+        return BaritoneHelper.INSTANCE.baritoneExists() && (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().isPathing() || BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().hasPath());
     }
 
     protected static boolean isTakingControl() {
@@ -68,7 +69,21 @@ public class UnsafeBaritoneHelper {
     }
 
     protected static void pathTo(BlockPos blockPos) {
+        if (blockPos == null) {
+            BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
+            return;
+        }
         Goal goal = new GoalBlock(blockPos);
+        BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(goal);
+    }
+
+    protected static void pathNear(BlockPos blockPos, int range) {
+        if (blockPos == null) {
+            BaritoneAPI.getProvider().getPrimaryBaritone().getPathingBehavior().cancelEverything();
+            return;
+        }
+
+        GoalNear goal = new GoalNear(blockPos, range);
         BaritoneAPI.getProvider().getPrimaryBaritone().getCustomGoalProcess().setGoalAndPath(goal);
     }
 

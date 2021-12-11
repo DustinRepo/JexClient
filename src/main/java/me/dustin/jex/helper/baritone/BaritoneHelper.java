@@ -107,6 +107,10 @@ public enum BaritoneHelper {
         if (baritoneExists())
             UnsafeBaritoneHelper.pathTo(blockPos);
     }
+    public void pathNear(BlockPos blockPos, int range) {
+        if (baritoneExists())
+            UnsafeBaritoneHelper.pathNear(blockPos, range);
+    }
 
     public void pathTo(int x, int z) {
         if (baritoneExists())

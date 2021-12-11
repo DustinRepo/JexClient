@@ -2,6 +2,8 @@ package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.enums.EventPriority;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
@@ -9,6 +11,7 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -42,9 +45,9 @@ public class Excavator extends Feature {
     public boolean renderPath = true;
     @Op(name = "Render Area Box")
     public boolean renderAreaBox = true;
-    //@Op(name = "LogOut when Done") crashes atm, no clue why
+    //@Op(name = "LogOut when Done")
     public boolean logoutWhenDone = false;
-    @Op(name = "Sort Delay")
+    @Op(name = "Sort Delay", max = 1000, inc = 10)
     public int sortDelay = 350;
 
     private PathFinder pathFinder;
@@ -53,9 +56,9 @@ public class Excavator extends Feature {
     public static MiningArea miningArea;
 
     private BlockPos tempPos;
-    private Timer sortTimer = new Timer();
+    private final Timer sortTimer = new Timer();
 
-    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventMouseButton.class, EventRender2D.class})
+    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventMouseButton.class, EventRender2D.class}, priority = EventPriority.LOWEST)
     private void runMethod(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (AutoEat.isEating)
@@ -67,17 +70,26 @@ public class Excavator extends Feature {
                 if (closestBlock != null) {
                     double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(closestBlock));
                     if (distanceTo <= Wrapper.INSTANCE.getInteractionManager().getReachDistance() - 0.1f) {
-                        //TODO: actually check if visible and send correct face
                         BlockHitResult blockHitResult = rayCast(closestBlock);
                         if (blockHitResult != null) {
                             Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
                             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                         }
-                        if (distanceTo <= 3)
+                        if (distanceTo <= 3) {
                             pathFinder = null;
+                            BaritoneHelper.INSTANCE.pathTo(null);
+                        }
                     } else
                     if (pathFinder == null && miningArea != null && distanceTo > 3) {
-                        pathFinder = new PathFinder(closestBlock);
+                        JexClient.INSTANCE.getLogger().info("setting path");
+                        if (BaritoneHelper.INSTANCE.baritoneExists()) {
+                            if (!BaritoneHelper.INSTANCE.isBaritoneRunning()) {
+                                BaritoneHelper.INSTANCE.pathNear(closestBlock, 2);
+                                JexClient.INSTANCE.getLogger().info("baritone path");
+                            }
+                        } else {
+                            pathFinder = new PathFinder(closestBlock);
+                        }
                     }
                 } else if (miningArea.empty()) {
                     ChatHelper.INSTANCE.addClientMessage("Excavator finished.");
@@ -88,29 +100,30 @@ public class Excavator extends Feature {
                     return;
                 }
 
-                if (pathFinder != null) {
-                    if (!pathFinder.isDone() && !pathFinder.isFailed()) {
-                        PathProcessor.lockControls();
-                        pathFinder.think();
+                if (!BaritoneHelper.INSTANCE.baritoneExists()) {
+                    if (pathFinder != null) {
+                        if (!pathFinder.isDone() && !pathFinder.isFailed()) {
+                            PathProcessor.lockControls();
+                            pathFinder.think();
+                            if (!pathFinder.isDone() && !pathFinder.isFailed())
+                                return;
 
-                        if (!pathFinder.isDone() && !pathFinder.isFailed())
+                            pathFinder.formatPath();
+                            pathProcessor = pathFinder.getProcessor();
+                        }
+
+                        if (pathProcessor != null && !pathFinder.isPathStillValid(pathProcessor.getIndex())) {
+                            pathFinder = new PathFinder(pathFinder);
                             return;
+                        }
 
-                        pathFinder.formatPath();
-                        pathProcessor = pathFinder.getProcessor();
-                    }
+                        pathProcessor.process();
 
-                    if (pathProcessor != null && !pathFinder.isPathStillValid(pathProcessor.getIndex())) {
-                        pathFinder = new PathFinder(pathFinder);
-                        return;
-                    }
-
-                    pathProcessor.process();
-
-                    if (pathProcessor.isDone()) {
-                        pathFinder = null;
-                        pathProcessor = null;
-                        PathProcessor.releaseControls();
+                        if (pathProcessor.isDone()) {
+                            pathFinder = null;
+                            pathProcessor = null;
+                            PathProcessor.releaseControls();
+                        }
                     }
                 }
                 if (miningArea != null)
