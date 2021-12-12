@@ -58,6 +58,8 @@ public class Excavator extends Feature {
     private BlockPos tempPos;
     private final Timer sortTimer = new Timer();
 
+    private boolean baritoneAllowPlace;
+
     @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventMouseButton.class, EventRender2D.class}, priority = EventPriority.LOWEST)
     private void runMethod(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets) {
@@ -77,15 +79,14 @@ public class Excavator extends Feature {
                         }
                         if (distanceTo <= 3) {
                             pathFinder = null;
-                            BaritoneHelper.INSTANCE.pathTo(null);
+                            if (BaritoneHelper.INSTANCE.baritoneExists())
+                                BaritoneHelper.INSTANCE.pathTo(null);
                         }
                     } else
                     if (pathFinder == null && miningArea != null && distanceTo > 3) {
-                        JexClient.INSTANCE.getLogger().info("setting path");
                         if (BaritoneHelper.INSTANCE.baritoneExists()) {
                             if (!BaritoneHelper.INSTANCE.isBaritoneRunning()) {
                                 BaritoneHelper.INSTANCE.pathNear(closestBlock, 2);
-                                JexClient.INSTANCE.getLogger().info("baritone path");
                             }
                         } else {
                             pathFinder = new PathFinder(closestBlock);
@@ -175,11 +176,30 @@ public class Excavator extends Feature {
             float width = FontHelper.INSTANCE.getStringWidth(message);
             Render2DHelper.INSTANCE.outlineAndFill(eventRender2D.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 10, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 24, 0x70696969, 0x40000000);
             FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 13, miningArea != null ? getColor(percent).getRGB() : -1);
+
+            if (pathFinder != null && !pathFinder.isDone() && !pathFinder.isFailed()) {
+                message = Formatting.GREEN + "Wurst AI" + Formatting.GRAY + ": " + Formatting.WHITE + "Thinking";
+                width = FontHelper.INSTANCE.getStringWidth(message);
+                Render2DHelper.INSTANCE.outlineAndFill(eventRender2D.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 25, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 39, 0x70696969, 0x40000000);
+                FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 28,-1);
+            }
         }
     }
 
     @Override
+    public void onEnable() {
+        if (BaritoneHelper.INSTANCE.baritoneExists()) {
+            baritoneAllowPlace = BaritoneHelper.INSTANCE.getAllowPlace();
+            BaritoneHelper.INSTANCE.setAllowPlace(false);
+        }
+        super.onEnable();
+    }
+
+    @Override
     public void onDisable() {
+        if (BaritoneHelper.INSTANCE.baritoneExists() && Wrapper.INSTANCE.getLocalPlayer() != null) {
+            BaritoneHelper.INSTANCE.setAllowPlace(baritoneAllowPlace);
+        }
         pathProcessor = null;
         pathFinder = null;
         miningArea = null;
