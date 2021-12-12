@@ -13,6 +13,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -74,6 +75,17 @@ public class SlimeSpawnMarker extends Feature {
         if (event instanceof EventRender3D) {
             if (!markSlimeChunks)
                 return;
+            //TODO: implement this with a seed you can input
+            /*for (int x = -5; x < 5; x++) {
+                for (int z = -5; z < 5; z++) {
+                    if (WorldHelper.INSTANCE.isSlimeChunk(-2898254280411172189L, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + x, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + z)) {
+                        ChunkPos chunkPos = new ChunkPos(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + x, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + z);
+                        if (!chunkPositions.contains(chunkPos)) {
+                            chunkPositions.add(chunkPos);
+                        }
+                    }
+                }
+            }*/
             chunkPositions.forEach(chunkPos -> {
                 if (Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunkPos.x, chunkPos.z)) {
                     Vec3d renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, -64, chunkPos.z * 16);

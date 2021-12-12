@@ -51,6 +51,8 @@ public class KillAura extends Feature {
     public float autoblockDistance = 7.5f;
     @Op(name = "Player")
     public boolean player = true;
+    @Op(name = "Neutral")
+    public boolean neutral = false;
     @Op(name = "Hostile")
     public boolean hostile = true;
     @Op(name = "Passive")
@@ -200,11 +202,14 @@ public class KillAura extends Feature {
             }
             return player;
         }
-        if (EntityHelper.INSTANCE.isPassiveMob((LivingEntity) entity) && !EntityHelper.INSTANCE.doesPlayerOwn((LivingEntity) entity)) {
+        if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity)) {
             return passive;
         }
-        if (EntityHelper.INSTANCE.isHostileMob((LivingEntity) entity)) {
+        if (EntityHelper.INSTANCE.isHostileMob(entity)) {
             return hostile;
+        }
+        if (EntityHelper.INSTANCE.isNeutralMob(entity)) {
+            return neutral;
         }
         return false;
     }

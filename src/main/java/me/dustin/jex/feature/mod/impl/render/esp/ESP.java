@@ -33,6 +33,8 @@ public class ESP extends Feature {
 
     @Op(name = "Player")
     public boolean player = true;
+    @Op(name = "Neutral")
+    public boolean neutral = true;
     @Op(name = "Hostile")
     public boolean hostile = true;
     @Op(name = "Passive")
@@ -49,6 +51,8 @@ public class ESP extends Feature {
     public int friendColor = 0xff0080ff;
     @OpChild(name = "Hostile Color", isColor = true, parent = "Hostile")
     public int hostileColor = 0xffff8000;
+    @OpChild(name = "Neutral Color", isColor = true, parent = "Neutral")
+    public int neutralColor = 0xffff00ff;
     @OpChild(name = "Passive Color", isColor = true, parent = "Passive")
     public int passiveColor = 0xff00ff00;
     @OpChild(name = "Pets Color", isColor = true, parent = "Passive Color")
@@ -103,6 +107,8 @@ public class ESP extends Feature {
             return false;
         if (livingEntity instanceof PlayerEntity)
             return player;
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
+            return neutral;
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostile;
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
@@ -129,6 +135,8 @@ public class ESP extends Feature {
                 return passiveColor;
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostileColor;
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
+            return neutralColor;
         return -1;
     }
 

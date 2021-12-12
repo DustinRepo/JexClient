@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.entity;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
@@ -42,8 +43,6 @@ public enum EntityHelper {
     }
 
     public boolean isPassiveMob(Entity entity) {
-        if (isNeutralMob(entity))
-            return !isAngryAtPlayer(entity);
         return doesPlayerOwn(entity) || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
     }
 
@@ -148,21 +147,21 @@ public enum EntityHelper {
     }
 
     public boolean isAngryAtPlayer(Entity entity) {
-        if (entity instanceof BeeEntity && (((BeeEntity) entity).getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (((BeeEntity) entity).getAngryAt() == null && ((BeeEntity) entity).isAttacking())))
+        if (entity instanceof BeeEntity bee && (bee.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (bee.getAngryAt() == null && (bee.isAttacking()))))
             return true;
-        if (entity instanceof PiglinEntity && (((PiglinEntity) entity).isAngryAt(Wrapper.INSTANCE.getLocalPlayer())))
+        if (entity instanceof PiglinEntity piglinEntity && piglinEntity.isAngryAt(Wrapper.INSTANCE.getLocalPlayer()))
             return true;
-        if (entity instanceof ZombifiedPiglinEntity/* && ((ZombifiedPiglinEntity) entity).shouldAngerAt(Wrapper.INSTANCE.getLocalPlayer())*/)
+        if (entity instanceof ZombifiedPiglinEntity zombifiedPiglinEntity && (zombifiedPiglinEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (zombifiedPiglinEntity.getAngryAt() == null && (zombifiedPiglinEntity.getAngerTime() > 0))))
             return true;
-        if (entity instanceof PandaEntity && ((PandaEntity) entity).isAttacking())
+        if (entity instanceof PandaEntity pandaEntity && pandaEntity.isAttacking())
             return true;
-        if (entity instanceof PolarBearEntity && (((PolarBearEntity) entity).getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (((PolarBearEntity) entity).getAngryAt() == null && ((PolarBearEntity) entity).isAttacking())))
+        if (entity instanceof PolarBearEntity polarBearEntity && (polarBearEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (polarBearEntity.getAngryAt() == null && polarBearEntity.isAttacking())))
             return true;
-        if (entity instanceof EndermanEntity && (((EndermanEntity) entity).getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (((EndermanEntity) entity).getAngryAt() == null && ((EndermanEntity) entity).isAngry())))
+        if (entity instanceof EndermanEntity endermanEntity && (endermanEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (endermanEntity.getAngryAt() == null && (endermanEntity.isAngry()))))
             return true;
-        if (entity instanceof IronGolemEntity && (((IronGolemEntity) entity).getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (((IronGolemEntity) entity).getAngryAt() == null && ((IronGolemEntity) entity).isAttacking())))
+        if (entity instanceof IronGolemEntity ironGolemEntity && (ironGolemEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (ironGolemEntity.getAngryAt() == null && (ironGolemEntity.isAttacking()))))
             return true;
-        if (entity instanceof WolfEntity && ((WolfEntity) entity).isAttacking() && !doesPlayerOwn(entity))
+        if (entity instanceof WolfEntity wolf && (wolf.isAttacking() && !doesPlayerOwn(wolf)))
             return true;
         return false;
     }

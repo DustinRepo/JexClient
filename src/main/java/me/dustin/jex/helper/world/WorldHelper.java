@@ -181,6 +181,12 @@ public enum WorldHelper {
         return onLiquid;
     }
 
+    public boolean isSlimeChunk(long seed, int chunkX, int chunkZ) {
+        Random r = new Random(seed + (chunkX * chunkX * 4987142L) + (chunkX * 5947611L) + (chunkZ * chunkZ) * 4392871L + (chunkZ * 389711L) ^ 0x3AD8025FL);
+
+        return (r.nextInt(10) == 0);
+    }
+
     public boolean isTouchingLiquidBlockSpace(Entity entity) {
         if (entity == null) {
             return false;
