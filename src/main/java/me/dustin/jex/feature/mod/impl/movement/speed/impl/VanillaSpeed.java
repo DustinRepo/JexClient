@@ -4,6 +4,7 @@ import me.dustin.events.core.Event;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -23,7 +24,11 @@ public class VanillaSpeed extends FeatureExtension {
             Speed speed = ((Speed) Feature.get(Speed.class));
             if ((BaritoneHelper.INSTANCE.isBaritoneRunning() || PathProcessor.lockedControls) && !Wrapper.INSTANCE.getLocalPlayer().isOnGround())
                 return;
-            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.vanillaSpeed);
+            if (PathProcessor.lockedControls) {
+                eventMove.setX(eventMove.getX() * speed.vanillaSpeed);
+                eventMove.setZ(eventMove.getZ() * speed.vanillaSpeed);
+            } else
+                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.vanillaSpeed);
         }
     }
 

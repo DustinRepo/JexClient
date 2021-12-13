@@ -23,7 +23,11 @@ public class StrafeSpeed extends FeatureExtension {
             Speed speed = ((Speed) Feature.get(Speed.class));
             if ((BaritoneHelper.INSTANCE.isBaritoneRunning() || PathProcessor.lockedControls) && !Wrapper.INSTANCE.getLocalPlayer().isOnGround())
                 return;
-            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.strafeSpeed);
+            if (PathProcessor.lockedControls) {
+                eventMove.setX(eventMove.getX() * speed.vanillaSpeed);
+                eventMove.setZ(eventMove.getZ() * speed.vanillaSpeed);
+            }else
+                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.strafeSpeed);
         } else if (event instanceof EventPlayerPackets eventPlayerPackets) {
             Speed speed = ((Speed) Feature.get(Speed.class));
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {

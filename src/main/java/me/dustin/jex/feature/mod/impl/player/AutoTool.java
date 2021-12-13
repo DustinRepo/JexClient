@@ -20,7 +20,7 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 public class AutoTool extends Feature {
 
     @Op(name = "Return to Original Slot")
-    public boolean returnToSlot = true;
+    public boolean returnToSlot = false;
 
     private boolean attackingBlock;
     private int savedSlot;
@@ -52,7 +52,7 @@ public class AutoTool extends Feature {
                     }
                 }
                 if (slot == InventoryHelper.INSTANCE.getInventory().selectedSlot && !found) {
-                    if (InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot).isDamageable()) {
+                    if (InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot).isDamageable() && !InventoryHelper.INSTANCE.hasEnchantment(InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot), Enchantments.SILK_TOUCH)) {
                         slot = getNonDamageSlot();
                     }
                 }

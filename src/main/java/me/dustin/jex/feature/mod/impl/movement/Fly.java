@@ -2,15 +2,18 @@ package me.dustin.jex.feature.mod.impl.movement;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.enums.EventPriority;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
@@ -31,7 +34,7 @@ public class Fly extends Feature {
     private float lastStrideDist;
     private float strideDistance;
 
-    @EventListener(events = {EventPlayerPackets.class, EventPacketSent.class})
+    @EventListener(events = {EventPlayerPackets.class, EventPacketSent.class}, priority = EventPriority.LOWEST)
     private void runMove(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
             boolean jumping = Wrapper.INSTANCE.getOptions().keyJump.isPressed();
@@ -52,7 +55,8 @@ public class Fly extends Feature {
             }
 
             Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = speed;
-            Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
+            if (!PathProcessor.lockedControls)
+                Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
 
             if (jumping) {
                 PlayerHelper.INSTANCE.setVelocityY(speed);

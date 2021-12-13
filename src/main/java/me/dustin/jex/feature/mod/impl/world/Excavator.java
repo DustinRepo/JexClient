@@ -60,7 +60,7 @@ public class Excavator extends Feature {
 
     private boolean baritoneAllowPlace;
 
-    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventMouseButton.class, EventRender2D.class}, priority = EventPriority.LOWEST)
+    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventMouseButton.class, EventRender2D.class}, priority = EventPriority.LOW)
     private void runMethod(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets) {
             if (AutoEat.isEating)
@@ -89,7 +89,7 @@ public class Excavator extends Feature {
                                 BaritoneHelper.INSTANCE.pathNear(closestBlock, 2);
                             }
                         } else {
-                            pathFinder = new PathFinder(closestBlock);
+                            pathFinder = new ExcavatorPathFinder(closestBlock);
                         }
                     }
                 } else if (miningArea.empty()) {
@@ -106,9 +106,10 @@ public class Excavator extends Feature {
                         if (!pathFinder.isDone() && !pathFinder.isFailed()) {
                             PathProcessor.lockControls();
                             pathFinder.think();
-                            if (!pathFinder.isDone() && !pathFinder.isFailed())
+                            if (!pathFinder.isDone() && !pathFinder.isFailed()) {
                                 return;
 
+                            }
                             pathFinder.formatPath();
                             pathProcessor = pathFinder.getProcessor();
                         }
@@ -199,6 +200,7 @@ public class Excavator extends Feature {
     public void onDisable() {
         if (BaritoneHelper.INSTANCE.baritoneExists() && Wrapper.INSTANCE.getLocalPlayer() != null) {
             BaritoneHelper.INSTANCE.setAllowPlace(baritoneAllowPlace);
+            BaritoneHelper.INSTANCE.pathTo(null);
         }
         pathProcessor = null;
         pathFinder = null;
@@ -289,6 +291,35 @@ public class Excavator extends Feature {
         public void sortList() {
             blockPosList.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(value))));
             blockPosList.sort(Comparator.comparingInt(value -> -value.getY()));
+        }
+    }
+
+    private static class ExcavatorPathFinder extends PathFinder
+    {
+        public ExcavatorPathFinder(BlockPos goal)
+        {
+            super(goal);
+            setThinkTime(10);
+        }
+
+        public ExcavatorPathFinder(ExcavatorPathFinder pathFinder)
+        {
+            super(pathFinder);
+        }
+
+        @Override
+        protected boolean checkDone()
+        {
+            BlockPos goal = getGoal();
+
+            return done = goal.down(2).equals(current)
+                    || goal.up().equals(current) || goal.north().equals(current)
+                    || goal.south().equals(current) || goal.west().equals(current)
+                    || goal.east().equals(current)
+                    || goal.down().north().equals(current)
+                    || goal.down().south().equals(current)
+                    || goal.down().west().equals(current)
+                    || goal.down().east().equals(current);
         }
     }
 }

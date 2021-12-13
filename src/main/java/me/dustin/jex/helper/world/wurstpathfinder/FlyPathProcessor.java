@@ -7,6 +7,7 @@
  */
 package me.dustin.jex.helper.world.wurstpathfinder;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Fly;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
@@ -133,6 +134,7 @@ public class FlyPathProcessor extends PathProcessor
 			// vertical movement
 		}else if(y)
 		{
+			PlayerHelper.INSTANCE.setVelocityY(0);
 			if(!creativeFlying && Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= ((Fly) Feature.get(Fly.class)).speed) {
 				Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 				return;
