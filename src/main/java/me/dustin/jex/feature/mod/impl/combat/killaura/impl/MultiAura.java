@@ -28,7 +28,6 @@ import java.util.ArrayList;
 
 public class MultiAura extends FeatureExtension {
 
-    private KillAura killaura;
     private ArrayList<LivingEntity> targets = new ArrayList<>();
 
     public MultiAura() {
@@ -42,9 +41,6 @@ public class MultiAura extends FeatureExtension {
 
     @Override
     public void pass(Event event1) {
-        if (killaura == null) {
-            killaura = (KillAura) Feature.get(KillAura.class);
-        }
         if (((AutoPot) Feature.get(AutoPot.class)).throwing)
             return;
         if (AutoEat.isEating || BaritoneHelper.INSTANCE.isTakingControl())
@@ -53,34 +49,34 @@ public class MultiAura extends FeatureExtension {
             EventPlayerPackets event = (EventPlayerPackets) event1;
             if (event.getMode() == EventPlayerPackets.Mode.PRE) {
                 getTargets();
-
+                KillAura.INSTANCE.setHasTarget(targets.isEmpty());
                 if (!targets.isEmpty()) {
                     if (BaritoneHelper.INSTANCE.baritoneExists()) {
-                        if (killaura.baritoneOverride && BaritoneHelper.INSTANCE.isBaritoneRunning())
-                            BaritoneHelper.INSTANCE.followUntilDead(targets.get(0), killaura);
+                        if (KillAura.INSTANCE.baritoneOverride && BaritoneHelper.INSTANCE.isBaritoneRunning())
+                            BaritoneHelper.INSTANCE.followUntilDead(targets.get(0), KillAura.INSTANCE);
                     }
-                    if (killaura.rotate) {
+                    if (KillAura.INSTANCE.rotate) {
                         RotationVector rotationVector = new RotationVector(PlayerHelper.INSTANCE.getYaw(), 90);
                         event.setRotation(rotationVector);
                     }
                 } else {
                     if (BaritoneHelper.INSTANCE.baritoneExists())
-                        if (killaura.baritoneOverride && BaritoneHelper.INSTANCE.isBaritoneRunning())
+                        if (KillAura.INSTANCE.baritoneOverride && BaritoneHelper.INSTANCE.isBaritoneRunning())
                             BaritoneHelper.INSTANCE.disableKillauraTargetProcess();
                 }
                 if ((EntityHelper.INSTANCE.isAuraBlocking()) && PlayerHelper.INSTANCE.isMoving())
                     PlayerHelper.INSTANCE.unblock();
             }
-            if (killaura.attackMode.equalsIgnoreCase(event.getMode().toString()))
+            if (KillAura.INSTANCE.attackMode.equalsIgnoreCase(event.getMode().toString()))
                 doAttack();
         }
         if (event1 instanceof EventRender3D) {
             getTargets();
             for (LivingEntity target : targets)
-                if (target != null && killaura.showTarget) {
-                    Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getMatrixStack(), target, ((EventRender3D) event1).getPartialTicks(), killaura.targetColor);
+                if (target != null && KillAura.INSTANCE.showTarget) {
+                    Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getMatrixStack(), target, ((EventRender3D) event1).getPartialTicks(), KillAura.INSTANCE.targetColor);
                 }
-            if (killaura.reachCircle) {
+            if (KillAura.INSTANCE.reachCircle) {
                 MatrixStack matrixStack = ((EventRender3D) event1).getMatrixStack();
                 matrixStack.push();
                 Render3DHelper.INSTANCE.setup3DRender(false);
@@ -88,7 +84,7 @@ public class MultiAura extends FeatureExtension {
                 double x = Wrapper.INSTANCE.getLocalPlayer().prevX + ((Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX) * ((EventRender3D) event1).getPartialTicks());
                 double y = Wrapper.INSTANCE.getLocalPlayer().prevY + ((Wrapper.INSTANCE.getLocalPlayer().getY() - Wrapper.INSTANCE.getLocalPlayer().prevY) * ((EventRender3D) event1).getPartialTicks());
                 double z = Wrapper.INSTANCE.getLocalPlayer().prevZ + ((Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ) * ((EventRender3D) event1).getPartialTicks());
-                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getMatrixStack(), killaura.reach, 25, killaura.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
+                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getMatrixStack(), KillAura.INSTANCE.reach, 25, KillAura.INSTANCE.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
                 Render3DHelper.INSTANCE.end3DRender();
                 matrixStack.pop();
             }
@@ -99,19 +95,19 @@ public class MultiAura extends FeatureExtension {
         boolean reblock = false;
 
         if (targets.isEmpty()) {
-            if (killaura.autoBlock && killaura.autoblockDistance > killaura.reach) {
+            if (KillAura.INSTANCE.autoBlock && KillAura.INSTANCE.autoblockDistance > KillAura.INSTANCE.reach) {
                 for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                    if (killaura.isValid(entity, false) && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.autoblockDistance) {
-                        PlayerHelper.INSTANCE.block(killaura.ignoreNewCombat);
+                    if (KillAura.INSTANCE.isValid(entity, false) && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= KillAura.INSTANCE.autoblockDistance) {
+                        PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
                         break;
                     }
                 }
             }
         }else {
-            if (killaura.autoBlock)
-                PlayerHelper.INSTANCE.block(killaura.ignoreNewCombat);
+            if (KillAura.INSTANCE.autoBlock)
+                PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
 
-            boolean canSwing = killaura.canSwing();
+            boolean canSwing = KillAura.INSTANCE.canSwing();
             if (canSwing)
                 if (EntityHelper.INSTANCE.isAuraBlocking()) {
                     reblock = true;
@@ -119,8 +115,8 @@ public class MultiAura extends FeatureExtension {
                 }
 
             for (LivingEntity target : targets) {
-                if (killaura.rayTrace && target != null) {
-                    Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), target), killaura.reach);
+                if (KillAura.INSTANCE.rayTrace && target != null) {
+                    Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), target), KillAura.INSTANCE.reach);
                     if (possible instanceof LivingEntity && !targets.contains(possible)) {
                         target = (LivingEntity) possible;
                     }
@@ -139,8 +135,8 @@ public class MultiAura extends FeatureExtension {
                 Wrapper.INSTANCE.getLocalPlayer().resetLastAttackedTicks();
             }
 
-            if (killaura.autoBlock && reblock) {
-                PlayerHelper.INSTANCE.block(killaura.ignoreNewCombat);
+            if (KillAura.INSTANCE.autoBlock && reblock) {
+                PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
             }
         }
     }
@@ -150,7 +146,7 @@ public class MultiAura extends FeatureExtension {
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof LivingEntity) {
                 LivingEntity livingEntity1 = (LivingEntity) entity;
-                if (killaura.isValid(livingEntity1, true)) {
+                if (KillAura.INSTANCE.isValid(livingEntity1, true)) {
                     targets.add(livingEntity1);
                 }
             }

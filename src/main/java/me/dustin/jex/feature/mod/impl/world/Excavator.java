@@ -9,6 +9,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
@@ -72,10 +73,17 @@ public class Excavator extends Feature {
                 if (closestBlock != null) {
                     double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(closestBlock));
                     if (distanceTo <= Wrapper.INSTANCE.getInteractionManager().getReachDistance() - 0.1f) {
-                        BlockHitResult blockHitResult = rayCast(closestBlock);
-                        if (blockHitResult != null) {
-                            Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                        if (!KillAura.INSTANCE.hasTarget()) {
+                            BlockHitResult blockHitResult = rayCast(closestBlock);
+                            if (blockHitResult != null) {
+                                RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.of(blockHitResult.getBlockPos()).add(0.5, 0, 0.5));
+                                eventPlayerPackets.setRotation(rotationVector);
+                                Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
+                                Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
+
+                                Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
+                                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                            }
                         }
                         if (distanceTo <= 3) {
                             pathFinder = null;

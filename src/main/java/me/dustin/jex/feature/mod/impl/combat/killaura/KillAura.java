@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 @Feature.Manifest(category = Feature.Category.COMBAT, description = "Attack entities around you.", key = GLFW.GLFW_KEY_R)
 public class KillAura extends Feature {
+    public static KillAura INSTANCE;
 
     @Op(name = "Mode", all = {"Single", "Multi"})
     public String mode = "Single";
@@ -91,10 +92,13 @@ public class KillAura extends Feature {
     private Timer timer = new Timer();
     private String lastMode;
 
+    private boolean hasTarget = false;
+
     public ArrayList<PlayerEntity> touchedGround = new ArrayList<>();
     public ArrayList<PlayerEntity> swung = new ArrayList<>();
 
     public KillAura() {
+        INSTANCE = this;
         new SingleAura();
         new MultiAura();
     }
@@ -222,9 +226,18 @@ public class KillAura extends Feature {
         }
     }
 
+    public void setHasTarget(boolean hasTarget) {
+        this.hasTarget = hasTarget;
+    }
+
+    public boolean hasTarget() {
+        return hasTarget;
+    }
+
     @Override
     public void onDisable() {
         super.onDisable();
+        setHasTarget(false);
         if (BaritoneHelper.INSTANCE.baritoneExists())
             BaritoneHelper.INSTANCE.disableKillauraTargetProcess();
         FeatureExtension.get(mode, this).disable();
