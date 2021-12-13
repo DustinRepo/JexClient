@@ -48,6 +48,12 @@ public class Xray extends Feature {
         blockList.add(Blocks.EMERALD_ORE);
         blockList.add(Blocks.GOLD_ORE);
         blockList.add(Blocks.LAPIS_ORE);
+        blockList.add(Blocks.DEEPSLATE_DIAMOND_ORE);
+        blockList.add(Blocks.DEEPSLATE_IRON_ORE);
+        blockList.add(Blocks.DEEPSLATE_COAL_ORE);
+        blockList.add(Blocks.DEEPSLATE_EMERALD_ORE);
+        blockList.add(Blocks.DEEPSLATE_GOLD_ORE);
+        blockList.add(Blocks.DEEPSLATE_LAPIS_ORE);
         blockList.add(Blocks.NETHER_QUARTZ_ORE);
     }
 
