@@ -12,6 +12,8 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -76,16 +78,17 @@ public class SpawnHighlighter extends Feature {
 		Block thisBlock = WorldHelper.INSTANCE.getBlock(blockPos);
 		Block aboveBlock = WorldHelper.INSTANCE.getBlock(above);
 		BlockState thisState = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
+		BlockState aboveState = Wrapper.INSTANCE.getWorld().getBlockState(above);
 		if (thisBlock == Blocks.AIR)
 			return false;
 		if (checkIsSpawnable)
-			if (!thisState.isSideSolidFullSquare(Wrapper.INSTANCE.getWorld(), blockPos, Direction.UP))
+			if (!thisState.allowsSpawning(Wrapper.INSTANCE.getWorld(), blockPos, EntityType.ZOMBIE))
 				return false;
 		if (checkWater)
 			if (WorldHelper.INSTANCE.isWaterlogged(above))
 				return false;
 		assert aboveBlock != null;
-		if (!aboveBlock.canMobSpawnInside())
+		if (aboveState.getMaterial().blocksMovement() || !aboveBlock.canMobSpawnInside() || !aboveState.canPathfindThrough(Wrapper.INSTANCE.getWorld(), blockPos, NavigationType.LAND))
 			return false;
 		if (checkLight) {
 			int light = Wrapper.INSTANCE.getWorld().getLightLevel(LightType.BLOCK, above);
