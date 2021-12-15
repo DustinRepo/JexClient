@@ -1,16 +1,15 @@
 package me.dustin.jex.feature.mod.impl.combat;
 
 import com.google.gson.JsonArray;
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.misc.EventSetScreen;
-import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.events.core.annotate.EventPointer;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 
@@ -18,20 +17,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 @Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically send messages when you die to a player. Configurable messages in .minecraft/JexClient/CopeMessages.json")
 public class AutoCope extends Feature {
 
     private ArrayList<String> messages = new ArrayList<>();
 
-    @EventListener(events = {EventPacketReceive.class, EventSetScreen.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventSetScreen eventDisplayScreen) {
-            if (eventDisplayScreen.getScreen() instanceof DeathScreen)
-                sendMessage();
-        }
-    }
+    @EventPointer
+    private final EventListener<EventSetScreen> eventSetScreenEventListener = new EventListener<>(event -> {
+        if (event.getScreen() instanceof DeathScreen)
+            sendMessage();
+    });
 
     @Override
     public void onEnable() {

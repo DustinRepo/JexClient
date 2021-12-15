@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -13,24 +15,22 @@ import net.minecraft.util.Hand;
 @Feature.Manifest(category = Feature.Category.MISC, description = "Automatically feed your pups to keep them at full health at all times.")
 public class AutoDogFeeder extends Feature {
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-            int slot = getDogFoodSlot();
-            if (slot == -1)
-                return;
-            Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
-                    if (wolfEntity.getHealth() < wolfEntity.getMaxHealth()) {
-                        InventoryHelper.INSTANCE.setSlot(slot, false, true);
-                        Wrapper.INSTANCE.getInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
-                        InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
-                    }
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
+        int slot = getDogFoodSlot();
+        if (slot == -1)
+            return;
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
+                if (wolfEntity.getHealth() < wolfEntity.getMaxHealth()) {
+                    InventoryHelper.INSTANCE.setSlot(slot, false, true);
+                    Wrapper.INSTANCE.getInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
+                    InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
-            });
-        }
-    }
+            }
+        });
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     private int getDogFoodSlot() {
         int steak = InventoryHelper.INSTANCE.getFromHotbar(Items.COOKED_BEEF);

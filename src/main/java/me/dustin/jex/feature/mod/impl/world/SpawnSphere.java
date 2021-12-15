@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.world;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -22,17 +23,17 @@ public class SpawnSphere extends Feature {
 
     private Vec3d pos;
 
-    @EventListener(events = {EventRender3D.class})
-    private void runMethod(EventRender3D eventRender3D) {
-        MatrixStack matrixStack = eventRender3D.getMatrixStack();
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        MatrixStack matrixStack = event.getMatrixStack();
         matrixStack.push();
         Render3DHelper.INSTANCE.setup3DRender(true);
         RenderSystem.lineWidth(1);
-        Vec3d subtractable = Render3DHelper.INSTANCE.getEntityRenderPosition(Wrapper.INSTANCE.getLocalPlayer(), eventRender3D.getPartialTicks()).subtract(pos);
+        Vec3d subtractable = Render3DHelper.INSTANCE.getEntityRenderPosition(Wrapper.INSTANCE.getLocalPlayer(), event.getPartialTicks()).subtract(pos);
         Render3DHelper.INSTANCE.drawSphere(matrixStack, 128, 25, sphereColor, !seethrough, Vec3d.ZERO.subtract(subtractable));
         Render3DHelper.INSTANCE.end3DRender();
         matrixStack.pop();
-    }
+    });
 
     @Override
     public void onEnable() {

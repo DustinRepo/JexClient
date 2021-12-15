@@ -1,8 +1,10 @@
 package me.dustin.jex.gui.click.window.impl;
 
-import me.dustin.events.api.EventAPI;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.EventManager;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
+import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
@@ -155,11 +157,10 @@ public class ModuleButton extends Button {
         }
         ButtonListener keybind = new ButtonListener(this) {
 
-            @EventListener(events = {EventKeyPressed.class})
-            public void runEvent(EventKeyPressed event) {
+            @EventPointer
+            private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
                 if (event.getType() == EventKeyPressed.PressType.IN_GAME) {
-                    while (EventAPI.getInstance().alreadyRegistered(this))
-                        EventAPI.getInstance().unregister(this);
+                    EventManager.unregister(this);
                     return;
                 }
                 ModuleButton moduleButton = (ModuleButton) this.button;
@@ -173,17 +174,16 @@ public class ModuleButton extends Button {
                     moduleButton.getFeature().setKey(event.getKey());
                     thisButton.setName("Key: " + KeyboardHelper.INSTANCE.getKeyName(event.getKey()));
                 }
-                while (EventAPI.getInstance().alreadyRegistered(this))
-                    EventAPI.getInstance().unregister(this);
+                EventManager.unregister(this);
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
                     ConfigManager.INSTANCE.get(FeatureFile.class).write();
-            }
+            });
 
             @Override
             public void invoke() {
                 Button thisButton = this.button.getChildren().get(this.button.getChildren().size() - 2);
                 thisButton.setName("Press a key...");
-                EventAPI.getInstance().register(this);
+                EventManager.register(this);
             }
 
 

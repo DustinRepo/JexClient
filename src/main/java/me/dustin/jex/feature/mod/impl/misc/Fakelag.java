@@ -1,10 +1,10 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
 import com.mojang.authlib.GameProfile;
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
-import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -12,9 +12,6 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -35,10 +32,8 @@ public class Fakelag extends Feature {
 
     private FakePlayerEntity fakePlayerEntity;
 
-    @EventListener(events = {EventPacketSent.class})
-    private void runMethod(EventPacketSent eventPacketSent) {
-        if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
-            return;
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         if (sending)
             return;
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
@@ -47,8 +42,8 @@ public class Fakelag extends Feature {
             fakePlayerEntity = null;
         }
         if (!timer.hasPassed(choke) && shouldCatchPackets()) {
-            packets.add(eventPacketSent.getPacket());
-            eventPacketSent.cancel();
+            packets.add(event.getPacket());
+            event.cancel();
         } else {
             sending = true;
             packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
@@ -63,7 +58,7 @@ public class Fakelag extends Feature {
             packets.clear();
             timer.reset();
         }
-    }
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE));
 
     private boolean shouldCatchPackets() {
         return switch (catchWhen.toLowerCase()) {

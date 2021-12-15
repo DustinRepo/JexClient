@@ -1,8 +1,8 @@
 package me.dustin.jex.feature.mod.impl.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.render.EventBobView;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -36,17 +36,16 @@ public class Tracers extends Feature {
     @Op(name = "Passives")
     public boolean passives = true;
 
-    private boolean disableBob = false;
 
-    @EventListener(events = {EventRender3D.EventRender3DNoBob.class})
-    private void runEvent(EventRender3D.EventRender3DNoBob eventRender3D) {
+    @EventPointer
+    private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof LivingEntity && isValid((LivingEntity) entity)) {
                 LivingEntity living = (LivingEntity) entity;
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
-                Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, eventRender3D.getPartialTicks());
+                Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, event.getPartialTicks());
                 Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
@@ -68,13 +67,7 @@ public class Tracers extends Feature {
                 Render3DHelper.INSTANCE.end3DRender();
             }
         });
-    }
-
-    @EventListener(events = {EventBobView.class})
-    private void runMethod(EventBobView eventBobView) {
-        if (disableBob)
-            eventBobView.cancel();
-    }
+    });
 
     private int getColor(Entity ent) {
         if (ent instanceof PlayerEntity playerEntity && colorOnDistance) {

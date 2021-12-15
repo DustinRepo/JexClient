@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRenderToolTip;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -25,13 +26,13 @@ public class ShulkerToolTip extends Feature {
 
     private final Identifier SHULKER_GUI = new Identifier("textures/gui/container/shulker_box.png");
 
-    @EventListener(events = {EventDrawScreen.class})
-    public void run(EventDrawScreen eventGuiDrawScreen) {
-        if (eventGuiDrawScreen.getMode() == EventDrawScreen.Mode.PRE && eventGuiDrawScreen.getScreen() instanceof HandledScreen) {
+    @EventPointer
+    private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
+        if (event.getMode() == EventDrawScreen.Mode.PRE && event.getScreen() instanceof HandledScreen) {
             Wrapper.INSTANCE.getMinecraft().getItemRenderer().zOffset = -200;
         }
-        if (eventGuiDrawScreen.getMode() == EventDrawScreen.Mode.POST_CONTAINER && eventGuiDrawScreen.getScreen() instanceof HandledScreen) {
-            IHandledScreen screen = (IHandledScreen) eventGuiDrawScreen.getScreen();
+        if (event.getMode() == EventDrawScreen.Mode.POST_CONTAINER && event.getScreen() instanceof HandledScreen) {
+            IHandledScreen screen = (IHandledScreen) event.getScreen();
             Slot slot = screen.focusedSlot();
             if (slot == null)
                 return;
@@ -46,16 +47,16 @@ public class ShulkerToolTip extends Feature {
                 if (y + (20 * 3) > Render2DHelper.INSTANCE.getScaledHeight())
                     y -= 20 * 3;
 
-                MatrixStack matrixStack = eventGuiDrawScreen.getMatrixStack();
+                MatrixStack matrixStack = event.getMatrixStack();
                 matrixStack.push();
 
                 RenderSystem.disableDepthTest();
                 Render2DHelper.INSTANCE.bindTexture(SHULKER_GUI);
                 Scissor.INSTANCE.cut((int) x, (int) y, 285, 85);
                 matrixStack.translate(0.0F, 0.0F, 32.0F);
-                DrawableHelper.drawTexture(eventGuiDrawScreen.getMatrixStack(), (int) x, (int) y, 0, 0, 285, 285, 285, 285);
+                DrawableHelper.drawTexture(event.getMatrixStack(), (int) x, (int) y, 0, 0, 285, 285, 285, 285);
                 Scissor.INSTANCE.seal();
-                FontHelper.INSTANCE.draw(eventGuiDrawScreen.getMatrixStack(), shulker.getName().getString(), x + 9, y + 7, 0xff202020);
+                FontHelper.INSTANCE.draw(event.getMatrixStack(), shulker.getName().getString(), x + 9, y + 7, 0xff202020);
 
                 int xCount = 0;
                 int yCount = 0;
@@ -81,11 +82,10 @@ public class ShulkerToolTip extends Feature {
                 matrixStack.pop();
             }
         }
-    }
-
-    @EventListener(events = {EventRenderToolTip.class})
-    public void run(EventRenderToolTip event) {
+    });
+    @EventPointer
+    private final EventListener<EventRenderToolTip> eventRenderToolTipEventListener = new EventListener<>(event -> {
         if (InventoryHelper.INSTANCE.isShulker(event.getItemStack()))
             event.cancel();
-    }
+    });
 }

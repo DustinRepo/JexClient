@@ -1,7 +1,6 @@
 package me.dustin.jex.feature.mod.impl.combat;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -17,6 +16,7 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.events.core.annotate.EventPointer;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.Entity;
@@ -66,72 +66,75 @@ public class AnchorAura extends Feature {
     private Timer attackTimer = new Timer();
     private BlockPos placePos;
 
-    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class})
-    private void runMethod(Event event) {
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         this.setSuffix(mode);
         if (WorldHelper.INSTANCE.getDimensionID().toString().equalsIgnoreCase("the_nether"))
             return;
-        if (event instanceof EventPlayerPackets eventPlayerPackets) {
-            if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-                if (attackTimer.hasPassed(attackDelay)) {
-                    BlockPos chargedAnchor = getChargedAnchor(Wrapper.INSTANCE.getLocalPlayer());
-                    if (chargedAnchor != null && shouldExplode(chargedAnchor)) {
-                        Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(chargedAnchor.getX(), chargedAnchor.getY(), chargedAnchor.getZ()), Direction.UP, chargedAnchor, false));
+        if (event.getMode() == EventPlayerPackets.Mode.PRE) {
+            if (attackTimer.hasPassed(attackDelay)) {
+                BlockPos chargedAnchor = getChargedAnchor(Wrapper.INSTANCE.getLocalPlayer());
+                if (chargedAnchor != null && shouldExplode(chargedAnchor)) {
+                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(chargedAnchor.getX(), chargedAnchor.getY(), chargedAnchor.getZ()), Direction.UP, chargedAnchor, false));
+                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                    attackTimer.reset();
+                    return;
+                }
+                BlockPos anchor = getAnchor(Wrapper.INSTANCE.getLocalPlayer());
+                if (anchor != null && shouldExplode(anchor) && !Wrapper.INSTANCE.getLocalPlayer().isSneaking()) {
+                    int glowstone = InventoryHelper.INSTANCE.getFromHotbar(Items.GLOWSTONE);
+                    if (glowstone != -1) {
+                        int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
+                        InventoryHelper.INSTANCE.setSlot(glowstone, true, true);
+                        Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(anchor.getX(), anchor.getY(), anchor.getZ()), Direction.UP, anchor, false));
                         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                        InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                         attackTimer.reset();
                         return;
                     }
-                    BlockPos anchor = getAnchor(Wrapper.INSTANCE.getLocalPlayer());
-                    if (anchor != null && shouldExplode(anchor) && !Wrapper.INSTANCE.getLocalPlayer().isSneaking()) {
-                        int glowstone = InventoryHelper.INSTANCE.getFromHotbar(Items.GLOWSTONE);
-                        if (glowstone != -1) {
-                            int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-                            InventoryHelper.INSTANCE.setSlot(glowstone, true, true);
-                            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(anchor.getX(), anchor.getY(), anchor.getZ()), Direction.UP, anchor, false));
-                            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                            InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
-                            attackTimer.reset();
-                            return;
-                        }
-                    }
                 }
-                if (placeTimer.hasPassed(delay))
-                    if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.RESPAWN_ANCHOR))) {
-                        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                            if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().asString())) {
-                                BlockPos placingPos = getOpenBlockPos(entityPlayer);
-                                if (placingPos != null) {
-                                    if (ClientMathHelper.INSTANCE.getDistance(entityPlayer.getPos(), new Vec3d(placingPos.getX(), placingPos.getY(), placingPos.getZ())) <= 6 && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldExplode(placingPos)) {
-                                        RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
-                                        eventPlayerPackets.setRotation(rotation);
-                                        placePos = placingPos;
-                                        placeTimer.reset();
-                                        return;
-                                    }
+            }
+            if (placeTimer.hasPassed(delay))
+                if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.RESPAWN_ANCHOR))) {
+                    for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+                        if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().asString())) {
+                            BlockPos placingPos = getOpenBlockPos(entityPlayer);
+                            if (placingPos != null) {
+                                if (ClientMathHelper.INSTANCE.getDistance(entityPlayer.getPos(), new Vec3d(placingPos.getX(), placingPos.getY(), placingPos.getZ())) <= 6 && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldExplode(placingPos)) {
+                                    RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
+                                    event.setRotation(rotation);
+                                    placePos = placingPos;
+                                    placeTimer.reset();
+                                    return;
                                 }
                             }
                         }
                     }
-            } else if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.POST) {
-                if (placePos != null) {
-                    PlayerHelper.INSTANCE.placeBlockInPos(placePos, Hand.MAIN_HAND, true);
-                    placePos = null;
                 }
+        } else if (event.getMode() == EventPlayerPackets.Mode.POST) {
+            if (placePos != null) {
+                PlayerHelper.INSTANCE.placeBlockInPos(placePos, Hand.MAIN_HAND, true);
+                placePos = null;
             }
-        } else if (event instanceof EventRender3D eventRender3D) {
-            if (autoPlace && visualize)
-                Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                    if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
-                        BlockPos placingPos = getOpenBlockPos(entityPlayer);
-                        if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().asString())) {
-                            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());
-                            Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-                            Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, shouldExplode(placingPos) ? placingColor : thinkingColor);
-                        }
-                    }
-                });
         }
-    }
+    });
+
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        if (WorldHelper.INSTANCE.getDimensionID().toString().equalsIgnoreCase("the_nether"))
+            return;
+        if (autoPlace && visualize)
+            Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+                if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
+                    BlockPos placingPos = getOpenBlockPos(entityPlayer);
+                    if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().asString())) {
+                        Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());
+                        Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
+                        Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), box, shouldExplode(placingPos) ? placingColor : thinkingColor);
+                    }
+                }
+            });
+    });
 
     public BlockPos getOpenBlockPos(PlayerEntity entityPlayer) {
         double distance = 6;

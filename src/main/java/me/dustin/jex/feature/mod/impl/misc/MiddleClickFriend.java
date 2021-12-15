@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FriendFile;
@@ -16,9 +17,9 @@ import net.minecraft.util.hit.HitResult;
 @Feature.Manifest(category = Feature.Category.MISC, description = "Middle click people to add them as friends.")
 public class MiddleClickFriend extends Feature {
 
-    @EventListener(events = {EventMouseButton.class})
-    private void runMethod(EventMouseButton eventMouseButton) {
-        if (eventMouseButton.getButton() == 2 && eventMouseButton.getClickType() == EventMouseButton.ClickType.IN_GAME) {
+    @EventPointer
+    private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
+        if (event.getButton() == 2 && event.getClickType() == EventMouseButton.ClickType.IN_GAME) {
             HitResult hitResult = Wrapper.INSTANCE.getMinecraft().crosshairTarget;
 
             if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
@@ -36,6 +37,5 @@ public class MiddleClickFriend extends Feature {
                 }
             }
         }
-    }
-
+    });
 }

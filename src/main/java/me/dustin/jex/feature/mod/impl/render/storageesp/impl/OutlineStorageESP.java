@@ -2,6 +2,8 @@ package me.dustin.jex.feature.mod.impl.render.storageesp.impl;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
+import me.dustin.jex.event.render.EventHasOutline;
+import me.dustin.jex.event.render.EventOutlineColor;
 import me.dustin.jex.event.render.EventRender2DNoScale;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
@@ -65,6 +67,16 @@ public class OutlineStorageESP extends FeatureExtension {
             if (ShaderHelper.INSTANCE.canDrawFBO()) {
                 ShaderHelper.INSTANCE.drawStorageFBO();
                 Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
+            }
+        } else if (event instanceof EventHasOutline eventHasOutline) {
+            if (storageESP.isValid(eventHasOutline.getEntity())) {
+                eventHasOutline.setOutline(true);
+                event.cancel();
+            }
+        } else if (event instanceof EventOutlineColor eventOutlineColor) {
+            if (storageESP.isValid(eventOutlineColor.getEntity())) {
+                eventOutlineColor.setColor(storageESP.getColor(eventOutlineColor.getEntity()));
+                event.cancel();
             }
         }
     }

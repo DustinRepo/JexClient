@@ -1,7 +1,10 @@
 package me.dustin.jex.feature.mod.impl.movement;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.misc.EventRenderTick;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -30,28 +33,30 @@ public class Step extends Feature {
     private int cancelPackets;
     private int stepsTillCancel = 2;
     private boolean slow;
-    @EventListener(events = {EventPlayerPackets.class, EventStep.class, EventPacketSent.class, EventRenderTick.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPlayerPackets eventPlayerPackets) {
-            BaritoneHelper.INSTANCE.setAssumeStep(true);
-            if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-                if (mode.equalsIgnoreCase("Vanilla"))
-                    Wrapper.INSTANCE.getLocalPlayer().stepHeight = stepHeight;
-                else
-                    Wrapper.INSTANCE.getLocalPlayer().stepHeight = 1.75f;
-            }
-            this.setSuffix(mode);
-        } else if (event instanceof EventStep eventStep && mode.equalsIgnoreCase("Packet")) {
-            switch (eventStep.getMode()) {
+
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        BaritoneHelper.INSTANCE.setAssumeStep(true);
+        if (mode.equalsIgnoreCase("Vanilla"))
+            Wrapper.INSTANCE.getLocalPlayer().stepHeight = stepHeight;
+        else
+            Wrapper.INSTANCE.getLocalPlayer().stepHeight = 1.75f;
+        this.setSuffix(mode);
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventStep> eventStepEventListener = new EventListener<>(event -> {
+        if (mode.equalsIgnoreCase("Packet")) {
+            switch (event.getMode()) {
                 case PRE -> slow = true;
                 case MID -> {
                     NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.42399999499321, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + (eventStep.getStepHeight() > 1f ? 0.76111999664784 : 0.75), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-                    if (eventStep.getStepHeight() > 1f) {
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + (event.getStepHeight() > 1f ? 0.76111999664784 : 0.75), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
+                    if (event.getStepHeight() > 1f) {
                         NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 1.01309760317355, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
                         NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 1.18163566084895, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
                     }
-                    if (eventStep.getStepHeight() > 1.3f) {
+                    if (event.getStepHeight() > 1.3f) {
                         NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 1.26840295905959, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
                         NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 1.20313422336366, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
                     }
@@ -61,7 +66,7 @@ public class Step extends Feature {
                     if (stepsTillCancel == 0) {
                         cancelPackets = 1;
                         stepsTillCancel = new Random().nextBoolean() ? 2 : 1;
-                        if (eventStep.getStepHeight() > 1.3f)
+                        if (event.getStepHeight() > 1.3f)
                             stepsTillCancel = 1;
                     } else {
                         stepsTillCancel--;
@@ -69,24 +74,28 @@ public class Step extends Feature {
                 }
                 case POST -> slow = false;
             }
-        } else if (event instanceof EventPacketSent eventPacketSent) {
-            if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
-                return;
-            if (eventPacketSent.getPacket() instanceof PlayerMoveC2SPacket playerMoveC2SPacket && cancelPackets > 0 && cancelPacket)
-            {
-                double yDif = playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - Wrapper.INSTANCE.getLocalPlayer().getY();
-                if (!(yDif == 0.42D || yDif == 0.75D || yDif == 1)) {
-                    eventPacketSent.cancel();
-                    cancelPackets--;
-                }
-            }
-        } else if (event instanceof EventRenderTick) {
-            if (slow) {
-                ((EventRenderTick) event).timeScale = 1000f / (20f * 0.3f);
-            } else if (!Feature.get(Timer.class).getState())
-                ((EventRenderTick) event).timeScale = 1000.f / 20.f;
         }
-    }
+    });
+
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
+        if (cancelPacket && cancelPackets > 0) {
+            double yDif = playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - Wrapper.INSTANCE.getLocalPlayer().getY();
+            if (!(yDif == 0.42D || yDif == 0.75D || yDif == 1)) {
+                event.cancel();
+                cancelPackets--;
+            }
+        }
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, PlayerMoveC2SPacket.class));
+
+    @EventPointer
+    private final EventListener<EventRenderTick> eventRenderTickEventListener = new EventListener<>(event -> {
+        if (slow) {
+            event.timeScale = 1000f / (20f * 0.3f);
+        } else if (!Feature.getState(Timer.class))
+           event.timeScale = 1000.f / 20.f;
+    });
 
     @Override
     public void onDisable() {

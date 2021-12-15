@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -21,45 +23,43 @@ public class EndPortalFinder extends Feature {
 	private int pearl = 0;
 	private EyeOfEnderEntity trackedEye;
 
-	@EventListener(events = { EventPlayerPackets.class })
-	private void runMethod(EventPlayerPackets eventPlayerPackets) {
-		if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-			if (portalPos != null) {
-				ChatHelper.INSTANCE.addClientMessage("End Portal should be near: x" + ((int) portalPos[0]) + " z" + ((int) portalPos[1]));
-				firstPos = null;
-				pearl = 0;
-				portalPos = null;
+	@EventPointer
+	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+		if (portalPos != null) {
+			ChatHelper.INSTANCE.addClientMessage("End Portal should be near: x" + ((int) portalPos[0]) + " z" + ((int) portalPos[1]));
+			firstPos = null;
+			pearl = 0;
+			portalPos = null;
+		}
+		if (pearl == 0) {
+			if (findEye() != null) {
+				if (firstPos == null) {
+					firstPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
+				}
+				firstYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye).getYaw();
 			}
-			if (pearl == 0) {
-				if (findEye() != null) {
-					if (firstPos == null) {
-						firstPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
-					}
-					firstYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye).getYaw();
+			if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
+				if (firstPos != null) {
+					pearl = 1;
+					secondPos = null;
+					ChatHelper.INSTANCE.addClientMessage("First position set. Now please move about 100 blocks away and throw another.");
+					trackedEye = null;
 				}
-				if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
-					if (firstPos != null) {
-						pearl = 1;
-						secondPos = null;
-						ChatHelper.INSTANCE.addClientMessage("First position set. Now please move about 100 blocks away and throw another.");
-						trackedEye = null;
-					}
+			}
+		} else if (pearl == 1) {
+			if (findEye() != null) {
+				if (secondPos == null) {
+					secondPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
 				}
-			} else if (pearl == 1) {
-				if (findEye() != null) {
-					if (secondPos == null) {
-						secondPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
-					}
-					secondYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye).getYaw();
-				}
-				if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
-					if (firstPos != null && secondPos != null) {
-						portalPos = getPortalPosition();
-					}
+				secondYaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), trackedEye).getYaw();
+			}
+			if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
+				if (firstPos != null && secondPos != null) {
+					portalPos = getPortalPosition();
 				}
 			}
 		}
-	}
+	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
 	@Override
 	public void onDisable() {

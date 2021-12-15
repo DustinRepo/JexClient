@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -36,52 +36,54 @@ public class SuperheroFX extends Feature{
     private final ArrayList<LivingEntity> attacked = new ArrayList<>();
     private final ArrayList<KapowParticle> particles = new ArrayList<>();
 
-    @EventListener(events = {EventAttackEntity.class, EventRender3D.class, EventRender2D.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventAttackEntity eventAttackEntity) {
-            if (eventAttackEntity.getEntity() instanceof LivingEntity livingEntity && livingEntity.isAlive()) {
-                attacked.add(livingEntity);
-            }
-        } else if (event instanceof EventRender3D eventRender3D) {
-            for (int i = 0; i < attacked.size(); i++) {
-                LivingEntity livingEntity = attacked.get(i);
-                Random random = new Random();
-                for (int j = 0; j < (1 +random.nextInt(particleCount)); j++) {
-                    FXType type = FXType.values()[random.nextInt(FXType.values().length)];
-                    float sideOffset = livingEntity.getWidth() / 1.5f;
-                    float heightOffset = livingEntity.getHeight() / 2;
-                    double x = livingEntity.getX() - sideOffset + (random.nextDouble() * (sideOffset * 2));
-                    double y = livingEntity.getY() + (double) (livingEntity.getHeight() / 2) - heightOffset + (random.nextFloat() * (heightOffset * 2));
-                    double z = livingEntity.getZ() - sideOffset + (random.nextDouble() * (sideOffset * 2));
-                    Vec3d vec3d = new Vec3d(x, y, z);
-                    KapowParticle kapowParticle = new KapowParticle(vec3d, type);
-                    kapowParticle.setTwoDPosition(Render2DHelper.INSTANCE.to2D(kapowParticle.getPosition(), eventRender3D.getMatrixStack()));
-                    particles.add(kapowParticle);
-                }
-                attacked.remove(i);
-            }
-            for (int i = 0; i < particles.size(); i++) {
-                KapowParticle kapowParticle = particles.get(i);
-                if (kapowParticle.getAge() <= 0) {
-                    particles.remove(i);
-                    continue;
-                }
-                kapowParticle.setTwoDPosition(Render2DHelper.INSTANCE.to2D(kapowParticle.getPosition(), eventRender3D.getMatrixStack()));
-            }
-        } else if (event instanceof EventRender2D eventRender2D) {
-            particles.forEach(particle -> {
-                particle.render(eventRender2D.getMatrixStack());
-            });
+    @EventPointer
+    private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
+        if (event.getEntity() instanceof LivingEntity livingEntity && livingEntity.isAlive()) {
+            attacked.add(livingEntity);
         }
-    }
+    });
+
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        for (int i = 0; i < attacked.size(); i++) {
+            LivingEntity livingEntity = attacked.get(i);
+            Random random = new Random();
+            for (int j = 0; j < (1 +random.nextInt(particleCount)); j++) {
+                FXType type = FXType.values()[random.nextInt(FXType.values().length)];
+                float sideOffset = livingEntity.getWidth() / 1.5f;
+                float heightOffset = livingEntity.getHeight() / 2;
+                double x = livingEntity.getX() - sideOffset + (random.nextDouble() * (sideOffset * 2));
+                double y = livingEntity.getY() + (double) (livingEntity.getHeight() / 2) - heightOffset + (random.nextFloat() * (heightOffset * 2));
+                double z = livingEntity.getZ() - sideOffset + (random.nextDouble() * (sideOffset * 2));
+                Vec3d vec3d = new Vec3d(x, y, z);
+                KapowParticle kapowParticle = new KapowParticle(vec3d, type);
+                kapowParticle.setTwoDPosition(Render2DHelper.INSTANCE.to2D(kapowParticle.getPosition(), event.getMatrixStack()));
+                particles.add(kapowParticle);
+            }
+            attacked.remove(i);
+        }
+        for (int i = 0; i < particles.size(); i++) {
+            KapowParticle kapowParticle = particles.get(i);
+            if (kapowParticle.getAge() <= 0) {
+                particles.remove(i);
+                continue;
+            }
+            kapowParticle.setTwoDPosition(Render2DHelper.INSTANCE.to2D(kapowParticle.getPosition(), event.getMatrixStack()));
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
+        particles.forEach(particle -> particle.render(event.getMatrixStack()));
+    });
 
     public class KapowParticle {
+        private final Identifier identifier;
         private Vec3d position;
         private Vec3d twoDPosition;
-        private Identifier identifier;
         private FXType fxType;
         private int age = 200;
-        private Timer timer;
+        private final Timer timer;
 
         public KapowParticle(Vec3d position, FXType fxType) {
             this.position = position;

@@ -2,7 +2,9 @@ package me.dustin.jex.feature.mod.impl.player;
 
 import com.mojang.authlib.GameProfile;
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
@@ -14,10 +16,7 @@ import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.load.impl.IKeyBinding;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.fabricmc.fabric.api.renderer.v1.Renderer;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -41,42 +40,43 @@ public class Freecam extends Feature {
     private RotationVector lookVec = new RotationVector(0, 0);
     public static PlayerEntity playerEntity;
 
-    @EventListener(events = {EventPacketSent.class, EventMove.class, EventPlayerUpdates.class, EventPushOutOfBlocks.class, EventMarkChunkClosed.class})
-    public void runEvent(Event event) {
-        if (event instanceof EventMarkChunkClosed)
-            event.cancel();
-        if (event instanceof EventPacketSent packetSent) {
-            if (packetSent.getMode() != EventPacketSent.Mode.PRE)
-                return;
-            if (stealth) {
-                if (!(packetSent.getPacket() instanceof KeepAliveC2SPacket || packetSent.getPacket() instanceof ChatMessageC2SPacket))
-                    packetSent.cancel();
-            } else if (packetSent.getPacket() instanceof PlayerMoveC2SPacket) {
-                PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), lookVec.getYaw(), lookVec.getPitch(), true);
-                packetSent.setPacket(playerMoveC2SPacket);
-            }
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        if (stealth) {
+            if (!(event.getPacket() instanceof KeepAliveC2SPacket || event.getPacket() instanceof ChatMessageC2SPacket))
+                event.cancel();
+        } else if (event.getPacket() instanceof PlayerMoveC2SPacket) {
+            PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), lookVec.getYaw(), lookVec.getPitch(), true);
+            event.setPacket(playerMoveC2SPacket);
         }
-        if (event instanceof EventMove move) {
-            if (!PlayerHelper.INSTANCE.isMoving()) {
-                move.setX(0);
-                move.setZ(0);
-            } else {
-                PlayerHelper.INSTANCE.setMoveSpeed(move, speed);
-            }
-            move.setY(0);
-            if (Wrapper.INSTANCE.getOptions().keySneak.isPressed())
-                move.setY(-speed);
-            if (Wrapper.INSTANCE.getOptions().keyJump.isPressed())
-                move.setY(speed);
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
+        if (!PlayerHelper.INSTANCE.isMoving()) {
+            event.setX(0);
+            event.setZ(0);
+        } else {
+            PlayerHelper.INSTANCE.setMoveSpeed(event, speed);
         }
-        if (event instanceof EventPlayerUpdates) {
-            Wrapper.INSTANCE.getLocalPlayer().handSwingProgress += 400.0F;
-            Wrapper.INSTANCE.getLocalPlayer().noClip = true;
-        }
-        if (event instanceof EventPushOutOfBlocks) {
-            event.cancel();
-        }
-    }
+        event.setY(0);
+        if (Wrapper.INSTANCE.getOptions().keySneak.isPressed())
+            event.setY(-speed);
+        if (Wrapper.INSTANCE.getOptions().keyJump.isPressed())
+            event.setY(speed);
+    });
+
+    @EventPointer
+    private final EventListener<EventPlayerUpdates> eventPlayerUpdatesEventListener = new EventListener<>(event -> {
+        Wrapper.INSTANCE.getLocalPlayer().handSwingProgress += 400.0F;
+        Wrapper.INSTANCE.getLocalPlayer().noClip = true;
+    });
+
+    @EventPointer
+    private final EventListener<EventPushOutOfBlocks> eventPushOutOfBlocksEventListener = new EventListener<>(Event::cancel);
+
+    @EventPointer
+    private final EventListener<EventMarkChunkClosed> eventMarkChunkClosedEventListener = new EventListener<>(Event::cancel);
 
     @Override
     public void onEnable() {

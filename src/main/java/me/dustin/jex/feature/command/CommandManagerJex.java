@@ -5,10 +5,11 @@ package me.dustin.jex.feature.command;
  */
 
 import com.mojang.brigadier.CommandDispatcher;
-import me.dustin.events.api.EventAPI;
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.EventManager;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.chat.EventSendMessage;
+import me.dustin.jex.event.filters.DrawScreenFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.feature.command.core.Command;
@@ -38,7 +39,7 @@ public enum CommandManagerJex {
     public static final CommandDispatcher<FabricClientCommandSource> DISPATCHER = new CommandDispatcher<>();
 
     public void registerCommands() {
-        EventAPI.getInstance().unregister(this);
+        EventManager.unregister(this);
         this.getCommands().clear();
         Reflections reflections = new Reflections("me.dustin.jex.feature.command.impl");
         Set<Class<? extends Command>> allClasses = reflections.getSubTypesOf(Command.class);
@@ -53,54 +54,52 @@ public enum CommandManagerJex {
             }
         });
         this.getCommands().sort((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()));
-        EventAPI.getInstance().register(this);
+        EventManager.register(this);
     }
 
-    @EventListener(events = {EventDrawScreen.class, EventTick.class, EventSendMessage.class})
-    private void runOtherMethod(Event event) {
-        if (event instanceof EventSendMessage eventSendMessage) {
-            if (eventSendMessage.getMessage().startsWith(prefix) && ClientCommandInternals.executeCommand(eventSendMessage.getMessage())) {
-                eventSendMessage.cancel();
+    @EventPointer
+    private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
+        IChatScreen chatScreen = (IChatScreen) event.getScreen();
+        if (chatScreen.getText().startsWith(this.getPrefix())) {
+            overlayOn = true;
+            chatScreen.getWidget().setMaxLength(100000);
+        } else {
+            overlayOn = false;
+            chatScreen.getWidget().setMaxLength(256);
+        }
+        Color color1 = Color.decode("0x" + Integer.toHexString(ColorHelper.INSTANCE.getClientColor()).substring(2));
+        int color = new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), overlayAlpha).getRGB();
+        Render2DHelper.INSTANCE.fillAndBorder(event.getMatrixStack(), chatScreen.getWidget().x - 2, chatScreen.getWidget().y - 2, chatScreen.getWidget().x + chatScreen.getWidget().getWidth() - 2, chatScreen.getWidget().y + chatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
+
+    }, new DrawScreenFilter(EventDrawScreen.Mode.POST, ChatScreen.class));
+
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
+        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen)) {
+            overlayOn = false;
+            overlayAlpha = 0;
+        }
+        if (overlayOn) {
+            if (overlayAlpha < 255) {
+                overlayAlpha+=35;
+            }
+        } else {
+            if (overlayAlpha > 0) {
+                overlayAlpha-=35;
             }
         }
-        if (event instanceof EventDrawScreen eventDrawScreen && eventDrawScreen.getMode() == EventDrawScreen.Mode.POST) {
-            if (eventDrawScreen.getScreen() instanceof ChatScreen) {
-                IChatScreen chatScreen = (IChatScreen) (ChatScreen) eventDrawScreen.getScreen();
-                if (chatScreen.getText().startsWith(this.getPrefix())) {
-                    overlayOn = true;
-                    chatScreen.getWidget().setMaxLength(100000);
-                } else {
-                    overlayOn = false;
-                    chatScreen.getWidget().setMaxLength(256);
-                }
-                Color color1 = Color.decode("0x" + Integer.toHexString(ColorHelper.INSTANCE.getClientColor()).substring(2));
-                int color = new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), overlayAlpha).getRGB();
-                Render2DHelper.INSTANCE.fillAndBorder(((EventDrawScreen) event).getMatrixStack(), chatScreen.getWidget().x - 2, chatScreen.getWidget().y - 2, chatScreen.getWidget().x + chatScreen.getWidget().getWidth() - 2, chatScreen.getWidget().y + chatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
-            } else {
-                overlayOn = false;
-                overlayAlpha = 0;
-            }
+        if (overlayAlpha > 255)
+            overlayAlpha = 255;
+        if (overlayAlpha < 0)
+            overlayAlpha = 0;
+    });
+
+    @EventPointer
+    private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {
+        if (event.getMessage().startsWith(prefix) && ClientCommandInternals.executeCommand(event.getMessage())) {
+            event.cancel();
         }
-        if (event instanceof EventTick) {
-            if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen)) {
-                overlayOn = false;
-                overlayAlpha = 0;
-            }
-            if (overlayOn) {
-                if (overlayAlpha < 255) {
-                    overlayAlpha+=35;
-                }
-            } else {
-                if (overlayAlpha > 0) {
-                    overlayAlpha-=35;
-                }
-            }
-            if (overlayAlpha > 255)
-                overlayAlpha = 255;
-            if (overlayAlpha < 0)
-                overlayAlpha = 0;
-        }
-    }
+    });
 
     public boolean isJexCommand(String command) {
         if (command.contains(" "))

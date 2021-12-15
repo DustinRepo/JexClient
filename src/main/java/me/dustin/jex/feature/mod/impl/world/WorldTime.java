@@ -1,7 +1,10 @@
 package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
+import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -15,19 +18,11 @@ public class WorldTime extends Feature {
     @Op(name = "Time", max = 24000)
     public int time = 6000;
 
-    @EventListener(events = {EventPlayerPackets.class, EventPacketReceive.class})
-    public void run(Event event) {
-        if (event instanceof EventPlayerPackets)
-            if (((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE) {
-                Wrapper.INSTANCE.getWorld().setTimeOfDay(time);
-            }
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        Wrapper.INSTANCE.getWorld().setTimeOfDay(time);
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
-        if (event instanceof EventPacketReceive eventPacketReceive) {
-            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
-                return;
-            if (eventPacketReceive.getPacket() instanceof WorldTimeUpdateS2CPacket)
-                event.cancel();
-        }
-
-    }
+    @EventPointer
+    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(Event::cancel, new ServerPacketFilter(EventPacketReceive.Mode.PRE, WorldTimeUpdateS2CPacket.class));
 }

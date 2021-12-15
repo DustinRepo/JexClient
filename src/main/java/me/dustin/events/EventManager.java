@@ -1,92 +1,98 @@
 package me.dustin.events;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.events.exception.MethodNotPrivateException;
+import com.google.common.collect.Maps;
+import me.dustin.events.core.EventListener;
+import me.dustin.jex.JexClient;
+import me.dustin.events.core.annotate.EventPointer;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.lang.reflect.Field;
+import java.util.*;
 
+//basically an Alpine clone I made years back
 public class EventManager {
-    private ConcurrentMap<Class, Object> classes = new ConcurrentHashMap<>();
-    private ConcurrentMap<Class<? extends Event>, List<Method>> events = new ConcurrentHashMap<>();
-    protected boolean privateOnlyMode = false;
-    /*
-        Adds the class and object to the classes map
-        Then adds all Methods using the @EventListener annotation to the events list for later use in the run method
-     */
-    public void register(Object object) throws MethodNotPrivateException {
-        classes.put(object.getClass(), object);
-        for (Method method : object.getClass().getDeclaredMethods()) {
-            if (privateOnlyMode) {
-                if (method.isAccessible()) {
-                    throw new MethodNotPrivateException("Method is not private: " + method.getName() + " in class " + method.getDeclaringClass());
-                }
-            }
-            if (!method.isAccessible())
-                method.setAccessible(true);
-            if (method.isAnnotationPresent(EventListener.class)) {
-                EventListener eventListener = method.getAnnotation(EventListener.class);
-                for (Class<? extends Event> event : eventListener.events()) {
-                    List<Method> list = new ArrayList<>();
-                    events.putIfAbsent(event, list);
-                    events.get(event).add(method);
-                }
-            }
-        }
-    }
-    /*
-        Removes the class and object from the classes map
-        Then removes all methods using @EventListener annotation from the events list
-     */
-    public void unregister(Object object) {
-        classes.remove(object.getClass());
-        for (Method method : object.getClass().getDeclaredMethods()) {
-            if (!method.isAccessible())
-                method.setAccessible(true);
-            if (method.isAnnotationPresent(EventListener.class)) {
-                EventListener eventListener = method.getAnnotation(EventListener.class);
-                for (Class<? extends Event> event : eventListener.events()) {
-                    List<Method> list = events.get(event);
-                    if (list != null)
-                        list.remove(method);
-                }
-            }
-        }
-    }
 
-    public boolean alreadyRegistered(Object object) {
-        return classes.containsKey(object.getClass());
-    }
+	/*
+	 * Map of all objects in the call list
+	 */
+	private static final Map<Object, Class<?>> classMAP = Maps.newConcurrentMap();
 
-    /*
-        Loops all methods subscribed to the event and invokes them
-     */
-    public void run(Event event) throws ConcurrentModificationException {
-        List<Method> methods = events.get(event.getClass());
-        if (methods != null) {
-            //I really need a sorting system.
-            for (int i = 5; i > 0; i--) {
-                int finalI = i;
-                methods.forEach(method -> {
-                    if (method.getAnnotation(EventListener.class).priority() == finalI)
-                        try {
-                            if (methods.contains(method))
-                                method.invoke(classes.get(method.getDeclaringClass()), event);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                });
-            }
-        }
-    }
+	/*
+	 * Map of every field + the class of the event in the field.
+	 */
+	private static final Map<Class<?>, List<EventListener>> eventMAP = Maps.newConcurrentMap();
 
+	/*
+	 * This is what runs the event to every class it is hooked in.
+	 */
+	public static void run(Object event) {
+		List<EventListener> eventListeners = eventMAP.get(event.getClass());
+		if (eventListeners != null && eventListeners.size() > 0) {
+			try {
+				eventListeners.forEach(listener -> listener.invoke(event));
+			} catch (ConcurrentModificationException e) {
+
+			}
+		}
+	}
+
+	/*
+	 * Register an object to the call list Example:
+	 * EventManager.register(Minecraft.getMinecraft()); or
+	 * EventManager.register(this);
+	 */
+	public static void register(Object o) {
+		if (isRegistered(o))
+			return;
+		for (Field f : o.getClass().getDeclaredFields()) {
+			if (f.isAnnotationPresent(EventPointer.class)) {
+				if (!f.isAccessible()) {
+					f.setAccessible(true);
+				}
+				try {
+					EventListener eventListener = (EventListener) f.get(o);
+
+					if (eventListener == null) {
+						JexClient.INSTANCE.getLogger().info(o.getClass().getSimpleName() + " " + f.getName() + " " + f.get(o));
+						continue;
+					}
+					if (!eventMAP.containsKey(eventListener.getEventClass()))
+						eventMAP.put(eventListener.getEventClass(), new ArrayList<>());
+
+					eventMAP.get(eventListener.getEventClass()).add(eventListener);
+					eventMAP.get(eventListener.getEventClass()).sort(Comparator.comparingInt(EventListener::getPriority));
+				} catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		classMAP.put(o, o.getClass());
+	}
+
+	/*
+	 * Remove the object from the call list
+	 */
+	public static void unregister(Object o) {
+		while (isRegistered(o)) {
+			for (Field f : o.getClass().getDeclaredFields()) {
+				if (f.isAnnotationPresent(EventPointer.class)) {
+					if (!f.isAccessible()) {
+						f.setAccessible(true);
+					}
+					try {
+						EventListener eventListener = (EventListener) f.get(o);
+						if (eventMAP.get(eventListener.getEventClass()) != null) {
+							eventMAP.get(eventListener.getEventClass()).remove(eventListener);
+						}
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			classMAP.remove(o);
+		}
+	}
+
+	public static boolean isRegistered(Object o) {
+		return classMAP.containsKey(o);
+	}
 }

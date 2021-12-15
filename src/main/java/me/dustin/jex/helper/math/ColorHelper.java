@@ -1,6 +1,7 @@
 package me.dustin.jex.helper.math;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
@@ -57,12 +58,11 @@ public enum ColorHelper {
         return getColorViaHue(rainbowHue).getRGB();
     }
 
-    @EventListener(events = {EventTick.class})
-    public void runMethod(EventTick eventTick) {
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         this.rainbowHue++;
         if (rainbowHue > 270) {
             rainbowHue -= 270;
         }
-
-    }
+    });
 }

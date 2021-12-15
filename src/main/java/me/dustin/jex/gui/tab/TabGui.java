@@ -1,6 +1,7 @@
 package me.dustin.jex.gui.tab;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -81,11 +82,11 @@ public enum TabGui {
 
     }
 
-    @EventListener(events = {EventKeyPressed.class})
-    private void runKeys(EventKeyPressed eventKeyPressed) {
-        if (!((Hud) Feature.get(Hud.class)).tabGui || eventKeyPressed.getType() != EventKeyPressed.PressType.IN_GAME)
+    @EventPointer
+    private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
+        if (!((Hud) Feature.get(Hud.class)).tabGui || event.getType() != EventKeyPressed.PressType.IN_GAME)
             return;
-        switch (eventKeyPressed.getKey()) {
+        switch (event.getKey()) {
             case GLFW.GLFW_KEY_UP:
                 if (!categoryOpen) {
                     categorySelect--;
@@ -126,7 +127,7 @@ public enum TabGui {
                 modSelect = 0;
                 break;
         }
-    }
+    });
 
     private float getModWidth(float origWidth) {
         for (Feature feature : Feature.getModules(Feature.Category.values()[categorySelect])) {
@@ -152,8 +153,8 @@ public enum TabGui {
 
     private Timer timer = new Timer();
 
-    @EventListener(events = EventTick.class)
-    private void tick(EventTick eventTick) {
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         this.lastHoverY = hoverY;
         this.lastModHoverY = modHoverY;
         float distance = Math.abs(hoverY - spotHoverY);
@@ -175,5 +176,5 @@ public enum TabGui {
         } else if (modHoverY < modSpotHoverY) {
             modHoverY += modDistance * speed;
         }
-    }
+    });
 }

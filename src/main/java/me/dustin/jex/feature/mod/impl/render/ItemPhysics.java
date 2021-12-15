@@ -1,21 +1,19 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRotateItemEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render3DHelper;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
-import org.lwjgl.system.CallbackI;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -45,11 +43,11 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
     private final HashMap<ItemEntity, Boolean> itemRollNeg = new HashMap<>();
     private final HashMap<ItemEntity, Boolean> itemYawNeg = new HashMap<>();
 
-    @EventListener(events = EventRotateItemEntity.class)
-    public void runMethod(EventRotateItemEntity eventRotateItemEntity) {
-        ItemEntity itemEntity = eventRotateItemEntity.getItemEntity();
-        MatrixStack matrixStack = eventRotateItemEntity.getMatrixStack();
-        float g = eventRotateItemEntity.getG();
+    @EventPointer
+    private final EventListener<EventRotateItemEntity> eventRotateItemEntityEventListener = new EventListener<>(event -> {
+        ItemEntity itemEntity = event.getItemEntity();
+        MatrixStack matrixStack = event.getMatrixStack();
+        float g = event.getG();
         float n = itemEntity.getRotation(g);
 
         if (!prevItemRotationsRoll.containsKey(itemEntity))
@@ -74,10 +72,10 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
         float l = MathHelper.sin(((float)itemEntity.getItemAge() + g) / 10.0F + itemEntity.uniqueOffset) * 0.1F + 0.1F;
         float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.getY();
         matrixStack.translate(0.0D, -(l + 0.25F * m), 0.0D);
-    }
+    });
 
-    @EventListener(events = EventTick.class)
-    private void tick(EventTick eventTick) {
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getWorld() != null)
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                 if (entity instanceof ItemEntity itemEntity) {
@@ -121,6 +119,5 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
         itemPitchNeg.keySet().removeIf(Objects::isNull);
         itemRollNeg.keySet().removeIf(Objects::isNull);
         itemYawNeg.keySet().removeIf(Objects::isNull);
-    }
-
+    });
 }

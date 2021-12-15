@@ -4,6 +4,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -29,7 +30,6 @@ public class ArrayListElement extends HudElement {
         if (mods.isEmpty())
             mods.addAll(FeatureManager.INSTANCE.getFeatures());
 
-        reorderArrayList(mods);
         int num = count;
         count = 0;
 
@@ -63,6 +63,7 @@ public class ArrayListElement extends HudElement {
 
     @Override
     public void tick() {
+        reorderArrayList(mods);
         rainbowScroll += getHud().rainbowSpeed;
         super.tick();
     }
@@ -87,19 +88,18 @@ public class ArrayListElement extends HudElement {
         };
     }
 
+
     private void reorderArrayList(ArrayList<Feature> mods) {
-        Collections.sort(mods, new Comparator<Feature>() {
-            public int compare(Feature mod, Feature mod1) {
-                String name1 = mod.getDisplayName();
-                String name2 = mod1.getDisplayName();
-                if (FontHelper.INSTANCE.getStringWidth(name1) > FontHelper.INSTANCE.getStringWidth(name2)) {
-                    return -1;
-                }
-                if (FontHelper.INSTANCE.getStringWidth(name1) < FontHelper.INSTANCE.getStringWidth(name2)) {
-                    return 1;
-                }
-                return 0;
+        Collections.sort(mods, (mod, mod1) -> {
+            String name1 = mod.getDisplayName();
+            String name2 = mod1.getDisplayName();
+            if (FontHelper.INSTANCE.getStringWidth(name1) > FontHelper.INSTANCE.getStringWidth(name2)) {
+                return -1;
             }
+            if (FontHelper.INSTANCE.getStringWidth(name1) < FontHelper.INSTANCE.getStringWidth(name2)) {
+                return 1;
+            }
+            return 0;
         });
     }
 }

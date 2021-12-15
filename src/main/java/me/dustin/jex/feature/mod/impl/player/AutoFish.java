@@ -1,7 +1,10 @@
 package me.dustin.jex.feature.mod.impl.player;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
+import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -53,78 +56,81 @@ public class AutoFish extends Feature {
     Timer timer1 = new Timer();
     boolean hasReconnected;
 
-    @EventListener(events = {EventPacketReceive.class, EventPlayerPackets.class, EventJoinWorld.class, EventRender3D.class})
-    public void run(Event event) {
-        if (event instanceof EventRender3D eventRender3D && showIfOpenWater) {
-            FishingBobberEntity hook = getHook();
-            if (hook != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.FISHING_ROD) {
-                Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(hook, eventRender3D.getPartialTicks());
-                Box box = new Box(renderPos.x - 0.2f, renderPos.y - 0.2f, renderPos.z - 0.2f, renderPos.x + 0.2f, renderPos.y + 0.2f, renderPos.z + 0.2f);
-                Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, isOpenOrWaterAround(hook.getBlockPos()) ? 0xff0000ff : 0xffff0000);
+    @EventPointer
+    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
+        if (hasReeled)
+            return;
+        PlaySoundS2CPacket soundPacket = (PlaySoundS2CPacket) event.getPacket();
+        if (soundPacket.getSound().getId().toString().equalsIgnoreCase("minecraft:entity.fishing_bobber.splash")) {
+            if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().fishHook == null)
+                Wrapper.INSTANCE.getLocalPlayer().fishHook = getClosest();
+            if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getLocalPlayer().fishHook == null)
+                return;
+            Vec3d vec3d = new Vec3d(soundPacket.getX(), soundPacket.getY(), soundPacket.getZ());
+            if (distanceTo(Wrapper.INSTANCE.getLocalPlayer().fishHook, vec3d) < 3 || !distanceCheck) {
+                reel();
+                hasReeled = true;
+                timer.reset();
             }
         }
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, PlaySoundS2CPacket.class));
+
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (AutoEat.isEating && recast) {
             this.hasReeled = true;
             timer.reset();
             return;
         }
-        if (event instanceof EventPlayerPackets) {
-            if (((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE) {
-                if (hasReconnected) {
-                    if (timer1.hasPassed(5000)) {
-                        reel();
-                        timer1.reset();
-                        hasReconnected = false;
-                    }
-                }
-
-
-                FishingBobberEntity hook = getHook();
-
-                if (hook != null && hook.age > 100 && !sound) {
-                    if (lastY == -1)
-                        lastY = hook.getY();
-                    double difference = Math.abs(hook.getY() - lastY);
-                    if (difference > 0.11) {
-                        reel();
-                        hasReeled = true;
-                        timer.reset();
-                    }
-                    lastY = hook.getY();
-                }
-
-                if (hasReeled && recast) {
-                    if (timer.hasPassed(delay)) {
-                        reel();
-                        hasReeled = false;
-                        timer.reset();
-                    }
-                }
+        if (hasReconnected) {
+            if (timer1.hasPassed(5000)) {
+                reel();
+                timer1.reset();
+                hasReconnected = false;
             }
         }
-        if (!hasReeled && event instanceof EventPacketReceive receive) {
-            if (receive.getMode() != EventPacketReceive.Mode.PRE)
-                return;
-            if (receive.getPacket() instanceof PlaySoundS2CPacket soundPacket) {
-                if (soundPacket.getSound().getId().toString().equalsIgnoreCase("minecraft:entity.fishing_bobber.splash")) {
-                    if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().fishHook == null)
-                        Wrapper.INSTANCE.getLocalPlayer().fishHook = getClosest();
-                    if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getLocalPlayer().fishHook == null)
-                        return;
-                    Vec3d vec3d = new Vec3d(soundPacket.getX(), soundPacket.getY(), soundPacket.getZ());
-                    if (distanceTo(Wrapper.INSTANCE.getLocalPlayer().fishHook, vec3d) < 3 || !distanceCheck) {
-                        reel();
-                        hasReeled = true;
-                        timer.reset();
-                    }
-                }
+
+
+        FishingBobberEntity hook = getHook();
+
+        if (hook != null && hook.age > 100 && !sound) {
+            if (lastY == -1)
+                lastY = hook.getY();
+            double difference = Math.abs(hook.getY() - lastY);
+            if (difference > 0.11) {
+                reel();
+                hasReeled = true;
+                timer.reset();
+            }
+            lastY = hook.getY();
+        }
+
+        if (hasReeled && recast) {
+            if (timer.hasPassed(delay)) {
+                reel();
+                hasReeled = false;
+                timer.reset();
             }
         }
-        if (event.equals(EventJoinWorld.class)) {
-            if (reelOnReconnect)
-                hasReconnected = true;
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+        if (reelOnReconnect)
+            hasReconnected = true;
+    });
+
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        if (!showIfOpenWater)
+            return;
+            FishingBobberEntity hook = getHook();
+        if (hook != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.FISHING_ROD) {
+            Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(hook, event.getPartialTicks());
+            Box box = new Box(renderPos.x - 0.2f, renderPos.y - 0.2f, renderPos.z - 0.2f, renderPos.x + 0.2f, renderPos.y + 0.2f, renderPos.z + 0.2f);
+            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), box, isOpenOrWaterAround(hook.getBlockPos()) ? 0xff0000ff : 0xffff0000);
         }
-    }
+    });
 
     void reel() {
         if (dontReel) return;

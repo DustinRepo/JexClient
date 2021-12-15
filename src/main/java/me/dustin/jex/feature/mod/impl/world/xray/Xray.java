@@ -1,16 +1,15 @@
 package me.dustin.jex.feature.mod.impl.world.xray;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.world.xray.impl.NormalXray;
-import me.dustin.jex.feature.mod.impl.world.xray.impl.OpacityXray;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
@@ -57,8 +56,28 @@ public class Xray extends Feature {
         blockList.add(Blocks.NETHER_QUARTZ_ORE);
     }
 
-    @EventListener(events = {EventShouldDrawSide.class, EventBlockBrightness.class, EventMarkChunkClosed.class, EventRenderBlockEntity.class, EventRenderBlock.class, EventRenderFluid.class, EventGetRenderLayer.class, EventGetTranslucentShader.class, EventTick.class, EventSodiumBeginShader.class})
-    private void run(Event event) {
+    @EventPointer
+    private final EventListener<EventShouldDrawSide> eventShouldDrawSideEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventBlockBrightness> eventBlockBrightnessEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventMarkChunkClosed> eventMarkChunkClosedEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventRenderBlockEntity> eventRenderBlockEntityEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventRenderBlock> eventRenderBlockEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventRenderFluid> eventRenderFluidEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventGetRenderLayer> eventGetRenderLayerEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventGetTranslucentShader> eventGetTranslucentShaderEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventSodiumBeginShader> eventSodiumBeginShaderEventListener = new EventListener<>(event -> sendEvent(event));
+
+    public void sendEvent(Event event) {
         if (!mode.equalsIgnoreCase(lastMode) && lastMode != null) {
             FeatureExtension.get(lastMode, this).disable();
             FeatureExtension.get(mode, this).enable();

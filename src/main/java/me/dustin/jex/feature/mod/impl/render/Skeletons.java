@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -26,10 +27,10 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
     @Op(name = "Color", isColor = true)
     public int skeletonColor = 0xffffffff;
 
-    @EventListener(events = {EventRender3D.class})
-    private void runMethod(EventRender3D eventRender3D) {
-        MatrixStack matrixStack = eventRender3D.getMatrixStack();
-        float g = eventRender3D.getPartialTicks();
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        MatrixStack matrixStack = event.getMatrixStack();
+        float g = event.getPartialTicks();
         Render3DHelper.INSTANCE.setup3DRender(true);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof PlayerEntity playerEntity && (entity != Wrapper.INSTANCE.getLocalPlayer() || Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON)) {
@@ -133,7 +134,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
             }
         });
         Render3DHelper.INSTANCE.end3DRender();
-    }
+    });
 
     private void rotate(MatrixStack matrix, ModelPart modelPart) {
         if (modelPart.roll != 0.0F) {

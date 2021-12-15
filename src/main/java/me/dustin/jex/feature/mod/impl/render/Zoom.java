@@ -1,12 +1,13 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Zoom in like Optifine")
@@ -33,35 +34,32 @@ public class Zoom extends Feature {
             super.onDisable();
     }
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            if(KeyboardHelper.INSTANCE.isPressed(zoomKey) && Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
-                if(resetFOV)
-                {
-                    this.resetFOV = false;
-                    this.savedFOV = (float)Wrapper.INSTANCE.getOptions().fov;
-                }
-                float zoomFov = 30 - (6 * zoomLevel);
-                if (zoomFov == 0)
-                    zoomFov = 1;
-                if(Wrapper.INSTANCE.getOptions().fov > zoomFov)
-                {
-                    Wrapper.INSTANCE.getOptions().fov = zoomFov;
-                }
-            }
-            else
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if(KeyboardHelper.INSTANCE.isPressed(zoomKey) && Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
+            if(resetFOV)
             {
-                if(!resetFOV || !getState()) {
-                    if (Wrapper.INSTANCE.getOptions().fov < savedFOV) {
-                        Wrapper.INSTANCE.getOptions().fov = savedFOV;
-                    }
-                    if (!getState())
-                        super.onDisable();
-                } else
-                    this.resetFOV = true;
+                this.resetFOV = false;
+                this.savedFOV = (float)Wrapper.INSTANCE.getOptions().fov;
+            }
+            float zoomFov = 30 - (6 * zoomLevel);
+            if (zoomFov == 0)
+                zoomFov = 1;
+            if(Wrapper.INSTANCE.getOptions().fov > zoomFov)
+            {
+                Wrapper.INSTANCE.getOptions().fov = zoomFov;
             }
         }
-    }
-
+        else
+        {
+            if(!resetFOV || !getState()) {
+                if (Wrapper.INSTANCE.getOptions().fov < savedFOV) {
+                    Wrapper.INSTANCE.getOptions().fov = savedFOV;
+                }
+                if (!getState())
+                    super.onDisable();
+            } else
+                this.resetFOV = true;
+        }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

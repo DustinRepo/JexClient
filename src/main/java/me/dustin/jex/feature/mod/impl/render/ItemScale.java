@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderItem;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -32,30 +33,26 @@ public class ItemScale extends Feature {
     @OpChild(name = "LH Z", min = -2, max = 2, inc = 0.05f, parent = "Left Hand")
     public float leftHandZ;
 
-    @EventListener(events = EventRenderItem.class)
-    private void runMethod(EventRenderItem eventRenderItem) {
-
-        if (eventRenderItem.getType().isFirstPerson()) {
-            MatrixStack matrixStack = eventRenderItem.getMatrixStack();
-            switch (eventRenderItem.getRenderTime()) {
-                case PRE:
+    @EventPointer
+    private final EventListener<EventRenderItem> eventRenderItemEventListener = new EventListener<>(event -> {
+        if (event.getType().isFirstPerson()) {
+            MatrixStack matrixStack = event.getMatrixStack();
+            switch (event.getRenderTime()) {
+                case PRE -> {
                     matrixStack.push();
-                    switch (eventRenderItem.getType()) {
-                        case FIRST_PERSON_RIGHT_HAND:
+                    switch (event.getType()) {
+                        case FIRST_PERSON_RIGHT_HAND -> {
                             matrixStack.translate(rightHandX, rightHandY, rightHandZ);
                             matrixStack.scale(rightHandScale, rightHandScale, rightHandScale);
-                            break;
-                        case FIRST_PERSON_LEFT_HAND:
+                        }
+                        case FIRST_PERSON_LEFT_HAND -> {
                             matrixStack.translate(leftHandX, leftHandY, leftHandZ);
                             matrixStack.scale(leftHandScale, leftHandScale, leftHandScale);
-                            break;
+                        }
                     }
-                    break;
-                case POST:
-                    matrixStack.pop();
-                    break;
+                }
+                case POST -> matrixStack.pop();
             }
         }
-    }
-
+    });
 }

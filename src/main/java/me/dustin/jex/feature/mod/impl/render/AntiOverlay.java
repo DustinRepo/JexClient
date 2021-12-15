@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderOverlay;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -23,37 +24,37 @@ public class AntiOverlay extends Feature {
     @Op(name = "Vignette")
     public boolean vignette = true;
 
-    @EventListener(events = {EventRenderOverlay.class})
-    private void runMethod(EventRenderOverlay eventRenderOverlay) {
-        switch (eventRenderOverlay.getOverlay()) {
+    @EventPointer
+    private final EventListener<EventRenderOverlay> eventRenderOverlayEventListener = new EventListener<>(event -> {
+        switch (event.getOverlay()) {
             case FIRE:
                 if (fire)
-                    eventRenderOverlay.cancel();
+                    event.cancel();
                 break;
             case UNDERWATER:
                 if (water)
-                    eventRenderOverlay.cancel();
+                    event.cancel();
                 break;
             case LAVA:
                 if (lava)
-                    eventRenderOverlay.cancel();
+                    event.cancel();
                 break;
             case IN_WALL:
                 if (inwall)
-                    eventRenderOverlay.cancel();
+                    event.cancel();
                 break;
             case PUMPKIN:
                 if (pumpkin)
-                    eventRenderOverlay.cancel();
+                    event.cancel();
                 break;
             case PORTAL:
                 if (portal)
-                    eventRenderOverlay.cancel();
+                    event.cancel();
                 break;
             case VIGNETTE:
                 if (vignette)
-                    eventRenderOverlay.cancel();
+                    event.cancel();
                 break;
         }
-    }
+    });
 }

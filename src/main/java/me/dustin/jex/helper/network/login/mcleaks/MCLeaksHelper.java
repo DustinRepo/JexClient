@@ -1,15 +1,14 @@
 package me.dustin.jex.helper.network.login.mcleaks;
 
 import com.google.gson.JsonObject;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.packet.EventHello;
-import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.util.Session;
-import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.text.LiteralText;
 
 import java.util.HashMap;
@@ -68,8 +67,8 @@ public enum MCLeaksHelper {
         return false;
     }
 
-    @EventListener(events = {EventHello.class})
-    private void receiveHello(EventHello eventHello) {
+    @EventPointer
+    private final EventListener<EventHello> eventHelloEventListener = new EventListener<>(event -> {
         if (activeAccount != null) {
             String address = Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
             int port = 25565;
@@ -78,14 +77,14 @@ public enum MCLeaksHelper {
                 port = Integer.parseInt(address.split(":")[1]);
                 address = address1;
             }
-            boolean success = login(address, port, eventHello.getServerhash());
+            boolean success = login(address, port, event.getServerhash());
             if (!success) {
-                eventHello.getClientConnection().disconnect(new LiteralText("Bad MCLeaks response"));
-                eventHello.cancel();
+                event.getClientConnection().disconnect(new LiteralText("Bad MCLeaks response"));
+                event.cancel();
             }
-            JexClient.INSTANCE.getLogger().info("MCLeaks gave success to server: " + address + ":" + port + " name: " + activeAccount.mcname + " serverhash: " + eventHello.getServerhash());
+            JexClient.INSTANCE.getLogger().info("MCLeaks gave success to server: " + address + ":" + port + " name: " + activeAccount.mcname + " serverhash: " + event.getServerhash());
         }
-    }
+    });
 
     public void restoreSession() {
         MCLeaksHelper.INSTANCE.activeAccount = null;

@@ -55,8 +55,7 @@ public class FlyPathProcessor extends PathProcessor
 				index++;
 			
 			// stop when changing directions
-			if(creativeFlying)
-			{
+			if(creativeFlying) {
 				Vec3d v = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
 				Wrapper.INSTANCE.getLocalPlayer().setVelocity(v.x / Math.max(Math.abs(v.x) * 50, 1), v.y / Math.max(Math.abs(v.y) * 50, 1), v.z / Math.max(Math.abs(v.z) * 50, 1));
 			}

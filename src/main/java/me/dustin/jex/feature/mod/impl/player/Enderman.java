@@ -1,7 +1,9 @@
 package me.dustin.jex.feature.mod.impl.player;
 
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.events.core.enums.EventPriority;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.priority.Priority;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -22,37 +24,35 @@ public class Enderman extends Feature {
     @Op(name = "Mode", all = {"Look At", "Look Away"})
     public String mode = "Look At";
 
-    @EventListener(events = {EventPlayerPackets.class}, priority = EventPriority.HIGH)
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            switch (mode.toLowerCase()) {
-                case "look at":
-                    EndermanEntity lookat = getEnderman();
-                    if (lookat != null) {
-                        RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), lookat);
-                        eventPlayerPackets.setRotation(rotation);
-                    }
-                    break;
-                case "look away":
-                    for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                        if (entity instanceof EndermanEntity) {
-                            if (isPlayerStaring(Wrapper.INSTANCE.getLocalPlayer(), (EndermanEntity) entity)) {
-                                if (PlayerHelper.INSTANCE.getPitch() > 85)
-                                    eventPlayerPackets.setPitch(-90);
-                                else
-                                    eventPlayerPackets.setPitch(90);
-                                break;
-                            }
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        setSuffix(mode);
+        switch (mode.toLowerCase()) {
+            case "look at":
+                EndermanEntity lookat = getEnderman();
+                if (lookat != null) {
+                    RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), lookat);
+                    event.setRotation(rotation);
+                }
+                break;
+            case "look away":
+                for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+                    if (entity instanceof EndermanEntity) {
+                        if (isPlayerStaring(Wrapper.INSTANCE.getLocalPlayer(), (EndermanEntity) entity)) {
+                            if (PlayerHelper.INSTANCE.getPitch() > 85)
+                                event.setPitch(-90);
+                            else
+                                event.setPitch(90);
+                            break;
                         }
                     }
-                    break;
-            }
+                }
+                break;
         }
-        setSuffix(mode);
-    }
+    }, Priority.SECOND, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     private boolean isPlayerStaring(PlayerEntity player, EndermanEntity endermanEntity) {
-        ItemStack itemStack = (ItemStack) InventoryHelper.INSTANCE.getInventory(player).armor.get(3);
+        ItemStack itemStack = InventoryHelper.INSTANCE.getInventory(player).armor.get(3);
         if (itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
             return false;
         } else {

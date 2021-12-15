@@ -1,9 +1,9 @@
 package me.dustin.jex.feature.mod.impl.combat;
 
 import com.google.gson.JsonArray;
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
+import me.dustin.events.core.EventListener;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
+import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -14,6 +14,7 @@ import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.events.core.annotate.EventPointer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
@@ -36,38 +37,40 @@ public class AutoEZ extends Feature {
     private boolean isFighting;
     private Map<PlayerEntity, Long> fightingPlayers = new HashMap<>();
 
-    @EventListener(events = {EventPlayerPackets.class, EventPacketReceive.class, EventAttackEntity.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPacketReceive eventPacketReceive) {
-            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
-                return;
-            if (eventPacketReceive.getPacket() instanceof EnterCombatS2CPacket) {
-                isFighting = true;
-            } else if (eventPacketReceive.getPacket() instanceof EndCombatS2CPacket) {
-                isFighting = false;
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        for (int i = 0; i < fightingPlayers.size(); i++) {
+            PlayerEntity player = new ArrayList<>(fightingPlayers.keySet()).get(i);
+            long time = fightingPlayers.get(player);
+            if (time <= System.currentTimeMillis()) {
+                fightingPlayers.remove(player);
+                continue;
             }
-        } else if (event instanceof EventAttackEntity eventAttackEntity) {
-            if (eventAttackEntity.getEntity() instanceof PlayerEntity playerEntity) {
-                if (fightingPlayers.containsKey(playerEntity))
-                    fightingPlayers.replace(playerEntity, System.currentTimeMillis() + killDetectDelay);
-                else
-                    fightingPlayers.put(playerEntity, System.currentTimeMillis() + killDetectDelay);
-            }
-        } else if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            for (int i = 0; i < fightingPlayers.size(); i++) {
-                PlayerEntity player = new ArrayList<>(fightingPlayers.keySet()).get(i);
-                long time = fightingPlayers.get(player);
-                if (time <= System.currentTimeMillis()) {
-                    fightingPlayers.remove(player);
-                    continue;
-                }
-                if (player.getHealth() <= 0 || player.isDead() && isFighting) {
-                    sendMessage(player);
-                    fightingPlayers.remove(player);
-                }
+            if (player.getHealth() <= 0 || player.isDead() && isFighting) {
+                sendMessage(player);
+                fightingPlayers.remove(player);
             }
         }
-    }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
+        if (event.getEntity() instanceof PlayerEntity playerEntity) {
+            if (fightingPlayers.containsKey(playerEntity))
+                fightingPlayers.replace(playerEntity, System.currentTimeMillis() + killDetectDelay);
+            else
+                fightingPlayers.put(playerEntity, System.currentTimeMillis() + killDetectDelay);
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
+        if (event.getPacket() instanceof EnterCombatS2CPacket) {
+            isFighting = true;
+        } else if (event.getPacket() instanceof EndCombatS2CPacket) {
+            isFighting = false;
+        }
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, EnterCombatS2CPacket.class, EndCombatS2CPacket.class));
 
     @Override
     public void onEnable() {

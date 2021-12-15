@@ -1,10 +1,8 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventKeyPressed;
-import me.dustin.jex.event.misc.EventMouseButton;
-import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -28,9 +26,9 @@ public class InventorySort extends Feature {
 
     private Timer timeOutTimer = new Timer();
 
-    @EventListener(events = {EventKeyPressed.class})
-    private void runMethod(EventKeyPressed eventKeyPressed) {
-        if (eventKeyPressed.getKey() != sortKey)
+    @EventPointer
+    private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
+        if (event.getKey() != sortKey)
             return;
         if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen<?> handledScreen) {
             ScreenHandler screenHandler = handledScreen.getScreenHandler();
@@ -51,7 +49,7 @@ public class InventorySort extends Feature {
                 }
             }
         }
-    }
+    });
 
     int getLastNonEmptySlot(ScreenHandler screenHandler) {
         int s = -1;

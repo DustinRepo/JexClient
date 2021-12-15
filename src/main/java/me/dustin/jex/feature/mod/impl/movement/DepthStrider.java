@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.movement;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -17,14 +18,13 @@ public class DepthStrider extends Feature {
     @Op(name = "Allow Sprinting")
     public boolean allowSprinting;
 
-    @EventListener(events = {EventMove.class})
-    private void runMethod(EventMove eventMove) {
+    @EventPointer
+    private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
         int enchLevel = level;
         if (InventoryHelper.INSTANCE.getDepthStriderLevel() > enchLevel)
             enchLevel = InventoryHelper.INSTANCE.getDepthStriderLevel();
         if (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer())) {
-            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, PlayerHelper.INSTANCE.getWaterSpeed(enchLevel, allowSprinting));
+            PlayerHelper.INSTANCE.setMoveSpeed(event, PlayerHelper.INSTANCE.getWaterSpeed(enchLevel, allowSprinting));
         }
-    }
-
+    });
 }

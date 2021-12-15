@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.movement;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventWalkOffBlock;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -38,55 +39,54 @@ public class Scaffold extends Feature {
     @Op(name = "Range", min = 0, max = 4)
     public int range = 0;
     BlockHitResult blockHitResult;
-    private Timer timer = new Timer();
-    private ConcurrentLinkedQueue<BlockInfo> emptyNearBlocks = new ConcurrentLinkedQueue<>();
+    private final Timer timer = new Timer();
+    private final ConcurrentLinkedQueue<BlockInfo> emptyNearBlocks = new ConcurrentLinkedQueue<>();
 
-    @EventListener(events = {EventPlayerPackets.class, EventWalkOffBlock.class})
-    private void runMethod(Event event) {
+    @EventPointer
+    private final EventListener<EventWalkOffBlock> eventWalkOffBlockEventListener = new EventListener<>(Event::cancel);
+
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (AutoEat.isEating)
             return;
-        if (event instanceof EventPlayerPackets) {
-            if (((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE) {
-                blockHitResult = null;
-                BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
-                if (AutoEat.isEating)
-                    return;
-                getNearBlocks(below);
-                for (BlockInfo blockInfo : emptyNearBlocks) {
-                    if (blockInfo != null) {
-                        if (getBlockFromHotbar() == -1) {
-                            if (InventoryHelper.INSTANCE.isHotbarFull()) {
-                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 44, SlotActionType.THROW);
-                            }
-                            if (getBlockFromInv() != -1) {
-                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), SlotActionType.QUICK_MOVE);
-                            }
+        if (event.getMode() == EventPlayerPackets.Mode.PRE) {
+            blockHitResult = null;
+            BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
+            if (AutoEat.isEating)
+                return;
+            getNearBlocks(below);
+            for (BlockInfo blockInfo : emptyNearBlocks) {
+                if (blockInfo != null) {
+                    if (getBlockFromHotbar() == -1) {
+                        if (InventoryHelper.INSTANCE.isHotbarFull()) {
+                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 44, SlotActionType.THROW);
                         }
-                        if (getBlockFromHotbar() != -1) {
-                            InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
-                            place(blockInfo, (EventPlayerPackets) event);
-                            emptyNearBlocks.remove(blockInfo);
-                            if (delay > 0 && placeMode.equalsIgnoreCase("Pre"))
-                                return;
+                        if (getBlockFromInv() != -1) {
+                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), SlotActionType.QUICK_MOVE);
                         }
                     }
+                    if (getBlockFromHotbar() != -1) {
+                        InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
+                        place(blockInfo, event);
+                        emptyNearBlocks.remove(blockInfo);
+                        if (delay > 0 && placeMode.equalsIgnoreCase("Pre"))
+                            return;
+                    }
                 }
-            } else if (blockHitResult != null) {
-                if (!timer.hasPassed(delay)) {
-                    return;
-                }
-                if (placeMode.equalsIgnoreCase("Post"))
-                    Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
-                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                if (sneak) {
-                    NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
-                }
-                timer.reset();
             }
-        } else if (event instanceof EventWalkOffBlock) {
-            event.cancel();
+        } else if (blockHitResult != null) {
+            if (!timer.hasPassed(delay)) {
+                return;
+            }
+            if (placeMode.equalsIgnoreCase("Post"))
+                Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
+            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+            if (sneak) {
+                NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
+            }
+            timer.reset();
         }
-    }
+    });
 
     private boolean isReplaceable(Block block) {
         return block.getDefaultState().getMaterial().isReplaceable();

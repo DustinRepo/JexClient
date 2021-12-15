@@ -1,8 +1,8 @@
 package me.dustin.jex.feature.mod.impl.movement;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.events.core.enums.EventPriority;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventSlowdown;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -24,26 +24,25 @@ public class NoSlow extends Feature {
 	@Op(name = "Berry Bush")
 	public boolean berryBush = true;
 
-	@EventListener(events = { EventSlowdown.class, EventMove.class }, priority = EventPriority.HIGHEST)
-	public void run(Event event) {
-		if (event instanceof EventSlowdown eventSlowdown) {
-			if (eventSlowdown.getState() == EventSlowdown.State.USE_ITEM && useItem) {
-				event.cancel();
-			}
-			if (eventSlowdown.getState() == EventSlowdown.State.COBWEB && cobweb) {
-				event.cancel();
-			}
-			if (eventSlowdown.getState() == EventSlowdown.State.BERRY_BUSH && berryBush) {
-				event.cancel();
-			}
+	@EventPointer
+	private final EventListener<EventSlowdown> eventSlowdownEventListener = new EventListener<>(event -> {
+		if (event.getState() == EventSlowdown.State.USE_ITEM && useItem) {
+			event.cancel();
 		}
-		if (event instanceof EventMove eventMove) {
-			Block block = WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getLocalPlayer(), 0.7f);
-			if (block == Blocks.SOUL_SAND && soulSand) {
-				eventMove.setX(eventMove.getX() * 1.72111554);
-				eventMove.setZ(eventMove.getZ() * 1.72111554);
-			}
+		if (event.getState() == EventSlowdown.State.COBWEB && cobweb) {
+			event.cancel();
 		}
-	}
+		if (event.getState() == EventSlowdown.State.BERRY_BUSH && berryBush) {
+			event.cancel();
+		}
+	}, Priority.FIRST);
 
+	@EventPointer
+	private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
+		Block block = WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getLocalPlayer(), 0.7f);
+		if (block == Blocks.SOUL_SAND && soulSand) {
+			event.setX(event.getX() * 1.72111554);
+			event.setZ(event.getZ() * 1.72111554);
+		}
+	}, Priority.FIRST);
 }

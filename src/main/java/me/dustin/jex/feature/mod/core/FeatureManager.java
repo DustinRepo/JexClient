@@ -1,8 +1,5 @@
 package me.dustin.jex.feature.mod.core;
 
-import me.dustin.events.api.EventAPI;
-import me.dustin.events.core.Event;
-import me.dustin.jex.helper.file.ClassHelper;
 import org.reflections.Reflections;
 
 import java.util.ArrayList;
@@ -22,6 +19,7 @@ public enum FeatureManager {
         allClasses.forEach(clazz -> {
             try {
                 Feature instance = clazz.newInstance();
+                instance.loadFeature();
                 this.getFeatures().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();

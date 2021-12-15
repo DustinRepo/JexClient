@@ -7,7 +7,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.proxy.Socks4ProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.DrawScreenFilter;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -65,16 +67,14 @@ public enum ProxyHelper {
         FOUR, FIVE;
     }
 
-    @EventListener(events = {EventDrawScreen.class})
-    private void runMethod(EventDrawScreen eventDrawScreen) {
-        if (eventDrawScreen.getScreen() instanceof MultiplayerScreen && eventDrawScreen.getMode() == EventDrawScreen.Mode.POST) {
-            if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
-                ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
-                String string = "Current Proxy: " + proxy.getHost() + ":" + proxy.getPort();
-                FontHelper.INSTANCE.drawWithShadow(eventDrawScreen.getMatrixStack(), string, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(string) - 2, 22, ColorHelper.INSTANCE.getClientColor());
-            }
+    @EventPointer
+    private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
+        if (isConnectedToProxy()) {
+            ProxyHelper.ClientProxy proxy = getProxy();
+            String string = "Current Proxy: " + proxy.getHost() + ":" + proxy.getPort();
+            FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), string, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(string) - 2, 22, ColorHelper.INSTANCE.getClientColor());
         }
-    }
+    }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
 
     public ClientConnection clientConnection;
     public ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {

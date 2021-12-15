@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.render.esp;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
@@ -61,8 +62,6 @@ public class ESP extends Feature {
     public int itemColor = 0xffffffff;
     String lastMode;
 
-    public static boolean spoofOutline;
-
     public ESP() {
         new ShaderESP();
         new BoxESP();
@@ -71,8 +70,20 @@ public class ESP extends Feature {
         INSTANCE = this;
     }
 
-    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventRender2DNoScale.class, EventOutlineColor.class, EventJoinWorld.class, EventRender3D.class, EventHasOutline.class}, priority = 1)
-    public void run(Event event) {
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventRender2DNoScale> eventRender2DNoScaleEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventOutlineColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventHasOutline> eventHasOutlineEventListener = new EventListener<>(event -> sendEvent(event));
+
+    private void sendEvent(Event event) {
         if (lastMode != null && !mode.equalsIgnoreCase(lastMode)) {
             FeatureExtension.get(lastMode, this).disable();
             FeatureExtension.get(mode, this).enable();

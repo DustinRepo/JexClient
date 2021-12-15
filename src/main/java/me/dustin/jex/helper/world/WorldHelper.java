@@ -7,7 +7,8 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.util.Function4;
 import com.mojang.serialization.Lifecycle;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -42,10 +43,9 @@ import net.minecraft.world.level.storage.LevelStorage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.*;
 
 public enum WorldHelper {
     INSTANCE;
@@ -123,8 +123,8 @@ public enum WorldHelper {
         return blockEntities;
     }
 
-    @EventListener(events={EventTick.class})
-    private void runMethod(EventTick eventTick) {
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getWorld() == null)
             blockEntities.clear();
         else {
@@ -133,7 +133,7 @@ public enum WorldHelper {
                     removeBlockEntity(blockEntity.getPos());
             }
         }
-    }
+    });
 
     public Collection<BlockEntity> getBlockEntities() {
         return blockEntities.values();

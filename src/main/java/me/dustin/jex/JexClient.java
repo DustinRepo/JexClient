@@ -2,9 +2,8 @@ package me.dustin.jex;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.dustin.events.api.EventAPI;
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.misc.*;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -37,6 +36,8 @@ import me.dustin.jex.helper.update.JexVersion;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.helper.update.UpdateManager;
+import me.dustin.events.EventManager;
+import me.dustin.events.core.annotate.EventPointer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -63,7 +64,6 @@ public enum JexClient {
         if (loadedOnce)
             return;
         getLogger().info("Loading Jex Client");
-        EventAPI.getInstance().setPrivateOnly(true);
 
         if (BaritoneHelper.INSTANCE.baritoneExists()) {
             getLogger().info("Creating Baritone processes");
@@ -79,16 +79,16 @@ public enum JexClient {
         getLogger().info("Reading Config Files");
         ModFileHelper.INSTANCE.gameBootLoad();
 
-        EventAPI.getInstance().register(this);
-        EventAPI.getInstance().register(TPSHelper.INSTANCE);
-        EventAPI.getInstance().register(Lagometer.INSTANCE);
-        EventAPI.getInstance().register(ProxyHelper.INSTANCE);
-        EventAPI.getInstance().register(WorldHelper.INSTANCE);
-        EventAPI.getInstance().register(PlayerHelper.INSTANCE);
-        EventAPI.getInstance().register(InventoryHelper.INSTANCE);
-        EventAPI.getInstance().register(ColorHelper.INSTANCE);
-        EventAPI.getInstance().register(EntityPositionHelper.INSTANCE);
-        EventAPI.getInstance().register(JexServerHelper.INSTANCE);
+        EventManager.register(this);
+        EventManager.register(TPSHelper.INSTANCE);
+        EventManager.register(Lagometer.INSTANCE);
+        EventManager.register(ProxyHelper.INSTANCE);
+        EventManager.register(WorldHelper.INSTANCE);
+        EventManager.register(PlayerHelper.INSTANCE);
+        EventManager.register(InventoryHelper.INSTANCE);
+        EventManager.register(ColorHelper.INSTANCE);
+        EventManager.register(EntityPositionHelper.INSTANCE);
+        EventManager.register(JexServerHelper.INSTANCE);
         getLogger().info("Checking for update");
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();
@@ -99,46 +99,51 @@ public enum JexClient {
             getLogger().info("Creating mods.json for website.");
             createJson();
         }
-
         loadedOnce = true;
     }
 
-    @EventListener(events = {EventKeyPressed.class, EventTick.class, EventScheduleStop.class, EventGameFinishedLoading.class})
-    public void runMethod(Event event) {
-        if (event instanceof EventKeyPressed eventKeyPressed) {
-            if (eventKeyPressed.getType() == EventKeyPressed.PressType.IN_GAME) {
-                if (eventKeyPressed.getKey() == GLFW.GLFW_KEY_INSERT)
-                    Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
-                FeatureManager.INSTANCE.getFeatures().forEach(module -> {
-                    if (module.getKey() == eventKeyPressed.getKey()) {
-                        module.toggleState();
-                        ConfigManager.INSTANCE.get(FeatureFile.class).write();
-                    }
-                });
-            }
-        } else if (event instanceof EventTick) {
-            //TODO: create an event for this in the setTitle method to avoid it flashing the title and make it optional
-            //Wrapper.INSTANCE.getWindow().setTitle("Jex Client " + getVersion().version());
-            if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-                if (Feature.get(KillAura.class).getState())
-                    Feature.get(KillAura.class).setState(false);
-                if (Feature.get(Freecam.class).getState())
-                    Feature.get(Freecam.class).setState(false);
-                if (Feature.get(Fakelag.class).getState())
-                    Feature.get(Fakelag.class).setState(false);
-            } else if (Gui.clickgui.guiModule == null) {
-                Gui.clickgui.init();
-            }
-            if (BaritoneHelper.INSTANCE.baritoneExists()) {
-                BaritoneHelper.INSTANCE.setAssumeStep(Feature.get(Step.class).getState());
-                BaritoneHelper.INSTANCE.setAssumeJesus(Feature.get(Jesus.class).getState());
-            }
-        } else if (event instanceof EventScheduleStop) {
-            ModFileHelper.INSTANCE.closeGame();
-        } else if (event instanceof EventGameFinishedLoading && playSoundOnLaunch()) {
-            Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F));
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
+        //TODO: create an event for this in the setTitle method to avoid it flashing the title and make it optional
+        //Wrapper.INSTANCE.getWindow().setTitle("Jex Client " + getVersion().version());
+        if (Wrapper.INSTANCE.getLocalPlayer() == null) {
+            if (Feature.getState(KillAura.class))
+                Feature.get(KillAura.class).setState(false);
+            if (Feature.getState(Freecam.class))
+                Feature.get(Freecam.class).setState(false);
+            if (Feature.getState(Fakelag.class))
+                Feature.get(Fakelag.class).setState(false);
+        } else if (Gui.clickgui.guiModule == null) {
+            Gui.clickgui.init();
         }
-    }
+        if (BaritoneHelper.INSTANCE.baritoneExists()) {
+            BaritoneHelper.INSTANCE.setAssumeStep(Feature.get(Step.class).getState());
+            BaritoneHelper.INSTANCE.setAssumeJesus(Feature.get(Jesus.class).getState());
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
+        if (event.getKey() == GLFW.GLFW_KEY_INSERT)
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
+        FeatureManager.INSTANCE.getFeatures().forEach(module -> {
+            if (module.getKey() == event.getKey()) {
+                module.toggleState();
+                ConfigManager.INSTANCE.get(FeatureFile.class).write();
+            }
+        });
+    }, new KeyPressFilter(EventKeyPressed.PressType.IN_GAME));
+
+    @EventPointer
+    private final EventListener<EventScheduleStop> eventScheduleStopEventListener = new EventListener<>(event -> {
+        ModFileHelper.INSTANCE.closeGame();
+    });
+
+    @EventPointer
+    private final EventListener<EventGameFinishedLoading> eventGameFinishedLoadingEventListener = new EventListener<>(event -> {
+        if (playSoundOnLaunch())
+            Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F));
+    });
 
     public ModContainer getModContainer() {
         return FabricLoader.getInstance().getModContainer("jex").orElse(null);

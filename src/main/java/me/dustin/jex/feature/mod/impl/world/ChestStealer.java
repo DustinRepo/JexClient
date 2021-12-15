@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -21,34 +23,32 @@ public class ChestStealer extends Feature {
     @Op(name = "Dump")
     public boolean dump;
 
-    private Timer timer = new Timer();
+    private final Timer timer = new Timer();
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (!timer.hasPassed(delay))
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (!timer.hasPassed(delay))
+            return;
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen) {
+            if (InventoryHelper.INSTANCE.isInventoryFull() && !dump) {
+                Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
                 return;
-            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen) {
-                if (InventoryHelper.INSTANCE.isInventoryFull() && !dump) {
-                    Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
-                    return;
-                }
-                if (InventoryHelper.INSTANCE.isContainerEmpty(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler)) {
-                    Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
-                } else {
-                    int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
-                    for (int i = 0; i < most; i++) {
-                        Slot slot = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.get(i);
-                        ItemStack stack = slot.getStack();
-                        if (stack != null && stack.getItem() != Items.AIR) {
-                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot.id, dump ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, dump ? 1 : 0);
-                            timer.reset();
-                            if (delay > 0)
-                                return;
-                        }
+            }
+            if (InventoryHelper.INSTANCE.isContainerEmpty(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler)) {
+                Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
+            } else {
+                int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
+                for (int i = 0; i < most; i++) {
+                    Slot slot = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.get(i);
+                    ItemStack stack = slot.getStack();
+                    if (stack != null && stack.getItem() != Items.AIR) {
+                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot.id, dump ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, dump ? 1 : 0);
+                        timer.reset();
+                        if (delay > 0)
+                            return;
                     }
                 }
             }
         }
-    }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

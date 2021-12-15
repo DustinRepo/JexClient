@@ -1,7 +1,9 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
 import io.netty.buffer.Unpooled;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.network.PacketByteBuf;
@@ -12,18 +14,14 @@ import java.nio.charset.StandardCharsets;
 @Feature.Manifest(category = Feature.Category.MISC, description = "Tell the server you are a vanilla player")
 public class VanillaSpoof extends Feature {
 
-    @EventListener(events = {EventPacketSent.class})
-    private void runMethod(EventPacketSent eventPacketSent) {
-        if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
-            return;
-        if (eventPacketSent.getPacket() instanceof CustomPayloadC2SPacket packet) {
-            if (packet.getChannel() == CustomPayloadC2SPacket.BRAND) {
-                CustomPayloadC2SPacket newPacket = new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString("vanilla"));
-                eventPacketSent.setPacket(newPacket);
-            } else if (packet.getData().toString(StandardCharsets.UTF_8).toLowerCase().contains("fabric")) {
-                eventPacketSent.cancel();
-            }
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        CustomPayloadC2SPacket packet = (CustomPayloadC2SPacket) event.getPacket();
+        if (packet.getChannel() == CustomPayloadC2SPacket.BRAND) {
+            CustomPayloadC2SPacket newPacket = new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString("vanilla"));
+            event.setPacket(newPacket);
+        } else if (packet.getData().toString(StandardCharsets.UTF_8).toLowerCase().contains("fabric")) {
+            event.cancel();
         }
-    }
-
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, CustomPayloadC2SPacket.class));
 }

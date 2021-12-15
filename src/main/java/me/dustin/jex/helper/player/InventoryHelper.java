@@ -2,14 +2,14 @@ package me.dustin.jex.helper.player;
 
 import com.google.common.collect.Maps;
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -22,7 +22,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
@@ -290,16 +289,16 @@ public enum InventoryHelper {
 
     private int lastSlotSent = -1;
 
-    @EventListener(events = {EventPacketSent.class, EventJoinWorld.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPacketSent eventPacketSent) {
-            if (eventPacketSent.getPacket() instanceof UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket) {
-                if (updateSelectedSlotC2SPacket.getSelectedSlot() == lastSlotSent)
-                    eventPacketSent.cancel();
-                lastSlotSent = updateSelectedSlotC2SPacket.getSelectedSlot();
-            }
-        } else if (event instanceof EventJoinWorld) {
-            lastSlotSent = -1;
-        }
-    }
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket = (UpdateSelectedSlotC2SPacket) event.getPacket();
+        if (updateSelectedSlotC2SPacket.getSelectedSlot() == lastSlotSent)
+            event.cancel();
+        lastSlotSent = updateSelectedSlotC2SPacket.getSelectedSlot();
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, UpdateSelectedSlotC2SPacket.class));
+
+    @EventPointer
+    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+        lastSlotSent = -1;
+    });
 }

@@ -1,11 +1,11 @@
 package me.dustin.jex.feature.mod.core;
 
 import com.google.common.collect.Maps;
-import me.dustin.events.api.EventAPI;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
+import me.dustin.events.EventManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,8 +29,6 @@ public class Feature {
         this.featureCategory = this.getClass().getAnnotation(Feature.Manifest.class).category();
         this.key = this.getClass().getAnnotation(Feature.Manifest.class).key();
         this.visible = this.getClass().getAnnotation(Feature.Manifest.class).visible();
-        if (this.getClass().getAnnotation(Feature.Manifest.class).enabled())
-            setState(true);
     }
 
     public static Feature get(Class<? extends Feature> clazz) {
@@ -43,6 +41,10 @@ public class Feature {
 
     public static Feature get(String name) {
         return FeatureManager.INSTANCE.getFeatures().stream().filter(module -> module.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    public static boolean getState(Class<? extends Feature> clazz) {
+        return get(clazz).getState();
     }
 
     public static ArrayList<Feature> getModules(Feature.Category category) {
@@ -69,14 +71,11 @@ public class Feature {
     }
 
     public void onEnable() {
-        if (EventAPI.getInstance().alreadyRegistered(this))
-            EventAPI.getInstance().unregister(this);
-        EventAPI.getInstance().register(this);
+        EventManager.register(this);
     }
 
     public void onDisable() {
-        while (EventAPI.getInstance().alreadyRegistered(this))
-            EventAPI.getInstance().unregister(this);
+        EventManager.unregister(this);
     }
 
     public String getName() {
@@ -153,6 +152,13 @@ public class Feature {
     }
 
     public Map<String, ButtonListener> addButtons() {return Maps.newHashMap();}
+
+    public void loadFeature() {
+        //fuck-ass workaround for having mods enabled by default in the code messing with the event manager
+        if (this.getClass().getAnnotation(Feature.Manifest.class) != null && this.getClass().getAnnotation(Feature.Manifest.class).enabled()) {
+            setState(true);
+        }
+    }
 
     public enum Category {
         COMBAT, PLAYER, MOVEMENT, WORLD, VISUAL, MISC

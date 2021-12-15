@@ -1,17 +1,17 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
-import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -23,63 +23,59 @@ public class AutoWither extends Feature {
     boolean creatingWither = false;
     PlayerInteractBlockC2SPacket packet = null;
 
-    @EventListener(events = {EventPlayerPackets.class, EventPacketSent.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPlayerPackets eventPlayerPackets) {
-            if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-                if (creatingWither && packet != null) {
-                    int skulls = getSkulls();
-                    int soulSand = getSoulSand();
-                    if (skulls == -1 || soulSand == -1) {
-                        stage = 0;
-                        creatingWither = false;
-                        packet = null;
-                        return;
-                    }
-                    BlockPos originPos = packet.getBlockHitResult().getBlockPos();
-                    if (packet.getBlockHitResult().getSide() == Direction.UP || packet.getBlockHitResult().getSide() == Direction.DOWN)
-                        originPos = originPos.up();
-                    if (packet.getBlockHitResult().getSide() == Direction.NORTH)
-                        originPos = originPos.north();//north
-                    if (packet.getBlockHitResult().getSide() == Direction.SOUTH)
-                        originPos = originPos.south();//south
-                    if (packet.getBlockHitResult().getSide() == Direction.WEST)
-                        originPos = originPos.west();//west
-                    if (packet.getBlockHitResult().getSide() == Direction.EAST)
-                        originPos = originPos.east();//east
-                    if (stage >= 3) {
-                        if (InventoryHelper.INSTANCE.getInventory().selectedSlot != skulls) {
-                            InventoryHelper.INSTANCE.setSlot(skulls, true, true);
-                        }
-                    } else {
-                        if (InventoryHelper.INSTANCE.getInventory().selectedSlot != soulSand) {
-                            InventoryHelper.INSTANCE.setSlot(soulSand, true, true);
-                        }
-                    }
-                    PlayerHelper.INSTANCE.placeBlockInPos(getBlockPos(originPos, stage), Hand.MAIN_HAND, true);
-
-                    stage++;
-                    if (stage == 6) {
-                        creatingWither = false;
-                        packet = null;
-                        stage = 0;
-                        InventoryHelper.INSTANCE.setSlot(soulSand, true, true);
-                    }
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (creatingWither && packet != null) {
+            int skulls = getSkulls();
+            int soulSand = getSoulSand();
+            if (skulls == -1 || soulSand == -1) {
+                stage = 0;
+                creatingWither = false;
+                packet = null;
+                return;
+            }
+            BlockPos originPos = packet.getBlockHitResult().getBlockPos();
+            if (packet.getBlockHitResult().getSide() == Direction.UP || packet.getBlockHitResult().getSide() == Direction.DOWN)
+                originPos = originPos.up();
+            if (packet.getBlockHitResult().getSide() == Direction.NORTH)
+                originPos = originPos.north();//north
+            if (packet.getBlockHitResult().getSide() == Direction.SOUTH)
+                originPos = originPos.south();//south
+            if (packet.getBlockHitResult().getSide() == Direction.WEST)
+                originPos = originPos.west();//west
+            if (packet.getBlockHitResult().getSide() == Direction.EAST)
+                originPos = originPos.east();//east
+            if (stage >= 3) {
+                if (InventoryHelper.INSTANCE.getInventory().selectedSlot != skulls) {
+                    InventoryHelper.INSTANCE.setSlot(skulls, true, true);
+                }
+            } else {
+                if (InventoryHelper.INSTANCE.getInventory().selectedSlot != soulSand) {
+                    InventoryHelper.INSTANCE.setSlot(soulSand, true, true);
                 }
             }
-        } else if (event instanceof EventPacketSent eventPacketSent) {
-            if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
-                return;
-            if(eventPacketSent.getPacket() instanceof PlayerInteractBlockC2SPacket && !creatingWither && InventoryHelper.INSTANCE.getFromHotbar(Items.WITHER_SKELETON_SKULL) != -1)
-            {
-                packet = (PlayerInteractBlockC2SPacket)eventPacketSent.getPacket();
-                if(Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.SOUL_SAND)
-                {
-                    creatingWither = true;
-                }
+            PlayerHelper.INSTANCE.placeBlockInPos(getBlockPos(originPos, stage), Hand.MAIN_HAND, true);
+
+            stage++;
+            if (stage == 6) {
+                creatingWither = false;
+                packet = null;
+                stage = 0;
+                InventoryHelper.INSTANCE.setSlot(soulSand, true, true);
             }
         }
-    }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        if (!creatingWither && InventoryHelper.INSTANCE.getFromHotbar(Items.WITHER_SKELETON_SKULL) != -1) {
+            packet = (PlayerInteractBlockC2SPacket)event.getPacket();
+            if(Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.SOUL_SAND)
+            {
+                creatingWither = true;
+            }
+        }
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, PlayerInteractBlockC2SPacket.class));
 
     @Override
     public void onDisable() {

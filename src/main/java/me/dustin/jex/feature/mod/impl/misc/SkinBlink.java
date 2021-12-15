@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -37,47 +39,46 @@ public class SkinBlink extends Feature {
 
     Random random = new Random();
 
-    private ArrayList<PlayerModelPart> savedEnabled = new ArrayList<>();
-    private Timer timer = new Timer();
+    private final ArrayList<PlayerModelPart> savedEnabled = new ArrayList<>();
+    private final Timer timer = new Timer();
     private boolean toggleCustom;
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (!timer.hasPassed(delay))
-                return;
-            switch (mode) {
-                case "Random":
-                    for (PlayerModelPart value : PlayerModelPart.values()) {
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, random.nextBoolean());
-                    }
-                    break;
-                case "Full Flash":
-                    boolean on = Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(PlayerModelPart.HAT);
-                    for (PlayerModelPart value : PlayerModelPart.values()) {
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, on);
-                    }
-                    break;
-                case "Custom":
-                    if (head)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.HAT, toggleCustom);
-                    if (cape)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.CAPE, toggleCustom);
-                    if (jacket)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.JACKET, toggleCustom);
-                    if (leftArm)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_SLEEVE, toggleCustom);
-                    if (leftLeg)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_PANTS_LEG, toggleCustom);
-                    if (rightArm)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_SLEEVE, toggleCustom);
-                    if (rightLeg)
-                        Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_PANTS_LEG, toggleCustom);
-                    toggleCustom = !toggleCustom;
-                    break;
-            }
-            timer.reset();
+
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (!timer.hasPassed(delay))
+            return;
+        switch (mode) {
+            case "Random":
+                for (PlayerModelPart value : PlayerModelPart.values()) {
+                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, random.nextBoolean());
+                }
+                break;
+            case "Full Flash":
+                boolean on = Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(PlayerModelPart.HAT);
+                for (PlayerModelPart value : PlayerModelPart.values()) {
+                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, on);
+                }
+                break;
+            case "Custom":
+                if (head)
+                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.HAT, toggleCustom);
+                if (cape)
+                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.CAPE, toggleCustom);
+                if (jacket)
+                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.JACKET, toggleCustom);
+                if (leftArm)
+                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_SLEEVE, toggleCustom);
+                if (leftLeg)
+                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_PANTS_LEG, toggleCustom);
+                if (rightArm)
+                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_SLEEVE, toggleCustom);
+                if (rightLeg)
+                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_PANTS_LEG, toggleCustom);
+                toggleCustom = !toggleCustom;
+                break;
         }
-    }
+        timer.reset();
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override
     public void onEnable() {

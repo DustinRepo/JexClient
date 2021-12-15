@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.MousePressFilter;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -28,30 +29,29 @@ public class AirPlace extends Feature {
 	@Op(name = "Reach", min = 3, max = 6, inc = 0.1f)
 	public float reach = 4.5f;
 
-	@EventListener(events = { EventMouseButton.class, EventRender3D.class })
-	private void runMethod(Event event) {
-		if (event instanceof EventMouseButton eventMouseButton) {
-			if (eventMouseButton.getButton() == 1 && eventMouseButton.getClickType() == EventMouseButton.ClickType.IN_GAME) {
-				HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
-				if (hitResult instanceof BlockHitResult blockHitResult) {
-					if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()))) {
-						Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
-						Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-						event.cancel();
-					}
-				}
-			}
-		} else if (event instanceof EventRender3D eventRender3D) {
+	@EventPointer
+	private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
 			HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
 			if (hitResult instanceof BlockHitResult blockHitResult) {
 				if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()))) {
-					Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
-					Box box = new Box(renderPos.getX(), renderPos.getY(), renderPos.getZ(), renderPos.getX() + 1, renderPos.getY() + 1, renderPos.getZ() + 1);
-					Render3DHelper.INSTANCE.drawBoxOutline(eventRender3D.getMatrixStack(), box, Feature.get(BlockOverlay.class).getState() ? ColorHelper.INSTANCE.getClientColor() : 0xff000000);
+					Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
+					Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+					event.cancel();
 				}
 			}
+	}, new MousePressFilter(EventMouseButton.ClickType.IN_GAME, 1));
+
+	@EventPointer
+	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+		HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
+		if (hitResult instanceof BlockHitResult blockHitResult) {
+			if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()))) {
+				Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
+				Box box = new Box(renderPos.getX(), renderPos.getY(), renderPos.getZ(), renderPos.getX() + 1, renderPos.getY() + 1, renderPos.getZ() + 1);
+				Render3DHelper.INSTANCE.drawBoxOutline(event.getMatrixStack(), box, Feature.getState(BlockOverlay.class) ? ColorHelper.INSTANCE.getClientColor() : 0xff000000);
+			}
 		}
-	}
+	});
 
 	private boolean canReplaceBlock(Block block) {
 		return block == Blocks.AIR || (liquids && block instanceof FluidBlock);

@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.combat;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.player.FriendHelper;
@@ -65,8 +66,8 @@ public class CrystalAura extends Feature {
 	private Timer timer = new Timer();
 	private BlockPos placePos;
 
-	@EventListener(events = { EventPlayerPackets.class })
-	public void run(EventPlayerPackets event) {
+	@EventPointer
+	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
 		boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.END_CRYSTAL;
 		if (event.getMode() == EventPlayerPackets.Mode.PRE) {
 			this.setSuffix(mode);
@@ -112,10 +113,10 @@ public class CrystalAura extends Feature {
 				placePos = null;
 			}
 		}
-	}
+	});
 
-	@EventListener(events = { EventRender3D.class })
-	public void run(EventRender3D event) {
+	@EventPointer
+	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 		if (autoPlace && visualize)
 			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 				if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
@@ -129,7 +130,7 @@ public class CrystalAura extends Feature {
 					}
 				}
 			});
-	}
+	});
 
 	public BlockPos getOpenBlockPos(PlayerEntity entityPlayer) {
 		double distance = 6;

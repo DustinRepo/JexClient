@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.movement;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -27,16 +28,16 @@ public class BucketCatch extends Feature {
     private boolean placedBucket;
     private boolean click;
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (event.getMode() == EventPlayerPackets.Mode.PRE) {
             if (placedBucket && Wrapper.INSTANCE.getLocalPlayer().fallDistance < fallDistance) {
                 int bucket = InventoryHelper.INSTANCE.getFromHotbar(Items.BUCKET);
                 if (bucket != -1) {
                     InventoryHelper.INSTANCE.setSlot(bucket, true, true);
                     if (rotate)
                         PlayerHelper.INSTANCE.setPitch(90);
-                    eventPlayerPackets.setPitch(90);
+                    event.setPitch(90);
                     if (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()) {
                         click = true;
                         placedBucket = false;
@@ -52,7 +53,7 @@ public class BucketCatch extends Feature {
                     InventoryHelper.INSTANCE.setSlot(waterBucketSlot, true, true);
                     if (rotate)
                         PlayerHelper.INSTANCE.setPitch(90);
-                    eventPlayerPackets.setPitch(90);
+                    event.setPitch(90);
                     BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(0, -3f, 0);
                     if (WorldHelper.INSTANCE.getBlock(pos) != Blocks.AIR) {
                         click = true;
@@ -64,5 +65,5 @@ public class BucketCatch extends Feature {
             NetworkHelper.INSTANCE.sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND));
             click = false;
         }
-    }
+    });
 }

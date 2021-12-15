@@ -1,16 +1,14 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import com.google.common.collect.Maps;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 
-import java.util.HashMap;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Modify messages you send in chat")
 public class Messages extends Feature {
@@ -18,32 +16,28 @@ public class Messages extends Feature {
     @Op(name = "Mode", all = {"Fancy", "Upside-Down", "Backwards", "Random Capital"})
     public String mode = "Fancy";
 
-    @EventListener(events = {EventPacketSent.class})
-    private void runMethod(EventPacketSent eventPacketSent) {
-        if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        String message = ((ChatMessageC2SPacket) event.getPacket()).getChatMessage();
+        if (message.startsWith("/"))
             return;
-        if (eventPacketSent.getPacket() instanceof ChatMessageC2SPacket) {
-            String message = ((ChatMessageC2SPacket) eventPacketSent.getPacket()).getChatMessage();
-            if (message.startsWith("/"))
-                return;
-            switch (mode) {
-                case "Fancy" -> {
-                    String fancyChars = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ１２３４５６７８９０－＝｀～！＠＃＄％＾＆＊＼，＜．＞／？：；＇＂";
-                    String replaceChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=`~!@#$%^&*\\,<.>/?:;'\"";
-                    String s = message;
-                    for (int i = 0; i < fancyChars.length(); i++) {
-                        char currentChar = replaceChars.charAt(i);
-                        char replace = fancyChars.charAt(replaceChars.indexOf(currentChar));
-                        s = s.replace(currentChar, replace);
-                    }
-                    eventPacketSent.setPacket(new ChatMessageC2SPacket(s));
+        switch (mode) {
+            case "Fancy" -> {
+                String fancyChars = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ１２３４５６７８９０－＝｀～！＠＃＄％＾＆＊＼，＜．＞／？：；＇＂";
+                String replaceChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=`~!@#$%^&*\\,<.>/?:;'\"";
+                String s = message;
+                for (int i = 0; i < fancyChars.length(); i++) {
+                    char currentChar = replaceChars.charAt(i);
+                    char replace = fancyChars.charAt(replaceChars.indexOf(currentChar));
+                    s = s.replace(currentChar, replace);
                 }
-                case "Upside-Down" -> eventPacketSent.setPacket(new ChatMessageC2SPacket(upsideDown(message)));
-                case "Backwards" -> eventPacketSent.setPacket(new ChatMessageC2SPacket(new StringBuilder(message).reverse().toString()));
-                case "Random Capital" -> eventPacketSent.setPacket(new ChatMessageC2SPacket(randomCapitalize(message)));
+                event.setPacket(new ChatMessageC2SPacket(s));
             }
+            case "Upside-Down" -> event.setPacket(new ChatMessageC2SPacket(upsideDown(message)));
+            case "Backwards" -> event.setPacket(new ChatMessageC2SPacket(new StringBuilder(message).reverse().toString()));
+            case "Random Capital" -> event.setPacket(new ChatMessageC2SPacket(randomCapitalize(message)));
         }
-    }
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ChatMessageC2SPacket.class));
 
     public String randomCapitalize(String str) {
         StringBuilder newString = new StringBuilder();

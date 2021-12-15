@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.world.EventBreakBlock;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -9,10 +10,6 @@ import net.minecraft.util.math.Direction;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Prevent the game from creating ghost blocks.")
 public class AntiGhostBlock extends Feature {
-
-    @EventListener(events = {EventBreakBlock.class})
-    public void breakB(EventBreakBlock eventBreakBlock) {
-        NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, eventBreakBlock.getPos(), Direction.UP));
-    }
-
+    @EventPointer
+    private final EventListener<EventBreakBlock> eventBreakBlockEventListener = new EventListener<>(event -> NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, event.getPos(), Direction.UP)));
 }

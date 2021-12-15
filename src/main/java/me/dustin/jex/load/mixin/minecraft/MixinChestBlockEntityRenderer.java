@@ -1,6 +1,5 @@
 package me.dustin.jex.load.mixin.minecraft;
 
-import me.dustin.events.core.annotate.EventListener;
 import me.dustin.jex.event.render.EventRenderChest;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;

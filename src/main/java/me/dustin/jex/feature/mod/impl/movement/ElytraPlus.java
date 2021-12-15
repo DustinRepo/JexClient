@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.movement;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -33,8 +34,8 @@ public class ElytraPlus extends Feature {
     @OpChild(name = "Slow Glide", parent = "Mode", dependency = "Hover")
     public boolean slowGlide = false;
 
-    @EventListener(events = {EventMove.class})
-    private void move(EventMove event) {
+    @EventPointer
+    private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
         this.setSuffix(mode);
         if (wearingElytra() && (autoElytra && Wrapper.INSTANCE.getLocalPlayer().fallDistance >= fallDistance && !Wrapper.INSTANCE.getLocalPlayer().isOnGround() && !Wrapper.INSTANCE.getLocalPlayer().isFallFlying())) {
             if (Wrapper.INSTANCE.getLocalPlayer().age % 5 == 0)
@@ -45,8 +46,6 @@ public class ElytraPlus extends Feature {
             if (mode.equalsIgnoreCase("Firework")) {
 
                 Vec3d vec3d_1 = Wrapper.INSTANCE.getLocalPlayer().getRotationVector();
-                double double_1 = 1.5D;
-                double double_2 = 0.1D;
                 Vec3d vec3d_2 = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
                 Wrapper.INSTANCE.getLocalPlayer().setVelocity(vec3d_2.add(vec3d_1.x * 0.1D + (vec3d_1.x * 1.5D - vec3d_2.x) * 0.5D, vec3d_1.y * 0.1D + (vec3d_1.y * 1.5D - vec3d_2.y) * 0.5D, vec3d_1.z * 0.1D + (vec3d_1.z * 1.5D - vec3d_2.z) * 0.5D));
             } else {
@@ -58,7 +57,7 @@ public class ElytraPlus extends Feature {
 
             }
         }
-    }
+    });
 
     private boolean wearingElytra() {
         ItemStack equippedStack = Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(EquipmentSlot.CHEST);

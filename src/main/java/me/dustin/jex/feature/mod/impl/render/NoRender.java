@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderBlockEntity;
 import me.dustin.jex.event.render.EventRenderEntity;
 import me.dustin.jex.event.world.EventTickParticle;
@@ -48,44 +48,50 @@ public class NoRender extends Feature {
     @Op(name = "Campfires")
     public boolean campfires = true;
 
-    @EventListener(events = {EventRenderEntity.class, EventRenderBlockEntity.class, EventTickParticle.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventRenderEntity eventRenderEntity) {
-            if (eventRenderEntity.getEntity() instanceof ItemEntity && item)
-                eventRenderEntity.cancel();
-            if (eventRenderEntity.getEntity() instanceof WitherEntity && withers)
-                eventRenderEntity.cancel();
-            if (eventRenderEntity.getEntity() instanceof FallingBlockEntity && fallingBlocks)
-                eventRenderEntity.cancel();
-        } else if (event instanceof EventRenderBlockEntity eventRenderBlockEntity) {
-            if (eventRenderBlockEntity.blockEntity instanceof SignBlockEntity && signs)
-                event.cancel();
-            if (eventRenderBlockEntity.blockEntity instanceof ChestBlockEntity && chests)
-                event.cancel();
-            if (eventRenderBlockEntity.blockEntity instanceof EnderChestBlockEntity && endchests)
-                event.cancel();
-            if (eventRenderBlockEntity.blockEntity instanceof EnchantingTableBlockEntity && enchantbooks)
-                event.cancel();
-            if (eventRenderBlockEntity.blockEntity instanceof BannerBlockEntity && banners)
-                event.cancel();
-            if (eventRenderBlockEntity.blockEntity instanceof HopperBlockEntity && hoppers)
-                event.cancel();
-            if (eventRenderBlockEntity.blockEntity instanceof CampfireBlockEntity && campfires)
-                event.cancel();
-        } else if (event instanceof EventTickParticle eventTickParticle && particles) {
-            if (eventTickParticle.getParticle() instanceof ExplosionSmokeParticle || eventTickParticle.getParticle() instanceof FireSmokeParticle || eventTickParticle.getParticle() instanceof CampfireSmokeParticle && smoke) {
-                eventTickParticle.cancel();
-            }
-            if (eventTickParticle.getParticle() instanceof ExplosionLargeParticle || eventTickParticle.getParticle() instanceof ExplosionEmitterParticle && explosions) {
-                eventTickParticle.cancel();
-            }
-            if (eventTickParticle.getParticle() instanceof FireworksSparkParticle.FireworkParticle || eventTickParticle.getParticle() instanceof FireworksSparkParticle.FireworkParticle && fireworks) {
-                eventTickParticle.cancel();
-            }
-            if (eventTickParticle.getParticle() instanceof BlockDustParticle && blockBreak) {
-                eventTickParticle.cancel();
-            }
-        }
-    }
+    @EventPointer
+    private final EventListener<EventRenderEntity> eventRenderEntityEventListener = new EventListener<>(event -> {
+        if (event.getEntity() instanceof ItemEntity && item)
+            event.cancel();
+        if (event.getEntity() instanceof WitherEntity && withers)
+            event.cancel();
+        if (event.getEntity() instanceof FallingBlockEntity && fallingBlocks)
+            event.cancel();
+    });
 
+
+    @EventPointer
+    private final EventListener<EventRenderBlockEntity> eventRenderBlockEntityEventListener = new EventListener<>(event -> {
+        if (event.blockEntity instanceof SignBlockEntity && signs)
+            event.cancel();
+        if (event.blockEntity instanceof ChestBlockEntity && chests)
+            event.cancel();
+        if (event.blockEntity instanceof EnderChestBlockEntity && endchests)
+            event.cancel();
+        if (event.blockEntity instanceof EnchantingTableBlockEntity && enchantbooks)
+            event.cancel();
+        if (event.blockEntity instanceof BannerBlockEntity && banners)
+            event.cancel();
+        if (event.blockEntity instanceof HopperBlockEntity && hoppers)
+            event.cancel();
+        if (event.blockEntity instanceof CampfireBlockEntity && campfires)
+            event.cancel();
+    });
+
+    @EventPointer
+    private final EventListener<EventTickParticle> eventTickParticleEventListener = new EventListener<>(event -> {
+        if (!particles)
+            return;
+        if (event.getParticle() instanceof ExplosionSmokeParticle || event.getParticle() instanceof FireSmokeParticle || event.getParticle() instanceof CampfireSmokeParticle && smoke) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof ExplosionLargeParticle || event.getParticle() instanceof ExplosionEmitterParticle && explosions) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof FireworksSparkParticle.FireworkParticle || event.getParticle() instanceof FireworksSparkParticle.FireworkParticle && fireworks) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof BlockDustParticle && blockBreak) {
+            event.cancel();
+        }
+    });
 }

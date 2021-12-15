@@ -2,7 +2,8 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import com.google.common.collect.Maps;
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -12,7 +13,6 @@ import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
-import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -69,49 +69,52 @@ public class Nametag extends Feature {
     @OpChild(name = "Health Mode", all = {"Bar", "Hearts", "HP", "Percent"}, parent = "Health")
     public String healthMode = "Bar";
     int count = 0;
-    private HashMap<Entity, Vec3d> positions = Maps.newHashMap();
+    private final HashMap<Entity, Vec3d> positions = Maps.newHashMap();
 
-    @EventListener(events = {EventRender2D.class, EventRenderNametags.class, EventRender3D.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventRenderNametags) {
-            EventRenderNametags eventRenderNametags = (EventRenderNametags) event;
-            if (isValid(eventRenderNametags.getEntity())) {
-                eventRenderNametags.cancel();
+    @EventPointer
+    private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (isValid(entity)) {
+                drawNametags(entity, event);
             }
-        } else if (event instanceof EventRender2D) {
-            Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                if (isValid(entity)) {
-                    drawNametags(entity, (EventRender2D) event);
-                }
-            });
-            Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                if (entity instanceof LivingEntity && isValid(entity)) {
-                    drawNametagInv((LivingEntity) entity, (EventRender2D) event);
-                }
-            });
-            if (showself && Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON) {
-                drawNametags(Wrapper.INSTANCE.getLocalPlayer(), (EventRender2D) event);
-                drawNametagInv(Wrapper.INSTANCE.getLocalPlayer(), (EventRender2D) event);
+        });
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (entity instanceof LivingEntity && isValid(entity)) {
+                drawNametagInv((LivingEntity) entity, event);
             }
-        } else if (event instanceof EventRender3D eventRender3D) {
-            this.positions.clear();
-            Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                if (isValid(entity)) {
-                    float offset = entity.getHeight() + 0.2f;
-                    if (entity instanceof PlayerEntity) {
-                        if (Hat.hasHat((PlayerEntity) entity)) {
-                            if (Hat.getType((PlayerEntity) entity) == Hat.HatType.TOP_HAT || ((PlayerEntity) entity).getEquippedStack(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD)
-                                offset = entity.getHeight() + 0.7f;
-                            else
-                                offset = entity.getHeight() + 0.4f;
-                        }
-                    }
-                    Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, eventRender3D.getPartialTicks(), eventRender3D.getMatrixStack());
-                    this.positions.put(entity, vec);
-                }
-            });
+        });
+        if (showself && Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON) {
+            drawNametags(Wrapper.INSTANCE.getLocalPlayer(), event);
+            drawNametagInv(Wrapper.INSTANCE.getLocalPlayer(), event);
         }
-    }
+    });
+
+    @EventPointer
+    private final EventListener<EventRenderNametags> eventRenderNametagsEventListener = new EventListener<>(event -> {
+        if (isValid(event.getEntity())) {
+            event.cancel();
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        this.positions.clear();
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (isValid(entity)) {
+                float offset = entity.getHeight() + 0.2f;
+                if (entity instanceof PlayerEntity) {
+                    if (Hat.hasHat((PlayerEntity) entity)) {
+                        if (Hat.getType((PlayerEntity) entity) == Hat.HatType.TOP_HAT || ((PlayerEntity) entity).getEquippedStack(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD)
+                            offset = entity.getHeight() + 0.7f;
+                        else
+                            offset = entity.getHeight() + 0.4f;
+                    }
+                }
+                Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, event.getPartialTicks(), event.getMatrixStack());
+                this.positions.put(entity, vec);
+            }
+        });
+    });
 
     private void drawInv(LivingEntity player, float posX, float posY, EventRender2D eventRender2D) {
         int itemWidth = 16;

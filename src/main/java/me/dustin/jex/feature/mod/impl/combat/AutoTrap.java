@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.mod.impl.combat;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -13,6 +13,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.events.core.annotate.EventPointer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
@@ -39,72 +40,28 @@ public class AutoTrap extends Feature {
     private Timer timer = new Timer();
     private BlockPos placingPos;
 
-    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPlayerPackets eventPlayerPackets) {
-            if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-                if (placingPos != null) {
-                    RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(placingPos, true));
-                    if (rotate)
-                        ((EventPlayerPackets) event).setRotation(rotationVector);
-                    PlayerHelper.INSTANCE.placeBlockInPos(placingPos, Hand.MAIN_HAND, true);
-                    placingPos = null;
-                }
-                if (!timer.hasPassed(placeDelay))
-                    return;
-                int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-                int obby = InventoryHelper.INSTANCE.getFromHotbar(Items.OBSIDIAN);
-                if (obby == -1) {
-                    this.stage = 0;
-                    this.setState(false);
-                    return;
-                }
-                PlayerEntity player = getPlayerToTrap();
-                if (player != null) {
-                    InventoryHelper.INSTANCE.setSlot(obby, true, true);
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (placingPos != null) {
+            RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(placingPos, true));
+            if (rotate)
+                ((EventPlayerPackets) event).setRotation(rotationVector);
+            PlayerHelper.INSTANCE.placeBlockInPos(placingPos, Hand.MAIN_HAND, true);
+            placingPos = null;
+        }
+        if (!timer.hasPassed(placeDelay))
+            return;
+        int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
+        int obby = InventoryHelper.INSTANCE.getFromHotbar(Items.OBSIDIAN);
+        if (obby == -1) {
+            this.stage = 0;
+            this.setState(false);
+            return;
+        }
+        PlayerEntity player = getPlayerToTrap();
+        if (player != null) {
+            InventoryHelper.INSTANCE.setSlot(obby, true, true);
 
-                    ArrayList<BlockPos> placePos = new ArrayList<>();
-                    placePos.add(player.getBlockPos().north());
-                    placePos.add(player.getBlockPos().east());
-                    placePos.add(player.getBlockPos().south());
-                    placePos.add(player.getBlockPos().west());
-                    placePos.add(player.getBlockPos().north().up());
-                    placePos.add(player.getBlockPos().east().up());
-                    placePos.add(player.getBlockPos().south().up());
-                    placePos.add(player.getBlockPos().west().up());
-                    placePos.add(player.getBlockPos().up().up());
-                    if (placeDelay != 0) {
-                        if (stage == placePos.size()) {
-                            InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
-                            this.setState(false);
-                            return;
-                        }
-                        BlockPos pos = placePos.get(stage);
-                        if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
-                            RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(pos, true));
-                            if (rotate)
-                                ((EventPlayerPackets) event).setRotation(rotationVector);
-                            placingPos = pos;
-                            timer.reset();
-                        }
-                        stage++;
-                    } else {
-                        for (BlockPos pos : placePos) {
-                            if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
-                                PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, true);
-                            }
-                        }
-
-                        InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
-                        this.setState(false);
-                        timer.reset();
-                        this.stage = 0;
-                    }
-                }
-            }
-        } else if (event instanceof EventRender3D) {
-            PlayerEntity player = getPlayerToTrap();
-            if (player == null)return;
             ArrayList<BlockPos> placePos = new ArrayList<>();
             placePos.add(player.getBlockPos().north());
             placePos.add(player.getBlockPos().east());
@@ -115,20 +72,63 @@ public class AutoTrap extends Feature {
             placePos.add(player.getBlockPos().south().up());
             placePos.add(player.getBlockPos().west().up());
             placePos.add(player.getBlockPos().up().up());
-            BlockPos blockPos = null;
-            for (BlockPos pos : placePos) {
-                if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
-                    blockPos = pos;
-                    break;
+            if (placeDelay != 0) {
+                if (stage == placePos.size()) {
+                    InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
+                    this.setState(false);
+                    return;
                 }
+                BlockPos pos = placePos.get(stage);
+                if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
+                    RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(pos, true));
+                    if (rotate)
+                        ((EventPlayerPackets) event).setRotation(rotationVector);
+                    placingPos = pos;
+                    timer.reset();
+                }
+                stage++;
+            } else {
+                for (BlockPos pos : placePos) {
+                    if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
+                        PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, true);
+                    }
+                }
+
+                InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
+                this.setState(false);
+                timer.reset();
+                this.stage = 0;
             }
-            if (blockPos == null)
-                return;
-            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
-            Box bb = new Box(renderPos.getX(), renderPos.getY(), renderPos.getZ(), renderPos.getX() + 1, renderPos.getY() + 1, renderPos.getZ() + 1);
-            Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), bb, placeColor);
         }
-    }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        PlayerEntity player = getPlayerToTrap();
+        if (player == null)return;
+        ArrayList<BlockPos> placePos = new ArrayList<>();
+        placePos.add(player.getBlockPos().north());
+        placePos.add(player.getBlockPos().east());
+        placePos.add(player.getBlockPos().south());
+        placePos.add(player.getBlockPos().west());
+        placePos.add(player.getBlockPos().north().up());
+        placePos.add(player.getBlockPos().east().up());
+        placePos.add(player.getBlockPos().south().up());
+        placePos.add(player.getBlockPos().west().up());
+        placePos.add(player.getBlockPos().up().up());
+        BlockPos blockPos = null;
+        for (BlockPos pos : placePos) {
+            if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
+                blockPos = pos;
+                break;
+            }
+        }
+        if (blockPos == null)
+            return;
+        Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
+        Box bb = new Box(renderPos.getX(), renderPos.getY(), renderPos.getZ(), renderPos.getX() + 1, renderPos.getY() + 1, renderPos.getZ() + 1);
+        Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), bb, placeColor);
+    });
 
     private PlayerEntity getPlayerToTrap() {
         PlayerEntity playerEntity = null;

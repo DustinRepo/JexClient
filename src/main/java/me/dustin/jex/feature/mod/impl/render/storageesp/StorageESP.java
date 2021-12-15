@@ -1,7 +1,9 @@
 package me.dustin.jex.feature.mod.impl.render.storageesp;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.feature.mod.impl.render.storageesp.impl.OutlineStorageESP;
@@ -11,6 +13,10 @@ import me.dustin.jex.feature.mod.impl.render.storageesp.impl.BoxStorageESP;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.block.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.vehicle.ChestMinecartEntity;
+import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
+import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.world.chunk.Chunk;
 
 import java.awt.*;
@@ -30,6 +36,12 @@ public class StorageESP extends Feature {
     public boolean barrel = true;
     @Op(name = "Hopper")
     public boolean hopper = true;
+    @Op(name = "Hopper Minecart")
+    public boolean hopperMinecart = true;
+    @Op(name = "Chest Minecart")
+    public boolean chestMinecart = true;
+    @Op(name = "Furnace Minecart")
+    public boolean furnaceMinecart = true;
     @Op(name = "Spawner")
     public boolean spawner = true;
 
@@ -45,15 +57,32 @@ public class StorageESP extends Feature {
     public int barrelColor = new Color(215, 82, 0).getRGB();
     @OpChild(name = "Hopper Color", isColor = true, parent = "Hopper")
     public int hopperColor = new Color(79, 76, 78).getRGB();
-    private String lastMode;
+    @OpChild(name = "Hopper Minecart Color", isColor = true, parent = "Hopper Minecart")
+    public int hopperMinecartColor = new Color(0, 128, 255).getRGB();
+    @OpChild(name = "Chest Minecart Color", isColor = true, parent = "Chest Minecart")
+    public int chestMinecartColor = new Color(255, 0, 0).getRGB();
+    @OpChild(name = "Furnace Minecart Color", isColor = true, parent = "Furnace Minecart")
+    public int furnaceMinecartColor = new Color(73, 50, 103).getRGB();
 
+    private String lastMode;
     public StorageESP() {
         new OutlineStorageESP();
         new BoxStorageESP();
     }
 
-    @EventListener(events = {EventRender3D.class, EventRender2D.class, EventRender2DNoScale.class}, priority = 1)
-    public void run(Event event) {
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> sendEvent(event), Priority.FIRST);
+    @EventPointer
+    private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventRender2DNoScale> eventRender2DNoScaleEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventHasOutline> eventHasOutlineEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventOutlineColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
+
+
+    private void sendEvent(Event event) {
         if (lastMode != null && !mode.equalsIgnoreCase(lastMode)) {
             FeatureExtension.get(lastMode, this).disable();
             FeatureExtension.get(mode, this).enable();
@@ -92,6 +121,26 @@ public class StorageESP extends Feature {
         if (blockEntity instanceof HopperBlockEntity)
             return hopper;
         return false;
+    }
+
+    public boolean isValid(Entity entity) {
+        if (entity instanceof HopperMinecartEntity)
+            return hopperMinecart;
+        if (entity instanceof ChestMinecartEntity)
+            return chestMinecart;
+        if (entity instanceof FurnaceMinecartEntity)
+            return furnaceMinecart;
+        return false;
+    }
+
+    public int getColor(Entity entity) {
+        if (entity instanceof HopperMinecartEntity)
+            return hopperMinecartColor;
+        if (entity instanceof ChestMinecartEntity)
+            return chestMinecartColor;
+        if (entity instanceof FurnaceMinecartEntity)
+            return furnaceMinecartColor;
+        return -1;
     }
 
     public int getColor(BlockEntity blockEntity) {

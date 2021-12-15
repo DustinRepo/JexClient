@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.mod.impl.player;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.misc.EventServerTurn;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -11,18 +11,17 @@ public class NoTurn extends Feature {
 
     boolean reconnected;
 
-    @EventListener(events = {EventServerTurn.class, EventJoinWorld.class})
-    public void runEvent(Event event) {
-        if (event.equals(EventServerTurn.class)) {
-            if (reconnected) {
-                reconnected = false;
-                return;
-            }
-            event.cancel();
+    @EventPointer
+    private final EventListener<EventServerTurn> eventServerTurnEventListener = new EventListener<>(event -> {
+        if (reconnected) {
+            reconnected = false;
+            return;
         }
-        if (event.equals(EventJoinWorld.class)) {
-            reconnected = true;
-        }
-    }
+        event.cancel();
+    });
 
+    @EventPointer
+    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+        reconnected = true;
+    });
 }

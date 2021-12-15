@@ -2,8 +2,9 @@ package me.dustin.jex.gui.click.window.impl;
 
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.dustin.events.api.EventAPI;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.EventManager;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.file.core.ConfigManager;
@@ -73,13 +74,13 @@ public class OptionButton extends Button {
             case STRING:
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getOption().getName(), this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, ((StringOption)option).getValue(), this.getX() + (this.getWidth() / 2), this.getY() + 14, 0xffaaaaaa);
-                if (EventAPI.getInstance().alreadyRegistered(this)) {
+                if (EventManager.isRegistered(this)) {
                     Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), getWindow().getColor(), 0x00ffffff, 1);
                 }
                 break;
             case KEYBIND:
                 int key = ((KeybindOption)this.getOption()).getValue();
-                String s = EventAPI.getInstance().alreadyRegistered(this) ? "Press a key..." : this.getOption().getName() + ": " + (key == 0 ? "None" : KeyboardHelper.INSTANCE.getKeyName(key));
+                String s = EventManager.isRegistered(this) ? "Press a key..." : this.getOption().getName() + ": " + (key == 0 ? "None" : KeyboardHelper.INSTANCE.getKeyName(key));
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, s, this.getX() + (this.getWidth() / 2), this.getY() + 3, 0xffaaaaaa);
                 break;
             case COLOR:
@@ -118,13 +119,13 @@ public class OptionButton extends Button {
                         Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 }
                 if (this.getOption() instanceof StringOption) {
-                    if (!EventAPI.getInstance().alreadyRegistered(this))
-                        EventAPI.getInstance().register(this);
+                    if (!EventManager.isRegistered(this))
+                        EventManager.register(this);
                     if (ClickGui.doesPlayClickSound())
                         Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 }
                 if (this.getOption() instanceof KeybindOption) {
-                    EventAPI.getInstance().register(this);
+                    EventManager.register(this);
                 }
                 if (this.getOption() instanceof FloatOption || this.getOption() instanceof IntOption || this.getOption() instanceof ColorOption) {
                     isSliding = true;
@@ -142,8 +143,8 @@ public class OptionButton extends Button {
             }
         } else {
             if (this.getOption() instanceof StringOption) {
-                while (EventAPI.getInstance().alreadyRegistered(this))
-                    EventAPI.getInstance().unregister(this);
+                while (EventManager.isRegistered(this))
+                    EventManager.unregister(this);
             }
         }
         getChildren().forEach(button -> {
@@ -277,14 +278,15 @@ public class OptionButton extends Button {
         }
     }
 
-    @EventListener(events = {EventKeyPressed.class})
-    private void handleKeys(EventKeyPressed eventKeyPressed) {
+    @EventPointer
+    private final EventListener<EventKeyPressed> eventListener = new EventListener<>(event -> {
+
         if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui)) {
-            while (EventAPI.getInstance().alreadyRegistered(this))
-                EventAPI.getInstance().unregister(this);
+            while (EventManager.isRegistered(this))
+                EventManager.unregister(this);
             return;
         }
-        int keyCode = eventKeyPressed.getKey();
+        int keyCode = event.getKey();
 
         if (this.getOption() instanceof KeybindOption keybindOption) {
             if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_ESCAPE) {
@@ -293,8 +295,8 @@ public class OptionButton extends Button {
                 keybindOption.setValue(0);
             }
             ConfigManager.INSTANCE.get(FeatureFile.class).write();
-            while (EventAPI.getInstance().alreadyRegistered(this))
-                EventAPI.getInstance().unregister(this);
+            while (EventManager.isRegistered(this))
+                EventManager.unregister(this);
         } else if (this.getOption() instanceof StringOption stringOption) {
             if (Screen.isPaste(keyCode)) {
                 stringOption.setValue(stringOption.getValue() + MinecraftClient.getInstance().keyboard.getClipboard());
@@ -303,8 +305,8 @@ public class OptionButton extends Button {
             switch (keyCode) {
                 case GLFW.GLFW_KEY_ENTER:
                 case GLFW.GLFW_KEY_ESCAPE:
-                    while (EventAPI.getInstance().alreadyRegistered(this))
-                        EventAPI.getInstance().unregister(this);
+                    while (EventManager.isRegistered(this))
+                        EventManager.unregister(this);
                     break;
                 case GLFW.GLFW_KEY_SPACE:
                     stringOption.setValue(stringOption.getValue() + " ");
@@ -316,7 +318,7 @@ public class OptionButton extends Button {
                     stringOption.setValue(str);
                     break;
                 default:
-                    String keyName = InputUtil.fromKeyCode(keyCode, eventKeyPressed.getScancode()).getTranslationKey().replace("key.keyboard.", "");
+                    String keyName = InputUtil.fromKeyCode(keyCode, event.getScancode()).getTranslationKey().replace("key.keyboard.", "");
                     if (keyName.length() == 1) {
                         if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
                             keyName = keyName.toUpperCase();
@@ -328,7 +330,7 @@ public class OptionButton extends Button {
                     break;
             }
         }
-    }
+    });
 
     private boolean isInt(String intStr) {
         try {

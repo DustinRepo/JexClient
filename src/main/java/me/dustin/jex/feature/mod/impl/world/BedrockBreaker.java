@@ -1,8 +1,8 @@
 package me.dustin.jex.feature.mod.impl.world;
 
 import bedrockminer.utils.BreakingFlowController;
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.event.world.EventPlayerInteractionTick;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -16,18 +16,19 @@ import net.minecraft.util.math.BlockPos;
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Break bedrock in survival mode using a well-known bug. Code from https://github.com/aria1th/Fabric-Bedrock-Miner")
 public class BedrockBreaker extends Feature {
 
-    @EventListener(events = {EventPlayerInteractionTick.class, EventClickBlock.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventClickBlock eventClickBlock) {
-            BlockPos blockPos = eventClickBlock.getBlockPos();
-            Block block = WorldHelper.INSTANCE.getBlock(blockPos);
-            if (block == Blocks.BEDROCK) {
-                BreakingFlowController.addBlockPosToList(blockPos);
-            }
-        } else if (event instanceof EventPlayerInteractionTick) {
-            BreakingFlowController.tick();
+    @EventPointer
+    private final EventListener<EventPlayerInteractionTick> eventPlayerInteractionTickEventListener = new EventListener<>(event -> {
+        BreakingFlowController.tick();
+    });
+
+    @EventPointer
+    private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
+        BlockPos blockPos = event.getBlockPos();
+        Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+        if (block == Blocks.BEDROCK) {
+            BreakingFlowController.addBlockPosToList(blockPos);
         }
-    }
+    });
 
     @Override
     public void onEnable() {

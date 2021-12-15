@@ -3,7 +3,7 @@ package me.dustin.jex.feature.mod.impl.render;
 import java.awt.*;
 import java.util.ArrayList;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.Feature.Category;
@@ -28,11 +28,10 @@ public class BarrierView extends Feature {
 	@Op(name = "Color", isColor = true)
 	public int color = 0xffff0000;
 	
-	private ArrayList<BlockPos> renderPositions = new ArrayList<>();
-	private Timer timer = new Timer();
-	
-	@EventListener(events = {EventRender3D.class})
-	private void runMethod(EventRender3D eventRender3D) {
+	private final ArrayList<BlockPos> renderPositions = new ArrayList<>();
+	private final Timer timer = new Timer();
+
+	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 		if (timer.hasPassed(250)) {
 			renderPositions.clear();
 			for (int x = -4; x < 4; x++) {
@@ -60,9 +59,9 @@ public class BarrierView extends Feature {
 		list.forEach(blockStorage -> {
 			Box box = blockStorage.box();
 			int color = blockStorage.color();
-			Render3DHelper.INSTANCE.drawOutlineBox(eventRender3D.getMatrixStack(), box, color, false);
+			Render3DHelper.INSTANCE.drawOutlineBox(event.getMatrixStack(), box, color, false);
 			Color color1 = ColorHelper.INSTANCE.getColor(color);
-			Matrix4f matrix4f = eventRender3D.getMatrixStack().peek().getPositionMatrix();
+			Matrix4f matrix4f = event.getMatrixStack().peek().getPositionMatrix();
 			bufferBuilder.vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 			bufferBuilder.vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 			bufferBuilder.vertex(matrix4f, (float)box.maxX, (float)box.maxY, (float)box.minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
@@ -100,10 +99,10 @@ public class BarrierView extends Feature {
 		list.forEach(blockStorage -> {
 			Box box = blockStorage.box();
 			int color = blockStorage.color();
-			Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getMatrixStack(), box, color & 0x45ffffff, false);
+			Render3DHelper.INSTANCE.drawFilledBox(event.getMatrixStack(), box, color & 0x45ffffff, false);
 		});
 		bufferBuilder.end();
 		BufferRenderer.draw(bufferBuilder);
 		Render3DHelper.INSTANCE.end3DRender();
-	}
+	});
 }

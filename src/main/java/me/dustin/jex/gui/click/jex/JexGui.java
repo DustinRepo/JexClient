@@ -1,7 +1,8 @@
 package me.dustin.jex.gui.click.jex;
 
-import me.dustin.events.api.EventAPI;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.EventManager;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -417,34 +418,31 @@ public class JexGui extends Screen {
         buttonHeight += visibleButton.getHeight();
         ButtonListener keybind = new ButtonListener() {
 
-            @EventListener(events = {EventKeyPressed.class})
-            public void runEvent(EventKeyPressed event) {
+            @EventPointer
+            private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event ->  {
                 if (event.getType() == EventKeyPressed.PressType.IN_GAME) {
-                    while (EventAPI.getInstance().alreadyRegistered(this))
-                        EventAPI.getInstance().unregister(this);
+                    EventManager.unregister(this);
                     return;
                 }
-                Button thisButton = keyButton;
 
                 if (event.getKey() == GLFW.GLFW_KEY_ESCAPE || event.getKey() == GLFW.GLFW_KEY_ENTER) {
                     feature.setKey(0);
-                    thisButton.setName("Key: None");
+                    keyButton.setName("Key: None");
                     event.cancel();
                 } else {
                     feature.setKey(event.getKey());
-                    thisButton.setName("Key: " + KeyboardHelper.INSTANCE.getKeyName(event.getKey()));
+                    keyButton.setName("Key: " + KeyboardHelper.INSTANCE.getKeyName(event.getKey()));
                 }
-                while (EventAPI.getInstance().alreadyRegistered(this))
-                    EventAPI.getInstance().unregister(this);
+                EventManager.unregister(this);
                 if (JexClient.INSTANCE.isAutoSaveEnabled())
                     ConfigManager.INSTANCE.get(FeatureFile.class).write();
-            }
+            });
 
             @Override
             public void invoke() {
                 Button thisButton = keyButton;
                 thisButton.setName("Press a key...");
-                EventAPI.getInstance().register(this);
+                EventManager.register(this);
             }
         };
         ButtonListener visible = new ButtonListener() {

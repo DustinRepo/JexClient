@@ -1,8 +1,8 @@
 package me.dustin.jex.feature.mod.impl.combat.killaura;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.events.core.enums.EventPriority;
+import me.dustin.events.core.EventListener;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
@@ -16,6 +16,8 @@ import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.priority.Priority;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -103,46 +105,44 @@ public class KillAura extends Feature {
         new MultiAura();
     }
 
-    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class}, priority = EventPriority.LOWEST)
-    public void runEvent(Event event) {
-        if (event instanceof EventPlayerPackets) {
-            if (((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE) {
-                for(Entity entity : Wrapper.INSTANCE.getWorld().getEntities())
-                {
-                    if(entity instanceof PlayerEntity)
-                    {
-                        PlayerEntity playerEntity = (PlayerEntity)entity;
-                        if(playerEntity.isOnGround() && !touchedGround.contains(playerEntity))
-                            touchedGround.add(playerEntity);
-                        if(playerEntity.handSwingProgress > 0 && !swung.contains(playerEntity))
-                            swung.add(playerEntity);
-                    }
-                }
-                for(int i = 0; i < swung.size() - 1; i++)
-                {
-                    PlayerEntity playerEntity = swung.get(i);
-                    if(playerEntity == null)
-                    {
-                        swung.remove(i);
-                    }
-                }
-                for(int i = 0; i < touchedGround.size() - 1; i++)
-                {
-                    PlayerEntity playerEntity = touchedGround.get(i);
-                    if(playerEntity == null)
-                    {
-                        touchedGround.remove(i);
-                    }
-                }
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        for(Entity entity : Wrapper.INSTANCE.getWorld().getEntities())
+        {
+            if(entity instanceof PlayerEntity playerEntity) {
+                if(playerEntity.isOnGround() && !touchedGround.contains(playerEntity))
+                    touchedGround.add(playerEntity);
+                if(playerEntity.handSwingProgress > 0 && !swung.contains(playerEntity))
+                    swung.add(playerEntity);
             }
         }
+        for(int i = 0; i < swung.size() - 1; i++)
+        {
+            PlayerEntity playerEntity = swung.get(i);
+            if(playerEntity == null) {
+                swung.remove(i);
+            }
+        }
+        for(int i = 0; i < touchedGround.size() - 1; i++)
+        {
+            PlayerEntity playerEntity = touchedGround.get(i);
+            if(playerEntity == null) {
+                touchedGround.remove(i);
+            }
+        }
+        setSuffix(mode + " : " + attackMode);
+        sendEvent(event);
+    }, Priority.LAST, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> sendEvent(event));
+
+    public void sendEvent(Event event) {
         if (!mode.equalsIgnoreCase(lastMode) && lastMode != null) {
             FeatureExtension.get(lastMode, this).disable();
             FeatureExtension.get(mode, this).enable();
         }
         FeatureExtension.get(mode, this).pass(event);
-        setSuffix(mode + " : " + attackMode);
         lastMode = mode;
     }
 

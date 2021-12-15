@@ -1,6 +1,6 @@
 package me.dustin.jex.gui.mcleaks;
 
-import me.dustin.events.api.EventAPI;
+import me.dustin.events.EventManager;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.login.mcleaks.MCLeaksHelper;
 import me.dustin.jex.helper.network.WebHelper;
@@ -8,13 +8,10 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.Session;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.UUID;
 
 public class MCLeaksScreen extends Screen {
     private Screen parent;
@@ -46,8 +43,7 @@ public class MCLeaksScreen extends Screen {
         restoreButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 96 + 18, 128, 20, new LiteralText(this.sessionRestored ? "Session restored!" : "Restore Session"), button -> {
             MCLeaksHelper.INSTANCE.restoreSession();
             Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, true));
-            while(EventAPI.getInstance().alreadyRegistered(MCLeaksHelper.INSTANCE))
-                EventAPI.getInstance().unregister(MCLeaksHelper.INSTANCE);
+            EventManager.unregister(MCLeaksHelper.INSTANCE);
         });
         useTokenButton = new ButtonWidget(this.width / 2 - 18, this.height / 4 + 96 + 18, 168, 20, new LiteralText("Redeem Token"), button -> {
             if (this.tokenField.getText().length() != 16) {
@@ -59,8 +55,7 @@ public class MCLeaksScreen extends Screen {
             new Thread(() -> {
                 MCLeaksHelper.MCLeaksAccount account = MCLeaksHelper.INSTANCE.getAccount(tokenField.getText());
                 if (account != null) {
-                    if (!EventAPI.getInstance().alreadyRegistered(MCLeaksHelper.INSTANCE))
-                        EventAPI.getInstance().register(MCLeaksHelper.INSTANCE);
+                    EventManager.register(MCLeaksHelper.INSTANCE);
                     MCLeaksHelper.INSTANCE.setActiveAccount(account);
                     settingScreen = new MCLeaksScreen(this.parent, false, Formatting.GREEN + "Your token was redeemed successfully!");
                 } else {

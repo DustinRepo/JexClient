@@ -1,5 +1,6 @@
 package bedrockminer.utils;
 
+import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
@@ -18,15 +19,9 @@ public class BreakingFlowController {
 
     private static boolean working = false;
 
-    static {
-
-    }
-
     public static void addBlockPosToList(BlockPos pos) {
         ClientWorld world = MinecraftClient.getInstance().world;
         if (world.getBlockState(pos).isOf(Blocks.BEDROCK)) {
-            MinecraftClient minecraftClient = MinecraftClient.getInstance();
-
             String haveEnoughItems = InventoryManager.warningMessage();
             if (haveEnoughItems != null) {
                 Messager.actionBar(haveEnoughItems);
@@ -36,10 +31,8 @@ public class BreakingFlowController {
             if (shouldAddNewTargetBlock(pos)){
                 TargetBlock targetBlock = new TargetBlock(pos, world);
                 cachedTargetBlockList.add(targetBlock);
-                System.out.println("新任务");
             }
         } else {
-            Messager.actionBar("请确保敲击的方块还是基岩！");
         }
     }
 
@@ -63,13 +56,16 @@ public class BreakingFlowController {
                 break;
             }
 
-            if (blockInPlayerRange(selectedBlock.getBlockPos(), player, 3.4f)) {
+            if (blockInPlayerRange(selectedBlock.getBlockPos(), player, Wrapper.INSTANCE.getInteractionManager().getReachDistance())) {
                 TargetBlock.Status status = cachedTargetBlockList.get(i).tick();
                 if (status == TargetBlock.Status.RETRACTING) {
+                    working = true;
                     continue;
                 } else if (status == TargetBlock.Status.FAILED || status == TargetBlock.Status.RETRACTED) {
                     cachedTargetBlockList.remove(i);
+                    working = false;
                 } else {
+                    working = true;
                     break;
                 }
 
@@ -92,32 +88,6 @@ public class BreakingFlowController {
             }
         }
         return true;
-    }
-
-    public static void switchOnOff(){
-        if (working){
-            Messager.chat("");
-            Messager.chat("Bedrock Miner已关闭。");
-            Messager.chat("Bedrock Miner stopped.");
-            Messager.chat("");
-            working = false;
-        } else {
-            Messager.chat("");
-            Messager.chat("╔════════════════════════════════╗");
-            Messager.chat("║ Bedrock Miner已启动！左键基岩即可自动破除基岩。                 ║");
-            Messager.chat("║                                                                        ║");
-            Messager.chat("║ Bedrock Miner started! Left click bedrock to break it.    ║");
-            Messager.chat("╚════════  Author: LXYan  作者：LXYan  ════════╝");
-            Messager.chat("");
-            MinecraftClient minecraftClient = MinecraftClient.getInstance();
-            if (!minecraftClient.isInSingleplayer()){
-                Messager.chat("看起来你好像是在服务器使用Bedrock Miner？");
-                Messager.chat("在使用本mod前请先征询其他玩家的意见。");
-                Messager.chat("It seems that you are playing on a server? ");
-                Messager.chat("Please ask other players' opinions first.");
-            }
-            working = true;
-        }
     }
 
 

@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.combat;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -48,9 +49,9 @@ public class Roaster extends Feature {
     Hand hand = null;
     BlockPos blockPos = null;
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (event.getMode() == EventPlayerPackets.Mode.PRE) {
             ItemStack mainHandStack = Wrapper.INSTANCE.getLocalPlayer().getMainHandStack();
             ItemStack offHandStack = Wrapper.INSTANCE.getLocalPlayer().getOffHandStack();
             hand = null;
@@ -68,7 +69,7 @@ public class Roaster extends Feature {
                             blockPos = livingEntity.getBlockPos().down();
                             if (rotate) {
                                 RotationVector rotations = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-                                eventPlayerPackets.setRotation(rotations);
+                                event.setRotation(rotations);
                             }
                         }
                     }
@@ -84,7 +85,7 @@ public class Roaster extends Feature {
             }
             blockPos = null;
         }
-    }
+    });
 
     private boolean isValid(LivingEntity livingEntity) {
         if (livingEntity instanceof ClientPlayerEntity)

@@ -1,13 +1,7 @@
 package me.dustin.jex.helper.world.seed;
 
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
-import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.command.impl.CommandDungeonSeedCracker;
-import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.seed.kaptainwutax.magic.PopulationReversal;
 import me.dustin.jex.helper.world.seed.kaptainwutax.magic.RandomSeed;
 import me.dustin.jex.helper.world.seed.kaptainwutax.util.LCG;
@@ -15,16 +9,9 @@ import me.dustin.jex.helper.world.seed.kaptainwutax.util.Rand;
 import me.dustin.jex.helper.world.seed.randomreversor.ReverserDevice;
 import me.dustin.jex.helper.world.seed.randomreversor.call.FilteredSkip;
 import me.dustin.jex.helper.world.seed.randomreversor.call.NextInt;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 

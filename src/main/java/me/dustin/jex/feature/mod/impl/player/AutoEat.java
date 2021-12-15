@@ -1,8 +1,8 @@
 package me.dustin.jex.feature.mod.impl.player;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerUpdates;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -40,78 +40,79 @@ public class AutoEat extends Feature {
     private int savedSlot = 0;
     private int lastFood;
 
-    private Timer baritoneTimer = new Timer();
-    @EventListener(events = {EventPlayerUpdates.class, EventPacketSent.class})
-    public void run(Event event) {
-        if (Wrapper.INSTANCE.getLocalPlayer() != null && getBestFood().itemStack != null) {
-            setSuffix(getBestFood().itemStack.getName().getString());
-        } else {
-            setSuffix("None");
-        }
-        if (!isEating && wasEating) {
-            if (BaritoneHelper.INSTANCE.baritoneExists())
-                BaritoneHelper.INSTANCE.resume();
-        }
-        if (Wrapper.INSTANCE.getLocalPlayer() == null || Feature.get(Freecam.class).getState() || Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
-            isEating = false;
-            if (BaritoneHelper.INSTANCE.baritoneExists()) {
-                BaritoneHelper.INSTANCE.resume();
-                baritoneTimer.reset();
+    private final Timer baritoneTimer = new Timer();
+
+    @EventPointer
+    private final EventListener<EventPlayerUpdates> eventPlayerUpdatesEventListener = new EventListener<>(event -> {
+        if (event.getMode() == EventPlayerUpdates.Mode.PRE) {
+            if (Wrapper.INSTANCE.getLocalPlayer() != null && getBestFood().itemStack != null) {
+                setSuffix(getBestFood().itemStack.getName().getString());
+            } else {
+                setSuffix("None");
             }
-            return;
-        }
-        if (event instanceof EventPlayerUpdates) {
-            if (((EventPlayerUpdates) event).getMode() == EventPlayerUpdates.Mode.PRE) {
-                if (getBestFood().slot != -1 && getBestFood().itemStack != null && needsToEat(getBestFood())) {
-                    if (EntityHelper.INSTANCE.isAuraBlocking())
-                        PlayerHelper.INSTANCE.unblock();
-                    if (!isEating) {
-                        savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
-                        if (BaritoneHelper.INSTANCE.baritoneExists())
-                            BaritoneHelper.INSTANCE.pause();
-                        InventoryHelper.INSTANCE.setSlot(getBestFood().slot, true, true);
-                        lastFood = Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel();
-                        isEating = true;
-                    }
-                    if (lastFood != Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
-                        if (lastFood < Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
-                            isEating = false;
-                            if (pressKey)
-                                Wrapper.INSTANCE.getOptions().keyUse.setPressed(false);
-                            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
-                            InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
-                        }
-                        lastFood = Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel();
-                        if (BaritoneHelper.INSTANCE.baritoneExists()) {
-                            BaritoneHelper.INSTANCE.resume();
-                        }
-                    }
-                    if (isEating) {
-                        if (pressKey)
-                            Wrapper.INSTANCE.getOptions().keyUse.setPressed(true);
-                        Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
-                    }
-                } else if (isEating) {
-                    isEating = false;
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
-                    InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
+            if (!isEating && wasEating) {
+                if (BaritoneHelper.INSTANCE.baritoneExists())
+                    BaritoneHelper.INSTANCE.resume();
+            }
+            if (Wrapper.INSTANCE.getLocalPlayer() == null || Feature.get(Freecam.class).getState() || Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
+                isEating = false;
+                if (BaritoneHelper.INSTANCE.baritoneExists()) {
+                    BaritoneHelper.INSTANCE.resume();
+                    baritoneTimer.reset();
                 }
-                wasEating = isEating;
-            }
-        }
-        if (event instanceof EventPacketSent eventPacketSent) {
-            if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
                 return;
-            if (eventPacketSent.getPacket() instanceof UpdateSelectedSlotC2SPacket && isEating) {
-                if (((UpdateSelectedSlotC2SPacket) eventPacketSent.getPacket()).getSelectedSlot() != getBestFood().slot)
-                    event.cancel();
             }
-            if (eventPacketSent.getPacket() instanceof PlayerActionC2SPacket playerActionC2SPacket) {
-                if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.RELEASE_USE_ITEM && isEating)
-                    event.cancel();
+            if (getBestFood().slot != -1 && getBestFood().itemStack != null && needsToEat(getBestFood())) {
+                if (EntityHelper.INSTANCE.isAuraBlocking())
+                    PlayerHelper.INSTANCE.unblock();
+                if (!isEating) {
+                    savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
+                    if (BaritoneHelper.INSTANCE.baritoneExists())
+                        BaritoneHelper.INSTANCE.pause();
+                    InventoryHelper.INSTANCE.setSlot(getBestFood().slot, true, true);
+                    lastFood = Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel();
+                    isEating = true;
+                }
+                if (lastFood != Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
+                    if (lastFood < Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
+                        isEating = false;
+                        if (pressKey)
+                            Wrapper.INSTANCE.getOptions().keyUse.setPressed(false);
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
+                        InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
+                    }
+                    lastFood = Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel();
+                    if (BaritoneHelper.INSTANCE.baritoneExists()) {
+                        BaritoneHelper.INSTANCE.resume();
+                    }
+                }
+                if (isEating) {
+                    if (pressKey)
+                        Wrapper.INSTANCE.getOptions().keyUse.setPressed(true);
+                    Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
+                }
+            } else if (isEating) {
+                isEating = false;
+                NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
+                InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
+                if (BaritoneHelper.INSTANCE.baritoneExists())
+                    BaritoneHelper.INSTANCE.resume();
             }
+            wasEating = isEating;
         }
-    }
+    });
+
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        if (event.getPacket() instanceof UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket && isEating) {
+            if (updateSelectedSlotC2SPacket.getSelectedSlot() != getBestFood().slot)
+                event.cancel();
+        }
+        if (event.getPacket() instanceof PlayerActionC2SPacket playerActionC2SPacket) {
+            if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.RELEASE_USE_ITEM && isEating)
+                event.cancel();
+        }
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, UpdateSelectedSlotC2SPacket.class, PlayerActionC2SPacket.class));
 
     private boolean needsToEat(FoodInfo foodInfo) {
         if (!eatToRegen) {

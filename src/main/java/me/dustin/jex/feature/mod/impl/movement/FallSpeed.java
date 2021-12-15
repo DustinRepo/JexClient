@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.movement;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -16,13 +17,12 @@ public class FallSpeed extends Feature {
     @Op(name = "Speed", min = 0.1f, max = 15f, inc = 0.1f)
     public float speed = 0.5f;
 
-    @EventListener(events = {EventMove.class})
-    private void runMethod(EventMove eventMove) {
+    @EventPointer
+    private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
         if (Feature.get(Fly.class).getState() || Feature.get(Freecam.class).getState())
             return;
         if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistance && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
-            eventMove.setY(-speed);
+            event.setY(-speed);
         }
-    }
-
+    });
 }

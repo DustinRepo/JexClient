@@ -1,19 +1,7 @@
-/*
- * Copyright (c) 2014-2021 Wurst-Imperium and contributors.
- *
- * This source code is subject to the terms of the GNU General Public
- * License, version 3. If a copy of the GPL was not distributed with this
- * file, You can obtain one at: https://www.gnu.org/licenses/gpl-3.0.txt
- */
 package me.dustin.jex.helper.world.wurstpathfinder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
+import java.util.*;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Fly;
 import me.dustin.jex.feature.mod.impl.movement.Spider;
@@ -22,7 +10,6 @@ import me.dustin.jex.feature.mod.impl.player.NoFall;
 import me.dustin.jex.feature.mod.impl.player.NoPush;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.util.math.Box;
@@ -36,8 +23,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class PathFinder {
-
+public class PathFinder
+{
 	private final boolean invulnerable = Wrapper.INSTANCE.getLocalPlayer().getAbilities().creativeMode;
 	private final boolean creativeFlying = Wrapper.INSTANCE.getLocalPlayer().getAbilities().flying;
 	protected final boolean flying = creativeFlying || Feature.get(Fly.class).getState();
@@ -67,7 +54,7 @@ public class PathFinder {
 	public PathFinder(BlockPos goal)
 	{
 		if(Wrapper.INSTANCE.getLocalPlayer().isOnGround())
-			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5, Wrapper.INSTANCE.getLocalPlayer().getZ()));
+			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getX(),Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5, Wrapper.INSTANCE.getLocalPlayer().getZ()));
 		else
 			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos()));
 		this.goal = goal;
@@ -203,24 +190,21 @@ public class PathFinder {
 
 		// down
 		if(pos.getY() > 0 && canGoThrough(down) && canGoAbove(down.down())
-				&& (flying || canFallBelow(pos)) && (divingAllowed || WorldHelper.INSTANCE.getBlockState(pos).getMaterial() != Material.WATER))
+				&& (flying || canFallBelow(pos)) && (divingAllowed
+				|| WorldHelper.INSTANCE.getBlockState(pos).getMaterial() != Material.WATER))
 			neighbors.add(new PathPos(down));
 
 		return neighbors;
 	}
 
-	private boolean checkHorizontalMovement(BlockPos current, BlockPos next)
-	{
-		if(isPassable(next) && (canFlyAt(current) || canGoThrough(next.down())
-				|| canSafelyStandOn(next.down())))
+	private boolean checkHorizontalMovement(BlockPos current, BlockPos next) {
+		if(isPassable(next) && (canFlyAt(current) || canGoThrough(next.down()) || canSafelyStandOn(next.down())))
 			return true;
 
 		return false;
 	}
 
-	private boolean checkDiagonalMovement(BlockPos current,
-										  Direction direction1, Direction direction2)
-	{
+	private boolean checkDiagonalMovement(BlockPos current, Direction direction1, Direction direction2) {
 		BlockPos horizontal1 = current.offset(direction1);
 		BlockPos horizontal2 = current.offset(direction2);
 		BlockPos next = horizontal1.offset(direction2);
@@ -245,8 +229,7 @@ public class PathFinder {
 		if(!canGoAbove(pos.down()))
 			return false;
 
-		if(!divingAllowed
-				&& WorldHelper.INSTANCE.getBlockState(up).getMaterial() == Material.WATER)
+		if(!divingAllowed && WorldHelper.INSTANCE.getBlockState(up).getMaterial() == Material.WATER)
 			return false;
 
 		return true;
@@ -264,8 +247,7 @@ public class PathFinder {
 		if(!canGoAbove(pos.down()))
 			return false;
 
-		if(!divingAllowed
-				&& WorldHelper.INSTANCE.getBlockState(up).getMaterial() == Material.WATER)
+		if(!divingAllowed && WorldHelper.INSTANCE.getBlockState(up).getMaterial() == Material.WATER)
 			return false;
 
 		return true;
@@ -288,9 +270,12 @@ public class PathFinder {
 				&& (material == Material.WATER || material == Material.LAVA);
 	}
 
+	@SuppressWarnings("deprecation")
 	private boolean canGoThrough(BlockPos pos)
 	{
 		// check if loaded
+		// Can't see why isChunkLoaded() is deprecated. Still seems to be widely
+		// used with no replacement.
 		if(!Wrapper.INSTANCE.getWorld().isChunkLoaded(pos))
 			return false;
 
@@ -316,11 +301,7 @@ public class PathFinder {
 	{
 		// check for fences, etc.
 		Block block = WorldHelper.INSTANCE.getBlock(pos);
-		if(block instanceof FenceBlock || block instanceof WallBlock
-				|| block instanceof FenceGateBlock)
-			return false;
-
-		return true;
+		return !(block instanceof FenceBlock) && !(block instanceof WallBlock) && !(block instanceof FenceGateBlock);
 	}
 
 	private boolean canSafelyStandOn(BlockPos pos)
@@ -331,8 +312,7 @@ public class PathFinder {
 			return false;
 
 		// check if safe
-		if(!invulnerable
-				&& (material == Material.CACTUS || material == Material.LAVA))
+		if(!invulnerable && (material == Material.CACTUS || material == Material.LAVA))
 			return false;
 
 		return true;
@@ -522,12 +502,10 @@ public class PathFinder {
 		PathPos pos;
 		if(!failed)
 			pos = current;
-		else
-		{
+		else {
 			pos = start;
 			for(PathPos next : prevPosMap.keySet())
-				if(getHeuristic(next) < getHeuristic(pos)
-						&& (canFlyAt(next) || canBeSolid(next.down())))
+				if(getHeuristic(next) < getHeuristic(pos) && (canFlyAt(next) || canBeSolid(next.down())))
 					pos = next;
 		}
 
@@ -554,8 +532,7 @@ public class PathFinder {
 					boxes.add(new Render3DHelper.BoxStorage(box, 0xffffff00));
 			}
 
-			for(Entry<PathPos, PathPos> entry : prevPosMap.entrySet())
-			{
+			for(Map.Entry<PathPos, PathPos> entry : prevPosMap.entrySet()) {
 				Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(Vec3d.ofCenter(entry.getKey()));
 				Box box = new Box(vec.getX() - 0.05, vec.getY() - 0.05, vec.getZ() - 0.05, vec.getX() + 0.05, vec.getY() + 0.05, vec.getZ() + 0.05);
 				if (boxes.size() < 5000)
@@ -570,7 +547,7 @@ public class PathFinder {
 				boxes.add(new Render3DHelper.BoxStorage(box, ColorHelper.INSTANCE.getClientColor()));
 		}
 
-		Render3DHelper.INSTANCE.drawList(matrixStack, boxes, true);
+		Render3DHelper.INSTANCE.drawList(matrixStack, boxes, depthTest);
 	}
 
 	public boolean isPathStillValid(int index)
@@ -584,7 +561,7 @@ public class PathFinder {
 				|| Feature.get(Fly.class).getState())
 				|| immuneToFallDamage != (invulnerable
 				|| Feature.get(NoFall.class).getState())
-				|| noWaterSlowdown != (Feature.get(NoPush.class).getState() && ((NoPush)Feature.get(NoPush.class)).water)
+				|| noWaterSlowdown != Feature.get(NoPush.class).getState() && ((NoPush)Feature.get(NoPush.class)).water
 				|| jesus != Feature.get(Jesus.class).getState()
 				|| spider != Feature.get(Spider.class).getState())
 			return false;

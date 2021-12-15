@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventGetFramerateLimit;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -12,11 +13,11 @@ public class UnfocusedFPS extends Feature {
     @Op(name = "Unfocused FPS", min = 1, max = 25)
     public int unfocusedFPS = 15;
 
-    @EventListener(events = {EventGetFramerateLimit.class})
-    private void runMethod(EventGetFramerateLimit eventGetFramerateLimit) {
+    @EventPointer
+    private final EventListener<EventGetFramerateLimit> eventGetFramerateLimitEventListener = new EventListener<>(event -> {
         boolean focused = Wrapper.INSTANCE.getMinecraft().isWindowFocused();
         if (!focused) {
-            eventGetFramerateLimit.setLimit(unfocusedFPS);
+            event.setLimit(unfocusedFPS);
         }
-    }
+    });
 }

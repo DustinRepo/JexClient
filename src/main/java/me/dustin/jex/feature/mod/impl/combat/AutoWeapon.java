@@ -1,10 +1,10 @@
 package me.dustin.jex.feature.mod.impl.combat;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.enchantment.Enchantment;
@@ -12,7 +12,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
-import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 
 import java.util.Map;
 
@@ -24,11 +23,11 @@ public class AutoWeapon extends Feature {
     @Op(name = "Mode", all = {"Sword", "Sword&Axe", "All Tools"})
     public String mode = "Sword";
 
-    @EventListener(events = {EventAttackEntity.class})
-    public void run(EventAttackEntity eventAttackEntity) {
+    @EventPointer
+    private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
         if (AutoEat.isEating)
             return;
-        if (livingOnly && !(eventAttackEntity.getEntity() instanceof LivingEntity))
+        if (livingOnly && !(event.getEntity() instanceof LivingEntity))
             return;
         int slot = -1;
         float str = 1;
@@ -58,7 +57,8 @@ public class AutoWeapon extends Feature {
         if (slot != -1 && slot != InventoryHelper.INSTANCE.getInventory().selectedSlot) {
             InventoryHelper.INSTANCE.setSlot(slot, true, true);
         }
-    }
+    });
+
     private boolean isGoodItem(Item item) {
         return switch (mode.toLowerCase()) {
             case "sword" -> item instanceof SwordItem;

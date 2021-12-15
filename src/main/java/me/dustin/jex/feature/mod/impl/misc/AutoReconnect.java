@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventConnect;
@@ -28,30 +28,37 @@ public class AutoReconnect extends Feature {
 
     private ServerAddress serverAddress;
 
-    @EventListener(events = {EventTick.class, EventSetScreen.class, EventConnect.class, EventDrawScreen.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventTick) {
-            if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen) || serverAddress == null)
-                timer.reset();
-        } else if (event instanceof EventSetScreen eventSetScreen) {
-            if (eventSetScreen.getScreen() instanceof DisconnectedScreen)
-                timer.reset();
-        } else if (event instanceof EventConnect eventConnect) {
-            this.serverAddress = eventConnect.getServerAddress();
-        } else if (event instanceof EventDrawScreen eventDrawScreen) {
-            if (eventDrawScreen.getMode() == EventDrawScreen.Mode.POST && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen) {
-                float timeLeft = (timer.getLastMS() + delay) - timer.getCurrentMS();
-                timeLeft /= 1000;
-                String messageString = String.format("Reconnecting in %.1fs", timeLeft);
-                FontHelper.INSTANCE.drawCenteredString(eventDrawScreen.getMatrixStack(), messageString, Wrapper.INSTANCE.getWindow().getScaledWidth() / 2.f, 2, ColorHelper.INSTANCE.getClientColor());
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
+        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen) || serverAddress == null)
+            timer.reset();
+    });
 
-                if (timer.hasPassed(delay)) {
-                    connect();
-                    timer.reset();
-                }
+    @EventPointer
+    private final EventListener<EventSetScreen> eventSetScreenEventListener = new EventListener<>(event -> {
+        if (event.getScreen() instanceof DisconnectedScreen)
+            timer.reset();
+    });
+
+    @EventPointer
+    private final EventListener<EventConnect> eventConnectEventListener = new EventListener<>(event -> {
+        this.serverAddress = event.getServerAddress();
+    });
+
+    @EventPointer
+    private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
+        if (event.getMode() == EventDrawScreen.Mode.POST && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen) {
+            float timeLeft = (timer.getLastMS() + delay) - timer.getCurrentMS();
+            timeLeft /= 1000;
+            String messageString = String.format("Reconnecting in %.1fs", timeLeft);
+            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), messageString, Wrapper.INSTANCE.getWindow().getScaledWidth() / 2.f, 2, ColorHelper.INSTANCE.getClientColor());
+
+            if (timer.hasPassed(delay)) {
+                connect();
+                timer.reset();
             }
         }
-    }
+    });
 
     public void connect() {
         ConnectScreen.connect(new MultiplayerScreen(new JexTitleScreen()), Wrapper.INSTANCE.getMinecraft(), serverAddress, null);

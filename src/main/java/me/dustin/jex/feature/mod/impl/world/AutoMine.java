@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -8,12 +10,10 @@ import me.dustin.jex.helper.misc.Wrapper;
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically mine any block you hover over.")
 public class AutoMine extends Feature {
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            Wrapper.INSTANCE.getOptions().keyAttack.setPressed(true);
-        }
-    }
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        Wrapper.INSTANCE.getOptions().keyAttack.setPressed(true);
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override
     public void onDisable() {

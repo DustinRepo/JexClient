@@ -1,8 +1,8 @@
 package me.dustin.jex.feature.mod.impl.combat;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.event.packet.EventPacketReceive;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventExplosionVelocity;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventPlayerVelocity;
@@ -15,32 +15,32 @@ public class Velocity extends Feature {
     @Op(name = "Percent", min = -300, max = 300, inc = 10)
     public int percent = 0;
 
-    @EventListener(events = {EventExplosionVelocity.class, EventPlayerVelocity.class, EventPlayerPackets.class})
-    public void run(Event event) {
+    @EventPointer
+    private final EventListener<EventExplosionVelocity> eventExplosionVelocityEventListener = new EventListener<>(event -> {
         float perc = percent / 100.0f;
-        if (event instanceof EventPlayerVelocity eventPlayerVelocity) {
-            if (percent == 0)
-                event.cancel();
-            else {
-                eventPlayerVelocity.setVelocityX((int)(eventPlayerVelocity.getVelocityX() * perc));
-                eventPlayerVelocity.setVelocityY((int)(eventPlayerVelocity.getVelocityY() * perc));
-                eventPlayerVelocity.setVelocityZ((int)(eventPlayerVelocity.getVelocityZ() * perc));
-            }
+        if (percent == 0)
+            event.cancel();
+        else {
+            event.setMultX(perc);
+            event.setMultY(perc);
+            event.setMultZ(perc);
         }
-        if (event instanceof EventExplosionVelocity) {
-            if (percent == 0)
-                event.cancel();
-            else {
-                EventExplosionVelocity eventExplosionVelocity = (EventExplosionVelocity)event;
-                eventExplosionVelocity.setMultX(perc);
-                eventExplosionVelocity.setMultY(perc);
-                eventExplosionVelocity.setMultZ(perc);
-            }
-        }
-        if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            this.setSuffix(percent + "%");
-        }
-    }
+    });
 
+    @EventPointer
+    private final EventListener<EventPlayerVelocity> eventPlayerVelocityEventListener = new EventListener<>(event -> {
+        float perc = percent / 100.0f;
+        if (percent == 0)
+            event.cancel();
+        else {
+            event.setVelocityX((int)(event.getVelocityX() * perc));
+            event.setVelocityY((int)(event.getVelocityY() * perc));
+            event.setVelocityZ((int)(event.getVelocityZ() * perc));
+        }
+    });
 
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        this.setSuffix(percent + "%");
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

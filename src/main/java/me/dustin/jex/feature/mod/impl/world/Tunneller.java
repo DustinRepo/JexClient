@@ -1,9 +1,9 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
@@ -39,60 +39,58 @@ public class Tunneller extends Feature {
 
     private Direction direction;
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (AutoEat.isEating)
-                return;
-            if (direction == null)
-                direction = Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing();
-            setSuffix(getDirectionString());
-            //do liquid replacing
-            if (handleLiquids)
-                for (BlockPos liquidCheckSpot : getLiquidCheckSpots()) {
-                    if (WorldHelper.INSTANCE.getBlock(liquidCheckSpot) instanceof FluidBlock) {
-                        if (moveToBlocks()) {
-                            PlayerHelper.INSTANCE.placeBlockInPos(liquidCheckSpot, Hand.MAIN_HAND, true);
-                            return;
-                        } else {
-                            ChatHelper.INSTANCE.addClientMessage("Tunneller ran out of blocks. Disabling.");
-                            this.setState(false);
-                            return;
-                        }
-                    }
-                }
-            //break-a da blocks
-            for (BlockPos blockPos : getBlocksInTunnel()) {
-                if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
-                    Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
-                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                    return;
-                }
-            }
-            //make sure floor is there
-            Box tunnelBox = getTunnelBox();
-            Box floorBox = new Box(tunnelBox.minX, tunnelBox.minY - 1, tunnelBox.minZ, tunnelBox.maxX, tunnelBox.minY - 1, tunnelBox.maxZ);
-            ArrayList<BlockPos> floorBlocks = WorldHelper.INSTANCE.getBlocksInBox(floorBox);
-            for (BlockPos floorBlock : floorBlocks) {
-                if (WorldHelper.INSTANCE.getBlockState(floorBlock).getOutlineShape(Wrapper.INSTANCE.getWorld(), floorBlock) == VoxelShapes.empty()) {
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (AutoEat.isEating)
+            return;
+        if (direction == null)
+            direction = Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing();
+        setSuffix(getDirectionString());
+        //do liquid replacing
+        if (handleLiquids)
+            for (BlockPos liquidCheckSpot : getLiquidCheckSpots()) {
+                if (WorldHelper.INSTANCE.getBlock(liquidCheckSpot) instanceof FluidBlock) {
                     if (moveToBlocks()) {
-                        PlayerHelper.INSTANCE.placeBlockInPos(floorBlock, Hand.MAIN_HAND, true);
+                        PlayerHelper.INSTANCE.placeBlockInPos(liquidCheckSpot, Hand.MAIN_HAND, true);
+                        return;
                     } else {
                         ChatHelper.INSTANCE.addClientMessage("Tunneller ran out of blocks. Disabling.");
                         this.setState(false);
+                        return;
                     }
-                    return;
                 }
             }
-            //move forward until one of the above catches
-            switch (direction) {
-                case NORTH -> PlayerHelper.INSTANCE.setVelocityZ(-moveSpeed());
-                case SOUTH -> PlayerHelper.INSTANCE.setVelocityZ(moveSpeed());
-                case WEST -> PlayerHelper.INSTANCE.setVelocityX(-moveSpeed());
-                case EAST -> PlayerHelper.INSTANCE.setVelocityX(moveSpeed());
+        //break-a da blocks
+        for (BlockPos blockPos : getBlocksInTunnel()) {
+            if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
+                Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
+                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                return;
             }
         }
-    }
+        //make sure floor is there
+        Box tunnelBox = getTunnelBox();
+        Box floorBox = new Box(tunnelBox.minX, tunnelBox.minY - 1, tunnelBox.minZ, tunnelBox.maxX, tunnelBox.minY - 1, tunnelBox.maxZ);
+        ArrayList<BlockPos> floorBlocks = WorldHelper.INSTANCE.getBlocksInBox(floorBox);
+        for (BlockPos floorBlock : floorBlocks) {
+            if (WorldHelper.INSTANCE.getBlockState(floorBlock).getOutlineShape(Wrapper.INSTANCE.getWorld(), floorBlock) == VoxelShapes.empty()) {
+                if (moveToBlocks()) {
+                    PlayerHelper.INSTANCE.placeBlockInPos(floorBlock, Hand.MAIN_HAND, true);
+                } else {
+                    ChatHelper.INSTANCE.addClientMessage("Tunneller ran out of blocks. Disabling.");
+                    this.setState(false);
+                }
+                return;
+            }
+        }
+        //move forward until one of the above catches
+        switch (direction) {
+            case NORTH -> PlayerHelper.INSTANCE.setVelocityZ(-moveSpeed());
+            case SOUTH -> PlayerHelper.INSTANCE.setVelocityZ(moveSpeed());
+            case WEST -> PlayerHelper.INSTANCE.setVelocityX(-moveSpeed());
+            case EAST -> PlayerHelper.INSTANCE.setVelocityX(moveSpeed());
+        }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override
     public void onEnable() {

@@ -12,10 +12,7 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.JumpingMount;
-import net.minecraft.entity.MovementType;
+import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
@@ -34,7 +31,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity {
-
 
     @Shadow
     public Input input;
@@ -92,6 +88,24 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     @Shadow private float mountJumpStrength;
 
     @Shadow public abstract float getMountJumpStrength();
+
+    @Shadow public float renderPitch;
+
+    @Override
+    public boolean isTouchingWater() {
+        EventIsPlayerTouchingWater eventIsPlayerTouchingWater = new EventIsPlayerTouchingWater(super.isTouchingWater()).run();
+        if (eventIsPlayerTouchingWater.isCancelled())
+            return eventIsPlayerTouchingWater.isTouchingWater();
+        return super.isTouchingWater();
+    }
+
+    @Override
+    public EntityPose getPose() {
+        EventGetPose eventGetPose = new EventGetPose(super.getPose()).run();
+        if (eventGetPose.isCancelled())
+            return eventGetPose.getPose();
+        return super.getPose();
+    }
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.hasVehicle()Z"))
     public void tick(CallbackInfo ci) {

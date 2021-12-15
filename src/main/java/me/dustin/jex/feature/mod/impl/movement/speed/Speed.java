@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.movement.speed;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -33,14 +34,24 @@ public class Speed extends Feature {
         INSTANCE = this;
     }
 
-    @EventListener(events = {EventMove.class, EventPlayerPackets.class, EventPacketSent.class})
-    public void run(Event event) {
+    @EventPointer
+    private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        this.setSuffix(mode);
+        sendEvent(event);
+    });
+
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> sendEvent(event));
+
+    private void sendEvent(Event event) {
         if (!mode.equalsIgnoreCase(lastMode) && lastMode != null) {
             FeatureExtension.get(lastMode, this).disable();
             FeatureExtension.get(mode, this).enable();
         }
         FeatureExtension.get(mode, this).pass(event);
-        this.setSuffix(mode);
         lastMode = mode;
     }
 

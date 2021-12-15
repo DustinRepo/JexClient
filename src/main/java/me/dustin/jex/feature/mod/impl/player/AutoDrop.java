@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.player;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -46,30 +48,28 @@ public class AutoDrop extends Feature {
         items.add(Items.PHANTOM_MEMBRANE);
     }
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (!timer.hasPassed(dropDelay))
-                return;
-            Map<Integer, ItemStack> inventory = InventoryHelper.INSTANCE.getStacksFromInventory(true);
-            if (dropDelay == 0) {
-                inventory.forEach((slot, itemStack) -> {
-                    if (items.contains(itemStack.getItem())) {
-                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot <= 27 ? slot + 9 : slot, SlotActionType.THROW, 1);
-                    }
-                });
-            } else {
-                for (int slot : inventory.keySet()) {
-                    ItemStack itemStack = inventory.get(slot);
-                    if (items.contains(itemStack.getItem())) {
-                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot <= 27 ? slot + 9 : slot, SlotActionType.THROW, 1);
-                        timer.reset();
-                        return;
-                    }
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (!timer.hasPassed(dropDelay))
+            return;
+        Map<Integer, ItemStack> inventory = InventoryHelper.INSTANCE.getStacksFromInventory(true);
+        if (dropDelay == 0) {
+            inventory.forEach((slot, itemStack) -> {
+                if (items.contains(itemStack.getItem())) {
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot <= 27 ? slot + 9 : slot, SlotActionType.THROW, 1);
+                }
+            });
+        } else {
+            for (int slot : inventory.keySet()) {
+                ItemStack itemStack = inventory.get(slot);
+                if (items.contains(itemStack.getItem())) {
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot <= 27 ? slot + 9 : slot, SlotActionType.THROW, 1);
+                    timer.reset();
+                    return;
                 }
             }
         }
-    }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     public ArrayList<Item> getItems() {
         return items;

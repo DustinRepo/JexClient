@@ -2,8 +2,9 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
@@ -31,7 +32,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 
 import java.awt.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
@@ -49,7 +49,7 @@ public class Search extends Feature {
     public int range = 25;
 
     private Thread thread;
-    private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
 
     public static void firstLoad() {
         blocks.put(Blocks.DIAMOND_ORE, new Color(0, 150, 255).getRGB());
@@ -90,92 +90,84 @@ public class Search extends Feature {
         super.onEnable();
     }
 
-    @EventListener(events = {EventRender3D.class, EventRender3D.EventRender3DNoBob.class, EventPacketReceive.class, EventJoinWorld.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPacketReceive eventPacketReceive) {
-            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        ArrayList<BoxStorage> boxList = new ArrayList<>();
+        for (BlockPos pos : worldBlocks.keySet()) {
+            Block block = worldBlocks.get(pos);
+            if (WorldHelper.INSTANCE.getBlock(pos) != block) {
+                worldBlocks.remove(pos);
+                continue;
+            }
+            Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
+            assert cameraEntity != null;
+            if (limitRange && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos)) > range)
+                continue;
+            Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
+            Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 1, entityPos.z + 1 - 0.5f);
+            BoxStorage boxStorage = new BoxStorage(box, blocks.get(block));
+            boxList.add(boxStorage);
+        }
+        Render3DHelper.INSTANCE.drawList(event.getMatrixStack(), boxList, true);
+    });
+
+    @EventPointer
+    private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
+        if (!tracers)
+            return;
+        for (BlockPos pos : worldBlocks.keySet()) {
+            Block block = worldBlocks.get(pos);
+            if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlock(pos) != block) {
+                worldBlocks.remove(pos);
+                continue;
+            }
+            Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
+            assert cameraEntity != null;
+            Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
+
+            Color color1 = ColorHelper.INSTANCE.getColor(blocks.get(block));
+
+            Render3DHelper.INSTANCE.setup3DRender(true);
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+            Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
+
+            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+            bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+            bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+            bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+
+            Render3DHelper.INSTANCE.end3DRender();
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
+
+        if (Wrapper.INSTANCE.getWorld() == null)
+            return;
+        Chunk emptyChunk = null;
+
+        Packet<?> packet = event.getPacket();
+
+        if (packet instanceof ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
+
+            ArrayList<BlockPos> changeBlocks = new ArrayList<>();
+            chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> {
+                changeBlocks.add(pos);
+            });
+            if (changeBlocks.isEmpty())
                 return;
-            if (Wrapper.INSTANCE.getWorld() == null)
-                return;
-            Chunk emptyChunk = null;
+            emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(changeBlocks.get(0));
+        } else if (packet instanceof BlockUpdateS2CPacket) {
+            emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(((BlockUpdateS2CPacket) packet).getPos());
+        } else if (packet instanceof ChunkDataS2CPacket chunkDataS2CPacket) {
+            emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(chunkDataS2CPacket.getX(), chunkDataS2CPacket.getZ());
+        }
 
-            Packet<?> packet = eventPacketReceive.getPacket();
-
-            if (packet instanceof ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
-
-                ArrayList<BlockPos> changeBlocks = new ArrayList<>();
-                chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> {
-                    changeBlocks.add(pos);
-                });
-                if (changeBlocks.isEmpty())
-                    return;
-                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(changeBlocks.get(0));
-            } else if (packet instanceof BlockUpdateS2CPacket) {
-                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(((BlockUpdateS2CPacket) packet).getPos());
-            } else if (packet instanceof ChunkDataS2CPacket chunkDataS2CPacket) {
-                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(chunkDataS2CPacket.getX(), chunkDataS2CPacket.getZ());
-            }
-
-            if (emptyChunk != null) {
-                int distance = Wrapper.INSTANCE.getOptions().viewDistance;
-                if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
-                    for (int i = -distance; i < distance; i++) {
-                        for (int j = -distance; j < distance; j++) {
-                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
-                            if (chunk != null && !chunksToUpdate.contains(chunk))
-                                chunksToUpdate.offer(chunk);
-                        }
-                    }
-                }
-            }
-        } else if (event instanceof EventRender3D.EventRender3DNoBob) {
-            if (!tracers)
-                return;
-            for (BlockPos pos : worldBlocks.keySet()) {
-                Block block = worldBlocks.get(pos);
-                if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlock(pos) != block) {
-                    worldBlocks.remove(pos);
-                    continue;
-                }
-                Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
-                assert cameraEntity != null;
-                Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
-
-                Color color1 = ColorHelper.INSTANCE.getColor(blocks.get(block));
-
-                Render3DHelper.INSTANCE.setup3DRender(true);
-                RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
-
-                BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
-
-                Render3DHelper.INSTANCE.end3DRender();
-            }
-        } else if (event instanceof EventRender3D eventRender3D) {
-            ArrayList<BoxStorage> boxList = new ArrayList<>();
-            for (BlockPos pos : worldBlocks.keySet()) {
-            	Block block = worldBlocks.get(pos);
-                if (WorldHelper.INSTANCE.getBlock(pos) != block) {
-                    worldBlocks.remove(pos);
-                    continue;
-                }
-                Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
-                assert cameraEntity != null;
-                if (limitRange && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos)) > range)
-                    continue;
-                Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
-                Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 1, entityPos.z + 1 - 0.5f);
-                BoxStorage boxStorage = new BoxStorage(box, blocks.get(block));
-                boxList.add(boxStorage);
-            }
-            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), boxList, true);
-        } else if (event instanceof EventJoinWorld) {
+        if (emptyChunk != null) {
             int distance = Wrapper.INSTANCE.getOptions().viewDistance;
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
@@ -187,7 +179,21 @@ public class Search extends Feature {
                 }
             }
         }
-    }
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ChunkDeltaUpdateS2CPacket.class, ChunkDataS2CPacket.class, BlockUpdateS2CPacket.class));
+
+    @EventPointer
+    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
+            for (int i = -distance; i < distance; i++) {
+                for (int j = -distance; j < distance; j++) {
+                    Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
+                    if (chunk != null && !chunksToUpdate.contains(chunk))
+                        chunksToUpdate.offer(chunk);
+                }
+            }
+        }
+    });
 
     public void searchChunk(Chunk chunk) {
         try {

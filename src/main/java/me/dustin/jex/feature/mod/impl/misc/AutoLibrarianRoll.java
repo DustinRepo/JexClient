@@ -1,8 +1,10 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -32,7 +34,6 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
-import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
@@ -69,143 +70,147 @@ public class AutoLibrarianRoll extends Feature {
 
     private static final Map<VillagerEntity, BlockPos> doneVillagers = new HashMap<>();
 
-    @EventListener(events = {EventPlayerPackets.class, EventRender3D.class, EventRender2D.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (enchantment == null || enchantmentLevel == -1)
-                return;
-            if (lecternPos == null) {
-                lecternPos = getLectern();
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (enchantment == null || enchantmentLevel == -1)
+            return;
+        if (lecternPos == null) {
+            lecternPos = getLectern();
+        }
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof MerchantScreen merchantScreen) {
+            MerchantScreenHandler merchantScreenHandler = merchantScreen.getScreenHandler();
+            if (merchantScreenHandler.getExperience() > 0) {
+                doneVillagers.put(villager, lecternPos);
+                lecternPos = null;
+                villager = null;
+                ChatHelper.INSTANCE.addClientMessage("Villager has been traded with, ignoring");
             }
-            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof MerchantScreen merchantScreen) {
-                MerchantScreenHandler merchantScreenHandler = merchantScreen.getScreenHandler();
-                if (merchantScreenHandler.getExperience() > 0) {
-                    doneVillagers.put(villager, lecternPos);
-                    lecternPos = null;
-                    villager = null;
-                    ChatHelper.INSTANCE.addClientMessage("Villager has been traded with, ignoring");
-                }
-                TradeOfferList tradeOfferList = merchantScreenHandler.getRecipes();
-                if (!tradeOfferList.isEmpty()) {
-                    tradeOfferList.forEach(tradeOffer -> {
-                        if (tradeOffer.getSellItem().getItem() instanceof EnchantedBookItem) {
-                            Map<Enchantment, Integer> enchants = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(tradeOffer.getSellItem()));
-                            if (enchants.containsKey(enchantment) && enchants.get(enchantment) == enchantmentLevel) {
-                                int count = priceMode.equalsIgnoreCase("Normal") ? tradeOffer.getOriginalFirstBuyItem().getCount() : tradeOffer.getAdjustedFirstBuyItem().getCount();
-                                if (count <= price) {
-                                    ChatHelper.INSTANCE.addClientMessage("Enchantment found at price " + count + " emeralds");
-                                    tradeFound = true;
-                                    doneVillagers.put(villager, lecternPos);
-                                    this.setState(false);
+            TradeOfferList tradeOfferList = merchantScreenHandler.getRecipes();
+            if (!tradeOfferList.isEmpty()) {
+                tradeOfferList.forEach(tradeOffer -> {
+                    if (tradeOffer.getSellItem().getItem() instanceof EnchantedBookItem) {
+                        Map<Enchantment, Integer> enchants = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(tradeOffer.getSellItem()));
+                        if (enchants.containsKey(enchantment) && enchants.get(enchantment) == enchantmentLevel) {
+                            int count = priceMode.equalsIgnoreCase("Normal") ? tradeOffer.getOriginalFirstBuyItem().getCount() : tradeOffer.getAdjustedFirstBuyItem().getCount();
+                            if (count <= price) {
+                                ChatHelper.INSTANCE.addClientMessage("Enchantment found at price " + count + " emeralds");
+                                tradeFound = true;
+                                doneVillagers.put(villager, lecternPos);
+                                this.setState(false);
 
-                                    if (autoTrade) {
-                                        int book = getItem(Items.BOOK) - 6;
-                                        if (book != -1) {
-                                            int emerald = getItem(Items.EMERALD) - 6;
-                                            if (emerald != -1) {
-                                                JexClient.INSTANCE.getLogger().info("Autotrading");
-                                                JexClient.INSTANCE.getLogger().info("Book slot: " + book + " Emerald slot: " + emerald);
-                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, emerald, SlotActionType.PICKUP, 0);
-                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 0, SlotActionType.PICKUP, 0);
+                                if (autoTrade) {
+                                    int book = getItem(Items.BOOK) - 6;
+                                    if (book != -1) {
+                                        int emerald = getItem(Items.EMERALD) - 6;
+                                        if (emerald != -1) {
+                                            JexClient.INSTANCE.getLogger().info("Autotrading");
+                                            JexClient.INSTANCE.getLogger().info("Book slot: " + book + " Emerald slot: " + emerald);
+                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, emerald, SlotActionType.PICKUP, 0);
+                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 0, SlotActionType.PICKUP, 0);
 
-                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
-                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 1, SlotActionType.PICKUP, 0);
+                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
+                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 1, SlotActionType.PICKUP, 0);
 
-                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 2, SlotActionType.PICKUP, 0);
-                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
-                                            } else {
-                                                ChatHelper.INSTANCE.addClientMessage("No emeralds in inventory! Can not trade.");
-                                            }
+                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 2, SlotActionType.PICKUP, 0);
+                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
                                         } else {
-                                            ChatHelper.INSTANCE.addClientMessage("No books in inventory! Can not trade.");
+                                            ChatHelper.INSTANCE.addClientMessage("No emeralds in inventory! Can not trade.");
                                         }
+                                    } else {
+                                        ChatHelper.INSTANCE.addClientMessage("No books in inventory! Can not trade.");
                                     }
-                                } else {
-                                    ChatHelper.INSTANCE.addClientMessage("Enchantment found, but price is too high: " + count);
                                 }
+                            } else {
+                                ChatHelper.INSTANCE.addClientMessage("Enchantment found, but price is too high: " + count);
                             }
-                        }
-                    });
-                    if (!tradeFound) {
-                        NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(merchantScreenHandler.syncId));
-                        Wrapper.INSTANCE.getMinecraft().setScreen(null);
-                        checkedTrades = true;
-                    }
-                }
-            }
-            if (checkedTrades) {
-                if (lecternPos == null || tradeFound) {
-                    checkedTrades = false;
-                } else if (WorldHelper.INSTANCE.getBlock(lecternPos) == Blocks.LECTERN) {
-                    Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(lecternPos, Direction.UP);
-                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                } else if (WorldHelper.INSTANCE.getBlock(lecternPos) == Blocks.AIR) {
-                    checkedTrades = false;
-                }
-            }
-            if (villager == null || Wrapper.INSTANCE.getLocalPlayer().distanceTo(villager) > 6) {
-                tradeFound = false;
-                Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                    if (entity instanceof VillagerEntity villagerEntity) {
-                        if (villagerEntity.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN && Wrapper.INSTANCE.getLocalPlayer().distanceTo(villagerEntity) < 6) {
-                            if (villager == null || Wrapper.INSTANCE.getLocalPlayer().distanceTo(villagerEntity) < Wrapper.INSTANCE.getLocalPlayer().distanceTo(villager))
-                                if (!doneVillagers.containsKey(villagerEntity))
-                                    villager = villagerEntity;
                         }
                     }
                 });
-            } else if (villager.getVillagerData().getProfession() != lastProfession && lecternPos != null) {
-                if (villager.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN) {
-                    NetworkHelper.INSTANCE.sendPacket(PlayerInteractEntityC2SPacket.interact(villager, false, Hand.MAIN_HAND));
-                } else if (villager.getVillagerData().getProfession() == VillagerProfession.NONE) {
-                    int lecternHotbarSlot = InventoryHelper.INSTANCE.getFromHotbar(Items.LECTERN);
-                    if (lecternHotbarSlot == -1) {
-                        int lecternInvSlot = InventoryHelper.INSTANCE.getFromInv(Items.LECTERN);
-                        if (lecternInvSlot == -1)
-                            return;
-                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, lecternInvSlot < 9 ? lecternInvSlot + 36 : lecternInvSlot, SlotActionType.SWAP, 8);
-                        return;
-                    } else {
-                        InventoryHelper.INSTANCE.setSlot(lecternHotbarSlot, true, true);
-                        NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
-                        PlayerHelper.INSTANCE.placeBlockInPos(lecternPos, Hand.MAIN_HAND, false);
-                        NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
-                    }
+                if (!tradeFound) {
+                    NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(merchantScreenHandler.syncId));
+                    Wrapper.INSTANCE.getMinecraft().setScreen(null);
+                    checkedTrades = true;
                 }
-                lastProfession = villager.getVillagerData().getProfession();
-            }
-        } else if (event instanceof EventRender3D eventRender3D) {
-            if (lecternPos != null) {
-                Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(lecternPos);
-                Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-                Render3DHelper.INSTANCE.drawBox(eventRender3D.getMatrixStack(), box, 0xff00ff00);
-            }
-            if (villager != null) {
-                villagerPos = Render2DHelper.INSTANCE.getHeadPos(villager, eventRender3D.getPartialTicks(), eventRender3D.getMatrixStack());
-            }
-        } else if (event instanceof EventRender2D eventRender2D) {
-            if (villager != null && Render2DHelper.INSTANCE.isOnScreen(villagerPos)) {
-                Nametag nametag = (Nametag)Feature.get(Nametag.class);
-                float x = (float) villagerPos.x;
-                float y = (float) villagerPos.y - (nametag.getState() && nametag.passives ? 15 : 0);
-                String string1 = "Searching:";
-                String string2 = enchantment.getName(enchantmentLevel).getString();
-                String string3 = price + " Emeralds";
-                float length1 = FontHelper.INSTANCE.getStringWidth(string1);
-                float length2 = FontHelper.INSTANCE.getStringWidth(string2);
-                float length3 = FontHelper.INSTANCE.getStringWidth(string3);
-
-                Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), x - (length1 / 2) - 2, y - 34, x + (length1 / 2) + 2, y - 23, 0x35000000);
-                FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), string1, x, y - 32, -1);
-
-                Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), x - (length2 / 2) - 2, y - 23, x + (length2 / 2) + 2, y - 12, 0x35000000);
-                FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), string2, x, y - 21, ColorHelper.INSTANCE.getClientColor());
-
-                Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), x - (length3 / 2) - 2, y - 12, x + (length3 / 2) + 2, y - 1, 0x35000000);
-                FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), string3, x, y - 10, 0xff00ff00);
             }
         }
-    }
+        if (checkedTrades) {
+            if (lecternPos == null || tradeFound) {
+                checkedTrades = false;
+            } else if (WorldHelper.INSTANCE.getBlock(lecternPos) == Blocks.LECTERN) {
+                Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(lecternPos, Direction.UP);
+                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+            } else if (WorldHelper.INSTANCE.getBlock(lecternPos) == Blocks.AIR) {
+                checkedTrades = false;
+            }
+        }
+        if (villager == null || Wrapper.INSTANCE.getLocalPlayer().distanceTo(villager) > 6) {
+            tradeFound = false;
+            Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+                if (entity instanceof VillagerEntity villagerEntity) {
+                    if (villagerEntity.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN && Wrapper.INSTANCE.getLocalPlayer().distanceTo(villagerEntity) < 6) {
+                        if (villager == null || Wrapper.INSTANCE.getLocalPlayer().distanceTo(villagerEntity) < Wrapper.INSTANCE.getLocalPlayer().distanceTo(villager))
+                            if (!doneVillagers.containsKey(villagerEntity))
+                                villager = villagerEntity;
+                    }
+                }
+            });
+        } else if (villager.getVillagerData().getProfession() != lastProfession && lecternPos != null) {
+            if (villager.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN) {
+                NetworkHelper.INSTANCE.sendPacket(PlayerInteractEntityC2SPacket.interact(villager, false, Hand.MAIN_HAND));
+            } else if (villager.getVillagerData().getProfession() == VillagerProfession.NONE) {
+                int lecternHotbarSlot = InventoryHelper.INSTANCE.getFromHotbar(Items.LECTERN);
+                if (lecternHotbarSlot == -1) {
+                    int lecternInvSlot = InventoryHelper.INSTANCE.getFromInv(Items.LECTERN);
+                    if (lecternInvSlot == -1)
+                        return;
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, lecternInvSlot < 9 ? lecternInvSlot + 36 : lecternInvSlot, SlotActionType.SWAP, 8);
+                    return;
+                } else {
+                    InventoryHelper.INSTANCE.setSlot(lecternHotbarSlot, true, true);
+                    NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
+                    PlayerHelper.INSTANCE.placeBlockInPos(lecternPos, Hand.MAIN_HAND, false);
+                    NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
+                }
+            }
+            lastProfession = villager.getVillagerData().getProfession();
+        }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        if (lecternPos != null) {
+            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(lecternPos);
+            Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
+            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), box, 0xff00ff00);
+        }
+        if (villager != null) {
+            villagerPos = Render2DHelper.INSTANCE.getHeadPos(villager, event.getPartialTicks(), event.getMatrixStack());
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
+        if (villager != null && Render2DHelper.INSTANCE.isOnScreen(villagerPos)) {
+            Nametag nametag = (Nametag)Feature.get(Nametag.class);
+            float x = (float) villagerPos.x;
+            float y = (float) villagerPos.y - (nametag.getState() && nametag.passives ? 15 : 0);
+            String string1 = "Searching:";
+            String string2 = enchantment.getName(enchantmentLevel).getString();
+            String string3 = price + " Emeralds";
+            float length1 = FontHelper.INSTANCE.getStringWidth(string1);
+            float length2 = FontHelper.INSTANCE.getStringWidth(string2);
+            float length3 = FontHelper.INSTANCE.getStringWidth(string3);
+
+            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), x - (length1 / 2) - 2, y - 34, x + (length1 / 2) + 2, y - 23, 0x35000000);
+            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), string1, x, y - 32, -1);
+
+            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), x - (length2 / 2) - 2, y - 23, x + (length2 / 2) + 2, y - 12, 0x35000000);
+            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), string2, x, y - 21, ColorHelper.INSTANCE.getClientColor());
+
+            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), x - (length3 / 2) - 2, y - 12, x + (length3 / 2) + 2, y - 1, 0x35000000);
+            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), string3, x, y - 10, 0xff00ff00);
+        }
+    });
 
     @Override
     public void onEnable() {

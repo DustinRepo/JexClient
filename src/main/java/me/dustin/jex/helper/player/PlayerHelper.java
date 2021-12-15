@@ -1,8 +1,10 @@
 package me.dustin.jex.helper.player;
 
 import com.google.common.collect.Maps;
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.events.core.enums.EventPriority;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.priority.Priority;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -480,18 +482,16 @@ public enum PlayerHelper {
         return this.pitch;
     }
 
-    @EventListener(events = {EventPlayerPackets.class}, priority = EventPriority.HIGHEST)
-    public void runPacketEvent(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            this.yaw = eventPlayerPackets.getYaw();
-            this.pitch = eventPlayerPackets.getPitch();
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        this.yaw = event.getYaw();
+        this.pitch = event.getPitch();
 
-            if (!BaritoneHelper.INSTANCE.baritoneExists())
-                return;
-            if (!BaritoneHelper.INSTANCE.isBaritoneRunning())
-                return;
-            Wrapper.INSTANCE.getLocalPlayer().headYaw = yaw;
-            Wrapper.INSTANCE.getLocalPlayer().bodyYaw = yaw;
-        }
-    }
+        if (!BaritoneHelper.INSTANCE.baritoneExists())
+            return;
+        if (!BaritoneHelper.INSTANCE.isBaritoneRunning())
+            return;
+        Wrapper.INSTANCE.getLocalPlayer().headYaw = yaw;
+        Wrapper.INSTANCE.getLocalPlayer().bodyYaw = yaw;
+    }, Priority.FIRST, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

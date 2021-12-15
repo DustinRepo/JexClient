@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -29,8 +31,8 @@ public class SpeedCrafter extends Feature {
     private boolean alerted;
     private Timer timer = new Timer();
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
             if (InventoryHelper.INSTANCE.isInventoryFull(new ItemStack(craftingItem))) {
                 if (!alerted) {
@@ -56,7 +58,7 @@ public class SpeedCrafter extends Feature {
             }
         }
         setSuffix(craftingItem == null ? "None" : craftingItem.getName().getString());
-    }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override
     public void onEnable() {

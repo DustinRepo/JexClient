@@ -1,7 +1,6 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import me.dustin.events.core.Event;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.helper.misc.Wrapper;

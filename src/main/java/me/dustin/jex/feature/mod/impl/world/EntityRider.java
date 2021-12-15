@@ -1,7 +1,9 @@
 package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.misc.EventControlLlama;
 import me.dustin.jex.event.misc.EventHorseIsSaddled;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -54,53 +56,55 @@ public class EntityRider extends Feature {
     @OpChild(name = "Boat Jump", min = 0.1f, max = 2, inc = 0.05f, parent = "Boat")
     public float boatJump = 1;
 
-    @EventListener(events = {EventPlayerPackets.class, EventHorseIsSaddled.class, EventControlLlama.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPlayerPackets) {
-            if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() == null)
-                return;
-            Entity vehicle = Wrapper.INSTANCE.getLocalPlayer().getVehicle();
-            if (horse && isHorse(vehicle)) {
-                HorseBaseEntity horseBaseEntity = (HorseBaseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
-                IHorseBaseEntity iHorseBaseEntity = (IHorseBaseEntity) horseBaseEntity;
-                iHorseBaseEntity.setJumpStrength(horseJump);
-                iHorseBaseEntity.setSpeed(horseSpeed);
-                if (horseInstantJump)
-                    iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? 1 : 0);
-            }
-            if (llama && isLlama(vehicle)) {
-                HorseBaseEntity horseBaseEntity = (HorseBaseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
-                IHorseBaseEntity iHorseBaseEntity = (IHorseBaseEntity) horseBaseEntity;
-                iHorseBaseEntity.setJumpStrength(llamaJump);
-                iHorseBaseEntity.setSpeed(llamaSpeed);
-                if (llamaInstantJump)
-                    iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? 1 : 0);
-            }
-            if (boat && vehicle instanceof BoatEntity boatEntity) {
-                boatEntity.updateVelocity(boatSpeed / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));
-                if (allowBoatFly)
-                    if (Wrapper.INSTANCE.getOptions().keyJump.isPressed()) {
-                        boatEntity.addVelocity(0, boatJump / 10.0f, 0);
-                    } else if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_INSERT)) {
-                        boatEntity.addVelocity(0, -boatJump / 10.0f, 0);
-                    }
-            }
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() == null)
+            return;
+        Entity vehicle = Wrapper.INSTANCE.getLocalPlayer().getVehicle();
+        if (horse && isHorse(vehicle)) {
+            HorseBaseEntity horseBaseEntity = (HorseBaseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
+            IHorseBaseEntity iHorseBaseEntity = (IHorseBaseEntity) horseBaseEntity;
+            iHorseBaseEntity.setJumpStrength(horseJump);
+            iHorseBaseEntity.setSpeed(horseSpeed);
+            if (horseInstantJump)
+                iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? 1 : 0);
         }
-        if (event instanceof EventHorseIsSaddled) {
-            if (horse && alwaysSaddleHorse && isHorse(((EventHorseIsSaddled) event).getEntity())) {
-                ((EventHorseIsSaddled) event).setSaddled(true);
-                event.cancel();
-            }
-            if (llama && alwaysSaddleLlama && isLlama(((EventHorseIsSaddled) event).getEntity())) {
-                ((EventHorseIsSaddled) event).setSaddled(true);
-                event.cancel();
-            }
+        if (llama && isLlama(vehicle)) {
+            HorseBaseEntity horseBaseEntity = (HorseBaseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
+            IHorseBaseEntity iHorseBaseEntity = (IHorseBaseEntity) horseBaseEntity;
+            iHorseBaseEntity.setJumpStrength(llamaJump);
+            iHorseBaseEntity.setSpeed(llamaSpeed);
+            if (llamaInstantJump)
+                iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? 1 : 0);
         }
-        if (event instanceof EventControlLlama) {
-            ((EventControlLlama) event).setControl(llamaControl);
+        if (boat && vehicle instanceof BoatEntity boatEntity) {
+            boatEntity.updateVelocity(boatSpeed / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));
+            if (allowBoatFly)
+                if (Wrapper.INSTANCE.getOptions().keyJump.isPressed()) {
+                    boatEntity.addVelocity(0, boatJump / 10.0f, 0);
+                } else if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_INSERT)) {
+                    boatEntity.addVelocity(0, -boatJump / 10.0f, 0);
+                }
+        }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventHorseIsSaddled> eventHorseIsSaddledEventListener = new EventListener<>(event -> {
+        if (horse && alwaysSaddleHorse && isHorse(event.getEntity())) {
+            ((EventHorseIsSaddled) event).setSaddled(true);
             event.cancel();
         }
-    }
+        if (llama && alwaysSaddleLlama && isLlama(event.getEntity())) {
+            ((EventHorseIsSaddled) event).setSaddled(true);
+            event.cancel();
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventControlLlama> eventControlLlamaEventListener = new EventListener<>(event -> {
+        event.setControl(llamaControl);
+        event.cancel();
+    });
 
     private boolean isHorse(Entity entity) {
         return entity instanceof HorseEntity || entity instanceof DonkeyEntity || entity instanceof MuleEntity || entity instanceof SkeletonHorseEntity;

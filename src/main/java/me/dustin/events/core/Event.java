@@ -1,10 +1,6 @@
 package me.dustin.events.core;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
-import me.dustin.events.api.EventAPI;
+import me.dustin.events.EventManager;
 
 import java.util.ConcurrentModificationException;
 
@@ -15,7 +11,7 @@ public class Event {
     public <T> T run()
     {
         try {
-            EventAPI.getInstance().run(this);
+            EventManager.run(this);
         } catch (ConcurrentModificationException ignored){}
         return (T) this;
     }

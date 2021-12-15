@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -26,33 +28,33 @@ public class Derp extends Feature {
 
     private int yaw, pitch;
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         Random random = new Random();
         switch (mode) {
             case "Random" -> {
-                eventPlayerPackets.setYaw(random.nextFloat() * 180);
+                event.setYaw(random.nextFloat() * 180);
                 if (random.nextBoolean())
-                    eventPlayerPackets.setYaw(-eventPlayerPackets.getYaw());
-                eventPlayerPackets.setPitch(random.nextFloat() * 90);
+                    event.setYaw(-event.getYaw());
+                event.setPitch(random.nextFloat() * 90);
                 if (random.nextBoolean())
-                    eventPlayerPackets.setPitch(-eventPlayerPackets.getPitch());
+                    event.setPitch(-event.getPitch());
             }
             case "Pitch Roll" -> {
                 pitch++;
-                eventPlayerPackets.setPitch(pitch);
+                event.setPitch(pitch);
                 if (pitch > 90)
                     pitch = -90;
             }
             case "Yaw Roll" -> {
                 yaw++;
-                eventPlayerPackets.setYaw(yaw);
+                event.setYaw(yaw);
             }
             case "Both Roll" -> {
                 pitch++;
                 yaw++;
-                eventPlayerPackets.setYaw(yaw);
-                eventPlayerPackets.setPitch(pitch);
+                event.setYaw(yaw);
+                event.setPitch(pitch);
                 if (pitch > 90)
                     pitch = -90;
             }
@@ -65,6 +67,5 @@ public class Derp extends Feature {
                 NetworkHelper.INSTANCE.sendPacket(new HandSwingC2SPacket(hand));
             }
         }
-    }
-
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -21,25 +23,22 @@ public class AntiAFK extends Feature {
 
     private Timer timer = new Timer();
 
-    @EventListener(events = {EventPlayerPackets.class})
-    public void run(EventPlayerPackets event) {
-        if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (timer.hasPassed(secondsDelay * 1000)) {
-                switch (mode) {
-                    case "Swing":
-                        Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                        break;
-                    case "Jump":
-                        if (Wrapper.INSTANCE.getLocalPlayer().isOnGround())
-                            Wrapper.INSTANCE.getLocalPlayer().jump();
-                        break;
-                    case "Walk":
-                        NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(Wrapper.INSTANCE.getLocalPlayer().age + ""));
-                        break;
-                }
-                timer.reset();
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (timer.hasPassed(secondsDelay * 1000L)) {
+            switch (mode) {
+                case "Swing":
+                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                    break;
+                case "Jump":
+                    if (Wrapper.INSTANCE.getLocalPlayer().isOnGround())
+                        Wrapper.INSTANCE.getLocalPlayer().jump();
+                    break;
+                case "Walk":
+                    NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(Wrapper.INSTANCE.getLocalPlayer().age + ""));
+                    break;
             }
+            timer.reset();
         }
-    }
-
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

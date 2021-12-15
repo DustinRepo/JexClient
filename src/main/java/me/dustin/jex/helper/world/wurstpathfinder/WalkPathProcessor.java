@@ -37,9 +37,13 @@ public class WalkPathProcessor extends PathProcessor
 	public void process()
 	{
 		// get positions
-		BlockPos pos = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos());
-		if (Wrapper.INSTANCE.getLocalPlayer().isOnGround())
-			pos = pos.add(0, 0.2f, 0);
+		BlockPos pos;
+		if(Wrapper.INSTANCE.getLocalPlayer().isOnGround())
+			pos = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getX(),
+					Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5,
+					Wrapper.INSTANCE.getLocalPlayer().getZ());
+		else
+			pos = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos());
 		PathPos nextPos = path.get(index);
 		int posIndex = path.indexOf(pos);
 

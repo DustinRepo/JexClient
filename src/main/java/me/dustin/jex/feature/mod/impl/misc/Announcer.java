@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.jex.JexClient;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
-import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.file.FileHelper;
@@ -20,7 +20,6 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
@@ -31,40 +30,37 @@ public class Announcer extends Feature {
     @Op(name = "Message Delay", min = 50, max = 5000, inc = 10)
     public int messageDelay = 1000;
 
-    private File announcerFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "announcer.json");
+    private final File announcerFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "announcer.json");
 
-    private ArrayList<String> joinMessages = new ArrayList<>();
-    private ArrayList<String> leaveMessages = new ArrayList<>();
+    private final ArrayList<String> joinMessages = new ArrayList<>();
+    private final ArrayList<String> leaveMessages = new ArrayList<>();
 
-    private Timer timer = new Timer();
-    
-    @EventListener(events = {EventPacketReceive.class})
-    private void runMethod(EventPacketReceive eventPacketReceive) {
-        if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+    private final Timer timer = new Timer();
+
+    @EventPointer
+    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !timer.hasPassed(messageDelay))
             return;
-    	if (eventPacketReceive.getPacket() instanceof PlayerListS2CPacket playerListPacket) {
-            if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !timer.hasPassed(messageDelay))
-            	return;
-            
-    		if (playerListPacket.getAction() == PlayerListS2CPacket.Action.REMOVE_PLAYER) {
-    			Entry entry = playerListPacket.getEntries().get(0);
-    			if (entry != null) {
-    				String name = entry.getProfile().getName();
-					int rand = ClientMathHelper.INSTANCE.getRandom(leaveMessages.size());
-		            NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(leaveMessages.get(rand).replace("%player", name)));
-		            timer.reset();
-    			}
-    		} else if (playerListPacket.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
-    			Entry entry = playerListPacket.getEntries().get(0);
-    			if (entry != null) {
-    				String name = entry.getProfile().getName();
-    				int rand = ClientMathHelper.INSTANCE.getRandom(joinMessages.size());
-                    NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(joinMessages.get(rand).replace("%player", name)));
-                    timer.reset();
-    			}
-    		}
-    	}
-    }
+        PlayerListS2CPacket playerListPacket = (PlayerListS2CPacket) event.getPacket();
+
+        if (playerListPacket.getAction() == PlayerListS2CPacket.Action.REMOVE_PLAYER) {
+            Entry entry = playerListPacket.getEntries().get(0);
+            if (entry != null) {
+                String name = entry.getProfile().getName();
+                int rand = ClientMathHelper.INSTANCE.getRandom(leaveMessages.size());
+                NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(leaveMessages.get(rand).replace("%player", name)));
+                timer.reset();
+            }
+        } else if (playerListPacket.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
+            Entry entry = playerListPacket.getEntries().get(0);
+            if (entry != null) {
+                String name = entry.getProfile().getName();
+                int rand = ClientMathHelper.INSTANCE.getRandom(joinMessages.size());
+                NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(joinMessages.get(rand).replace("%player", name)));
+                timer.reset();
+            }
+        }
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, PlayerListS2CPacket.class));
 
     @Override
     public void onEnable() {

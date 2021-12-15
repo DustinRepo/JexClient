@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventGetGlintShaders;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -39,8 +40,8 @@ public class EnchantColor extends Feature{
     private GlUniform alphaU;
     private GlUniform mathModeU;
 
-    @EventListener(events = {EventGetGlintShaders.class})
-    private void runMethod(EventGetGlintShaders eventGetGlintShaders) {
+    @EventPointer
+    private final EventListener<EventGetGlintShaders> eventGetGlintShadersEventListener = new EventListener<>(event -> {
         if (glintColorU == null || crazyRainbowU == null || saturationU == null || mathModeU == null) {
             IShader iShader = (IShader) ShaderHelper.getRainbowEnchantShader();
             if (iShader != null) {
@@ -67,8 +68,8 @@ public class EnchantColor extends Feature{
         if (mathModeU != null) {
             mathModeU.set(getShaderMode());
         }
-        eventGetGlintShaders.setShader(ShaderHelper.getRainbowEnchantShader());
-        eventGetGlintShaders.cancel();
+        event.setShader(ShaderHelper.getRainbowEnchantShader());
+        event.cancel();
 
         if (timer.hasPassed(25)) {
             col+=rainbowSpeed;
@@ -76,7 +77,7 @@ public class EnchantColor extends Feature{
                 col-=270;
             timer.reset();
         }
-    }
+    });
 
     public int getShaderMode() {
         switch (shaderMode.toLowerCase()) {

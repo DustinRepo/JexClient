@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
@@ -31,61 +32,35 @@ public class TunnelFinder extends Feature {
     public int color = new Color(175, 250, 0).getRGB();
 
 
-    private ConcurrentLinkedQueue<BlockPos> positions = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<BlockPos> positions = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
 
     private Thread thread;
 
-    @EventListener(events = {EventPacketReceive.class, EventRender3D.class, EventJoinWorld.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPacketReceive eventPacketReceive) {
-            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+    @EventPointer
+    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getWorld() == null)
+            return;
+        Chunk emptyChunk = null;
+
+        Packet<?> packet = event.getPacket();
+
+        if (packet instanceof ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
+
+            ArrayList<BlockPos> changeBlocks = new ArrayList<>();
+            chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> {
+                changeBlocks.add(pos);
+            });
+            if (changeBlocks.isEmpty())
                 return;
-            if (Wrapper.INSTANCE.getWorld() == null)
-                return;
-            Chunk emptyChunk = null;
+            emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(changeBlocks.get(0));
+        } else if (packet instanceof BlockUpdateS2CPacket) {
+            emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(((BlockUpdateS2CPacket) packet).getPos());
+        } else if (packet instanceof ChunkDataS2CPacket chunkDataS2CPacket) {
+            emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(chunkDataS2CPacket.getX(), chunkDataS2CPacket.getZ());
+        }
 
-            Packet<?> packet = eventPacketReceive.getPacket();
-
-            if (packet instanceof ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
-
-                ArrayList<BlockPos> changeBlocks = new ArrayList<>();
-                chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> {
-                    changeBlocks.add(pos);
-                });
-                if (changeBlocks.isEmpty())
-                    return;
-                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(changeBlocks.get(0));
-            } else if (packet instanceof BlockUpdateS2CPacket) {
-                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(((BlockUpdateS2CPacket) packet).getPos());
-            } else if (packet instanceof ChunkDataS2CPacket chunkDataS2CPacket) {
-                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(chunkDataS2CPacket.getX(), chunkDataS2CPacket.getZ());
-            }
-
-            if (emptyChunk != null) {
-                int distance = Wrapper.INSTANCE.getOptions().viewDistance;
-                if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
-                    for (int i = -distance; i < distance; i++) {
-                        for (int j = -distance; j < distance; j++) {
-                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
-                            if (chunk != null && !chunksToUpdate.contains(chunk))
-                                chunksToUpdate.offer(chunk);
-                        }
-                    }
-                }
-            }
-        } else if (event instanceof EventRender3D) {
-            for (BlockPos pos : positions) {
-                if (ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ())) > 256) {
-                    positions.remove(pos);
-                    continue;
-                }
-                Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
-                Box box = new Box(entityPos.x, entityPos.y, entityPos.z, entityPos.x + 1, entityPos.y + 2, entityPos.z + 1);
-                Render3DHelper.INSTANCE.drawBoxOutline(((EventRender3D) event).getMatrixStack(), box, color);
-            }
-        } else if (event instanceof EventJoinWorld) {
-            positions.clear();
+        if (emptyChunk != null) {
             int distance = Wrapper.INSTANCE.getOptions().viewDistance;
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
@@ -97,7 +72,35 @@ public class TunnelFinder extends Feature {
                 }
             }
         }
-    }
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ChunkDeltaUpdateS2CPacket.class, ChunkDataS2CPacket.class, BlockUpdateS2CPacket.class));
+
+    @EventPointer
+    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        for (BlockPos pos : positions) {
+            if (ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ())) > 256) {
+                positions.remove(pos);
+                continue;
+            }
+            Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
+            Box box = new Box(entityPos.x, entityPos.y, entityPos.z, entityPos.x + 1, entityPos.y + 2, entityPos.z + 1);
+            Render3DHelper.INSTANCE.drawBoxOutline(event.getMatrixStack(), box, color);
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+        positions.clear();
+        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
+            for (int i = -distance; i < distance; i++) {
+                for (int j = -distance; j < distance; j++) {
+                    Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
+                    if (chunk != null && !chunksToUpdate.contains(chunk))
+                        chunksToUpdate.offer(chunk);
+                }
+            }
+        }
+    });
 
     @Override
     public void onEnable() {

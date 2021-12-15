@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.annotate.EventListener;
-import me.dustin.events.core.enums.EventPriority;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.render.EventRenderHeldItem;
 import me.dustin.jex.event.render.EventRenderItem;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -23,18 +24,18 @@ public class OldBlocking extends Feature {
     @Op(name = "Mode", all = {"Swords", "Tools", "All Items"})
     public String mode = "Swords";
 
-    @EventListener(events = {EventRenderItem.class}, priority = EventPriority.LOWEST)
-    private void runMethod(EventRenderItem eventRenderItem) {
-        if (eventRenderItem.getType().isFirstPerson()) {
-            MatrixStack matrixStack = eventRenderItem.getMatrixStack();
-            boolean offHand = eventRenderItem.isLeftHanded() ? eventRenderItem.getType() == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : eventRenderItem.getType() == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND;
+    @EventPointer
+    private final EventListener<EventRenderItem> eventRenderItemEventListener = new EventListener<>(event -> {
+        if (event.getType().isFirstPerson()) {
+            MatrixStack matrixStack = event.getMatrixStack();
+            boolean offHand = event.isLeftHanded() ? event.getType() == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : event.getType() == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND;
 
             if (EntityHelper.INSTANCE.isAuraBlocking())
-                switch (eventRenderItem.getRenderTime()) {
+                switch (event.getRenderTime()) {
                     case PRE -> {
                         matrixStack.push();
                         if (!offHand) {
-                            if (isGoodItem(eventRenderItem.getItemStack().getItem())) {
+                            if (isGoodItem(event.getItemStack().getItem())) {
                                 //point the tip outward
                                 matrixStack.multiply(new Quaternion(new Vec3f(1.0F, 0.0F, 0.0F), -60, true));
                                 //rotate infront of camera
@@ -49,13 +50,13 @@ public class OldBlocking extends Feature {
                 }
 
         }
-    }
+    }, Priority.LAST);
 
-    @EventListener(events = {EventRenderHeldItem.class})
-    private void heldItem(EventRenderHeldItem eventRenderHeldItem) {
-        if (eventRenderHeldItem.getHand() == Hand.OFF_HAND && eventRenderHeldItem.getItemStack().getItem() instanceof ShieldItem && EntityHelper.INSTANCE.isAuraBlocking())
-            eventRenderHeldItem.cancel();
-    }
+    @EventPointer
+    private final EventListener<EventRenderHeldItem> eventRenderHeldItemEventListener = new EventListener<>(event -> {
+        if (event.getHand() == Hand.OFF_HAND && event.getItemStack().getItem() instanceof ShieldItem && EntityHelper.INSTANCE.isAuraBlocking())
+            event.cancel();
+    });
 
     private boolean isGoodItem(Item item) {
         return switch (mode.toLowerCase()) {

@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -23,57 +24,53 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.")
 public class BedrockObf extends Feature {
 
-    private ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
-    private ConcurrentLinkedQueue<Chunk> obfuscatedChunks = new ConcurrentLinkedQueue<>();
-    private Random random = new Random();
+    private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Chunk> obfuscatedChunks = new ConcurrentLinkedQueue<>();
+    private final Random random = new Random();
     private Thread thread;
 
-    @EventListener(events = {EventPacketReceive.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventPacketReceive eventPacketReceive) {
-            if (eventPacketReceive.getMode() != EventPacketReceive.Mode.PRE)
+    @EventPointer
+    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getWorld() == null)
+            return;
+        Chunk emptyChunk = null;
+
+        Packet<?> packet = event.getPacket();
+
+        if (packet instanceof ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
+
+            ArrayList<BlockPos> changeBlocks = new ArrayList<>();
+            chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> {
+                changeBlocks.add(pos);
+            });
+            if (changeBlocks.isEmpty())
                 return;
-            if (Wrapper.INSTANCE.getWorld() == null)
-                return;
-            Chunk emptyChunk = null;
+            emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(changeBlocks.get(0));
+        } else if (packet instanceof BlockUpdateS2CPacket) {
+            emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(((BlockUpdateS2CPacket) packet).getPos());
+        } else if (packet instanceof ChunkDataS2CPacket chunkDataS2CPacket) {
+            emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(chunkDataS2CPacket.getX(), chunkDataS2CPacket.getZ());
+        }
 
-            Packet<?> packet = eventPacketReceive.getPacket();
-
-            if (packet instanceof ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket) {
-
-                ArrayList<BlockPos> changeBlocks = new ArrayList<>();
-                chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> {
-                    changeBlocks.add(pos);
-                });
-                if (changeBlocks.isEmpty())
-                    return;
-                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(changeBlocks.get(0));
-            } else if (packet instanceof BlockUpdateS2CPacket) {
-                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(((BlockUpdateS2CPacket) packet).getPos());
-            } else if (packet instanceof ChunkDataS2CPacket chunkDataS2CPacket) {
-                emptyChunk = Wrapper.INSTANCE.getWorld().getChunk(chunkDataS2CPacket.getX(), chunkDataS2CPacket.getZ());
+        if (emptyChunk != null) {
+            for (Chunk chunk : obfuscatedChunks) {
+                assert Wrapper.INSTANCE.getWorld() != null;
+                if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
+                    obfuscatedChunks.remove(chunk);
             }
-
-            if (emptyChunk != null) {
-                for (Chunk chunk : obfuscatedChunks) {
-                    assert Wrapper.INSTANCE.getWorld() != null;
-                    if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
-                        obfuscatedChunks.remove(chunk);
-                }
-                int distance = Wrapper.INSTANCE.getOptions().viewDistance;
-                if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
-                    for (int i = -distance; i < distance; i++) {
-                        for (int j = -distance; j < distance; j++) {
-                            Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
-                            if (chunk != null && !chunksToUpdate.contains(chunk) && !obfuscatedChunks.contains(chunk) && Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z)) {
-                                chunksToUpdate.offer(chunk);
-                            }
+            int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
+                for (int i = -distance; i < distance; i++) {
+                    for (int j = -distance; j < distance; j++) {
+                        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + i, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + j);
+                        if (chunk != null && !chunksToUpdate.contains(chunk) && !obfuscatedChunks.contains(chunk) && Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z)) {
+                            chunksToUpdate.offer(chunk);
                         }
                     }
                 }
             }
         }
-    }
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ChunkDeltaUpdateS2CPacket.class, ChunkDataS2CPacket.class, BlockUpdateS2CPacket.class));
 
     @Override
     public void onEnable() {

@@ -1,7 +1,8 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
@@ -39,15 +40,19 @@ public class AutoBreak extends Feature {
 
 	private BlockPos pos;
 
-	@EventListener(events = { EventClickBlock.class, EventRender3D.class, EventPlayerPackets.class, EventJoinWorld.class })
-	public void run(Event event) {
-		if (event.equals(EventClickBlock.class)) {
-			EventClickBlock click = (EventClickBlock) event;
-			pos = click.getBlockPos().add(0.5, 0, 0.5);
-		}
-		if (event.equals(EventJoinWorld.class))
-			pos = null;
-		if (event.equals(EventRender3D.class) && pos != null && showPosition) {
+	@EventPointer
+	private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
+		pos = event.getBlockPos().add(0.5, 0, 0.5);
+	});
+
+	@EventPointer
+	private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+		pos = null;
+	});
+
+	@EventPointer
+	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+		if (pos != null && showPosition) {
 			Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(pos.getX(), pos.getY(), pos.getZ());
 			Block block = WorldHelper.INSTANCE.getBlock(pos);
 
@@ -60,7 +65,11 @@ public class AutoBreak extends Feature {
 			Box bb = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
 			Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), bb, color);
 		}
-		if (event.equals(EventPlayerPackets.class) && ((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE && pos != null) {
+	});
+
+	@EventPointer
+	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+		if (pos != null) {
 			Block block = WorldHelper.INSTANCE.getBlock(pos);
 			if (block != Blocks.AIR && getDistance(pos, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ()) <= mineDistance) {
 				RotationVector rot = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
@@ -71,7 +80,7 @@ public class AutoBreak extends Feature {
 				Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 			}
 		}
-	}
+	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
 	public double getDistance(Vec3i vec, double xIn, double yIn, double zIn) {
 		double d0 = (vec.getX() - xIn);

@@ -1,11 +1,8 @@
 package me.dustin.jex.helper.math;
-/*
- * @Author Dustin
- * 9/28/2019
- */
 
-import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -37,20 +34,16 @@ public enum TPSHelper {
        return getTPS(reports.size());
     }
 
-    @EventListener(events = {EventJoinWorld.class, EventPacketReceive.class})
-    private void run(Event event) {
-        if (event instanceof EventJoinWorld) {
-            reports.clear();
+    @EventPointer
+    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+        reports.clear();
+    });
+
+    @EventPointer
+    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
+        reports.add(System.currentTimeMillis());
+        while (reports.size() > ((TPSSync) Feature.get(TPSSync.class)).sampleSize) {
+            reports.remove(0);
         }
-        if (event instanceof EventPacketReceive packetReceive) {
-            if (packetReceive.getMode() != EventPacketReceive.Mode.PRE)
-                return;
-            if (packetReceive.getPacket() instanceof WorldTimeUpdateS2CPacket) {
-                reports.add(System.currentTimeMillis());
-                while (reports.size() > ((TPSSync) Feature.get(TPSSync.class)).sampleSize) {
-                    reports.remove(0);
-                }
-            }
-        }
-    }
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, WorldTimeUpdateS2CPacket.class));
 }

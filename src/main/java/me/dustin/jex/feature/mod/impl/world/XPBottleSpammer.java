@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -21,9 +22,9 @@ public class XPBottleSpammer extends Feature {
     @Op(name = "Throw Key", isKeybind = true)
     public int throwKey = KeyboardHelper.INSTANCE.MIDDLE_CLICK;
 
-    @EventListener(events = EventPlayerPackets.class)
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
+    @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (event.getMode() == EventPlayerPackets.Mode.PRE) {
             if (!KeyboardHelper.INSTANCE.isPressed(throwKey))
                 return;
             int xpBottleHotbar = InventoryHelper.INSTANCE.getFromHotbar(Items.EXPERIENCE_BOTTLE);
@@ -33,8 +34,8 @@ public class XPBottleSpammer extends Feature {
                     return;
                 InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, xpBottleInv < 9 ? xpBottleInv + 36 : xpBottleInv, SlotActionType.SWAP, 8);
             }
-            eventPlayerPackets.setRotation(new RotationVector(Wrapper.INSTANCE.getLocalPlayer().getYaw(), 90));
-        } else if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.POST) {
+            event.setRotation(new RotationVector(Wrapper.INSTANCE.getLocalPlayer().getYaw(), 90));
+        } else if (event.getMode() == EventPlayerPackets.Mode.POST) {
             if (!KeyboardHelper.INSTANCE.isPressed(throwKey))
                 return;
             int xpBottleHotbar = InventoryHelper.INSTANCE.getFromHotbar(Items.EXPERIENCE_BOTTLE);
@@ -45,6 +46,5 @@ public class XPBottleSpammer extends Feature {
                 Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
             InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
         }
-    }
-
+    });
 }

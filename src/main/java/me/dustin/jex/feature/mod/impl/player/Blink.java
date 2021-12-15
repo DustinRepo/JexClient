@@ -1,7 +1,10 @@
 package me.dustin.jex.feature.mod.impl.player;
 
 import com.mojang.authlib.GameProfile;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -26,37 +29,33 @@ public class Blink extends Feature {
 	@OpChild(name = "Send Amount PT", min = 5, max = 50, parent = "Buffer Packets")
 	public int amountPT = 25;
 
-	private ArrayList<PlayerMoveC2SPacket> packets = new ArrayList<>();
+	private final ArrayList<PlayerMoveC2SPacket> packets = new ArrayList<>();
 	public static PlayerEntity playerEntity;
 	private boolean stopCatching;
 
-	@EventListener(events = { EventPacketSent.class })
-	private void runMethod(EventPacketSent eventPacketSent) {
-		if (eventPacketSent.getMode() != EventPacketSent.Mode.PRE)
-			return;
+	@EventPointer
+	private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
 		if (Wrapper.INSTANCE.getLocalPlayer() == null || (packets.isEmpty() && stopCatching)) {
 			packets.clear();
 			this.setState(false);
 			return;
 		}
-		if (!stopCatching && eventPacketSent.getPacket() instanceof PlayerMoveC2SPacket) {
+		if (!stopCatching) {
 			if (PlayerHelper.INSTANCE.isMoving()) {
-				packets.add((PlayerMoveC2SPacket) eventPacketSent.getPacket());
+				packets.add((PlayerMoveC2SPacket) event.getPacket());
 			}
-			eventPacketSent.cancel();
+			event.cancel();
 		}
-	}
+	}, new ClientPacketFilter(EventPacketSent.Mode.PRE, PlayerMoveC2SPacket.class));
 
-	@EventListener(events = { EventPlayerPackets.class })
-	private void runPlayerPackets(EventPlayerPackets eventPlayerPackets) {
-		if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-			if (stopCatching && !packets.isEmpty()) {
-				for (int i = 0; i < amountPT; i++) {
-					NetworkHelper.INSTANCE.sendPacket(packets.get(i));
-				}
+	@EventPointer
+	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+		if (stopCatching && !packets.isEmpty()) {
+			for (int i = 0; i < amountPT; i++) {
+				NetworkHelper.INSTANCE.sendPacket(packets.get(i));
 			}
 		}
-	}
+	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
 	@Override
 	public void onEnable() {

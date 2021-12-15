@@ -2,8 +2,9 @@ package me.dustin.jex.feature.command.impl;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.dustin.events.api.EventAPI;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.EventManager;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.event.misc.EventTick;
@@ -21,19 +22,18 @@ import java.util.HashMap;
 public class CommandPeek extends Command {
     ShulkerBoxScreen shulkerBoxScreen;
 
-    @EventListener(events = {EventTick.class})
-    private void runMethod(EventTick eventTick) {
+
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-            while (EventAPI.getInstance().alreadyRegistered(this))
-                EventAPI.getInstance().unregister(this);
+            EventManager.unregister(this);
             return;
         }
         if (Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
             Wrapper.INSTANCE.getMinecraft().setScreen(shulkerBoxScreen);
-            while (EventAPI.getInstance().alreadyRegistered(this))
-                EventAPI.getInstance().unregister(this);
+            EventManager.unregister(this);
         }
-    }
+    });
 
     @Override
     public void registerCommand() {
@@ -50,7 +50,7 @@ public class CommandPeek extends Command {
                 shulkerBoxScreenHandler.setStackInSlot(slot, shulkerBoxScreenHandler.nextRevision(), stackHashMap.get(slot));
             });
             shulkerBoxScreen = new ShulkerBoxScreen(shulkerBoxScreenHandler, InventoryHelper.INSTANCE.getInventory(), stack.getName());
-            EventAPI.getInstance().register(this);
+            EventManager.register(this);
         } else {
             ChatHelper.INSTANCE.addClientMessage("You must be holding a Shulker Box to use this command.");
         }

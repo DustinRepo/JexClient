@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -12,8 +13,8 @@ public class Fullbright extends Feature {
     @Op(name = "Reset Gamma", max = 1, inc = 0.05f)
     public float resetGamma = 1;
 
-    @EventListener(events = {EventTick.class})
-    private void tick(EventTick eventTick) {
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getOptions() == null)
             return;
         double gamma = Wrapper.INSTANCE.getOptions().gamma;
@@ -28,7 +29,7 @@ public class Fullbright extends Feature {
                 Wrapper.INSTANCE.getOptions().gamma += 0.5f;
             }
         }
-    }
+    });
 
     @Override
     public void onDisable() {

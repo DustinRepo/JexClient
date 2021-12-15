@@ -1,8 +1,9 @@
 package me.dustin.jex.feature.mod.impl.render.hud;
 
-import me.dustin.events.api.EventAPI;
+import me.dustin.events.EventManager;
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.misc.EventTick;
@@ -32,7 +33,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.*;
 import org.lwjgl.glfw.GLFW;
 
-import java.awt.*;
 import java.util.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
@@ -131,73 +131,81 @@ public class Hud extends Feature {
 
     @Override
     public void onEnable() {
-        if (!EventAPI.getInstance().alreadyRegistered(TabGui.INSTANCE))
-            EventAPI.getInstance().register(TabGui.INSTANCE);
+        EventManager.register(TabGui.INSTANCE);
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        while (EventAPI.getInstance().alreadyRegistered(TabGui.INSTANCE))
-            EventAPI.getInstance().unregister(TabGui.INSTANCE);
+        EventManager.unregister(TabGui.INSTANCE);
         super.onDisable();
     }
 
-    @EventListener(events = {EventRender2D.class, EventRenderEffects.class, EventMouseButton.class, EventKeyPressed.class, EventRender2DItem.class, EventTick.class})
-    private void runRenderMethod(Event event) {
-        if (event instanceof EventRender2D eventRender2D) {
-            if (Wrapper.INSTANCE.getOptions().debugEnabled)
-                return;
-            if (!gaveEditorMessage && ModFileHelper.INSTANCE.isFirstTimeLoading()) {
-                ChatHelper.INSTANCE.addClientMessage("Welcome to Jex Client");
-                ChatHelper.INSTANCE.addClientMessage("If you would like to customize the HUD you see infront of you, simply open the Chat");
-                ChatHelper.INSTANCE.addClientMessage("You can press \247b" + KeyboardHelper.INSTANCE.getKeyName(constrictKey) + "\2477 to bring them back on-screen, and right-click them to flip them");
-                ChatHelper.INSTANCE.addClientMessage("Press \247b" + KeyboardHelper.INSTANCE.getKeyName(Feature.get(Gui.class).getKey()) + "\2477 to open the ClickGui");
-                gaveEditorMessage = true;
-            }
-            if (hudElements.isEmpty())
-                loadElements();
-            hudElements.forEach(hudElement -> {
-                hudElement.render(eventRender2D.getMatrixStack());
-            });
-            if (lagometer)
-                drawLagometer(eventRender2D);
-            for (Window window : ClickGui.windows) {
-                if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof JexGui)) {
-                    window.draw(eventRender2D.getMatrixStack());
-                }
-            }
-        } else if (event instanceof EventRenderEffects eventRenderEffects) {
-            if (this.potionEffects)
-                eventRenderEffects.cancel();
-        } else if (event instanceof EventTick) {
-            hudElements.forEach(HudElement::tick);
-
-            float shouldBeY = Lagometer.INSTANCE.isServerLagging() ? 2 : -11;
-            float distance = Math.abs(lagOMeterY - shouldBeY);
-
-            if (distance > 30)
-                lagOMeterY = shouldBeY;
-            if (lagOMeterY < shouldBeY)
-                lagOMeterY += distance * 0.5f;
-            if (lagOMeterY > shouldBeY)
-                lagOMeterY -= distance * 0.5f;
-        } else if (event instanceof EventMouseButton eventMouseButton) {
-            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen)
-                hudElements.forEach(hudElement -> {
-                    hudElement.click(MouseHelper.INSTANCE.getMouseX(), MouseHelper.INSTANCE.getMouseY(), eventMouseButton.getButton());
-                });
-        }else if (event instanceof EventKeyPressed eventKeyPressed) {
-            if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen && eventKeyPressed.getKey() == this.constrictKey)
-                hudElements.forEach(hudElement -> {
-                    hudElement.setX(MathHelper.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
-                    hudElement.setY(MathHelper.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
-                });
-        } else if (event instanceof EventRender2DItem eventRender2DItem) {
-            if (this.itemDurability)
-                drawItemDurability(eventRender2DItem);
+    @EventPointer
+    private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getOptions().debugEnabled)
+            return;
+        if (!gaveEditorMessage && ModFileHelper.INSTANCE.isFirstTimeLoading()) {
+            ChatHelper.INSTANCE.addClientMessage("Welcome to Jex Client");
+            ChatHelper.INSTANCE.addClientMessage("If you would like to customize the HUD you see infront of you, simply open the Chat");
+            ChatHelper.INSTANCE.addClientMessage("You can press \247b" + KeyboardHelper.INSTANCE.getKeyName(constrictKey) + "\2477 to bring them back on-screen, and right-click them to flip them");
+            ChatHelper.INSTANCE.addClientMessage("Press \247b" + KeyboardHelper.INSTANCE.getKeyName(Feature.get(Gui.class).getKey()) + "\2477 to open the ClickGui");
+            gaveEditorMessage = true;
         }
-    }
+        if (hudElements.isEmpty())
+            loadElements();
+        hudElements.forEach(hudElement -> {
+            hudElement.render(event.getMatrixStack());
+        });
+        if (lagometer)
+            drawLagometer(event);
+        for (Window window : ClickGui.windows) {
+            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof JexGui)) {
+                window.draw(event.getMatrixStack());
+            }
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventRenderEffects> eventRenderEffectsEventListener = new EventListener<>(event -> {
+        if (this.potionEffects)
+            event.cancel();
+    });
+
+    @EventPointer
+    private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen)
+            hudElements.forEach(hudElement -> hudElement.click(MouseHelper.INSTANCE.getMouseX(), MouseHelper.INSTANCE.getMouseY(), event.getButton()));
+    });
+
+    @EventPointer
+    private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen && event.getKey() == this.constrictKey)
+            hudElements.forEach(hudElement -> {
+                hudElement.setX(MathHelper.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
+                hudElement.setY(MathHelper.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
+            });
+    });
+
+    @EventPointer
+    private final EventListener<EventRender2DItem> eventRender2DItemEventListener = new EventListener<>(event -> {
+        if (this.itemDurability)
+            drawItemDurability(event);
+    });
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
+        hudElements.forEach(HudElement::tick);
+
+        float shouldBeY = Lagometer.INSTANCE.isServerLagging() ? 2 : -11;
+        float distance = Math.abs(lagOMeterY - shouldBeY);
+
+        if (distance > 30)
+            lagOMeterY = shouldBeY;
+        if (lagOMeterY < shouldBeY)
+            lagOMeterY += distance * 0.5f;
+        if (lagOMeterY > shouldBeY)
+            lagOMeterY -= distance * 0.5f;
+    });
 
     public void loadElements() {
         hudElements.add(new PotionEffectsElement(0, 12 * 6 + 150, 60, 20));

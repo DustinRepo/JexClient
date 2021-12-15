@@ -2,9 +2,11 @@ package me.dustin.jex.feature.command.impl;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.dustin.events.api.EventAPI;
+import me.dustin.events.EventManager;
 import me.dustin.events.core.Event;
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.world.EventClickBlock;
@@ -62,11 +64,11 @@ public class CommandDupe extends Command {
                 Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
                 ChatHelper.INSTANCE.addClientMessage("Running dupe");
                 this.blockHitResult = blockHitResult;
-                this.speedmine = Feature.get(SpeedMine.class).getState() && ((SpeedMine)Feature.get(SpeedMine.class)).mode.equalsIgnoreCase("Instant");
+                this.speedmine = Feature.getState(SpeedMine.class) && ((SpeedMine)Feature.get(SpeedMine.class)).mode.equalsIgnoreCase("Instant");
                 if (speedmine) {
                     Feature.get(SpeedMine.class).setState(false);
                 }
-                EventAPI.getInstance().register(this);
+                EventManager.register(this);
             } else {
                 ChatHelper.INSTANCE.addClientMessage("You must be staring at a shulker");
             }
@@ -74,36 +76,37 @@ public class CommandDupe extends Command {
         return 1;
     }
 
-    @EventListener(events = {EventTick.class, EventPacketSent.class})
-    private void runMethod(Event event) {
-        if (event instanceof EventTick) {
-            if (Feature.get(AutoTool.class).getState())
-                new EventClickBlock(blockHitResult.getBlockPos(), blockHitResult.getSide()).run();
-            Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
-        } else if (event instanceof EventPacketSent eventPacketSent && eventPacketSent.getPacket() instanceof PlayerActionC2SPacket playerActionC2SPacket && playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
-            if (eventPacketSent.getMode() == EventPacketSent.Mode.POST) {
-                if (Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler instanceof ShulkerBoxScreenHandler shulkerBoxScreenHandler) {
-                    ChatHelper.INSTANCE.addClientMessage("Sending window click and turning off");
-                    if (speedmine) {
-                        Feature.get(SpeedMine.class).setState(true);
-                    }
-                    if (all) {
-                        int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
-                        for (int i = 0; i < most; i++) {
-                            ItemStack stack = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getSlot(i).getStack();
-                            if (stack != null && stack.getItem() != Items.AIR) {
-                                InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, i, throwItems ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, throwItems ? 1 : 0);
-                            }
-                        }
-                    } else {
-                        InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, 0, throwItems ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, throwItems ? 1 : 0);
-                    }
+    @EventPointer
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
+        if (Feature.getState(AutoTool.class))
+            new EventClickBlock(blockHitResult.getBlockPos(), blockHitResult.getSide()).run();
+        Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
+    });
+
+    @EventPointer
+    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        PlayerActionC2SPacket playerActionC2SPacket = (PlayerActionC2SPacket) event.getPacket();
+        if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
+            if (Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler instanceof ShulkerBoxScreenHandler shulkerBoxScreenHandler) {
+                ChatHelper.INSTANCE.addClientMessage("Sending window click and turning off");
+                if (speedmine) {
+                    Feature.get(SpeedMine.class).setState(true);
                 }
-                while (EventAPI.getInstance().alreadyRegistered(this))
-                    EventAPI.getInstance().unregister(this);
-                this.throwItems = false;
-                this.all = false;
+                if (all) {
+                    int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
+                    for (int i = 0; i < most; i++) {
+                        ItemStack stack = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getSlot(i).getStack();
+                        if (stack != null && stack.getItem() != Items.AIR) {
+                            InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, i, throwItems ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, throwItems ? 1 : 0);
+                        }
+                    }
+                } else {
+                    InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, 0, throwItems ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, throwItems ? 1 : 0);
+                }
             }
+            EventManager.unregister(this);
+            this.throwItems = false;
+            this.all = false;
         }
-    }
+    }, new ClientPacketFilter(EventPacketSent.Mode.POST, PlayerActionC2SPacket.class));
 }

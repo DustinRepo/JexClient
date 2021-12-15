@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -16,7 +17,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
@@ -47,8 +47,8 @@ public class SpawnHighlighter extends Feature {
 	private ArrayList<BlockPos> posList = new ArrayList<>();
 	private Timer timer = new Timer();
 
-	@EventListener(events = { EventRender3D.class })
-	private void runMethod(EventRender3D eventRender3D) {
+	@EventPointer
+	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 		if (timer.hasPassed(checkDelay)) {
 			posList.clear();
 			for (int x = -radius; x < radius; x++) {
@@ -70,8 +70,8 @@ public class SpawnHighlighter extends Feature {
 			Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
 			boxes.add(new Render3DHelper.BoxStorage(box, color));
 		});
-		Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), boxes, disableDepth);
-	}
+		Render3DHelper.INSTANCE.drawList(event.getMatrixStack(), boxes, disableDepth);
+	});
 
 	private boolean isValidBlock(BlockPos blockPos) {
 		BlockPos above = blockPos.add(0, 1, 0);

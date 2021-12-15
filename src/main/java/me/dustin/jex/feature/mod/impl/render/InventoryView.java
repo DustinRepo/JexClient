@@ -1,6 +1,8 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -25,8 +27,8 @@ public class InventoryView extends Feature {
 
     private final Identifier SHULKER_GUI = new Identifier("textures/gui/container/shulker_box.png");
 
-    @EventListener(events = {EventRender2D.class})
-    private void runMethod(EventRender2D eventRender2D) {
+    @EventPointer
+    private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
         if (location.equalsIgnoreCase("Top") && KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_TAB) && Wrapper.INSTANCE.getMinecraft().currentScreen == null)
             return;
         float y = location.equalsIgnoreCase("Top") ? -10 : Render2DHelper.INSTANCE.getScaledHeight() - 140;
@@ -37,7 +39,7 @@ public class InventoryView extends Feature {
         if (drawBackground) {
             Render2DHelper.INSTANCE.bindTexture(SHULKER_GUI);
             Scissor.INSTANCE.cut((int) x + 5, (int) y + 18, 185, 62);
-            Render2DHelper.INSTANCE.drawTexture(eventRender2D.getMatrixStack(), (int) x, (int) y, 0, 0, 285, 285, 285, 285);
+            Render2DHelper.INSTANCE.drawTexture(event.getMatrixStack(), (int) x, (int) y, 0, 0, 285, 285, 285, 285);
             Scissor.INSTANCE.seal();
         }
         int xCount = 0;
@@ -58,5 +60,5 @@ public class InventoryView extends Feature {
                 yCount++;
             }
         }
-    }
+    }, Priority.LAST);
 }

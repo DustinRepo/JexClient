@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.annotate.EventListener;
+import me.dustin.events.core.EventListener;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Timer;
@@ -39,38 +40,34 @@ public class CreativeDrop extends Feature {
     public boolean newEnchants = true;
 
     private int slot = 1;
-    private Timer timer = new Timer();
+    private final Timer timer = new Timer();
 
-    @EventListener(events = {EventPlayerPackets.class})
-    private void runMethod(EventPlayerPackets eventPlayerPackets) {
-        if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
-            Random random = new Random();
-            String[] names = new String[]{"https://jexclient.com", "Download Jex Client to do this", "Nice FPS", "Oh look a shiny item", "Copper pants", "How do I stop dropping items?", "Can you hear me?", "Please help I am stuck in this item"};
-            if (timer.hasPassed(delay) && Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
-                for (int i = 0; i < speed; i++) {
-                    ItemStack itemStack = new ItemStack(Item.byRawId(slot));
-                    if (itemStack.getItem() != null && itemStack.getItem() != Items.AIR) {
-                        String name = "§" + (slot % 9) + names[(int) (random.nextFloat() * (names.length))];
-                        if (this.name)
-                            itemStack.setCustomName(new LiteralText(name));
-                        if (enchant)
-                            Registry.ENCHANTMENT.forEach(enchantment -> {
-                                if (!newEnchants) {
-                                    if (enchantment == Enchantments.SOUL_SPEED || enchantment == Enchantments.LOYALTY || enchantment == Enchantments.MULTISHOT || enchantment == Enchantments.PIERCING || enchantment == Enchantments.RIPTIDE || enchantment == Enchantments.IMPALING || enchantment == Enchantments.CHANNELING || enchantment == Enchantments.QUICK_CHARGE)
-                                        return;
-                                }
-                                itemStack.addEnchantment(enchantment, 127);
-                            });
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        Random random = new Random();
+        String[] names = new String[]{"https://jexclient.com", "Download Jex Client to do this", "Nice FPS", "Oh look a shiny item", "Copper pants", "How do I stop dropping items?", "Can you hear me?", "Please help I am stuck in this item"};
+        if (timer.hasPassed(delay) && Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
+            for (int i = 0; i < speed; i++) {
+                ItemStack itemStack = new ItemStack(Item.byRawId(slot));
+                if (itemStack.getItem() != null && itemStack.getItem() != Items.AIR) {
+                    String name = "§" + (slot % 9) + names[(int) (random.nextFloat() * (names.length))];
+                    if (this.name)
+                        itemStack.setCustomName(new LiteralText(name));
+                    if (enchant)
+                        Registry.ENCHANTMENT.forEach(enchantment -> {
+                            if (!newEnchants) {
+                                if (enchantment == Enchantments.SOUL_SPEED || enchantment == Enchantments.LOYALTY || enchantment == Enchantments.MULTISHOT || enchantment == Enchantments.PIERCING || enchantment == Enchantments.RIPTIDE || enchantment == Enchantments.IMPALING || enchantment == Enchantments.CHANNELING || enchantment == Enchantments.QUICK_CHARGE)
+                                    return;
+                            }
+                            itemStack.addEnchantment(enchantment, 127);
+                        });
 
-                        NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(36, itemStack));
-                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 36, SlotActionType.THROW, 0);
-                        slot += 1;
-                    } else
-                        slot = 1;
-                }
-                timer.reset();
+                    NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(36, itemStack));
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 36, SlotActionType.THROW, 0);
+                    slot += 1;
+                } else
+                    slot = 1;
             }
+            timer.reset();
         }
-    }
-
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
