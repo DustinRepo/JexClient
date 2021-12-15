@@ -50,7 +50,7 @@ public class MultiAura extends FeatureExtension {
             EventPlayerPackets event = (EventPlayerPackets) event1;
             if (event.getMode() == EventPlayerPackets.Mode.PRE) {
                 getTargets();
-                KillAura.INSTANCE.setHasTarget(targets.isEmpty());
+                KillAura.INSTANCE.setHasTarget(!targets.isEmpty());
                 if (!targets.isEmpty()) {
                     if (BaritoneHelper.INSTANCE.baritoneExists()) {
                         if (KillAura.INSTANCE.baritoneOverride && (BaritoneHelper.INSTANCE.isBaritoneRunning() || Feature.get(Excavator.class).getState()))

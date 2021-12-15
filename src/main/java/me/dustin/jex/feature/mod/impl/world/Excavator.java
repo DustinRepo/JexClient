@@ -37,6 +37,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
 import org.lwjgl.glfw.GLFW;
@@ -87,20 +88,19 @@ public class Excavator extends Feature {
             if (distanceTo <= (WorldHelper.INSTANCE.getBlock(closestBlock) == Blocks.BEDROCK ? 3 : Wrapper.INSTANCE.getInteractionManager().getReachDistance() - 1)) {
                 if (!KillAura.INSTANCE.hasTarget() && !BreakingFlowController.isWorking()) {
                     BlockHitResult blockHitResult = rayCast(closestBlock);
+                    BlockPos blockPos = closestBlock;
                     if (blockHitResult != null) {
-                        BlockPos blockPos = closestBlock;
-                        RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), blockHitResult.getPos());
-                        event.setRotation(rotationVector);
-                        Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
-                        Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
-
                         if (ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(blockHitResult.getBlockPos())) < ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(closestBlock))) {
                             blockPos = blockHitResult.getBlockPos();
                         }
-
-                        Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, blockHitResult.getSide());
-                        Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                     }
+                    RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(blockPos));
+                    event.setRotation(rotationVector);
+                    Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
+                    Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
+
+                    Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
+                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 }
                 if (distanceTo <= 1.5f) {
                     pathFinder = null;
@@ -254,6 +254,7 @@ public class Excavator extends Feature {
                 }
                 case EXCAVATING -> {
                     stage = Stage.PAUSED;
+                    PathProcessor.releaseControls();
                     if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritone)
                         BaritoneHelper.INSTANCE.pathTo(null);
                 }
@@ -275,6 +276,10 @@ public class Excavator extends Feature {
             }
         }
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_GAME, GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_BACKSPACE));
+
+    public boolean isPaused() {
+        return this.stage == Stage.PAUSED;
+    }
 
     @Override
     public void onEnable() {
@@ -410,7 +415,7 @@ public class Excavator extends Feature {
 
         @Override
         protected boolean checkDone() {
-            return done = ClientMathHelper.INSTANCE.getDistance(Vec3d.of(getGoal()), Vec3d.of(current)) <= ((Excavator)Feature.get(Excavator.class)).layerDepth;
+            return done = WorldHelper.INSTANCE.getBlock(current.down()).getDefaultState().getCollisionShape(Wrapper.INSTANCE.getWorld(), current.down()) != VoxelShapes.empty() && ClientMathHelper.INSTANCE.getDistance(Vec3d.of(getGoal()), Vec3d.of(current)) <= ((Excavator)Feature.get(Excavator.class)).layerDepth;
         }
     }
 

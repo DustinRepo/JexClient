@@ -10,6 +10,7 @@ import me.dustin.jex.event.player.EventGetPose;
 import me.dustin.jex.event.player.EventIsPlayerTouchingWater;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -57,8 +58,7 @@ public class Fly extends Feature {
         }
 
         Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = speed;
-        Wrapper.INSTANCE.getLocalPlayer().setMovementSpeed(speed);
-        if (!PathProcessor.lockedControls)
+        if (!PathProcessor.lockedControls && !((Excavator)Feature.get(Excavator.class)).isPaused())
             Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
 
         if (jumping) {

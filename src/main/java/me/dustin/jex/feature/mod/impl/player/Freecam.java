@@ -5,6 +5,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
+import me.dustin.jex.event.player.EventGetPose;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
@@ -18,6 +19,7 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
@@ -73,10 +75,18 @@ public class Freecam extends Feature {
     });
 
     @EventPointer
-    private final EventListener<EventPushOutOfBlocks> eventPushOutOfBlocksEventListener = new EventListener<>(Event::cancel);
+    private final EventListener<EventPushOutOfBlocks> eventPushOutOfBlocksEventListener = new EventListener<>(event -> event.cancel());
 
     @EventPointer
-    private final EventListener<EventMarkChunkClosed> eventMarkChunkClosedEventListener = new EventListener<>(Event::cancel);
+    private final EventListener<EventMarkChunkClosed> eventMarkChunkClosedEventListener = new EventListener<>(event -> event.cancel());
+
+    @EventPointer
+    private final EventListener<EventGetPose> eventGetPoseEventListener = new EventListener<>(event -> {
+       if (event.getPose() == EntityPose.SWIMMING) {
+           event.setPose(EntityPose.STANDING);
+           event.cancel();
+       }
+    });
 
     @Override
     public void onEnable() {
