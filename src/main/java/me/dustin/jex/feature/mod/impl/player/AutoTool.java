@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.player;
 import bedrockminer.utils.BreakingFlowController;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventClickBlock;
@@ -12,7 +13,9 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CropBlock;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.item.HoeItem;
 import net.minecraft.item.ItemStack;
 
 @Feature.Manifest(category = Feature.Category.PLAYER, description = "Switch to the best tool for your needs.")
@@ -31,20 +34,32 @@ public class AutoTool extends Feature {
         if (!Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
             int slot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
             BlockState blockState = Wrapper.INSTANCE.getWorld().getBlockState(event.getBlockPos());
+
             float best = 1;
             boolean found = false;
             for (int index = 0; index < 9; index++) {
                 ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(index);
                 if (blockState.getBlock() != Blocks.AIR) {
-                    if (itemStack.getMiningSpeedMultiplier(blockState) > best) {
-                        best = itemStack.getMiningSpeedMultiplier(blockState);
+                    float miningSpeedMultiplier = itemStack.getMiningSpeedMultiplier(blockState);
+
+                    //apparently axes are considerably faster than hoes for crops, but if you have a hoe odds are it's being used for those crops
+                    if (blockState.getBlock() instanceof CropBlock && itemStack.getItem() instanceof HoeItem) {
+                        miningSpeedMultiplier *= 100;
+                    }
+
+                    if (miningSpeedMultiplier > best) {
+                        best = miningSpeedMultiplier;
                         slot = index;
                         found = true;
-                    } else if (itemStack.getMiningSpeedMultiplier(blockState) == best && best > 1) {
-                        if (InventoryHelper.INSTANCE.compareEnchants(InventoryHelper.INSTANCE.getInventory().getStack(slot), itemStack, Enchantments.EFFICIENCY)) {
-                            best = itemStack.getMiningSpeedMultiplier(blockState);
+                    } else if (miningSpeedMultiplier == best && best > 1) {
+                        if (blockState.getBlock() instanceof CropBlock && itemStack.getItem() instanceof HoeItem) {
+                            if (InventoryHelper.INSTANCE.compareEnchants(InventoryHelper.INSTANCE.getInventory().getStack(slot), itemStack, Enchantments.FORTUNE)) {
+                                best = miningSpeedMultiplier;
+                                slot = index;
+                            }
+                        } else if (InventoryHelper.INSTANCE.compareEnchants(InventoryHelper.INSTANCE.getInventory().getStack(slot), itemStack, Enchantments.EFFICIENCY)) {
+                            best = miningSpeedMultiplier;
                             slot = index;
-                            found = true;
                         }
                     }
                 }
