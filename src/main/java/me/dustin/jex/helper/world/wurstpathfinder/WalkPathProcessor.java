@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Fly;
+import me.dustin.jex.feature.mod.impl.movement.Step;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -120,28 +121,24 @@ public class WalkPathProcessor extends PathProcessor
 			// vertical movement
 		}else if(pos.getY() != nextPos.getY())
 			// go up
-			if(pos.getY() < nextPos.getY())
-			{
+			if(pos.getY() < nextPos.getY()) {
 				// climb up
 				// TODO: Spider
 				Block block = WorldHelper.INSTANCE.getBlock(pos);
-				if(block instanceof LadderBlock || block instanceof VineBlock)
-				{
+				if(block instanceof LadderBlock || block instanceof VineBlock) {
 					Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
-				}else
-				{
+				}else {
 					// directional jump
 					if(index < path.size() - 1
 							&& !nextPos.up().equals(path.get(index + 1)))
 						index++;
 
 					// jump up
-					Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
+					if (!Feature.getState(Step.class))
+						Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
 				}
-
 				// go down
-			}else
-			{
+			}else {
 				// skip mid-air nodes and go straight to the bottom
 				while(index < path.size() - 1
 						&& path.get(index).down().equals(path.get(index + 1)))
@@ -153,7 +150,7 @@ public class WalkPathProcessor extends PathProcessor
 					PlayerHelper.INSTANCE.setVelocityZ(0);
 					double newx = -Math.sin(yaw * 3.1415927F / 180.0F) * moveSpeed();
 					double newz = Math.cos(yaw * 3.1415927F / 180.0F) * moveSpeed();
-					if(Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()){
+					if(Wrapper.INSTANCE.getLocalPlayer().isTouchingWater() || PlayerHelper.INSTANCE.isOnEdgeOfBlock()){
 						newx *= 0.4;
 						newz *= 0.4;
 					}

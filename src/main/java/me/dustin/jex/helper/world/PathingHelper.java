@@ -36,7 +36,7 @@ public enum PathingHelper {
                pathProcessor = pathFinder.getProcessor();
            }
 
-           if (pathProcessor != null && !pathFinder.isPathStillValid(pathProcessor.getIndex())) {
+           if (pathProcessor != null && !pathFinder.isPathStillValid(pathProcessor.getIndex()) && goal != null) {
                pathFinder = new PathFinder(goal);
                return;
            }
@@ -96,11 +96,11 @@ public enum PathingHelper {
 
     public void setPathFinder(PathFinder pathFinder) {
         this.pathFinder = pathFinder;
+        this.goal = pathFinder.getGoal();
         this.pathProcessor = null;
     }
 
     private static class NearPathFinder extends PathFinder{
-
         private final int range;
 
         public NearPathFinder(BlockPos goal, int range) {
@@ -111,7 +111,7 @@ public enum PathingHelper {
 
         @Override
         protected boolean checkDone() {
-            return done = WorldHelper.INSTANCE.getBlock(current.down()).getDefaultState().getCollisionShape(Wrapper.INSTANCE.getWorld(), current.down()) != VoxelShapes.empty() && ClientMathHelper.INSTANCE.getDistance(Vec3d.of(getGoal()), Vec3d.of(current)) <= this.range;
+            return done = WorldHelper.INSTANCE.getBlockState(current.down()).getCollisionShape(Wrapper.INSTANCE.getWorld(), current.down()) != VoxelShapes.empty() && ClientMathHelper.INSTANCE.getDistance(Vec3d.of(getGoal()), Vec3d.of(current)) <= this.range;
         }
     }
 

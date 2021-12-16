@@ -82,10 +82,8 @@ public class Freecam extends Feature {
 
     @EventPointer
     private final EventListener<EventGetPose> eventGetPoseEventListener = new EventListener<>(event -> {
-       if (event.getPose() == EntityPose.SWIMMING) {
            event.setPose(EntityPose.STANDING);
            event.cancel();
-       }
     });
 
     @Override

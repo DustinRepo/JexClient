@@ -16,6 +16,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
+import me.dustin.jex.helper.world.wurstpathfinder.PathPos;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.Block;
@@ -25,6 +26,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
+
+import java.util.ArrayList;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Prevent yourself from being detected as AFK and potentially kicked")
 public class AntiAFK extends Feature {
@@ -38,15 +41,15 @@ public class AntiAFK extends Feature {
     private final Timer timer = new Timer();
 
     private BlockPos afkSpot;
-    private BlockPos lastSpot;
+    private BlockPos[] lastSpots;
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         setSuffix(mode);
         if (afkSpot == null)
             afkSpot = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
-        if (lastSpot == null)
-            lastSpot = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
+        if (lastSpots == null)
+            lastSpots = new BlockPos[]{Wrapper.INSTANCE.getLocalPlayer().getBlockPos(), Wrapper.INSTANCE.getLocalPlayer().getBlockPos()};
         if (timer.hasPassed(secondsDelay * 1000L)) {
             switch (mode) {
                 case "Swing":
@@ -70,8 +73,8 @@ public class AntiAFK extends Feature {
     @Override
     public void onDisable() {
         afkSpot = null;
-        lastSpot = null;
-        PathProcessor.releaseControls();
+        lastSpots = null;
+        PathingHelper.INSTANCE.cancelPathing();
         super.onDisable();
     }
 
@@ -82,6 +85,8 @@ public class AntiAFK extends Feature {
         public WanderPathFinder(BlockPos goal, AntiAFK antiAFK) {
             super(goal);
             setThinkTime(10);
+            setFallingAllowed(false);
+            setDivingAllowed(false);
             this.antiAFK = antiAFK;
         }
 
@@ -91,11 +96,14 @@ public class AntiAFK extends Feature {
             Vec3d currentVec = Vec3d.of(current);
             double playerDistance = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), currentVec);
             double origSpotDistance = ClientMathHelper.INSTANCE.getDistance(Vec3d.of(getGoal()), currentVec);
-            double lastSpotDistance = ClientMathHelper.INSTANCE.getDistance(Vec3d.of(antiAFK.lastSpot), currentVec);
+            double lastSpotDistance = ClientMathHelper.INSTANCE.getDistance(Vec3d.of(antiAFK.lastSpots[0]), currentVec);
 
-            done = playerDistance > 5 && origSpotDistance < 15 && origSpotDistance > 4 && lastSpotDistance > 6;
+            Block below = WorldHelper.INSTANCE.getBlock(current.down());
+
+            done = below != Blocks.AIR && playerDistance > 5 && origSpotDistance < 15 && origSpotDistance > 4 && lastSpotDistance > 6;
             if (done) {
-                antiAFK.lastSpot = current;
+                antiAFK.lastSpots[0] = antiAFK.lastSpots[1];
+                antiAFK.lastSpots[1] = current;
             }
             return done;
         }

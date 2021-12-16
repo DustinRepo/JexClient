@@ -445,6 +445,12 @@ public enum PlayerHelper {
         }
     }
 
+    public boolean isOnEdgeOfBlock() {
+        double fracX = MathHelper.fractionalPart(Wrapper.INSTANCE.getLocalPlayer().getX());
+        double fracZ = MathHelper.fractionalPart(Wrapper.INSTANCE.getLocalPlayer().getZ());
+        return fracX < 0.3 || fracX > 0.7 || fracZ < 0.3 || fracZ > 0.7;
+    }
+
     public Vec3d getPlayerVec() {
         return new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
     }
