@@ -89,6 +89,15 @@ public enum PathingHelper {
         return this.pathFinder != null;
     }
 
+    public boolean isThinking() {
+        return isPathing() && !pathFinder.isDone() && pathFinder.isFailed();
+    }
+
+    public void setPathFinder(PathFinder pathFinder) {
+        this.pathFinder = pathFinder;
+        this.pathProcessor = null;
+    }
+
     private static class NearPathFinder extends PathFinder{
 
         private final int range;

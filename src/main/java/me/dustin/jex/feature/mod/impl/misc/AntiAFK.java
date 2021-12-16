@@ -13,6 +13,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
@@ -38,8 +39,6 @@ public class AntiAFK extends Feature {
 
     private BlockPos afkSpot;
     private BlockPos lastSpot;
-    private WanderPathFinder pathFinder;
-    private PathProcessor pathProcessor;
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -61,49 +60,12 @@ public class AntiAFK extends Feature {
                     NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(Wrapper.INSTANCE.getLocalPlayer().age + ""));
                     break;
                 case "Wander":
-                    pathFinder = new WanderPathFinder(afkSpot,this);
+                    PathingHelper.INSTANCE.setPathFinder(new WanderPathFinder(afkSpot, this));
                     break;
             }
             timer.reset();
         }
-        if (pathFinder != null) {
-            if (!pathFinder.isDone() && !pathFinder.isFailed()) {
-                PathProcessor.lockControls();
-                pathFinder.think();
-
-                if (!pathFinder.isDone() && !pathFinder.isFailed())
-                    return;
-
-                pathFinder.formatPath();
-                pathProcessor = pathFinder.getProcessor();
-            }
-
-            if (pathProcessor != null && !pathFinder.isPathStillValid(pathProcessor.getIndex())) {
-                pathFinder = new WanderPathFinder(afkSpot,this);
-                return;
-            }
-
-            if (pathProcessor == null) {
-                PathProcessor.releaseControls();
-                return;
-            }
-
-            pathProcessor.process();
-
-            if (pathProcessor.isDone()) {
-                pathFinder = null;
-                pathProcessor = null;
-                PathProcessor.releaseControls();
-            }
-        }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
-
-    @EventPointer
-    private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-       if (pathFinder != null && pathFinder.isDone()) {
-           pathFinder.renderPath(event.getMatrixStack(), false, false);
-       }
-    });
 
     @Override
     public void onDisable() {

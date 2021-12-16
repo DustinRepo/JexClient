@@ -26,6 +26,7 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
@@ -48,8 +49,6 @@ import java.util.Comparator;
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Mine out a selected area")
 public class Excavator extends Feature {
 
-    @Op(name = "Render Path")
-    public boolean renderPath = true;
     @Op(name = "Use Baritone If Available")
     public boolean useBaritone = true;
     @Op(name = "Render Area Box")
@@ -60,9 +59,6 @@ public class Excavator extends Feature {
     public boolean logoutWhenDone = false;
     @Op(name = "Sort Delay", max = 1000, inc = 10)
     public int sortDelay = 350;
-
-    private ExcavatorPathFinder pathFinder;
-    private PathProcessor pathProcessor;
 
     public static MiningArea miningArea;
     private Stage stage = Stage.SET_POS1;
@@ -102,18 +98,20 @@ public class Excavator extends Feature {
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 }
                 if (distanceTo <= 1.5f) {
-                    pathFinder = null;
+                    PathingHelper.INSTANCE.cancelPathing();
                     if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritone)
                         BaritoneHelper.INSTANCE.pathTo(null);
                 }
             } else
-            if (pathFinder == null && miningArea != null && distanceTo > 2.5f) {
+            if (miningArea != null && distanceTo > 2.5f) {
                 if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritone) {
                     if (!BaritoneHelper.INSTANCE.isBaritoneRunning()) {
-                        BaritoneHelper.INSTANCE.pathNear(closestBlock, 2);
+                        BaritoneHelper.INSTANCE.pathNear(closestBlock, layerDepth);
                     }
                 } else {
-                    pathFinder = new ExcavatorPathFinder(closestBlock);
+                    if (!PathingHelper.INSTANCE.isPathing()) {
+                        PathingHelper.INSTANCE.pathNear(closestBlock, layerDepth);
+                    }
                 }
             }
         } else if (miningArea.empty()) {
@@ -124,34 +122,6 @@ public class Excavator extends Feature {
             }
             return;
         }
-
-        if (!BaritoneHelper.INSTANCE.baritoneExists() || !useBaritone) {
-            if (pathFinder != null) {
-                if (!pathFinder.isDone() && !pathFinder.isFailed()) {
-                    PathProcessor.lockControls();
-                    pathFinder.think();
-                    if (!pathFinder.isDone() && !pathFinder.isFailed()) {
-                        return;
-
-                    }
-                    pathFinder.formatPath();
-                    pathProcessor = pathFinder.getProcessor();
-                }
-
-                if (pathProcessor != null && !pathFinder.isPathStillValid(pathProcessor.getIndex())) {
-                    pathFinder = new ExcavatorPathFinder(closestBlock);
-                    return;
-                }
-
-                pathProcessor.process();
-
-                if (pathProcessor.isDone()) {
-                    pathFinder = null;
-                    pathProcessor = null;
-                    PathProcessor.releaseControls();
-                }
-            }
-        }
         if (miningArea != null)
             setSuffix(String.format("%.2f%%", (1 - ((float)miningArea.blocksLeft() / (float)miningArea.totalBlocks())) * 100));
         else
@@ -160,9 +130,6 @@ public class Excavator extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        if (renderPath && pathFinder != null)
-            pathFinder.renderPath(event.getMatrixStack(), false, false);
-
         if (miningArea != null && renderAreaBox) {
             Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(miningArea.getAreaBB().minX, miningArea.getAreaBB().minY, miningArea.getAreaBB().minZ));
             Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(miningArea.getAreaBB().maxX, miningArea.getAreaBB().maxY, miningArea.getAreaBB().maxZ));
@@ -226,7 +193,7 @@ public class Excavator extends Feature {
         Render2DHelper.INSTANCE.outlineAndFill(event.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 10, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 24, 0x70696969, 0x40000000);
         FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 13, miningArea != null ? getColor(percent).getRGB() : -1);
 
-        if (pathFinder != null && !pathFinder.isDone() && !pathFinder.isFailed()) {
+        if (PathingHelper.INSTANCE.isPathing()) {
             message = Formatting.GREEN + "Wurst AI" + Formatting.GRAY + ": " + Formatting.WHITE + "Thinking";
             width = FontHelper.INSTANCE.getStringWidth(message);
             Render2DHelper.INSTANCE.outlineAndFill(event.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 25, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 39, 0x70696969, 0x40000000);
@@ -296,8 +263,7 @@ public class Excavator extends Feature {
             BaritoneHelper.INSTANCE.setAllowPlace(baritoneAllowPlace);
             BaritoneHelper.INSTANCE.pathTo(null);
         }
-        pathProcessor = null;
-        pathFinder = null;
+        PathingHelper.INSTANCE.cancelPathing();
         miningArea = null;
         tempPos1 = null;
         tempPos2 = null;
@@ -403,18 +369,6 @@ public class Excavator extends Feature {
 
         public void sortList() {
             blockPosList.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, 2, 0), Vec3d.ofCenter(value))));
-        }
-    }
-
-    private static class ExcavatorPathFinder extends PathFinder {
-        public ExcavatorPathFinder(BlockPos goal) {
-            super(goal);
-            setThinkTime(10);
-        }
-
-        @Override
-        protected boolean checkDone() {
-            return done = WorldHelper.INSTANCE.getBlock(current.down()).getDefaultState().getCollisionShape(Wrapper.INSTANCE.getWorld(), current.down()) != VoxelShapes.empty() && ClientMathHelper.INSTANCE.getDistance(Vec3d.of(getGoal()), Vec3d.of(current)) <= ((Excavator)Feature.get(Excavator.class)).layerDepth;
         }
     }
 
