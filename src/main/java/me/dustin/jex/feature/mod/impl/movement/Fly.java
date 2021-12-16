@@ -16,6 +16,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
@@ -58,7 +59,7 @@ public class Fly extends Feature {
         }
 
         Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = speed;
-        if (!PathProcessor.lockedControls || ((Excavator)Feature.get(Excavator.class)).isPaused())
+        if (!PathingHelper.INSTANCE.isPathing() || PathingHelper.INSTANCE.isThinking())
             Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
 
         if (jumping) {

@@ -2,6 +2,7 @@ package me.dustin.jex.helper.world;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -48,7 +49,7 @@ public enum PathingHelper {
                PathProcessor.releaseControls();
            }
        }
-    });
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
