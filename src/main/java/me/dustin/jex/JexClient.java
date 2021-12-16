@@ -33,6 +33,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.EntityPositionHelper;
 import me.dustin.jex.helper.update.JexVersion;
+import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.helper.update.UpdateManager;
@@ -89,6 +90,7 @@ public enum JexClient {
         EventManager.register(ColorHelper.INSTANCE);
         EventManager.register(EntityPositionHelper.INSTANCE);
         EventManager.register(JexServerHelper.INSTANCE);
+        EventManager.register(PathingHelper.INSTANCE);
         getLogger().info("Checking for update");
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();

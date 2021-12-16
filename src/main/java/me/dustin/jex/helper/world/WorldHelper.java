@@ -71,6 +71,27 @@ public enum WorldHelper {
         return blockState.getFluidState() != Fluids.EMPTY.getDefaultState();
     }
 
+    public boolean isCrop(BlockPos blockPos, boolean checkAge) {
+        Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+        if (block instanceof CropBlock cropBlock) {
+            int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
+            if (!checkAge || age == cropBlock.getMaxAge()) {
+                return true;
+            }
+        } else if (block == Blocks.MELON || block == Blocks.PUMPKIN) {
+            return true;
+        } else if (block == Blocks.SUGAR_CANE) {
+            Block belowBlock = WorldHelper.INSTANCE.getBlock(blockPos.down());
+            if (belowBlock == Blocks.SUGAR_CANE)
+                return true;
+        } else if (block == Blocks.BAMBOO) {
+            Block belowBlock = WorldHelper.INSTANCE.getBlock(blockPos.down());
+            if (belowBlock == Blocks.BAMBOO)
+                return true;
+        }
+        return false;
+    }
+
     public FluidState getFluidState(BlockPos pos) {
         return getBlockState(pos).getFluidState();
     }
