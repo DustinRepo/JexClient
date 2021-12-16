@@ -99,17 +99,18 @@ public class AutoFarm extends Feature {
                 closest = farmArea.getClosestFarmland();
                 int cropSlot = getPlantableCrop();
 
-                if (cropSlot > 8) {
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, cropSlot, SlotActionType.SWAP, 8);
-                    cropSlot = 8;
-                }
-
                 //if out of crops to plant or no more area to plant crops move to next stage
                 if (cropSlot == -1 || closest == null) {
                     this.stage = Stage.ITEM_PICKUP;
                     PathingHelper.INSTANCE.cancelPathing();
                     return;
                 }
+
+                if (cropSlot > 8) {
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, cropSlot, SlotActionType.SWAP, 8);
+                    cropSlot = 8;
+                }
+
                 if (!PathingHelper.INSTANCE.isPathing()) {
                     PathingHelper.INSTANCE.pathTo(closest);
                 }
