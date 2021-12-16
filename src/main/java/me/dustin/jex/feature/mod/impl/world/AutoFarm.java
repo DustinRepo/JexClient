@@ -55,10 +55,6 @@ public class AutoFarm extends Feature {
 
     @Op(name = "Render Area Box")
     public boolean renderAreaBox = true;
-    @Op(name = "Layer Depth", min = 1, max = 5)
-    public int layerDepth = 2;
-    //@Op(name = "LogOut when Done")
-    public boolean logoutWhenDone = false;
     @Op(name = "Sort Delay", max = 1000, inc = 10)
     public int sortDelay = 350;
 
