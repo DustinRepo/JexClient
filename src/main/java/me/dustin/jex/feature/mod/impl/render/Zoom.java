@@ -13,6 +13,8 @@ import org.lwjgl.glfw.GLFW;
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Zoom in like Optifine")
 public class Zoom extends Feature {
 
+    @Op(name = "Mouse Smooth")
+    public boolean mouseSmooth = true;
     @Op(name = "Zoom Level", min = 1, max = 5, inc = 0.1f)
     public float zoomLevel = 1;
     @Op(name = "Zoom Key", isKeybind = true)
@@ -37,17 +39,17 @@ public class Zoom extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if(KeyboardHelper.INSTANCE.isPressed(zoomKey) && Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
-            if(resetFOV)
-            {
+            if(resetFOV) {
                 this.resetFOV = false;
                 this.savedFOV = (float)Wrapper.INSTANCE.getOptions().fov;
             }
             float zoomFov = 30 - (6 * zoomLevel);
             if (zoomFov == 0)
                 zoomFov = 1;
-            if(Wrapper.INSTANCE.getOptions().fov > zoomFov)
-            {
+            if(Wrapper.INSTANCE.getOptions().fov > zoomFov) {
                 Wrapper.INSTANCE.getOptions().fov = zoomFov;
+                if (mouseSmooth)
+                    Wrapper.INSTANCE.getOptions().smoothCameraEnabled = true;
             }
         }
         else
@@ -55,9 +57,14 @@ public class Zoom extends Feature {
             if(!resetFOV || !getState()) {
                 if (Wrapper.INSTANCE.getOptions().fov < savedFOV) {
                     Wrapper.INSTANCE.getOptions().fov = savedFOV;
+                    if (mouseSmooth)
+                        Wrapper.INSTANCE.getOptions().smoothCameraEnabled = false;
                 }
-                if (!getState())
+                if (!getState()) {
                     super.onDisable();
+                    if (mouseSmooth)
+                        Wrapper.INSTANCE.getOptions().smoothCameraEnabled = false;
+                }
             } else
                 this.resetFOV = true;
         }
