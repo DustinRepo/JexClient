@@ -58,7 +58,7 @@ public class Fly extends Feature {
         }
 
         Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = speed;
-        if (!PathProcessor.lockedControls && !((Excavator)Feature.get(Excavator.class)).isPaused())
+        if (!PathProcessor.lockedControls || ((Excavator)Feature.get(Excavator.class)).isPaused())
             Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
 
         if (jumping) {

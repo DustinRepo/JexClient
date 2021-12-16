@@ -1,7 +1,6 @@
 package me.dustin.jex.feature.mod.impl.world;
 
 import bedrockminer.utils.BreakingFlowController;
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.KeyPressFilter;
@@ -278,7 +277,7 @@ public class Excavator extends Feature {
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_GAME, GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_BACKSPACE));
 
     public boolean isPaused() {
-        return this.stage == Stage.PAUSED;
+        return this.stage != Stage.EXCAVATING;
     }
 
     @Override
