@@ -2,6 +2,7 @@ package me.dustin.jex.gui.tab;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -176,5 +177,5 @@ public enum TabGui {
         } else if (modHoverY < modSpotHoverY) {
             modHoverY += modDistance * speed;
         }
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 }

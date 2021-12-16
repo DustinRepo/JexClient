@@ -120,6 +120,12 @@ public class InventoryManager {
 
     public static String warningMessage() {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        if (minecraftClient.interactionManager == null)
+            return "null interaction manager";
+        if (minecraftClient.player == null)
+            return "null player";
+        if (minecraftClient.world == null)
+            return "null world";
         if (!"survival".equals(minecraftClient.interactionManager.getCurrentGameMode().getName())) {
             return "仅限生存模式！Survival Only!";
         }

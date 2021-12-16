@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -29,7 +30,7 @@ public class Fullbright extends Feature {
                 Wrapper.INSTANCE.getOptions().gamma += 0.5f;
             }
         }
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     @Override
     public void onDisable() {

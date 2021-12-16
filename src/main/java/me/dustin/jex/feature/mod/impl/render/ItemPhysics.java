@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRotateItemEntity;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -119,5 +120,5 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
         itemPitchNeg.keySet().removeIf(Objects::isNull);
         itemRollNeg.keySet().removeIf(Objects::isNull);
         itemYawNeg.keySet().removeIf(Objects::isNull);
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 }

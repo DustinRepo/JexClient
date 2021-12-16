@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.filters.KeyPressFilter;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.*;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -122,7 +123,7 @@ public enum JexClient {
             BaritoneHelper.INSTANCE.setAssumeStep(Feature.get(Step.class).getState());
             BaritoneHelper.INSTANCE.setAssumeJesus(Feature.get(Jesus.class).getState());
         }
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {

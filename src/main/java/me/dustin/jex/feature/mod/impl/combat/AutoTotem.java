@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -54,7 +55,7 @@ public class AutoTotem extends Feature {
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getLocalPlayer() == null)
             swappedSlot = -1;
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     public boolean needsOffhandTotem() {
         if (activateWhen.equalsIgnoreCase("Always"))

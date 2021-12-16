@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.world;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketReceive;
@@ -27,7 +28,7 @@ public class AutoSign extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld() == null) {
             this.setState(false);
         }
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventSetScreen> eventSetScreenEventListener = new EventListener<>(event -> {

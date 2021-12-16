@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.world.xray;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
@@ -73,7 +74,7 @@ public class Xray extends Feature {
     @EventPointer
     private final EventListener<EventGetTranslucentShader> eventGetTranslucentShaderEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
-    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> sendEvent(event));
+    private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> sendEvent(event), new TickFilter(EventTick.Mode.PRE));
     @EventPointer
     private final EventListener<EventSodiumBeginShader> eventSodiumBeginShaderEventListener = new EventListener<>(event -> sendEvent(event));
 

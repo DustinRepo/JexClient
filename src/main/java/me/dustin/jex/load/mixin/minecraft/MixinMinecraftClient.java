@@ -70,8 +70,12 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
-    public void tick(CallbackInfo ci) {
-        new EventTick().run();
+    public void tickPre(CallbackInfo ci) {
+        new EventTick(EventTick.Mode.PRE).run();
+    }
+    @Inject(method = "tick", at = @At("RETURN"))
+    public void tickPost(CallbackInfo ci) {
+        new EventTick(EventTick.Mode.POST).run();
     }
 
     @Inject(method = "joinWorld", at = @At("HEAD"))

@@ -31,9 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GameRenderer.class)
 public abstract class MixinGameRenderer implements IGameRenderer {
 
-    @Shadow
-    @Final
-    private Camera camera;
+    @Shadow @Final private Camera camera;
 
     @Shadow
     public abstract void loadProjectionMatrix(Matrix4f matrix4f);
@@ -59,7 +57,7 @@ public abstract class MixinGameRenderer implements IGameRenderer {
 
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", at = @At(value = "INVOKE", target = "com/mojang/blaze3d/systems/RenderSystem.clear(IZ)V"))
     private void onRenderWorld(float partialTicks, long finishTimeNano, MatrixStack matrixStack1, CallbackInfo ci) {
-        if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null)
+        if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null || Wrapper.INSTANCE.getLocalPlayer() == null)
             return;
         RenderSystem.clearColor(1, 1, 1, 1);
         MatrixStack matrixStack = new MatrixStack();

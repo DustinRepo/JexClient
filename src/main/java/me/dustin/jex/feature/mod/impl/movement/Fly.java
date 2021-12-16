@@ -10,6 +10,7 @@ import me.dustin.jex.event.player.EventGetPose;
 import me.dustin.jex.event.player.EventIsPlayerTouchingWater;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -74,7 +75,7 @@ public class Fly extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        if (!flyCheckBypass)
+        if (!flyCheckBypass || Feature.getState(Freecam.class))
             return;
         PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
         if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {

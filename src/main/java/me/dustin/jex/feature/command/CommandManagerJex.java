@@ -10,6 +10,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.chat.EventSendMessage;
 import me.dustin.jex.event.filters.DrawScreenFilter;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.feature.command.core.Command;
@@ -92,7 +93,7 @@ public enum CommandManagerJex {
             overlayAlpha = 255;
         if (overlayAlpha < 0)
             overlayAlpha = 0;
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {

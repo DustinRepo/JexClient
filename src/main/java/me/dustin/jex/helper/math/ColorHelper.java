@@ -2,6 +2,7 @@ package me.dustin.jex.helper.math;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
@@ -64,5 +65,5 @@ public enum ColorHelper {
         if (rainbowHue > 270) {
             rainbowHue -= 270;
         }
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 }

@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRenderWidget;
@@ -87,7 +88,7 @@ public class CustomWidgets extends Feature {
             hovered = MathHelper.clamp(hovered, 0, 10);
             hoverChecks.replace(widget, hovered);
         }
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventSetScreen> eventSetScreenEventListener = new EventListener<>(event -> {

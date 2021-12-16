@@ -4,6 +4,7 @@ import me.dustin.events.EventManager;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.misc.EventTick;
@@ -205,7 +206,7 @@ public class Hud extends Feature {
             lagOMeterY += distance * 0.5f;
         if (lagOMeterY > shouldBeY)
             lagOMeterY -= distance * 0.5f;
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     public void loadElements() {
         hudElements.add(new PotionEffectsElement(0, 12 * 6 + 150, 60, 20));

@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.event.misc.EventTick;
@@ -33,7 +34,7 @@ public class CommandPeek extends Command {
             Wrapper.INSTANCE.getMinecraft().setScreen(shulkerBoxScreen);
             EventManager.unregister(this);
         }
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     @Override
     public void registerCommand() {

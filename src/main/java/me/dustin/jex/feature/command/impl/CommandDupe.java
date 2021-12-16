@@ -7,6 +7,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.world.EventClickBlock;
@@ -81,7 +82,7 @@ public class CommandDupe extends Command {
         if (Feature.getState(AutoTool.class))
             new EventClickBlock(blockHitResult.getBlockPos(), blockHitResult.getSide()).run();
         Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {

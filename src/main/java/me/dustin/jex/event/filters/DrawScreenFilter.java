@@ -19,16 +19,17 @@ public class DrawScreenFilter implements Predicate<EventDrawScreen> {
     @Override
     public boolean test(EventDrawScreen eventDrawScreen) {
         if (screens.length <= 0)
-            return true;
+            if (mode != null)
+                return mode == eventDrawScreen.getMode();
+            else
+                return true;
         for (Class<? extends Screen> screen : screens) {
             if (screen == eventDrawScreen.getScreen().getClass()) {
                 if (mode != null)
-                    return eventDrawScreen.getMode() == mode;
+                    return mode == eventDrawScreen.getMode();
                 return true;
             }
         }
-        if (mode != null)
-            return eventDrawScreen.getMode() == mode;
         return false;
     }
 }

@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.misc;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -31,5 +32,5 @@ public class AutoDisconnect extends Feature {
                 }
             }
         }
-    }, Priority.LAST);
+    }, Priority.LAST, new TickFilter(EventTick.Mode.PRE));
 }

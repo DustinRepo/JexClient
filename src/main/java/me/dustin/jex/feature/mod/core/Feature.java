@@ -36,7 +36,7 @@ public class Feature {
             if (feature.getClass() == clazz)
                 return feature;
         }
-        return null;
+        return new Feature();
     }
 
     public static Feature get(String name) {

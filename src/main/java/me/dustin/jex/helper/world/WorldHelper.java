@@ -10,6 +10,7 @@ import com.mojang.serialization.Lifecycle;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.*;
@@ -154,7 +155,7 @@ public enum WorldHelper {
                     removeBlockEntity(blockEntity.getPos());
             }
         }
-    });
+    }, new TickFilter(EventTick.Mode.PRE));
 
     public Collection<BlockEntity> getBlockEntities() {
         return blockEntities.values();

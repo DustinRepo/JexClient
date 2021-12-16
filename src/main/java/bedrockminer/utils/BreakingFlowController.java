@@ -42,7 +42,8 @@ public class BreakingFlowController {
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         PlayerEntity player = minecraftClient.player;
-
+        if (player == null)
+            return;
         if (!"survival".equals(minecraftClient.interactionManager.getCurrentGameMode().getName())) {
             return;
         }
@@ -60,7 +61,6 @@ public class BreakingFlowController {
                 TargetBlock.Status status = cachedTargetBlockList.get(i).tick();
                 if (status == TargetBlock.Status.RETRACTING) {
                     working = true;
-                    continue;
                 } else if (status == TargetBlock.Status.FAILED || status == TargetBlock.Status.RETRACTED) {
                     cachedTargetBlockList.remove(i);
                     working = false;
@@ -68,7 +68,6 @@ public class BreakingFlowController {
                     working = true;
                     break;
                 }
-
             }
         }
     }

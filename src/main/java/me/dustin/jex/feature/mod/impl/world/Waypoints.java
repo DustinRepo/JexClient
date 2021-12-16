@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -167,7 +168,7 @@ public class Waypoints extends Feature {
 	@EventPointer
 	private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
 		spin++;
-	});
+	}, new TickFilter(EventTick.Mode.PRE));
 
 	public boolean shouldRender(Vec3d pos) {
 		return pos != null && (pos.getZ() > -1 && pos.getZ() < 1);
