@@ -98,7 +98,7 @@ public class Excavator extends Feature {
                     Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 }
-                if (distanceTo <= 1.5f) {
+                if (distanceTo <= 1.5f && WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getLocalPlayer()) != Blocks.AIR) {
                     PathingHelper.INSTANCE.cancelPathing();
                     if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritone)
                         BaritoneHelper.INSTANCE.pathTo(null);
@@ -194,7 +194,7 @@ public class Excavator extends Feature {
         Render2DHelper.INSTANCE.outlineAndFill(event.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 10, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 24, 0x70696969, 0x40000000);
         FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 13, miningArea != null ? getColor(percent).getRGB() : -1);
 
-        if (PathingHelper.INSTANCE.isPathing()) {
+        if (PathingHelper.INSTANCE.isThinking()) {
             message = Formatting.GREEN + "Wurst AI" + Formatting.GRAY + ": " + Formatting.WHITE + "Thinking";
             width = FontHelper.INSTANCE.getStringWidth(message);
             Render2DHelper.INSTANCE.outlineAndFill(event.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 25, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 39, 0x70696969, 0x40000000);
