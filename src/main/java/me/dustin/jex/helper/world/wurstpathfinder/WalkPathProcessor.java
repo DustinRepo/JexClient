@@ -83,10 +83,7 @@ public class WalkPathProcessor extends PathProcessor
 				return;
 
 			// manually swim down if using Jesus
-			if(Wrapper.INSTANCE.getLocalPlayer().getY() - nextPos.getY() > 0.5
-					&& (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()
-					|| Wrapper.INSTANCE.getLocalPlayer().isInLava()
-					|| WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer())))
+			if(Wrapper.INSTANCE.getLocalPlayer().getY() - nextPos.getY() > 0.5 && (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater() || Wrapper.INSTANCE.getLocalPlayer().isInLava() || WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer()) || WorldHelper.INSTANCE.isTouchingLiquidBlockSpace(Wrapper.INSTANCE.getLocalPlayer())))
 				Wrapper.INSTANCE.getOptions().keySneak.setPressed(true);
 		}
 
