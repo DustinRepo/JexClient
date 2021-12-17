@@ -73,17 +73,6 @@ public class SlimeSpawnMarker extends Feature {
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (!markSlimeChunks)
             return;
-        //TODO: implement this with a seed you can input
-            /*for (int x = -5; x < 5; x++) {
-                for (int z = -5; z < 5; z++) {
-                    if (WorldHelper.INSTANCE.isSlimeChunk(-2898254280411172189L, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + x, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + z)) {
-                        ChunkPos chunkPos = new ChunkPos(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + x, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + z);
-                        if (!chunkPositions.contains(chunkPos)) {
-                            chunkPositions.add(chunkPos);
-                        }
-                    }
-                }
-            }*/
         chunkPositions.forEach(chunkPos -> {
             if (Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunkPos.x, chunkPos.z)) {
                 Vec3d renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, -64, chunkPos.z * 16);
