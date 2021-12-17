@@ -18,7 +18,7 @@ public enum Lagometer {
     }, new ServerPacketFilter(EventPacketReceive.Mode.PRE));
 
     public boolean isServerLagging() {
-        return lagTimer.getPassed() > 1000;
+        return lagTimer.getPassed() > 1000 && !(Wrapper.INSTANCE.getMinecraft().isInSingleplayer() && Wrapper.INSTANCE.getMinecraft().isPaused());
     }
 
     public long getLagTime() {
