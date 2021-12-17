@@ -41,6 +41,8 @@ public class FarmAura extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (BonemealAura.INSTANCE.isBonemealing())
+            return;
         if (breakTimer.hasPassed(breakDelay)) {
             breakTimer.reset();
             BlockPos crop = getCrop();

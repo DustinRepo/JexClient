@@ -73,8 +73,9 @@ public class AutoFarm extends Feature {
             return;
         if (stage == Stage.PAUSED)
             return;
-
-        BlockPos closest = null;
+        if (BonemealAura.INSTANCE.isBonemealing())
+            return;
+        BlockPos closest;
         if (KillAura.INSTANCE.hasTarget())
             return;
         switch (stage) {
