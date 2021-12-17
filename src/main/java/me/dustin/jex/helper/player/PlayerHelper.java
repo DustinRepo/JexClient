@@ -351,7 +351,7 @@ public enum PlayerHelper {
                 speed = 4.32 / 20;
                 break;
         }
-        if ((Wrapper.INSTANCE.getLocalPlayer().isSprinting() || (Feature.get(Sprint.class).getState() && isMoving())) && accountSprint)
+        if ((Wrapper.INSTANCE.getLocalPlayer().isSprinting() || (Feature.getState(Sprint.class) && isMoving())) && accountSprint)
             speed += (speed * 0.3);
         return speed;
     }

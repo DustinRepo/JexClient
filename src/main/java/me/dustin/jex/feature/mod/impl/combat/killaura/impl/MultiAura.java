@@ -42,7 +42,7 @@ public class MultiAura extends FeatureExtension {
 
     @Override
     public void pass(Event event1) {
-        if (((AutoPot) Feature.get(AutoPot.class)).throwing)
+        if (Feature.get(AutoPot.class).throwing)
             return;
         if (AutoEat.isEating || BaritoneHelper.INSTANCE.isTakingControl())
             return;

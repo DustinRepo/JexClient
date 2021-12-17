@@ -32,7 +32,7 @@ public class OutlineStorageESP extends FeatureExtension {
     @Override
     public void pass(Event event) {
         if (storageESP == null) {
-            storageESP = (StorageESP) Feature.get(StorageESP.class);
+            storageESP = Feature.get(StorageESP.class);
         }
         if (event instanceof EventRender3D eventRender3D) {
             if (ShaderHelper.INSTANCE.canDrawFBO()) {

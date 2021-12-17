@@ -37,7 +37,6 @@ public class Fly extends Feature {
     @OpChild(name = "Glide Speed", min = 0.01f, max = 2, inc = 0.01f, parent = "Glide")
     public float glideSpeed = 0.034f;
 
-    private float lastStrideDist;
     private float strideDistance;
 
     @EventPointer
@@ -53,15 +52,18 @@ public class Fly extends Feature {
                 g = 0.0F;
             }
 
-            lastStrideDist = strideDistance;
+            float lastStrideDist = strideDistance;
             strideDistance += (g - strideDistance) * 0.4F;
             Wrapper.INSTANCE.getLocalPlayer().strideDistance = strideDistance;
             Wrapper.INSTANCE.getLocalPlayer().prevStrideDistance = lastStrideDist;
         }
 
         Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = speed;
-        if (!PathingHelper.INSTANCE.isPathing() || PathingHelper.INSTANCE.isThinking())
-            Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
+        if (!PathingHelper.INSTANCE.isPathing() || PathingHelper.INSTANCE.isThinking()) {
+            PlayerHelper.INSTANCE.setVelocityX(0);
+            PlayerHelper.INSTANCE.setVelocityZ(0);
+        }
+        PlayerHelper.INSTANCE.setVelocityY(0);
 
         if (jumping) {
             PlayerHelper.INSTANCE.setVelocityY(speed);

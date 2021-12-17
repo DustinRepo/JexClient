@@ -106,8 +106,8 @@ public class FlyPathProcessor extends PathProcessor
 				newz *= 0.4;
 			}
 			//fix for speed going way past the point
-			if (Feature.get(Fly.class).getState()) {
-				if (!creativeFlying && Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= ((Fly) Feature.get(Fly.class)).speed) {
+			if (Feature.getState(Fly.class)) {
+				if (!creativeFlying && Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= Feature.get(Fly.class).speed) {
 					PlayerHelper.INSTANCE.setVelocityX(0);
 					PlayerHelper.INSTANCE.setVelocityZ(0);
 					Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
@@ -134,7 +134,7 @@ public class FlyPathProcessor extends PathProcessor
 		}else if(y)
 		{
 			PlayerHelper.INSTANCE.setVelocityY(0);
-			if(!creativeFlying && Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= ((Fly) Feature.get(Fly.class)).speed) {
+			if(!creativeFlying && Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= Feature.get(Fly.class).speed) {
 				Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 				return;
 			}
@@ -154,7 +154,7 @@ public class FlyPathProcessor extends PathProcessor
 
 	public double moveSpeed() {
 		if (Speed.INSTANCE.getState()) {
-			return ((Fly)Feature.get(Fly.class)).speed;
+			return Feature.get(Fly.class).speed;
 		}
 		return PlayerHelper.INSTANCE.getBaseMoveSpeed();
 	}

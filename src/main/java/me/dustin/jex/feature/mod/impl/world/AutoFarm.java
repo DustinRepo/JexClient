@@ -316,7 +316,7 @@ public class AutoFarm extends Feature {
     }
 
     public boolean isPaused() {
-        return this.stage != Stage.FARMING && stage != Stage.WAITING;
+        return this.stage != Stage.FARMING && stage != Stage.PLANTING && stage != Stage.ITEM_PICKUP;
     }
 
     @Override
@@ -366,7 +366,7 @@ public class AutoFarm extends Feature {
             BlockPos min = new BlockPos(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()));
             BlockPos max = new BlockPos(Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
             this.areaBB = new Box(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
-            this.autoFarm = (AutoFarm) Feature.get(AutoFarm.class);
+            this.autoFarm = Feature.get(AutoFarm.class);
 
             for (int x = min.getX(); x <= max.getX(); x++) {
                 for (int y = min.getY(); y <= max.getY(); y++) {

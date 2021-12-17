@@ -98,23 +98,6 @@ public abstract class MixinEntity {
             ci.cancel();
     }
 
-    @Inject(method = "isInSwimmingPose", at = @At("HEAD"), cancellable = true)
-    public void isInSwimmingPose(CallbackInfoReturnable<Boolean> ci) {
-        Entity me = (Entity) (Object) this;
-        if (Feature.get(CompatSwim.class).getState()) {
-            ci.setReturnValue(false);
-        }
-    }
-
-    @Inject(method = "getPose", at = @At("HEAD"), cancellable = true)
-    public void getPose(CallbackInfoReturnable<EntityPose> ci) {
-        if (Feature.get(CompatSwim.class).getState()) {
-            if (this.isSwimming()) {
-                ci.setReturnValue(this.isAlive() ? (this.isSneaking() ? EntityPose.CROUCHING : EntityPose.STANDING) : EntityPose.DYING);
-            }
-        }
-    }
-
     @Inject(method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
     public void move1(Vec3d movement, CallbackInfoReturnable<Vec3d> cir) {
         Box box = this.getBoundingBox();

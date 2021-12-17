@@ -77,8 +77,7 @@ public class WalkPathProcessor extends PathProcessor
 		Wrapper.INSTANCE.getLocalPlayer().getAbilities().flying = false;
 		float yaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
 
-		if(Feature.get(Jesus.class).getState())
-		{
+		if(Feature.getState(Jesus.class)) {
 			// wait for Jesus to swim up
 			if(Wrapper.INSTANCE.getLocalPlayer().getY() < nextPos.getY() && (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater() || Wrapper.INSTANCE.getLocalPlayer().isInLava()))
 				return;

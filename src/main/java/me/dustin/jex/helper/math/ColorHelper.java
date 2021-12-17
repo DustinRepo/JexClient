@@ -38,7 +38,7 @@ public enum ColorHelper {
     }
 
     public int getClientColor() {
-        Hud hud = (Hud) Feature.get(Hud.class);
+        Hud hud = Feature.get(Hud.class);
         return hud.rainbowClientColor ? getRainbowColor() : hud.clientColor;
     }
 

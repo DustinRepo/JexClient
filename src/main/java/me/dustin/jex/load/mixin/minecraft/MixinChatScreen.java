@@ -38,7 +38,7 @@ public class MixinChatScreen implements IChatScreen {
     public void init(CallbackInfo ci) {
         CommandManagerJex.INSTANCE.jexCommandSuggestor = new CommandSuggestor(Wrapper.INSTANCE.getMinecraft(), (ChatScreen)(Object)this, this.chatField, Wrapper.INSTANCE.getTextRenderer(), false, true, 1, 10, true, -805306368);
         CommandManagerJex.INSTANCE.jexCommandSuggestor.refresh();
-        ircMod = (IRC)Feature.get(IRC.class);
+        ircMod = Feature.get(IRC.class);
         normalChatButton = new ButtonWidget(chatField.x - 2, chatField.y - 22, 40, 18, new LiteralText(ircMod.ircChatOverride ? "\2477Chat": "\247bChat"), button -> {
             ircChatButton.setMessage(new LiteralText("\2477IRC"));
             normalChatButton.setMessage(new LiteralText("\247bChat"));

@@ -21,12 +21,12 @@ public class CommandSpeedCraft extends Command {
     public void registerCommand() {
         LiteralCommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(literal("clear").executes(context -> {
             //clear item
-            SpeedCrafter speedCrafter = (SpeedCrafter) Feature.get(SpeedCrafter.class);
+            SpeedCrafter speedCrafter = Feature.get(SpeedCrafter.class);
             speedCrafter.craftingItem = null;
             ChatHelper.INSTANCE.addClientMessage("SpeedCrafter item cleared");
             return 1;
         })).then(literal("set").executes(context -> {
-            SpeedCrafter speedCrafter = (SpeedCrafter) Feature.get(SpeedCrafter.class);
+            SpeedCrafter speedCrafter = Feature.get(SpeedCrafter.class);
             if (Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.AIR) {
                 ChatHelper.INSTANCE.addClientMessage("No item in hand");
             } else {
@@ -35,9 +35,8 @@ public class CommandSpeedCraft extends Command {
             }
             return 1;
         }).then(argument("item", ItemStackArgumentType.itemStack()).executes(context -> {
-            SpeedCrafter speedCrafter = (SpeedCrafter) Feature.get(SpeedCrafter.class);
-            Item item = ItemStackArgumentType.getItemStackArgument(context, "item").getItem();
-            speedCrafter.craftingItem = item;
+            SpeedCrafter speedCrafter = Feature.get(SpeedCrafter.class);
+            speedCrafter.craftingItem = ItemStackArgumentType.getItemStackArgument(context, "item").getItem();
             ChatHelper.INSTANCE.addClientMessage("SpeedCrafter item set to \247b" + speedCrafter.craftingItem.getName().getString());
             return 1;
         }))));

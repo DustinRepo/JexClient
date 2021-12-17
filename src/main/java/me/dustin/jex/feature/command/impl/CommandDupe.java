@@ -65,7 +65,7 @@ public class CommandDupe extends Command {
                 Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
                 ChatHelper.INSTANCE.addClientMessage("Running dupe");
                 this.blockHitResult = blockHitResult;
-                this.speedmine = Feature.getState(SpeedMine.class) && ((SpeedMine)Feature.get(SpeedMine.class)).mode.equalsIgnoreCase("Instant");
+                this.speedmine = Feature.getState(SpeedMine.class) && Feature.get(SpeedMine.class).mode.equalsIgnoreCase("Instant");
                 if (speedmine) {
                     Feature.get(SpeedMine.class).setState(false);
                 }

@@ -77,7 +77,7 @@ public class ArrayListElement extends HudElement {
     }
 
     public static int getCategoryColor(Feature.Category category) {
-        Gui gui = (Gui)Feature.get(Gui.class);
+        Gui gui = Feature.get(Gui.class);
         return switch (category) {
             case MOVEMENT -> gui.movementColor;
             case VISUAL -> gui.visualColor;

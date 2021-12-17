@@ -396,7 +396,7 @@ public class HudElement {
 
     public static Hud getHud() {
         if (hud == null)
-            hud = (Hud)Feature.get(Hud.class);
+            hud = Feature.get(Hud.class);
         return hud;
     }
 }

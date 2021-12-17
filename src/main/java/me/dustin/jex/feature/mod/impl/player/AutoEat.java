@@ -54,7 +54,7 @@ public class AutoEat extends Feature {
                 if (BaritoneHelper.INSTANCE.baritoneExists())
                     BaritoneHelper.INSTANCE.resume();
             }
-            if (Wrapper.INSTANCE.getLocalPlayer() == null || Feature.get(Freecam.class).getState() || Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
+            if (Wrapper.INSTANCE.getLocalPlayer() == null || Feature.getState(Freecam.class) || Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
                 isEating = false;
                 if (BaritoneHelper.INSTANCE.baritoneExists()) {
                     BaritoneHelper.INSTANCE.resume();

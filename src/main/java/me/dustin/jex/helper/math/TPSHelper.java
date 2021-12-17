@@ -42,7 +42,7 @@ public enum TPSHelper {
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
         reports.add(System.currentTimeMillis());
-        while (reports.size() > ((TPSSync) Feature.get(TPSSync.class)).sampleSize) {
+        while (reports.size() > Feature.get(TPSSync.class).sampleSize) {
             reports.remove(0);
         }
     }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, WorldTimeUpdateS2CPacket.class));

@@ -32,7 +32,7 @@ public class SingleAura extends FeatureExtension {
 
     @Override
     public void pass(Event event1) {
-        if (((AutoPot) Feature.get(AutoPot.class)).throwing)
+        if (Feature.get(AutoPot.class).throwing)
             return;
         if (AutoEat.isEating || BaritoneHelper.INSTANCE.isTakingControl())
             return;
@@ -104,7 +104,7 @@ public class SingleAura extends FeatureExtension {
         }
         if (target != null && Wrapper.INSTANCE.getWorld().getEntityById(target.getId()) != null) {
             if (BaritoneHelper.INSTANCE.baritoneExists()) {
-                if (KillAura.INSTANCE.baritoneOverride && (BaritoneHelper.INSTANCE.isBaritoneRunning() || Feature.get(Excavator.class).getState()))
+                if (KillAura.INSTANCE.baritoneOverride && (BaritoneHelper.INSTANCE.isBaritoneRunning() || (Feature.get(Excavator.class).getState() && !Feature.get(Excavator.class).isPaused())))
                     BaritoneHelper.INSTANCE.followUntilDead(target, KillAura.INSTANCE);
             }
             if (KillAura.INSTANCE.autoBlock && !alreadyBlocking)

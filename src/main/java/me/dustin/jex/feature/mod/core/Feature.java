@@ -31,7 +31,11 @@ public class Feature {
         this.visible = this.getClass().getAnnotation(Feature.Manifest.class).visible();
     }
 
-    public static Feature get(Class<? extends Feature> clazz) {
+    public static <T extends Feature> T get(Class<T> clazz) {
+        return clazz.cast(Feature.getFeature(clazz));
+    }
+
+    private static Feature getFeature(Class<? extends Feature> clazz) {
         for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
             if (feature.getClass() == clazz)
                 return feature;
@@ -49,8 +53,7 @@ public class Feature {
 
     public static ArrayList<Feature> getModules(Feature.Category category) {
         ArrayList<Feature> features = new ArrayList<>();
-        FeatureManager.INSTANCE.getFeatures().forEach(module ->
-        {
+        FeatureManager.INSTANCE.getFeatures().forEach(module -> {
             if (module.getFeatureCategory() == category)
                 features.add(module);
         });

@@ -89,7 +89,7 @@ public class JexTitleScreen extends Screen {
         this.backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
         this.doBackgroundFade = doBackgroundFade;
         this.isMinceraft = (double) (new Random()).nextFloat() < 1.0E-4D;
-        customMainMenu = (CustomMainMenu) Feature.get(CustomMainMenu.class);
+        customMainMenu = Feature.get(CustomMainMenu.class);
 
         MCAPIHelper.INSTANCE.downloadPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
     }

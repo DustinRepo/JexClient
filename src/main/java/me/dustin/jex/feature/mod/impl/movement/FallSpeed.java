@@ -19,7 +19,7 @@ public class FallSpeed extends Feature {
 
     @EventPointer
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
-        if (Feature.get(Fly.class).getState() || Feature.get(Freecam.class).getState())
+        if (Feature.getState(Fly.class) || Feature.getState(Freecam.class))
             return;
         if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistance && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
             event.setY(-speed);

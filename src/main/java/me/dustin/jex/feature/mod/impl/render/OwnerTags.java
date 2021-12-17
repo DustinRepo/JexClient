@@ -42,7 +42,7 @@ public class OwnerTags extends Feature {
 
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
-        Nametag nametagModule = (Nametag) Feature.get(Nametag.class);
+        Nametag nametagModule = Feature.get(Nametag.class);
         positions.keySet().forEach(livingEntity -> {
             Vec3d pos = positions.get(livingEntity);
             if (isOnScreen(pos)) {

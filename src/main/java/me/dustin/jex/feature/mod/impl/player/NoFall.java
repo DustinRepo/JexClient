@@ -18,7 +18,7 @@ public class NoFall extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Feature.get(Fly.class).getState() && Wrapper.INSTANCE.getLocalPlayer().isSneaking()) return;
+        if (Feature.getState(Fly.class) && Wrapper.INSTANCE.getLocalPlayer().isSneaking()) return;
         if (Wrapper.INSTANCE.getLocalPlayer().isFallFlying() && !isFallSpeedDangerous()) return;
         if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > 2.5f) {
             NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(true));

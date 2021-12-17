@@ -31,6 +31,17 @@ public class BonemealAura extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        if (Feature.getState(AutoFarm.class) && !Feature.get(AutoFarm.class).isPaused()) {
+            isBonemealing = false;
+            return;
+        }
+
+        BlockPos crop = getCrop();
+        if (crop == null) {
+            isBonemealing = false;
+            return;
+        }
+
         int bonemeal = InventoryHelper.INSTANCE.get(Items.BONE_MEAL);
         if (bonemeal == -1) {
             isBonemealing = false;
@@ -42,11 +53,6 @@ public class BonemealAura extends Feature {
         }
         InventoryHelper.INSTANCE.setSlot(bonemeal, true, true);
 
-        BlockPos crop = getCrop();
-        if (crop == null) {
-            isBonemealing = false;
-            return;
-        }
         isBonemealing = true;
         PlayerHelper.INSTANCE.rightClickBlock(crop, Hand.MAIN_HAND, false);
         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);

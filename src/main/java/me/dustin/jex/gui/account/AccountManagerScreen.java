@@ -101,7 +101,7 @@ public class AccountManagerScreen extends Screen {
             File file = new File(ModFileHelper.INSTANCE.getJexDirectory() + File.separator + "config","Accounts-Unencrypted.yml");
             if (file.exists()) {
                 MinecraftAccountManager.INSTANCE.getAccounts().clear();
-                ((AltFile)ConfigManager.INSTANCE.get(AltFile.class)).importFile();
+                ConfigManager.INSTANCE.get(AltFile.class).importFile();
                 ConfigManager.INSTANCE.get(AltFile.class).write();
                 loadAccountButtons("");
                 outputString = "Imported alts from file.";
@@ -109,7 +109,7 @@ public class AccountManagerScreen extends Screen {
                 outputString = "Could not import file. Please make sure it is named Accounts-Unencrypted.json";
         });
         exportButton = new ButtonWidget(width - 52, 2, 50, 15, new LiteralText("Export"), button -> {
-            ((AltFile)ConfigManager.INSTANCE.get(AltFile.class)).exportFile();
+            ConfigManager.INSTANCE.get(AltFile.class).exportFile();
             outputString = "Exported alts to config/Accounts-Unencrypted.json";
         });
         searchTextField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) midX - 150, (height / 2) - 124, 250, 20, new LiteralText(""));
@@ -301,7 +301,7 @@ public class AccountManagerScreen extends Screen {
                     mojangAccount.loginCount++;
                     mojangAccount.lastUsed = System.currentTimeMillis();
                     if (FabricLoader.getInstance().isDevelopmentEnvironment())
-                        ((IRC) Feature.get(IRC.class)).ircManager.putNick(session.getUsername());
+                        Feature.get(IRC.class).ircManager.putNick(session.getUsername());
                 }
             }).login();
         } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
@@ -315,7 +315,7 @@ public class AccountManagerScreen extends Screen {
                     microsoftAccount.loginCount++;
                     microsoftAccount.lastUsed = System.currentTimeMillis();
                     if (FabricLoader.getInstance().isDevelopmentEnvironment())
-                        ((IRC) Feature.get(IRC.class)).ircManager.putNick(session.getUsername());
+                        Feature.get(IRC.class).ircManager.putNick(session.getUsername());
                 }
             }).login();
         }

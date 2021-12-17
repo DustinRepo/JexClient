@@ -40,7 +40,7 @@ public class Button {
         this.height = height;
         this.listener = listener;
         this.isEnabled = true;
-        gui = (Gui) Feature.get(Gui.class);
+        gui = Feature.get(Gui.class);
         this.backgroundColor = 0x80000000;
         this.textColor = 0xffaaaaaa;
     }

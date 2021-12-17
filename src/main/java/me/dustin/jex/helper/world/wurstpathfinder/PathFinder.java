@@ -27,11 +27,11 @@ public class PathFinder
 {
 	private final boolean invulnerable = Wrapper.INSTANCE.getLocalPlayer().getAbilities().creativeMode;
 	private final boolean creativeFlying = Wrapper.INSTANCE.getLocalPlayer().getAbilities().flying;
-	protected final boolean flying = creativeFlying || Feature.get(Fly.class).getState();
-	private final boolean immuneToFallDamage = invulnerable || Feature.get(NoFall.class).getState();
-	private final boolean noWaterSlowdown = Feature.get(NoPush.class).getState() && ((NoPush)Feature.get(NoPush.class)).water;
-	private final boolean jesus = Feature.get(Jesus.class).getState();
-	private final boolean spider = Feature.get(Spider.class).getState();
+	protected final boolean flying = creativeFlying || Feature.getState(Fly.class);
+	private final boolean immuneToFallDamage = invulnerable || Feature.getState(NoFall.class);
+	private final boolean noWaterSlowdown = Feature.getState(NoPush.class) && Feature.get(NoPush.class).water;
+	private final boolean jesus = Feature.getState(Jesus.class);
+	private final boolean spider = Feature.getState(Spider.class);
 	protected boolean fallingAllowed = true;
 	protected boolean divingAllowed = true;
 

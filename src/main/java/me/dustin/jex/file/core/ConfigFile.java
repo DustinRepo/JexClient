@@ -8,8 +8,8 @@ import java.lang.annotation.RetentionPolicy;
 
 public abstract class ConfigFile {
 
-    private File file;
-    private boolean bootRead;
+    private final File file;
+    private final boolean bootRead;
 
     public ConfigFile() {
         String fileName = this.getClass().getAnnotation(CFG.class).fileName();

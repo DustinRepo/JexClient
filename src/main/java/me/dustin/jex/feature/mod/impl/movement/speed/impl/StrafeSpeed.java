@@ -21,7 +21,7 @@ public class StrafeSpeed extends FeatureExtension {
     @Override
     public void pass(Event event) {
         if (event instanceof EventMove eventMove) {
-            Speed speed = ((Speed) Feature.get(Speed.class));
+            Speed speed = Feature.get(Speed.class);
             if ((BaritoneHelper.INSTANCE.isBaritoneRunning() || PathingHelper.INSTANCE.isPathing()) && !Wrapper.INSTANCE.getLocalPlayer().isOnGround())
                 return;
             if (PathingHelper.INSTANCE.isPathing()) {
@@ -30,7 +30,7 @@ public class StrafeSpeed extends FeatureExtension {
             }else
                 PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.strafeSpeed);
         } else if (event instanceof EventPlayerPackets eventPlayerPackets) {
-            Speed speed = ((Speed) Feature.get(Speed.class));
+            Speed speed = Feature.get(Speed.class);
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && PlayerHelper.INSTANCE.isMoving())
                     PlayerHelper.INSTANCE.setVelocityY(speed.hopAmount);

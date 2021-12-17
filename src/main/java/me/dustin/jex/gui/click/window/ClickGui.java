@@ -109,7 +109,7 @@ public class ClickGui extends Screen {
     @Override
     public void init() {
         if (windows.isEmpty()) {
-            guiModule = (Gui) Feature.get(Gui.class);
+            guiModule = Feature.get(Gui.class);
             int count = 0;
             float windowWidth = 100;
             float windowHeight = 15;

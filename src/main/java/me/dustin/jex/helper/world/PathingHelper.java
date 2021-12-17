@@ -91,7 +91,7 @@ public enum PathingHelper {
     }
 
     public boolean isThinking() {
-        return isPathing() && !pathFinder.isDone() && pathFinder.isFailed();
+        return isPathing() && !pathFinder.isDone() && !pathFinder.isFailed();
     }
 
     public void setPathFinder(PathFinder pathFinder) {

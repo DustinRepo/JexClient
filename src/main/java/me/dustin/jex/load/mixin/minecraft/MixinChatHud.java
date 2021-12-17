@@ -18,7 +18,7 @@ public class MixinChatHud {
     @Inject(method = "isChatHidden", at = @At("HEAD"), cancellable = true)
     public void isChatHidden1(CallbackInfoReturnable<Boolean> cir) {
         if (getThis() == Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud()) {
-            IRC irc = (IRC) Feature.get(IRC.class);
+            IRC irc = Feature.get(IRC.class);
             if (irc.getState() && irc.ircChatOverride) {
                 cir.setReturnValue(true);
             }
@@ -35,7 +35,7 @@ public class MixinChatHud {
     @Inject(method = "scroll", at = @At("HEAD"), cancellable = true)
     public void scroll1(double amount, CallbackInfo ci) {
         if (getThis() == Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud()) {
-            IRC irc = (IRC) Feature.get(IRC.class);
+            IRC irc = Feature.get(IRC.class);
             if (irc.getState() && irc.ircChatOverride) {
                 IRC.ircChatHud.scroll(amount);
                 ci.cancel();
@@ -46,7 +46,7 @@ public class MixinChatHud {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void mouseClicked1(double mouseX, double mouseY, CallbackInfoReturnable<Boolean> cir) {
         if (getThis() == Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud()) {
-            IRC irc = (IRC) Feature.get(IRC.class);
+            IRC irc = Feature.get(IRC.class);
             if (irc.getState() && irc.ircChatOverride) {
                 IRC.ircChatHud.mouseClicked(mouseX, mouseY);
                 cir.cancel();

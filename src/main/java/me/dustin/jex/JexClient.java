@@ -120,8 +120,8 @@ public enum JexClient {
             Gui.clickgui.init();
         }
         if (BaritoneHelper.INSTANCE.baritoneExists()) {
-            BaritoneHelper.INSTANCE.setAssumeStep(Feature.get(Step.class).getState());
-            BaritoneHelper.INSTANCE.setAssumeJesus(Feature.get(Jesus.class).getState());
+            BaritoneHelper.INSTANCE.setAssumeStep(Feature.getState(Step.class));
+            BaritoneHelper.INSTANCE.setAssumeJesus(Feature.getState(Jesus.class));
         }
     }, new TickFilter(EventTick.Mode.PRE));
 

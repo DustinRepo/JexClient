@@ -191,7 +191,7 @@ public class AutoLibrarianRoll extends Feature {
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
         if (villager != null && Render2DHelper.INSTANCE.isOnScreen(villagerPos)) {
-            Nametag nametag = (Nametag)Feature.get(Nametag.class);
+            Nametag nametag = Feature.get(Nametag.class);
             float x = (float) villagerPos.x;
             float y = (float) villagerPos.y - (nametag.getState() && nametag.passives ? 15 : 0);
             String string1 = "Searching:";

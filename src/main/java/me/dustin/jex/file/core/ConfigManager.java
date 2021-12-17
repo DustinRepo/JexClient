@@ -1,5 +1,6 @@
 package me.dustin.jex.file.core;
 
+import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.file.impl.AltFile;
 import org.reflections.Reflections;
 
@@ -35,10 +36,10 @@ public enum ConfigManager {
         return configFiles;
     }
 
-    public ConfigFile get(Class<? extends ConfigFile> clazz) {
+    public <T extends ConfigFile> T get(Class<T> clazz) {
         for (ConfigFile configFile : getConfigFiles()) {
             if (configFile.getClass() == clazz)
-                return configFile;
+                return clazz.cast(configFile);
         }
         return null;
     }

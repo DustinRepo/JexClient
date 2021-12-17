@@ -69,20 +69,16 @@ public class ArmorDerp extends Feature {
 
     @Override
     public void onEnable() {
-        Feature f = Feature.get(AutoArmor.class);
-        if (f != null) {
-            autoArmor = f.getState();
-            f.setState(false);
-        }
+        AutoArmor autoArmorFeature = Feature.get(AutoArmor.class);
+        autoArmor = autoArmorFeature.getState();
+        autoArmorFeature.setState(false);
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
         if (autoArmor) {
-            Feature f = Feature.get(AutoArmor.class);
-            if (f != null)
-                f.setState(true);
+            Feature.get(AutoArmor.class).setState(true);
         }
         super.onDisable();
     }

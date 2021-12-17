@@ -28,7 +28,7 @@ public enum EntityHelper {
     public boolean isAuraBlocking() {
         if (AutoEat.isEating)
             return false;
-        KillAura killaura = (KillAura) Feature.get(KillAura.class);
+        KillAura killaura = Feature.get(KillAura.class);
         if (killaura.getState()) {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                 if (killaura.isValid(entity, false) && (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.autoblockDistance || Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.reach)) {
@@ -37,8 +37,7 @@ public enum EntityHelper {
             }
         }
         if (Wrapper.INSTANCE.getLocalPlayer().isUsingItem())
-            if (Wrapper.INSTANCE.getLocalPlayer().getActiveItem() != null && Wrapper.INSTANCE.getLocalPlayer().getActiveItem().getItem() instanceof ShieldItem)
-                return true;
+            return Wrapper.INSTANCE.getLocalPlayer().getActiveItem() != null && Wrapper.INSTANCE.getLocalPlayer().getActiveItem().getItem() instanceof ShieldItem;
         return false;
     }
 
