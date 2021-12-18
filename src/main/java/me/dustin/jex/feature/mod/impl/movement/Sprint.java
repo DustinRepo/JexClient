@@ -20,9 +20,7 @@ public class Sprint extends Feature {
     public boolean inInventory = true;
 
     @EventPointer
-    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        Wrapper.INSTANCE.getLocalPlayer().setSprinting(canSprint());
-    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getLocalPlayer().setSprinting(canSprint()), new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventSetSprint> eventSetSprintEventListener = new EventListener<>(event -> {

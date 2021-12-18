@@ -37,7 +37,7 @@ public enum PathingHelper {
            }
 
            if (pathProcessor != null && !pathFinder.isPathStillValid(pathProcessor.getIndex()) && goal != null) {
-               pathFinder = new PathFinder(goal);
+               pathFinder = new PathFinder(pathFinder);
                return;
            }
 
