@@ -88,6 +88,7 @@ public class AutoFarm extends Feature {
                     return;
                 }
                 if (!PathingHelper.INSTANCE.isPathing()) {
+                    PathingHelper.INSTANCE.setAllowMining(false);
                     PathingHelper.INSTANCE.pathTo(closest);
                 }
                 double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(closest));
@@ -113,6 +114,7 @@ public class AutoFarm extends Feature {
                 }
 
                 if (!PathingHelper.INSTANCE.isPathing()) {
+                    PathingHelper.INSTANCE.setAllowMining(false);
                     PathingHelper.INSTANCE.pathTo(closest);
                 }
                 double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(closest));
@@ -133,6 +135,7 @@ public class AutoFarm extends Feature {
 
                 closest = getClosestItem().getBlockPos();
                 if (!PathingHelper.INSTANCE.isPathing()) {
+                    PathingHelper.INSTANCE.setAllowMining(false);
                     PathingHelper.INSTANCE.pathTo(closest, 10);
                 }
             }

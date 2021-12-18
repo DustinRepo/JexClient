@@ -10,10 +10,20 @@ import me.dustin.jex.feature.mod.impl.player.NoFall;
 import me.dustin.jex.feature.mod.impl.player.NoPush;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShapes;
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -45,6 +55,7 @@ public class PathFinder
 
 	protected int thinkSpeed = 1024;
 	protected int thinkTime = 200;
+	protected boolean canMine;
 	private int iterations;
 
 	protected boolean done;
@@ -255,7 +266,8 @@ public class PathFinder
 
 	protected boolean isMineable(BlockPos pos)
 	{
-		return false;
+		BlockState blockState = WorldHelper.INSTANCE.getBlockState(pos);
+		return canMine && blockState.getCollisionShape(Wrapper.INSTANCE.getWorld(), pos) != VoxelShapes.empty() && WorldHelper.INSTANCE.getBlockBreakingSpeed(blockState, Wrapper.INSTANCE.getLocalPlayer().getMainHandStack()) > 0;
 	}
 
 	protected boolean canBeSolid(BlockPos pos)
@@ -291,7 +303,7 @@ public class PathFinder
 			return false;
 
 		// check if safe
-		if(!invulnerable && (material == Material.LAVA || material == Material.FIRE))
+		if((!invulnerable && !Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) && (material == Material.LAVA || material == Material.FIRE))
 			return false;
 
 		return true;
@@ -311,8 +323,8 @@ public class PathFinder
 		if(!canBeSolid(pos))
 			return false;
 
-		// check if safe
-		if(!invulnerable && (material == Material.CACTUS || material == Material.LAVA))
+		// check if safe																								TODO: lava jesus
+		if(!invulnerable && (WorldHelper.INSTANCE.getBlock(pos) == Blocks.MAGMA_BLOCK || material == Material.CACTUS || (material == Material.LAVA && !Feature.getState(Jesus.class))))
 			return false;
 
 		return true;
@@ -428,15 +440,14 @@ public class PathFinder
 				costs[i] *= 4.539515393656079F;
 
 			// soul sand
-			if(!canFlyAt(pos)
-					&& WorldHelper.INSTANCE.getBlock(pos.down()) instanceof SoulSandBlock)
+			if(!canFlyAt(pos) && WorldHelper.INSTANCE.getBlock(pos.down()) instanceof SoulSandBlock)
 				costs[i] *= 2.5F;
 
 			// mining
 			if(isMineable(pos))
-				costs[i] *= 2F;
+				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos), Wrapper.INSTANCE.getLocalPlayer().getMainHandStack()));
 			if(isMineable(pos.up()))
-				costs[i] *= 2F;
+				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos.up()), Wrapper.INSTANCE.getLocalPlayer().getMainHandStack()));
 		}
 
 		float cost = costs[0] + costs[1];
@@ -489,6 +500,14 @@ public class PathFinder
 	public boolean isFailed()
 	{
 		return failed;
+	}
+
+	public boolean isCanMine() {
+		return canMine;
+	}
+
+	public void setCanMine(boolean canMine) {
+		this.canMine = canMine;
 	}
 
 	public ArrayList<PathPos> formatPath()

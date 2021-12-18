@@ -13,20 +13,28 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorType;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
@@ -269,6 +277,51 @@ public enum WorldHelper {
             }
         }
         return false;
+    }
+
+    public float getBlockBreakingSpeed(BlockState block, ItemStack stack) {
+
+        float f = stack.getMiningSpeedMultiplier(block);
+        if (f > 1.0F) {
+            int i = EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, stack);
+            if (i > 0 && !stack.isEmpty()) {
+                f += (float) (i * i + 1);
+            }
+        }
+
+        if (StatusEffectUtil.hasHaste(Wrapper.INSTANCE.getLocalPlayer())) {
+            f *= 1.0F + (float) (StatusEffectUtil.getHasteAmplifier(Wrapper.INSTANCE.getLocalPlayer()) + 1) * 0.2F;
+        }
+
+        if (Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.MINING_FATIGUE)) {
+            float k;
+            switch (Wrapper.INSTANCE.getLocalPlayer().getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) {
+                case 0:
+                    k = 0.3F;
+                    break;
+                case 1:
+                    k = 0.09F;
+                    break;
+                case 2:
+                    k = 0.0027F;
+                    break;
+                case 3:
+                default:
+                    k = 8.1E-4F;
+            }
+
+            f *= k;
+        }
+
+        if (Wrapper.INSTANCE.getLocalPlayer().isSubmergedIn(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(Wrapper.INSTANCE.getLocalPlayer())) {
+            f /= 5.0F;
+        }
+
+        if (!Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
+            f /= 5.0F;
+        }
+
+        return f;
     }
 
     public IntegratedServer createIntegratedServer(Thread thread, long seed, GeneratorType generatorType) {

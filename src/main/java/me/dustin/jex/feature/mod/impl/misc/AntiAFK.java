@@ -63,6 +63,7 @@ public class AntiAFK extends Feature {
                     NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(Wrapper.INSTANCE.getLocalPlayer().age + ""));
                     break;
                 case "Wander":
+                    PathingHelper.INSTANCE.setAllowMining(false);
                     PathingHelper.INSTANCE.setPathFinder(new WanderPathFinder(afkSpot, this));
                     break;
             }

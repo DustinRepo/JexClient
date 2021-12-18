@@ -11,6 +11,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropBlock;
@@ -41,18 +42,19 @@ public class AutoTool extends Feature {
                 ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(index);
                 if (blockState.getBlock() != Blocks.AIR) {
                     float miningSpeedMultiplier = itemStack.getMiningSpeedMultiplier(blockState);
-
+                    boolean isHoeOnCrop = blockState.getBlock() instanceof CropBlock && itemStack.getItem() instanceof HoeItem;
                     //apparently axes are considerably faster than hoes for crops, but if you have a hoe odds are it's being used for those crops
-                    if (blockState.getBlock() instanceof CropBlock && itemStack.getItem() instanceof HoeItem) {
+                    if (isHoeOnCrop) {
                         miningSpeedMultiplier *= 100;
                     }
 
                     if (miningSpeedMultiplier > best) {
                         best = miningSpeedMultiplier;
                         slot = index;
+                        JexClient.INSTANCE.getLogger().info(10 / WorldHelper.INSTANCE.getBlockBreakingSpeed(blockState, InventoryHelper.INSTANCE.getInventory().getStack(slot)));
                         found = true;
                     } else if (miningSpeedMultiplier == best && best > 1) {
-                        if (blockState.getBlock() instanceof CropBlock && itemStack.getItem() instanceof HoeItem) {
+                        if (isHoeOnCrop) {
                             if (InventoryHelper.INSTANCE.compareEnchants(InventoryHelper.INSTANCE.getInventory().getStack(slot), itemStack, Enchantments.FORTUNE)) {
                                 best = miningSpeedMultiplier;
                                 slot = index;
@@ -67,6 +69,7 @@ public class AutoTool extends Feature {
             if (slot == InventoryHelper.INSTANCE.getInventory().selectedSlot && !found) {
                 if (InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot).isDamageable() && !InventoryHelper.INSTANCE.hasEnchantment(InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot), Enchantments.SILK_TOUCH)) {
                     slot = getNonDamageSlot();
+                    JexClient.INSTANCE.getLogger().info(10 / WorldHelper.INSTANCE.getBlockBreakingSpeed(blockState, Wrapper.INSTANCE.getLocalPlayer().getMainHandStack()));
                 }
             }
             if (!attackingBlock && slot != -1) {

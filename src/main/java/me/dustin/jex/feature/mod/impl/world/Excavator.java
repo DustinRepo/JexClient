@@ -52,6 +52,8 @@ public class Excavator extends Feature {
 
     @Op(name = "Use Baritone If Available")
     public boolean useBaritone = true;
+    @Op(name = "Mine Path")
+    public boolean allowMining = true;
     @Op(name = "Render Area Box")
     public boolean renderAreaBox = true;
     @Op(name = "Layer Depth", min = 1, max = 5)
@@ -84,18 +86,12 @@ public class Excavator extends Feature {
             if (distanceTo <= (WorldHelper.INSTANCE.getBlock(closestBlock) == Blocks.BEDROCK ? 3 : Wrapper.INSTANCE.getInteractionManager().getReachDistance() - 1)) {
                 if (!KillAura.INSTANCE.hasTarget() && !BreakingFlowController.isWorking()) {
                     BlockHitResult blockHitResult = rayCast(Wrapper.INSTANCE.getLocalPlayer(), closestBlock);
-                    BlockPos blockPos = closestBlock;
-                    if (blockHitResult != null) {
-                        if (ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(blockHitResult.getBlockPos())) < ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(closestBlock))) {
-                            blockPos = blockHitResult.getBlockPos();
-                        }
-                    }
-                    RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(blockPos));
+                    RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(closestBlock));
                     event.setRotation(rotationVector);
                     Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
                     Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
 
-                    Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
+                    Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(closestBlock, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 }
                 if (distanceTo <= 1.5f && WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getLocalPlayer()) != Blocks.AIR) {
@@ -111,6 +107,7 @@ public class Excavator extends Feature {
                     }
                 } else {
                     if (!PathingHelper.INSTANCE.isPathing()) {
+                        PathingHelper.INSTANCE.setAllowMining(allowMining);
                         PathingHelper.INSTANCE.pathNear(closestBlock, layerDepth);
                     }
                 }

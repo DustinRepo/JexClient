@@ -5,8 +5,6 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
@@ -20,6 +18,8 @@ public enum PathingHelper {
 
     private PathFinder pathFinder;
     private PathProcessor pathProcessor;
+
+    private boolean allowMining;
 
     private BlockPos goal;
 
@@ -54,7 +54,7 @@ public enum PathingHelper {
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (pathFinder != null)
-            pathFinder.renderPath(event.getMatrixStack(), false, false);
+            pathFinder.renderPath(event.getMatrixStack(), false, true);
     });
 
     public void pathTo(BlockPos blockPos) {
@@ -65,18 +65,21 @@ public enum PathingHelper {
     public void pathNear(BlockPos blockPos, int range) {
         this.goal = blockPos;
         this.pathFinder = new NearPathFinder(blockPos, range);
+        this.pathFinder.setCanMine(allowMining);
     }
 
     public void pathNear(BlockPos blockPos, int range, int thinkTime) {
         this.goal = blockPos;
         this.pathFinder = new NearPathFinder(blockPos, range);
         this.pathFinder.setThinkTime(thinkTime);
+        this.pathFinder.setCanMine(allowMining);
     }
 
     public void pathTo(BlockPos blockPos, int thinkTime) {
         this.goal = blockPos;
         this.pathFinder = new PathFinder(blockPos);
         this.pathFinder.setThinkTime(thinkTime);
+        this.pathFinder.setCanMine(allowMining);
     }
 
     public void cancelPathing() {
@@ -94,6 +97,10 @@ public enum PathingHelper {
         return isPathing() && !pathFinder.isDone() && !pathFinder.isFailed();
     }
 
+    public void setAllowMining(boolean allowMining) {
+        this.allowMining = allowMining;
+    }
+
     public void setPathFinder(PathFinder pathFinder) {
         this.pathFinder = pathFinder;
         this.goal = pathFinder.getGoal();
@@ -106,6 +113,7 @@ public enum PathingHelper {
         public NearPathFinder(BlockPos goal, int range) {
             super(goal);
             setThinkTime(10);
+            setCanMine(true);
             this.range = range;
         }
 

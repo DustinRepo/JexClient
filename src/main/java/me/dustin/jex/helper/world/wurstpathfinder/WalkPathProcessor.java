@@ -23,7 +23,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.VineBlock;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -76,6 +78,16 @@ public class WalkPathProcessor extends PathProcessor
 		lockControls();
 		Wrapper.INSTANCE.getLocalPlayer().getAbilities().flying = false;
 		float yaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
+
+		if (WorldHelper.INSTANCE.getBlockState(nextPos).getMaterial().blocksMovement()) {
+			Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(nextPos, Direction.UP);
+			Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+			return;
+		} else if (WorldHelper.INSTANCE.getBlockState(nextPos.up()).getMaterial().blocksMovement()) {
+			Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(nextPos.up(), Direction.UP);
+			Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+			return;
+		}
 
 		if(Feature.getState(Jesus.class)) {
 			// wait for Jesus to swim up
