@@ -61,7 +61,6 @@
     "minecraft.MixinRenderLayers",
     "minecraft.MixinRenderTickCounter",
     "minecraft.MixinScreen",
-    "minecraft.MixinServerList",
     "minecraft.MixinShader",
     "minecraft.MixinSignEditScreen",
     "minecraft.MixinSliderWidget",

@@ -18,6 +18,7 @@ public class MixinServerList {
 
     @Inject(method = "loadFile", at = @At("RETURN"))
     public void loadFile1(CallbackInfo ci) {
+        //TODO: maybe add this back at some point
         for (ServerInfo server : this.servers) {
             if (server.address.equalsIgnoreCase("play.jexclient.com"))
                 return;
