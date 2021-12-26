@@ -78,6 +78,8 @@ public class KillAura extends Feature {
     public boolean teamCheck = false;
     @OpChild(name = "Check Armor", parent = "Team Check")
     public boolean checkArmor = true;
+    @Op(name = "Nametagged")
+    public boolean nametagged = true;
     @Op(name = "Invisibles")
     public boolean invisibles = true;
     @Op(name = "Ignore Walls")
@@ -161,9 +163,8 @@ public class KillAura extends Feature {
     }
 
     public boolean isValid(Entity entity, boolean rangecheck) {
-        if (!(entity instanceof LivingEntity)) {
+        if (!(entity instanceof LivingEntity))
             return false;
-        }
         if (entity == Wrapper.INSTANCE.getLocalPlayer())
             return false;
         if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
@@ -174,47 +175,37 @@ public class KillAura extends Feature {
             return false;
         if (rangecheck)
             if (!Wrapper.INSTANCE.getLocalPlayer().canSee(entity)) {
-                if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > 3) {
+                if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > 3)
                     return false;
-                }
             } else {
-                if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > reach) {
+                if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > reach)
                     return false;
-                }
             }
-        if (entity.age < ticksExisted) {
+        if (entity.age < ticksExisted)
             return false;
-        }
-        if (entity.isInvisible() && !invisibles) {
+        if (entity.hasCustomName() && !nametagged)
             return false;
-        }
-        if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth()))) {
+        if (entity.isInvisible() && !invisibles)
             return false;
-        }
-        if (!Wrapper.INSTANCE.getLocalPlayer().canSee(entity) && !ignoreWalls) {
+        if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
             return false;
-        }
+        if (!Wrapper.INSTANCE.getLocalPlayer().canSee(entity) && !ignoreWalls)
+            return false;
         if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
-            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString())) {
+            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
                 return false;
-            }
-            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmor) && teamCheck) {
+            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmor) && teamCheck)
                 return false;
-            }
-            if (botCheck && isBot((PlayerEntity) entity)) {
+            if (botCheck && isBot((PlayerEntity) entity))
                 return false;
-            }
             return player;
         }
-        if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity)) {
+        if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
             return passive;
-        }
-        if (EntityHelper.INSTANCE.isHostileMob(entity)) {
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostile;
-        }
-        if (EntityHelper.INSTANCE.isNeutralMob(entity)) {
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutral;
-        }
         return false;
     }
 
