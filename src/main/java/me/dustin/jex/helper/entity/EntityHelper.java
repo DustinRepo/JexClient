@@ -43,7 +43,7 @@ public enum EntityHelper {
     }
 
     public boolean isPassiveMob(Entity entity) {
-        return doesPlayerOwn(entity) || (entity instanceof HoglinEntity && Wrapper.INSTANCE.getWorld().getDifficulty() == Difficulty.PEACEFUL) || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
+        return !(entity instanceof HoglinEntity) && doesPlayerOwn(entity) || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
     }
 
     public boolean isNeutralMob(Entity entity) {
@@ -53,7 +53,7 @@ public enum EntityHelper {
     public boolean isHostileMob(Entity entity) {
         if (isNeutralMob(entity))
             return isAngryAtPlayer(entity);
-        return entity instanceof ShulkerEntity || (entity instanceof HoglinEntity && Wrapper.INSTANCE.getWorld().getDifficulty() != Difficulty.PEACEFUL) || entity instanceof GhastEntity || entity instanceof HostileEntity || entity instanceof SlimeEntity || entity instanceof EnderDragonEntity || entity instanceof PhantomEntity;
+        return entity instanceof ShulkerEntity || entity instanceof HoglinEntity || entity instanceof GhastEntity || entity instanceof HostileEntity || entity instanceof SlimeEntity || entity instanceof EnderDragonEntity || entity instanceof PhantomEntity;
     }
 
     public boolean doesPlayerOwn(Entity entity) {
