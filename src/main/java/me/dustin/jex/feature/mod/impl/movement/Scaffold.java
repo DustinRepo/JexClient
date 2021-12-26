@@ -43,7 +43,7 @@ public class Scaffold extends Feature {
     private final ConcurrentLinkedQueue<BlockInfo> emptyNearBlocks = new ConcurrentLinkedQueue<>();
 
     @EventPointer
-    private final EventListener<EventWalkOffBlock> eventWalkOffBlockEventListener = new EventListener<>(Event::cancel);
+    private final EventListener<EventWalkOffBlock> eventWalkOffBlockEventListener = new EventListener<>(event -> event.cancel());
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
