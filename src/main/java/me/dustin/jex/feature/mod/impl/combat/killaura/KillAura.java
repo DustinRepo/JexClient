@@ -20,6 +20,9 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.lwjgl.glfw.GLFW;
 
@@ -60,6 +63,14 @@ public class KillAura extends Feature {
     public boolean hostile = true;
     @Op(name = "Passive")
     public boolean passive = true;
+    @Op(name = "Specific Filter")
+    public boolean specificFilter = false;
+    @OpChild(name = "Iron Golem", parent = "Specific Filter")
+    public boolean ironGolem = true;
+    @OpChild(name = "Piglin", parent = "Specific Filter")
+    public boolean piglin = true;
+    @OpChild(name = "Zombie Piglin", parent = "Specific Filter")
+    public boolean zombiepiglin = true;
     @Op(name = "RayTrace")
     public boolean rayTrace = false;
     @Op(name = "Rotate")
@@ -199,6 +210,14 @@ public class KillAura extends Feature {
             if (botCheck && isBot((PlayerEntity) entity))
                 return false;
             return player;
+        }
+        if (specificFilter) {
+            if (entity instanceof IronGolemEntity)
+                return ironGolem;
+            if (entity instanceof ZombifiedPiglinEntity)
+                return zombiepiglin;
+            if (entity instanceof PiglinEntity)
+                return piglin;
         }
         if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
             return passive;

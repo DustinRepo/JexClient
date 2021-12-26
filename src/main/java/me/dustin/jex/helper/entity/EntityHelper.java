@@ -18,6 +18,7 @@ import net.minecraft.item.*;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.RaycastContext;
 
 import java.util.UUID;
@@ -42,11 +43,17 @@ public enum EntityHelper {
     }
 
     public boolean isPassiveMob(Entity entity) {
-        return doesPlayerOwn(entity) || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
+        return doesPlayerOwn(entity) || (entity instanceof HoglinEntity && Wrapper.INSTANCE.getWorld().getDifficulty() == Difficulty.PEACEFUL) || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
     }
 
     public boolean isNeutralMob(Entity entity) {
         return entity instanceof ZombifiedPiglinEntity || entity instanceof BeeEntity || entity instanceof PiglinEntity || entity instanceof PandaEntity || entity instanceof WolfEntity || entity instanceof PolarBearEntity || entity instanceof IronGolemEntity || entity instanceof EndermanEntity;
+    }
+
+    public boolean isHostileMob(Entity entity) {
+        if (isNeutralMob(entity))
+            return isAngryAtPlayer(entity);
+        return entity instanceof ShulkerEntity || (entity instanceof HoglinEntity && Wrapper.INSTANCE.getWorld().getDifficulty() != Difficulty.PEACEFUL) || entity instanceof GhastEntity || entity instanceof HostileEntity || entity instanceof SlimeEntity || entity instanceof EnderDragonEntity || entity instanceof PhantomEntity;
     }
 
     public boolean doesPlayerOwn(Entity entity) {
@@ -60,23 +67,15 @@ public enum EntityHelper {
     }
 
     public UUID getOwnerUUID(LivingEntity livingEntity) {
-        if (livingEntity instanceof TameableEntity) {
-            TameableEntity tameableEntity = (TameableEntity) livingEntity;
+        if (livingEntity instanceof TameableEntity tameableEntity) {
             if (tameableEntity.isTamed()) {
                 return tameableEntity.getOwnerUuid();
             }
         }
-        if (livingEntity instanceof HorseBaseEntity) {
-            HorseBaseEntity horseBaseEntity = (HorseBaseEntity) livingEntity;
+        if (livingEntity instanceof HorseBaseEntity horseBaseEntity) {
             return horseBaseEntity.getOwnerUuid();
         }
         return null;
-    }
-
-    public boolean isHostileMob(Entity entity) {
-        if (isNeutralMob(entity))
-            return isAngryAtPlayer(entity);
-        return entity instanceof ShulkerEntity || entity instanceof GhastEntity || entity instanceof HostileEntity || entity instanceof SlimeEntity || entity instanceof EnderDragonEntity || entity instanceof PhantomEntity;
     }
 
     public boolean canBreed(AnimalEntity entity) {
@@ -148,7 +147,7 @@ public enum EntityHelper {
     public boolean isAngryAtPlayer(Entity entity) {
         if (entity instanceof BeeEntity bee && (bee.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (bee.getAngryAt() == null && (bee.isAttacking()))))
             return true;
-        if (entity instanceof PiglinEntity piglinEntity && piglinEntity.isAngryAt(Wrapper.INSTANCE.getLocalPlayer()))
+        if (entity instanceof PiglinEntity piglinEntity && (piglinEntity.getActivity() == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON || piglinEntity.getActivity() == PiglinActivity.CROSSBOW_CHARGE || piglinEntity.getActivity() == PiglinActivity.CROSSBOW_HOLD))
             return true;
         if (entity instanceof ZombifiedPiglinEntity zombifiedPiglinEntity && (zombifiedPiglinEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (zombifiedPiglinEntity.getAngryAt() == null && (zombifiedPiglinEntity.getAngerTime() > 0))))
             return true;
@@ -158,13 +157,13 @@ public enum EntityHelper {
             return true;
         if (entity instanceof EndermanEntity endermanEntity && (endermanEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (endermanEntity.getAngryAt() == null && (endermanEntity.isAngry()))))
             return true;
-        if (entity instanceof IronGolemEntity ironGolemEntity && (ironGolemEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (ironGolemEntity.getAngryAt() == null && (ironGolemEntity.isAttacking()))))
+        if (entity instanceof IronGolemEntity ironGolemEntity && ironGolemEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid())
             return true;
         if (entity instanceof WolfEntity wolf && (wolf.isAttacking() && !doesPlayerOwn(wolf)))
             return true;
         return false;
     }
-
+    
     public float getYaw(Entity entity) {
         return entity.getYaw(Wrapper.INSTANCE.getMinecraft().getTickDelta());
     }
