@@ -51,7 +51,6 @@ public class AutoTool extends Feature {
                     if (miningSpeedMultiplier > best) {
                         best = miningSpeedMultiplier;
                         slot = index;
-                        JexClient.INSTANCE.getLogger().info(10 / WorldHelper.INSTANCE.getBlockBreakingSpeed(blockState, InventoryHelper.INSTANCE.getInventory().getStack(slot)));
                         found = true;
                     } else if (miningSpeedMultiplier == best && best > 1) {
                         if (isHoeOnCrop) {
@@ -69,7 +68,6 @@ public class AutoTool extends Feature {
             if (slot == InventoryHelper.INSTANCE.getInventory().selectedSlot && !found) {
                 if (InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot).isDamageable() && !InventoryHelper.INSTANCE.hasEnchantment(InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot), Enchantments.SILK_TOUCH)) {
                     slot = getNonDamageSlot();
-                    JexClient.INSTANCE.getLogger().info(10 / WorldHelper.INSTANCE.getBlockBreakingSpeed(blockState, Wrapper.INSTANCE.getLocalPlayer().getMainHandStack()));
                 }
             }
             if (!attackingBlock && slot != -1) {
