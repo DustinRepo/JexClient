@@ -35,8 +35,8 @@ import java.util.Random;
 
 public class AccountManagerScreen extends Screen {
 
-    private ArrayList<AccountButton> accountButtons = new ArrayList<>();
-    private MinecraftAccountManager accountManager = MinecraftAccountManager.INSTANCE;
+    private final ArrayList<AccountButton> accountButtons = new ArrayList<>();
+    private final MinecraftAccountManager accountManager = MinecraftAccountManager.INSTANCE;
     private ButtonWidget loginButton;
     private ButtonWidget editButton;
     private ButtonWidget removeButton;
@@ -44,6 +44,7 @@ public class AccountManagerScreen extends Screen {
     private ButtonWidget cancelButton;
     private ButtonWidget importButton;
     private ButtonWidget exportButton;
+    private ButtonWidget importFromTXTButton;
     private TextFieldWidget searchTextField;
 
     public String outputString;
@@ -112,6 +113,9 @@ public class AccountManagerScreen extends Screen {
             ConfigManager.INSTANCE.get(AltFile.class).exportFile();
             outputString = "Exported alts to config/Accounts-Unencrypted.json";
         });
+        importFromTXTButton = new ButtonWidget(width / 2 - 50, height / 2 + 104, 100, 15, new LiteralText("Import From TXT"), button -> {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new ImportFromTXTScreen());
+        });
         searchTextField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) midX - 150, (height / 2) - 124, 250, 20, new LiteralText(""));
         searchTextField.setVisible(true);
         searchTextField.setEditable(true);
@@ -131,6 +135,7 @@ public class AccountManagerScreen extends Screen {
 
         this.addDrawableChild(exportButton);
         this.addDrawableChild(importButton);
+        this.addDrawableChild(importFromTXTButton);
         this.outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
 
         if (!accountButtons.isEmpty()) {
@@ -161,7 +166,7 @@ public class AccountManagerScreen extends Screen {
         randomButton.active = accountButtons.size() > 1;
         renderBackground(matrixStack);
 
-        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, (width / 2) - 154, (height / 2) - 128, (width / 2) + 156, (height / 2) + 102, 0xff000000, 0x50cccccc, 1);
+        Render2DHelper.INSTANCE.fillAndBorder(matrixStack, (width / 2.f) - 154, (height / 2.f) - 128, (width / 2.f) + 156, (height / 2.f) + 102, 0xff000000, 0x50cccccc, 1);
 
         Scissor.INSTANCE.cut(0, ((height / 2) - 100), width / 2 - 2, 200);
         accountButtons.forEach(button -> {

@@ -295,6 +295,8 @@ public enum MCAPIHelper {
     }
 
     public UUID getUUIDFromName(String name) {
+        if (name.startsWith("Imported"))
+            return null;
         try {
             if (nameMap.containsKey(name))
                 return nameMap.get(name);

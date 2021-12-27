@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.dustin.jex.file.core.ConfigFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
+import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.YamlHelper;
@@ -145,6 +146,35 @@ public class AltFile extends ConfigFile {
                 MinecraftAccountManager.INSTANCE.getAccounts().add(mojangAccount);
             }
         });
+    }
+    
+    public void importFromTXT(File file) {
+        String[] lines = FileHelper.INSTANCE.readFile(file).split("\n");
+        int nameCount = 1;
+        for (String line : lines) {
+            String[] accData = line.split(":");
+            switch (accData.length) {
+                case 2 -> {
+                    String email = accData[0];
+                    String password = accData[1];
+                    MinecraftAccount.MojangAccount mojangAccount;
+                    if (password.isEmpty())
+                        mojangAccount = new MinecraftAccount.MojangAccount(email);
+                    else
+                        mojangAccount = new MinecraftAccount.MojangAccount("Imported Alt #" + nameCount, email, password);
+                    MinecraftAccountManager.INSTANCE.getAccounts().add(mojangAccount);
+                    nameCount++;
+                }
+                case 3 -> {
+                    String username = accData[0];
+                    String email = accData[1];
+                    String password = accData[2];
+                    MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username, email, password);
+                    MinecraftAccountManager.INSTANCE.getAccounts().add(mojangAccount);
+                }
+            }
+        }
+        write();
     }
 
     public void convertJson() {
