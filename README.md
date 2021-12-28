@@ -14,6 +14,8 @@
 ![](https://forthebadge.com/images/badges/kinda-sfw.svg)
 ![](https://forthebadge.com/images/badges/built-by-neckbeards.svg)
 # Jex Utility Client
+[Join the Discord](https://discord.gg/BUcUGu6gfA)
+
 Jex Client is a Minecraft Utility Client made for Anarchy servers. It has support for mods like custom Baritone Processes, ViaFabric compatibility, a Sodium compatible Xray, and more
 
 You can download Jex Client at https://jexclient.com/ or in the releases tab
