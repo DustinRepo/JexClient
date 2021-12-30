@@ -19,6 +19,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -203,7 +204,7 @@ public class Scaffold extends Feature {
     }
 
     public boolean shouldUse(BlockItem blockItem) {
-        return blockItem.getBlock().getDefaultState().isFullCube(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN);
+        return blockItem.getBlock().getDefaultState().hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN, Wrapper.INSTANCE.getLocalPlayer()) && blockItem.getBlock().getDefaultState().onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS;
     }
 
     public record BlockInfo (BlockPos blockpos, Direction facing) {}

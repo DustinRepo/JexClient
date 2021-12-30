@@ -17,7 +17,9 @@ import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -130,10 +132,14 @@ public class Tunneller extends Feature {
     public int getBlockFromHotbar() {
         for (int i = 0; i < 9; i++) {
             if (InventoryHelper.INSTANCE.getInventory().getStack(i) != null && InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() instanceof BlockItem blockItem)
-                if (blockItem.getBlock().getDefaultState().isFullCube(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN))
+                if (shouldUse(blockItem))
                     return i;
         }
         return -1;
+    }
+
+    public boolean shouldUse(BlockItem blockItem) {
+        return blockItem.getBlock().getDefaultState().hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN, Wrapper.INSTANCE.getLocalPlayer()) && blockItem.getBlock().getDefaultState().onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS;
     }
 
     private ArrayList<BlockPos> getLiquidCheckSpots() {
