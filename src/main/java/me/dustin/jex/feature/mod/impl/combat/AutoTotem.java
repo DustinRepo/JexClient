@@ -33,6 +33,7 @@ public class AutoTotem extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         int totemCount = InventoryHelper.INSTANCE.countItems(Items.TOTEM_OF_UNDYING);
+        this.setSuffix(totemCount + "");
         int firstTotem = InventoryHelper.INSTANCE.getFromHotbar(Items.TOTEM_OF_UNDYING);
         if (firstTotem == -1)
             firstTotem = InventoryHelper.INSTANCE.getFromInv(Items.TOTEM_OF_UNDYING);
@@ -48,7 +49,6 @@ public class AutoTotem extends Feature {
             moveTotem(swappedSlot);
             swappedSlot = -1;
         }
-        this.setSuffix(totemCount + "");
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
