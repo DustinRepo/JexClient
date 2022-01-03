@@ -23,17 +23,19 @@ public class MendingSaver extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        ItemStack currentStack = Wrapper.INSTANCE.getLocalPlayer().getMainHandStack();
-        if (currentStack != null && InventoryHelper.INSTANCE.hasEnchantment(currentStack, Enchantments.MENDING)) {
-            float percent = (((float) currentStack.getMaxDamage() - (float) currentStack.getDamage()) / (float) currentStack.getMaxDamage()) * 100;
-            if (percent < itemPercent) {
-                if (notify)
-                    ChatHelper.INSTANCE.addClientMessage("MendingSaver just saved your \247b" + currentStack.getName().getString());
+        for (int i = 0; i < 9; i++) {
+            ItemStack currentStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
+            if (currentStack != null && InventoryHelper.INSTANCE.hasEnchantment(currentStack, Enchantments.MENDING)) {
+                float percent = (((float) currentStack.getMaxDamage() - (float) currentStack.getDamage()) / (float) currentStack.getMaxDamage()) * 100;
+                if (percent < itemPercent) {
+                    if (notify)
+                        ChatHelper.INSTANCE.addClientMessage("MendingSaver just saved your \247b" + currentStack.getName().getString());
 
-                if (!InventoryHelper.INSTANCE.isInventoryFullIgnoreHotbar())
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, SlotActionType.QUICK_MOVE);
-                else {
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, SlotActionType.SWAP, getFirstNonMendingSlot() == -1 ? 8 : getFirstNonMendingSlot());
+                    if (!InventoryHelper.INSTANCE.isInventoryFullIgnoreHotbar())
+                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, SlotActionType.QUICK_MOVE);
+                    else {
+                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, SlotActionType.SWAP, getFirstNonMendingSlot() == -1 ? 8 : getFirstNonMendingSlot());
+                    }
                 }
             }
         }
