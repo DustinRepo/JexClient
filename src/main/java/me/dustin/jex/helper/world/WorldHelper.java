@@ -212,7 +212,7 @@ public enum WorldHelper {
     }
 
     public boolean isSlimeChunk(long seed, int chunkX, int chunkZ) {
-        Random r = new Random(seed + (chunkX * chunkX * 4987142L) + (chunkX * 5947611L) + (chunkZ * chunkZ) * 4392871L + (chunkZ * 389711L) ^ 0x3AD8025FL);
+        Random r = new Random(seed + (int)(chunkX * chunkX * 0x4c1906) + (int)(chunkX * 0x5ac0db) + (int)(chunkZ * chunkZ) * 0x4307a7L + (int)(chunkZ * 0x5f24f) ^ 0x3AD8025FL);
 
         return (r.nextInt(10) == 0);
     }
