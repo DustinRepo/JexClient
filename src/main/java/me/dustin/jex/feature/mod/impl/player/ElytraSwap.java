@@ -45,7 +45,7 @@ public class ElytraSwap extends Feature {
             }
             if (bestElytraSlot != -1) {
                 if (bestElytraSlot > 8) {
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, bestElytraSlot, SlotActionType.SWAP, 8);
+                    InventoryHelper.INSTANCE.swapToHotbar(bestElytraSlot, 8);
                     bestElytraSlot = 8;
                 }
                 //swap on slot 6 as that's the chest slot

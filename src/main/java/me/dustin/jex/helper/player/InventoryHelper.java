@@ -124,6 +124,10 @@ public enum InventoryHelper {
         Wrapper.INSTANCE.getInteractionManager().clickSlot(container.syncId, slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
     }
 
+    public void swapToHotbar(int slot, int hotbarSlot) {
+        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot, SlotActionType.SWAP, hotbarSlot);
+    }
+
     public void moveToOffhand(int slot) {
         boolean hasOffhand = Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.AIR;
         windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);

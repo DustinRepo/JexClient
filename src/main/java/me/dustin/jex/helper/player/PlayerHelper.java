@@ -28,6 +28,7 @@ import net.minecraft.item.ShieldItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -142,32 +143,32 @@ public enum PlayerHelper {
         BlockPos placePos = null;
         Direction placeDir = null;
 
-        if (!WorldHelper.INSTANCE.getBlockState(north).getMaterial().isReplaceable()) {
+        if (!WorldHelper.INSTANCE.getBlockState(north).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(north).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
             placePos = north;
             placeDir = Direction.SOUTH;
-        } else if (!WorldHelper.INSTANCE.getBlockState(south).getMaterial().isReplaceable()) {
+        } else if (!WorldHelper.INSTANCE.getBlockState(south).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(south).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
             placePos = south;
             placeDir = Direction.NORTH;
-        } else if (!WorldHelper.INSTANCE.getBlockState(east).getMaterial().isReplaceable()) {
+        } else if (!WorldHelper.INSTANCE.getBlockState(east).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(east).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
             placePos = east;
             placeDir = Direction.WEST;
-        } else if (!WorldHelper.INSTANCE.getBlockState(west).getMaterial().isReplaceable()) {
+        } else if (!WorldHelper.INSTANCE.getBlockState(west).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(west).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
             placePos = west;
             placeDir = Direction.EAST;
-        } else if (!WorldHelper.INSTANCE.getBlockState(up).getMaterial().isReplaceable()) {
+        } else if (!WorldHelper.INSTANCE.getBlockState(up).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(up).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
             placePos = up;
             placeDir = Direction.DOWN;
-        } else if (!WorldHelper.INSTANCE.getBlockState(down).getMaterial().isReplaceable()) {
+        } else if (!WorldHelper.INSTANCE.getBlockState(down).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(down).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
             placePos = down;
             placeDir = Direction.UP;
         }
-        if (placePos == null || placeDir == null) {
+        if (placePos == null) {
             if (illegallPlace) {
                 Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), hand, new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.UP, blockPos, false));
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
             }
         } else {
-            Vec3d placeVec = ClientMathHelper.INSTANCE.getVec(placePos);
+            Vec3d placeVec = WorldHelper.INSTANCE.sideOfBlock(placePos, placeDir);
             BlockHitResult blockHitResult = new BlockHitResult(placeVec, placeDir, placePos, false);
             Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), hand, blockHitResult);
             Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);

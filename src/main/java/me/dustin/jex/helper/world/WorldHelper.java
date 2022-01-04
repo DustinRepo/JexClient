@@ -14,6 +14,7 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -37,9 +38,7 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UserCache;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.*;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -135,6 +134,18 @@ public enum WorldHelper {
             }
         }
         return blocks;
+    }
+
+    public Vec3d sideOfBlock(BlockPos pos, Direction direction) {
+        switch (direction) {
+            case NORTH -> Vec3d.ofCenter(pos).add(0, 0, -0.5);
+            case SOUTH -> Vec3d.ofCenter(pos).add(0, 0, 0.5);
+            case EAST -> Vec3d.ofCenter(pos).add(0.5, 0, 0);
+            case WEST -> Vec3d.ofCenter(pos).add(-0.5, 0, 0);
+            case UP -> Vec3d.ofCenter(pos).add(0, 0.5, 0);
+            case DOWN -> Vec3d.ofCenter(pos).add(0, -0.5, 0);
+        }
+        return Vec3d.ofCenter(pos);
     }
 
     public Block getBlockAboveEntity(Entity entity) {

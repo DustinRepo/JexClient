@@ -32,9 +32,9 @@ public class MendingSaver extends Feature {
                         ChatHelper.INSTANCE.addClientMessage("MendingSaver just saved your \247b" + currentStack.getName().getString());
 
                     if (!InventoryHelper.INSTANCE.isInventoryFullIgnoreHotbar())
-                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, SlotActionType.QUICK_MOVE);
+                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, i + 36, SlotActionType.QUICK_MOVE);
                     else {
-                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, SlotActionType.SWAP, getFirstNonMendingSlot() == -1 ? 8 : getFirstNonMendingSlot());
+                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, i + 36, SlotActionType.SWAP, getFirstNonMendingSlot() == -1 ? 8 : getFirstNonMendingSlot());
                     }
                 }
             }
