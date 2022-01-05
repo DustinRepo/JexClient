@@ -47,7 +47,7 @@ public class SpawnProofing extends Feature {
                         continue;
                     BlockState blockState = WorldHelper.INSTANCE.getBlockState(pos);
                     BlockState belowState = WorldHelper.INSTANCE.getBlockState(pos.down());
-                    if (blockState.getFluidState().isEmpty() && blockState.getMaterial().isReplaceable() && belowState.hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), pos.down(), Wrapper.INSTANCE.getLocalPlayer())) {
+                    if (blockState.getFluidState().isEmpty() && blockState.getMaterial().isReplaceable() && (belowState.hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), pos.down(), Wrapper.INSTANCE.getLocalPlayer()) || belowState.getBlock() instanceof SoulSandBlock) && !(belowState.getBlock() instanceof GlassBlock || belowState.getBlock() instanceof StainedGlassBlock || belowState.getBlock() == Blocks.BEDROCK)) {
                         int spawnproofItem = getSpawnProofingItem();
                         if (spawnproofItem == -1)
                             return;
@@ -71,7 +71,7 @@ public class SpawnProofing extends Feature {
     private int getSpawnProofingItem() {
         for (int i = 0; i < 36; i++) {
             ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
-            if (itemStack.getItem() instanceof BlockItem blockItem && (blockItem.getBlock() instanceof CarpetBlock || blockItem.getBlock() instanceof PressurePlateBlock || blockItem.getBlock() instanceof SlabBlock || (blockItem.getBlock() instanceof GlassBlock && useGlass))) {
+            if (itemStack.getItem() instanceof BlockItem blockItem && (blockItem.getBlock() instanceof CarpetBlock || blockItem.getBlock() instanceof PressurePlateBlock || blockItem.getBlock() instanceof SlabBlock || ((blockItem.getBlock() instanceof GlassBlock || blockItem.getBlock() instanceof StainedGlassBlock) && useGlass))) {
                 return i;
             }
         }
