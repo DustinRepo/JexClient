@@ -128,12 +128,13 @@ public class Excavator extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        if (miningArea != null && renderAreaBox) {
-            Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(miningArea.getAreaBB().minX, miningArea.getAreaBB().minY, miningArea.getAreaBB().minZ));
-            Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(miningArea.getAreaBB().maxX, miningArea.getAreaBB().maxY, miningArea.getAreaBB().maxZ));
+        if (renderAreaBox && (tempPos1 != null && tempPos2 != null) || miningArea != null) {
+            MiningArea copy = miningArea != null ? miningArea : new MiningArea(tempPos1, tempPos2);
+            Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(copy.getAreaBB().minX, copy.getAreaBB().minY, copy.getAreaBB().minZ));
+            Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(copy.getAreaBB().maxX, copy.getAreaBB().maxY, copy.getAreaBB().maxZ));
             Box miningAreaBox = new Box(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
             Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), miningAreaBox, 0xffffff00);
-        }else
+        }
         if (tempPos1 != null) {//draws yellow box on first set pos
             Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos1);
             Box closestBox = new Box(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
@@ -297,6 +298,7 @@ public class Excavator extends Feature {
         private final ArrayList<BlockPos> blockPosList = new ArrayList<>();
 
         private int highestY = -64;
+        private int startBlocksAmount;
 
         public MiningArea(BlockPos pos1, BlockPos pos2) {
             BlockPos min = new BlockPos(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()));
@@ -311,6 +313,7 @@ public class Excavator extends Feature {
                     }
                 }
             }
+            startBlocksAmount = blocksLeft();
             sortList();
         }
 
@@ -324,7 +327,7 @@ public class Excavator extends Feature {
         }
 
         public int totalBlocks() {
-            return blockPosList.size();
+            return startBlocksAmount;
         }
 
         public boolean empty() {
