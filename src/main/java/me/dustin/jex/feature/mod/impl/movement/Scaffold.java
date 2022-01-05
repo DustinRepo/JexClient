@@ -60,7 +60,7 @@ public class Scaffold extends Feature {
                 if (blockInfo != null) {
                     if (getBlockFromHotbar() == -1)
                         if (getBlockFromInv() != -1) {
-                            InventoryHelper.INSTANCE.swapToHotbar(getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), 9);
+                            InventoryHelper.INSTANCE.swapToHotbar(getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), 8);
                         }
                     if (getBlockFromHotbar() != -1) {
                         InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
