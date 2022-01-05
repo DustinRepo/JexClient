@@ -15,6 +15,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -33,7 +34,7 @@ public class AirPlace extends Feature {
 	private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
 			HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
 			if (hitResult instanceof BlockHitResult blockHitResult) {
-				if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()))) {
+				if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos())) && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() instanceof BlockItem) {
 					Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
 					Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 					event.cancel();
