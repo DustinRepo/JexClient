@@ -92,6 +92,8 @@ public class Search extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+        if (blocks.isEmpty())
+            return;
         ArrayList<BoxStorage> boxList = new ArrayList<>();
         for (BlockPos pos : worldBlocks.keySet()) {
             Block block = worldBlocks.get(pos);
