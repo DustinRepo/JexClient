@@ -1,4 +1,4 @@
-package me.dustin.jex.helper.world.seed;
+package me.dustin.jex.helper.world;
 
 import org.apache.commons.lang3.StringUtils;
 

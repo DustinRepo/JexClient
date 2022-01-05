@@ -7,7 +7,6 @@ import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.helper.world.seed.SeedCracker;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;

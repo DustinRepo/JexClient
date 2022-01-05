@@ -30,7 +30,7 @@ public class SpawnSphere extends Feature {
         Render3DHelper.INSTANCE.setup3DRender(true);
         RenderSystem.lineWidth(1);
         Vec3d subtractable = Render3DHelper.INSTANCE.getEntityRenderPosition(Wrapper.INSTANCE.getLocalPlayer(), event.getPartialTicks()).subtract(pos);
-        Render3DHelper.INSTANCE.drawSphere(matrixStack, 128, 25, sphereColor, !seethrough, Vec3d.ZERO.subtract(subtractable));
+        Render3DHelper.INSTANCE.drawSphere(matrixStack, pos, 128, 25, 25, sphereColor);
         Render3DHelper.INSTANCE.end3DRender();
         matrixStack.pop();
     });

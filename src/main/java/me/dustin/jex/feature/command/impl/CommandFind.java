@@ -9,7 +9,7 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.MessageArgumentType;
 import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.world.seed.SeedHelper;
+import me.dustin.jex.helper.world.SeedHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
