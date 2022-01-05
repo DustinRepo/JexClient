@@ -58,14 +58,10 @@ public class Scaffold extends Feature {
             getNearBlocks(below);
             for (BlockInfo blockInfo : emptyNearBlocks) {
                 if (blockInfo != null) {
-                    if (getBlockFromHotbar() == -1) {
-                        if (InventoryHelper.INSTANCE.isHotbarFull()) {
-                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 44, SlotActionType.THROW);
-                        }
+                    if (getBlockFromHotbar() == -1)
                         if (getBlockFromInv() != -1) {
-                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), SlotActionType.QUICK_MOVE);
+                            InventoryHelper.INSTANCE.swapToHotbar(getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), 9);
                         }
-                    }
                     if (getBlockFromHotbar() != -1) {
                         InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
                         place(blockInfo, event);
