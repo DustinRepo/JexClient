@@ -92,7 +92,7 @@ public class Search extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        if (blocks.isEmpty())
+        if (blocks == null || blocks.isEmpty())
             return;
         ArrayList<BoxStorage> boxList = new ArrayList<>();
         for (BlockPos pos : worldBlocks.keySet()) {
