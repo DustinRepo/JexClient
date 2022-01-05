@@ -20,7 +20,10 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically place carpets/slabs to spawn proof around you")
 public class SpawnProofing extends Feature {
@@ -56,7 +59,9 @@ public class SpawnProofing extends Feature {
                             spawnproofItem = 8;
                         }
                         InventoryHelper.INSTANCE.setSlot(spawnproofItem, true, true);
-                        PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, false);
+                        BlockHitResult blockHitResult = new BlockHitResult(Vec3d.ofBottomCenter(pos), Direction.UP, pos.down(), false);
+                        Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
+                        Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 
                         ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(spawnproofItem);
                         setSuffix(itemStack.getName().getString());
@@ -71,7 +76,7 @@ public class SpawnProofing extends Feature {
     private int getSpawnProofingItem() {
         for (int i = 0; i < 36; i++) {
             ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
-            if (itemStack.getItem() instanceof BlockItem blockItem && (blockItem.getBlock() instanceof CarpetBlock || blockItem.getBlock() instanceof PressurePlateBlock || blockItem.getBlock() instanceof SlabBlock || ((blockItem.getBlock() instanceof GlassBlock || blockItem.getBlock() instanceof StainedGlassBlock) && useGlass))) {
+            if (itemStack.getItem() instanceof BlockItem blockItem && (blockItem.getBlock() instanceof AbstractButtonBlock || blockItem.getBlock() instanceof CarpetBlock || blockItem.getBlock() instanceof PressurePlateBlock || blockItem.getBlock() instanceof SlabBlock || ((blockItem.getBlock() instanceof GlassBlock || blockItem.getBlock() instanceof StainedGlassBlock) && useGlass))) {
                 return i;
             }
         }
