@@ -81,6 +81,15 @@ public enum Render2DHelper {
         BufferRenderer.draw(bufferBuilder);
     }
 
+    public void drawTexturedQuadNoDraw(Matrix4f matrices, float x0, float x1, float y0, float y1, float z, float u0, float u1, float v0, float v1) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.vertex(matrices, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
+        bufferBuilder.vertex(matrices, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
+        bufferBuilder.vertex(matrices, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
+        bufferBuilder.vertex(matrices, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
+    }
+
     public void fill(MatrixStack matrixStack, float x1, float y1, float x2, float y2, int color) {
         Matrix4f matrix = matrixStack.peek().getPositionMatrix();
         float j;
@@ -114,6 +123,32 @@ public enum Render2DHelper {
         BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+    }
+
+    public void fillNoDraw(MatrixStack matrixStack, float x1, float y1, float x2, float y2, int color) {
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+        float j;
+        if (x1 < x2) {
+            j = x1;
+            x1 = x2;
+            x2 = j;
+        }
+
+        if (y1 < y2) {
+            j = y1;
+            y1 = y2;
+            y2 = j;
+        }
+
+        float f = (float)(color >> 24 & 255) / 255.0F;
+        float g = (float)(color >> 16 & 255) / 255.0F;
+        float h = (float)(color >> 8 & 255) / 255.0F;
+        float k = (float)(color & 255) / 255.0F;
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0.0F).color(g, h, k, f).next();
     }
 
     public void drawFace(MatrixStack matrixStack, float x, float y, int renderScale, Identifier id) {

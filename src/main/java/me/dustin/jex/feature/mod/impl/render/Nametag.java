@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render;
 
 import com.google.common.collect.Maps;
-import me.dustin.events.core.Event;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.addon.hat.Hat;
@@ -20,15 +20,14 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.Perspective;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AirBlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Formatting;
@@ -37,6 +36,7 @@ import net.minecraft.util.math.Vec3d;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Render names above players with more info.")
 public class Nametag extends Feature {
@@ -47,12 +47,20 @@ public class Nametag extends Feature {
     public boolean players = true;
     @OpChild(name = "Show Face", parent = "Players")
     public boolean showPlayerFace = true;
-    @Op(name = "Hostiles")
-    public boolean hostiles = false;
-    @Op(name = "Passives")
-    public boolean passives = false;
+    @Op(name = "Mobs")
+    public boolean mobs = false;
+    @OpChild(name = "Special Mobs Only", parent = "Mobs")
+    public boolean specialMobsOnly = false;
+    @OpChild(name = "Hostiles", parent = "Mobs")
+    public boolean hostiles = true;
+    @OpChild(name = "Neutrals", parent = "Mobs")
+    public boolean neutrals = true;
+    @OpChild(name = "Passives", parent = "Mobs")
+    public boolean passives = true;
     @Op(name = "Items")
     public boolean items = false;
+    @OpChild(name = "Group Range", max = 10, parent = "Items")
+    public int groupRange = 5;
     @Op(name = "Distance")
     public boolean distance = true;
     @Op(name = "Show Inv")
@@ -73,20 +81,8 @@ public class Nametag extends Feature {
 
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (isValid(entity)) {
-                drawNametags(entity, event);
-            }
-        });
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (entity instanceof LivingEntity && isValid(entity)) {
-                drawNametagInv((LivingEntity) entity, event);
-            }
-        });
-        if (showself && Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON) {
-            drawNametags(Wrapper.INSTANCE.getLocalPlayer(), event);
-            drawNametagInv(Wrapper.INSTANCE.getLocalPlayer(), event);
-        }
+        drawNametags(event.getMatrixStack());
+        drawPlayerFaces(event.getMatrixStack());
     });
 
     @EventPointer
@@ -100,7 +96,7 @@ public class Nametag extends Feature {
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         this.positions.clear();
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (isValid(entity)) {
+            if (isValid(entity) && !positions.containsKey(entity)) {
                 float offset = entity.getHeight() + 0.2f;
                 if (entity instanceof PlayerEntity) {
                     if (Hat.hasHat((PlayerEntity) entity)) {
@@ -111,40 +107,128 @@ public class Nametag extends Feature {
                     }
                 }
                 Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, event.getPartialTicks(), event.getMatrixStack());
+                if (entity instanceof ItemEntity itemEntity) {
+                    Wrapper.INSTANCE.getWorld().getEntities().forEach(entity1 -> {
+                        if (entity1 instanceof ItemEntity itemEntity1 && entity.distanceTo(entity1) <= groupRange) {
+                            if (itemEntity1.getStack().getItem() == itemEntity.getStack().getItem())
+                                this.positions.put(entity1, vec);
+                        }
+                    });
+                }
                 this.positions.put(entity, vec);
             }
         });
     });
 
-    private void drawInv(LivingEntity player, float posX, float posY, EventRender2D eventRender2D) {
+    public void drawNametags(MatrixStack matrixStack) {
+        ArrayList<Entity> exceptions = new ArrayList<>();
+        //draw all backgrounds then render all at once
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (!exceptions.contains(entity) && isValid(entity)) {
+                Vec3d vec = positions.get(entity);
+                if (isOnScreen(vec)) {
+                    float x = (float) vec.x;
+                    float y = (float) vec.y - (showPlayerFace && entity instanceof PlayerEntity ? 18 : 0);
+                    String nameString = getNameString(entity);
+                    if (entity instanceof ItemEntity itemEntity) {
+                        AtomicInteger stackCount = new AtomicInteger(itemEntity.getStack().getCount());
+                        positions.forEach((entity1, vec3d) -> {
+                            if (!exceptions.contains(entity1) && entity != entity1 && vec3d.equals(vec) && entity1 instanceof ItemEntity itemEntity1) {
+                                if (itemEntity1.getStack().getItem() == itemEntity.getStack().getItem()) {
+                                    stackCount.addAndGet(itemEntity1.getStack().getCount());
+                                    exceptions.add(entity1);
+                                }
+                            }
+                        });
+
+                        nameString = entity.getDisplayName().getString();
+                        if (stackCount.get() > 1)
+                            nameString += " \247fx" + stackCount.get();
+                    }
+                    float length = FontHelper.INSTANCE.getStringWidth(nameString, customFont || CustomFont.INSTANCE.getState());
+                    //health bar
+                    if (health && healthMode.equalsIgnoreCase("Bar") && entity instanceof LivingEntity) {
+                        float percent = ((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth();
+                        float barLength = (int) ((length + 4) * percent);
+                        Render2DHelper.INSTANCE.fillNoDraw(matrixStack, x - (length / 2) - 2, y - 1, (x - (length / 2) - 2) + barLength, y, getHealthColor(((LivingEntity) entity)));
+                    }
+                    //name background
+                    Render2DHelper.INSTANCE.fillNoDraw(matrixStack, x - (length / 2) - 2, y - 12, x + (length / 2) + 2, y - 1, 0x35000000);
+                    if (showInv && itemBackgrounds && entity instanceof LivingEntity livingEntity) {
+                        drawInventoryBackgrounds(matrixStack, vec, livingEntity);
+                    }
+                }
+            }
+        });
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+        //draw all text since we can't also do that while rendering the boxes
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (!exceptions.contains(entity) && isValid(entity)) {
+                Vec3d vec = positions.get(entity);
+                if (isOnScreen(vec)) {
+                    float x = (float) vec.x;
+                    float y = (float) vec.y - (showPlayerFace && entity instanceof PlayerEntity ? 18 : 0);
+                    String nameString = getNameString(entity);
+
+                    if (entity instanceof ItemEntity itemEntity) {
+                        int stackCount = itemEntity.getStack().getCount();
+                        for (Entity entity1 : exceptions) {
+                            Vec3d vec3d = positions.get(entity1);
+                            if (vec3d.equals(vec) && entity1 instanceof ItemEntity itemEntity1) {
+                                if (itemEntity1.getStack().getItem() == itemEntity.getStack().getItem()) {
+                                    stackCount += itemEntity1.getStack().getCount();
+                                }
+                            }
+                        }
+                        nameString = entity.getDisplayName().getString();
+                        if (stackCount > 1)
+                            nameString += " \247fx" + stackCount;
+                    }
+                    
+                    FontHelper.INSTANCE.drawCenteredString(matrixStack, nameString, x, y - 10, getColor(entity), customFont);
+
+                    if (showInv && entity instanceof LivingEntity livingEntity) {
+                        drawInventoryItems(matrixStack, vec, livingEntity);
+                    }
+                }
+            }
+        });
+    }
+
+    public void drawInventoryItems(MatrixStack matrixStack, Vec3d vec, LivingEntity livingEntity) {
+        float x = (float) vec.x;
+        float y = (float) vec.y - (showPlayerFace && livingEntity instanceof PlayerEntity ? 18 : 0);
         int itemWidth = 16;
-        int totalCount = getItems(player).size();
-        float startX = (posX - ((totalCount * itemWidth) / 2.f));
-        posY = (posY - 28);
+        int totalCount = getItems(livingEntity).size();
+        float startX = (x - ((totalCount * itemWidth) / 2.f));
+        y -= 28;
         count = 0;
-        for (ItemStack itemStack : getItems(player)) {
+        for (ItemStack itemStack : getItems(livingEntity)) {
             if (!(itemStack.getItem() instanceof AirBlockItem)) {
                 float newX = startX + (count * 16);
-                if (itemBackgrounds)
-                    Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), newX, posY, newX + 16, posY + 16, 0x35000000);
-                Render2DHelper.INSTANCE.drawItem(itemStack, newX, posY);
+                Render2DHelper.INSTANCE.drawItem(itemStack, newX, y);
                 if (itemStack.hasEnchantments()) {
                     float scale = 0.5f;
-                    MatrixStack matrixStack = eventRender2D.getMatrixStack();
                     matrixStack.push();
                     matrixStack.scale(scale, scale, 1);
                     int enchCount = 1;
                     for (NbtElement tag : itemStack.getEnchantments()) {
                         try {
                             NbtCompound compoundTag = (NbtCompound) tag;
-                            float newY = ((posY - ((10 * scale) * enchCount) + 0.5f) / scale);
+                            float newY = ((y - ((10 * scale) * enchCount) + 0.5f) / scale);
                             float newerX = (newX / scale);
                             String name = getEnchantName(compoundTag);
                             if (compoundTag.getString("id").equalsIgnoreCase("minecraft:binding_curse") || compoundTag.getString("id").equalsIgnoreCase("minecraft:vanishing_curse"))
                                 name = "\247c" + name;
-                            float nameWidth = FontHelper.INSTANCE.getStringWidth(name, customFont || CustomFont.INSTANCE.getState());
-                            Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), newerX, newY - 1, newerX + nameWidth, newY + 9, 0x35000000);
-                            FontHelper.INSTANCE.draw(eventRender2D.getMatrixStack(), name, newerX + 1.5f, newY, enchantColor, customFont);
+                            FontHelper.INSTANCE.draw(matrixStack, name, newerX + 1.5f, newY, enchantColor, customFont);
                             enchCount++;
                         } catch (Exception ignored) {}
                     }
@@ -153,6 +237,71 @@ public class Nametag extends Feature {
                 count++;
             }
         }
+    }
+
+    public void drawInventoryBackgrounds(MatrixStack matrixStack, Vec3d vec, LivingEntity livingEntity) {
+        float x = (float) vec.x;
+        float y = (float) vec.y - (showPlayerFace && livingEntity instanceof PlayerEntity ? 18 : 0);
+        int itemWidth = 16;
+        int totalCount = getItems(livingEntity).size();
+        float startX = (x - ((totalCount * itemWidth) / 2.f));
+        y -= 28;
+        count = 0;
+        for (ItemStack itemStack : getItems(livingEntity)) {
+            if (!(itemStack.getItem() instanceof AirBlockItem)) {
+                float newX = startX + (count * 16);
+                Render2DHelper.INSTANCE.fillNoDraw(matrixStack, newX, y, newX + 16, y + 16, 0x35000000);
+                if (itemStack.hasEnchantments()) {
+                    float scale = 0.5f;
+                    matrixStack.push();
+                    matrixStack.scale(scale, scale, 1);
+                    int enchCount = 1;
+                    for (NbtElement tag : itemStack.getEnchantments()) {
+                        try {
+                            NbtCompound compoundTag = (NbtCompound) tag;
+                            float newY = ((y - ((10 * scale) * enchCount) + 0.5f) / scale);
+                            float newerX = (newX / scale);
+                            String name = getEnchantName(compoundTag);
+                            if (compoundTag.getString("id").equalsIgnoreCase("minecraft:binding_curse") || compoundTag.getString("id").equalsIgnoreCase("minecraft:vanishing_curse"))
+                                name = "\247c" + name;
+                            float nameWidth = FontHelper.INSTANCE.getStringWidth(name, customFont || CustomFont.INSTANCE.getState());
+                            Render2DHelper.INSTANCE.fillNoDraw(matrixStack, newerX, newY - 1, newerX + nameWidth, newY + 9, 0x35000000);
+                            enchCount++;
+                        } catch (Exception ignored) {}
+                    }
+                    matrixStack.pop();
+                }
+                count++;
+            }
+        }
+    }
+
+    public void drawPlayerFaces(MatrixStack matrixStack) {
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (isValid(entity)) {
+                Vec3d vec = positions.get(entity);
+                if (isOnScreen(vec)) {
+                    float x = (float) vec.x - 8;
+                    float y = (float) vec.y - 16;
+
+                    if (showPlayerFace && entity instanceof PlayerEntity) {
+                        PlayerListEntry playerListEntry = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(entity.getUuid());
+                        if (playerListEntry != null) {
+                            Render2DHelper.INSTANCE.drawFace(matrixStack, x - 8, y + 2, 2, playerListEntry.getSkinTexture());
+                            Render2DHelper.INSTANCE.bindTexture(playerListEntry.getSkinTexture());
+                            float width = 16, height = 16, u = 16, v = 16, regionWidth = 16, regionHeight = 16, textureWidth = 128, textureHeight = 128;
+                            Render2DHelper.INSTANCE.drawTexturedQuadNoDraw(matrixStack.peek().getPositionMatrix(), x, x + width, y, y + height, 0, (u + 0.0F) / (float) textureWidth, (u + (float) regionWidth) / (float) textureWidth, (v + 0.0F) / (float) textureHeight, (v + (float) regionHeight) / (float) textureHeight);
+                            u = 80;
+                            Render2DHelper.INSTANCE.drawTexturedQuadNoDraw(matrixStack.peek().getPositionMatrix(), x, x + width, y, y + height, 0, (u + 0.0F) / (float) textureWidth, (u + (float) regionWidth) / (float) textureWidth, (v + 0.0F) / (float) textureHeight, (v + (float) regionHeight) / (float) textureHeight);
+                        }
+                    }
+                }
+            }
+        });
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
     }
 
     private String getEnchantName(NbtCompound compoundTag) {
@@ -166,40 +315,6 @@ public class Nametag extends Feature {
         }
         name += level;
         return name;
-    }
-
-    public void drawNametags(Entity playerEntity, EventRender2D eventRender2D) {
-        Vec3d vec = positions.get(playerEntity);
-        if (isOnScreen(vec)) {
-            float x = (float) vec.x;
-            float y = (float) vec.y - (showPlayerFace && playerEntity instanceof PlayerEntity ? 18 : 0);
-            String nameString = getNameString(playerEntity);
-            float length = FontHelper.INSTANCE.getStringWidth(nameString, customFont || CustomFont.INSTANCE.getState());
-
-            if (showPlayerFace && playerEntity instanceof PlayerEntity) {
-                PlayerListEntry playerListEntry = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(playerEntity.getUuid());
-                if (playerListEntry != null)
-                    Render2DHelper.INSTANCE.drawFace(eventRender2D.getMatrixStack(), x - 8, y + 2, 2, playerListEntry.getSkinTexture());
-            }
-
-            if (health && healthMode.equalsIgnoreCase("Bar") && playerEntity instanceof LivingEntity) {
-                float percent = ((LivingEntity) playerEntity).getHealth() / ((LivingEntity) playerEntity).getMaxHealth();
-                float barLength = (int) ((length + 4) * percent);
-                Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), x - (length / 2) - 2, y - 1, (x - (length / 2) - 2) + barLength, y, getHealthColor(((LivingEntity) playerEntity)));
-            }
-            Render2DHelper.INSTANCE.fill(eventRender2D.getMatrixStack(), x - (length / 2) - 2, y - 12, x + (length / 2) + 2, y - 1, 0x35000000);
-            FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), nameString, x, y - 10, getColor(playerEntity), customFont);
-        }
-    }
-
-    public void drawNametagInv(LivingEntity playerEntity, EventRender2D eventRender2D) {
-        Vec3d vec = positions.get(playerEntity);
-        if (isOnScreen(vec)) {
-            float x = (float) vec.x;
-            float y = (float) vec.y - (showPlayerFace && playerEntity instanceof PlayerEntity ? 18 : 0);
-            if (showInv)
-                drawInv(playerEntity, x, y, eventRender2D);
-        }
     }
 
     private ArrayList<ItemStack> getItems(LivingEntity player) {
@@ -223,11 +338,11 @@ public class Nametag extends Feature {
     }
 
     public String getNameString(Entity entity) {
-        String name = entity.getDisplayName().asString();
+        String name = entity.getDisplayName().getString();
         if (name.trim().isEmpty())
-            name = entity.getName().asString();
-        if (entity instanceof PlayerEntity && FriendHelper.INSTANCE.isFriend(entity.getName().asString()))
-            name = FriendHelper.INSTANCE.getFriendViaName(entity.getName().asString()).alias();
+            name = entity.getName().getString();
+        if (entity instanceof PlayerEntity && FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
+            name = FriendHelper.INSTANCE.getFriendViaName(entity.getName().getString()).alias();
         if (entity instanceof ItemEntity itemEntity) {
             name = entity.getDisplayName().getString();
             if (itemEntity.getStack().getCount() > 1)
@@ -250,6 +365,8 @@ public class Nametag extends Feature {
             return ESP.INSTANCE.hostileColor;
         if (EntityHelper.INSTANCE.isPassiveMob(player))
             return ESP.INSTANCE.passiveColor;
+        if (EntityHelper.INSTANCE.isNeutralMob(player))
+            return ESP.INSTANCE.neutralColor;
         if (player instanceof PlayerEntity) {
             if (FriendHelper.INSTANCE.isFriend(player.getName().asString()))
                 return ESP.INSTANCE.friendColor;
@@ -291,25 +408,60 @@ public class Nametag extends Feature {
     }
 
     private boolean isValid(Entity entity) {
-        if (entity instanceof ItemEntity) {
+        if (entity instanceof ItemEntity)
             return items;
-        } else if (entity instanceof LivingEntity && ((LivingEntity) entity).isSleeping()) {
+        else if (entity instanceof LivingEntity livingEntity && livingEntity.isSleeping())
             return false;
-        } else if (EntityHelper.INSTANCE.isHostileMob(entity)) {
+        else if (mobs && EntityHelper.INSTANCE.isHostileMob(entity)) {
+            if (specialMobsOnly && !isSpecialMob(entity))
+                return false;
             return hostiles;
-        } else if (EntityHelper.INSTANCE.isPassiveMob(entity)) {
+        } else if (mobs && EntityHelper.INSTANCE.isPassiveMob(entity)) {
+            if (specialMobsOnly && !isSpecialMob(entity))
+                return false;
             return passives;
-        } else if (entity instanceof PlayerEntity) {
+        } else if (mobs && EntityHelper.INSTANCE.isNeutralMob(entity)) {
+            if (specialMobsOnly && !isSpecialMob(entity))
+                return false;
+            return neutrals;
+        } else if (entity instanceof PlayerEntity)
             if (!EntityHelper.INSTANCE.isNPC((PlayerEntity) entity)) {
                 if (entity == Wrapper.INSTANCE.getLocalPlayer())
                     return showself && Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON;
                 return players;
             }
+        return false;
+    }
+
+    private boolean isSpecialMob(Entity entity) {
+        if (entity instanceof LivingEntity livingEntity) {
+            if (entity.hasCustomName())
+                return true;
+            return hasAbnormalItems(livingEntity);
         }
         return false;
     }
 
-    public boolean isOnScreen(Vec3d pos) {
+    public boolean hasAbnormalItems(LivingEntity livingEntity) {
+        ItemStack mainHandStack = livingEntity.getMainHandStack();
+        ItemStack offhandStack = livingEntity.getMainHandStack();
+
+        if (mainHandStack.getItem() instanceof TridentItem || offhandStack.getItem() instanceof TridentItem)
+            return true;
+        if (!(mainHandStack.getItem() instanceof BowItem) && !(mainHandStack.getItem() instanceof FishingRodItem) && mainHandStack.getItem() != Items.CROSSBOW && mainHandStack.getItem() != Items.IRON_AXE && mainHandStack.getItem() != Items.IRON_SWORD && mainHandStack.getItem() != Items.IRON_SHOVEL && mainHandStack.getItem() != Items.STONE_SWORD && mainHandStack.getItem() != Items.GOLDEN_SWORD) {
+            return mainHandStack.getItem() != Items.AIR || offhandStack.getItem() != Items.AIR;
+        }
+        boolean hasArmor = false;
+        for (ItemStack armorItem : livingEntity.getArmorItems()) {
+            if (armorItem.getItem() != Items.AIR) {
+                hasArmor = true;
+                break;
+            }
+        }
+        return hasArmor;
+    }
+
+    private boolean isOnScreen(Vec3d pos) {
         return pos != null && (pos.z > -1 && pos.z < 1);
     }
 

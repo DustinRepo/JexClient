@@ -237,9 +237,6 @@ public class NahrFont {
                     drawChar(matrixStack, c, x, y, newColor);
                     x += getStringWidth(Character.toString(c)) * 2.0F;
                 } catch (ArrayIndexOutOfBoundsException indexException) {
-                    char c = text.charAt(i);
-                    JexClient.INSTANCE.getLogger().error("Can't draw character: " + c + " (" + Character.getNumericValue(c) + ")");
-
                 }
             }
         bufferBuilder.end();
