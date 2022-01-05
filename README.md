@@ -21,7 +21,7 @@ Jex Client is a Minecraft Utility Client made for Anarchy servers. It has suppor
 You can download Jex Client at https://jexclient.com/ or in the releases tab
 ## Things needed:
 1. [Git](https://git-scm.com/downloads)
-2. [Java 16 JDK](https://www.oracle.com/java/technologies/javase/jdk16-archive-downloads.html)
+2. [Java 17 JDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 3. A Java IDE, like [Intellij](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
 
 ## Setup Intellij:
