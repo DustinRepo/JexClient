@@ -12,27 +12,27 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Show a 128 block radius sphere around an area to see all spots mobs could spawn in that radius.")
 public class SpawnSphere extends Feature {
 
-    @Op(name = "Sphere Color", isColor = true)
-    public int sphereColor = new Color(255, 250, 0).getRGB();
+    @Op(name = "Spawnable Sphere Color", isColor = true)
+    public int spawnableSphereColor = new Color(255, 0, 0).getRGB();
+    @Op(name = "Non-Spawnable Sphere Color", isColor = true)
+    public int nonSpawnableSphereColor = new Color(0, 255, 0).getRGB();
     @Op(name = "See-Through")
-    public boolean seethrough = true;
+    public boolean seethrough = false;
 
     private Vec3d pos;
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         MatrixStack matrixStack = event.getMatrixStack();
-        matrixStack.push();
-        Render3DHelper.INSTANCE.setup3DRender(true);
-        RenderSystem.lineWidth(1);
-        Vec3d subtractable = Render3DHelper.INSTANCE.getEntityRenderPosition(Wrapper.INSTANCE.getLocalPlayer(), event.getPartialTicks()).subtract(pos);
-        Render3DHelper.INSTANCE.drawSphere(matrixStack, pos, 128, 25, 25, sphereColor);
-        Render3DHelper.INSTANCE.end3DRender();
-        matrixStack.pop();
+        ArrayList<Render3DHelper.BoxStorage> outersphere = Render3DHelper.INSTANCE.drawSphere(matrixStack, pos, 128, 25, 25, spawnableSphereColor);
+        ArrayList<Render3DHelper.BoxStorage> inner = Render3DHelper.INSTANCE.drawSphere(matrixStack, pos, 24, 25, 25, nonSpawnableSphereColor);
+        outersphere.addAll(inner);
+        Render3DHelper.INSTANCE.drawList(matrixStack, outersphere, seethrough);
     });
 
     @Override

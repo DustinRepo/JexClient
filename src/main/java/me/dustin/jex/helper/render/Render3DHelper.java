@@ -166,7 +166,7 @@ public enum Render3DHelper {
         RenderSystem.disableTexture();
     }
 
-    public void drawSphere(MatrixStack matrixStack, Vec3d pos, double r, int lats, int longs, int color)
+    public ArrayList<BoxStorage> drawSphere(MatrixStack matrixStack, Vec3d pos, double r, int lats, int longs, int color)
     {
         ArrayList<BoxStorage> boxes = new ArrayList<>();
         ArrayList<Vec3d> positions = new ArrayList<>();
@@ -190,7 +190,7 @@ public enum Render3DHelper {
                 }
             }
         }
-        drawList(matrixStack, boxes, true);
+        return boxes;
     }
 
     public void drawBoxWithDepthTest(MatrixStack matrixstack, Box bb, int color) {
