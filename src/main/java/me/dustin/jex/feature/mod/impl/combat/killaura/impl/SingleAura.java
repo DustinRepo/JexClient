@@ -105,8 +105,9 @@ public class SingleAura extends FeatureExtension {
         }
         if (target != null && Wrapper.INSTANCE.getWorld().getEntityById(target.getId()) != null) {
             if (BaritoneHelper.INSTANCE.baritoneExists()) {
-                if (KillAura.INSTANCE.baritoneOverride && (BaritoneHelper.INSTANCE.isBaritoneRunning() || (Feature.get(Excavator.class).getState() && !Feature.get(Excavator.class).isPaused())))
-                    BaritoneHelper.INSTANCE.followUntilDead(target, KillAura.INSTANCE);
+                if (KillAura.INSTANCE.baritoneOverride)
+                    if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
+                        BaritoneHelper.INSTANCE.followUntilDead(target, KillAura.INSTANCE);
             }
             if (KillAura.INSTANCE.autoBlock && !alreadyBlocking)
                 PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);

@@ -53,7 +53,7 @@ public class MultiAura extends FeatureExtension {
                 KillAura.INSTANCE.setHasTarget(!targets.isEmpty());
                 if (!targets.isEmpty()) {
                     if (BaritoneHelper.INSTANCE.baritoneExists()) {
-                        if (KillAura.INSTANCE.baritoneOverride && (BaritoneHelper.INSTANCE.isBaritoneRunning() || Feature.get(Excavator.class).getState()))
+                        if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
                             BaritoneHelper.INSTANCE.followUntilDead(targets.get(0), KillAura.INSTANCE);
                     }
                     if (KillAura.INSTANCE.rotate) {
