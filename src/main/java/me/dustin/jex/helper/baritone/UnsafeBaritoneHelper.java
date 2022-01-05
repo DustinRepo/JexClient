@@ -20,8 +20,6 @@ public class UnsafeBaritoneHelper {
     protected static void initBaritoneProcesses() {
         BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().registerProcess(killauraTargetProcess = new KillauraTargetProcess());
         BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().registerProcess(pauseProcess = new PauseProcess());
-        BaritoneAPI.getSettings().prefix.value = "*&";
-        BaritoneAPI.getSettings().chatControl.value = false;
     }
 
     protected static boolean isBaritoneRunning() {
