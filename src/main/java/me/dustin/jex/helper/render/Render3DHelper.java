@@ -166,33 +166,6 @@ public enum Render3DHelper {
         RenderSystem.disableTexture();
     }
 
-    public ArrayList<BoxStorage> drawSphere(MatrixStack matrixStack, Vec3d pos, double r, int lats, int longs, int color)
-    {
-        ArrayList<BoxStorage> boxes = new ArrayList<>();
-        ArrayList<Vec3d> positions = new ArrayList<>();
-        int i, j;
-        for (i = 0; i <= lats; i++)
-        {
-            double lat0 = Math.PI * (-0.5 + (double)(i - 1) / lats);
-            double z0 = Math.sin(lat0) * r;
-            double zr0 = Math.cos(lat0) * r;
-
-            for (j = 0; j <= longs; j++)
-            {
-                double lng = 2 * Math.PI * (double)(j - 1) / longs;
-                double x = Math.cos(lng);
-                double y = Math.sin(lng);
-                Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(pos.add(x * zr0, y * zr0, z0)));
-                if (!positions.contains(renderPos)) {
-                    Box box = new Box(0, 0, 0, 1, 1, 1).offset(renderPos);
-                    boxes.add(new BoxStorage(box, color));
-                    positions.add(renderPos);
-                }
-            }
-        }
-        return boxes;
-    }
-
     public void drawBoxWithDepthTest(MatrixStack matrixstack, Box bb, int color) {
         setup3DRender(false);
         drawFilledBox(matrixstack, bb, color & 0x50ffffff);

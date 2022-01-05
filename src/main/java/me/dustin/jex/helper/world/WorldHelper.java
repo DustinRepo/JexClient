@@ -14,12 +14,14 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import me.dustin.jex.helper.render.Render3DHelper;
 import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -59,6 +61,7 @@ public enum WorldHelper {
     INSTANCE;
     private Queue<Runnable> var10001 = Queues.newConcurrentLinkedQueue();
     private ConcurrentMap<BlockPos, BlockEntity> blockEntities = Maps.newConcurrentMap();
+    public static final Box SINGLE_BOX = new Box(0, 0, 0, 1, 1, 1);
 
     public Block getBlock(BlockPos pos) {
         if (Wrapper.INSTANCE.getWorld() == null)
@@ -333,6 +336,29 @@ public enum WorldHelper {
         }
 
         return f;
+    }
+
+    public ArrayList<BlockPos> cubeSphere(Vec3d pos, double r, int lats, int longs) {
+        ArrayList<BlockPos> positions = new ArrayList<>();
+        int i, j;
+        for (i = 0; i <= lats; i++)
+        {
+            double lat0 = Math.PI * (-0.5 + (double)(i - 1) / lats);
+            double z0 = Math.sin(lat0) * r;
+            double zr0 = Math.cos(lat0) * r;
+
+            for (j = 0; j <= longs; j++)
+            {
+                double lng = 2 * Math.PI * (double)(j - 1) / longs;
+                double x = Math.cos(lng);
+                double y = Math.sin(lng);
+                BlockPos blockPos = new BlockPos(pos.add(x * zr0, y * zr0, z0));
+                if (!positions.contains(blockPos)) {
+                    positions.add(blockPos);
+                }
+            }
+        }
+        return positions;
     }
 
     public IntegratedServer createIntegratedServer(Thread thread, long seed, GeneratorType generatorType) {
