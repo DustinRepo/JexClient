@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.combat.killaura.impl;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
@@ -136,11 +137,12 @@ public class SingleAura extends FeatureExtension {
         LivingEntity livingEntity = null;
         float distance = KillAura.INSTANCE.reach;
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if (entity instanceof LivingEntity) {
-                LivingEntity livingEntity1 = (LivingEntity) entity;
+            if (entity instanceof LivingEntity livingEntity1) {
                 if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= distance) {
-                    livingEntity = livingEntity1;
-                    distance = livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
+                    if (PlayerHelper.INSTANCE.getDistanceFromMouse(livingEntity1) * 2 <= KillAura.INSTANCE.fov) {
+                        livingEntity = livingEntity1;
+                        distance = livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
+                    }
                 }
             }
         }

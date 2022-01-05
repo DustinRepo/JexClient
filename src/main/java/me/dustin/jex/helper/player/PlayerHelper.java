@@ -217,12 +217,12 @@ public enum PlayerHelper {
             var6 = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - (ent2.getY() + (double) (ent2.getEyeHeight(ent2.getPose()) * Math.random()));
         }
 
-        double var141 = (double) MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
+        double var141 = MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
         float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
         float pitch = updateRotation(EntityHelper.INSTANCE.getPitch(ent2), var13, Float.MAX_VALUE);
         float yaw = updateRotation(EntityHelper.INSTANCE.getYaw(ent2), var12, Float.MAX_VALUE);
-        return new RotationVector(yaw - 180, -pitch);
+        return new RotationVector(yaw + 180, -pitch);
     }
 
     public RotationVector getRotations(Entity entityIn, Vec3d vec3d) {
@@ -231,12 +231,12 @@ public enum PlayerHelper {
         double var6;
         var6 = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - vec3d.y;
 
-        double var141 = (double) MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
+        double var141 = MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
         float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
         float pitch = updateRotation(getPitch(), var13, Float.MAX_VALUE);
         float yaw = updateRotation(getYaw(), var12, Float.MAX_VALUE);
-        return new RotationVector(yaw - 180, -pitch);
+        return new RotationVector(yaw + 180, -pitch);
     }
 
     public RotationVector getRotations(Vec3d vec3d, Entity entityIn) {
@@ -245,12 +245,12 @@ public enum PlayerHelper {
         double var6;
         var6 = vec3d.y - (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D;
 
-        double var141 = (double) MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
+        double var141 = MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
         float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
         float pitch = updateRotation(getPitch(), var13, Float.MAX_VALUE);
         float yaw = updateRotation(getYaw(), var12, Float.MAX_VALUE);
-        return new RotationVector(yaw - 180, -pitch);
+        return new RotationVector(yaw + 180, -pitch);
     }
 
     public RotationVector getRotations(Entity ent2, float sideOffset, float heightOffset) {
@@ -269,7 +269,7 @@ public enum PlayerHelper {
         float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
         float pitch = updateRotation(EntityHelper.INSTANCE.getPitch(ent2), var13, Float.MAX_VALUE);
         float yaw = updateRotation(EntityHelper.INSTANCE.getYaw(ent2), var12, Float.MAX_VALUE);
-        return new RotationVector(yaw - 180, -pitch);
+        return new RotationVector(yaw + 180, -pitch);
     }
 
     /**
@@ -320,6 +320,28 @@ public enum PlayerHelper {
         float j = MathHelper.cos(f);
         float k = MathHelper.sin(f);
         return new Vec3d((double) (i * j), (double) (-k), (double) (h * j));
+    }
+
+    public int getDistanceFromMouse(Entity entity) {
+        RotationVector neededRotations = getRotations(Wrapper.INSTANCE.getLocalPlayer(), entity);
+        RotationVector currentRotations = new RotationVector(getYaw(), getPitch());
+        neededRotations.normalize();
+        currentRotations.normalize();
+        float neededYaw = currentRotations.getYaw() - neededRotations.getYaw();
+        float neededPitch = currentRotations.getPitch() - neededRotations.getPitch();
+        float distanceFromMouse = MathHelper.sqrt(neededYaw * neededYaw + neededPitch * neededPitch);
+        return (int) distanceFromMouse;
+    }
+
+    public int getDistanceFromMouse(Vec3d vec3d) {
+        RotationVector neededRotations = getRotations(Wrapper.INSTANCE.getLocalPlayer(), vec3d);
+        RotationVector currentRotations = new RotationVector(getYaw(), getPitch());
+        neededRotations.normalize();
+        currentRotations.normalize();
+        float neededYaw = currentRotations.getYaw() - neededRotations.getYaw();
+        float neededPitch = currentRotations.getPitch() - neededRotations.getPitch();
+        float distanceFromMouse = MathHelper.sqrt(neededYaw * neededYaw + neededPitch * neededPitch);
+        return (int) distanceFromMouse;
     }
 
     public double getWaterSpeed() {

@@ -38,6 +38,8 @@ public class KillAura extends Feature {
     public String attackMode = "Pre";
     @Op(name = "Reach", min = 3, max = 6, inc = 0.1f)
     public float reach = 3.8f;
+    @Op(name = "FOV", min = 15, max = 360)
+    public int fov = 360;
     @Op(name = "Ticks Exsited", max = 200, inc = 1f)
     public float ticksExisted = 50;
     @OpChild(name = "APS", min = 1, max = 20, inc = 0.1f, parent = "Ignore 1.9")
@@ -120,8 +122,7 @@ public class KillAura extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        for(Entity entity : Wrapper.INSTANCE.getWorld().getEntities())
-        {
+        for(Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if(entity instanceof PlayerEntity playerEntity) {
                 if(playerEntity.isOnGround() && !touchedGround.contains(playerEntity))
                     touchedGround.add(playerEntity);
@@ -129,15 +130,13 @@ public class KillAura extends Feature {
                     swung.add(playerEntity);
             }
         }
-        for(int i = 0; i < swung.size() - 1; i++)
-        {
+        for(int i = 0; i < swung.size() - 1; i++) {
             PlayerEntity playerEntity = swung.get(i);
             if(playerEntity == null) {
                 swung.remove(i);
             }
         }
-        for(int i = 0; i < touchedGround.size() - 1; i++)
-        {
+        for(int i = 0; i < touchedGround.size() - 1; i++) {
             PlayerEntity playerEntity = touchedGround.get(i);
             if(playerEntity == null) {
                 touchedGround.remove(i);

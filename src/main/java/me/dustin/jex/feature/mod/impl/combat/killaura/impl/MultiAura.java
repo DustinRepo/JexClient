@@ -145,10 +145,11 @@ public class MultiAura extends FeatureExtension {
     public void getTargets() {
         targets.clear();
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if (entity instanceof LivingEntity) {
-                LivingEntity livingEntity1 = (LivingEntity) entity;
+            if (entity instanceof LivingEntity livingEntity1) {
                 if (KillAura.INSTANCE.isValid(livingEntity1, true)) {
-                    targets.add(livingEntity1);
+                    if (PlayerHelper.INSTANCE.getDistanceFromMouse(livingEntity1) * 2 <= KillAura.INSTANCE.fov) {
+                        targets.add(livingEntity1);
+                    }
                 }
             }
         }
