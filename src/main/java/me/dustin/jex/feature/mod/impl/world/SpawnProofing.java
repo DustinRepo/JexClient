@@ -11,14 +11,10 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.*;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -50,7 +46,7 @@ public class SpawnProofing extends Feature {
                         continue;
                     BlockState blockState = WorldHelper.INSTANCE.getBlockState(pos);
                     BlockState belowState = WorldHelper.INSTANCE.getBlockState(pos.down());
-                    if (blockState.getFluidState().isEmpty() && blockState.getMaterial().isReplaceable() && !WorldHelper.INSTANCE.canUseOnPos(pos.down()) && (belowState.hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), pos.down(), Wrapper.INSTANCE.getLocalPlayer()) || belowState.getBlock() instanceof SoulSandBlock) && !(belowState.getBlock() instanceof GlassBlock || belowState.getBlock() instanceof StainedGlassBlock || belowState.getBlock() == Blocks.BEDROCK)) {
+                    if (blockState.getFluidState().isEmpty() && blockState.getMaterial().isReplaceable() && !WorldHelper.INSTANCE.canUseOnPos(pos.down()) && (belowState.hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), pos.down(), Wrapper.INSTANCE.getLocalPlayer()) || belowState.getBlock() instanceof SoulSandBlock) && !(belowState.getBlock() instanceof GlassBlock || belowState.getBlock() instanceof StainedGlassBlock || belowState.getBlock() == Blocks.SEA_LANTERN || belowState.getBlock() == Blocks.GLOWSTONE || belowState.getBlock() == Blocks.BEDROCK)) {
                         int spawnproofItem = getSpawnProofingItem();
                         if (spawnproofItem == -1)
                             return;
@@ -76,7 +72,7 @@ public class SpawnProofing extends Feature {
     private int getSpawnProofingItem() {
         for (int i = 0; i < 36; i++) {
             ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
-            if (itemStack.getItem() instanceof BlockItem blockItem && (blockItem.getBlock() instanceof AbstractButtonBlock || blockItem.getBlock() instanceof CarpetBlock || blockItem.getBlock() instanceof PressurePlateBlock || blockItem.getBlock() instanceof SlabBlock || ((blockItem.getBlock() instanceof GlassBlock || blockItem.getBlock() instanceof StainedGlassBlock) && useGlass))) {
+            if (itemStack.getItem() instanceof BlockItem blockItem && (blockItem.getBlock() instanceof AbstractButtonBlock || blockItem.getBlock() instanceof CarpetBlock || blockItem.getBlock() instanceof PressurePlateBlock || blockItem.getBlock() instanceof SlabBlock || blockItem.getBlock() == Blocks.SEA_LANTERN || blockItem.getBlock() == Blocks.GLOWSTONE || ((blockItem.getBlock() instanceof GlassBlock || blockItem.getBlock() instanceof StainedGlassBlock) && useGlass))) {
                 return i;
             }
         }

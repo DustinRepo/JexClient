@@ -82,7 +82,7 @@ public class SpawnHighlighter extends Feature {
 		if (thisBlock == Blocks.AIR)
 			return false;
 		if (checkIsSpawnable)
-			if (!thisState.allowsSpawning(Wrapper.INSTANCE.getWorld(), blockPos, EntityType.ZOMBIE))
+			if (!WorldHelper.INSTANCE.canMobSpawnOntop(blockPos))
 				return false;
 		if (checkWater)
 			if (WorldHelper.INSTANCE.isWaterlogged(above))

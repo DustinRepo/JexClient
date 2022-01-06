@@ -13,22 +13,18 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.player.InventoryHelper;
-import me.dustin.jex.helper.render.Render3DHelper;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -345,6 +341,16 @@ public enum WorldHelper {
         return f;
     }
 
+    public boolean canMobSpawnOntop(BlockPos blockPos) {
+        BlockState blockState = WorldHelper.INSTANCE.getBlockState(blockPos);
+        Block block = blockState.getBlock();
+        if (!blockState.allowsSpawning(Wrapper.INSTANCE.getWorld(), blockPos, EntityType.ZOMBIE))
+            return false;
+        if (block instanceof GlassBlock || block instanceof StainedGlassBlock || block instanceof TintedGlassBlock)
+            return false;
+        return block != Blocks.GLOWSTONE && block != Blocks.SEA_LANTERN;
+    }
+
     public boolean canMobSpawnInside(BlockState blockState) {
         Block block = blockState.getBlock();
         if (blockState.getMaterial().blocksMovement() || !block.canMobSpawnInside())
@@ -367,9 +373,11 @@ public enum WorldHelper {
             return false;
         if (block instanceof CarpetBlock)
             return false;
-        if (block instanceof RailBlock)
+        if (block instanceof AbstractRailBlock)
             return false;
         if (block instanceof FlowerPotBlock)
+            return false;
+        if (block instanceof SkullBlock)
             return false;
         return !(block instanceof CandleBlock);
     }
