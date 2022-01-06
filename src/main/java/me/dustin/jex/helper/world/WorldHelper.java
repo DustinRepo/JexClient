@@ -345,6 +345,35 @@ public enum WorldHelper {
         return f;
     }
 
+    public boolean canMobSpawnInside(BlockState blockState) {
+        Block block = blockState.getBlock();
+        if (blockState.getMaterial().blocksMovement() || !block.canMobSpawnInside())
+            return false;
+        if (block instanceof AbstractButtonBlock)
+            return false;
+        if (block instanceof RedstoneWireBlock)
+            return false;
+        if (block instanceof ComparatorBlock)
+            return false;
+        if (block instanceof RepeaterBlock)
+            return false;
+        if (block instanceof RedstoneTorchBlock)
+            return false;
+        if (block instanceof PressurePlateBlock)
+            return false;
+        if (block instanceof LeverBlock)
+            return false;
+        if (block instanceof TripwireHookBlock)
+            return false;
+        if (block instanceof CarpetBlock)
+            return false;
+        if (block instanceof RailBlock)
+            return false;
+        if (block instanceof FlowerPotBlock)
+            return false;
+        return !(block instanceof CandleBlock);
+    }
+
     public ArrayList<BlockPos> cubeSphere(Vec3d pos, double r, int lats, int longs) {
         ArrayList<BlockPos> positions = new ArrayList<>();
         int i, j;

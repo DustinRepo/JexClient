@@ -44,8 +44,8 @@ public class SpawnHighlighter extends Feature {
 	@Op(name = "Color", isColor = true)
 	public int color = 0xffff0000;
 
-	private ArrayList<BlockPos> posList = new ArrayList<>();
-	private Timer timer = new Timer();
+	private final ArrayList<BlockPos> posList = new ArrayList<>();
+	private final Timer timer = new Timer();
 
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
@@ -75,10 +75,10 @@ public class SpawnHighlighter extends Feature {
 
 	private boolean isValidBlock(BlockPos blockPos) {
 		BlockPos above = blockPos.add(0, 1, 0);
-		Block thisBlock = WorldHelper.INSTANCE.getBlock(blockPos);
-		Block aboveBlock = WorldHelper.INSTANCE.getBlock(above);
 		BlockState thisState = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
 		BlockState aboveState = Wrapper.INSTANCE.getWorld().getBlockState(above);
+		Block thisBlock = thisState.getBlock();
+		Block aboveBlock = aboveState.getBlock();
 		if (thisBlock == Blocks.AIR)
 			return false;
 		if (checkIsSpawnable)
@@ -88,7 +88,7 @@ public class SpawnHighlighter extends Feature {
 			if (WorldHelper.INSTANCE.isWaterlogged(above))
 				return false;
 		assert aboveBlock != null;
-		if (aboveState.getMaterial().blocksMovement() || !aboveBlock.canMobSpawnInside() || !aboveState.canPathfindThrough(Wrapper.INSTANCE.getWorld(), blockPos, NavigationType.LAND))
+		if (!WorldHelper.INSTANCE.canMobSpawnInside(aboveState))
 			return false;
 		if (checkLight) {
 			int light = Wrapper.INSTANCE.getWorld().getLightLevel(LightType.BLOCK, above);
