@@ -33,6 +33,8 @@ public class SpawnHighlighter extends Feature {
 	public int yradius = 15;
 	@Op(name = "Z Clipping")
 	public boolean disableDepth = false;
+	@Op(name = "Check Height")
+	public boolean checkHeight = true;
 	@Op(name = "Check Light")
 	public boolean checkLight = true;
 	@OpChild(name = "Light Value", min = 0, max = 15, inc = 1, parent = "Check Light")
@@ -77,6 +79,7 @@ public class SpawnHighlighter extends Feature {
 		BlockPos above = blockPos.add(0, 1, 0);
 		BlockState thisState = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
 		BlockState aboveState = Wrapper.INSTANCE.getWorld().getBlockState(above);
+		BlockState twoAboveState = Wrapper.INSTANCE.getWorld().getBlockState(above.up());
 		Block thisBlock = thisState.getBlock();
 		Block aboveBlock = aboveState.getBlock();
 		if (thisBlock == Blocks.AIR)
@@ -88,7 +91,7 @@ public class SpawnHighlighter extends Feature {
 			if (WorldHelper.INSTANCE.isWaterlogged(above))
 				return false;
 		assert aboveBlock != null;
-		if (!WorldHelper.INSTANCE.canMobSpawnInside(aboveState))
+		if (!WorldHelper.INSTANCE.canMobSpawnInside(aboveState) || (checkHeight && !WorldHelper.INSTANCE.canMobSpawnInside(twoAboveState)))
 			return false;
 		if (checkLight) {
 			int light = Wrapper.INSTANCE.getWorld().getLightLevel(LightType.BLOCK, above);
