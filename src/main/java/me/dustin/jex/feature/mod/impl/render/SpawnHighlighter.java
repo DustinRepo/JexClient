@@ -2,6 +2,8 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
+import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -51,6 +53,17 @@ public class SpawnHighlighter extends Feature {
 
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+		ArrayList<Render3DHelper.BoxStorage> boxes = new ArrayList<>();
+		posList.forEach(blockPos -> {
+			Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+			Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
+			boxes.add(new Render3DHelper.BoxStorage(box, color));
+		});
+		Render3DHelper.INSTANCE.drawList(event.getMatrixStack(), boxes, disableDepth);
+	});
+
+	@EventPointer
+	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
 		if (timer.hasPassed(checkDelay)) {
 			posList.clear();
 			for (int x = -radius; x < radius; x++) {
@@ -66,14 +79,7 @@ public class SpawnHighlighter extends Feature {
 			}
 			timer.reset();
 		}
-		ArrayList<Render3DHelper.BoxStorage> boxes = new ArrayList<>();
-		posList.forEach(blockPos -> {
-			Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-			Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
-			boxes.add(new Render3DHelper.BoxStorage(box, color));
-		});
-		Render3DHelper.INSTANCE.drawList(event.getMatrixStack(), boxes, disableDepth);
-	});
+	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
 	private boolean isValidBlock(BlockPos blockPos) {
 		BlockPos above = blockPos.add(0, 1, 0);

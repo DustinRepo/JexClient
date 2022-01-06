@@ -123,6 +123,8 @@ public enum Render3DHelper {
         RenderSystem.defaultBlendFunc();
         if (disableDepth)
             RenderSystem.disableDepthTest();
+        else
+            RenderSystem.enableDepthTest();
         RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
         RenderSystem.enableCull();
     }
