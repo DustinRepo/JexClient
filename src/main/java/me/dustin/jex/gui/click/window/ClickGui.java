@@ -25,6 +25,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
@@ -157,6 +158,7 @@ public class ClickGui extends Screen {
     @Override
     public void onClose() {
         ConfigManager.INSTANCE.get(GuiFile.class).write();
+        searchField.setText("");
         super.onClose();
     }
 
@@ -251,6 +253,17 @@ public class ClickGui extends Screen {
     public boolean charTyped(char typedChar, int keyCode) {
         windows.forEach(window -> window.keyTyped(typedChar, keyCode));
         return super.charTyped(typedChar, keyCode);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+            if (searchField.getText().isEmpty())
+                return super.keyPressed(keyCode, scanCode, modifiers);
+            searchField.keyPressed(keyCode, scanCode, modifiers);
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void updateWindowColors() {
