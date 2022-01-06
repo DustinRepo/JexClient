@@ -147,7 +147,7 @@ public class MultiAura extends FeatureExtension {
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof LivingEntity livingEntity1) {
                 if (KillAura.INSTANCE.isValid(livingEntity1, true)) {
-                    if (PlayerHelper.INSTANCE.getDistanceFromMouse(livingEntity1) * 2 <= KillAura.INSTANCE.fov) {
+                    if (KillAura.INSTANCE.fov == 360 || PlayerHelper.INSTANCE.getDistanceFromMouse(livingEntity1) * 2 <= KillAura.INSTANCE.fov) {
                         targets.add(livingEntity1);
                     }
                 }
