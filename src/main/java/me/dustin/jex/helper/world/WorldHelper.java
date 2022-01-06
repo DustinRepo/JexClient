@@ -38,8 +38,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
@@ -80,6 +83,10 @@ public enum WorldHelper {
         if (blockState == null)
             return false;
         return blockState.getFluidState() != Fluids.EMPTY.getDefaultState();
+    }
+
+    public boolean canUseOnPos(BlockPos pos) {
+        return WorldHelper.INSTANCE.getBlockState(pos).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) != ActionResult.PASS;
     }
 
     public boolean isCrop(BlockPos blockPos, boolean checkAge) {

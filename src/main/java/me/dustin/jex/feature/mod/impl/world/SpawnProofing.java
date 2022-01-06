@@ -50,7 +50,7 @@ public class SpawnProofing extends Feature {
                         continue;
                     BlockState blockState = WorldHelper.INSTANCE.getBlockState(pos);
                     BlockState belowState = WorldHelper.INSTANCE.getBlockState(pos.down());
-                    if (blockState.getFluidState().isEmpty() && blockState.getMaterial().isReplaceable() && (belowState.hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), pos.down(), Wrapper.INSTANCE.getLocalPlayer()) || belowState.getBlock() instanceof SoulSandBlock) && !(belowState.getBlock() instanceof GlassBlock || belowState.getBlock() instanceof StainedGlassBlock || belowState.getBlock() == Blocks.BEDROCK)) {
+                    if (blockState.getFluidState().isEmpty() && blockState.getMaterial().isReplaceable() && !WorldHelper.INSTANCE.canUseOnPos(pos.down()) && (belowState.hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), pos.down(), Wrapper.INSTANCE.getLocalPlayer()) || belowState.getBlock() instanceof SoulSandBlock) && !(belowState.getBlock() instanceof GlassBlock || belowState.getBlock() instanceof StainedGlassBlock || belowState.getBlock() == Blocks.BEDROCK)) {
                         int spawnproofItem = getSpawnProofingItem();
                         if (spawnproofItem == -1)
                             return;
