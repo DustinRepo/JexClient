@@ -6,7 +6,9 @@ import me.dustin.jex.load.impl.IHandledScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,11 +25,22 @@ public class MixinHandledScreen implements IHandledScreen {
     @Shadow
     protected int y;//y
 
+    @Shadow @Final protected ScreenHandler handler;
+
     @Inject(method = "drawMouseoverTooltip", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/ingame/HandledScreen.renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V"), cancellable = true)
     public void drawMouseoverTooltip(MatrixStack matrixStack, int i, int j, CallbackInfo ci) {
-        EventRenderToolTip eventRenderToolTip = new EventRenderToolTip(this.focusedSlot.getStack()).run();
+        EventRenderToolTip eventRenderToolTip = new EventRenderToolTip(matrixStack, EventRenderToolTip.Mode.PRE, this.focusedSlot.getStack()).run();
         if (eventRenderToolTip.isCancelled())
             ci.cancel();
+    }
+
+    @Inject(method = "drawMouseoverTooltip", at = @At(value = "RETURN"), cancellable = true)
+    public void drawMouseoverTooltipPOST(MatrixStack matrixStack, int i, int j, CallbackInfo ci) {
+        if (this.handler.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
+            EventRenderToolTip eventRenderToolTip = new EventRenderToolTip(matrixStack, EventRenderToolTip.Mode.POST, this.focusedSlot.getStack()).run();
+            if (eventRenderToolTip.isCancelled())
+                ci.cancel();
+        }
     }
 
     @Inject(method = "render", at = @At("RETURN"))
