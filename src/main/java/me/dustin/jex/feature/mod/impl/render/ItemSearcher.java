@@ -1,6 +1,5 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
@@ -13,6 +12,7 @@ import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
+import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.load.impl.IHandledScreen;
@@ -23,10 +23,12 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Search for items while in a chest or your inventory")
@@ -85,18 +87,12 @@ public class ItemSearcher extends Feature {
                 for (Slot slot : handledScreen.getScreenHandler().slots) {
                     float x = iHandledScreen.getX() + slot.x;
                     float y = iHandledScreen.getY() + slot.y;
-                    boolean correct = slot.hasStack() && slot.getStack().getName().getString().toLowerCase().contains(searchField.toLowerCase());
-                    if (slot.getStack().hasEnchantments()) {
-                        Map<Enchantment, Integer> enchants = EnchantmentHelper.fromNbt(slot.getStack().getEnchantments());
-                        for (Enchantment enchantment : enchants.keySet()) {
-                            if (enchantment.getName(enchantment.getMaxLevel()).getString().toLowerCase().contains(searchField.toLowerCase()))
-                                correct = true;
-                        }
-                    }
-                    if (slot.getStack().getItem() instanceof EnchantedBookItem) {
-                        Map<Enchantment, Integer> enchants = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(slot.getStack()));
-                        for (Enchantment enchantment : enchants.keySet()) {
-                            if (enchantment.getName(enchantment.getMaxLevel()).getString().toLowerCase().contains(searchField.toLowerCase()))
+                    boolean correct = slot.hasStack() && (checkEnchantmentNames(slot.getStack()) || slot.getStack().getName().getString().toLowerCase().contains(searchField.toLowerCase()));
+                    if (slot.hasStack() && InventoryHelper.INSTANCE.isShulker(slot.getStack())) {
+                        HashMap<Integer, ItemStack> shulkerStacks = InventoryHelper.INSTANCE.getStacksFromShulker(slot.getStack());
+                        for (int shulkerSlot : shulkerStacks.keySet()) {
+                            ItemStack insideStack = shulkerStacks.get(shulkerSlot);
+                            if (insideStack.getItem() != Items.AIR && (checkEnchantmentNames(insideStack) || insideStack.getName().getString().toLowerCase().contains(searchField.toLowerCase())))
                                 correct = true;
                         }
                     }
@@ -105,6 +101,23 @@ public class ItemSearcher extends Feature {
         }
     }, Priority.FIRST, new DrawScreenFilter(EventDrawScreen.Mode.POST_CONTAINER));
 
+    private boolean checkEnchantmentNames(ItemStack itemStack) {
+        if (itemStack.hasEnchantments()) {
+            Map<Enchantment, Integer> enchants = EnchantmentHelper.fromNbt(itemStack.getEnchantments());
+            for (Enchantment enchantment : enchants.keySet()) {
+                if (enchantment.getName(enchantment.getMaxLevel()).getString().toLowerCase().contains(searchField.toLowerCase()))
+                    return true;
+            }
+        }
+        if (itemStack.getItem() instanceof EnchantedBookItem) {
+            Map<Enchantment, Integer> enchants = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(itemStack));
+            for (Enchantment enchantment : enchants.keySet()) {
+                if (enchantment.getName(enchantment.getMaxLevel()).getString().toLowerCase().contains(searchField.toLowerCase()))
+                    return true;
+            }
+        }
+        return false;
+    }
 
     private boolean isInt(String intStr) {
         try {
