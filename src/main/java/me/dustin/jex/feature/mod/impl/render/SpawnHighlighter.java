@@ -5,6 +5,9 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.impl.world.SpawnSphere;
+import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -48,6 +51,8 @@ public class SpawnHighlighter extends Feature {
 	public boolean checkIsSpawnable = true;
 	@Op(name = "Color", isColor = true)
 	public int color = 0xffff0000;
+	@Op(name = "SpawnSphere Color", isColor = true)
+	public int spawnSphereColor = 0xff00a1ff;
 
 	private final ArrayList<BlockPos> posList = new ArrayList<>();
 	private final Timer timer = new Timer();
@@ -56,6 +61,12 @@ public class SpawnHighlighter extends Feature {
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 		ArrayList<Render3DHelper.BoxStorage> boxes = new ArrayList<>();
 		posList.forEach(blockPos -> {
+			int color = this.color;
+			if (Feature.getState(SpawnSphere.class)) {
+				Vec3d pos = Feature.get(SpawnSphere.class).pos;
+				if (ClientMathHelper.INSTANCE.getDistance(pos, Vec3d.of(blockPos)) <= 128)
+					color = spawnSphereColor;
+			}
 			Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
 			Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
 			boxes.add(new Render3DHelper.BoxStorage(box, color));

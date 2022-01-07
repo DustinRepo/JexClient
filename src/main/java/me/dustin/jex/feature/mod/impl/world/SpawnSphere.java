@@ -31,7 +31,7 @@ public class SpawnSphere extends Feature {
     @Op(name = "See-Through")
     public boolean seethrough = false;
 
-    private Vec3d pos;
+    public Vec3d pos;
     private final ArrayList<BlockPos> innerSphere = new ArrayList<>();
     private final ArrayList<BlockPos> outerSphere = new ArrayList<>();
 
