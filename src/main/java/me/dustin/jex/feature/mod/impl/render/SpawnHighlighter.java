@@ -15,6 +15,7 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.render.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.util.math.BlockPos;
@@ -59,7 +60,17 @@ public class SpawnHighlighter extends Feature {
 			Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
 			boxes.add(new Render3DHelper.BoxStorage(box, color));
 		});
-		Render3DHelper.INSTANCE.drawList(event.getMatrixStack(), boxes, disableDepth);
+		Render3DHelper.INSTANCE.setup3DRender(disableDepth);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+		boxes.forEach(blockStorage -> {
+			Box box = blockStorage.box();
+			int color = blockStorage.color();
+			Render3DHelper.INSTANCE.drawFilledBox(event.getMatrixStack(), box, color & 0x70ffffff, false);
+		});
+		bufferBuilder.end();
+		BufferRenderer.draw(bufferBuilder);
+		Render3DHelper.INSTANCE.end3DRender();
 	});
 
 	@EventPointer
