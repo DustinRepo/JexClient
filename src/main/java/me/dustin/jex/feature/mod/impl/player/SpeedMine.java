@@ -2,7 +2,6 @@ package me.dustin.jex.feature.mod.impl.player;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventClickBlock;
@@ -11,6 +10,9 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -38,6 +40,10 @@ public class SpeedMine extends Feature {
                 if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
                     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
                 float bProgress = mode.equalsIgnoreCase("Progress") ? progress : 0;
+                if (!isBreakable(WorldHelper.INSTANCE.getBlock(Wrapper.INSTANCE.getIInteractionManager().currentBreakingPos()))) {
+                    givenHaste = false;
+                    break;
+                }
                 if (Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() >= bProgress) {
                     Wrapper.INSTANCE.getIInteractionManager().setBlockBreakProgress(1);
                 }
@@ -47,7 +53,7 @@ public class SpeedMine extends Feature {
                 givenHaste = true;
                 if (Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE) && Wrapper.INSTANCE.getLocalPlayer().getStatusEffect(StatusEffects.HASTE).getAmplifier() > haste - 1)
                     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
-                if (((EventPlayerPackets) event).getMode() == EventPlayerPackets.Mode.PRE)
+                if (event.getMode() == EventPlayerPackets.Mode.PRE)
                     Wrapper.INSTANCE.getLocalPlayer().addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 5200, haste - 1));
             }
         }
@@ -62,12 +68,18 @@ public class SpeedMine extends Feature {
             return;
         if (Wrapper.INSTANCE.getLocalPlayer().isCreative())
             return;
+        if (!isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
+            return;
         for (int i = 0; i < 10; i++) {
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
         }
         Wrapper.INSTANCE.getIInteractionManager().setBlockBreakProgress(1);
     });
+
+    private boolean isBreakable(Block block) {
+        return block != Blocks.BEDROCK && block != Blocks.BARRIER && block != Blocks.COMMAND_BLOCK;
+    }
 
     @Override
     public void onDisable() {

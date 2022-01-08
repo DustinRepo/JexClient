@@ -27,6 +27,8 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
 
     @Shadow private int blockBreakingCooldown;
 
+    @Shadow private BlockPos currentBreakingPos;
+
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick1(CallbackInfo ci) {
         new EventPlayerInteractionTick().run();
@@ -85,5 +87,10 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
     @Override
     public int getBlockBreakingCooldown() {
         return this.blockBreakingCooldown;
+    }
+
+    @Override
+    public BlockPos currentBreakingPos() {
+        return this.currentBreakingPos;
     }
 }
