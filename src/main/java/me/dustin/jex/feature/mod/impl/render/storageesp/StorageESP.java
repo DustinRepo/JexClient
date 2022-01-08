@@ -36,6 +36,10 @@ public class StorageESP extends Feature {
     public boolean barrel = true;
     @Op(name = "Hopper")
     public boolean hopper = true;
+    @Op(name = "Furnace")
+    public boolean furnace = true;
+    @Op(name = "Dispenser/Dropper")
+    public boolean dispensers = true;
     @Op(name = "Hopper Minecart")
     public boolean hopperMinecart = true;
     @Op(name = "Chest Minecart")
@@ -56,7 +60,13 @@ public class StorageESP extends Feature {
     @OpChild(name = "Barrel Color", isColor = true, parent = "Barrel")
     public int barrelColor = new Color(215, 82, 0).getRGB();
     @OpChild(name = "Hopper Color", isColor = true, parent = "Hopper")
-    public int hopperColor = new Color(79, 76, 78).getRGB();
+    public int hopperColor = new Color(42, 42, 42).getRGB();
+    @OpChild(name = "Furnace Color", isColor = true, parent = "Furnace")
+    public int furnaceColor = new Color(201, 201, 201).getRGB();
+    @OpChild(name = "Dispenser Color", isColor = true, parent = "Dispenser/Dropper")
+    public int dispenserColor = new Color(0, 208, 255).getRGB();
+    @OpChild(name = "Dropper Color", isColor = true, parent = "Dispenser/Dropper")
+    public int dropperColor = new Color(59, 147, 0).getRGB();
     @OpChild(name = "Hopper Minecart Color", isColor = true, parent = "Hopper Minecart")
     public int hopperMinecartColor = new Color(0, 128, 255).getRGB();
     @OpChild(name = "Chest Minecart Color", isColor = true, parent = "Chest Minecart")
@@ -120,6 +130,10 @@ public class StorageESP extends Feature {
             return spawner;
         if (blockEntity instanceof HopperBlockEntity)
             return hopper;
+        if (blockEntity instanceof FurnaceBlockEntity || blockEntity instanceof SmokerBlockEntity || blockEntity instanceof BlastFurnaceBlockEntity)
+            return furnace;
+        if (blockEntity instanceof DispenserBlockEntity)
+            return dispensers;
         return false;
     }
 
@@ -156,7 +170,12 @@ public class StorageESP extends Feature {
             return barrelColor;
         if (blockEntity instanceof HopperBlockEntity)
             return hopperColor;
-
+        if (blockEntity instanceof FurnaceBlockEntity || blockEntity instanceof SmokerBlockEntity || blockEntity instanceof BlastFurnaceBlockEntity)
+            return furnaceColor;
+        if (blockEntity instanceof DropperBlockEntity)
+            return dropperColor;
+        if (blockEntity instanceof DispenserBlockEntity)
+            return dispenserColor;
         return 0xffffffff;
     }
 }
