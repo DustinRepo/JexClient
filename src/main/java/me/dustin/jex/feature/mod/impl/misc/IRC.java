@@ -90,7 +90,7 @@ public class IRC extends Feature {
     private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
         IChatScreen iChatScreen = (IChatScreen) event.getScreen();
         String chatString = iChatScreen.getText();
-        if (renderAboveChat) {
+        if (ircManager.isConnected() && renderAboveChat) {
             FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"), iChatScreen.getWidget().x + 84, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
         }
         if (chatString.startsWith(sendPrefix) || ircChatOverride) {
