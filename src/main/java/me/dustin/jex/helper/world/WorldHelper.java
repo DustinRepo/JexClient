@@ -15,6 +15,7 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.toast.SystemToast;
@@ -104,6 +105,22 @@ public enum WorldHelper {
                 return true;
         }
         return false;
+    }
+
+    //super fucking scuffed
+    public Direction chestMergeDirection(ChestBlockEntity chestBlockEntity) {
+        BlockState blockState = getBlockState(chestBlockEntity.getPos());
+        ChestBlock chestBlock = (ChestBlock) getBlock(chestBlockEntity.getPos());
+        Box chestBox = chestBlock.getOutlineShape(blockState, Wrapper.INSTANCE.getWorld(), chestBlockEntity.getPos(), ShapeContext.absent()).getBoundingBox();
+        if (chestBox.minZ == 0)
+            return Direction.NORTH;
+        if (chestBox.maxZ == 1)
+            return Direction.SOUTH;
+        if (chestBox.maxX == 1)
+            return Direction.EAST;
+        if (chestBox.minX == 0)
+            return Direction.WEST;
+        return Direction.UP;
     }
 
     public FluidState getFluidState(BlockPos pos) {
