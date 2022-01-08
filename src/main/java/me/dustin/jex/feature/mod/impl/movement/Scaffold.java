@@ -16,6 +16,7 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.block.Block;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
@@ -76,11 +77,10 @@ public class Scaffold extends Feature {
                 return;
             }
             if (placeMode.equalsIgnoreCase("Post"))
-                Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
-            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-            if (sneak) {
+                PlayerHelper.INSTANCE.placeBlockInPos(blockHitResult.getBlockPos(), Hand.MAIN_HAND, false);
+
+            if (sneak)
                 NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
-            }
             timer.reset();
         }
     });
@@ -158,7 +158,7 @@ public class Scaffold extends Feature {
 
         blockHitResult = new BlockHitResult(new Vec3d(blockInfo.blockpos().getX(), blockInfo.blockpos().getY(), blockInfo.blockpos().getZ()), blockInfo.facing(), blockInfo.blockpos(), false);
         if (placeMode.equalsIgnoreCase("Pre"))
-            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
+            PlayerHelper.INSTANCE.placeBlockInPos(blockInfo.blockpos(), Hand.MAIN_HAND, false);
     }
 
     public BlockInfo getBlockInfo(BlockPos pos) {
