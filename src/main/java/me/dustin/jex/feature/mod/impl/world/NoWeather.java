@@ -9,5 +9,5 @@ import me.dustin.jex.feature.mod.core.Feature;
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Remove rain and snow")
 public class NoWeather extends Feature {
     @EventPointer
-    private final EventListener<EventRenderRain> eventRenderRainEventListener = new EventListener<>(Event::cancel);
+    private final EventListener<EventRenderRain> eventRenderRainEventListener = new EventListener<>(event -> event.cancel());
 }
