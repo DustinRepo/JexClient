@@ -12,6 +12,7 @@ import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -41,38 +42,41 @@ public class ItemSearcher extends Feature {
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
         if (!typing)
             return;
-        int keyCode = event.getKey();
-        if (Screen.isPaste(keyCode)) {
-            searchField += MinecraftClient.getInstance().keyboard.getClipboard();
-            event.cancel();
-            return;
-        }
-        switch (keyCode) {
-            case GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_ESCAPE -> typing = false;
-            case GLFW.GLFW_KEY_SPACE -> searchField += " ";
-            case GLFW.GLFW_KEY_BACKSPACE -> {
-                if (searchField.isEmpty())
-                    break;
-                searchField = searchField.substring(0, searchField.length() - 1);
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen<?>) {
+            int keyCode = event.getKey();
+            if (Screen.isPaste(keyCode)) {
+                searchField += MinecraftClient.getInstance().keyboard.getClipboard();
+                event.cancel();
+                return;
             }
-            default -> {
-                String keyName = InputUtil.fromKeyCode(keyCode, event.getScancode()).getTranslationKey().replace("key.keyboard.", "");
-                if (keyName.length() == 1) {
-                    if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
-                        keyName = keyName.toUpperCase();
-                        if (isInt(keyName))
-                            keyName = getFromNumKey(Integer.parseInt(keyName));
+            switch (keyCode) {
+                case GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_ESCAPE -> typing = false;
+                case GLFW.GLFW_KEY_SPACE -> searchField += " ";
+                case GLFW.GLFW_KEY_BACKSPACE -> {
+                    if (searchField.isEmpty())
+                        break;
+                    searchField = searchField.substring(0, searchField.length() - 1);
+                }
+                default -> {
+                    String keyName = InputUtil.fromKeyCode(keyCode, event.getScancode()).getTranslationKey().replace("key.keyboard.", "");
+                    if (keyName.length() == 1) {
+                        if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
+                            keyName = keyName.toUpperCase();
+                            if (isInt(keyName))
+                                keyName = getFromNumKey(Integer.parseInt(keyName));
+                        }
+                        searchField += keyName;
                     }
-                    searchField += keyName;
                 }
             }
+            event.cancel();
         }
-        event.cancel();
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_MENU));
 
     @EventPointer
     private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
-        typing = Render2DHelper.INSTANCE.isHovered(Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 150, Render2DHelper.INSTANCE.getScaledHeight() - 22, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + 150, Render2DHelper.INSTANCE.getScaledHeight() - 1);
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen<?>)
+            typing = Render2DHelper.INSTANCE.isHovered(Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 150, Render2DHelper.INSTANCE.getScaledHeight() - 22, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + 150, Render2DHelper.INSTANCE.getScaledHeight() - 1);
     }, new MousePressFilter(EventMouseButton.ClickType.IN_MENU, 0));
 
     @EventPointer
