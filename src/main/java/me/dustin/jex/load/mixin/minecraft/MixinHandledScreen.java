@@ -1,13 +1,17 @@
 package me.dustin.jex.load.mixin.minecraft;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRenderToolTip;
 import me.dustin.jex.load.impl.IHandledScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HandledScreen.class)
-public class MixinHandledScreen implements IHandledScreen {
+public class MixinHandledScreen extends Screen implements IHandledScreen {
 
     @Shadow
     protected Slot focusedSlot;
@@ -27,25 +31,54 @@ public class MixinHandledScreen implements IHandledScreen {
 
     @Shadow @Final protected ScreenHandler handler;
 
-    @Inject(method = "drawMouseoverTooltip", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/ingame/HandledScreen.renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V"), cancellable = true)
-    public void drawMouseoverTooltip(MatrixStack matrixStack, int i, int j, CallbackInfo ci) {
-        EventRenderToolTip eventRenderToolTip = new EventRenderToolTip(matrixStack, EventRenderToolTip.Mode.PRE, this.focusedSlot.getStack()).run();
-        if (eventRenderToolTip.isCancelled())
-            ci.cancel();
+    protected MixinHandledScreen(Text title) {
+        super(title);
     }
 
-    @Inject(method = "drawMouseoverTooltip", at = @At(value = "RETURN"), cancellable = true)
-    public void drawMouseoverTooltipPOST(MatrixStack matrixStack, int i, int j, CallbackInfo ci) {
-        if (this.handler.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
-            EventRenderToolTip eventRenderToolTip = new EventRenderToolTip(matrixStack, EventRenderToolTip.Mode.POST, this.focusedSlot.getStack()).run();
-            if (eventRenderToolTip.isCancelled())
+    private static EventRenderToolTip.ToolTipData other;
+
+    @Inject(method = "drawMouseoverTooltip", at = @At(value = "HEAD"), cancellable = true)
+    public void drawMouseoverTooltip(MatrixStack matrixStack, int i, int j, CallbackInfo ci) {
+        ItemStack stack = focusedSlot != null ? this.focusedSlot.getStack() : ItemStack.EMPTY;
+        EventRenderToolTip eventRenderToolTip = new EventRenderToolTip(matrixStack, EventRenderToolTip.Mode.PRE, i, j, stack).run();
+        if (eventRenderToolTip.getX() != i || eventRenderToolTip.getY() != j || eventRenderToolTip.getItemStack() != stack) {
+            this.renderTooltip(matrixStack, eventRenderToolTip.getItemStack(), eventRenderToolTip.getX(), eventRenderToolTip.getY());
+            ci.cancel();
+            if (eventRenderToolTip.getOther() != null)
+                toolTipRender(matrixStack, eventRenderToolTip.getOther().itemStack(), eventRenderToolTip.getOther().x(), eventRenderToolTip.getOther().y());
+            return;
+        } else if (this.handler.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
+            if (eventRenderToolTip.isCancelled()) {
                 ci.cancel();
+                return;
+            }
         }
+        if (eventRenderToolTip.getOther() != null)
+            other = eventRenderToolTip.getOther();
+    }
+
+    @Inject(method = "drawMouseoverTooltip", at = @At(value = "RETURN"))
+    public void drawMouseoverTooltipPOST(MatrixStack matrixStack, int i, int j, CallbackInfo ci) {
+        EventRenderToolTip eventRenderToolTip = new EventRenderToolTip(matrixStack, EventRenderToolTip.Mode.POST, i, j, focusedSlot != null ? this.focusedSlot.getStack() : ItemStack.EMPTY).run();
+        if (eventRenderToolTip.getOther() != null)
+            other = eventRenderToolTip.getOther();
+        if (other != null) {
+            toolTipRender(matrixStack, other.itemStack(), other.x(), other.y());
+        }
+        other = null;
+    }
+
+    private void toolTipRender(MatrixStack matrixStack, ItemStack itemStack, int x, int y) {
+        matrixStack.push();
+        matrixStack.translate(0, 0, 50);
+        this.renderTooltip(matrixStack, itemStack, x, y);
+        matrixStack.translate(0, 0, -50);
+        matrixStack.pop();
     }
 
     @Inject(method = "render", at = @At("RETURN"))
     public void render(MatrixStack matrixStack, int mouseY, int i, float f, CallbackInfo ci) {
-        new EventDrawScreen((Screen) (Object) this, matrixStack, EventDrawScreen.Mode.POST_CONTAINER).run();
+        new EventDrawScreen( this, matrixStack, EventDrawScreen.Mode.POST_CONTAINER).run();
     }
 
     @Override
