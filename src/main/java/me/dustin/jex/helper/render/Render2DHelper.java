@@ -18,7 +18,9 @@ import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.map.MapState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +31,8 @@ import java.io.FileNotFoundException;
 
 public enum Render2DHelper {
     INSTANCE;
-    protected Identifier cog = new Identifier("jex", "gui/click/cog.png");
+    private final Identifier cog = new Identifier("jex", "gui/click/cog.png");
+    private final static Identifier MAP_BACKGROUND = new Identifier("textures/map/map_background_checkerboard.png");
 
     public void setup2DRender(boolean disableDepth) {
         RenderSystem.enableBlend();
@@ -235,6 +238,21 @@ public enum Render2DHelper {
         BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+    }
+
+    public void drawMap(MatrixStack matrixStack, int x, int y, ItemStack stack) {
+        MapState mapState = FilledMapItem.getOrCreateMapState(stack, Wrapper.INSTANCE.getWorld());
+        if (mapState != null) {
+            Render2DHelper.INSTANCE.bindTexture(MAP_BACKGROUND);
+            DrawableHelper.drawTexture(matrixStack, x, y, 0, 0, 150, 150, 150, 150);
+
+            matrixStack.push();
+            matrixStack.translate(x + 11, y + 11, 1000);
+            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+            Wrapper.INSTANCE.getMinecraft().gameRenderer.getMapRenderer().draw(matrixStack, immediate, FilledMapItem.getMapId(stack), mapState, false, 15728880);
+            immediate.draw();
+            matrixStack.pop();
+        }
     }
 
     public void drawCheckmark(MatrixStack matrixStack, float x, float y, int color) {

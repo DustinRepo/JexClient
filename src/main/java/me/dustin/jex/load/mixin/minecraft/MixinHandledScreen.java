@@ -4,6 +4,7 @@ import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRenderToolTip;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.MapToolTip;
+import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IHandledScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -48,7 +49,7 @@ public class MixinHandledScreen extends Screen implements IHandledScreen {
             if (eventRenderToolTip.getOther() != null) {
                 toolTipRender(matrixStack, eventRenderToolTip.getOther().itemStack(), eventRenderToolTip.getOther().x(), eventRenderToolTip.getOther().y());
                 if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(MapToolTip.class)) {
-                    Feature.get(MapToolTip.class).drawMap(eventRenderToolTip.getMatrixStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
+                    Render2DHelper.INSTANCE.drawMap(eventRenderToolTip.getMatrixStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
                 }
             }
             return;
@@ -70,7 +71,7 @@ public class MixinHandledScreen extends Screen implements IHandledScreen {
         if (other != null) {
             toolTipRender(matrixStack, other.itemStack(), other.x(), other.y());
             if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(MapToolTip.class)) {
-                Feature.get(MapToolTip.class).drawMap(eventRenderToolTip.getMatrixStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
+                Render2DHelper.INSTANCE.drawMap(eventRenderToolTip.getMatrixStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
             }
         }
         other = null;
