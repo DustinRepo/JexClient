@@ -69,7 +69,7 @@ public class Jesus extends Feature {
 
     @EventPointer
     private final EventListener<EventBlockCollisionShape> eventBlockCollisionShapeEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld() == null || mode.equalsIgnoreCase("Dolphin"))
+        if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld() == null || mode.equalsIgnoreCase("Dolphin") || event.getBlockPos() == null)
             return;
         if (Wrapper.INSTANCE.getLocalPlayer().isSubmergedInWater() || Wrapper.INSTANCE.getLocalPlayer().isInLava() || (event.getBlockPos().getY() < Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5f && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getLocalPlayer())) || Wrapper.INSTANCE.getLocalPlayer().isSneaking() || Wrapper.INSTANCE.getLocalPlayer().fallDistance > 3)
             return;
