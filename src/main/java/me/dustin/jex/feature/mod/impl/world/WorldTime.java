@@ -24,5 +24,5 @@ public class WorldTime extends Feature {
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
-    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(Event::cancel, new ServerPacketFilter(EventPacketReceive.Mode.PRE, WorldTimeUpdateS2CPacket.class));
+    private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> event.cancel(), new ServerPacketFilter(EventPacketReceive.Mode.PRE, WorldTimeUpdateS2CPacket.class));
 }
