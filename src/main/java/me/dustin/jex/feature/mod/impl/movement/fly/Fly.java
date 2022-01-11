@@ -1,5 +1,6 @@
-package me.dustin.jex.feature.mod.impl.movement;
+package me.dustin.jex.feature.mod.impl.movement.fly;
 
+import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
@@ -8,8 +9,14 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventGetPose;
 import me.dustin.jex.event.player.EventIsPlayerTouchingWater;
+import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.movement.fly.impl.CreativeFly;
+import me.dustin.jex.feature.mod.impl.movement.fly.impl.NormalFly;
+import me.dustin.jex.feature.mod.impl.movement.fly.impl.ThreeDFly;
+import me.dustin.jex.feature.mod.impl.movement.fly.impl.TightFly;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -26,6 +33,8 @@ import org.lwjgl.glfw.GLFW;
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Fly in survival", key = GLFW.GLFW_KEY_F)
 public class Fly extends Feature {
 
+    @Op(name = "Mode", all = {"Normal", "Creative", "Tight", "3D"})
+    public String mode = "Normal";
     @Op(name = "Speed", min = 0.1f, max = 5f, inc = 0.1f)
     public float speed = 0.5f;
     @Op(name = "Walk Animation")
@@ -38,16 +47,21 @@ public class Fly extends Feature {
     public float glideSpeed = 0.034f;
 
     private float strideDistance;
+    private String lastMode;
+
+    public Fly() {
+        new NormalFly();
+        new TightFly();
+        new ThreeDFly();
+        new CreativeFly();
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        boolean jumping = Wrapper.INSTANCE.getOptions().keyJump.isPressed();
-        boolean sneaking = Wrapper.INSTANCE.getOptions().keySneak.isPressed();
-
         if (walkAnimation) {
             float g;
             if (!Wrapper.INSTANCE.getLocalPlayer().isDead() && !Wrapper.INSTANCE.getLocalPlayer().isSwimming()) {
-                g = Math.min(0.1F, (float)Wrapper.INSTANCE.getLocalPlayer().getVelocity().horizontalLength());
+                g = Math.min(0.1F, (float) Wrapper.INSTANCE.getLocalPlayer().getVelocity().horizontalLength());
             } else {
                 g = 0.0F;
             }
@@ -57,23 +71,14 @@ public class Fly extends Feature {
             Wrapper.INSTANCE.getLocalPlayer().strideDistance = strideDistance;
             Wrapper.INSTANCE.getLocalPlayer().prevStrideDistance = lastStrideDist;
         }
-
-        Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = speed;
-        if (!PathingHelper.INSTANCE.isPathing() || PathingHelper.INSTANCE.isThinking()) {
-            PlayerHelper.INSTANCE.setVelocityX(0);
-            PlayerHelper.INSTANCE.setVelocityZ(0);
-        }
-        PlayerHelper.INSTANCE.setVelocityY(0);
-
-        if (jumping) {
-            PlayerHelper.INSTANCE.setVelocityY(speed);
-        } else if (sneaking) {
-            PlayerHelper.INSTANCE.setVelocityY(-speed);
-        }
-        if (glide && !jumping) {
-            PlayerHelper.INSTANCE.setVelocityY(-glideSpeed);
-        }
+        sendEvent(event);
+        this.setSuffix(mode);
     }, Priority.LAST, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
+        sendEvent(event);
+    });
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
@@ -101,4 +106,25 @@ public class Fly extends Feature {
             event.cancel();
         }
     });
+
+    private void sendEvent(Event event) {
+        if (!mode.equalsIgnoreCase(lastMode) && lastMode != null) {
+            FeatureExtension.get(lastMode, this).disable();
+            FeatureExtension.get(mode, this).enable();
+        }
+        FeatureExtension.get(mode, this).pass(event);
+        lastMode = mode;
+    }
+
+    @Override
+    public void onEnable() {
+        FeatureExtension.get(mode, this).enable();
+        super.onEnable();
+    }
+
+    @Override
+    public void onDisable() {
+        FeatureExtension.get(mode, this).disable();
+        super.onDisable();
+    }
 }

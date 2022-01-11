@@ -7,7 +7,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.movement.Fly;
+import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -18,7 +18,7 @@ public class NoFall extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Feature.getState(Fly.class) && Wrapper.INSTANCE.getLocalPlayer().isSneaking() && Wrapper.INSTANCE.getLocalPlayer().age % 10 == 0) return;
+        if (Feature.getState(Fly.class) && !Feature.get(Fly.class).mode.equalsIgnoreCase("Creative") && Wrapper.INSTANCE.getLocalPlayer().isSneaking() && Wrapper.INSTANCE.getLocalPlayer().age % 10 == 0) return;
         if (Wrapper.INSTANCE.getLocalPlayer().isFallFlying() && !isFallSpeedDangerous()) return;
         if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > 2.5f) {
             NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(true));

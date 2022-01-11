@@ -3,30 +3,19 @@ package me.dustin.jex.helper.world.wurstpathfinder;
 import java.util.*;
 
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.movement.Fly;
+import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.feature.mod.impl.movement.Spider;
 import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.feature.mod.impl.player.NoFall;
 import me.dustin.jex.feature.mod.impl.player.NoPush;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
-import org.lwjgl.opengl.GL11;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.block.*;
 import net.minecraft.client.util.math.MatrixStack;

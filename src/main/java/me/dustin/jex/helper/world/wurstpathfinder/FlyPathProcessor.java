@@ -7,11 +7,9 @@
  */
 package me.dustin.jex.helper.world.wurstpathfinder;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.movement.Fly;
+import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
-import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.util.math.*;

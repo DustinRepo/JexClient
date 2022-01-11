@@ -9,24 +9,19 @@ package me.dustin.jex.helper.world.wurstpathfinder;
 
 import java.util.ArrayList;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.movement.Fly;
 import me.dustin.jex.feature.mod.impl.movement.Step;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 import me.dustin.jex.feature.mod.impl.player.Jesus;
-import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.VineBlock;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class WalkPathProcessor extends PathProcessor
