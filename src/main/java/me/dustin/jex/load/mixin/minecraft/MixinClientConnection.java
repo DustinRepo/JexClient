@@ -77,13 +77,13 @@ public abstract class MixinClientConnection {
 
     @Inject(method = "send(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
     public void send(Packet packet, CallbackInfo ci) {
-        EventPacketSent eventPacketSent = new EventPacketSent(packet, EventPacketSent.Mode.PRE).run();
+        EventPacketSent.EventPacketSentDirect eventPacketSent = new EventPacketSent.EventPacketSentDirect(packet, EventPacketSent.Mode.PRE).run();
         if (eventPacketSent.isCancelled()) {
             ci.cancel();
             return;
         }
         send(eventPacketSent.getPacket(), (GenericFutureListener) null);
-        new EventPacketSent(packet, EventPacketSent.Mode.POST).run();
+        new EventPacketSent.EventPacketSentDirect(packet, EventPacketSent.Mode.POST).run();
         ci.cancel();
     }
 

@@ -7,6 +7,7 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
+import me.dustin.jex.event.filters.DirectClientPacketFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketSent;
@@ -85,7 +86,7 @@ public class CommandDupe extends Command {
     }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer
-    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+    private final EventListener<EventPacketSent.EventPacketSentDirect> eventPacketSentEventListener = new EventListener<>(event -> {
         PlayerActionC2SPacket playerActionC2SPacket = (PlayerActionC2SPacket) event.getPacket();
         if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
             if (Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler instanceof ShulkerBoxScreenHandler shulkerBoxScreenHandler) {
@@ -109,5 +110,5 @@ public class CommandDupe extends Command {
             this.throwItems = false;
             this.all = false;
         }
-    }, new ClientPacketFilter(EventPacketSent.Mode.POST, PlayerActionC2SPacket.class));
+    }, new DirectClientPacketFilter(EventPacketSent.Mode.POST, PlayerActionC2SPacket.class));
 }

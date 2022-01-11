@@ -21,14 +21,15 @@ public enum NetworkHelper {
 
     public void sendPacket(Packet<?> packet) {
         try {
-            if (Wrapper.INSTANCE.getLocalPlayer() != null) {
+            if (Wrapper.INSTANCE.getLocalPlayer() != null)
                 Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(packet);
-            } else {
-                Wrapper.INSTANCE.getMinecraft().getNetworkHandler().sendPacket(packet);
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendPacketDirect(Packet<?> packet) {
+        Wrapper.INSTANCE.getLocalPlayer().networkHandler.getConnection().send(packet);
     }
 
     public void setSessionService(SessionService sessionService) {

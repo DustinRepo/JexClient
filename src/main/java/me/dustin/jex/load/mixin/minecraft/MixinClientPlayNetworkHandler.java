@@ -2,6 +2,7 @@ package me.dustin.jex.load.mixin.minecraft;
 
 import com.mojang.brigadier.CommandDispatcher;
 import me.dustin.jex.event.misc.EventServerTurn;
+import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventExplosionVelocity;
 import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.feature.command.ClientCommandInternals;
@@ -14,7 +15,9 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Final;
@@ -39,6 +42,24 @@ public class MixinClientPlayNetworkHandler {
     @Final
     private ClientCommandSource commandSource;
 
+    @Shadow @Final private ClientConnection connection;
+
+    @Inject(method = "sendPacket", at = @At("HEAD"), cancellable = true)
+    public void sendPacketPre(Packet<?> packet, CallbackInfo ci) {
+        EventPacketSent eventPacketSent = new EventPacketSent(packet, EventPacketSent.Mode.PRE).run();
+        if (eventPacketSent.isCancelled()) {
+            ci.cancel();
+        } else if (eventPacketSent.getPacket() != packet) {
+            this.connection.send(eventPacketSent.getPacket());
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "sendPacket", at = @At("HEAD"))
+    public void sendPacketPost(Packet<?> packet, CallbackInfo ci) {
+        EventPacketSent eventPacketSent = new EventPacketSent(packet, EventPacketSent.Mode.POST).run();
+    }
+    
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Inject(method = "onCommandTree", at = @At("RETURN"))
     private void onOnCommandTree(CommandTreeS2CPacket packet, CallbackInfo info) {
