@@ -78,7 +78,7 @@ public class SpeedMine extends Feature {
     });
 
     private boolean isBreakable(Block block) {
-        return block != Blocks.BEDROCK && block != Blocks.BARRIER && block != Blocks.COMMAND_BLOCK;
+        return block != Blocks.BEDROCK && block != Blocks.BARRIER && block != Blocks.COMMAND_BLOCK && block != Blocks.NETHER_PORTAL && block != Blocks.END_PORTAL && block != Blocks.END_GATEWAY;
     }
 
     @Override
