@@ -30,7 +30,7 @@ public class AutoTool extends Feature {
 
     @EventPointer
     private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
-        if (AutoEat.isEating || BreakingFlowController.isWorking())
+        if (AutoEat.isEating || BreakingFlowController.isWorking() || !WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
             return;
         if (!Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
             int slot = InventoryHelper.INSTANCE.getInventory().selectedSlot;

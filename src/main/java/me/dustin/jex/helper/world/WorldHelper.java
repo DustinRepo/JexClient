@@ -357,6 +357,10 @@ public enum WorldHelper {
         return f;
     }
 
+    public boolean isBreakable(Block block) {
+        return block != Blocks.BEDROCK && block != Blocks.BARRIER && block != Blocks.COMMAND_BLOCK && block != Blocks.NETHER_PORTAL && block != Blocks.END_PORTAL && block != Blocks.END_GATEWAY;
+    }
+
     public boolean canMobSpawnOntop(BlockPos blockPos) {
         BlockState blockState = WorldHelper.INSTANCE.getBlockState(blockPos);
         Block block = blockState.getBlock();

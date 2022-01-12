@@ -40,7 +40,7 @@ public class SpeedMine extends Feature {
                 if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
                     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
                 float bProgress = mode.equalsIgnoreCase("Progress") ? progress : 0;
-                if (!isBreakable(WorldHelper.INSTANCE.getBlock(Wrapper.INSTANCE.getIInteractionManager().currentBreakingPos()))) {
+                if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(Wrapper.INSTANCE.getIInteractionManager().currentBreakingPos()))) {
                     givenHaste = false;
                     break;
                 }
@@ -68,7 +68,7 @@ public class SpeedMine extends Feature {
             return;
         if (Wrapper.INSTANCE.getLocalPlayer().isCreative())
             return;
-        if (!isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
+        if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
             return;
         for (int i = 0; i < 10; i++) {
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
@@ -76,10 +76,6 @@ public class SpeedMine extends Feature {
         }
         Wrapper.INSTANCE.getIInteractionManager().setBlockBreakProgress(1);
     });
-
-    private boolean isBreakable(Block block) {
-        return block != Blocks.BEDROCK && block != Blocks.BARRIER && block != Blocks.COMMAND_BLOCK && block != Blocks.NETHER_PORTAL && block != Blocks.END_PORTAL && block != Blocks.END_GATEWAY;
-    }
 
     @Override
     public void onDisable() {
