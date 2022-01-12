@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import org.jetbrains.annotations.Nullable;
@@ -464,6 +465,18 @@ public enum Render2DHelper {
         else if (percent <= 75)
             return new Color(255, 234, 0).getRGB();
         return new Color(0, 255, 0).getRGB();
+    }
+
+    public Formatting getPercentFormatting(float percent) {
+        if (percent <= 15)
+            return Formatting.DARK_RED;
+        else if (percent <= 25)
+            return Formatting.RED;
+        else if (percent <= 50)
+            return Formatting.GOLD;
+        else if (percent <= 75)
+            return Formatting.YELLOW;
+        return Formatting.GREEN;
     }
 
     public Vec3d to2D(Vec3d worldPos, MatrixStack matrixStack) {

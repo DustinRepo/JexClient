@@ -1,14 +1,21 @@
 package me.dustin.jex.load.mixin.minecraft;
 
+import me.dustin.jex.event.misc.EventGetToolTipFromItem;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRenderBackground;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(Screen.class)
 public class MixinScreen {
@@ -18,6 +25,13 @@ public class MixinScreen {
         EventRenderBackground eventRenderBackground = new EventRenderBackground(matrices).run();
         if (eventRenderBackground.isCancelled())
             ci.cancel();
+    }
+
+    @Inject(method = "getTooltipFromItem", at = @At("RETURN"), cancellable = true)
+    public void getToolTipText(ItemStack stack, CallbackInfoReturnable<List<Text>> cir) {
+        EventGetToolTipFromItem eventGetToolTipFromItem = new EventGetToolTipFromItem(stack, cir.getReturnValue()).run();
+        if (eventGetToolTipFromItem.getTextList() != cir.getReturnValue())
+            cir.setReturnValue(eventGetToolTipFromItem.getTextList());
     }
 
     @Inject(method = "render", at = @At("HEAD"))
