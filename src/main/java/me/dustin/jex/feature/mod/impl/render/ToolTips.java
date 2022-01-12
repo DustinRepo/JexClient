@@ -42,7 +42,7 @@ public class ToolTips extends Feature {
     public boolean repairCost = true;
     @Op(name = "ShulkerToolTip")
     public boolean shulkerToolTip = true;
-    @OpChild(name = "Inspect Key", isKeybind = true, parent = "ShukerToolTip")
+    @OpChild(name = "Inspect Key", isKeybind = true, parent = "ShulkerToolTip")
     public int inspectKey = GLFW.GLFW_KEY_LEFT_CONTROL;
     @Op(name = "MapToolTip")
     public boolean mapToolTip = true;
@@ -51,7 +51,9 @@ public class ToolTips extends Feature {
     @Op(name = "HiveToolTip")
     public boolean hiveToolTip = true;
     @Op(name = "NBTToolTip")
-    public boolean nbtToolTip = false;
+    public boolean nbtToolTip = true;
+    @OpChild(name = "Show NBT Key", isKeybind = true, parent = "NBTToolTip")
+    public int nbtKey = GLFW.GLFW_KEY_LEFT_SHIFT;
 
     private final PrettyPrintTextFormatter formatter = new PrettyPrintTextFormatter();
     private final Identifier SHULKER_GUI = new Identifier("jex", "gui/mc/shulker_background.png");
@@ -214,12 +216,16 @@ public class ToolTips extends Feature {
             }
         }
         if (nbtToolTip && !InventoryHelper.INSTANCE.isShulker(stack) && stack.getNbt() != null) {
-            PrettyPrintTextFormatter.RGBColorText formatted = formatter.apply(stack.getNbt());
-            event.getTextList().add(new LiteralText(Formatting.GRAY + "-------------------"));
-            event.getTextList().add(new LiteralText("NBT:"));
-            event.getTextList().addAll(formatted.entriesAsText());
-            //little fix for the pretty print color formatter not adding the last bracket
-            event.getTextList().add(new LiteralText("}"));
+            if (KeyboardHelper.INSTANCE.isPressed(nbtKey)) {
+                PrettyPrintTextFormatter.RGBColorText formatted = formatter.apply(stack.getNbt());
+                event.getTextList().add(new LiteralText(Formatting.GRAY + "-------------------"));
+                event.getTextList().add(new LiteralText("NBT:"));
+                event.getTextList().addAll(formatted.entriesAsText());
+                //little fix for the pretty print color formatter not adding the last bracket
+                event.getTextList().add(new LiteralText("}"));
+            } else {
+                event.getTextList().add(new LiteralText("Hold " + KeyboardHelper.INSTANCE.getKeyName(nbtKey) + " to see NBT"));
+            }
         }
     });
 

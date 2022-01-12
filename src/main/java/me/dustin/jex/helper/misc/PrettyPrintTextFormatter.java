@@ -289,7 +289,7 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
 
             String line = "";
             for (RGBEntry entry : this.getEntries()) {
-                line += byColor(entry.color()) + entry.value;
+                line += byColor(entry.color()) + entry.value.replace("\247", "\\247");
                 if (entry.value().endsWith("\n")) {
                     textList.add(new LiteralText(line.replace("\n", "")));
                     line = "";
