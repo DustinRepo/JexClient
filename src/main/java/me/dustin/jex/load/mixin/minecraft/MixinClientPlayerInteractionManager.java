@@ -3,6 +3,7 @@ package me.dustin.jex.load.mixin.minecraft;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.player.EventGetReachDistance;
 import me.dustin.jex.event.player.EventHasExtendedReach;
+import me.dustin.jex.event.player.EventStopUsingItem;
 import me.dustin.jex.event.world.EventBreakBlock;
 import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.event.world.EventPlayerInteractionTick;
@@ -64,6 +65,14 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
         EventHasExtendedReach eventHasExtendedReach = new EventHasExtendedReach().run();
         if (eventHasExtendedReach.isExtendedReach() != null)
             callback.setReturnValue(eventHasExtendedReach.isExtendedReach());
+    }
+
+    @Inject(method = "stopUsingItem", at = @At("HEAD"), cancellable = true)
+    public void stopUsingItem(CallbackInfo ci) {
+        EventStopUsingItem eventStopUsingItem = new EventStopUsingItem().run();
+        if (eventStopUsingItem.isCancelled()) {
+            ci.cancel();
+        }
     }
 
     @Override
