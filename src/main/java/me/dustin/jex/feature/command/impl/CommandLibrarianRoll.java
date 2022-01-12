@@ -41,7 +41,7 @@ public class CommandLibrarianRoll extends Command {
             }
 
             return 1;
-        })).then(literal("remove").then(argument("enchantment", EnchantmentArgumentType.enchantment()).then(argument("level", IntegerArgumentType.integer()).executes(context -> {
+        })).then(literal("del").then(argument("enchantment", EnchantmentArgumentType.enchantment()).then(argument("level", IntegerArgumentType.integer()).executes(context -> {
             Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
             int level = IntegerArgumentType.getInteger(context, "level");
 
@@ -50,13 +50,13 @@ public class CommandLibrarianRoll extends Command {
                 levels.remove(levels.get(levels.indexOf(level)));
             }
 
-            ChatHelper.INSTANCE.addClientMessage("\247b" + new TranslatableText(enchantment.getTranslationKey()).getString() + " \2477lvl \247b" + level + "\247r removed from LibrarianRoll");
+            ChatHelper.INSTANCE.addClientMessage("\247b" + new TranslatableText(enchantment.getTranslationKey()).getString() + " \2477lvl \247b" + level + "\2477 removed from LibrarianRoll");
             return 1;
-        })))).then(literal("remove").then(argument("enchantment", EnchantmentArgumentType.enchantment()).executes(context -> {
+        })))).then(literal("del").then(argument("enchantment", EnchantmentArgumentType.enchantment()).executes(context -> {
             Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
             AutoLibrarianRoll.enchantments.remove(EnchantmentArgumentType.getEnchantment(context, "enchantment"));
 
-            ChatHelper.INSTANCE.addClientMessage("\247b" + new TranslatableText(enchantment.getTranslationKey()).getString() + " \2477lvl \247b*\247r removed from LibrarianRoll");
+            ChatHelper.INSTANCE.addClientMessage("\247b" + new TranslatableText(enchantment.getTranslationKey()).getString() + " \2477lvl \247b*\2477 removed from LibrarianRoll");
             return 1;
         }))).then(literal("add").then(argument("enchantment", EnchantmentArgumentType.enchantment()).then(argument("level", IntegerArgumentType.integer()).executes(this)))));
         dispatcher.register(literal("lr").redirect(node));
@@ -74,7 +74,7 @@ public class CommandLibrarianRoll extends Command {
             AutoLibrarianRoll.enchantments.put(enchantment, new ArrayList<>(List.of(level)));
         }
 
-        ChatHelper.INSTANCE.addClientMessage("\247b" + new TranslatableText(enchantment.getTranslationKey()).getString() + " \2477lvl \247b" + level + "\247r added to LibrarianRoll");
+        ChatHelper.INSTANCE.addClientMessage("\247b" + new TranslatableText(enchantment.getTranslationKey()).getString() + " \2477lvl \247b" + level + "\2477 added to LibrarianRoll");
         return 1;
     }
 }
