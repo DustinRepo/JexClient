@@ -1,6 +1,5 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
@@ -36,6 +35,7 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -44,7 +44,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerProfession;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Automatically break lecterns matched to a villager until it has the trade you want")
@@ -65,14 +67,14 @@ public class AutoLibrarianRoll extends Feature {
 
     private Vec3d villagerPos = Vec3d.ZERO;
 
-    public static Enchantment enchantment = null;
-    public static int enchantmentLevel = -1;
+    // Map of Enchantments to their accepted Levels
+    public static Map<Enchantment, ArrayList<Integer>> enchantments = new HashMap<>();
 
     private static final Map<VillagerEntity, BlockPos> doneVillagers = new HashMap<>();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (enchantment == null || enchantmentLevel == -1)
+        if (enchantments.isEmpty())
             return;
         if (lecternPos == null) {
             lecternPos = getLectern();
@@ -90,40 +92,45 @@ public class AutoLibrarianRoll extends Feature {
                 tradeOfferList.forEach(tradeOffer -> {
                     if (tradeOffer.getSellItem().getItem() instanceof EnchantedBookItem) {
                         Map<Enchantment, Integer> enchants = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(tradeOffer.getSellItem()));
-                        if (enchants.containsKey(enchantment) && enchants.get(enchantment) == enchantmentLevel) {
-                            int count = priceMode.equalsIgnoreCase("Normal") ? tradeOffer.getOriginalFirstBuyItem().getCount() : tradeOffer.getAdjustedFirstBuyItem().getCount();
-                            if (count <= price) {
-                                ChatHelper.INSTANCE.addClientMessage("Enchantment found at price " + count + " emeralds");
-                                tradeFound = true;
-                                doneVillagers.put(villager, lecternPos);
-                                this.setState(false);
+                        for (Map.Entry<Enchantment, ArrayList<Integer>> entry : enchantments.entrySet()) {
+                            Enchantment enchantment = entry.getKey();
+                            String enchantName = new TranslatableText(enchantment.getTranslationKey()).getString();
+                            if (enchants.containsKey(enchantment) && entry.getValue().contains(enchants.get(enchantment))) {
+                                int count = priceMode.equalsIgnoreCase("Normal") ? tradeOffer.getOriginalFirstBuyItem().getCount() : tradeOffer.getAdjustedFirstBuyItem().getCount();
+                                if (count <= price) {
+                                    ChatHelper.INSTANCE.addClientMessage(enchantName + " " + enchants.get(enchantment) + " found at price " + count + " emeralds");
+                                    tradeFound = true;
+                                    doneVillagers.put(villager, lecternPos);
+                                    this.setState(false);
 
-                                if (autoTrade) {
-                                    int book = getItem(Items.BOOK) - 6;
-                                    if (book != -1) {
-                                        int emerald = getItem(Items.EMERALD) - 6;
-                                        if (emerald != -1) {
-                                            JexClient.INSTANCE.getLogger().info("Autotrading");
-                                            JexClient.INSTANCE.getLogger().info("Book slot: " + book + " Emerald slot: " + emerald);
-                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, emerald, SlotActionType.PICKUP, 0);
-                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 0, SlotActionType.PICKUP, 0);
+                                    if (autoTrade) {
+                                        int book = getItem(Items.BOOK) - 6;
+                                        if (book != -1) {
+                                            int emerald = getItem(Items.EMERALD) - 6;
+                                            if (emerald != -1) {
+                                                JexClient.INSTANCE.getLogger().info("Autotrading");
+                                                JexClient.INSTANCE.getLogger().info("Book slot: " + book + " Emerald slot: " + emerald);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, emerald, SlotActionType.PICKUP, 0);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 0, SlotActionType.PICKUP, 0);
 
-                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
-                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 1, SlotActionType.PICKUP, 0);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 1, SlotActionType.PICKUP, 0);
 
-                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 2, SlotActionType.PICKUP, 0);
-                                            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 2, SlotActionType.PICKUP, 0);
+                                                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, book, SlotActionType.PICKUP, 0);
+                                            } else {
+                                                ChatHelper.INSTANCE.addClientMessage("No emeralds in inventory! Can not trade.");
+                                            }
                                         } else {
-                                            ChatHelper.INSTANCE.addClientMessage("No emeralds in inventory! Can not trade.");
+                                            ChatHelper.INSTANCE.addClientMessage("No books in inventory! Can not trade.");
                                         }
-                                    } else {
-                                        ChatHelper.INSTANCE.addClientMessage("No books in inventory! Can not trade.");
                                     }
+                                } else {
+                                    ChatHelper.INSTANCE.addClientMessage(enchantName + " " + enchants.get(enchantment) + " found, but price is too high: " + count);
                                 }
-                            } else {
-                                ChatHelper.INSTANCE.addClientMessage("Enchantment found, but price is too high: " + count);
                             }
                         }
+
                     }
                 });
                 if (!tradeFound) {
@@ -195,7 +202,18 @@ public class AutoLibrarianRoll extends Feature {
             float x = (float) villagerPos.x;
             float y = (float) villagerPos.y - (nametag.getState() && nametag.passives ? 15 : 0);
             String string1 = "Searching:";
-            String string2 = enchantment.getName(enchantmentLevel).getString();
+            StringBuilder sb = new StringBuilder();
+            for (Enchantment enchantment : enchantments.keySet()) {
+                sb.append(new TranslatableText(enchantment.getTranslationKey()).getString()).append(": ");
+                for (int level : enchantments.get(enchantment)) {
+                    sb.append(level).append(", ");
+                }
+                sb.setLength(sb.length() - 2);
+                sb.append(" | ");
+            }
+            sb.setLength(sb.length() - 3);
+            String string2 = sb.toString();
+
             String string3 = price + " Emeralds";
             float length1 = FontHelper.INSTANCE.getStringWidth(string1);
             float length2 = FontHelper.INSTANCE.getStringWidth(string2);
@@ -214,8 +232,8 @@ public class AutoLibrarianRoll extends Feature {
 
     @Override
     public void onEnable() {
-        if ((enchantment == null || enchantmentLevel == -1) && Wrapper.INSTANCE.getLocalPlayer() != null) {
-            ChatHelper.INSTANCE.addClientMessage("Enchantment not set! Set enchantment with " + CommandManagerJex.INSTANCE.getPrefix() + "librarianroll <enchant> <level>");
+        if ((enchantments.isEmpty()) && Wrapper.INSTANCE.getLocalPlayer() != null) {
+            ChatHelper.INSTANCE.addClientMessage("Enchantment not set! Set enchantment with " + CommandManagerJex.INSTANCE.getPrefix() + "librarianroll add <enchant> <level>");
         }
         super.onEnable();
     }
