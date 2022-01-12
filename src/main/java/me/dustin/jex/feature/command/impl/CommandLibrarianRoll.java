@@ -10,30 +10,71 @@ import me.dustin.jex.feature.command.core.arguments.EnchantmentArgumentType;
 import me.dustin.jex.feature.mod.impl.misc.AutoLibrarianRoll;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.text.TranslatableText;
 
-@Cmd(name = "librarianroll", alias = {"lr"}, syntax = ".librarianroll <clear/enchantment> <level>", description = "Set the enchantment for AutoLibrarianRoll mod")
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+@Cmd(name = "librarianroll", alias = {"lr"}, syntax = ".librarianroll <clear/list/add> <enchantment> <level>", description = "Set the enchantment for AutoLibrarianRoll mod")
 public class CommandLibrarianRoll extends Command {
 
     @Override
     public void registerCommand() {
         CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(literal("clear").executes(context -> {
-            AutoLibrarianRoll.enchantment = null;
-            AutoLibrarianRoll.enchantmentLevel = 0;
+            AutoLibrarianRoll.enchantments.clear();
 
-            ChatHelper.INSTANCE.addClientMessage("LibrarianRoll enchantment cleared");
+            ChatHelper.INSTANCE.addClientMessage("LibrarianRoll enchantments cleared");
             return 1;
-        })).then(argument("enchantment", EnchantmentArgumentType.enchantment()).then(argument("level", IntegerArgumentType.integer()).executes(this))));
+        })).then(literal("list").executes(context -> {
+            ChatHelper.INSTANCE.addClientMessage("LibrarianRoll enchantments: ");
+
+            for (Enchantment enchantment : AutoLibrarianRoll.enchantments.keySet()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(" - \247b").append(new TranslatableText(enchantment.getTranslationKey()).getString()).append("\247r: ");
+                for (int level : AutoLibrarianRoll.enchantments.get(enchantment)) {
+                    sb.append("\247b").append(level).append("\247r, ");
+                }
+                sb.deleteCharAt(sb.length() - 2);
+                ChatHelper.INSTANCE.addClientMessage(sb.toString());
+            }
+
+            return 1;
+        })).then(literal("remove").then(argument("enchantment", EnchantmentArgumentType.enchantment()).then(argument("level", IntegerArgumentType.integer()).executes(context -> {
+            Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
+            int level = IntegerArgumentType.getInteger(context, "level");
+
+            if (AutoLibrarianRoll.enchantments.containsKey(enchantment)) {
+                ArrayList<Integer> levels = AutoLibrarianRoll.enchantments.get(enchantment);
+                levels.remove(levels.get(levels.indexOf(level)));
+            }
+
+            ChatHelper.INSTANCE.addClientMessage("\247b" + new TranslatableText(enchantment.getTranslationKey()).getString() + " \2477lvl \247b" + level + "\247r removed from LibrarianRoll");
+            return 1;
+        })))).then(literal("remove").then(argument("enchantment", EnchantmentArgumentType.enchantment()).executes(context -> {
+            Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
+            AutoLibrarianRoll.enchantments.remove(EnchantmentArgumentType.getEnchantment(context, "enchantment"));
+
+            ChatHelper.INSTANCE.addClientMessage("\247b" + new TranslatableText(enchantment.getTranslationKey()).getString() + " \2477lvl \247b*\247r removed from LibrarianRoll");
+            return 1;
+        }))).then(literal("add").then(argument("enchantment", EnchantmentArgumentType.enchantment()).then(argument("level", IntegerArgumentType.integer()).executes(this)))));
         dispatcher.register(literal("lr").redirect(node));
     }
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
 
-        AutoLibrarianRoll.enchantment = EnchantmentArgumentType.getEnchantment(context,"enchantment");
-        AutoLibrarianRoll.enchantmentLevel = IntegerArgumentType.getInteger(context, "level");
-        String enchantName = context.getInput().split(" ")[1];
+        Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
+        int level = IntegerArgumentType.getInteger(context, "level");
 
-        ChatHelper.INSTANCE.addClientMessage("LibrarianRoll enchantment set to \247b" + enchantName + " \2477lvl \247b" + AutoLibrarianRoll.enchantmentLevel);
+        if (AutoLibrarianRoll.enchantments.containsKey(enchantment)) {
+            AutoLibrarianRoll.enchantments.get(enchantment).add(level);
+        } else {
+            AutoLibrarianRoll.enchantments.put(enchantment, new ArrayList<>(List.of(level)));
+        }
+
+        ChatHelper.INSTANCE.addClientMessage("\247b" + new TranslatableText(enchantment.getTranslationKey()).getString() + " \2477lvl \247b" + level + "\247r added to LibrarianRoll");
         return 1;
     }
 }
