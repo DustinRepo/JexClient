@@ -9,6 +9,7 @@ import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.MultiAura;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.SingleAura;
+import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
@@ -106,7 +107,7 @@ public class KillAura extends Feature {
     @OpChild(name = "Sphere Color", isColor = true, parent = "Reach Sphere")
     public int reachCircleColor = 0xff00ff00;
 
-    private Timer timer = new Timer();
+    private final Timer timer = new Timer();
     private String lastMode;
 
     private boolean hasTarget = false;
@@ -175,7 +176,7 @@ public class KillAura extends Feature {
     public boolean isValid(Entity entity, boolean rangecheck) {
         if (!(entity instanceof LivingEntity))
             return false;
-        if (entity == Wrapper.INSTANCE.getLocalPlayer())
+        if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
             return false;
         if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
             if (entity == Wrapper.INSTANCE.getLocalPlayer().getVehicle())
@@ -185,10 +186,10 @@ public class KillAura extends Feature {
             return false;
         if (rangecheck)
             if (!Wrapper.INSTANCE.getLocalPlayer().canSee(entity)) {
-                if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > 3)
+                if (entity.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) > 3)
                     return false;
             } else {
-                if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > reach)
+                if (entity.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) > reach)
                     return false;
             }
         if (entity.age < ticksExisted)

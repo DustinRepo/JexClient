@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
+import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -37,8 +38,7 @@ public class SingleAura extends FeatureExtension {
             return;
         if (AutoEat.isEating || BaritoneHelper.INSTANCE.isTakingControl())
             return;
-        if (event1 instanceof EventPlayerPackets) {
-            EventPlayerPackets event = (EventPlayerPackets) event1;
+        if (event1 instanceof EventPlayerPackets event) {
             if (event.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (target == null || !KillAura.INSTANCE.isValid(target, true)) {
                     target = getClosest();
@@ -139,7 +139,7 @@ public class SingleAura extends FeatureExtension {
         float distance = KillAura.INSTANCE.reach;
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof LivingEntity livingEntity1) {
-                if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= distance) {
+                if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) <= distance) {
                     if (KillAura.INSTANCE.fov == 360 || PlayerHelper.INSTANCE.getDistanceFromMouse(livingEntity1) * 2 <= KillAura.INSTANCE.fov) {
                         livingEntity = livingEntity1;
                         distance = livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
