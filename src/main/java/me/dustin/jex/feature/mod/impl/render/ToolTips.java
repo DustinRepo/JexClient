@@ -227,8 +227,6 @@ public class ToolTips extends Feature {
                 event.getTextList().add(new LiteralText(Formatting.GRAY + "-------------------"));
                 event.getTextList().add(new LiteralText("NBT:"));
                 event.getTextList().addAll(formatted.entriesAsText());
-                //little fix for the pretty print color formatter not adding the last bracket
-                event.getTextList().add(new LiteralText("}"));
             } else {
                 event.getTextList().add(new LiteralText("Hold " + KeyboardHelper.INSTANCE.getKeyName(nbtKey) + " to see NBT"));
             }

@@ -287,14 +287,15 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
         public List<Text> entriesAsText() {
             List<Text> textList = new ArrayList<>();
 
-            String line = "";
+            StringBuilder line = new StringBuilder();
             for (RGBEntry entry : this.getEntries()) {
-                line += byColor(entry.color()) + entry.value.replace("\247", "\\247");
+                line.append(byColor(entry.color())).append(entry.value.replace("\247", "\\247"));
                 if (entry.value().endsWith("\n")) {
-                    textList.add(new LiteralText(line.replace("\n", "")));
-                    line = "";
+                    textList.add(new LiteralText(line.toString().replace("\n", "")));
+                    line = new StringBuilder();
                 }
             }
+            textList.add(new LiteralText(this.getEntries().get(this.getEntries().size() - 1).value()));
             return textList;
         }
 

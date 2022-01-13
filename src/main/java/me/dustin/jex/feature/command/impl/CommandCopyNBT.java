@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.text.LiteralText;
 
 @Cmd(name = "copynbt", description = "Copy the NBT data of your current item to clipboard", syntax = ".copynbt <display(optional)")
 public class CommandCopyNBT extends Command {
@@ -19,14 +20,12 @@ public class CommandCopyNBT extends Command {
         dispatcher.register(literal(this.name).executes(this).then(literal("display").executes(context -> {
             ItemStack itemStack = context.getSource().getPlayer().getMainHandStack();
             assert itemStack.getNbt() != null;
-            String nbt = NbtHelper.toFormattedString(itemStack.getNbt());
             Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(itemStack.getNbt().toString().replace("\247", "\\247"));
 
             PrettyPrintTextFormatter prettyPrintTextFormatter = new PrettyPrintTextFormatter();
             prettyPrintTextFormatter.apply(itemStack.getNbt()).entriesAsText().forEach(text -> {
                 Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud().addMessage(text);
             });
-            ChatHelper.INSTANCE.addRawMessage("}");
             ChatHelper.INSTANCE.addClientMessage("NBT Copied to clipboard");
             return 1;
         })));
