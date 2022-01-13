@@ -11,6 +11,7 @@ import me.dustin.jex.event.render.EventRenderToolTip;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.PrettyPrintTextFormatter;
@@ -191,8 +192,13 @@ public class ToolTips extends Feature {
                 }
                 NbtCompound blockStateTag = nbtCompound.getCompound("BlockStateTag");
                 if (blockStateTag != null) {
-                    int honeyLevel = blockStateTag.getInt("honey_level");
-                    event.getTextList().add(new LiteralText("Honey Level: " + Render2DHelper.INSTANCE.getPercentFormatting((honeyLevel / 5.f) * 100) + honeyLevel));
+                    String honeyLevel = blockStateTag.getString("honey_level");
+                    int honeyLevelInt = 0;
+                    try {
+                        honeyLevelInt = Integer.parseInt(honeyLevel);
+                    } catch (Exception e) {
+                    }
+                    event.getTextList().add(new LiteralText("Honey Level: " + Render2DHelper.INSTANCE.getPercentFormatting((honeyLevelInt / 5.f) * 100) + honeyLevel));
                 } else {
                     event.getTextList().add(new LiteralText("Honey Level: " + Formatting.DARK_RED + "0"));
                 }
