@@ -67,7 +67,6 @@
     "minecraft.MixinSplashScreen",
     "minecraft.MixinWorldChunk",
     "minecraft.MixinWorldRenderer",
-    "optifine.MixinShader",
     "sodium.MixinBlockOcclusionCache",
     "sodium.MixinBlockRenderer",
     "sodium.MixinFluidRenderer",
