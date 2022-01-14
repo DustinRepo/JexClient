@@ -174,7 +174,7 @@ public class KillAura extends Feature {
     }
 
     public boolean isValid(Entity entity, boolean rangecheck) {
-        if (!(entity instanceof LivingEntity))
+        if (!(entity instanceof LivingEntity livingEntity))
             return false;
         if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
             return false;
@@ -182,10 +182,10 @@ public class KillAura extends Feature {
             if (entity == Wrapper.INSTANCE.getLocalPlayer().getVehicle())
                 return false;
         }
-        if (((LivingEntity) entity).isSleeping())
+        if (livingEntity.isSleeping())
             return false;
         if (rangecheck)
-            if (!Wrapper.INSTANCE.getLocalPlayer().canSee(entity)) {
+            if (!(livingEntity.canSee(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()))) {
                 if (entity.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) > 3)
                     return false;
             } else {
