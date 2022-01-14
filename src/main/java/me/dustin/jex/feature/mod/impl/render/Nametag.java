@@ -98,9 +98,9 @@ public class Nametag extends Feature {
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (isValid(entity) && !positions.containsKey(entity)) {
                 float offset = entity.getHeight() + 0.2f;
-                if (entity instanceof PlayerEntity) {
-                    if (Hat.hasHat((PlayerEntity) entity)) {
-                        if (Hat.getType((PlayerEntity) entity) == Hat.HatType.TOP_HAT || ((PlayerEntity) entity).getEquippedStack(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD)
+                if (entity instanceof PlayerEntity playerEntity) {
+                    if (Hat.hasHat(playerEntity)) {
+                        if (Hat.getType(playerEntity) == Hat.HatType.TOP_HAT || playerEntity.getEquippedStack(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD)
                             offset = entity.getHeight() + 0.7f;
                         else
                             offset = entity.getHeight() + 0.4f;
@@ -109,7 +109,7 @@ public class Nametag extends Feature {
                 Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, event.getPartialTicks(), event.getMatrixStack());
                 if (entity instanceof ItemEntity itemEntity) {
                     Wrapper.INSTANCE.getWorld().getEntities().forEach(entity1 -> {
-                        if (entity1 instanceof ItemEntity itemEntity1 && entity.distanceTo(entity1) <= groupRange) {
+                        if (entity1 instanceof ItemEntity itemEntity1 && entity.distanceTo(entity1) <= groupRange && entity.getBlockY() == entity1.getBlockY()) {
                             if (itemEntity1.getStack().getItem() == itemEntity.getStack().getItem())
                                 this.positions.put(entity1, vec);
                         }
