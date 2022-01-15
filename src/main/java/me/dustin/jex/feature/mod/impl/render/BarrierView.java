@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.Feature.Category;
@@ -31,6 +32,7 @@ public class BarrierView extends Feature {
 	private final ArrayList<BlockPos> renderPositions = new ArrayList<>();
 	private final Timer timer = new Timer();
 
+	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 		if (timer.hasPassed(250)) {
 			renderPositions.clear();
