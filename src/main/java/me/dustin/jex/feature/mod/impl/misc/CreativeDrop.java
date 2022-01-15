@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.EventListener;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -44,7 +45,7 @@ public class CreativeDrop extends Feature {
 
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         Random random = new Random();
-        String[] names = new String[]{"https://jexclient.com", "Download Jex Client to do this", "Nice FPS", "Oh look a shiny item", "Copper pants", "How do I stop dropping items?", "Can you hear me?", "Please help I am stuck in this item"};
+        String[] names = new String[]{JexClient.INSTANCE.getBaseUrl(), "Download Jex Client to do this", "Nice FPS", "Oh look a shiny item", "Copper pants", "How do I stop dropping items?", "Can you hear me?", "Please help I am stuck in this item"};
         if (timer.hasPassed(delay) && Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
             for (int i = 0; i < speed; i++) {
                 ItemStack itemStack = new ItemStack(Item.byRawId(slot));

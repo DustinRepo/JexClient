@@ -21,7 +21,7 @@ public enum Update {
             progressText = "Error. New version for another snapshot, and can not run on this Fabric version";
             return;
         }
-        String downloadURL = "https://jexclient.com/download/JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar");
+        String downloadURL = JexClient.INSTANCE.getBaseUrl() + "download/JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar");
         String modsFolder = Wrapper.INSTANCE.getMinecraft().runDirectory.getAbsolutePath() + File.separator + "mods";
 
         new Thread(() -> {

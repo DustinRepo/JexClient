@@ -2,6 +2,7 @@ package me.dustin.jex.addon;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -40,7 +41,7 @@ public class Addon {
 		requestedUUIds.add(uuid);
 		Thread addonDownload = new Thread(() -> {
 			try {
-				URL url = new URL("https://jexclient.com/includes/loadprofile.inc.php?uuid=" + uuid);
+				URL url = new URL(JexClient.INSTANCE.getBaseUrl() + "includes/loadprofile.inc.php?uuid=" + uuid);
 				String response = WebHelper.INSTANCE.readURL(url);
 				JsonObject json = new Gson().fromJson(response, JsonObject.class);
 				String cape = json.get("cape").getAsString();

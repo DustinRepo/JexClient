@@ -20,7 +20,7 @@ public enum UpdateManager {
     public void checkForUpdate() {
         new Thread(() -> {
             try {
-                URL url = new URL("https://jexclient.com/includes/version.inc.php");
+                URL url = new URL(JexClient.INSTANCE.getBaseUrl() + "includes/version.inc.php");
                 String response = WebHelper.INSTANCE.readURL(url);
 
                 JsonObject updateResponse = new Gson().fromJson(response, JsonObject.class);

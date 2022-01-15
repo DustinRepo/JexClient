@@ -105,7 +105,7 @@ public class Spammer extends Feature {
     }
 
     private String jexAdString =
-            "Download Jex Client! https://jexclient.com/\n" +
+            "Download Jex Client! https://discord.gg/BUcUGu6gfA\n" +
                     "Thanks to Jex Client, I can use the new dupe!\n" +
                     "What are you fucking stupid? Download Jex Client right now!\n" +
                     "Jex Client: now with Baritone!\n" +

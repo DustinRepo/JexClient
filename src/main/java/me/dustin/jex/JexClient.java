@@ -59,6 +59,7 @@ public enum JexClient {
     private boolean soundOnLaunch = true;
     private final Logger logger = LogManager.getFormatterLogger("Jex");
     private JexVersion version;
+    private final String baseUrl = "https://google.com/";
 
     private static boolean loadedOnce = false;
 
@@ -187,6 +188,10 @@ public enum JexClient {
 
     public void setPlaySoundOnLaunch(boolean soundOnLaunch) {
         this.soundOnLaunch = soundOnLaunch;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
     private void createJson() {
