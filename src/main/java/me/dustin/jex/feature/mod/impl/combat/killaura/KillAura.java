@@ -145,7 +145,7 @@ public class KillAura extends Feature {
         }
         setSuffix(mode + " : " + attackMode);
         sendEvent(event);
-    }, Priority.LAST, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+    }, Priority.LAST);
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> sendEvent(event));
