@@ -3,8 +3,8 @@ package me.dustin.jex.gui.waypoints;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.WaypointFile;
-import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
+import me.dustin.jex.helper.render.Button;
+import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.gui.waypoints.impl.ServerButton;
 import me.dustin.jex.gui.waypoints.impl.WaypointButton;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -77,7 +77,7 @@ public class WaypointScreen extends Screen {
         float viewportHeight = 190;
         float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
         scrollbar = new Scrollbar(getMidX() + buttonWidth + 2, getMidY() - 90, 2, scrollBarHeight, viewportHeight, contentHeight, -1);
-        editButton = new Button(null, "Edit Waypoints", getMidX() - 100, getMidY() + 105, 200, 20, new ButtonListener() {
+        editButton = new Button( "Edit Waypoints", getMidX() - 100, getMidY() + 105, 200, 20, new ButtonListener() {
             @Override
             public void invoke() {
                 WaypointScreen.page = 1;
@@ -93,8 +93,8 @@ public class WaypointScreen extends Screen {
 
                 scrollbar.setY(getMidY() - 90);
                 scrollbar.setContentHeight(waypointCount * 20);
-                editWaypointButton = new Button(null, "Edit", getMidX() - 99, getMidY() + 105, 98, 20, editListener);
-                deleteButton = new Button(null, "Delete", getMidX() + 1, getMidY() + 105, 98, 20, deleteListener);
+                editWaypointButton = new Button("Edit", getMidX() - 99, getMidY() + 105, 98, 20, editListener);
+                deleteButton = new Button("Delete", getMidX() + 1, getMidY() + 105, 98, 20, deleteListener);
 
             }
         });
@@ -115,23 +115,23 @@ public class WaypointScreen extends Screen {
             FontHelper.INSTANCE.drawCenteredString(matrixStack, "Servers", getMidX(), getMidY() - 99, -1);
             Scissor.INSTANCE.cut((int)getMidX() - buttonWidth - 1, (int)getMidY() - 90, 200, 190);
             serverButtons.forEach(button -> {
-                button.draw(matrixStack);
+                button.render(matrixStack);
             });
             Scissor.INSTANCE.seal();
             editButton.setEnabled(getSelectedServer() != null);
-            editButton.draw(matrixStack);
+            editButton.render(matrixStack);
         }
         if(page == 1)
         {
             Render2DHelper.INSTANCE.fill(matrixStack, getMidX() - buttonWidth - 1, getMidY() - 100, getMidX() + buttonWidth + 1, getMidY() + 100, 0x60000000);
             FontHelper.INSTANCE.drawCenteredString(matrixStack, "Waypoints", getMidX(), getMidY() - 99, -1);
             Scissor.INSTANCE.cut((int)getMidX() - buttonWidth - 1, (int)getMidY() - 90, 200, 190);
-            waypointButtons.forEach(button -> button.draw(matrixStack));
+            waypointButtons.forEach(button -> button.render(matrixStack));
             Scissor.INSTANCE.seal();
             deleteButton.setEnabled(getSelectedWaypoint() != null);
-            deleteButton.draw(matrixStack);
+            deleteButton.render(matrixStack);
             editWaypointButton.setEnabled(getSelectedWaypoint() != null);
-            editWaypointButton.draw(matrixStack);
+            editWaypointButton.render(matrixStack);
         }
         scrollbar.render(matrixStack);
         super.render(matrixStack, int_1, int_2, float_1);

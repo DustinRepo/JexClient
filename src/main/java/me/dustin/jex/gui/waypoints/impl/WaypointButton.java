@@ -1,8 +1,8 @@
 package me.dustin.jex.gui.waypoints.impl;
 
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
-import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
+import me.dustin.jex.helper.render.Button;
+import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -12,12 +12,12 @@ public class WaypointButton extends Button {
     private Waypoints.Waypoint waypoint;
     private boolean selected;
     public WaypointButton(Waypoints.Waypoint waypoint, float x, float y, float width, float height, ButtonListener listener) {
-        super(null, waypoint.getName(), x, y, width, height, listener);
+        super(waypoint.getName(), x, y, width, height, listener);
         this.waypoint = waypoint;
     }
 
     @Override
-    public void draw(MatrixStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x50000000);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getName(), this.getX() + 2, this.getY() + (this.getHeight() / 2) - 4, waypoint.getColor());
         if(isSelected())

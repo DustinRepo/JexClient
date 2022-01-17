@@ -1,9 +1,6 @@
 package me.dustin.jex.helper.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import me.dustin.jex.gui.click.window.impl.Window;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.util.Util;
 import org.lwjgl.opengl.GL11;
 
 public enum Scissor {

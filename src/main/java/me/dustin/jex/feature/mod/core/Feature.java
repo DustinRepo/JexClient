@@ -2,7 +2,7 @@ package me.dustin.jex.feature.mod.core;
 
 import com.google.common.collect.Maps;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
+import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.events.EventManager;

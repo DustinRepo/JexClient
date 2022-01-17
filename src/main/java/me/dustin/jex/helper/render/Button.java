@@ -1,10 +1,8 @@
-package me.dustin.jex.gui.click.window.impl;
+package me.dustin.jex.helper.render;
 
 
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -16,7 +14,6 @@ import java.util.ArrayList;
 public class Button {
 
     protected Gui gui;
-    private Window window;
     private String name;
     private float x, y, width, height;
     private ButtonListener listener;
@@ -31,8 +28,7 @@ public class Button {
     private int textColor;
     private int backgroundColor;
 
-    public Button(Window window, String name, float x, float y, float width, float height, ButtonListener listener) {
-        this.window = window;
+    public Button(String name, float x, float y, float width, float height, ButtonListener listener) {
         this.name = name;
         this.x = x;
         this.y = y;
@@ -45,7 +41,7 @@ public class Button {
         this.textColor = 0xffaaaaaa;
     }
 
-    public void draw(MatrixStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         Render2DHelper.INSTANCE.fill(matrixStack, x, y, x + width, y + height, backgroundColor);
         if (centerText)
             FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getName(), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 3.5f, isEnabled ? textColor : 0xff676767);
@@ -55,7 +51,7 @@ public class Button {
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
         this.getChildren().forEach(button -> {
             if (button.isVisible())
-                button.draw(matrixStack);
+                button.render(matrixStack);
         });
     }
 
@@ -140,10 +136,6 @@ public class Button {
         this.name = name;
     }
 
-    public Window getWindow() {
-        return window;
-    }
-
     public boolean isVisible() {
         return isVisible;
     }
@@ -182,28 +174,6 @@ public class Button {
                     height += getFullHeight(button);
             }
         return height;
-    }
-
-    public ArrayList<Button> allButtonsAfter() {
-        ArrayList<Button> buttons = new ArrayList<>();
-        for (Button button : getWindow().getButtons()) {
-            if (getWindow().getButtons().indexOf(button) > getWindow().getButtons().indexOf(this) && button.isVisible()) {
-                buttons.add(button);
-                buttons = addAllChildren(buttons, button);
-            }
-        }
-        return buttons;
-    }
-
-    public ArrayList<Button> allButtonsAfter(Button button1) {
-        ArrayList<Button> buttons = new ArrayList<>();
-        for (Button button : getWindow().getButtons()) {
-            if (getWindow().getButtons().indexOf(button) > getWindow().getButtons().indexOf(button1) && button.isVisible()) {
-                buttons.add(button);
-                buttons = addAllChildren(buttons, button);
-            }
-        }
-        return buttons;
     }
 
     public ArrayList<Button> addAllChildren(ArrayList<Button> buttons, Button button) {

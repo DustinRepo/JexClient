@@ -6,7 +6,6 @@ import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.file.core.ConfigFile;
-import me.dustin.jex.gui.click.window.ClickGui;
 import me.dustin.jex.gui.jex.JexPersonalizationScreen;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
 import me.dustin.jex.helper.file.JsonHelper;
@@ -31,7 +30,6 @@ public class ClientSettingsFile extends ConfigFile {
         yamlMap.put("prefix", CommandManagerJex.INSTANCE.getPrefix());
         yamlMap.put("main-menu-bg", JexTitleScreen.background);
         yamlMap.put("auto-save", JexClient.INSTANCE.isAutoSaveEnabled());
-        yamlMap.put("gui-click-sounds", ClickGui.doesPlayClickSound());
         yamlMap.put("launch-sound", JexClient.INSTANCE.playSoundOnLaunch());
         yamlMap.put("personal-cape", JexPersonalizationScreen.setCape);
         yamlMap.put("personal-hat", JexPersonalizationScreen.setHat);
@@ -50,7 +48,6 @@ public class ClientSettingsFile extends ConfigFile {
         JexTitleScreen.background = (int)parsedYaml.get("main-menu-bg");
         JexClient.INSTANCE.setAutoSave((boolean)parsedYaml.get("auto-save"));
         JexClient.INSTANCE.setPlaySoundOnLaunch((boolean)parsedYaml.get("launch-sound"));
-        ClickGui.setDoesPlayClickSound((boolean)parsedYaml.get("gui-click-sounds"));
         JexPersonalizationScreen.setCape = (String)parsedYaml.get("personal-cape");
         JexPersonalizationScreen.setHat = (String)parsedYaml.get("personal-hat");
         TheAlteningHelper.INSTANCE.setApiKey((String)parsedYaml.get("altening-api-key"));
@@ -79,7 +76,6 @@ public class ClientSettingsFile extends ConfigFile {
             CommandManagerJex.INSTANCE.setPrefix(object.get("prefix").getAsString());
             JexTitleScreen.background = object.get("main-menu-bg").getAsInt();
             JexClient.INSTANCE.setAutoSave(object.get("auto-save").getAsBoolean());
-            ClickGui.setDoesPlayClickSound(object.get("gui-click-sounds").getAsBoolean());
             JexClient.INSTANCE.setPlaySoundOnLaunch(object.get("launch-sound").getAsBoolean());
 
             if (object.get("personal-cape") != null) {

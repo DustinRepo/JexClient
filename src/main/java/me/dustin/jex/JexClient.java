@@ -117,8 +117,6 @@ public enum JexClient {
                 Feature.get(Freecam.class).setState(false);
             if (Feature.getState(Fakelag.class))
                 Feature.get(Fakelag.class).setState(false);
-        } else if (Gui.clickgui.guiModule == null) {
-            Gui.clickgui.init();
         }
         if (BaritoneHelper.INSTANCE.baritoneExists()) {
             BaritoneHelper.INSTANCE.setAssumeStep(Feature.getState(Step.class));

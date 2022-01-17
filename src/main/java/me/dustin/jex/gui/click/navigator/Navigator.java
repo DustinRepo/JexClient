@@ -7,7 +7,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorFeatureButton;
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
+import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -53,7 +53,7 @@ public class Navigator extends Screen {
             ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }));
         this.addDrawableChild(new ButtonWidget(2, height - 44, 100, 20, new LiteralText("Save"), button -> {
-            FeatureFile.saveButton();
+            ConfigManager.INSTANCE.get(FeatureFile.class).saveButton();
         }));
         this.addDrawableChild(new ButtonWidget(2, height - 66, 100, 20, new LiteralText("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")), button -> {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
@@ -83,7 +83,7 @@ public class Navigator extends Screen {
         Scissor.INSTANCE.cut((int)navigatorX, (int)navigatorY, (int)navigatorWidth, (int)navigatorHeight);
         featureButtons.forEach(navigatorFeatureButton -> {
             if (navigatorFeatureButton.getY() + navigatorFeatureButton.getHeight() > navigatorY && navigatorFeatureButton.getY() < navigatorY + navigatorHeight)
-                navigatorFeatureButton.draw(matrices);
+                navigatorFeatureButton.render(matrices);
         });
         Scissor.INSTANCE.seal();
 

@@ -5,7 +5,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.render.font.NahrFont;
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
+import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.render.font.FontHelper;

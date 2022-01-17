@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.waypoints.impl;
 
-import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
+import me.dustin.jex.helper.render.Button;
+import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -13,11 +13,11 @@ public class ServerButton extends Button {
 	private boolean selected;
 
 	public ServerButton(String name, float x, float y, float width, float height, ButtonListener listener) {
-		super(null, name, x, y, width, height, listener);
+		super(name, x, y, width, height, listener);
 	}
 
 	@Override
-	public void draw(MatrixStack matrixStack) {
+	public void render(MatrixStack matrixStack) {
 		Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x50000000);
 		FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getName(), this.getX() + 2, this.getY() + (this.getHeight() / 2) - 4, ColorHelper.INSTANCE.getClientColor());
 		if (isSelected())

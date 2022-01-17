@@ -46,7 +46,7 @@ public class FeatureFile extends ConfigFile {
         YamlHelper.INSTANCE.writeFile(yamlMap, getFile());
     }
 
-    public static void saveButton() {
+    public void saveButton() {
         Map<String, Object> yamlMap = new HashMap<>();
         for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
             Map<String, Object> featureMap = new HashMap<>();
@@ -70,7 +70,6 @@ public class FeatureFile extends ConfigFile {
 
     @Override
     public void read() {
-        convertFromJson();
         Map<String, Object> parsedYaml = YamlHelper.INSTANCE.readFile(getFile());
         if (parsedYaml == null || parsedYaml.isEmpty())
             return;
@@ -101,58 +100,5 @@ public class FeatureFile extends ConfigFile {
                 feature.setVisible(visible);
             }
         });
-    }
-
-    public void convertFromJson() {
-        try {
-            File file = new File(ModFileHelper.INSTANCE.getJexDirectory(), "Features.json");
-            if (!file.exists())
-                return;
-            StringBuffer stringBuffer = new StringBuffer("");
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file.getPath()), "UTF8"));
-            String line;
-            while ((line = in.readLine()) != null) {
-                stringBuffer.append(line);
-            }
-            JsonArray array = JsonHelper.INSTANCE.prettyGson.fromJson(String.valueOf(stringBuffer), JsonArray.class);
-            in.close();
-            if (array != null)
-                for (int i = 0; i < array.size(); i++) {
-                    JsonObject object = array.get(i).getAsJsonObject();
-                    String name = object.get("name").getAsString();
-                    Feature feature = Feature.get(name);
-                    if (feature != null) {
-                        feature.setKey(object.get("key").getAsInt());
-                        feature.setVisible(object.get("visible").getAsBoolean());
-                        if (feature.getState() != object.get("state").getAsBoolean())
-                            feature.setState(object.get("state").getAsBoolean());
-                    } else {
-                        JexClient.INSTANCE.getLogger().error("Could not find Module " + name);
-                    }
-                    JsonArray objectArray = null;
-
-
-                    if (OptionManager.get().hasOption(feature) && object.has("Properties"))
-                        objectArray = object.get("Properties").getAsJsonArray();
-
-                    if (objectArray != null)
-                        for (int j = 0; j < objectArray.size(); j++) {
-                            JsonObject newObject = objectArray.get(j).getAsJsonObject();
-                            String opName = newObject.get("name").getAsString();
-                            String valueString = newObject.get("value").getAsString();
-                            Option option = OptionManager.get().getOption(opName, feature);
-                            if (option != null) {
-                                option.parseValue(valueString);
-                            }
-                        }
-                }
-            file.delete();
-            boolean autoSave = JexClient.INSTANCE.isAutoSaveEnabled();
-            JexClient.INSTANCE.setAutoSave(true);
-            write();
-            JexClient.INSTANCE.setAutoSave(autoSave);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

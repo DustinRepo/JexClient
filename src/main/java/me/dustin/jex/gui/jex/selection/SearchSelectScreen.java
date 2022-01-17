@@ -116,11 +116,11 @@ public class SearchSelectScreen extends Screen {
         Scissor.INSTANCE.cut(0, (int) startY, width, 250);
         this.allowedBlocks.forEach(button -> {
             if (button.getY() + button.getHeight() > startY && button.getY() < startY + 250)
-                button.draw(matrices);
+                button.render(matrices);
         });
         this.notAllowedBlocks.forEach(button -> {
             if (button.getY() + button.getHeight() > startY && button.getY() < startY + 250)
-                button.draw(matrices);
+                button.render(matrices);
         });
         Scissor.INSTANCE.seal();
         if (leftScrollbar != null)

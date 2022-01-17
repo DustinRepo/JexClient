@@ -11,7 +11,7 @@ import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorFeatureVisibleButton;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorKeybindButton;
 import me.dustin.jex.gui.click.navigator.impl.NavigatorOptionButton;
-import me.dustin.jex.gui.click.window.impl.Button;
+import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -95,7 +95,7 @@ public class NavigatorOptionScreen extends Screen {
             scrollbar.render(matrices);
 
             Scissor.INSTANCE.cut((int)navigator.navigatorX, (int)navigator.navigatorY + 62, (int)navigator.navigatorWidth,(int)navigator.navigatorHeight - 90);
-            options.forEach(button -> button.draw(matrices));
+            options.forEach(button -> button.render(matrices));
             Scissor.INSTANCE.seal();
 
             //draw fake button

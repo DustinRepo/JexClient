@@ -39,7 +39,7 @@ public class IRCManager extends PircBot {
             try {
                 Map<String, String> map = new HashMap<>();
                 map.put("uuid", Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
-                String resp = WebHelper.INSTANCE.sendPOST(new URL("https://jexclient.com/includes/irc-info.inc.php"), map);
+                String resp = WebHelper.INSTANCE.sendPOST(new URL(JexClient.INSTANCE.getBaseUrl() + "includes/irc-info.inc.php"), map);
                 JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(new String(Base64.decodeBase64(resp)), JsonObject.class);
                 IRC_HostName = jsonObject.get("host").getAsString();
                 IRC_ChannelName = jsonObject.get("channel").getAsString();

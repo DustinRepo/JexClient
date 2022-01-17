@@ -1,7 +1,6 @@
 package me.dustin.jex.feature.mod.impl.render.hud;
 
 import me.dustin.events.EventManager;
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.TickFilter;
@@ -15,9 +14,9 @@ import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.hud.elements.*;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.HudElementsFile;
-import me.dustin.jex.gui.click.jex.JexGui;
-import me.dustin.jex.gui.click.window.ClickGui;
-import me.dustin.jex.gui.click.window.impl.Window;
+import me.dustin.jex.gui.click.dropdown.DropDownGui;
+import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
+import me.dustin.jex.gui.click.navigator.Navigator;
 import me.dustin.jex.gui.tab.TabGui;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -160,9 +159,9 @@ public class Hud extends Feature {
         });
         if (lagometer)
             drawLagometer(event);
-        for (Window window : ClickGui.windows) {
-            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ClickGui || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof JexGui)) {
-                window.draw(event.getMatrixStack());
+        for (DropdownWindow window : DropDownGui.getCurrentTheme().windows) {
+            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DropDownGui || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof Navigator)) {
+                window.render(event.getMatrixStack());
             }
         }
     });

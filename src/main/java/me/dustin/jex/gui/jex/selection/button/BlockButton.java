@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.jex.selection.button;
 
-import me.dustin.jex.gui.click.window.impl.Button;
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
+import me.dustin.jex.helper.render.Button;
+import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -16,12 +16,12 @@ public class BlockButton extends Button {
     private boolean selected;
 
     public BlockButton(Block block, String name, float x, float y, float width, float height, ButtonListener listener) {
-        super(null, name, x, y, width, height, listener);
+        super(name, x, y, width, height, listener);
         this.block = block;
     }
 
     @Override
-    public void draw(MatrixStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (isSelected()) {
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor(), 0x25ffffff, 1);
         }
@@ -31,7 +31,7 @@ public class BlockButton extends Button {
         if (isHovered() && isEnabled())
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x25ffffff);
         this.getChildren().forEach(button -> {
-            button.draw(matrixStack);
+            button.render(matrixStack);
         });
     }
 

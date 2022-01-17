@@ -8,7 +8,7 @@ import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
-import me.dustin.jex.gui.click.window.impl.Button;
+import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -18,12 +18,12 @@ import org.lwjgl.glfw.GLFW;
 public class NavigatorKeybindButton extends Button {
     private Feature feature;
     public NavigatorKeybindButton(Feature feature, float x, float y, float width, float height) {
-        super(null, "", x, y, width, height, null);
+        super("", x, y, width, height, null);
         this.feature = feature;
     }
 
     @Override
-    public void draw(MatrixStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         String keyString = feature.getKey() == 0 ? "None" : KeyboardHelper.INSTANCE.getKeyName(feature.getKey());
         if (EventManager.isRegistered(this))
             keyString = "...";

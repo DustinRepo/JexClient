@@ -4,7 +4,7 @@ import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.ClientSettingsFile;
-import me.dustin.jex.gui.click.window.listener.ButtonListener;
+import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FileBrowser;
 import me.dustin.jex.helper.render.Render2DHelper;

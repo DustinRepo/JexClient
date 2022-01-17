@@ -186,6 +186,7 @@ public enum Render2DHelper {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         bufferBuilder.vertex(x2, y, 0).color(f1, f2, f3, f).next();
@@ -193,6 +194,37 @@ public enum Render2DHelper {
 
         bufferBuilder.vertex(x, y2, 0).color(f5, f6, f7, f4).next();
         bufferBuilder.vertex(x2, y2, 0).color(f5, f6, f7, f4).next();
+
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+    }
+
+    public void gradientFill(MatrixStack matrixStack, float x, float y, float x2, float y2, int col1, int col2) {
+        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+        float f = (float) (col1 >> 24 & 0xFF) / 255F;
+        float f1 = (float) (col1 >> 16 & 0xFF) / 255F;
+        float f2 = (float) (col1 >> 8 & 0xFF) / 255F;
+        float f3 = (float) (col1 & 0xFF) / 255F;
+
+        float f4 = (float) (col2 >> 24 & 0xFF) / 255F;
+        float f5 = (float) (col2 >> 16 & 0xFF) / 255F;
+        float f6 = (float) (col2 >> 8 & 0xFF) / 255F;
+        float f7 = (float) (col2 & 0xFF) / 255F;
+
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+
+        bufferBuilder.vertex(matrix4f, x2, y, 0).color(f1, f2, f3, f).next();
+        bufferBuilder.vertex(matrix4f, x, y, 0).color(f1, f2, f3, f).next();
+
+        bufferBuilder.vertex(matrix4f, x, y2, 0).color(f5, f6, f7, f4).next();
+        bufferBuilder.vertex(matrix4f, x2, y2, 0).color(f5, f6, f7, f4).next();
 
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);

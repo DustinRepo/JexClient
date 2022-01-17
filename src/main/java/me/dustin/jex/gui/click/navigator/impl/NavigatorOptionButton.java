@@ -12,10 +12,8 @@ import me.dustin.jex.feature.option.enums.OpType;
 import me.dustin.jex.feature.option.types.*;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
-import me.dustin.jex.gui.click.jex.JexGui;
 import me.dustin.jex.gui.click.navigator.NavigatorOptionScreen;
-import me.dustin.jex.gui.click.window.ClickGui;
-import me.dustin.jex.gui.click.window.impl.Button;
+import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
@@ -54,12 +52,12 @@ public class NavigatorOptionButton extends Button {
     private int buttonsHeight;
 
     public NavigatorOptionButton(Option option, float x, float y, float width, float height) {
-        super(null, option.getName(), x, y, width, height, null);
+        super(option.getName(), x, y, width, height, null);
         this.option = option;
     }
 
     @Override
-    public void draw(MatrixStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         updateOnOff();
         if (this.masterButton != null) {
             Render2DHelper.INSTANCE.fill(matrixStack, masterButton.getX(), this.getY(), this.getX(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor());
@@ -106,7 +104,7 @@ public class NavigatorOptionButton extends Button {
         }
         if (isOpen())
             this.getChildren().forEach(button -> {
-                button.draw(matrixStack);
+                button.render(matrixStack);
             });
     }
 
@@ -114,23 +112,17 @@ public class NavigatorOptionButton extends Button {
     public void click(double double_1, double double_2, int int_1) {
         if (isHovered()) {
             if (int_1 == 0) {
-                if (this.getOption() instanceof BoolOption) {
-                    ((BoolOption) this.getOption()).setValue(!((BoolOption) this.getOption()).getValue());
-                    if (ClickGui.doesPlayClickSound())
-                        Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                if (this.getOption() instanceof BoolOption boolOption) {
+                    boolOption.setValue(!boolOption.getValue());
                 }
                 if (this.getOption() instanceof StringArrayOption) {
                     ((StringArrayOption) this.getOption()).inc();
                     if (this.isOpen())
                         this.close();
-                    if (ClickGui.doesPlayClickSound())
-                        Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 }
                 if (this.getOption() instanceof StringOption) {
                     if (!EventManager.isRegistered(this))
                         EventManager.register(this);
-                    if (ClickGui.doesPlayClickSound())
-                        Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 }
                 if (this.getOption() instanceof KeybindOption) {
                     EventManager.register(this);
@@ -212,7 +204,6 @@ public class NavigatorOptionButton extends Button {
         });
     }
 
-    @Override
     public ArrayList<Button> allButtonsAfter() {
         ArrayList<Button> buttons = new ArrayList<>();
 

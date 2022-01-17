@@ -76,6 +76,7 @@ public class Scrollbar {
 
     public void setViewportHeight(float viewportHeight) {
         this.viewportHeight = viewportHeight;
+        updateHeight();
     }
 
     public float getContentHeight() {
@@ -99,6 +100,8 @@ public class Scrollbar {
     }
 
     public void setViewportY(float viewportY) {
+        float dif = viewportY - this.viewportY;
+        this.setY(this.y + dif);
         this.viewportY = viewportY;
     }
 
