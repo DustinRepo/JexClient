@@ -60,6 +60,10 @@ public class Tunneller extends Feature {
                         this.setState(false);
                         return;
                     }
+                } else if (WorldHelper.INSTANCE.isWaterlogged(liquidCheckSpot)){
+                    Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(liquidCheckSpot, Direction.UP);
+                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                    return;
                 }
             }
         //break-a da blocks
