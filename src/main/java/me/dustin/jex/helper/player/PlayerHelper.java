@@ -205,88 +205,57 @@ public enum PlayerHelper {
         return ClientMathHelper.INSTANCE.getVec(blockPos);
     }
 
-    public RotationVector getRotations(Entity entityIn, Entity ent2) {
-        double var4 = entityIn.getX() - ent2.getX();
-        double var8 = entityIn.getZ() - ent2.getZ();
-        double var6;
+    public RotationVector getRotations(Entity entityIn) {
+        double xDif = entityIn.getX() - Wrapper.INSTANCE.getLocalPlayer().getX();
+        double zDif = entityIn.getZ() - Wrapper.INSTANCE.getLocalPlayer().getZ();
+        double yDif;
 
-        if (entityIn instanceof LivingEntity) {
-            LivingEntity var14 = (LivingEntity) entityIn;
-            var6 = var14.getY() + (double) var14.getEyeHeight(var14.getPose()) - (ent2.getY() + (double) ent2.getEyeHeight(ent2.getPose()));
+        if (entityIn instanceof LivingEntity livingEntity) {
+            yDif = livingEntity.getY() + (double) livingEntity.getEyeHeight(livingEntity.getPose()) - (Wrapper.INSTANCE.getLocalPlayer().getY() + (double) Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()));
         } else {
-            var6 = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - (ent2.getY() + (double) (ent2.getEyeHeight(ent2.getPose()) * Math.random()));
+            yDif = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - (Wrapper.INSTANCE.getLocalPlayer().getY() + (double) (Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()) * Math.random()));
         }
 
-        double var141 = MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
-        float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
-        float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(EntityHelper.INSTANCE.getPitch(ent2), var13, Float.MAX_VALUE);
-        float yaw = updateRotation(EntityHelper.INSTANCE.getYaw(ent2), var12, Float.MAX_VALUE);
-        return new RotationVector(yaw + 180, -pitch);
+        double var141 = MathHelper.sqrt((float)(xDif * xDif + zDif * zDif));
+        float var12 = (float) (Math.atan2(zDif, xDif) * 180.0D / Math.PI) - 90.0F;
+        float var13 = (float) (-(Math.atan2(yDif, var141) * 180.0D / Math.PI));
+        return new RotationVector(var12, var13);
     }
 
     public RotationVector getRotations(Entity entityIn, Vec3d vec3d) {
-        double var4 = entityIn.getX() - vec3d.x;
-        double var8 = entityIn.getZ() - vec3d.z;
-        double var6;
-        var6 = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - vec3d.y;
+        double xDif = vec3d.x - entityIn.getX();
+        double zDif = vec3d.z - entityIn.getZ();
+        double yDif = vec3d.y - (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D;
 
-        double var141 = MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
-        float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
-        float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(getPitch(), var13, Float.MAX_VALUE);
-        float yaw = updateRotation(getYaw(), var12, Float.MAX_VALUE);
-        return new RotationVector(yaw + 180, -pitch);
+        double var141 = MathHelper.sqrt((float)(xDif * xDif + zDif * zDif));
+        float yaw = (float) (Math.atan2(zDif, xDif) * 180.0D / Math.PI) - 90.0F;
+        float pitch = (float) (-(Math.atan2(yDif, var141) * 180.0D / Math.PI));
+        return new RotationVector(yaw, pitch);
     }
 
     public RotationVector getRotations(Vec3d vec3d, Entity entityIn) {
-        double var4 = vec3d.x - entityIn.getX();
-        double var8 = vec3d.z - entityIn.getZ();
-        double var6;
-        var6 = vec3d.y - (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D;
+        double xDif = entityIn.getX() - vec3d.x;
+        double zDif = entityIn.getZ() - vec3d.z;
+        double yDif = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - vec3d.y;
 
-        double var141 = MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
-        float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
-        float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(getPitch(), var13, Float.MAX_VALUE);
-        float yaw = updateRotation(getYaw(), var12, Float.MAX_VALUE);
-        return new RotationVector(yaw + 180, -pitch);
+        double var141 = MathHelper.sqrt((float)(xDif * xDif + zDif * zDif));
+        float yaw = (float) (Math.atan2(zDif, xDif) * 180.0D / Math.PI) - 90.0F;
+        float pitch = (float) (-(Math.atan2(yDif, var141) * 180.0D / Math.PI));
+        return new RotationVector(yaw, pitch);
     }
 
     public RotationVector getRotations(Entity ent2, float sideOffset, float heightOffset) {
-        ClientPlayerEntity entityIn = Wrapper.INSTANCE.getLocalPlayer();
         Random random = new Random();
         sideOffset = ent2.getWidth() * sideOffset;
         heightOffset = ent2.getHeight() * heightOffset;
-        double var4 = entityIn.getX() - (ent2.getX() - sideOffset + (random.nextFloat() * (sideOffset * 2)));
-        double var8 = entityIn.getZ() - (ent2.getZ() - sideOffset + (random.nextFloat() * (sideOffset * 2)));
-        double var6;
+        double xDif = (ent2.getX() - sideOffset + (random.nextFloat() * (sideOffset * 2))) - Wrapper.INSTANCE.getLocalPlayer().getX();
+        double zDif = (ent2.getZ() - sideOffset + (random.nextFloat() * (sideOffset * 2))) - Wrapper.INSTANCE.getLocalPlayer().getZ();
+        double yDif = (ent2.getY() + (double) (ent2.getHeight() / 2) - heightOffset + (random.nextFloat() * (heightOffset * 2))) - (Wrapper.INSTANCE.getLocalPlayer().getY() + (double) Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()));
 
-        var6 = entityIn.getY() + (double) entityIn.getEyeHeight(entityIn.getPose()) - (ent2.getY() + (double) (ent2.getHeight() / 2) - heightOffset + (random.nextFloat() * (heightOffset * 2)));
-
-        double var141 = MathHelper.sqrt((float)(var4 * var4 + var8 * var8));
-        float var12 = (float) (Math.atan2(var8, var4) * 180.0D / Math.PI) - 90.0F;
-        float var13 = (float) (-(Math.atan2(var6, var141) * 180.0D / Math.PI));
-        float pitch = updateRotation(EntityHelper.INSTANCE.getPitch(ent2), var13, Float.MAX_VALUE);
-        float yaw = updateRotation(EntityHelper.INSTANCE.getYaw(ent2), var12, Float.MAX_VALUE);
-        return new RotationVector(yaw + 180, -pitch);
-    }
-
-    /**
-     * Arguments: current rotation, intended rotation, max increment.
-     */
-    public float updateRotation(float angle, float targetAngle, float maxIncrease) {
-        float f = MathHelper.wrapDegrees(targetAngle - angle);
-
-        if (f > maxIncrease) {
-            f = maxIncrease;
-        }
-
-        if (f < -maxIncrease) {
-            f = -maxIncrease;
-        }
-
-        return angle + f;
+        double var141 = MathHelper.sqrt((float)(xDif * xDif + zDif * zDif));
+        float yaw = (float) (Math.atan2(zDif, xDif) * 180.0D / Math.PI) - 90.0F;
+        float pitch = (float) (-(Math.atan2(yDif, var141) * 180.0D / Math.PI));
+        return new RotationVector(yaw, pitch);
     }
 
     public Entity getCrosshairEntity(float tickDelta, RotationVector rots, float reach) {
@@ -298,9 +267,7 @@ public enum PlayerHelper {
                 Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
 
                 Box box = entity.getBoundingBox().stretch(vec3d2.multiply(reach)).expand(1.0D, 1.0D, 1.0D);
-                EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, (entityx) -> {
-                    return !entityx.isSpectator() && entityx.collides();
-                }, reach);
+                EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.collides(), reach);
                 if (entityHitResult != null) {
                     Entity entity2 = entityHitResult.getEntity();
                     if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {
@@ -323,7 +290,7 @@ public enum PlayerHelper {
     }
 
     public int getDistanceFromMouse(Entity entity) {
-        RotationVector neededRotations = getRotations(Wrapper.INSTANCE.getLocalPlayer(), entity);
+        RotationVector neededRotations = getRotations(entity);
         RotationVector currentRotations = new RotationVector(getYaw(), getPitch());
         neededRotations.normalize();
         currentRotations.normalize();
@@ -348,32 +315,20 @@ public enum PlayerHelper {
         double speed = 1.96 / 20;
         int dsLevel = InventoryHelper.INSTANCE.getDepthStriderLevel();
         switch (dsLevel) {
-            case 1:
-                speed = 3.21 / 20;
-                break;
-            case 2:
-                speed = 3.89 / 20;
-                break;
-            case 3:
-                speed = 4.32 / 20;
-                break;
+            case 1 -> speed = 3.21 / 20;
+            case 2 -> speed = 3.89 / 20;
+            case 3 -> speed = 4.32 / 20;
         }
         return speed;
     }
 
     public double getWaterSpeed(int depthStriderLevel, boolean accountSprint) {
-        double speed = 1.96 / 20;
-        switch (depthStriderLevel) {
-            case 1:
-                speed = 3.21 / 20;
-                break;
-            case 2:
-                speed = 3.89 / 20;
-                break;
-            case 3:
-                speed = 4.32 / 20;
-                break;
-        }
+        double speed = switch (depthStriderLevel) {
+            case 1 -> 3.21 / 20;
+            case 2 -> 3.89 / 20;
+            case 3 -> 4.32 / 20;
+            default -> 1.96 / 20;
+        };
         if ((Wrapper.INSTANCE.getLocalPlayer().isSprinting() || (Feature.getState(Sprint.class) && isMoving())) && accountSprint)
             speed += (speed * 0.3);
         return speed;

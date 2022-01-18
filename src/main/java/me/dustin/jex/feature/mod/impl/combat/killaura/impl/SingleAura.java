@@ -46,7 +46,7 @@ public class SingleAura extends FeatureExtension {
                 KillAura.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
                     if (KillAura.INSTANCE.rotate) {
-                        RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), target);
+                        RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(target);
                         if (KillAura.INSTANCE.randomize) {
                             rotationVector = PlayerHelper.INSTANCE.getRotations(target, KillAura.INSTANCE.randomWidth, KillAura.INSTANCE.randomHeight);
                         }
@@ -88,7 +88,7 @@ public class SingleAura extends FeatureExtension {
         LivingEntity savedTarget = null;
         if (KillAura.INSTANCE.rayTrace && target != null) {
             savedTarget = target;
-            Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), target), KillAura.INSTANCE.reach);
+            Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.getRotations(target), KillAura.INSTANCE.reach);
             if (possible != null && possible instanceof LivingEntity) {
                 target = (LivingEntity) possible;
             }

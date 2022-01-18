@@ -98,7 +98,7 @@ public class CrystalAura extends Feature {
 				if (entity instanceof EndCrystalEntity) {
 					EndCrystalEntity enderCrystalEntity = (EndCrystalEntity) entity;
 					if (shouldAttack(enderCrystalEntity)) {
-						RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
+						RotationVector rotation = PlayerHelper.INSTANCE.getRotations(enderCrystalEntity);
 						event.setRotation(rotation);
 						Wrapper.INSTANCE.getInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
 						Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
