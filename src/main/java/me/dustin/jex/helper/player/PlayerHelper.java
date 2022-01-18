@@ -10,14 +10,12 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Sprint;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
-import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -205,7 +203,7 @@ public enum PlayerHelper {
         return ClientMathHelper.INSTANCE.getVec(blockPos);
     }
 
-    public RotationVector getRotations(Entity entityIn) {
+    public RotationVector rotateToEntity(Entity entityIn) {
         double xDif = entityIn.getX() - Wrapper.INSTANCE.getLocalPlayer().getX();
         double zDif = entityIn.getZ() - Wrapper.INSTANCE.getLocalPlayer().getZ();
         double yDif;
@@ -222,7 +220,18 @@ public enum PlayerHelper {
         return new RotationVector(var12, var13);
     }
 
-    public RotationVector getRotations(Entity entityIn, Vec3d vec3d) {
+    public RotationVector rotateToCenter(Entity entityIn) {
+        double xDif = entityIn.getX() - Wrapper.INSTANCE.getLocalPlayer().getX();
+        double zDif = entityIn.getZ() - Wrapper.INSTANCE.getLocalPlayer().getZ();
+        double yDif = (entityIn.getY() + entityIn.getHeight() / 2.f) - (Wrapper.INSTANCE.getLocalPlayer().getY() + (double) Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()));
+
+        double var141 = MathHelper.sqrt((float)(xDif * xDif + zDif * zDif));
+        float var12 = (float) (Math.atan2(zDif, xDif) * 180.0D / Math.PI) - 90.0F;
+        float var13 = (float) (-(Math.atan2(yDif, var141) * 180.0D / Math.PI));
+        return new RotationVector(var12, var13);
+    }
+
+    public RotationVector rotateToVec(Entity entityIn, Vec3d vec3d) {
         double xDif = vec3d.x - entityIn.getX();
         double zDif = vec3d.z - entityIn.getZ();
         double yDif = vec3d.y - (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D;
@@ -233,7 +242,7 @@ public enum PlayerHelper {
         return new RotationVector(yaw, pitch);
     }
 
-    public RotationVector getRotations(Vec3d vec3d, Entity entityIn) {
+    public RotationVector rotateFromVec(Vec3d vec3d, Entity entityIn) {
         double xDif = entityIn.getX() - vec3d.x;
         double zDif = entityIn.getZ() - vec3d.z;
         double yDif = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - vec3d.y;
@@ -244,7 +253,7 @@ public enum PlayerHelper {
         return new RotationVector(yaw, pitch);
     }
 
-    public RotationVector getRotations(Entity ent2, float sideOffset, float heightOffset) {
+    public RotationVector randomRotateTo(Entity ent2, float sideOffset, float heightOffset) {
         Random random = new Random();
         sideOffset = ent2.getWidth() * sideOffset;
         heightOffset = ent2.getHeight() * heightOffset;
@@ -290,7 +299,7 @@ public enum PlayerHelper {
     }
 
     public int getDistanceFromMouse(Entity entity) {
-        RotationVector neededRotations = getRotations(entity);
+        RotationVector neededRotations = rotateToCenter(entity);
         RotationVector currentRotations = new RotationVector(getYaw(), getPitch());
         neededRotations.normalize();
         currentRotations.normalize();
@@ -301,7 +310,7 @@ public enum PlayerHelper {
     }
 
     public int getDistanceFromMouse(Vec3d vec3d) {
-        RotationVector neededRotations = getRotations(Wrapper.INSTANCE.getLocalPlayer(), vec3d);
+        RotationVector neededRotations = rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), vec3d);
         RotationVector currentRotations = new RotationVector(getYaw(), getPitch());
         neededRotations.normalize();
         currentRotations.normalize();

@@ -28,7 +28,7 @@ public class AntiFireball extends Feature {
         if (entity instanceof FireballEntity fireballEntity) {
             if (fireballEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= range) {
                 if (rotate) {
-                    RotationVector rotation = PlayerHelper.INSTANCE.getRotations(fireballEntity);
+                    RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(fireballEntity);
                     event.setRotation(rotation);
                 }
                 if (swing) {

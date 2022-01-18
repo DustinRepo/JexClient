@@ -28,7 +28,6 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -86,7 +85,7 @@ public class Excavator extends Feature {
             if (distanceTo <= (WorldHelper.INSTANCE.getBlock(closestBlock) == Blocks.BEDROCK ? 3 : Wrapper.INSTANCE.getInteractionManager().getReachDistance() - 1)) {
                 if (!KillAura.INSTANCE.hasTarget() && !BreakingFlowController.isWorking()) {
                     BlockHitResult blockHitResult = rayCast(Wrapper.INSTANCE.getLocalPlayer(), closestBlock);
-                    RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(closestBlock));
+                    RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(closestBlock));
                     event.setRotation(rotationVector);
                     Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
                     Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
@@ -281,7 +280,7 @@ public class Excavator extends Feature {
     }
 
     public BlockHitResult rayCast(ClientPlayerEntity player, BlockPos blockPos) {
-        RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(player, Vec3d.of(blockPos).add(0.5, 0, 0.5));
+        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(player, Vec3d.of(blockPos).add(0.5, 0, 0.5));
         RotationVector saved = new RotationVector(player);
         PlayerHelper.INSTANCE.setRotation(rotationVector);
         HitResult result = player.raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);

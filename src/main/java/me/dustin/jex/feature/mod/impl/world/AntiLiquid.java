@@ -17,7 +17,6 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
@@ -84,7 +83,7 @@ public class AntiLiquid extends Feature {
                         if (sneak) {
                             NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
                         }
-                        event.setRotation(PlayerHelper.INSTANCE.getRotations(PlayerHelper.INSTANCE.getPlacingLookPos(pos, illegalPlace), Wrapper.INSTANCE.getLocalPlayer()));
+                        event.setRotation(PlayerHelper.INSTANCE.rotateFromVec(PlayerHelper.INSTANCE.getPlacingLookPos(pos, illegalPlace), Wrapper.INSTANCE.getLocalPlayer()));
                         InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
                         if (placeMode.equalsIgnoreCase("Pre")) {
                             PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlace);

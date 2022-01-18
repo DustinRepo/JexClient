@@ -36,7 +36,7 @@ public class EndPortalFinder extends Feature {
 				if (firstPos == null) {
 					firstPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
 				}
-				firstYaw = PlayerHelper.INSTANCE.getRotations(trackedEye).getYaw();
+				firstYaw = PlayerHelper.INSTANCE.rotateToEntity(trackedEye).getYaw();
 			}
 			if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
 				if (firstPos != null) {
@@ -51,7 +51,7 @@ public class EndPortalFinder extends Feature {
 				if (secondPos == null) {
 					secondPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
 				}
-				secondYaw = PlayerHelper.INSTANCE.getRotations(trackedEye).getYaw();
+				secondYaw = PlayerHelper.INSTANCE.rotateToEntity(trackedEye).getYaw();
 			}
 			if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
 				if (firstPos != null && secondPos != null) {

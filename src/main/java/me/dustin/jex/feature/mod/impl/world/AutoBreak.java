@@ -72,7 +72,7 @@ public class AutoBreak extends Feature {
 		if (pos != null) {
 			Block block = WorldHelper.INSTANCE.getBlock(pos);
 			if (block != Blocks.AIR && getDistance(pos, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ()) <= mineDistance) {
-				RotationVector rot = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
+				RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
 				((EventPlayerPackets) event).setRotation(rot);
 				rot.normalize();
 				Direction facing = Direction.fromRotation(-rot.getYaw());

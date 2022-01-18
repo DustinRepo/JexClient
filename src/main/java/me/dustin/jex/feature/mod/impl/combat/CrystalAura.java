@@ -72,7 +72,7 @@ public class CrystalAura extends Feature {
 		if (event.getMode() == EventPlayerPackets.Mode.PRE) {
 			this.setSuffix(mode);
 			if (placePos != null) {
-				RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
+				RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 				event.setRotation(rotation);
 			}
 
@@ -84,7 +84,7 @@ public class CrystalAura extends Feature {
 							if (placingPos != null) {
 								EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
 								if (entityPlayer.distanceTo(crystal) <= 6 && Wrapper.INSTANCE.getLocalPlayer().distanceTo(crystal) <= 6 && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldAttack(crystal)) {
-									RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
+									RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 									event.setRotation(rotation);
 									placePos = placingPos.down();
 									timer.reset();
@@ -98,7 +98,7 @@ public class CrystalAura extends Feature {
 				if (entity instanceof EndCrystalEntity) {
 					EndCrystalEntity enderCrystalEntity = (EndCrystalEntity) entity;
 					if (shouldAttack(enderCrystalEntity)) {
-						RotationVector rotation = PlayerHelper.INSTANCE.getRotations(enderCrystalEntity);
+						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
 						Wrapper.INSTANCE.getInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
 						Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);

@@ -101,7 +101,7 @@ public class AnchorAura extends Feature {
                             BlockPos placingPos = getOpenBlockPos(entityPlayer);
                             if (placingPos != null) {
                                 if (ClientMathHelper.INSTANCE.getDistance(entityPlayer.getPos(), new Vec3d(placingPos.getX(), placingPos.getY(), placingPos.getZ())) <= 6 && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldExplode(placingPos)) {
-                                    RotationVector rotation = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
+                                    RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
                                     event.setRotation(rotation);
                                     placePos = placingPos;
                                     placeTimer.reset();

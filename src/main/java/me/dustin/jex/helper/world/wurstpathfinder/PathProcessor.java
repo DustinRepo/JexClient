@@ -57,7 +57,7 @@ public abstract class PathProcessor
 	
 	protected final void facePosition(BlockPos pos)
 	{
-		RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(pos));
+		RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(pos));
 		Wrapper.INSTANCE.getLocalPlayer().setYaw(rotationVector.getYaw());
 		Wrapper.INSTANCE.getLocalPlayer().setPitch(0);
 	}

@@ -2,7 +2,6 @@ package me.dustin.jex.feature.mod.impl.combat.killaura.impl;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
@@ -46,9 +45,9 @@ public class SingleAura extends FeatureExtension {
                 KillAura.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
                     if (KillAura.INSTANCE.rotate) {
-                        RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(target);
+                        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToEntity(target);
                         if (KillAura.INSTANCE.randomize) {
-                            rotationVector = PlayerHelper.INSTANCE.getRotations(target, KillAura.INSTANCE.randomWidth, KillAura.INSTANCE.randomHeight);
+                            rotationVector = PlayerHelper.INSTANCE.randomRotateTo(target, KillAura.INSTANCE.randomWidth, KillAura.INSTANCE.randomHeight);
                         }
                         event.setRotation(rotationVector);
                         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
@@ -88,7 +87,7 @@ public class SingleAura extends FeatureExtension {
         LivingEntity savedTarget = null;
         if (KillAura.INSTANCE.rayTrace && target != null) {
             savedTarget = target;
-            Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.getRotations(target), KillAura.INSTANCE.reach);
+            Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reach);
             if (possible != null && possible instanceof LivingEntity) {
                 target = (LivingEntity) possible;
             }
@@ -140,10 +139,8 @@ public class SingleAura extends FeatureExtension {
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof LivingEntity livingEntity1) {
                 if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) <= distance) {
-                    if (KillAura.INSTANCE.fov == 360 || PlayerHelper.INSTANCE.getDistanceFromMouse(livingEntity1) * 2 <= KillAura.INSTANCE.fov) {
-                        livingEntity = livingEntity1;
-                        distance = livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
-                    }
+                    livingEntity = livingEntity1;
+                    distance = livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
                 }
             }
         }

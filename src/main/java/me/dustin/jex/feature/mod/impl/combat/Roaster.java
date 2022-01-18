@@ -68,7 +68,7 @@ public class Roaster extends Feature {
                         if (footBlock == Blocks.AIR) {
                             blockPos = livingEntity.getBlockPos().down();
                             if (rotate) {
-                                RotationVector rotations = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                                RotationVector rotations = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                                 event.setRotation(rotations);
                             }
                         }

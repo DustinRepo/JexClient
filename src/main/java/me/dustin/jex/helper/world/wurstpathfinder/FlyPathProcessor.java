@@ -94,7 +94,7 @@ public class FlyPathProcessor extends PathProcessor
 		// horizontal movement
 		if(horizontal)
 		{
-			float yaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
+			float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
 			PlayerHelper.INSTANCE.setVelocityX(0);
 			PlayerHelper.INSTANCE.setVelocityZ(0);
 			double newx = -Math.sin(yaw * 3.1415927F / 180.0F) * moveSpeed();

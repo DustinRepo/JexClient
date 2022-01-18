@@ -19,6 +19,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
+import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinEntity;
@@ -202,6 +203,9 @@ public class KillAura extends Feature {
             return false;
         if (!Wrapper.INSTANCE.getLocalPlayer().canSee(entity) && !ignoreWalls)
             return false;
+        if (PlayerHelper.INSTANCE.getDistanceFromMouse(entity) * 2 > KillAura.INSTANCE.fov) {
+            return false;
+        }
         if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
                 return false;

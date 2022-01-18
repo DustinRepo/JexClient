@@ -1,6 +1,5 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import bedrockminer.utils.BreakingFlowController;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.KeyPressFilter;
@@ -309,7 +308,7 @@ public class AutoFarm extends Feature {
                 blockPos = blockHitResult.getBlockPos();
             }
         }
-        RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(blockPos));
+        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(blockPos));
         event.setRotation(rotationVector);
         Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
         Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
@@ -349,7 +348,7 @@ public class AutoFarm extends Feature {
     }
 
     public BlockHitResult rayCast(BlockPos blockPos) {
-        RotationVector rotationVector = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.of(blockPos).add(0.5, 0, 0.5));
+        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.of(blockPos).add(0.5, 0, 0.5));
         RotationVector saved = new RotationVector(Wrapper.INSTANCE.getLocalPlayer());
         PlayerHelper.INSTANCE.setRotation(rotationVector);
         HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);

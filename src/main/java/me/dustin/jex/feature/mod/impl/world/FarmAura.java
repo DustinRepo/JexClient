@@ -2,7 +2,6 @@ package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
@@ -15,9 +14,7 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.CropBlock;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
@@ -47,7 +44,7 @@ public class FarmAura extends Feature {
             breakTimer.reset();
             BlockPos crop = getCrop();
             if (crop != null) {
-                RotationVector rot = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(crop.getX(), crop.getY(), crop.getZ()));
+                RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(crop.getX(), crop.getY(), crop.getZ()));
                 rot.normalize();
                 event.setRotation(rot);
                 Direction facing = Direction.fromRotation(-rot.getYaw());
@@ -68,7 +65,7 @@ public class FarmAura extends Feature {
                 }
                 InventoryHelper.INSTANCE.setSlot(cropSlot, true, true);
 
-                RotationVector rot = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(farmland));
+                RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(farmland));
                 rot.normalize();
                 event.setRotation(rot);
                 PlayerHelper.INSTANCE.placeBlockInPos(getFarmland().up(), Hand.MAIN_HAND, false);

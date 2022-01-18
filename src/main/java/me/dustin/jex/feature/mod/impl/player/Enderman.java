@@ -31,7 +31,7 @@ public class Enderman extends Feature {
             case "look at":
                 EndermanEntity lookat = getEnderman();
                 if (lookat != null) {
-                    RotationVector rotation = PlayerHelper.INSTANCE.getRotations(lookat);
+                    RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(lookat);
                     event.setRotation(rotation);
                 }
                 break;

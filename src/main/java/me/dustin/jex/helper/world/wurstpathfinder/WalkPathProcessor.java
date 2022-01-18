@@ -72,7 +72,7 @@ public class WalkPathProcessor extends PathProcessor
 
 		lockControls();
 		Wrapper.INSTANCE.getLocalPlayer().getAbilities().flying = false;
-		float yaw = PlayerHelper.INSTANCE.getRotations(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
+		float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
 
 		if (WorldHelper.INSTANCE.getBlockState(nextPos).getMaterial().blocksMovement()) {
 			Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(nextPos, Direction.UP);

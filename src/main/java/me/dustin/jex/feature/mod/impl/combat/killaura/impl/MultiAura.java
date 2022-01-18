@@ -117,7 +117,7 @@ public class MultiAura extends FeatureExtension {
 
             for (LivingEntity target : targets) {
                 if (KillAura.INSTANCE.rayTrace && target != null) {
-                    Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.getRotations(target), KillAura.INSTANCE.reach);
+                    Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reach);
                     if (possible instanceof LivingEntity && !targets.contains(possible)) {
                         target = (LivingEntity) possible;
                     }
@@ -147,9 +147,7 @@ public class MultiAura extends FeatureExtension {
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof LivingEntity livingEntity1) {
                 if (KillAura.INSTANCE.isValid(livingEntity1, true)) {
-                    if (KillAura.INSTANCE.fov == 360 || PlayerHelper.INSTANCE.getDistanceFromMouse(livingEntity1) * 2 <= KillAura.INSTANCE.fov) {
-                        targets.add(livingEntity1);
-                    }
+                    targets.add(livingEntity1);
                 }
             }
         }
