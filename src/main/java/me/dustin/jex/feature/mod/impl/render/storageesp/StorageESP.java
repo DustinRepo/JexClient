@@ -28,6 +28,8 @@ public class StorageESP extends Feature {
     public String mode = "Shader";
     @OpChild(name = "Fade When Close", parent = "Mode", dependency = "Box")
     public boolean fadeBoxesWhenClose = true;
+    @OpChild(name = "Fade Distance", min = 1, max = 50, parent = "Mode", dependency = "Box")
+    public int fadeDistance = 10;
     @Op(name = "Chest")
     public boolean chest = true;
     @Op(name = "Ender Chest")

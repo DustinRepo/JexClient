@@ -69,7 +69,7 @@ public class BoxStorageESP extends FeatureExtension {
             bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             list.forEach(blockStorage -> {
                 Box box = blockStorage.box();
-                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 255 : Math.min(255, (int)ClientMathHelper.INSTANCE.getDistance(blockStorage.vec3d(), Wrapper.INSTANCE.getLocalPlayer().getPos()) * 12));
+                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 255 : Math.max(0, Math.min(255, (int)(ClientMathHelper.INSTANCE.getDistance(blockStorage.vec3d(), Wrapper.INSTANCE.getLocalPlayer().getPos()) - storageESP.fadeDistance) * 12)));
                 int color = blockStorage.color();
                 Render3DHelper.INSTANCE.drawOutlineBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
             });
@@ -80,7 +80,7 @@ public class BoxStorageESP extends FeatureExtension {
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
             list.forEach(blockStorage -> {
                 Box box = blockStorage.box();
-                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 100 : Math.min(100, (int)ClientMathHelper.INSTANCE.getDistance(blockStorage.vec3d(), Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, Wrapper.INSTANCE.getLocalPlayer().getHeight() / 2, 0)) * 12));
+                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 100 : Math.max(0, Math.min(100, (int)(ClientMathHelper.INSTANCE.getDistance(blockStorage.vec3d(), Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, Wrapper.INSTANCE.getLocalPlayer().getHeight() / 2, 0)) - storageESP.fadeDistance) * 12)));
                 int color = blockStorage.color();
                 Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
             });
