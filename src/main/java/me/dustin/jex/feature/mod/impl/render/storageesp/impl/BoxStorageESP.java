@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.mod.impl.render.storageesp.impl;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 import me.dustin.events.core.Event;
@@ -8,6 +9,7 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.storageesp.StorageESP;
+import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.Render3DHelper.BoxStorage;
@@ -17,6 +19,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.client.render.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -38,13 +41,13 @@ public class BoxStorageESP extends FeatureExtension {
             storageESP = Feature.get(StorageESP.class);
         }
         if (event instanceof EventRender3D eventRender3D) {
-            ArrayList<BoxStorage> list = new ArrayList<>();
+            ArrayList<CustomBoxStorage> list = new ArrayList<>();
             ArrayList<BlockPos> chestPositions = new ArrayList<>();
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                 if (storageESP.isValid(entity)) {
                     Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, eventRender3D.getPartialTicks());
                     Box box = WorldHelper.SINGLE_BOX.offset(renderPos).offset(-0.5, 0, -0.5);
-                    list.add(new BoxStorage(box, storageESP.getColor(entity)));
+                    list.add(new CustomBoxStorage(box, storageESP.getColor(entity), entity.getPos()));
                 }
             });
             WorldHelper.INSTANCE.getBlockEntities().forEach(blockEntity -> {
@@ -57,10 +60,34 @@ public class BoxStorageESP extends FeatureExtension {
                         chestPositions.add(blockEntity.getPos().offset(facingDir));
                     }
                     Box box = getBox(blockEntity).offset(renderPos);
-                    list.add(new BoxStorage(box, storageESP.getColor(blockEntity)));
+                    list.add(new CustomBoxStorage(box, storageESP.getColor(blockEntity), Vec3d.ofCenter(blockEntity.getPos())));
                 }
             });
-            Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), list, true);
+
+            Render3DHelper.INSTANCE.setup3DRender(true);
+            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+            bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+            list.forEach(blockStorage -> {
+                Box box = blockStorage.box();
+                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 255 : Math.min(255, (int)ClientMathHelper.INSTANCE.getDistance(blockStorage.vec3d(), Wrapper.INSTANCE.getLocalPlayer().getPos()) * 12));
+                int color = blockStorage.color();
+                Render3DHelper.INSTANCE.drawOutlineBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
+            });
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+
+
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+            list.forEach(blockStorage -> {
+                Box box = blockStorage.box();
+                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 100 : Math.min(100, (int)ClientMathHelper.INSTANCE.getDistance(blockStorage.vec3d(), Wrapper.INSTANCE.getLocalPlayer().getPos()) * 12));
+                int color = blockStorage.color();
+                Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
+            });
+            bufferBuilder.end();
+            BufferRenderer.draw(bufferBuilder);
+
+            Render3DHelper.INSTANCE.end3DRender();
         }
     }
 
@@ -86,4 +113,6 @@ public class BoxStorageESP extends FeatureExtension {
             return SINGLE_CHEST;
         return WorldHelper.SINGLE_BOX;
     }
+
+    public record CustomBoxStorage (Box box, int color, Vec3d vec3d) {}
 }
