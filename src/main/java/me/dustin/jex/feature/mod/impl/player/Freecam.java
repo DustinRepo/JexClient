@@ -5,12 +5,10 @@ import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
-import me.dustin.jex.event.player.EventGetPose;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
+import me.dustin.jex.event.player.*;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
-import me.dustin.jex.event.player.EventMove;
-import me.dustin.jex.event.player.EventPlayerUpdates;
-import me.dustin.jex.event.player.EventPushOutOfBlocks;
 import me.dustin.jex.event.render.EventMarkChunkClosed;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -18,13 +16,18 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 import java.util.UUID;
 
@@ -44,17 +47,33 @@ public class Freecam extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        if (playerEntity != null && hasMoved(playerEntity) && event.getPacket() instanceof PlayerMoveC2SPacket orig) {
+            PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), playerEntity.isOnGround());
+            event.setPacket(playerMoveC2SPacket);
+            return;
+        }
         if (stealth) {
             if (!(event.getPacket() instanceof KeepAliveC2SPacket || event.getPacket() instanceof ChatMessageC2SPacket))
                 event.cancel();
         } else if (event.getPacket() instanceof PlayerMoveC2SPacket) {
-            PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), lookVec.getYaw(), lookVec.getPitch(), true);
+            PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), true);
             event.setPacket(playerMoveC2SPacket);
         }
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE));
 
     @EventPointer
+    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        playerEntity.setVelocity(Vec3d.ZERO);
+       if (!stealth) {
+           playerEntity.setStackInHand(Hand.MAIN_HAND, Wrapper.INSTANCE.getLocalPlayer().getMainHandStack());
+           playerEntity.setStackInHand(Hand.OFF_HAND, Wrapper.INSTANCE.getLocalPlayer().getOffHandStack());
+       }
+    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
+        playerEntity.move(MovementType.PLAYER, playerEntity.getVelocity());
+
         if (!PlayerHelper.INSTANCE.isMoving()) {
             event.setX(0);
             event.setZ(0);
@@ -108,10 +127,13 @@ public class Freecam extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() != null && resetPos) {
             Wrapper.INSTANCE.getLocalPlayer().noClip = false;
             Wrapper.INSTANCE.getWorldRenderer().reload();
-            Wrapper.INSTANCE.getLocalPlayer().setPos(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ());
-            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), false));
-            PlayerHelper.INSTANCE.setYaw(lookVec.getYaw());
-            PlayerHelper.INSTANCE.setPitch(lookVec.getPitch());
+            if (playerEntity == null) {
+                Wrapper.INSTANCE.getLocalPlayer().setPos(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ());
+                NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(savedCoords.getX(), savedCoords.getY(), savedCoords.getZ(), false));
+            } else {
+                Wrapper.INSTANCE.getLocalPlayer().copyPositionAndRotation(playerEntity);
+                NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), false));
+            }
         }
         savedCoords = Vec3d.ZERO;
         if (playerEntity != null) {
@@ -122,5 +144,9 @@ public class Freecam extends Feature {
         }
         if (Wrapper.INSTANCE.getLocalPlayer() != null)
             Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
+    }
+
+    private boolean hasMoved(PlayerEntity playerEntity) {
+        return playerEntity.prevX != playerEntity.getX() || playerEntity.prevY != playerEntity.getY() || playerEntity.prevZ != playerEntity.getZ() || playerEntity.prevYaw != playerEntity.getYaw() || playerEntity.prevPitch != playerEntity.getPitch();
     }
 }

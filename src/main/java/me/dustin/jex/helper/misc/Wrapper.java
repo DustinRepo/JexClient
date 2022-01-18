@@ -1,5 +1,7 @@
 package me.dustin.jex.helper.misc;
 
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.load.impl.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -10,6 +12,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
 
 public enum Wrapper {
     INSTANCE;
@@ -23,6 +26,10 @@ public enum Wrapper {
 
     public ClientPlayerEntity getLocalPlayer() {
         return getMinecraft().player;
+    }
+
+    public PlayerEntity getPlayer() {
+        return Feature.getState(Freecam.class) ? Freecam.playerEntity : getLocalPlayer();
     }
 
     public IPlayerEntity getILocalPlayer() {

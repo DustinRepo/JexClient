@@ -2,11 +2,14 @@ package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
+import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -15,6 +18,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.ActionResult;
@@ -43,10 +47,11 @@ public class Tunneller extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (AutoEat.isEating)
+        if (AutoEat.isEating || KillAura.INSTANCE.hasTarget())
             return;
+        JexClient.INSTANCE.getLogger().info(Wrapper.INSTANCE.getPlayer().getVelocity());
         if (direction == null)
-            direction = Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing();
+            direction = Wrapper.INSTANCE.getPlayer().getHorizontalFacing();
         setSuffix(getDirectionString());
         //do liquid replacing
         if (handleLiquids)
@@ -62,7 +67,7 @@ public class Tunneller extends Feature {
                     }
                 } else if (WorldHelper.INSTANCE.isWaterlogged(liquidCheckSpot)){
                     Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(liquidCheckSpot, Direction.UP);
-                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                    Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                     return;
                 }
             }
@@ -70,7 +75,7 @@ public class Tunneller extends Feature {
         for (BlockPos blockPos : getBlocksInTunnel()) {
             if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
                 Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
-                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                 return;
             }
         }
@@ -91,17 +96,17 @@ public class Tunneller extends Feature {
         }
         //move forward until one of the above catches
         switch (direction) {
-            case NORTH -> PlayerHelper.INSTANCE.setVelocityZ(-moveSpeed());
-            case SOUTH -> PlayerHelper.INSTANCE.setVelocityZ(moveSpeed());
-            case WEST -> PlayerHelper.INSTANCE.setVelocityX(-moveSpeed());
-            case EAST -> PlayerHelper.INSTANCE.setVelocityX(moveSpeed());
+            case NORTH -> PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), -moveSpeed());
+            case SOUTH -> PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), moveSpeed());
+            case WEST -> PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), -moveSpeed());
+            case EAST -> PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), moveSpeed());
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override
     public void onEnable() {
-        if (Wrapper.INSTANCE.getLocalPlayer() != null) {
-            direction = Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing();
+        if (Wrapper.INSTANCE.getPlayer() != null) {
+            direction = Wrapper.INSTANCE.getPlayer().getHorizontalFacing();
             PlayerHelper.INSTANCE.centerPerfectlyOnBlock();
         }
         super.onEnable();
@@ -110,10 +115,7 @@ public class Tunneller extends Feature {
     private boolean moveToBlocks() {
         if (getBlockFromHotbar() == -1) {
             if (getBlockFromInv() != -1) {
-                if (InventoryHelper.INSTANCE.isHotbarFull()) {
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 44, SlotActionType.THROW);
-                }
-                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), SlotActionType.QUICK_MOVE);
+                InventoryHelper.INSTANCE.swapToHotbar(getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), 8);
             }
         }
         int hotBarslot = getBlockFromHotbar();
@@ -127,7 +129,7 @@ public class Tunneller extends Feature {
     public int getBlockFromInv() {
         for (int i = 0; i < 36; i++) {
             if (InventoryHelper.INSTANCE.getInventory().getStack(i) != null && InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() instanceof BlockItem blockItem)
-                if (blockItem.getBlock().getDefaultState().isFullCube(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN))
+                if (shouldUse(blockItem))
                     return i;
         }
         return -1;
@@ -143,13 +145,13 @@ public class Tunneller extends Feature {
     }
 
     public boolean shouldUse(BlockItem blockItem) {
-        return blockItem.getBlock().getDefaultState().hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN, Wrapper.INSTANCE.getLocalPlayer()) && blockItem.getBlock().getDefaultState().onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS;
+        return blockItem.getBlock().getDefaultState().hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN, Wrapper.INSTANCE.getPlayer()) && blockItem.getBlock().getDefaultState().onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS;
     }
 
     private ArrayList<BlockPos> getLiquidCheckSpots() {
         Box box = getTunnelBox().expand(1);
         ArrayList<BlockPos> blocks = WorldHelper.INSTANCE.getBlocksInBox(box);
-        blocks.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(value))));
+        blocks.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(value))));
         blocks.sort(Comparator.comparingInt(value -> -value.getY()));
         return blocks;
     }
@@ -157,18 +159,18 @@ public class Tunneller extends Feature {
     private ArrayList<BlockPos> getBlocksInTunnel() {
         Box box = getTunnelBox();
         ArrayList<BlockPos> blocks = WorldHelper.INSTANCE.getBlocksInBox(box);
-        blocks.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(value))));
+        blocks.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(value))));
         blocks.sort(Comparator.comparingInt(value -> -value.getY()));
         return blocks;
     }
 
     private Box getTunnelBox() {
-        Box box = new Box(Wrapper.INSTANCE.getLocalPlayer().getBlockX() - width / 2, Wrapper.INSTANCE.getLocalPlayer().getBlockY(), Wrapper.INSTANCE.getLocalPlayer().getBlockZ() - width / 2, Wrapper.INSTANCE.getLocalPlayer().getBlockX() + width / 2, Wrapper.INSTANCE.getLocalPlayer().getBlockY() + height - 1, Wrapper.INSTANCE.getLocalPlayer().getBlockZ() + width / 2);
+        Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockX() + width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY() + height - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + width / 2.f);
         switch (direction) {
-            case NORTH -> box = box.offset(0, 0, -width / 2);
-            case SOUTH -> box = box.offset(0, 0, width / 2);
-            case EAST -> box = box.offset(width / 2, 0, 0);
-            case WEST -> box = box.offset(-width / 2, 0, 0);
+            case NORTH -> box = box.offset(0, 0, -width / 2.f);
+            case SOUTH -> box = box.offset(0, 0, width / 2.f);
+            case EAST -> box = box.offset(width / 2.f, 0, 0);
+            case WEST -> box = box.offset(-width / 2.f, 0, 0);
         }
         return box;
     }
@@ -181,13 +183,11 @@ public class Tunneller extends Feature {
     }
 
     public double getSpeedModSpeed() {
-        switch (Speed.INSTANCE.mode.toLowerCase()) {
-            case "vanilla":
-                return Speed.INSTANCE.vanillaSpeed;
-            case "strafe":
-                return Speed.INSTANCE.strafeSpeed;
-        }
-        return PlayerHelper.INSTANCE.getBaseMoveSpeed();
+        return switch (Speed.INSTANCE.mode.toLowerCase()) {
+            case "vanilla" -> Speed.INSTANCE.vanillaSpeed;
+            case "strafe" -> Speed.INSTANCE.strafeSpeed;
+            default -> PlayerHelper.INSTANCE.getBaseMoveSpeed();
+        };
     }
 
     private String getDirectionString() {

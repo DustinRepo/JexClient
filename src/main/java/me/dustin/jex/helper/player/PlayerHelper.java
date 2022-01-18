@@ -130,6 +130,21 @@ public enum PlayerHelper {
         Wrapper.INSTANCE.getLocalPlayer().setVelocity(velo.x, velo.y, z);
     }
 
+    public void setVelocityX(Entity entity, double x) {
+        Vec3d velo = entity.getVelocity();
+        entity.setVelocity(x, velo.y, velo.z);
+    }
+
+    public void setVelocityY(Entity entity, double y) {
+        Vec3d velo = entity.getVelocity();
+        entity.setVelocity(velo.x, y, velo.z);
+    }
+
+    public void setVelocityZ(Entity entity, double z) {
+        Vec3d velo = entity.getVelocity();
+        entity.setVelocity(velo.x, velo.y, z);
+    }
+
     public void placeBlockInPos(BlockPos blockPos, Hand hand, boolean illegallPlace) {
         BlockPos north = blockPos.north();
         BlockPos east = blockPos.east();
