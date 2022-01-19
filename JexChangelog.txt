@@ -1,0 +1,674 @@
+0.6.0
+Added AntiHazard mod
+Added Distance option to AntiLiquid
+Added ability to use Freecam with Excavator
+Added ability to use Freecam with Tunneller
+Added Powdered Snow to NoSlow
+Redeisigned Window mode of Gui to be resizable and allow for themes
+Fixed Post mode not working in Killaura
+Fixed Small inconsistency with Killaura while using Freecam
+Fixed FOV option in KillAura not working correctly
+Fixed BarrierView not working since 0.5.7
+Renamed Velocity to AntiKnockback
+
+0.5.9
+Added BowBomb mod - credit to https://github.com/Vonr
+Added ToolTips mod and put ShulkerToolTip inside of it, along with MapToolTip, HiveToolTip, and NBTToolTip options
+Added Inspect Key option to ShulkerToolTip, making it so you can hover over the items inside of the shulker to inspect them
+Added Tight, Creative, and 3D modes to Fly
+Added Furnace, Dispenser and Dropper modes to StorageESP
+Added SpawnSphere Color option to SpawnHighlighter, to allow you to see which spawnable blocks are inside of the SpawnSphere mod
+Added the ability for StorageESP to properly detect double chests and resized some boxes
+Added the ability to search for multiple enchantments at once with AutoLibrarianRoll - credit to https://github.com/Vonr
+Fixed crash using newer versions of Optifabric with Jex
+Fixed AutoTool running on blocks you can't break
+Fixed NoWeather not working since 0.5.7
+Fixed SpeedMine thinking it can break Bedrock with Instant mode
+Fixed ItemSearcher not allowing use of backspace in the Window Gui mode
+Redesigned ShulkerToolTip
+ItemSearcher now searches inside ShulkerBoxes in the inventory you are searching
+
+0.5.8
+Added Triggerbot mod
+Added ItemSearcher mod
+Added SpawnProofing mod
+Added Nametagged option to KillAura, enabled by default
+Added Specific Filter option to KillAura
+Added Import from TXT button to AccountManager
+Added a visual sphere for non-spawning (24 blocks within the player) in SpawnSphere
+Added Check Height option to SpawnHighlighter
+Fixed Piglins always being viewed as hostile mobs even while not angry
+Fixed block placing issues in Scaffold and Tunneller with blocks that would get you stuck
+Fixed SlimeChunks command being inaccurate
+Fixed AirPlace restricting your ability to eat and use normal items
+Fixed Killaura activating Baritone while Excavator is paused
+Improved consistency of SpawnHighlighter
+MendingSaver now saves all of your hotbar without hovering over
+Changed how SpawnSphere renders
+Massively improved performance with Nametag mod
+
+0.5.7
+Added AutoFarm mod
+Added BonemealAura mod
+Added ElytraSwap mod
+Added SlimeChunks command
+Added Neutral options to Killaura and ESP
+Added Deepslate ores to default Xray blocks
+Added a Mine Path option to Excavator to allow Wurst pathfinding to mine for it's path
+Added a "Press Enter to Confirm" to setting the positions with Excavator
+Added the ability to pause in Excavator
+Added Layer Depth option to Excavator
+Added Hopper, Chest, And Furnace Minecarts to StorageESP
+Added Smooth Mouse option to Zoom (enabled by default) to better fit optifine's zoom
+Added Wander mode to AntiAFK
+Improved performance while using Jex
+Fixed AntiLiquid throwing items one by one to grab blocks if hotbar is full
+Fixed Fly and Speed not working well with Wurst pathfinding
+Fixed Fly moving slow through water
+Fixed Fly interfering with Freecam
+Fixed Fly bobbing up and down alot with Wurst pathfinding
+Fixed CompatSwim still going in the swim pose
+Fixed Freecam going in swim pose while in water
+Fixed Nofall not negating fall damage from flying down with elytra
+Fixed Navigator GUI not working with keybind or text field options
+Fixed Lagometer saying server is lagging when paused in singleplayer
+Fixed Excavator taking way too long to find a new path while using the Wurst AI
+Fixed Excavator not allowing KillAura to run while excavating
+Excavator will now use Baritone to path if Baritone is loaded
+AutoTool will now prefer using a hoe on crops and prefer fortune
+Renamed CropBuster to FarmAura, and it will now re-plant
+Removed FastAnvilDupe mod since it is patched
+
+0.5.6
+Added BedrockBreaker mod
+Added AutoDogFeeder mod
+Added "Z Clipping" and "Check Delay" options to SpawnHighlighter
+Added AutoTrade option to AutoLibrarianRoll, to instantly lock that villager in
+Improved performance with Trajectories
+Fixed Jesus not moving upwards in lava
+Fixed AutoTotem swapping items that aren't a totem into your offhand if you don't have any
+Massively improved performance of SpawnHighlighter
+Changed .find and .findbiome commands to create a unique world for each seed and keep the world, allowing for faster searching on a seed already searched
+Removed Discord mod
+Removed the JexClient window title for now
+
+0.5.5
+Fixed Fly being way too fast
+Fixed mixins still trying to load Sodium Mixin classes when Sodium isn't loaded in some cases
+Fixed crash opening the Jex Options screen if it can't find the latest Jex version
+Fixed 3rd person looking weird or stiff on client-side
+
+0.5.4
+Changed Fly to work more like other Fly mods
+Fixed crash when using JexClient on a Raspberry Pi
+Fixed crash when adding first account to AccountManager
+Fixed crash with Disconnect mode in AutoDisconnect
+
+0.5.3
+Added Excavator mod
+Added Tunneller mod
+Added AutoDrop mod
+Added AutoDrop command
+Added AutoDrop selection screen found in Jex Options
+Fixed View Bobbing affecting Box ESPs
+Fixed BlockOverlay not showing destroy progress on the proper block with certain mods
+Fixed crash while disabling Fakelag in specific conditions
+Moved the Jex Options button in the Options screen
+Running Jex with Optifine no longer requires running the jar as executable, you can now just use the default jar
+
+0.5.2
+Added ItemPhysics mod
+Added UnfocusedFPS mod
+Added AutoGapple mod
+Added Ghost mod
+Added Navigator mode to Gui, which will function almost exactly like Wurst's Navigator gui
+Added a "collision" option the HUD to enable/disable the boxes colliding with eachother
+Added a Color on Distance option to ESP, to match Tracers
+Added Suffixes option to HUD
+Added Distance option to Nametag
+Added Offhand support to CrystalAura
+Added Reset Gamma option to Fullbright, so you can choose what it sets to on disable
+Added "When" mode to AutoTotem, allowing you to decide when to put the Totem in offhand
+Added a way to convert Jex to support Optifabric by double-clicking the jar
+Improved accuracy of sliders in guis
+Fixed crash when tab-completing a Jex command afer manually typing it out
+Fixed crash launching Jex with Meteor
+Fixed crash while favoriting or privating TheAltening accounts
+Fixed crash trying to open TheAltening alt manager with an expired license
+Fixed crash when searching for alts that don't exist in the alt manager
+Fixed AutoReconnect not having a server to attempt until after a successful connection
+Fixed Nametag not setting your friend color based on ESP
+Fixed Nametag no longer showing Item names
+Fixed Criticals not applying crits while sprinting
+Fixed Jesus assuming all water is a full block of water
+Fixed Jesus not making waterlogged blocks solid
+Fixed GUIs not rendering properly for Mac users
+Modified opacity of Box ESPs
+The Disconnect button in the Proxy Screen will now only be clickable when connected to a proxy
+The Open ClickGui button in the Jex Options screen will now open your currently selected GUI
+AutoTotem will now set your last item you were holding in your offhand when swapped back
+Converted config files to YML instead of json
+
+0.5.1
+Added MCLeaks and the TheAltening support
+Added a Pesonal Cosmetics screen found in the Jex Options screen
+Added a spinning Cape renderer to the CustomMainMenu, to replace the original flat one
+Added a way to customize the Category colors in ArrayList by linking it with the Window colors
+Added "upload" option to SkinSteal command, which will upload the skin to Minecraft and set your current skin
+Resized Windows in ClickGui to be slimmer
+Renamed BedrockObfuscator to BedrockObf
+Adding an Account or Direct login will now be default Mojang login, and clicking the button switches to Microsoft
+Microsoft accounts now use Email and Password to initially log in, to avoid having to re-login after a few days
+and to avoid opening a web browser to log in
+
+0.5.0
+Added XPBottleSpammer mod
+Added a new Changelog screen
+Added Visualize and "Catch When" options to Fakelag
+Added Liquids option to AirPlace
+Added .dungeonseedcrack command (for getting server seeds to use with .find or .findbiome)
+Added .find Command (for finding structures with a seed, like /locate)
+Added .findbiome command (same thing as above for biomes)
+Fixed SpeedMine activating while in creative mode
+Fixed some mods sending two slot packets to the same slot, flagging some anticheats
+Fixed the Direct Login screen not properly logging you into cracked accounts
+Fixed Nametags not showing your friend's set nickname rather than their username
+Moved the AutoHop option in Vanilla Speed to be it's own Speed mode called Strafe with customizable hops
+Renamed MiddleClickSort to InventorySort as it now uses a customizable key
+Renamed Aura to KillAura
+The scrollbar in the AccountManager can now be click and dragged
+
+0.4.9
+Added "Don't Reel" option to AutoFish
+Greatly improved collision detection with the moveable HUD elements
+Improved HUD element loading so the elements should no longer go off-screen at load
+Fixed AutoFish "Show in Open Water" option not actually disabling
+Fixed issue where sometimes options for mods wouldn't accept clicks in the Window ClickGui
+Fixed crash when trying to edit a Mojang/Cracked account in the AccountManager
+Fixed issue with logging into cracked accounts
+
+0.4.8
+Added ThrowPearl mod
+Added CustomWidgets mod
+Added ArmorDerp mod
+Added moveable elements to the HUD
+Added "Walk Animation" option to Fly
+Added the ability to use middle click and extra mouse buttons for keybinds
+Added the ability to have keybind options for mods now (e.g. ThrowPearl having a "Throw Key" option)
+Added transparency to Window mode ClickGui
+Added an indicator above the Chat bar to tell you whether you are typing in game chat or IRC chat
+ClickGui windows now have a maximimum length, with an option in GUI to change the length
+Zoom now has a customizable keybind to activate the zoom function
+CustomMainMenu now uses default MC buttons now that they are customizable
+The hover effect on TabGui is now smoother
+
+0.4.7
+Added HolidayEvents mod
+Added Trail mod
+Added Trail command
+Added "Sprint in Inventory" option to Sprint
+Added Return to Original Slot option to AutoTool
+Added Auto Hop option to Vanilla Speed mode
+Added "Check Health" and "Open inventory" options to AutoTotem
+Added a function that adds Jex Anarchy server to the bottom of your server list if not there
+Raised the Max Price in AutoLibrarianRoll to 75 from 50 emeralds
+Changed minimum Percent in Velocity to -300
+Updated .dupe command to use the current shulker dupe
+Fixed .friend command not working with player names containing underscores
+Fixed NoFall causing issues with Fly, Elytra flying, etc
+Fixed InventoryView conflicting with the player list if the location is Top
+Fixed LawnBot not working in survival without an instant break tool
+Fixed Freecam keeping velocity on disable
+
+0.4.6
+Added IRC mod
+
+0.4.5
+Added AutoEZ mod
+Added AutoCope mod
+Added MassTPA mod
+Added Screenshot command, which takes a screenshot and automatically uploads to Imgur
+Added CGive command
+Added CopyNBT command
+Added ItemExploit command, and also moved .firework and .holo over to this command
+Changed NCP mode to Hover in ElytraPlus mod
+Converted commands to use Brigadier, Minecraft's backend, allowing for suggestions and tab completion
+Increased Max Length of the chat bar while running Jex commands
+Improved Skeletons while flying and swimming (thanks to c10udburst on github
+
+0.4.4
+Added AutoLibrarianRoll mod
+Added "Instant" mode to SpeedMine
+Added "Break Cooldown" option to Speedmine to modify the block breaking cooldown. (5, the max, is default Minecraft)
+Added support for logging in with Microsoft accounts in the AccountManager
+Added a Direct Login screen to AccountManager, as well as fixing the Add Account screen on smaller resolutions
+Redesigned AccountManager
+If running the game from IDE like Intellij, it will now attempt to auto-login to your first Account in the AccountManager
+
+0.4.3
+Added Lawnbot mod
+Added Trans Rights mode to EnchantColor mod
+Added FancyChat mode to Messages mod
+Added modes to Derp mod
+Fixed the "Realms" button on CustomMainMenu doing nothing
+Fixed AutoEat causing Baritone to get paused until disabled and re-enabled again
+Fixed LogOutSpot messing with fake players
+Redesigned BarrierView
+
+0.4.2
+Added MiddleClickSort mod
+Added AntiLiquid mod
+Added a Limit Range option to Search
+Modified 2D ESP to have an outline box
+Temporarily removed clickgui restriction for only moving one window at a time
+Improved performance of Search with many blocks being shown at once
+Removed Opacity mode from Xray for now as I figure out what is causing it's issues
+
+0.4.1
+Added BarrierView mod
+Added LogOutSpot mod
+Added .plugin command
+Improved performance while using Box StorageESP
+Vastly improved performance of 2D ESP
+Fixed issue causing crash on startup with Macs
+Fixed bug with HUD displaying potion effects
+
+0.4.0
+Fixed AntiOverlay not applying with water while using Sodium
+Fixed issue causing SkinBlink to disable all skin-overlays while re-loading config
+Fixed issue causing the Config window to not accept clicks in the Window GUI mode
+Fixed issue causing the scrollbar to stay on screen while searching in the ClickGui
+
+0.3.9
+Added TestRender mod, to test out my new renderer (shouldn't notice any visual differences, but please report visual issues if you use it)
+Added "Shader Rainbow" mode to EnchantColor, and you can change it to "Customize" to get old functionality
+Updated Sodium calls to work with official 0.3.0 for 1.17.1
+
+0.3.8
+Added CustomBackground mod
+Added SuperheroFX mod
+Added Buffer Packets mode to Blink
+Changed rainbow background on the GUIs to be less intense
+Changed ClickGUI so that you will only be able to click/drag one window at a time, and your most recent window will draw at the front of screen
+Fixed AutoWither not placing some blocks correctly
+
+0.3.7
+Added a colorful background to JexGui and changed the background of the window ClickGui
+Overhauled Opacity Xray to not require a world reload, and will update opacity without world reload as well as having a Fade option
+Fixed Nametags rendering overtop of worn Dragon Heads
+Fixed AutoArmor throwing errors in console while wearing something that isn't armor
+Fixed Jex crashing with latest Sodium actions build
+Fixed AutoTotem attempting to place totems in off-hand while a screen is open
+
+0.3.6
+Added EnchantColor mod
+Added the ability to get original name in anvils with FastAnvilDupe (non-full inventory) by removing the item name completely
+Added an option to make FastAnvilDupe automatic
+Fixed ShulkerToolTip having issues with items behind it
+Fixed Ctrl making you move downward with Fly while in a menu
+
+0.3.5
+Added FastAnvilDupe mod
+Added "Build Info" option to HUD
+Added Spin Speed option to Crosshair
+Added more information to console when JexClient loads
+Added scrollbars to Search and Xray selection screens
+Fixed Delete button in waypoint screen not saving
+Fixed AutoMend pulling items from main hand
+
+0.3.4
+Added Reach mod
+Added SpeedCrafter mod and SpeedCrafter command
+Added a constraint for windows in the ClickGui not allowing you to move them off-screen
+Added "Spin" option to Crosshair
+Added "Fade Boxes" option to HoleESP
+Changed Blink to show a player in position rather than a line
+Fixed issue causing ClickGui to crash while using search bar
+Fixed Freecam not reloading chunks on enable
+Fixed .peek crash
+
+0.3.3b
+Added AutoMine mod
+Added "Item Durability" option to HUD (again thanks to https://github.com/slcoolj)
+Fixed crash when loading AccountManager with no accounts
+
+0.3.3
+Added "Write to file" option to SlimeSpawnMarker
+Added "FOV Based Tag" option to Waypoints to clutter the screen less
+Added a screen that lets you see/edit waypoints, keybind is INSERT
+Added waypoints to the Radar
+Added support for the K colorcode to custom font renderer
+Added scrollbars to JexGui, ClickGui, and Alt Manager screen
+Added a limited way to use personal capes (can't be seen by others) by putting the cape file in the JexClient folder and renaming it to "cape.png". A better method should be implemented soon.
+Added an opacity Xray - thanks to https://github.com/slcoolj
+Updated calls to Sodium to align with their current 1.17 build on github
+Changed HUD and Waypoints to actually use the SP world name while on Singleplayer
+Fixed Shader StorageESP throwing error in console at launch
+
+0.3.2
+Added VanillaSpoof mod
+Added CustomFont mod, with ability to add font files in ".minecraft/JexClient/fonts" and load them in game
+Added Custom Font option to Nametags
+Added Shader mode to StorageESP
+Added Box Outline mode back to ESP
+Added mod descriptions to JexGui
+Added Item% option to MendingSaver allowing you to change at what durability MendingSaver will put away items
+Added the ability to connect to a Proxy server, with a button in the multiplayer menu
+Fixed MendingSaver not working properly with a full inventory
+Fixed Scaffold constantly trying to place blocks on range 0 even if you have a block below you already
+Fixed SignReader not working properly
+Changed color of disabled mods in JexGui
+
+0.3.1
+Added "Place mode" option and a Range slider to Scaffold mod
+Fixed SpawnHighlighter not rendering properly
+Fixed Item rendering (Nametags, InventoryView, etc) not displaying the damage bar
+Fixed Conflict issue with AutoEat and Killaura when blocking
+Fixed Fly not allowing you to fly upwards with Glide enabled
+Moved "Fly Check Glide" out of the glide option and renamed to "Fly Check Bypass" also making it use packets so it's not noticeable
+
+0.3.0
+Added AutoMend mod
+Added "Auto Turn Off" option to Surround, on by default
+Fixed Surround and AutoTrap attempting to place above the build limit
+Fixed issue causing the Account Manager to crash when it can't read the accounts from file
+Fixed Freecam breaking Box ESP when turned off until manually removing the fake player with a command
+Fixed "Show on Self" option in Nametags not functioning
+Fixed Velocity spamming the logs with errors in 1.17
+
+0.2.9
+Added FakePlayer command
+Changed Freecam to show the player in place rather than a box
+Fixed Radar crashing the game when opening the gui while not being in-game
+Fixed Freecam teleporting you under the world in singleplayer
+Fixed NoTurn, Freecam, Jesus, and NoFall filling logs with errors on the snapshots
+Fixed Skeletons not rendering properly on the snapshots
+Fixed Discord mod giving errors in the logs on game close
+Skeletons will now work with swimming/flying players, although it is nowhere near perfect
+
+0.2.8
+Added new JexGui to go alongside the current ClickGUI. Currently you can switch between them by going to the Gui mod and changing the "mode"
+Gui mod now defaults to opening JexGui
+Fixed NoRender particles not working properly on snapshots
+Fixed NoRender particles still rendering for a tick
+Fixed Tracers "Color on Distance" turning blue far away
+Improved AnchorAura, AutoTrap, and Surround working on servers with AntiCheats
+
+0.2.7
+Added a "Living Only" option to AutoWeapon to avoid swapping to a sword on entities that are not alive
+Also Added a "Living Only" option to Criticals
+Added "Rotate" option to Surround and AutoTrap
+Added the ability to type "friend list" command for a list of your friends and their aliases
+Added a new "Particles" mode to NoRender than includes Fireworks, Explosions, Smoke, and Block Breaking particles, all togglable
+Fixed AchorAura attempting to charge an achor while sneaking
+Improved Scaffold's ability to replace blocks
+Reworked how commands give you syntaxes (ways to use) for commands
+
+0.2.6
+Added AutoTrap mod
+Added Surround mod
+Added AnchorAura mod
+Added an option to toggle the watermark in the HUD
+Fixed the Baritone command telling the player "Sending command to Baritone" twice
+Fixed an issue causing the game to hang on load if you had a background with spaces or capital letters in the name
+Fixed an issue caused by trying to use the scroll wheel while hovered over Radar in ClickGUI
+Fixed Xray not working while using Sodium FPS improvement mod
+Fixed ShaderESP throwing an error in logs every game launch
+Modules.json config file is now named Features.json, the game will automatically rename this for you
+Commands will now be sorted alphabetically
+The progress bar for updating Jex will now actually function and show you the progress of the download
+
+0.2.5b
+Fixed Trajectories' line not rendering where it properly should
+Fixed Hud filling up logs with errors
+
+0.2.5
+Added AutoSoup mod
+Added "Sneak on Place" option to Scaffold, allowing it to sneak while it places (avoiding inventories of blocks like Crafting Table)
+Improved Botcheck in Killaura
+ESP entity boxes will now rotate along with the entity
+Fixed Skeletons setting all limb angles to those of the player closest to crosshair
+Fixed Scaffold mod not replacing blocks like grass, snow, etc
+Please note there has been another small render overhaul. Please report any issues you may find
+
+0.2.4
+Added ItemScale mod
+Added OldBlocking mod
+Added Skeletons mod
+Added Radar mod
+Added AutoWeapon mod, removing the "attack" option from AutoTool
+Added a mode option to AutoWeapon, allowing you to switch between just sword, sword & axe, or all tools to be counted
+Added the option to pin a ClickGui Window to the HUD
+Added a button for opening the ClickGui Window on each window, as well as a button for the new Pin feature
+Added Multiaura mode to Killaura
+Added an AutoBlock distance option to Killaura
+Fixed AutoBlock bug in KillAura that caused it to spam use even when it couldn't block
+Fixed a bug that caused ESP and Killaura to not know you're the owner of a mob you tamed after relogging
+Fixed a bug causing NoPush to not work with mobs, still getting pushed
+Fixed Messages mod changing the messages of server commands
+Made AutoArmor more reliable, and it now also no longer throws your previous armor if you have open inventory slots
+
+0.2.3
+Added NoFriendDMG mod
+Added a search bar to the ClickGUI
+Redesigned ClickGUI, with the ability to change the color of each category window, or set them all to client color
+Moved ClientColor option from ClickGUI to HUD
+Fixed an issue where if you clicked to drag a window in the gui while it was scrolled, it would toggle the mod behind it
+
+0.2.2
+Added SlimeSpawnMarker mod
+Added Hat and Firework commands (Creative only)
+Added Fireworks mode to NoRender
+Added Bamboo to CropBuster
+Added Boats to EntityRider
+Added a border to the mod description in ClickGui
+Fixed a crash involving addons when joining servers with npcs
+Made Jex compatible with the official Fabric Baritone
+
+0.2.1
+Added a slider to Velocity for percentage
+
+0.2.0
+Added AirPlace mod
+Added Blink mod
+Added Safewalk mod
+Added Breed command
+Fixed Block rendering in the Search/Xray screen having wrong placement in the selection screens
+Fixed SpawnSphere and Reach Sphere (in Killaura) crashing when enabled
+
+0.1.9
+Added Announcer mod, with fully customizable messages for leaving/joining
+Added CropBuster mod
+Added DepthStrider mod
+Added Bind command
+Added a face render to OwnerTags
+Fixed face rendering not showing properly for certain size skin files
+Fixed Spine not actually working on Tracers
+Fixed TunnelFinder, Search, and BedrockObfuscator not working below y=0 on snapshots
+Fixed Zoom not resetting FOV when disabled
+Fixed conflict between AutoTool and AutoEat sometimes showing the wrong item in your hand
+Reduced the size of the buttons in the Xray and Search selection screens, increasing the amount of visible blocks at one time
+Alphabetized the mods, making them have consistent spots in the clickgui/tabgui
+
+0.1.8
+Added InventoryView mod
+Added SkinSteal command
+Added an image of the current player's face on the CustomMainMenu, as well as showing your cape if your account is linked
+Added an image of the player's face in Nametags (optional, but enabled by default)
+Added an image of the Account's face in the Account Manager
+Added an image of the current player's face in the HUD as an option (enabled by default)
+Added Watermark Mode to HUD to change the effect the watermark makes (static/non-moving by default)
+Added Username, Ping, Biome, and a Player count to the Info on the HUD
+Added an option to play the player level up sound when the game finishes loading (enabled by default)
+Added buttons in the ClickGui to open the Xray and Search block selection screens
+Improved the BlockOverlay outline to just override the Minecraft outline rather than using it's own
+Changed the BlockOverlay progress-based color for Break Overlay to go from green -> red rather than red -> green
+Changed AntiGhostBlock to not right-click the blocks to update, sometimes stripping logs, making paths, etc.
+Fixed StorageESP rendering for blocks outside of render distance
+
+0.1.7
+Added BlockOverlay mod
+Added a new mode to SpeedMine called "Progress" that instant breaks a block after a % progress breaking it, with a slider for the progress
+Improved Step's ability to go up many steps in succession on anticheats
+Fixed AutoEats "Eat to Regen" eating when you can still regen health
+Fixed the issue that caused Fakelag to not allow you connecting to any server
+Fixed the bug with the HUD overlaying the watermark on the snapshot version
+Moved the FPS and TPS counters next to the watermark on the HUD
+
+0.1.6
+Added Sneak
+Added BucketCatch
+Added FastLadder with an option for SkipLadder as well
+Added an option to HUD to have the ArrayList come from the top or bottom
+Added "Press Key" option to AutoEat to press the right-click key so you visually eat
+Removed "Silent" option from AutoEat as it doesn't work very well
+Fixed the loading bar showing 0% after downloading update
+Changed the watermark on the HUD to a spinning circle effect
+
+0.1.5.5
+Added InventoryPlus
+Removed the need for Jex to have a profile to play, with it now just being the single Jar file redistributed
+
+0.1.5.1
+Fixed an issue causing Killaura to draw a box around the target when the option is disabled
+Greatly improved performance while using Jex
+
+0.1.5
+Added Hitboxes mod
+Added Zoom mod
+Added AutoDisconnect mod
+Added AutoWither mod
+Added DiscordRPC mod to show when you are using Jex Client on Discord (enabled by default)
+Added an option to disable Fly going downwards with CTRL
+Changed it to show "Jex Client <build version>" as the window title
+
+0.1.4
+Added SpawnSphere mod
+Added AutoFarm mod
+Added AutoFarm command, to set the positions
+Added a KillAura Reach sphere to show where you can reach with KillAura
+Fixed the Rainbow Saturation slider in HUD only allowing 0 or 1
+Changed the back-end to not be code-dependent on Baritone (Allowing the game to be ran without it now)
+
+0.1.3
+Changed the "Download Jex Installer" button to a button that will automatically update when clicked (skipping needing the installer again)
+Added Timer mod
+Added a "Packet" mode to step, which works on some servers with AntiCheats, like 2b2t and Constantiam, and will step up 1.75 blocks
+Added a Speed slider to Freecam
+Added StorageESP as a standalone mod, removing it from ESP
+Addded a 2D ESP mode
+Added an option for auto-saving mods in the ClickGui
+Added an option to play a click sound when you click a button in the ClickGui
+Added the ability to toggle a mod's visibility in the clickgui by holding Shift and clicking the mod
+Added a button to reload Capes and Hats in the Jex Options Screen (With a 30 second cooldown)
+Improved Auto Elytra in ElytraPlus to activate the Elytra more reliably
+Fixed the issue causing the TabGui to skip every other option
+Fixed the underlying issue that caused the game getting stuck on load using a Modules.json from b0.1.1 to b0.1.2
+Replaced NCP mode in Speed with "Floaty" an experimental speed that kind-of works on anticheats
+
+0.1.2
+Added OwnerTags
+Added SignReader
+Added BedrockObfuscator
+Added an option to show the instant TPS of the server as well on the HUD
+Added an option to TPSSync to change the Sample Size (Amount of seconds to take an average from)
+Added .damage command
+Added .holo command
+Added an effect that will outline the chat bar when you start typing a Jex command
+Added a list of possible commands to type out when you start typing a command, sort of like Minecraft's command system
+Made Command output more consistent across commands
+Fixed the issue that required Search to be force disabled on launch, ignoring the save file
+Fixed AutoEat having issues actually eating on laggy servers
+
+0.1.1
+Added NewChunks
+Added AntiAFK
+Added a WIP Waypoints mod, currently can only create/delete waypoints with commands but a GUI is coming soon
+Added a .waypoint command
+Added an option to use client color in the ArrayList on the HUD
+Added multiple new options to NoSlow, "Use Item" (original use), "Soul Sand", "Cobweb", and "Berry Bush"
+Modified Dolphin Jesus to work better on 2b2t, especially with CompatSwim enabled
+Fixed an issue where the description of a module would show on the clickgui even when a window was closed
+Fixed an issue where Zombie Piglins were being seen as hostile wihtout being angry
+Fixed an issue where Killaura would "jitter" the screen as it attacked and slowed down
+Fixed an issue where MendingSaver would try to save items that can't take damage (spawned in items)
+Made AutoEat more reliable
+Nametags:
+Brought back 2D Nametags, finally removing the ugly temp 3D ones.
+Added a new Health Mode called "Bar" that will just be a health bar below the nametags
+Added an option to show the equipped items of the nametagged entity
+Added an option to enable/disable Players/Hostiles/Passives/Items on the nametags
+
+0.1.0
+Added TunnelFinder
+Added CompatSwim
+Added a "Dolphin" mode to Jesus, that will let you jump on water, even on servers like Constantiam
+Greatly improved Scaffold for servers with anticheats
+Fixed Scaffold trying to place blocks like doors, torches, etc and will only place full blocks from now on.
+Fixed conflict issue between the rainbow saturation option and the option to show player saturation in the HUD
+Fixed AutoTool not allowing you to attack entities on some ViaFabric servers
+Fixed KillAura speeding you up when sprint is turned off
+Fixed the "Look" on the HUD not wrapping back to 180/-180
+
+0.0.9: 
+Added SkinBlink
+Added Trajectories
+Added NoFog
+Added ShulkerToolTip
+Added Lava mode to AntiOverlay
+Overhauled AutoEat, changing it so it doesn't send right-clicks, as well as having new options, "Eat Negative Foods", "Eat To Regen", and "Silent"
+Fixed CrystalAura showing where it could place on friends
+Fixed being able to see the Jex hats in the Xray and Search screen
+Fixed NoSlow speeding you up while eating and sneaking at the same time
+Fixed MiddleClickFriend not working if you changed your command prefix
+Fixed an issue where if you disabled ESP and turned it on with "Shader" mode selected, it wouldn't load the cleaner glow outline
+Fixed an issue where if you have viewbobbing off, client rendering would still bob slightly
+Fixed AutoTool not letting you break blocks when it swapped too fast, and also made it swap to non-breakable if no tool is found
+-Also Changed the "Swords" option to "Attack" as it now supports axes too, and there is an option to allow all tools to be checked.
+HUD:
+Added a TabGui to the HUD
+Added an option to see yaw and pitch on HUD
+Added saturation slider for the Rainbow option in ArrayList
+Added a rainbow speed slider for Rainbow option as well
+
+0.0.8:
+Added FallSpeed mod
+Added Messages mod
+Added CustomMainMenu mod, with the ability to use custom backgrounds in mcdir/JexClient/backgrounds
+Added Derp mod
+Added an Xray and Search block selection screen to the Jex Options screen
+Added a Rainbow option to the Client Color option in GUI
+Added .panic command
+Fixed Xray showing some sides of non-full blocks that were not selected
+Fixed VClip not letting you actually clip through without relogging
+Fixed Fullbright not being 100% reliable in turning on and off
+Fixed Freecam not teleporting you back when disabled, and added an option to keep it.
+-Also added a new option to Freecam called "Stealth" that will disable all packets being sent
+(Website and Client) Changed the website to show free capes, as well as making it so all linked accounts will have a seperate free cape after the beta cape is gone.
+
+0.0.7:
+Added MiddleClickFriend
+Added Criticals as a standalone mod, removing the option from killaura
+Added NoHurtCam
+Added HoleESP
+Added NoRender
+Added EndPortalFinder
+Added .peek command
+Fixed Velocity not affecting explosion velocity
+Fixed an issue where when your camera was moving from taking damage, client rendering would not move with it
+Fixed AutoPlace not working at all in CrystalAura
+Fixed the command prefix not being saved when closed
+Fixed the clickgui keybind showing empty when on a key like insert
+NoPush now has 2 new options, Mobs and Water. Mobs functions like it did before, removing mob-pushing, and water will remove water velocity.
+
+0.0.6:
+Added Tracers
+Added Search
+Added Scaffold
+Added ColoredSigns
+Added the option to add an alias for friends, and that will show on nametags
+Added a Jex Client options screen (WIP) (found in top-left of options screen)
+Added a useless bouncing particle effect to the gui as an option (disabled by default)
+Fixed Nametags being wonky through walls
+Changed Fly to be a more cheat-like fly rather than just creative mode, also with a speed slider
+Modified the Armor HUD to draw next to the hotbar instead of above, as well as having a few new modes to it.

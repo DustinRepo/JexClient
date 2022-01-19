@@ -10,7 +10,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
 @Feature.Manifest(category = Feature.Category.COMBAT, description = "Remove all knockback from the player.")
-public class Velocity extends Feature {
+public class AntiKnockback extends Feature {
 
     @Op(name = "Percent", min = -300, max = 300, inc = 10)
     public int percent = 0;
