@@ -5,6 +5,7 @@ import me.dustin.jex.file.impl.GuiFile;
 import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
 import me.dustin.jex.gui.click.dropdown.theme.flare.FlareTheme;
 import me.dustin.jex.gui.click.dropdown.theme.jex.JexTheme;
+import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -34,6 +35,8 @@ public class DropDownGui extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        if (Wrapper.INSTANCE.getWorld() == null)
+            renderBackground(matrices);
         currentTheme.render(matrices);
         super.render(matrices, mouseX, mouseY, delta);
     }
