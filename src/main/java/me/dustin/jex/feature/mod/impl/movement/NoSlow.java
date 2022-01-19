@@ -23,6 +23,8 @@ public class NoSlow extends Feature {
 	public boolean cobweb = true;
 	@Op(name = "Berry Bush")
 	public boolean berryBush = true;
+	@Op(name = "Powder Snow")
+	public boolean powderSnow = true;
 
 	@EventPointer
 	private final EventListener<EventSlowdown> eventSlowdownEventListener = new EventListener<>(event -> {
@@ -33,6 +35,9 @@ public class NoSlow extends Feature {
 			event.cancel();
 		}
 		if (event.getState() == EventSlowdown.State.BERRY_BUSH && berryBush) {
+			event.cancel();
+		}
+		if (event.getState() == EventSlowdown.State.POWDERED_SNOW && powderSnow) {
 			event.cancel();
 		}
 	}, Priority.FIRST);

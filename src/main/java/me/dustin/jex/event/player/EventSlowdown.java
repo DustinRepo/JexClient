@@ -19,7 +19,7 @@ public class EventSlowdown extends Event {
     }
 
     public enum State {
-        USE_ITEM, SOULSAND, COBWEB, BERRY_BUSH
+        USE_ITEM, SOULSAND, COBWEB, BERRY_BUSH, POWDERED_SNOW
     }
 
 }

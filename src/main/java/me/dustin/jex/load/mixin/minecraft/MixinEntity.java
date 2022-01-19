@@ -93,6 +93,8 @@ public abstract class MixinEntity {
             eventSlowdown = new EventSlowdown(EventSlowdown.State.COBWEB).run();
         if (blockState.getBlock() == Blocks.SWEET_BERRY_BUSH)
             eventSlowdown = new EventSlowdown(EventSlowdown.State.BERRY_BUSH).run();
+        if (blockState.getBlock() == Blocks.POWDER_SNOW)
+            eventSlowdown = new EventSlowdown(EventSlowdown.State.POWDERED_SNOW).run();
 
         if (eventSlowdown != null && eventSlowdown.isCancelled())
             ci.cancel();
