@@ -9,6 +9,7 @@ Fixed Post mode not working in Killaura
 Fixed Small inconsistency with Killaura while using Freecam
 Fixed FOV option in KillAura not working correctly
 Fixed BarrierView not working since 0.5.7
+Changed Changelog and In-Client Updating to be based on Github, to keep it working
 Renamed Velocity to AntiKnockback
 
 0.5.9

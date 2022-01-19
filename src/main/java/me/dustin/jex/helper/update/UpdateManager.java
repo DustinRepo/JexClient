@@ -20,17 +20,21 @@ public enum UpdateManager {
     public void checkForUpdate() {
         new Thread(() -> {
             try {
-                URL url = new URL(JexClient.INSTANCE.getBaseUrl() + "includes/version.inc.php");
+                //lots of changes as I temporarily use GitHub for these things
+                //URL url = new URL(JexClient.INSTANCE.getBaseUrl() + "includes/version.inc.php");
+                URL url = new URL("https://raw.githubusercontent.com/DustinRepo/JexClient/main/JexChangelog.txt");
                 String response = WebHelper.INSTANCE.readURL(url);
+                latestVersion = new JexVersion(response.split("\n")[0]);
+                JexClient.INSTANCE.getLogger().info(latestVersion.version());
 
-                JsonObject updateResponse = new Gson().fromJson(response, JsonObject.class);
+                /*JsonObject updateResponse = new Gson().fromJson(response, JsonObject.class);
                 latestMCVersion = updateResponse.get("mcVersion").getAsString();
                 latestVersion = new JexVersion(updateResponse.get("version").getAsString());
-                latestSnapshotVersion = updateResponse.get("snapVersion").getAsString();
+                latestSnapshotVersion = updateResponse.get("snapVersion").getAsString();*/
 
                 boolean isCurrentlySnapshot = SharedConstants.getGameVersion().getName().contains("w");
                 boolean isVersionSame = JexClient.INSTANCE.getVersion().version().equalsIgnoreCase(latestVersion.version());
-                boolean isMCVersionSame = SharedConstants.getGameVersion().getName().equalsIgnoreCase(isCurrentlySnapshot ? latestSnapshotVersion : latestMCVersion);
+                boolean isMCVersionSame = true;//SharedConstants.getGameVersion().getName().equalsIgnoreCase(isCurrentlySnapshot ? latestSnapshotVersion : latestMCVersion);
                 if (isVersionSame && isMCVersionSame)
                     status = Status.UP_TO_DATE;
                 if (isVersionSame && !isMCVersionSame)
