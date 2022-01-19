@@ -1,7 +1,9 @@
 package me.dustin.jex.event.player;
 
 import me.dustin.events.core.Event;
+import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.helper.math.vector.RotationVector;
+import me.dustin.jex.helper.misc.Wrapper;
 
 public class EventPlayerPackets extends Event {
 
@@ -41,6 +43,10 @@ public class EventPlayerPackets extends Event {
     public void setRotation(RotationVector rotation) {
         this.yaw = rotation.getYaw();
         this.pitch = rotation.getPitch();
+        if (Wrapper.INSTANCE.getPlayer() == Freecam.playerEntity) {
+            Freecam.playerEntity.setYaw(yaw);
+            Freecam.playerEntity.setPitch(pitch);
+        }
     }
 
     public RotationVector getRotation() {

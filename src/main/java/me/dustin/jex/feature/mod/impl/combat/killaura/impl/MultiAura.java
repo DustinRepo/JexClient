@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 public class MultiAura extends FeatureExtension {
 
-    private ArrayList<LivingEntity> targets = new ArrayList<>();
+    private final ArrayList<LivingEntity> targets = new ArrayList<>();
 
     public MultiAura() {
         super("Multi", KillAura.class);
@@ -132,7 +132,7 @@ public class MultiAura extends FeatureExtension {
                 }
             }
             if (canSwing) {
-                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
                 Wrapper.INSTANCE.getLocalPlayer().resetLastAttackedTicks();
             }
 

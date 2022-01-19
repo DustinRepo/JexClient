@@ -4,9 +4,11 @@ import com.mojang.authlib.GameProfile;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.*;
+import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.render.EventMarkChunkClosed;
@@ -47,11 +49,6 @@ public class Freecam extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        if (playerEntity != null && hasMoved(playerEntity) && event.getPacket() instanceof PlayerMoveC2SPacket orig) {
-            PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), playerEntity.isOnGround());
-            event.setPacket(playerMoveC2SPacket);
-            return;
-        }
         if (stealth) {
             if (!(event.getPacket() instanceof KeepAliveC2SPacket || event.getPacket() instanceof ChatMessageC2SPacket))
                 event.cancel();
@@ -63,12 +60,24 @@ public class Freecam extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        playerEntity.setVelocity(Vec3d.ZERO);
-       if (!stealth) {
-           playerEntity.setStackInHand(Hand.MAIN_HAND, Wrapper.INSTANCE.getLocalPlayer().getMainHandStack());
-           playerEntity.setStackInHand(Hand.OFF_HAND, Wrapper.INSTANCE.getLocalPlayer().getOffHandStack());
-       }
-    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+        if (playerEntity != null) {
+            if (hasMoved(playerEntity)) {
+                PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), playerEntity.isOnGround());
+                NetworkHelper.INSTANCE.sendPacket(playerMoveC2SPacket);
+            }
+            playerEntity.tick();
+            playerEntity.setVelocity(0, playerEntity.getVelocity().getY(), 0);
+            if (!playerEntity.isOnGround() && !playerEntity.isTouchingWater() && !playerEntity.isInLava()) {
+                playerEntity.setVelocity(0, playerEntity.getVelocity().getY() - 0.06499, 0);
+            }
+            if (Feature.getState(Fly.class))
+                playerEntity.setVelocity(0, 0, 0);
+            if (!stealth) {
+                playerEntity.setStackInHand(Hand.MAIN_HAND, Wrapper.INSTANCE.getLocalPlayer().getMainHandStack());
+                playerEntity.setStackInHand(Hand.OFF_HAND, Wrapper.INSTANCE.getLocalPlayer().getOffHandStack());
+            }
+        }
+    }, Priority.FIRST, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {

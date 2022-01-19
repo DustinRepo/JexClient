@@ -9,6 +9,7 @@ import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Sprint;
+import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -24,6 +25,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.item.SwordItem;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.ActionResult;
@@ -178,13 +180,13 @@ public enum PlayerHelper {
         if (placePos == null) {
             if (illegallPlace) {
                 Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), hand, new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.UP, blockPos, false));
-                Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
+                swing(hand);
             }
         } else {
             Vec3d placeVec = WorldHelper.INSTANCE.sideOfBlock(placePos, placeDir);
             BlockHitResult blockHitResult = new BlockHitResult(placeVec, placeDir, placePos, false);
             Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), hand, blockHitResult);
-            Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
+            swing(hand);
         }
     }
 
@@ -479,7 +481,11 @@ public enum PlayerHelper {
     }
 
     public void swing(Hand hand) {
-        Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
+        if (Wrapper.INSTANCE.getPlayer() == Freecam.playerEntity) {
+            NetworkHelper.INSTANCE.sendPacket(new HandSwingC2SPacket(hand));
+            Wrapper.INSTANCE.getPlayer().swingHand(hand);
+        } else
+            Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
     }
 
     public float getYawWithBaritone() {

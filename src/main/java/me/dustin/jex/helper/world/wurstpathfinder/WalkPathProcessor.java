@@ -9,9 +9,11 @@ package me.dustin.jex.helper.world.wurstpathfinder;
 
 import java.util.ArrayList;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Step;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
+import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -36,12 +38,12 @@ public class WalkPathProcessor extends PathProcessor
 	{
 		// get positions
 		BlockPos pos;
-		if(Wrapper.INSTANCE.getLocalPlayer().isOnGround())
-			pos = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getX(),
-					Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5,
-					Wrapper.INSTANCE.getLocalPlayer().getZ());
+		if(Wrapper.INSTANCE.getPlayer().isOnGround())
+			pos = new BlockPos(Wrapper.INSTANCE.getPlayer().getX(),
+					Wrapper.INSTANCE.getPlayer().getY() + 0.5,
+					Wrapper.INSTANCE.getPlayer().getZ());
 		else
-			pos = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos());
+			pos = new BlockPos(Wrapper.INSTANCE.getPlayer().getPos());
 		PathPos nextPos = path.get(index);
 		int posIndex = path.indexOf(pos);
 
@@ -71,56 +73,67 @@ public class WalkPathProcessor extends PathProcessor
 		}
 
 		lockControls();
-		Wrapper.INSTANCE.getLocalPlayer().getAbilities().flying = false;
-		float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
+		Wrapper.INSTANCE.getPlayer().getAbilities().flying = false;
+		float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
 
 		if (WorldHelper.INSTANCE.getBlockState(nextPos).getMaterial().blocksMovement()) {
 			Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(nextPos, Direction.UP);
-			Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+			Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
 			return;
 		} else if (WorldHelper.INSTANCE.getBlockState(nextPos.up()).getMaterial().blocksMovement()) {
 			Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(nextPos.up(), Direction.UP);
-			Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+			Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
 			return;
 		}
 
 		if(Feature.getState(Jesus.class)) {
 			// wait for Jesus to swim up
-			if(Wrapper.INSTANCE.getLocalPlayer().getY() < nextPos.getY() && (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater() || Wrapper.INSTANCE.getLocalPlayer().isInLava()))
+			if(Wrapper.INSTANCE.getPlayer().getY() - nextPos.getY() < -0.5f && (Wrapper.INSTANCE.getPlayer().isTouchingWater() || Wrapper.INSTANCE.getPlayer().isInLava()))
 				return;
 
 			// manually swim down if using Jesus
-			if(Wrapper.INSTANCE.getLocalPlayer().getY() - nextPos.getY() > 0.5 && (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater() || Wrapper.INSTANCE.getLocalPlayer().isInLava() || WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getLocalPlayer()) || WorldHelper.INSTANCE.isTouchingLiquidBlockSpace(Wrapper.INSTANCE.getLocalPlayer())))
-				Wrapper.INSTANCE.getOptions().keySneak.setPressed(true);
+			if(Wrapper.INSTANCE.getPlayer().getY() - nextPos.getY() > 0.5 && (Wrapper.INSTANCE.getPlayer().isTouchingWater() || Wrapper.INSTANCE.getPlayer().isInLava() || WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getPlayer()) || WorldHelper.INSTANCE.isTouchingLiquidBlockSpace(Wrapper.INSTANCE.getPlayer())))
+				if (Wrapper.INSTANCE.getPlayer() == Freecam.playerEntity) {
+					Wrapper.INSTANCE.getPlayer().setSneaking(true);
+				} else {
+					Wrapper.INSTANCE.getOptions().keySneak.setPressed(true);
+				}
+			else
+				Wrapper.INSTANCE.getPlayer().setSneaking(false);
 		}
 
 		Vec3d vecInPos = new Vec3d(nextPos.getX() + 0.5, nextPos.getY() + 0.1, nextPos.getZ() + 0.5);
 		// horizontal movement
 		if(pos.getX() != nextPos.getX() || pos.getZ() != nextPos.getZ())
 		{
-			PlayerHelper.INSTANCE.setVelocityX(0);
-			PlayerHelper.INSTANCE.setVelocityZ(0);
+			PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
+			PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
 			double newx = -Math.sin(yaw * 3.1415927F / 180.0F) * moveSpeed();
 			double newz = Math.cos(yaw * 3.1415927F / 180.0F) * moveSpeed();
-			if(Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()){
+			if(Wrapper.INSTANCE.getPlayer().isTouchingWater()){
 				newx *= 0.4;
 				newz *= 0.4;
 			}
 			if (Speed.INSTANCE.getState()) {
-				if (Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= getSpeedModSpeed()) {
-					PlayerHelper.INSTANCE.setVelocityX(0);
-					PlayerHelper.INSTANCE.setVelocityZ(0);
-					Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
+				if (Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= getSpeedModSpeed()) {
+					PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
+					PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
+					Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 					return;
 				}
 			}
 
-			PlayerHelper.INSTANCE.setVelocityX(newx);
-			PlayerHelper.INSTANCE.setVelocityZ(newz);
+			PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), newx);
+			PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), newz);
 
-			if(index > 0 && path.get(index - 1).isJumping() || pos.getY() < nextPos.getY())
-				Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
-
+			if(index > 0 && path.get(index - 1).isJumping() || pos.getY() < nextPos.getY()) {
+				if (!Feature.getState(Step.class)) {
+					double d = (double)(0.42f * getJumpVelocityMultiplier()) + Wrapper.INSTANCE.getPlayer().getJumpBoostVelocityModifier();
+					Vec3d vec3d = Wrapper.INSTANCE.getPlayer().getVelocity();
+					if (Wrapper.INSTANCE.getPlayer().isOnGround())
+						Wrapper.INSTANCE.getPlayer().setVelocity(vec3d.x, d, vec3d.z);
+				}
+			}
 			// vertical movement
 		}else if(pos.getY() != nextPos.getY())
 			// go up
@@ -137,8 +150,12 @@ public class WalkPathProcessor extends PathProcessor
 						index++;
 
 					// jump up
-					if (!Feature.getState(Step.class))
-						Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
+					if (!Feature.getState(Step.class)) {
+						double d = (double)(0.42f * getJumpVelocityMultiplier()) + Wrapper.INSTANCE.getPlayer().getJumpBoostVelocityModifier();
+						Vec3d vec3d = Wrapper.INSTANCE.getPlayer().getVelocity();
+						if (Wrapper.INSTANCE.getPlayer().isOnGround())
+							Wrapper.INSTANCE.getPlayer().setVelocity(vec3d.x, d, vec3d.z);
+					}
 				}
 				// go down
 			}else {
@@ -148,35 +165,41 @@ public class WalkPathProcessor extends PathProcessor
 					index++;
 
 				// walk off the edge
-				if(Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
-					PlayerHelper.INSTANCE.setVelocityX(0);
-					PlayerHelper.INSTANCE.setVelocityZ(0);
+				if(Wrapper.INSTANCE.getPlayer().isOnGround()) {
+					PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
+					PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
 					double newx = -Math.sin(yaw * 3.1415927F / 180.0F) * moveSpeed();
 					double newz = Math.cos(yaw * 3.1415927F / 180.0F) * moveSpeed();
-					if(Wrapper.INSTANCE.getLocalPlayer().isTouchingWater() || PlayerHelper.INSTANCE.isOnEdgeOfBlock()){
+					if(Wrapper.INSTANCE.getPlayer().isTouchingWater() || PlayerHelper.INSTANCE.isOnEdgeOfBlock()){
 						newx *= 0.4;
 						newz *= 0.4;
 					}
 					//fix for speed going way past the point
 					if (Speed.INSTANCE.getState()) {
-						if (Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= getSpeedModSpeed()) {
-							PlayerHelper.INSTANCE.setVelocityX(0);
-							PlayerHelper.INSTANCE.setVelocityZ(0);
-							Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
+						if (Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= getSpeedModSpeed()) {
+							PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
+							PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
+							Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 							return;
 						}
 					}
 					//fix for player going way past the point even with speed disabled (speed potions, soul speed, etc)
-					if (Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= Math.abs(Math.abs(newx) + Math.abs(newz))) {
-						PlayerHelper.INSTANCE.setVelocityX(0);
-						PlayerHelper.INSTANCE.setVelocityZ(0);
-						Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
+					if (Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= Math.abs(Math.abs(newx) + Math.abs(newz))) {
+						PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
+						PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
+						Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 						return;
 					}
-					PlayerHelper.INSTANCE.setVelocityX(newx);
-					PlayerHelper.INSTANCE.setVelocityZ(newz);
+					PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), newx);
+					PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), newz);
 				}
 			}
+	}
+
+	protected float getJumpVelocityMultiplier() {
+		float f = WorldHelper.INSTANCE.getBlock(Wrapper.INSTANCE.getPlayer().getBlockPos()).getJumpVelocityMultiplier();
+		float g = WorldHelper.INSTANCE.getBlock(new BlockPos(Wrapper.INSTANCE.getPlayer().getPos().x, Wrapper.INSTANCE.getPlayer().getBoundingBox().minY - 0.5000001, Wrapper.INSTANCE.getPlayer().getPos().z)).getJumpVelocityMultiplier();
+		return (double)f == 1.0 ? g : f;
 	}
 
 	public double moveSpeed() {
@@ -187,19 +210,17 @@ public class WalkPathProcessor extends PathProcessor
 	}
 
 	public double getSpeedModSpeed() {
-		switch (Speed.INSTANCE.mode.toLowerCase()) {
-			case "vanilla":
-				return Speed.INSTANCE.vanillaSpeed;
-			case "strafe":
-				return Speed.INSTANCE.strafeSpeed;
-		}
-		return PlayerHelper.INSTANCE.getBaseMoveSpeed();
+		return switch (Speed.INSTANCE.mode.toLowerCase()) {
+			case "vanilla" -> Speed.INSTANCE.vanillaSpeed;
+			case "strafe" -> Speed.INSTANCE.strafeSpeed;
+			default -> PlayerHelper.INSTANCE.getBaseMoveSpeed();
+		};
 	}
 
 	public float getYaw(Vec3d pos)
 	{
-		double xD = Wrapper.INSTANCE.getLocalPlayer().getX() - pos.getX();
-		double zD = Wrapper.INSTANCE.getLocalPlayer().getZ() - pos.getZ();
+		double xD = Wrapper.INSTANCE.getPlayer().getX() - pos.getX();
+		double zD = Wrapper.INSTANCE.getPlayer().getZ() - pos.getZ();
 		double yaw = Math.atan2(zD, xD);
 		return (float)Math.toDegrees(yaw) + 90.0F;
 	}

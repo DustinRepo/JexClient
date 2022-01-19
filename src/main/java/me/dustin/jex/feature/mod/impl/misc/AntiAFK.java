@@ -47,20 +47,20 @@ public class AntiAFK extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         setSuffix(mode);
         if (afkSpot == null)
-            afkSpot = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
+            afkSpot = Wrapper.INSTANCE.getPlayer().getBlockPos();
         if (lastSpots == null)
-            lastSpots = new BlockPos[]{Wrapper.INSTANCE.getLocalPlayer().getBlockPos(), Wrapper.INSTANCE.getLocalPlayer().getBlockPos()};
+            lastSpots = new BlockPos[]{Wrapper.INSTANCE.getPlayer().getBlockPos(), Wrapper.INSTANCE.getPlayer().getBlockPos()};
         if (timer.hasPassed(secondsDelay * 1000L)) {
             switch (mode) {
                 case "Swing":
-                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                    Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                     break;
                 case "Jump":
-                    if (Wrapper.INSTANCE.getLocalPlayer().isOnGround())
-                        Wrapper.INSTANCE.getLocalPlayer().jump();
+                    if (Wrapper.INSTANCE.getPlayer().isOnGround())
+                        Wrapper.INSTANCE.getPlayer().jump();
                     break;
-                case "Walk":
-                    NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(Wrapper.INSTANCE.getLocalPlayer().age + ""));
+                case "Chat":
+                    NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(Wrapper.INSTANCE.getPlayer().age + ""));
                     break;
                 case "Wander":
                     PathingHelper.INSTANCE.setAllowMining(false);
@@ -95,7 +95,7 @@ public class AntiAFK extends Feature {
         public boolean checkDone() {
             //more than 5 blocks away from current player position and no more than 15 blocks away from the start position and 3 or more blocks away from the last position so it doesn't loop two spots
             Vec3d currentVec = Vec3d.of(current);
-            double playerDistance = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), currentVec);
+            double playerDistance = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), currentVec);
             double origSpotDistance = ClientMathHelper.INSTANCE.getDistance(Vec3d.of(getGoal()), currentVec);
             double lastSpotDistance = ClientMathHelper.INSTANCE.getDistance(Vec3d.of(antiAFK.lastSpots[0]), currentVec);
 

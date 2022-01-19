@@ -38,9 +38,9 @@ public class Step extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         BaritoneHelper.INSTANCE.setAssumeStep(true);
         if (mode.equalsIgnoreCase("Vanilla"))
-            Wrapper.INSTANCE.getLocalPlayer().stepHeight = stepHeight;
+            Wrapper.INSTANCE.getPlayer().stepHeight = stepHeight;
         else
-            Wrapper.INSTANCE.getLocalPlayer().stepHeight = 1.75f;
+            Wrapper.INSTANCE.getPlayer().stepHeight = 1.75f;
         this.setSuffix(mode);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
@@ -50,15 +50,15 @@ public class Step extends Feature {
             switch (event.getMode()) {
                 case PRE -> slow = true;
                 case MID -> {
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.42399999499321, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + (event.getStepHeight() > 1f ? 0.76111999664784 : 0.75), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 0.42399999499321, Wrapper.INSTANCE.getPlayer().getZ(), false));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + (event.getStepHeight() > 1f ? 0.76111999664784 : 0.75), Wrapper.INSTANCE.getPlayer().getZ(), false));
                     if (event.getStepHeight() > 1f) {
-                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 1.01309760317355, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 1.18163566084895, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.01309760317355, Wrapper.INSTANCE.getPlayer().getZ(), false));
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.18163566084895, Wrapper.INSTANCE.getPlayer().getZ(), false));
                     }
                     if (event.getStepHeight() > 1.3f) {
-                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 1.26840295905959, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 1.20313422336366, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.26840295905959, Wrapper.INSTANCE.getPlayer().getZ(), false));
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.20313422336366, Wrapper.INSTANCE.getPlayer().getZ(), false));
                     }
                 }
                 case END -> {
@@ -81,7 +81,7 @@ public class Step extends Feature {
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
         if (cancelPacket && cancelPackets > 0) {
-            double yDif = playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - Wrapper.INSTANCE.getLocalPlayer().getY();
+            double yDif = playerMoveC2SPacket.getY(Wrapper.INSTANCE.getPlayer().getY()) - Wrapper.INSTANCE.getPlayer().getY();
             if (!(yDif == 0.42D || yDif == 0.75D || yDif == 1)) {
                 event.cancel();
                 cancelPackets--;
@@ -100,8 +100,8 @@ public class Step extends Feature {
     @Override
     public void onDisable() {
         BaritoneHelper.INSTANCE.setAssumeStep(false);
-        if (Wrapper.INSTANCE.getLocalPlayer() != null)
-            Wrapper.INSTANCE.getLocalPlayer().stepHeight = 0.6f;
+        if (Wrapper.INSTANCE.getPlayer() != null)
+            Wrapper.INSTANCE.getPlayer().stepHeight = 0.6f;
         super.onDisable();
     }
 }

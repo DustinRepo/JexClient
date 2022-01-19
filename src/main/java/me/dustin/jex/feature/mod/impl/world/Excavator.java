@@ -31,6 +31,7 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -73,7 +74,7 @@ public class Excavator extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (AutoEat.isEating)
+        if (AutoEat.isEating || (Feature.get(AntiLiquid.class).getPos() != null))
             return;
         if (miningArea == null)
             return;
@@ -81,19 +82,19 @@ public class Excavator extends Feature {
             return;
         BlockPos closestBlock = miningArea.getClosest();
         if (closestBlock != null) {
-            double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(closestBlock));
+            double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(closestBlock));
             if (distanceTo <= (WorldHelper.INSTANCE.getBlock(closestBlock) == Blocks.BEDROCK ? 3 : Wrapper.INSTANCE.getInteractionManager().getReachDistance() - 1)) {
                 if (!KillAura.INSTANCE.hasTarget() && !BreakingFlowController.isWorking()) {
-                    BlockHitResult blockHitResult = rayCast(Wrapper.INSTANCE.getLocalPlayer(), closestBlock);
-                    RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(closestBlock));
+                    BlockHitResult blockHitResult = rayCast(Wrapper.INSTANCE.getPlayer(), closestBlock);
+                    RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), Vec3d.ofCenter(closestBlock));
                     event.setRotation(rotationVector);
-                    Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
-                    Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
+                    Wrapper.INSTANCE.getPlayer().setHeadYaw(rotationVector.getYaw());
+                    Wrapper.INSTANCE.getPlayer().setBodyYaw(rotationVector.getYaw());
 
                     Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(closestBlock, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
-                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                    PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
                 }
-                if (distanceTo <= 1.5f && WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getLocalPlayer()) != Blocks.AIR) {
+                if (distanceTo <= 1.5f && WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getPlayer()) != Blocks.AIR) {
                     PathingHelper.INSTANCE.cancelPathing();
                     if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritone)
                         BaritoneHelper.INSTANCE.pathTo(null);
@@ -257,7 +258,7 @@ public class Excavator extends Feature {
 
     @Override
     public void onDisable() {
-        if (BaritoneHelper.INSTANCE.baritoneExists() && Wrapper.INSTANCE.getLocalPlayer() != null) {
+        if (BaritoneHelper.INSTANCE.baritoneExists() && Wrapper.INSTANCE.getPlayer() != null) {
             BaritoneHelper.INSTANCE.setAllowPlace(baritoneAllowPlace);
             BaritoneHelper.INSTANCE.pathTo(null);
         }
@@ -279,12 +280,14 @@ public class Excavator extends Feature {
         return Color.getHSBColor((float) H, (float) S, (float) B);
     }
 
-    public BlockHitResult rayCast(ClientPlayerEntity player, BlockPos blockPos) {
+    public BlockHitResult rayCast(PlayerEntity player, BlockPos blockPos) {
         RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(player, Vec3d.of(blockPos).add(0.5, 0, 0.5));
         RotationVector saved = new RotationVector(player);
-        PlayerHelper.INSTANCE.setRotation(rotationVector);
+        Wrapper.INSTANCE.getPlayer().setYaw(rotationVector.getYaw());
+        Wrapper.INSTANCE.getPlayer().setPitch(rotationVector.getPitch());
         HitResult result = player.raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
-        PlayerHelper.INSTANCE.setRotation(saved);
+        Wrapper.INSTANCE.getPlayer().setYaw(saved.getYaw());
+        Wrapper.INSTANCE.getPlayer().setPitch(saved.getPitch());
         if (result instanceof BlockHitResult blockHitResult)
             return blockHitResult;
         return null;
@@ -368,7 +371,7 @@ public class Excavator extends Feature {
         }
 
         public void sortList() {
-            blockPosList.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, 2, 0), Vec3d.ofCenter(value))));
+            blockPosList.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, 2, 0), Vec3d.ofCenter(value))));
         }
     }
 

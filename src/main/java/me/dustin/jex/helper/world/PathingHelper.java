@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
@@ -28,8 +29,10 @@ public enum PathingHelper {
        if (pathFinder != null) {
            if (!pathFinder.isDone() && !pathFinder.isFailed()) {
                pathFinder.think();
-               PathProcessor.lockControls();
-
+               if (Wrapper.INSTANCE.getPlayer() != Freecam.playerEntity)
+                   PathProcessor.lockControls();
+               else
+                   PathProcessor.releaseControls();
                if (!pathFinder.isDone() && !pathFinder.isFailed())
                    return;
                pathFinder.formatPath();
@@ -99,6 +102,10 @@ public enum PathingHelper {
 
     public void setAllowMining(boolean allowMining) {
         this.allowMining = allowMining;
+    }
+
+    public PathFinder getPathFinder() {
+        return this.pathFinder;
     }
 
     public void setPathFinder(PathFinder pathFinder) {

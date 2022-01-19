@@ -24,8 +24,8 @@ import net.minecraft.util.math.Direction;
 
 public class PathFinder
 {
-	private final boolean invulnerable = Wrapper.INSTANCE.getLocalPlayer().getAbilities().creativeMode;
-	private final boolean creativeFlying = Wrapper.INSTANCE.getLocalPlayer().getAbilities().flying;
+	private final boolean invulnerable = Wrapper.INSTANCE.getPlayer().getAbilities().creativeMode;
+	private final boolean creativeFlying = Wrapper.INSTANCE.getPlayer().getAbilities().flying;
 	protected final boolean flying = creativeFlying || Feature.getState(Fly.class);
 	private final boolean immuneToFallDamage = invulnerable || Feature.getState(NoFall.class);
 	private final boolean noWaterSlowdown = Feature.getState(NoPush.class) && Feature.get(NoPush.class).water;
@@ -53,10 +53,10 @@ public class PathFinder
 
 	public PathFinder(BlockPos goal)
 	{
-		if(Wrapper.INSTANCE.getLocalPlayer().isOnGround())
-			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getX(),Wrapper.INSTANCE.getLocalPlayer().getY() + 0.5, Wrapper.INSTANCE.getLocalPlayer().getZ()));
+		if(Wrapper.INSTANCE.getPlayer().isOnGround())
+			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getPlayer().getX(),Wrapper.INSTANCE.getPlayer().getY() + 0.5, Wrapper.INSTANCE.getPlayer().getZ()));
 		else
-			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos()));
+			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getPlayer().getPos()));
 		this.goal = goal;
 
 		costMap.put(start, 0F);
@@ -256,7 +256,7 @@ public class PathFinder
 	protected boolean isMineable(BlockPos pos)
 	{
 		BlockState blockState = WorldHelper.INSTANCE.getBlockState(pos);
-		return canMine && blockState.getCollisionShape(Wrapper.INSTANCE.getWorld(), pos) != VoxelShapes.empty() && WorldHelper.INSTANCE.getBlockBreakingSpeed(blockState, Wrapper.INSTANCE.getLocalPlayer().getMainHandStack()) > 0;
+		return canMine && blockState.getCollisionShape(Wrapper.INSTANCE.getWorld(), pos) != VoxelShapes.empty() && WorldHelper.INSTANCE.getBlockBreakingSpeed(blockState, Wrapper.INSTANCE.getPlayer().getMainHandStack()) > 0;
 	}
 
 	protected boolean canBeSolid(BlockPos pos)
@@ -292,7 +292,7 @@ public class PathFinder
 			return false;
 
 		// check if safe
-		if((!invulnerable && !Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) && (material == Material.LAVA || material == Material.FIRE))
+		if((!invulnerable && !Wrapper.INSTANCE.getPlayer().hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) && (material == Material.LAVA || material == Material.FIRE))
 			return false;
 
 		return true;
@@ -434,9 +434,9 @@ public class PathFinder
 
 			// mining
 			if(isMineable(pos))
-				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos), Wrapper.INSTANCE.getLocalPlayer().getMainHandStack()));
+				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos), Wrapper.INSTANCE.getPlayer().getMainHandStack()));
 			if(isMineable(pos.up()))
-				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos.up()), Wrapper.INSTANCE.getLocalPlayer().getMainHandStack()));
+				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos.up()), Wrapper.INSTANCE.getPlayer().getMainHandStack()));
 		}
 
 		float cost = costs[0] + costs[1];
@@ -564,7 +564,7 @@ public class PathFinder
 			throw new IllegalStateException("Path is not formatted!");
 
 		// check player abilities
-		if(invulnerable != Wrapper.INSTANCE.getLocalPlayer().getAbilities().creativeMode
+		if(invulnerable != Wrapper.INSTANCE.getPlayer().getAbilities().creativeMode
 				|| flying != (creativeFlying
 				|| Feature.get(Fly.class).getState())
 				|| immuneToFallDamage != (invulnerable

@@ -7,6 +7,7 @@
  */
 package me.dustin.jex.helper.world.wurstpathfinder;
 
+import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
@@ -29,9 +30,10 @@ public class FlyPathProcessor extends PathProcessor
 	@Override
 	public void process()
 	{
+		Fly fly = Feature.get(Fly.class);
 		// get positions
-		BlockPos pos = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos());
-		Vec3d posVec = Wrapper.INSTANCE.getLocalPlayer().getPos();
+		BlockPos pos = new BlockPos(Wrapper.INSTANCE.getPlayer().getPos());
+		Vec3d posVec = Wrapper.INSTANCE.getPlayer().getPos();
 		BlockPos nextPos = path.get(index);
 		int posIndex = path.indexOf(pos);
 		Box nextBox = new Box(nextPos.getX() + 0.3, nextPos.getY(), nextPos.getZ() + 0.3, nextPos.getX() + 0.7, nextPos.getY() + 0.2, nextPos.getZ() + 0.7);
@@ -54,8 +56,8 @@ public class FlyPathProcessor extends PathProcessor
 			
 			// stop when changing directions
 			if(creativeFlying) {
-				Vec3d v = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
-				Wrapper.INSTANCE.getLocalPlayer().setVelocity(v.x / Math.max(Math.abs(v.x) * 50, 1), v.y / Math.max(Math.abs(v.y) * 50, 1), v.z / Math.max(Math.abs(v.z) * 50, 1));
+				Vec3d v = Wrapper.INSTANCE.getPlayer().getVelocity();
+				Wrapper.INSTANCE.getPlayer().setVelocity(v.x / Math.max(Math.abs(v.x) * 50, 1), v.y / Math.max(Math.abs(v.y) * 50, 1), v.z / Math.max(Math.abs(v.z) * 50, 1));
 			}
 			
 			if(index >= path.size())
@@ -64,8 +66,7 @@ public class FlyPathProcessor extends PathProcessor
 			return;
 		}
 		
-		lockControls();
-		Wrapper.INSTANCE.getLocalPlayer().getAbilities().flying = creativeFlying;
+		Wrapper.INSTANCE.getPlayer().getAbilities().flying = creativeFlying;
 		boolean x = posVec.x < nextBox.minX || posVec.x > nextBox.maxX;
 		boolean y = posVec.y < nextBox.minY || posVec.y > nextBox.maxY;
 		boolean z = posVec.z < nextBox.minZ || posVec.z > nextBox.maxZ;
@@ -79,14 +80,14 @@ public class FlyPathProcessor extends PathProcessor
 		
 		if(creativeFlying)
 		{
-			Vec3d v = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
+			Vec3d v = Wrapper.INSTANCE.getPlayer().getVelocity();
 			
 			if(!x)
-				Wrapper.INSTANCE.getLocalPlayer().setVelocity(v.x / Math.max(Math.abs(v.x) * 50, 1), v.y, v.z);
+				Wrapper.INSTANCE.getPlayer().setVelocity(v.x / Math.max(Math.abs(v.x) * 50, 1), v.y, v.z);
 			if(!y)
-				Wrapper.INSTANCE.getLocalPlayer().setVelocity(v.x, v.y / Math.max(Math.abs(v.y) * 50, 1), v.z);
+				Wrapper.INSTANCE.getPlayer().setVelocity(v.x, v.y / Math.max(Math.abs(v.y) * 50, 1), v.z);
 			if(!z)
-				Wrapper.INSTANCE.getLocalPlayer().setVelocity(v.x, v.y, v.z / Math.max(Math.abs(v.z) * 50, 1));
+				Wrapper.INSTANCE.getPlayer().setVelocity(v.x, v.y, v.z / Math.max(Math.abs(v.z) * 50, 1));
 		}
 		
 		Vec3d vecInPos = new Vec3d(nextPos.getX() + 0.5, nextPos.getY() + 0.1, nextPos.getZ() + 0.5);
@@ -94,58 +95,64 @@ public class FlyPathProcessor extends PathProcessor
 		// horizontal movement
 		if(horizontal)
 		{
-			float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
-			PlayerHelper.INSTANCE.setVelocityX(0);
-			PlayerHelper.INSTANCE.setVelocityZ(0);
+			float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
+			PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
+			PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
 			double newx = -Math.sin(yaw * 3.1415927F / 180.0F) * moveSpeed();
 			double newz = Math.cos(yaw * 3.1415927F / 180.0F) * moveSpeed();
-			if(Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()){
+			if(Wrapper.INSTANCE.getPlayer().isTouchingWater()){
 				newx *= 0.4;
 				newz *= 0.4;
 			}
 			//fix for speed going way past the point
 			if (Feature.getState(Fly.class)) {
-				if (!creativeFlying && Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= Feature.get(Fly.class).speed) {
-					PlayerHelper.INSTANCE.setVelocityX(0);
-					PlayerHelper.INSTANCE.setVelocityZ(0);
-					Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
+				if (!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= Feature.get(Fly.class).speed) {
+					PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
+					PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
+					Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 					return;
 				}
 			}
 			//fix for player going way past the point even with speed disabled (speed potions, soul speed, etc)
-			if (Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= Math.abs(Math.abs(newx) + Math.abs(newz))) {
-				PlayerHelper.INSTANCE.setVelocityX(0);
-				PlayerHelper.INSTANCE.setVelocityZ(0);
-				Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
+			if (Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= Math.abs(Math.abs(newx) + Math.abs(newz))) {
+				PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
+				PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
+				Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 				return;
 			}
-			PlayerHelper.INSTANCE.setVelocityX(newx);
-			PlayerHelper.INSTANCE.setVelocityZ(newz);
+			PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), newx);
+			PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), newz);
 			
-			if(Wrapper.INSTANCE.getLocalPlayer().horizontalCollision)
+			if(Wrapper.INSTANCE.getPlayer().horizontalCollision)
 				if(posVec.y > nextBox.maxY)
-					Wrapper.INSTANCE.getOptions().keySneak.setPressed(true);
+					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.speed);
 				else if(posVec.y < nextBox.minY)
-					Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
+					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.speed);
 				
 			// vertical movement
 		}else if(y)
 		{
-			PlayerHelper.INSTANCE.setVelocityY(0);
-			if(!creativeFlying && Wrapper.INSTANCE.getLocalPlayer().getPos().distanceTo(vecInPos) <= Feature.get(Fly.class).speed) {
-				Wrapper.INSTANCE.getLocalPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
+			PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), 0);
+			if(!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= Feature.get(Fly.class).speed) {
+				Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 				return;
 			}
-			
+
 			if(posVec.y < nextBox.minY)
-				Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
+				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.speed);
 			else
-				Wrapper.INSTANCE.getOptions().keySneak.setPressed(true);
+				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.speed);
 			
-			if(Wrapper.INSTANCE.getLocalPlayer().verticalCollision)
-			{
-				Wrapper.INSTANCE.getOptions().keySneak.setPressed(false);
-				Wrapper.INSTANCE.getOptions().keyForward.setPressed(true);
+			if(Wrapper.INSTANCE.getPlayer().verticalCollision) {
+				float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
+				double newx = -Math.sin(yaw * 3.1415927F / 180.0F) * moveSpeed();
+				double newz = Math.cos(yaw * 3.1415927F / 180.0F) * moveSpeed();
+				if(Wrapper.INSTANCE.getPlayer().isTouchingWater()){
+					newx *= 0.4;
+					newz *= 0.4;
+				}
+				PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), newx);
+				PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), newz);
 			}
 		}
 	}
