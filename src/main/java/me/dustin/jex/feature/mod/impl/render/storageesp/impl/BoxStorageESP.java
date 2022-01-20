@@ -45,22 +45,33 @@ public class BoxStorageESP extends FeatureExtension {
             ArrayList<BlockPos> chestPositions = new ArrayList<>();
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                 if (storageESP.isValid(entity)) {
+                    float distance = ClientMathHelper.INSTANCE.getDistance(entity.getPos(), Wrapper.INSTANCE.getLocalPlayer().getPos());
+                    if (storageESP.fadeBoxesWhenClose) {
+                        if (distance < storageESP.fadeDistance)
+                            return;
+                    }
+
                     Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, eventRender3D.getPartialTicks());
                     Box box = WorldHelper.SINGLE_BOX.offset(renderPos).offset(-0.5, 0, -0.5);
-                    list.add(new CustomBoxStorage(box, storageESP.getColor(entity), entity.getPos()));
+                    list.add(new CustomBoxStorage(box, storageESP.getColor(entity), distance));
                 }
             });
             WorldHelper.INSTANCE.getBlockEntities().forEach(blockEntity -> {
                 if (storageESP.isValid(blockEntity)) {
                 	Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockEntity.getPos());
+                    float distance = ClientMathHelper.INSTANCE.getDistance(Vec3d.ofCenter(blockEntity.getPos()), Wrapper.INSTANCE.getLocalPlayer().getPos());
                     if (blockEntity instanceof ChestBlockEntity chestBlockEntity) {
                         if (chestPositions.contains(blockEntity.getPos()))
                             return;
+                        if (storageESP.fadeBoxesWhenClose) {
+                            if (distance < storageESP.fadeDistance)
+                                return;
+                        }
                         Direction facingDir = WorldHelper.INSTANCE.chestMergeDirection(chestBlockEntity);
                         chestPositions.add(blockEntity.getPos().offset(facingDir));
                     }
                     Box box = getBox(blockEntity).offset(renderPos);
-                    list.add(new CustomBoxStorage(box, storageESP.getColor(blockEntity), Vec3d.ofCenter(blockEntity.getPos())));
+                    list.add(new CustomBoxStorage(box, storageESP.getColor(blockEntity), distance));
                 }
             });
 
@@ -69,7 +80,7 @@ public class BoxStorageESP extends FeatureExtension {
             bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             list.forEach(blockStorage -> {
                 Box box = blockStorage.box();
-                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 255 : Math.max(0, Math.min(255, (int)(ClientMathHelper.INSTANCE.getDistance(blockStorage.vec3d(), Wrapper.INSTANCE.getLocalPlayer().getPos()) - storageESP.fadeDistance) * 12)));
+                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 255 : Math.max(0, Math.min(255, (int)(blockStorage.distance - storageESP.fadeDistance) * 12)));
                 int color = blockStorage.color();
                 Render3DHelper.INSTANCE.drawOutlineBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
             });
@@ -80,7 +91,7 @@ public class BoxStorageESP extends FeatureExtension {
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
             list.forEach(blockStorage -> {
                 Box box = blockStorage.box();
-                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 100 : Math.max(0, Math.min(100, (int)(ClientMathHelper.INSTANCE.getDistance(blockStorage.vec3d(), Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, Wrapper.INSTANCE.getLocalPlayer().getHeight() / 2, 0)) - storageESP.fadeDistance) * 12)));
+                Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenClose ? 100 : Math.max(0, Math.min(100, (int)(blockStorage.distance - storageESP.fadeDistance) * 12)));
                 int color = blockStorage.color();
                 Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
             });
@@ -114,5 +125,5 @@ public class BoxStorageESP extends FeatureExtension {
         return WorldHelper.SINGLE_BOX;
     }
 
-    public record CustomBoxStorage (Box box, int color, Vec3d vec3d) {}
+    public record CustomBoxStorage (Box box, int color, double distance) {}
 }
