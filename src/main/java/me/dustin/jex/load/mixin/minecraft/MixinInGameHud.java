@@ -61,6 +61,13 @@ public class MixinInGameHud {
         }
     }
 
+    @Inject(method = "renderSpyglassOverlay", at = @At("HEAD"), cancellable = true)
+    public void renderSpyglassOverlay(float scale, CallbackInfo ci) {
+        EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.SPYGLASS).run();
+        if (eventRenderOverlay.isCancelled())
+            ci.cancel();
+    }
+
     @Inject(method = "renderVignetteOverlay", at = @At("HEAD"), cancellable = true)
     public void renderVignetteOverlay(Entity entity, CallbackInfo ci) {
         EventRenderOverlay eventRenderOverlay = new EventRenderOverlay(EventRenderOverlay.Overlay.VIGNETTE).run();

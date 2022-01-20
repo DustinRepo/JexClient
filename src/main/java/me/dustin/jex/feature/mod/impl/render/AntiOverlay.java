@@ -1,10 +1,14 @@
 package me.dustin.jex.feature.mod.impl.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ApplyFogFilter;
+import me.dustin.jex.event.render.EventApplyFog;
 import me.dustin.jex.event.render.EventRenderOverlay;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
+import net.minecraft.client.render.CameraSubmersionType;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Remove overlays")
 public class AntiOverlay extends Feature {
@@ -15,8 +19,12 @@ public class AntiOverlay extends Feature {
     public boolean lava = true;
     @Op(name = "Fire")
     public boolean fire = true;
+    @Op(name = "Powder Snow")
+    public boolean powderSnow = true;
     @Op(name = "In-Wall")
     public boolean inwall = true;
+    @Op(name = "Spyglass")
+    public boolean spyglass = true;
     @Op(name = "Pumpkin")
     public boolean pumpkin = true;
     @Op(name = "Portal")
@@ -27,34 +35,66 @@ public class AntiOverlay extends Feature {
     @EventPointer
     private final EventListener<EventRenderOverlay> eventRenderOverlayEventListener = new EventListener<>(event -> {
         switch (event.getOverlay()) {
-            case FIRE:
+            case FIRE -> {
                 if (fire)
                     event.cancel();
-                break;
-            case UNDERWATER:
+            }
+            case UNDERWATER -> {
                 if (water)
                     event.cancel();
-                break;
-            case LAVA:
+            }
+            case LAVA -> {
                 if (lava)
                     event.cancel();
-                break;
-            case IN_WALL:
+            }
+            case IN_WALL -> {
                 if (inwall)
                     event.cancel();
-                break;
-            case PUMPKIN:
+            }
+            case PUMPKIN -> {
                 if (pumpkin)
                     event.cancel();
-                break;
-            case PORTAL:
+            }
+            case PORTAL -> {
                 if (portal)
                     event.cancel();
-                break;
-            case VIGNETTE:
+            }
+            case VIGNETTE -> {
                 if (vignette)
                     event.cancel();
-                break;
+            }
+            case COLD -> {
+                if (powderSnow)
+                    event.cancel();
+            }
+            case SPYGLASS -> {
+                if (spyglass)
+                    event.cancel();
+            }
         }
     });
+
+    @EventPointer
+    private final EventListener<EventApplyFog> eventApplyFogEventListener = new EventListener<>(event -> {
+        switch (event.getCameraSubmersionType()){
+            case WATER -> {
+                if (water) {
+                    RenderSystem.setShaderFogStart(0);
+                    RenderSystem.setShaderFogEnd(10000);
+                }
+            }
+            case LAVA -> {
+                if (lava) {
+                    RenderSystem.setShaderFogStart(0);
+                    RenderSystem.setShaderFogEnd(10000);
+                }
+            }
+            case POWDER_SNOW -> {
+                if (powderSnow) {
+                    RenderSystem.setShaderFogStart(0);
+                    RenderSystem.setShaderFogEnd(10000);
+                }
+            }
+        }
+    }, new ApplyFogFilter(CameraSubmersionType.WATER, CameraSubmersionType.LAVA, CameraSubmersionType.POWDER_SNOW));
 }
