@@ -1,3 +1,6 @@
+0.6.1
+Fixed NoPush Mobs not working since 0.5.7
+
 0.6.0
 Added AntiHazard mod
 Added Distance option to AntiLiquid
