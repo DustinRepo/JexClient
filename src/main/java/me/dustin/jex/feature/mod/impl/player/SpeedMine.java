@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.player;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClickBlockFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventClickBlock;
@@ -75,7 +76,7 @@ public class SpeedMine extends Feature {
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
         }
         Wrapper.INSTANCE.getIInteractionManager().setBlockBreakProgress(1);
-    });
+    }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
     @Override
     public void onDisable() {

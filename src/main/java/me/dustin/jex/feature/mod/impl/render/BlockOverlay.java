@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClickBlockFilter;
 import me.dustin.jex.event.render.EventBlockOutlineColor;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventClickBlock;
@@ -54,7 +55,7 @@ public class BlockOverlay extends Feature {
     @EventPointer
     private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
         this.clickedBlock = new BlockHitResult(Vec3d.of(event.getBlockPos()), event.getFace(), event.getBlockPos(), false);
-    });
+    }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
     public Color getColor(double power) {
         double H = power * 0.35; // Hue (note 0.4 = Green, see huge chart below)

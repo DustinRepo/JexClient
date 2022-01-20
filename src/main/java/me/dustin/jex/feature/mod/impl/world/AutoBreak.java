@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.ClickBlockFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -43,7 +44,7 @@ public class AutoBreak extends Feature {
 	@EventPointer
 	private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
 		pos = event.getBlockPos().add(0.5, 0, 0.5);
-	});
+	}, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
 	@EventPointer
 	private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {

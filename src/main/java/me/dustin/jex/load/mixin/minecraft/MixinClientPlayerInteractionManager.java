@@ -6,12 +6,18 @@ import me.dustin.jex.event.player.EventHasExtendedReach;
 import me.dustin.jex.event.player.EventStopUsingItem;
 import me.dustin.jex.event.world.EventBreakBlock;
 import me.dustin.jex.event.world.EventClickBlock;
+import me.dustin.jex.event.world.EventInteractBlock;
 import me.dustin.jex.event.world.EventPlayerInteractionTick;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.load.impl.IClientPlayerInteractionManager;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,10 +42,27 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
     }
 
     @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
-    public void attackBlock(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
-        EventClickBlock eventClickBlock = new EventClickBlock(pos, direction).run();
+    public void attackBlockPre(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
+        EventClickBlock eventClickBlock = new EventClickBlock(pos, direction, EventClickBlock.Mode.PRE).run();
         if (eventClickBlock.isCancelled())
             cir.setReturnValue(false);
+    }
+
+    @Inject(method = "attackBlock", at = @At("RETURN"), cancellable = true)
+    public void attackBlockPost(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir) {
+        new EventClickBlock(pos, direction, EventClickBlock.Mode.POST).run();
+    }
+
+    @Inject(method = "interactBlock", at = @At("HEAD"), cancellable = true)
+    public void interactBlockPre(ClientPlayerEntity player, ClientWorld world, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
+        EventInteractBlock eventInteractBlock = new EventInteractBlock(hitResult.getBlockPos(), hitResult, EventInteractBlock.Mode.PRE).run();
+        if (eventInteractBlock.isCancelled())
+            cir.setReturnValue(ActionResult.PASS);
+    }
+
+    @Inject(method = "interactBlock", at = @At("RETURN"), cancellable = true)
+    public void interactBlockPost(ClientPlayerEntity player, ClientWorld world, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
+        new EventInteractBlock(hitResult.getBlockPos(), hitResult, EventInteractBlock.Mode.POST).run();
     }
 
     @Inject(method = "breakBlock", at = @At("HEAD"))

@@ -49,7 +49,6 @@ public class Tunneller extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (AutoEat.isEating || KillAura.INSTANCE.hasTarget())
             return;
-        JexClient.INSTANCE.getLogger().info(Wrapper.INSTANCE.getPlayer().getVelocity());
         if (direction == null)
             direction = Wrapper.INSTANCE.getPlayer().getHorizontalFacing();
         setSuffix(getDirectionString());

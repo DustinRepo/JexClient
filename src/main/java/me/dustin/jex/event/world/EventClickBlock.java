@@ -8,10 +8,12 @@ public class EventClickBlock extends Event {
 
 	private BlockPos blockPos;
 	private Direction face;
+	private Mode mode;
 
-	public EventClickBlock(BlockPos loc, Direction face) {
+	public EventClickBlock(BlockPos loc, Direction face, Mode mode) {
 		this.blockPos = loc;
 		this.face = face;
+		this.mode = mode;
 	}
 
 	public BlockPos getBlockPos() {
@@ -22,4 +24,11 @@ public class EventClickBlock extends Event {
 		return face;
 	}
 
+	public Mode getMode() {
+		return this.mode;
+	}
+
+	public enum Mode {
+		PRE, POST
+	}
 }

@@ -81,7 +81,7 @@ public class CommandDupe extends Command {
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Feature.getState(AutoTool.class))
-            new EventClickBlock(blockHitResult.getBlockPos(), blockHitResult.getSide()).run();
+            new EventClickBlock(blockHitResult.getBlockPos(), blockHitResult.getSide(), EventClickBlock.Mode.PRE).run();
         Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
     }, new TickFilter(EventTick.Mode.PRE));
 
