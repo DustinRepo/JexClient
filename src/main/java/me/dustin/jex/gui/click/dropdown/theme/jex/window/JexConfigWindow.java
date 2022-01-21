@@ -21,17 +21,17 @@ public class JexConfigWindow extends JexDropdownWindow {
     @Override
     public void init() {
         int buttonCount = 0;
-        this.getButtons().add(new DropdownButton(this, "Save",this.getX() + 1, this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - 2, getTheme().getButtonSize(), unused -> {
+        this.getButtons().add(new DropdownButton(this, "Save",this.getX() + getTheme().getButtonWidthOffset(), this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).saveButton();
         }));
         buttonCount++;
-        this.getButtons().add(new DropdownButton(this, "Load",this.getX() + 1, this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - 2, getTheme().getButtonSize(), unused -> {
+        this.getButtons().add(new DropdownButton(this, "Load",this.getX() + getTheme().getButtonWidthOffset(), this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }));
         buttonCount++;
-        this.getButtons().add(new DropdownButton(this, "AutoSave: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"),this.getX() + 1, this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - 2, getTheme().getButtonSize(), unused -> {
+        this.getButtons().add(new DropdownButton(this, "AutoSave: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"),this.getX() + getTheme().getButtonWidthOffset(), this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
-            this.getButtons().get(2).setName("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"));
+            this.getButtons().get(2).setName("AutoSave: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"));
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }));
         buttonCount++;

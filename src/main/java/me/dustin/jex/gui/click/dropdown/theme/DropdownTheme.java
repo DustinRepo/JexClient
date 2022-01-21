@@ -9,7 +9,9 @@ public class DropdownTheme {
     private final String name;
     private int buttonSize;
     private int buttonOffset;
+    private int buttonWidthOffset;
     private int optionOffset;
+    private int optionButtonOffset;
     private int optionWidthOffset;
     private int topBarSize;
     private int topBarOffset;
@@ -128,5 +130,21 @@ public class DropdownTheme {
 
     public void setOptionWidthOffset(int optionWidthOffset) {
         this.optionWidthOffset = optionWidthOffset;
+    }
+
+    public int getButtonWidthOffset() {
+        return buttonWidthOffset;
+    }
+
+    public void setButtonWidthOffset(int buttonWidthOffset) {
+        this.buttonWidthOffset = buttonWidthOffset;
+    }
+
+    public int getOptionButtonOffset() {
+        return optionButtonOffset;
+    }
+
+    public void setOptionButtonOffset(int optionButtonOffset) {
+        this.optionButtonOffset = optionButtonOffset;
     }
 }

@@ -44,46 +44,46 @@ public class FlareDropdownFeatureButton extends DropdownFeatureButton {
                 if (option instanceof FloatOption floatOption) {
                     FlareFloatOptionButton floatOptionButton = new FlareFloatOptionButton(this.getWindow(), floatOption, getX() + getWindow().getTheme().getOptionWidthOffset(), (this.getY() + this.getHeight()) + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - getWindow().getTheme().getOptionWidthOffset() * 2, 17);
                     this.getChildren().add(floatOptionButton);
-                    buttonsHeight += floatOptionButton.getHeight();
+                    buttonsHeight += floatOptionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
                     return;
                 } else if (option instanceof IntOption intOption) {
                     FlareIntOptionButton intOptionButton = new FlareIntOptionButton(this.getWindow(), intOption, getX() + getWindow().getTheme().getOptionWidthOffset(), (this.getY() + this.getHeight()) + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - getWindow().getTheme().getOptionWidthOffset() * 2, 17);
                     this.getChildren().add(intOptionButton);
-                    buttonsHeight += intOptionButton.getHeight();
+                    buttonsHeight += intOptionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
                     return;
                 } else if (option instanceof ColorOption colorOption) {
                     FlareColorOptionButton colorOptionButton = new FlareColorOptionButton(this.getWindow(), colorOption, getX() + getWindow().getTheme().getOptionWidthOffset(), (this.getY() + this.getHeight()) + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - getWindow().getTheme().getOptionWidthOffset() * 2, 100);
                     this.getChildren().add(colorOptionButton);
-                    buttonsHeight += colorOptionButton.getHeight();
+                    buttonsHeight += colorOptionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
                     return;
                 } else if (option instanceof KeybindOption keybindOption) {
                     FlareKeybindOptionButton keybindOptionButton = new FlareKeybindOptionButton(this.getWindow(), keybindOption, getX() + getWindow().getTheme().getOptionWidthOffset(), (this.getY() + this.getHeight()) + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - getWindow().getTheme().getOptionWidthOffset() * 2, this.getHeight());
                     this.getChildren().add(keybindOptionButton);
-                    buttonsHeight += keybindOptionButton.getHeight();
+                    buttonsHeight += keybindOptionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
                     return;
                 } else if (option instanceof BoolOption boolOption) {
                     FlareBooleanOptionButton booleanOptionButton = new FlareBooleanOptionButton(this.getWindow(), boolOption, getX() + getWindow().getTheme().getOptionWidthOffset(), (this.getY() + this.getHeight()) + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - getWindow().getTheme().getOptionWidthOffset() * 2, this.getHeight());
                     this.getChildren().add(booleanOptionButton);
-                    buttonsHeight += booleanOptionButton.getHeight();
+                    buttonsHeight += booleanOptionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
                     return;
                 } else if (option instanceof StringOption stringOption) {
                     FlareStringOptionButton stringOptionButton = new FlareStringOptionButton(this.getWindow(), stringOption, getX() + getWindow().getTheme().getOptionWidthOffset(), (this.getY() + this.getHeight()) + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - getWindow().getTheme().getOptionWidthOffset() * 2, 22);
                     this.getChildren().add(stringOptionButton);
-                    buttonsHeight += stringOptionButton.getHeight();
+                    buttonsHeight += stringOptionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
                     return;
                 } else if (option instanceof StringArrayOption stringArrayOption) {
                     FlareModeOptionButton modeOptionButton = new FlareModeOptionButton(this.getWindow(), stringArrayOption, getX() + getWindow().getTheme().getOptionWidthOffset(), (this.getY() + this.getHeight()) + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - getWindow().getTheme().getOptionWidthOffset() * 2, this.getHeight());
                     this.getChildren().add(modeOptionButton);
-                    buttonsHeight += modeOptionButton.getHeight();
+                    buttonsHeight += modeOptionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
                     return;
                 }
 
                 DropdownOptionButton optionButton = new DropdownOptionButton(this.getWindow(), option, this.getX() + 1, (this.getY() + this.getHeight()) + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - 2, this.getHeight());
                 this.getChildren().add(optionButton);
-                buttonsHeight += optionButton.getHeight();
+                buttonsHeight += optionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
             }
         });
-        buttonsHeight += getWindow().getTheme().getOptionOffset() * 2;
+        buttonsHeight += getWindow().getTheme().getOptionOffset() * 2 - getWindow().getTheme().getOptionButtonOffset();
 
         allButtonsAfter().forEach(button -> {
             button.move(0, buttonsHeight);
@@ -94,9 +94,9 @@ public class FlareDropdownFeatureButton extends DropdownFeatureButton {
     public void addExtraButtons() {
         FlareDropdownKeybindButton dropdownKeybindButton = new FlareDropdownKeybindButton(this.getWindow(), getFeature(), getX() + getWindow().getTheme().getOptionWidthOffset(), getY() + this.getHeight() + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - getWindow().getTheme().getOptionWidthOffset() * 2, this.getHeight());
         this.getChildren().add(dropdownKeybindButton);
-        buttonsHeight += this.getHeight();
+        buttonsHeight += this.getHeight() + getWindow().getTheme().getOptionButtonOffset();
         this.getChildren().add(new FlareDropdownVisibleButton(this.getWindow(), getFeature(), getX() + getWindow().getTheme().getOptionWidthOffset(), getY() + this.getHeight() + buttonsHeight + getWindow().getTheme().getOptionOffset(), this.getWidth() - getWindow().getTheme().getOptionWidthOffset() * 2, this.getHeight()));
-        buttonsHeight += this.getHeight();
+        buttonsHeight += this.getHeight() + getWindow().getTheme().getOptionButtonOffset();
         super.addExtraButtons();
         super.addExtraButtons();
     }
@@ -127,14 +127,14 @@ public class FlareDropdownFeatureButton extends DropdownFeatureButton {
             if (optionButton.getOption().hasDependency() && dropdownOptionButton.getOption() instanceof StringArrayOption) {
                 if (optionButton.getOption().getDependency().equalsIgnoreCase(((StringArrayOption) dropdownOptionButton.getOption()).getValue())) {
                     dropdownOptionButton.getChildren().add(optionButton);
-                    dropdownOptionButton.buttonsHeight += optionButton.getHeight();
+                    dropdownOptionButton.buttonsHeight += optionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
                 }
             } else {
                 dropdownOptionButton.getChildren().add(optionButton);
-                dropdownOptionButton.buttonsHeight += optionButton.getHeight();
+                dropdownOptionButton.buttonsHeight += optionButton.getHeight() + getWindow().getTheme().getOptionButtonOffset();
             }
         });
-        dropdownOptionButton.buttonsHeight += getWindow().getTheme().getOptionOffset() * 2;
+        dropdownOptionButton.buttonsHeight += getWindow().getTheme().getOptionOffset() * 2 - getWindow().getTheme().getOptionButtonOffset();
         dropdownOptionButton.allButtonsAfter().forEach(button -> button.move(0, dropdownOptionButton.buttonsHeight));
         super.openOption(dropdownOptionButton);
     }

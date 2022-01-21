@@ -6,6 +6,7 @@ import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.dropdown.impl.button.DropdownButton;
 import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
+import me.dustin.jex.gui.click.dropdown.theme.flare.FlareDropdownToggleButton;
 import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.util.Formatting;
 
@@ -17,22 +18,26 @@ public class FlareConfigWindow extends FlareDropdownWindow {
     @Override
     public void init() {
         int buttonCount = 0;
-        DropdownButton saveButton = new DropdownButton(this, "Save",this.getX() + 1, this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getResizeBoxSize() + getTheme().getButtonOffset())), this.getWidth() - 2, getTheme().getButtonSize(), unused -> {
+        DropdownButton saveButton = new DropdownButton(this, "Save",this.getX() + getTheme().getButtonWidthOffset(), this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getResizeBoxSize() + getTheme().getButtonOffset())), this.getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).saveButton();
         });
+        saveButton.setBackgroundColor(0x00ffffff);
+        saveButton.setTextColor(-1);
         saveButton.setCenterText(false);
         this.getButtons().add(saveButton);
         buttonCount++;
-        DropdownButton loadButton = new DropdownButton(this, "Load",this.getX() + 1, this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - 2, getTheme().getButtonSize(), unused -> {
+        DropdownButton loadButton = new DropdownButton(this, "Load",this.getX() + getTheme().getButtonWidthOffset(), this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).read();
         });
+        loadButton.setBackgroundColor(0x00ffffff);
+        loadButton.setTextColor(-1);
         loadButton.setCenterText(false);
         this.getButtons().add(loadButton);
         buttonCount++;
-        DropdownButton autoSaveButton = new DropdownButton(this, "AutoSave: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"),this.getX() + 1, this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - 2, getTheme().getButtonSize(), unused -> {
+        FlareDropdownToggleButton autoSaveButton = new FlareDropdownToggleButton(this, "AutoSave",this.getX() + getTheme().getButtonWidthOffset(), this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
-            this.getButtons().get(2).setName("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"));
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
+            ((FlareDropdownToggleButton)this.getButtons().get(2)).setToggled(JexClient.INSTANCE.isAutoSaveEnabled());
         });
         autoSaveButton.setCenterText(false);
         this.getButtons().add(autoSaveButton);

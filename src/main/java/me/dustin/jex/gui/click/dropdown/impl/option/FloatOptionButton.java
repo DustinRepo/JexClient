@@ -42,4 +42,12 @@ public class FloatOptionButton extends DropdownOptionButton {
 
     protected void handleSliders(FloatOption v) {
     }
+
+    public boolean isSliding() {
+        return isSliding;
+    }
+
+    public void setSliding(boolean sliding) {
+        isSliding = sliding;
+    }
 }

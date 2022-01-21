@@ -12,6 +12,7 @@ public class FlareTheme extends DropdownTheme {
     public FlareTheme() {
         super("Flare");
         setButtonOffset(0);
+        setButtonWidthOffset(1);
         setButtonSize(14);
         setTopBarSize(14);
         setOptionOffset(4);

@@ -33,6 +33,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.*;
 import org.lwjgl.glfw.GLFW;
 
+import java.awt.*;
 import java.util.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
@@ -58,6 +59,18 @@ public class Hud extends Feature {
     public boolean suffixes = true;
     @OpChild(name = "Color", parent = "Array List", all = {"Client Color", "Rainbow", "Category"})
     public String colorMode = "Client Color";
+    @OpChild(name = "Combat", parent = "Color", dependency = "Category", isColor = true)
+    public int combatColor = new Color(255, 61, 56).getRGB();
+    @OpChild(name = "Player", parent = "Color", dependency = "Category", isColor = true)
+    public int playerColor = new Color(64, 255, 83).getRGB();
+    @OpChild(name = "Movement", parent = "Color", dependency = "Category", isColor = true)
+    public int movementColor = new Color(141, 95, 255).getRGB();
+    @OpChild(name = "Visual", parent = "Color", dependency = "Category", isColor = true)
+    public int visualColor = new Color(255, 92, 252).getRGB();
+    @OpChild(name = "World", parent = "Color", dependency = "Category", isColor = true)
+    public int worldColor = new Color(74, 84, 255).getRGB();
+    @OpChild(name = "Misc", parent = "Color", dependency = "Category", isColor = true)
+    public int miscColor = new Color(247, 255, 65).getRGB();
     @OpChild(name = "Rainbow Speed", parent = "Color", min = 1, max = 20, dependency = "Rainbow")
     public int rainbowSpeed = 3;
     @OpChild(name = "Rainbow Saturation", parent = "Color", dependency = "Rainbow", inc = 0.1f)
@@ -251,17 +264,14 @@ public class Hud extends Feature {
             immediate.draw();
         }
     }
-    private static Gui gui;
-    public static int getCategoryColor(Feature.Category category) {
-        if (gui == null)
-            gui = (Gui)Feature.get(Gui.class);
+    public int getCategoryColor(Feature.Category category) {
         return switch (category) {
-            case MOVEMENT -> gui.movementColor;
-            case VISUAL -> gui.visualColor;
-            case PLAYER -> gui.playerColor;
-            case MISC -> gui.miscColor;
-            case WORLD -> gui.worldColor;
-            case COMBAT -> gui.combatColor;
+            case MOVEMENT -> movementColor;
+            case VISUAL -> visualColor;
+            case PLAYER -> playerColor;
+            case MISC -> miscColor;
+            case WORLD -> worldColor;
+            case COMBAT -> combatColor;
         };
     }
 

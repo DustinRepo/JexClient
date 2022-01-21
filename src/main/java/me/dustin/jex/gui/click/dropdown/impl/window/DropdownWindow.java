@@ -3,6 +3,8 @@ package me.dustin.jex.gui.click.dropdown.impl.window;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.GuiFile;
 import me.dustin.jex.gui.click.dropdown.impl.button.DropdownButton;
 import me.dustin.jex.gui.click.dropdown.impl.feature.DropdownFeatureButton;
 import me.dustin.jex.gui.click.dropdown.impl.feature.DropdownKeybindButton;
@@ -50,6 +52,8 @@ public class DropdownWindow {
 
     public void tick() {
         if (!MouseHelper.INSTANCE.isMouseButtonDown(0)) {
+            if (isResizing() || isDragging())
+                ConfigManager.INSTANCE.get(GuiFile.class).write();
             setDragging(false);
             setResizing(false);
             movingScrollbar = false;
@@ -168,6 +172,7 @@ public class DropdownWindow {
                     scrollbar.moveDown();
                     for (DropdownButton button : buttons) {
                         button.setY(button.getY() - 1);
+                        moveAll(button, 0, -1);
                     }
                 }
             }
@@ -177,6 +182,7 @@ public class DropdownWindow {
                     scrollbar.moveUp();
                     for (DropdownButton button : buttons) {
                         button.setY(button.getY() + 1);
+                        moveAll(button, 0, 1);
                     }
                 }
             }

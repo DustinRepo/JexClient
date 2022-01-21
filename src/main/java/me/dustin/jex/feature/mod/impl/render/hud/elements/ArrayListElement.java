@@ -44,7 +44,7 @@ public class ArrayListElement extends HudElement {
 
             int color = getRainbowColor(count, num);
             if (getHud().colorMode.equalsIgnoreCase("Category"))
-                color = getCategoryColor(mod.getFeatureCategory());
+                color = getHud().getCategoryColor(mod.getFeatureCategory());
             if (getHud().colorMode.equalsIgnoreCase("Client Color"))
                 color = ColorHelper.INSTANCE.getClientColor();
             if (mod.isVisible() && mod.getState()) {
@@ -74,18 +74,6 @@ public class ArrayListElement extends HudElement {
         int inc = 270 / max;
         int hue = rainbowScroll + count * inc;
         return ColorHelper.INSTANCE.getColorViaHue(hue % 270, getHud().rainbowSaturation).getRGB();
-    }
-
-    public static int getCategoryColor(Feature.Category category) {
-        Gui gui = Feature.get(Gui.class);
-        return switch (category) {
-            case MOVEMENT -> gui.movementColor;
-            case VISUAL -> gui.visualColor;
-            case PLAYER -> gui.playerColor;
-            case MISC -> gui.miscColor;
-            case WORLD -> gui.worldColor;
-            case COMBAT -> gui.combatColor;
-        };
     }
 
 

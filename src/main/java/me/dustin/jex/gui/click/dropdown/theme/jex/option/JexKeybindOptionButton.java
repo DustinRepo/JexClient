@@ -38,11 +38,11 @@ public class JexKeybindOptionButton extends KeybindOptionButton {
 
         if (event.getKey() == GLFW.GLFW_KEY_ESCAPE || event.getKey() == GLFW.GLFW_KEY_ENTER) {
             this.getOption().setValue(0);
-            this.setName("Key: None");
+            this.setName(getOption().getName() + ": None");
             event.cancel();
         } else {
             this.getOption().setValue(event.getKey());
-            this.setName("Key: " + KeyboardHelper.INSTANCE.getKeyName(event.getKey()));
+            this.setName(getOption().getName() + ": " + KeyboardHelper.INSTANCE.getKeyName(event.getKey()));
         }
         EventManager.unregister(this);
         if (JexClient.INSTANCE.isAutoSaveEnabled())

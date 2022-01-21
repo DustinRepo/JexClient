@@ -21,24 +21,6 @@ public class Gui extends Feature {
     @Op(name = "Mode", all = {"Window", "Navigator"})
     public String mode = "Window";
 
-    @OpChild(name = "Max Window Height", min = 200, max = 800, inc = 5, parent = "Mode", dependency = "Window")
-    public int maxWindowHeight = 295;
-    @OpChild(name = "Colors", all = {"Customize", "Client"}, parent = "Mode", dependency = "Window")
-    public String colorScheme = "Customize";
-
-    @OpChild(name = "Combat", parent = "Colors", dependency = "Customize", isColor = true)
-    public int combatColor = new Color(255, 61, 56).getRGB();
-    @OpChild(name = "Player", parent = "Colors", dependency = "Customize", isColor = true)
-    public int playerColor = new Color(64, 255, 83).getRGB();
-    @OpChild(name = "Movement", parent = "Colors", dependency = "Customize", isColor = true)
-    public int movementColor = new Color(141, 95, 255).getRGB();
-    @OpChild(name = "Visual", parent = "Colors", dependency = "Customize", isColor = true)
-    public int visualColor = new Color(255, 92, 252).getRGB();
-    @OpChild(name = "World", parent = "Colors", dependency = "Customize", isColor = true)
-    public int worldColor = new Color(74, 84, 255).getRGB();
-    @OpChild(name = "Misc", parent = "Colors", dependency = "Customize", isColor = true)
-    public int miscColor = new Color(247, 255, 65).getRGB();
-
     @Override
     public void onEnable() {
         switch (mode.toLowerCase()) {

@@ -130,6 +130,16 @@ public class DropdownOptionButton extends DropdownButton {
         return last;
     }
 
+    protected DropdownButton getNextButton() {
+        if (parentButton != null)
+        for (DropdownButton button : parentButton.getChildren()) {
+            if (getWindow().getButtons().indexOf(button) > getWindow().getButtons().indexOf(this) && button.isVisible()) {
+                return button;
+            }
+        }
+        return null;
+    }
+
     public void unregister() {
         EventManager.unregister(this);
         if (JexClient.INSTANCE.isAutoSaveEnabled())

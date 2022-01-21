@@ -6,6 +6,7 @@ import me.dustin.jex.file.impl.GuiThemeFile;
 import me.dustin.jex.gui.click.dropdown.DropDownGui;
 import me.dustin.jex.gui.click.dropdown.impl.button.DropdownButton;
 import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
+import me.dustin.jex.gui.click.dropdown.theme.flare.FlareDropdownToggleButton;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Scrollbar;
 
@@ -18,12 +19,14 @@ public class FlareThemeWindow extends FlareDropdownWindow {
     public void init() {
         int i = 0;
         for (DropdownTheme theme : DropDownGui.getThemes()) {
-            getButtons().add(new DropdownButton(this, theme.getName(), getX(), getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (i * (getTheme().getButtonSize() + getTheme().getButtonOffset())), getWidth(), getTheme().getButtonSize(), unused -> {
+            FlareDropdownToggleButton button = new FlareDropdownToggleButton(this, theme.getName(), getX() + getTheme().getButtonWidthOffset(), getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (i * (getTheme().getButtonSize() + getTheme().getButtonOffset())), getWidth()- getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
                 ConfigManager.INSTANCE.get(GuiFile.class).write();
                 DropDownGui.setCurrentTheme(theme);
                 ConfigManager.INSTANCE.get(GuiThemeFile.class).write();
                 Wrapper.INSTANCE.getMinecraft().setScreen(new DropDownGui());
-            }));
+            });
+            button.setToggled(theme == DropDownGui.getCurrentTheme());
+            getButtons().add(button);
             i++;
         }
         this.setPrevHeight(getHeight());

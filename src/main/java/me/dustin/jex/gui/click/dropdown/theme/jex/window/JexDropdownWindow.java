@@ -25,7 +25,7 @@ public class JexDropdownWindow extends DropdownWindow {
         int i = 0;
         for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
             if (feature.getFeatureCategory().name().equalsIgnoreCase(getName())) {
-                JexDropdownFeatureButton dropdownFeatureButton = new JexDropdownFeatureButton(this, feature, getX() + 1, getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (i * (getTheme().getButtonSize() + getTheme().getButtonOffset())), getWidth() - 2, getTheme().getButtonSize());
+                JexDropdownFeatureButton dropdownFeatureButton = new JexDropdownFeatureButton(this, feature, getX() + getTheme().getButtonWidthOffset(), getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (i * (getTheme().getButtonSize() + getTheme().getButtonOffset())), getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize());
                 getButtons().add(dropdownFeatureButton);
                 this.setHeight(this.getHeight() + getTheme().getButtonSize() + getTheme().getBottomOffset());
                 i++;

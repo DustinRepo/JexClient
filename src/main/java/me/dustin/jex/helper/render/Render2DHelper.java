@@ -3,6 +3,7 @@ package me.dustin.jex.helper.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.math.vector.Vector3D;
 import me.dustin.jex.helper.misc.MouseHelper;
@@ -373,6 +374,20 @@ public enum Render2DHelper {
         }
 
         fill(matrixStack, par1, par3, par2 + 1, par3 + 1, par4);
+    }
+
+    public void drawThinHLine(MatrixStack matrixStack, float x, float y, float endX, int color) {
+        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+        Color color1 = ColorHelper.INSTANCE.getColor(color);
+        Render2DHelper.INSTANCE.setup2DRender(false);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        bufferBuilder.vertex(matrix4f, x, y, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f, endX, y, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        Render2DHelper.INSTANCE.end2DRender();
     }
 
     public void drawVLine(MatrixStack matrixStack, float par1, float par2, float par3, int par4) {

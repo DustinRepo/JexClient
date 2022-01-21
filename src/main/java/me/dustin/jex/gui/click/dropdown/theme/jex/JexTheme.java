@@ -14,6 +14,7 @@ public class JexTheme extends DropdownTheme {
         setResizeBoxSize(2);
         setButtonSize(12);
         setButtonOffset(0);
+        setButtonWidthOffset(1);
         setTopBarOffset(0);
         setOptionOffset(2);
         setOptionWidthOffset(1);

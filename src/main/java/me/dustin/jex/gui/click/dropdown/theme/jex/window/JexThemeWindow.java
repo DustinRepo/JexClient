@@ -18,7 +18,7 @@ public class JexThemeWindow extends JexDropdownWindow {
     public void init() {
         int i = 0;
         for (DropdownTheme theme : DropDownGui.getThemes()) {
-            getButtons().add(new DropdownButton(this, theme.getName(), getX(), getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (i * (getTheme().getButtonSize() + getTheme().getButtonOffset())), getWidth(), getTheme().getButtonSize(), unused -> {
+            getButtons().add(new DropdownButton(this, theme.getName(), getX() + getTheme().getButtonWidthOffset(), getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (i * (getTheme().getButtonSize() + getTheme().getButtonOffset())), getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
                 ConfigManager.INSTANCE.get(GuiFile.class).write();
                 DropDownGui.setCurrentTheme(theme);
                 ConfigManager.INSTANCE.get(GuiThemeFile.class).write();

@@ -43,4 +43,12 @@ public class IntOptionButton extends DropdownOptionButton {
     protected void handleSliders(IntOption v) {
 
     }
+
+    public boolean isSliding() {
+        return isSliding;
+    }
+
+    public void setSliding(boolean sliding) {
+        isSliding = sliding;
+    }
 }

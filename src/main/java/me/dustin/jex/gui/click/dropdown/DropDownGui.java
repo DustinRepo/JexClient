@@ -3,6 +3,7 @@ package me.dustin.jex.gui.click.dropdown;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.GuiFile;
 import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
+import me.dustin.jex.gui.click.dropdown.theme.aris.ArisTheme;
 import me.dustin.jex.gui.click.dropdown.theme.flare.FlareTheme;
 import me.dustin.jex.gui.click.dropdown.theme.jex.JexTheme;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -19,6 +20,7 @@ public class DropDownGui extends Screen {
     static {
         themes.add(new JexTheme());
         themes.add(new FlareTheme());
+        themes.add(new ArisTheme());
         currentTheme = themes.get(0);
     }
 

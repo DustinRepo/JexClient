@@ -32,6 +32,7 @@ public class KeybindOptionButton extends DropdownOptionButton{
         super.click(double_1, double_2, int_1);
         if (!EventManager.isRegistered(this) && isHovered() && int_1 == 0) {
             EventManager.register(this);
+            setName(getOption().getName() + ": ...");
         }
     }
 }
