@@ -6,6 +6,7 @@ import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
 import me.dustin.jex.gui.click.dropdown.theme.aris.ArisTheme;
 import me.dustin.jex.gui.click.dropdown.theme.flare.FlareTheme;
 import me.dustin.jex.gui.click.dropdown.theme.jex.JexTheme;
+import me.dustin.jex.gui.click.dropdown.theme.windows98.Windows98Theme;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -21,6 +22,7 @@ public class DropDownGui extends Screen {
         themes.add(new JexTheme());
         themes.add(new FlareTheme());
         themes.add(new ArisTheme());
+        //themes.add(new Windows98Theme());
         currentTheme = themes.get(0);
     }
 

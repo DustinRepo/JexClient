@@ -1,5 +1,10 @@
 0.6.1
+Added AntiVoid mod
+Added Aris theme to the new Gui
+Added Powder Snow and Spyglass options to AntiOverlay
 Fixed NoPush Mobs not working since 0.5.7
+Fixed NoFog applying underwater without being enabled
+Moved Category Color options to inside ArrayList option in the HUD
 
 0.6.0
 Added AntiHazard mod

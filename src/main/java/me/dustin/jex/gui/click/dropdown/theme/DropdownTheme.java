@@ -147,4 +147,8 @@ public class DropdownTheme {
     public void setOptionButtonOffset(int optionButtonOffset) {
         this.optionButtonOffset = optionButtonOffset;
     }
+
+    public DropdownWindow getTopWindow() {
+        return topWindow;
+    }
 }
