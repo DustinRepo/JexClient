@@ -77,7 +77,7 @@ public class AntiLiquid extends Feature {
                         return;
                     }
                     if (getBlockFromHotbar() == -1) {
-                        if (InventoryHelper.INSTANCE.isHotbarFull()) {
+                        if (InventoryHelper.INSTANCE.isHotbarFull() && getBlockFromInv() != -1) {
                             InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getPlayer().currentScreenHandler, getBlockFromInv(), SlotActionType.SWAP, 8);
                         }else if (getBlockFromInv() != -1) {
                             InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getPlayer().currentScreenHandler, getBlockFromInv() < 9 ? getBlockFromInv() + 36 : getBlockFromInv(), SlotActionType.QUICK_MOVE);
