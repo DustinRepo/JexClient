@@ -190,6 +190,32 @@ public enum PlayerHelper {
         }
     }
 
+    public boolean canPlaceHere(BlockPos blockPos) {
+        BlockPos north = blockPos.north();
+        BlockPos east = blockPos.east();
+        BlockPos south = blockPos.south();
+        BlockPos west = blockPos.west();
+        BlockPos down = blockPos.down();
+        BlockPos up = blockPos.up();
+
+        BlockPos placePos = null;
+
+        if (!WorldHelper.INSTANCE.getBlockState(north).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(north).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
+            placePos = north;
+        } else if (!WorldHelper.INSTANCE.getBlockState(south).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(south).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
+            placePos = south;
+        } else if (!WorldHelper.INSTANCE.getBlockState(east).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(east).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
+            placePos = east;
+        } else if (!WorldHelper.INSTANCE.getBlockState(west).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(west).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
+            placePos = west;
+        } else if (!WorldHelper.INSTANCE.getBlockState(up).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(up).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
+            placePos = up;
+        } else if (!WorldHelper.INSTANCE.getBlockState(down).getMaterial().isReplaceable() && WorldHelper.INSTANCE.getBlockState(down).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS) {
+            placePos = down;
+        }
+        return placePos != null;
+    }
+
     public Vec3d getPlacingLookPos(BlockPos blockPos, boolean illegallPlace) {
         BlockPos north = blockPos.north();
         BlockPos east = blockPos.east();
