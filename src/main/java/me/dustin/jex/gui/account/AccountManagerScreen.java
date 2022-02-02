@@ -50,6 +50,7 @@ public class AccountManagerScreen extends Screen {
     public String outputString;
     private Scrollbar scrollbar;
     private boolean movingScrollbar;
+    private String lastSearch = "";
 
     public AccountManagerScreen() {
         super(new LiteralText("Account Manager"));
@@ -148,6 +149,11 @@ public class AccountManagerScreen extends Screen {
 
     @Override
     public void tick() {
+        if (searchTextField.isFocused() && lastSearch != null && !lastSearch.equalsIgnoreCase(searchTextField.getText())) {
+            String search = searchTextField.getText().toLowerCase();
+            loadAccountButtons(search);
+        }
+        lastSearch = searchTextField.getText();
         if (movingScrollbar) {
             if (MouseHelper.INSTANCE.isMouseButtonDown(0))
                 moveScrollbar();
