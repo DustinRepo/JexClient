@@ -35,6 +35,8 @@ public class Tracers extends Feature {
     public boolean hostiles = true;
     @Op(name = "Passives")
     public boolean passives = true;
+    @Op(name = "Neutrals")
+    public boolean neutrals = true;
 
 
     @EventPointer
@@ -97,10 +99,12 @@ public class Tracers extends Feature {
             return false;
         if (e instanceof PlayerEntity)
             return players && !EntityHelper.INSTANCE.isNPC((PlayerEntity) e);
-        if (EntityHelper.INSTANCE.isHostileMob(e))
-            return hostiles;
         if (EntityHelper.INSTANCE.isPassiveMob(e))
             return passives;
+        if (EntityHelper.INSTANCE.isHostileMob(e))
+            return hostiles;
+        if (EntityHelper.INSTANCE.isNeutralMob(e))
+            return neutrals;
         return false;
     }
 }
