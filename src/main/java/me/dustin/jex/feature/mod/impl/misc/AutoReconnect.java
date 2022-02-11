@@ -61,4 +61,8 @@ public class AutoReconnect extends Feature {
     public void connect() {
         ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), Wrapper.INSTANCE.getMinecraft(), serverAddress, null);
     }
+
+    public ServerAddress getServerAddress() {
+        return serverAddress;
+    }
 }

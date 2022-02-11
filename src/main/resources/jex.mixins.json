@@ -22,6 +22,7 @@
     "minecraft.MixinChunkOcclusionDataBuilder",
     "minecraft.MixinClickableWidget",
     "minecraft.MixinClientConnection",
+    "minecraft.MixinClientLoginNetworkAddon",
     "minecraft.MixinClientLoginNetworkHandler",
     "minecraft.MixinClientPlayerEntity",
     "minecraft.MixinClientPlayerInteractionManager",

@@ -13,6 +13,9 @@ import io.netty.util.concurrent.GenericFutureListener;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.network.ProxyHelper;
+import me.dustin.jex.helper.player.bot.BotClientConnection;
+import me.dustin.jex.helper.player.bot.BotClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.Packet;
@@ -77,6 +80,8 @@ public abstract class MixinClientConnection {
 
     @Inject(method = "send(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
     public void send(Packet packet, CallbackInfo ci) {
+        if (isBotHandler())
+            return;
         EventPacketSent.EventPacketSentDirect eventPacketSent = new EventPacketSent.EventPacketSentDirect(packet, EventPacketSent.Mode.PRE).run();
         if (eventPacketSent.isCancelled()) {
             ci.cancel();
@@ -89,7 +94,7 @@ public abstract class MixinClientConnection {
 
     @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
     public void channelRead0(ChannelHandlerContext channelHandlerContext_1, Packet<?> packet_1, CallbackInfo ci) {
-        if (this.side == NetworkSide.CLIENTBOUND && this.isOpen()) {
+        if (this.side == NetworkSide.CLIENTBOUND && this.isOpen() && !isBotHandler()) {
             EventPacketReceive eventPacketReceive = new EventPacketReceive(packet_1, EventPacketReceive.Mode.PRE).run();
             if (eventPacketReceive.isCancelled())
                 ci.cancel();
@@ -98,8 +103,13 @@ public abstract class MixinClientConnection {
 
     @Inject(method = "channelRead0", at = @At("TAIL"))
     public void channelRead01(ChannelHandlerContext channelHandlerContext_1, Packet<?> packet_1, CallbackInfo ci) {
-        if (this.side == NetworkSide.CLIENTBOUND && this.isOpen()) {
+        if (this.side == NetworkSide.CLIENTBOUND && this.isOpen() && !isBotHandler()) {
             new EventPacketReceive(packet_1, EventPacketReceive.Mode.POST).run();
         }
+    }
+
+    private boolean isBotHandler() {
+        ClientConnection me = (ClientConnection)(Object)this;
+        return me instanceof BotClientConnection;
     }
 }

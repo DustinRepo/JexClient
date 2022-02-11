@@ -10,6 +10,7 @@ import me.dustin.jex.event.world.EventInteractBlock;
 import me.dustin.jex.event.world.EventPlayerInteractionTick;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.load.impl.IClientPlayerInteractionManager;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.world.ClientWorld;
@@ -20,7 +21,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,6 +38,9 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
     @Shadow private int blockBreakingCooldown;
 
     @Shadow private BlockPos currentBreakingPos;
+
+    @Mutable
+    @Shadow @Final private ClientPlayNetworkHandler networkHandler;
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick1(CallbackInfo ci) {
@@ -124,5 +130,10 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
     @Override
     public BlockPos currentBreakingPos() {
         return this.currentBreakingPos;
+    }
+
+    @Override
+    public void setNetworkHandler(ClientPlayNetworkHandler clientPlayNetworkHandler) {
+        this.networkHandler = clientPlayNetworkHandler;
     }
 }

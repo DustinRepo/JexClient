@@ -1,5 +1,6 @@
 package me.dustin.jex.load.impl;
 
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.util.math.BlockPos;
 
 public interface IClientPlayerInteractionManager {
@@ -9,4 +10,5 @@ public interface IClientPlayerInteractionManager {
     float getBlockBreakProgress();
     int getBlockBreakingCooldown();
     BlockPos currentBreakingPos();
+    void setNetworkHandler(ClientPlayNetworkHandler clientPlayNetworkHandler);
 }

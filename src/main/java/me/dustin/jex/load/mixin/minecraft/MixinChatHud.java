@@ -4,16 +4,25 @@ import me.dustin.jex.event.render.EventRenderChatHud;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.misc.IRC;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.load.impl.IChatHud;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
+
 @Mixin(ChatHud.class)
-public class MixinChatHud {
+public class MixinChatHud implements IChatHud {
+
+    @Shadow @Final private List<ChatHudLine<Text>> messages;
 
     @Inject(method = "isChatHidden", at = @At("HEAD"), cancellable = true)
     public void isChatHidden1(CallbackInfoReturnable<Boolean> cir) {
@@ -58,4 +67,17 @@ public class MixinChatHud {
         return (ChatHud)(Object)this;
     }
 
+    @Override
+    public boolean containsMessage(String message) {
+        for (ChatHudLine<Text> textChatHudLine : this.messages) {
+            if (textChatHudLine.getText().getString().equalsIgnoreCase(message))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<ChatHudLine<Text>> getMessages() {
+        return messages;
+    }
 }

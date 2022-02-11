@@ -28,6 +28,7 @@ import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.ConnectedServerHelper;
 import me.dustin.jex.helper.network.JexServerHelper;
 import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -93,6 +94,7 @@ public enum JexClient {
         EventManager.register(EntityPositionHelper.INSTANCE);
         EventManager.register(JexServerHelper.INSTANCE);
         EventManager.register(PathingHelper.INSTANCE);
+        EventManager.register(ConnectedServerHelper.INSTANCE);
         getLogger().info("Checking for update");
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();

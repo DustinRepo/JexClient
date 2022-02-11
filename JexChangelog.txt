@@ -1,3 +1,10 @@
+0.6.2
+Added WebSpam mod
+Added .bot command which allows you to login an account to the server you are on
+Added .botcmd command to control those bots
+Fixed AntiLiquid crashing when you ran out of blocks
+Fixed Tracers not having an option for neutrals
+
 0.6.1
 Added AntiVoid mod
 Added Aris theme to the new Gui

@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.client.util.Session;
 import net.minecraft.network.Packet;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -18,6 +19,7 @@ public enum NetworkHelper {
     INSTANCE;
 
     private YggdrasilMinecraftSessionService storedSessionService;
+    private Session storedSession;
 
     public void sendPacket(Packet<?> packet) {
         try {
@@ -51,6 +53,14 @@ public enum NetworkHelper {
 
     public YggdrasilMinecraftSessionService getStoredSessionService() {
         return storedSessionService;
+    }
+
+    public Session getStoredSession() {
+        return storedSession;
+    }
+
+    public void setStoredSession(Session storedSession) {
+        this.storedSession = storedSession;
     }
 
     public void disconnect(String reason, String message) {
