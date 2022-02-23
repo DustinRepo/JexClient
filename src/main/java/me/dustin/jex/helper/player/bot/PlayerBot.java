@@ -221,6 +221,8 @@ public class PlayerBot {
     }
 
     public final Vec3d getCameraPosVec() {
+        if (player == null)
+            return Vec3d.ZERO;
         return new Vec3d(player.getX(), player.getY() + player.getStandingEyeHeight(), player.getZ());
     }
 
