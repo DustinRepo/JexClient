@@ -20,8 +20,8 @@ import java.util.ArrayList;
 public abstract class PathProcessor
 {
 	private static final KeyBinding[] CONTROLS =
-		{Wrapper.INSTANCE.getOptions().keyForward, Wrapper.INSTANCE.getOptions().keyBack, Wrapper.INSTANCE.getOptions().keyRight,
-			Wrapper.INSTANCE.getOptions().keyLeft, Wrapper.INSTANCE.getOptions().keyJump, Wrapper.INSTANCE.getOptions().keySneak};
+		{Wrapper.INSTANCE.getOptions().forwardKey, Wrapper.INSTANCE.getOptions().backKey, Wrapper.INSTANCE.getOptions().rightKey,
+			Wrapper.INSTANCE.getOptions().leftKey, Wrapper.INSTANCE.getOptions().jumpKey, Wrapper.INSTANCE.getOptions().sneakKey};
 	
 	protected final ArrayList<PathPos> path;
 	protected int index;

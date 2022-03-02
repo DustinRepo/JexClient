@@ -34,11 +34,11 @@ public abstract class MixinCommandSuggestor implements ICommandSuggestor {
 
     @Shadow @Nullable private CompletableFuture<Suggestions> pendingSuggestions;
 
-    @Shadow @Final private static Pattern BACKSLASH_S_PATTERN;
-
     @Shadow private boolean windowActive;
 
     @Shadow @Nullable private CommandSuggestor.SuggestionWindow window;
+
+    @Shadow @Final private static Pattern WHITESPACE_PATTERN;
 
     @Redirect(method = "refresh", at = @At(value = "INVOKE", target = "com/mojang/brigadier/StringReader.peek()C"))
     public char refresh(StringReader stringReader) {
@@ -115,7 +115,7 @@ public abstract class MixinCommandSuggestor implements ICommandSuggestor {
         } else {
             int i = 0;
 
-            for(Matcher matcher = BACKSLASH_S_PATTERN.matcher(input); matcher.find(); i = matcher.end()) {
+            for(Matcher matcher = WHITESPACE_PATTERN.matcher(input); matcher.find(); i = matcher.end()) {
             }
 
             return i;

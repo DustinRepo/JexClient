@@ -103,7 +103,7 @@ public abstract class MixinMinecraftClient implements IMinecraft {
 
     @Inject(method = "hasOutline", at = @At("HEAD"), cancellable = true)
     public void hasOutline1(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        EventHasOutline eventHasOutline = new EventHasOutline(entity, entity.isGlowing() || this.player != null && this.player.isSpectator() && this.options.keySpectatorOutlines.isPressed() && entity.getType() == EntityType.PLAYER).run();
+        EventHasOutline eventHasOutline = new EventHasOutline(entity, entity.isGlowing() || this.player != null && this.player.isSpectator() && this.options.spectatorOutlinesKey.isPressed() && entity.getType() == EntityType.PLAYER).run();
         cir.setReturnValue(eventHasOutline.isOutline());
     }
 

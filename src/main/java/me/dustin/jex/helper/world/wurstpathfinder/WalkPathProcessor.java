@@ -96,7 +96,7 @@ public class WalkPathProcessor extends PathProcessor
 				if (Wrapper.INSTANCE.getPlayer() == Freecam.playerEntity) {
 					Wrapper.INSTANCE.getPlayer().setSneaking(true);
 				} else {
-					Wrapper.INSTANCE.getOptions().keySneak.setPressed(true);
+					Wrapper.INSTANCE.getOptions().sneakKey.setPressed(true);
 				}
 			else
 				Wrapper.INSTANCE.getPlayer().setSneaking(false);
@@ -142,7 +142,7 @@ public class WalkPathProcessor extends PathProcessor
 				// TODO: Spider
 				Block block = WorldHelper.INSTANCE.getBlock(pos);
 				if(block instanceof LadderBlock || block instanceof VineBlock) {
-					Wrapper.INSTANCE.getOptions().keyJump.setPressed(true);
+					Wrapper.INSTANCE.getOptions().jumpKey.setPressed(true);
 				}else {
 					// directional jump
 					if(index < path.size() - 1

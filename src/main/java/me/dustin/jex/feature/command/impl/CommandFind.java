@@ -3,6 +3,8 @@ package me.dustin.jex.feature.command.impl;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
@@ -17,17 +19,46 @@ import net.minecraft.client.world.GeneratorType;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+
+//TODO: fix after 1.18.2 changes
 @Cmd(name = "find", description = "Find structures with a given seed, like the /locate command", syntax = {".find <structure> <seed>", ".find <structure> <searchPos> <seed>"})
-public class CommandFind extends Command {
-    private StructureFeature<?> structureFeature;
+public class CommandFind /*extends Command*/ {
+    /*private StructureFeature<?> structureFeature;
     private BlockPos startPos;
     @Override
     public void registerCommand() {
         LiteralArgumentBuilder<FabricClientCommandSource> argumentBuilder = literal(this.name);
+        Registry<ConfiguredStructureFeature<?, ?>> registry = source.getWorld().getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+        Either var10000 = structureFeature.getKey();
+        Function var10001 = (key) -> {
+            return registry.getEntry((Integer) key).map((entry) -> {
+                return RegistryEntryList.of(new RegistryEntry[]{entry});
+            });
+        };
+        Objects.requireNonNull(registry);
+        RegistryEntryList<ConfiguredStructureFeature<?, ?>> registryEntryList = (RegistryEntryList)((Optional)var10000.map(var10001, registry::getEntryList)).orElseThrow(() -> {
+            return INVALID_EXCEPTION.create(structureFeature.asString());
+        });
+        BlockPos blockPos = new BlockPos(source.getPosition());
+        ServerWorld serverWorld = source.getWorld();
+        Pair<BlockPos, RegistryEntry<ConfiguredStructureFeature<?, ?>>> pair = serverWorld.getChunkManager().getChunkGenerator().locateStructure(serverWorld, registryEntryList, blockPos, 100, false);
+        if (pair == null) {
+            throw FAILED_EXCEPTION.create(structureFeature.asString());
+        } else {
+            return sendCoordinates(source, structureFeature, blockPos, pair, "commands.locate.success");
+        }
+        registry.getEntry(registryEntryList.key)
         StructureFeature.STRUCTURES.forEach((s, structureFeature) -> {
             argumentBuilder.then(literal(s).then(argument("pos", Vec3ArgumentType.vec3()).then(argument("seed", MessageArgumentType.message()).executes(context -> {
                 this.structureFeature = structureFeature;
@@ -80,5 +111,5 @@ public class CommandFind extends Command {
             }
         }.start();
         return 1;
-    }
+    }*/
 }

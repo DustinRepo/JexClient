@@ -3,6 +3,7 @@ package me.dustin.jex.load.mixin.minecraft;
 import me.dustin.jex.event.render.EventRenderFluid;
 import me.dustin.jex.event.render.EventShouldDrawSide;
 import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.FluidRenderer;
 import net.minecraft.fluid.FluidState;
@@ -19,24 +20,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinFluidRenderer {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void tesselate(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state, CallbackInfoReturnable<Boolean> cir) {
-        EventRenderFluid eventRenderFluid = new EventRenderFluid(state.getBlockState().getBlock()).run();
+    public void tesselate(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState, CallbackInfoReturnable<Boolean> cir) {
+        EventRenderFluid eventRenderFluid = new EventRenderFluid(fluidState.getBlockState().getBlock()).run();
         if (eventRenderFluid.isCancelled())
             cir.setReturnValue(false);
     }
 
-    @Inject(method = "isSideCovered(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;F)Z", at = @At("HEAD"), cancellable = true)
-    private static void isSideCovered1(BlockView world, BlockPos pos, Direction direction, float maxDeviation, CallbackInfoReturnable<Boolean> cir) {
-        EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(WorldHelper.INSTANCE.getBlock(pos), direction, pos).run();
+    @Inject(method = "isSideCovered(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FLnet/minecraft/block/BlockState;)Z", at = @At("HEAD"), cancellable = true)
+    private static void isSideCovered1(BlockView blockView, BlockPos blockPos, Direction direction, float maxDeviation, BlockState blockState, CallbackInfoReturnable<Boolean> cir) {
+        EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(WorldHelper.INSTANCE.getBlock(blockPos), direction, blockPos).run();
         if (eventShouldDrawSide.isCancelled())
             cir.setReturnValue(!eventShouldDrawSide.isShouldDrawSide());
     }
-
-    //Keep this? doesn't work on lava
-    /*@ModifyArg(method = "vertex", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumer;color(FFFF)Lnet/minecraft/client/render/VertexConsumer;"), index = 3)
-    public float getAlpha(float alpha) {
-        int a = (int)(alpha * 255);
-        EventBufferQuadAlpha eventBufferQuadAlpha = new EventBufferQuadAlpha(a).run();
-        return eventBufferQuadAlpha.getAlpha() / 255.f;
-    }*/
 }

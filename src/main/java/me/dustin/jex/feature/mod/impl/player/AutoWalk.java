@@ -13,13 +13,13 @@ public class AutoWalk extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        KeyBinding.setKeyPressed(Wrapper.INSTANCE.getOptions().keyForward.getDefaultKey(), true);
+        KeyBinding.setKeyPressed(Wrapper.INSTANCE.getOptions().forwardKey.getDefaultKey(), true);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override
     public void onDisable() {
         try {
-            KeyBinding.setKeyPressed(Wrapper.INSTANCE.getOptions().keyForward.getDefaultKey(), false);
+            KeyBinding.setKeyPressed(Wrapper.INSTANCE.getOptions().forwardKey.getDefaultKey(), false);
         } catch (NullPointerException ignored) {
         }
         super.onDisable();

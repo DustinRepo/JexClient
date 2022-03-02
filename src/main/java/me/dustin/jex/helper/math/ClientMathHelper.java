@@ -42,48 +42,6 @@ public enum ClientMathHelper {
         return val.compareTo(min) < 0 ? min : val.compareTo(max) > 0 ? max : val;
     }
 
-    private double lastMovementFovMultiplier, movementFovMultiplier;
-
-    public double getFOV(Camera camera, float tickDelta, boolean changingFov) {
-        double d = 70.0D;
-        if (changingFov) {
-            d = Wrapper.INSTANCE.getOptions().fov;
-            d *= (double)MathHelper.lerp(tickDelta, this.lastMovementFovMultiplier, this.movementFovMultiplier);
-        }
-
-        if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isDead()) {
-            float f = Math.min((float)((LivingEntity)camera.getFocusedEntity()).deathTime + tickDelta, 20.0F);
-            d /= (double)((1.0F - 500.0F / (f + 500.0F)) * 2.0F + 1.0F);
-        }
-
-        CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
-        if (cameraSubmersionType == CameraSubmersionType.LAVA || cameraSubmersionType == CameraSubmersionType.WATER) {
-            d *= (double)MathHelper.lerp(Wrapper.INSTANCE.getOptions().fovEffectScale, 1.0F, 0.85714287F);
-        }
-
-        updateMovementFovMultiplier();
-        return d;
-    }
-
-    private void updateMovementFovMultiplier() {
-        float f = 1.0F;
-        if (Wrapper.INSTANCE.getMinecraft().getCameraEntity() instanceof AbstractClientPlayerEntity) {
-            AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)Wrapper.INSTANCE.getMinecraft().getCameraEntity();
-            f = abstractClientPlayerEntity.getSpeed();
-        }
-
-        this.lastMovementFovMultiplier = this.movementFovMultiplier;
-        this.movementFovMultiplier += (f - this.movementFovMultiplier) * 0.5F;
-        if (this.movementFovMultiplier > 1.5F) {
-            this.movementFovMultiplier = 1.5F;
-        }
-
-        if (this.movementFovMultiplier < 0.1F) {
-            this.movementFovMultiplier = 0.1F;
-        }
-
-    }
-
     public float getRandom() {
         return rng.nextFloat();
     }

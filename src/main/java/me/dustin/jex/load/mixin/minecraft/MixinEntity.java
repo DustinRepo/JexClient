@@ -55,8 +55,7 @@ public abstract class MixinEntity {
 
     @Shadow public abstract void move(MovementType type, Vec3d movement);
 
-    @Shadow private Box entityBounds;
-
+    @Shadow private Box boundingBox;
 
     @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
     public void push(Entity entity, CallbackInfo ci) {
@@ -67,7 +66,7 @@ public abstract class MixinEntity {
 
     @Inject(method = "getBoundingBox", at = @At("HEAD"), cancellable = true)
     public void getBoundBox1(CallbackInfoReturnable<Box> cir) {
-        EventEntityHitbox eventEntityHitbox = new EventEntityHitbox((Entity)(Object)this, this.entityBounds).run();
+        EventEntityHitbox eventEntityHitbox = new EventEntityHitbox((Entity)(Object)this, this.boundingBox).run();
         cir.setReturnValue(eventEntityHitbox.getBox());
     }
 

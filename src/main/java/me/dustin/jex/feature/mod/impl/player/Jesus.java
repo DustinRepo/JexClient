@@ -53,13 +53,13 @@ public class Jesus extends Feature {
         }
         if (WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getPlayer())) {
             if (!Wrapper.INSTANCE.getPlayer().isSneaking()) {
-                if (Wrapper.INSTANCE.getOptions().keyJump.isPressed() && allowJump && mode.equalsIgnoreCase("Dolphin")) {
+                if (Wrapper.INSTANCE.getOptions().jumpKey.isPressed() && allowJump && mode.equalsIgnoreCase("Dolphin")) {
                     if (ticks != 4) {
                         Wrapper.INSTANCE.getPlayer().jump();
                         Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
                         Wrapper.INSTANCE.getPlayer().setVelocity(orig.getX() * 0.5f, orig.getY(), orig.getZ() * 0.5f);
                     } else {
-                        KeyBinding.setKeyPressed(Wrapper.INSTANCE.getOptions().keyJump.getDefaultKey(), false);
+                        KeyBinding.setKeyPressed(Wrapper.INSTANCE.getOptions().jumpKey.getDefaultKey(), false);
                     }
                 } else if (mode.equalsIgnoreCase("Dolphin") && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer()) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
                     Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();

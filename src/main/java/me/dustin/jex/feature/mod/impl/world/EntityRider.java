@@ -67,7 +67,7 @@ public class EntityRider extends Feature {
             iHorseBaseEntity.setJumpStrength(horseJump);
             iHorseBaseEntity.setSpeed(horseSpeed);
             if (horseInstantJump)
-                iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? 1 : 0);
+                iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
         }
         if (llama && isLlama(vehicle)) {
             HorseBaseEntity horseBaseEntity = (HorseBaseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
@@ -75,12 +75,12 @@ public class EntityRider extends Feature {
             iHorseBaseEntity.setJumpStrength(llamaJump);
             iHorseBaseEntity.setSpeed(llamaSpeed);
             if (llamaInstantJump)
-                iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? 1 : 0);
+                iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
         }
         if (boat && vehicle instanceof BoatEntity boatEntity) {
             boatEntity.updateVelocity(boatSpeed / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));
             if (allowBoatFly)
-                if (Wrapper.INSTANCE.getOptions().keyJump.isPressed()) {
+                if (Wrapper.INSTANCE.getOptions().jumpKey.isPressed()) {
                     boatEntity.addVelocity(0, boatJump / 10.0f, 0);
                 } else if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_INSERT)) {
                     boatEntity.addVelocity(0, -boatJump / 10.0f, 0);

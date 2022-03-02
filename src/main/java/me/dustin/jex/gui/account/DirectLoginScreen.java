@@ -91,9 +91,9 @@ public class DirectLoginScreen extends Screen {
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		Wrapper.INSTANCE.getMinecraft().keyboard.setRepeatEvents(false);
-		super.onClose();
+		super.close();
 	}
 
 	@Override

@@ -20,8 +20,8 @@ public class NormalFly extends FeatureExtension {
         if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
             if (fly == null)
                 fly = Feature.get(Fly.class);
-            boolean jumping = Wrapper.INSTANCE.getOptions().keyJump.isPressed();
-            boolean sneaking = Wrapper.INSTANCE.getOptions().keySneak.isPressed();
+            boolean jumping = Wrapper.INSTANCE.getOptions().jumpKey.isPressed();
+            boolean sneaking = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
 
 
             if (fly.mode.equalsIgnoreCase("Normal")) {

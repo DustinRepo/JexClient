@@ -49,7 +49,7 @@ public class WaypointScreen extends Screen {
     private Scrollbar scrollbar;
 
     @Override
-    public boolean isPauseScreen() {
+    public boolean shouldPause() {
         return false;
     }
 

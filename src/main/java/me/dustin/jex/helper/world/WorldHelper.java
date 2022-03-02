@@ -2,11 +2,6 @@ package me.dustin.jex.helper.world;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.datafixers.util.Function4;
-import com.mojang.serialization.Lifecycle;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
@@ -16,8 +11,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorType;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -29,32 +22,18 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resource.DataPackSettings;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.QueueingWorldGenerationProgressListener;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.UserCache;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.GameMode;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.SaveProperties;
-import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.level.LevelInfo;
-import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Function;
 import java.util.*;
 
 public enum WorldHelper {
@@ -426,7 +405,8 @@ public enum WorldHelper {
     }
 
     public IntegratedServer createIntegratedServer(Thread thread, long seed, GeneratorType generatorType) {
-        String worldName = "jex_finder" + seed;
+        //TODO: recreate this after 1.18.2
+        /*String worldName = "jex_finder" + seed;
         LevelStorage.Session session2;
         try {
             session2 = Wrapper.INSTANCE.getMinecraft().getLevelStorage().createSession(worldName);
@@ -436,7 +416,7 @@ public enum WorldHelper {
             Wrapper.INSTANCE.getMinecraft().setScreen(null);
             return null;
         }
-        DynamicRegistryManager.Impl registryTracker = DynamicRegistryManager.create();
+        DynamicRegistryManager.MutableImpl registryTracker = DynamicRegistryManager.createAndLoad().create();
         GeneratorOptions generatorOptions = generatorType.createDefaultOptions(registryTracker, seed, true, false);
         MinecraftClient.IntegratedResourceManager integratedResourceManager2;
         LevelInfo levelInfo = new LevelInfo(worldName, GameMode.CREATIVE, false, Difficulty.HARD, true, new GameRules(), DataPackSettings.SAFE_MODE);
@@ -469,7 +449,7 @@ public enum WorldHelper {
         if (integratedServer.setupServer()) {
             return integratedServer;
         }
-        //cleanupIntegratedServer();
+        //cleanupIntegratedServer();*/
         return null;
     }
 

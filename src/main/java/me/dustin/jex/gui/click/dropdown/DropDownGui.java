@@ -64,9 +64,9 @@ public class DropDownGui extends Screen {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         ConfigManager.INSTANCE.get(GuiFile.class).write();
-        super.onClose();
+        super.close();
     }
 
     public static DropdownTheme getCurrentTheme() {

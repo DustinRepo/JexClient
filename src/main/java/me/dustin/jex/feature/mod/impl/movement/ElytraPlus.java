@@ -52,7 +52,7 @@ public class ElytraPlus extends Feature {
                 if (mode.equalsIgnoreCase("Hover")) {
                     PlayerHelper.INSTANCE.setMoveSpeed(event, flySpeed);
                     if (event.getY() <= 0)
-                        event.setY(Wrapper.INSTANCE.getOptions().keyJump.isPressed() ? flySpeed : (Wrapper.INSTANCE.getLocalPlayer().isSneaking() ? -flySpeed : (slowGlide ? -0.0001 : 0)));
+                        event.setY(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? flySpeed : (Wrapper.INSTANCE.getLocalPlayer().isSneaking() ? -flySpeed : (slowGlide ? -0.0001 : 0)));
                 }
 
             }

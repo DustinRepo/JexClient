@@ -3,11 +3,12 @@ package me.dustin.jex.feature.command.impl;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.datafixers.util.Pair;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
-import me.dustin.jex.feature.command.core.arguments.IdentifierArgumentType;
 import me.dustin.jex.feature.command.core.arguments.MessageArgumentType;
+import me.dustin.jex.feature.command.core.arguments.RegistryPredicateArgumentType;
 import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.world.SeedHelper;
@@ -22,6 +23,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
@@ -33,7 +35,7 @@ public class CommandFindBiome extends Command {
 
     @Override
     public void registerCommand() {
-        dispatcher.register(literal(this.name).then(argument("biome", IdentifierArgumentType.identifier()).suggests(ALL_BIOMES).then(argument("pos", Vec3ArgumentType.vec3()).then(argument("seed", MessageArgumentType.message()).executes(context -> {
+        dispatcher.register(literal(this.name).then(argument("biome", RegistryPredicateArgumentType.registryPredicate(Registry.BIOME_KEY)).suggests(ALL_BIOMES).then(argument("pos", Vec3ArgumentType.vec3()).then(argument("seed", MessageArgumentType.message()).executes(context -> {
             this.startPos = new BlockPos(Vec3ArgumentType.getVec3(context, "pos"));
             return run(context);
         }))).then(argument("seed", MessageArgumentType.message()).executes(this))));
@@ -42,7 +44,7 @@ public class CommandFindBiome extends Command {
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         long seed = SeedHelper.INSTANCE.getSeed(MessageArgumentType.getMessage(context, "seed").asString()).getAsLong();
-        Identifier biomeId = IdentifierArgumentType.getIdentifier(context, "biome");
+        RegistryPredicateArgumentType.RegistryPredicate<Biome> biomeRegistryPredicate = RegistryPredicateArgumentType.getBiomePredicate(context, "biome");
         if (startPos == null)
             startPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
         new Thread("biome_finder") {
@@ -55,9 +57,7 @@ public class CommandFindBiome extends Command {
                     return;
                 }
 
-                Biome biome = integratedServer.getRegistryManager().get(Registry.BIOME_KEY).getOrEmpty(biomeId).orElseThrow(() -> null);
-
-                if (biome == null) {
+                if (biomeRegistryPredicate == null) {
                     ChatHelper.INSTANCE.addClientMessage("Error: Biome request returned null");
                 }
 
@@ -67,10 +67,10 @@ public class CommandFindBiome extends Command {
                     default -> integratedServer.getOverworld();
                 };
                 if (serverWorld != null) {
-                    BlockPos pos = serverWorld.locateBiome(biome, startPos, 6400, 8);
-                    if (pos != null) {
-                        String posString = "BlockPos: X: \247b" + pos.getX() + (pos.getY() == 0 ? "" : " \2477Y: \247b" + pos.getY()) + " \2477Z: \247b" + pos.getZ();
-                        ChatHelper.INSTANCE.addClientMessage(biomeId.toString() + " found at " + posString);
+                    Pair<BlockPos, RegistryEntry<Biome>> pair = serverWorld.locateBiome(biomeRegistryPredicate, startPos, 6400, 8);
+                    if (pair != null) {
+                        String posString = "BlockPos: X: \247b" + pair.getFirst().getX() + (pair.getFirst().getY() == 0 ? "" : " \2477Y: \247b" + pair.getFirst().getY()) + " \2477Z: \247b" + pair.getFirst().getZ();
+                        ChatHelper.INSTANCE.addClientMessage(pair.getSecond().value().toString() + " found at " + posString);
                     } else {
                         ChatHelper.INSTANCE.addClientMessage("Could not find biome");
                     }

@@ -76,10 +76,10 @@ public class AutoGapple extends Feature {
             BaritoneHelper.INSTANCE.resume();
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
             if (pressKey)
-                Wrapper.INSTANCE.getOptions().keyUse.setPressed(false);
+                Wrapper.INSTANCE.getOptions().useKey.setPressed(false);
         } else if (isEating) {
             if (pressKey)
-                Wrapper.INSTANCE.getOptions().keyUse.setPressed(true);
+                Wrapper.INSTANCE.getOptions().useKey.setPressed(true);
             Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
         }
 

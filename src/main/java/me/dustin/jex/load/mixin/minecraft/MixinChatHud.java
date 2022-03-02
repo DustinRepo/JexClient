@@ -42,7 +42,7 @@ public class MixinChatHud implements IChatHud {
     }
 
     @Inject(method = "scroll", at = @At("HEAD"), cancellable = true)
-    public void scroll1(double amount, CallbackInfo ci) {
+    public void scroll1(int amount, CallbackInfo ci) {
         if (getThis() == Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud()) {
             IRC irc = Feature.get(IRC.class);
             if (irc.getState() && irc.ircChatOverride) {

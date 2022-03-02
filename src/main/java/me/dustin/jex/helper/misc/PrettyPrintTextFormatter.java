@@ -4,20 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import net.minecraft.nbt.NbtByte;
-import net.minecraft.nbt.NbtByteArray;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtFloat;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtIntArray;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtLong;
-import net.minecraft.nbt.NbtLongArray;
-import net.minecraft.nbt.NbtNull;
-import net.minecraft.nbt.NbtShort;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.*;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -205,6 +192,11 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
         }
     }
 
+    @Override
+    public void visitEnd(NbtEnd element) {
+
+    }
+
     private void popPathPart() {
         this.pathParts.remove(this.pathParts.size() - 1);
     }
@@ -242,8 +234,6 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
         return String.join(".", this.pathParts);
     }
 
-    public void visitNull(NbtNull element) {
-    }
 
     public static class RGBColorText {
 

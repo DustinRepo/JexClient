@@ -73,7 +73,7 @@ public class BreakingFlowController {
     }
 
     private static boolean blockInPlayerRange(BlockPos blockPos, PlayerEntity player, float range) {
-        return (blockPos.getSquaredDistance(player.getPos(), true) <= range * range);
+        return (blockPos.getSquaredDistance(player.getPos()) <= range * range);
     }
 
     public static WorkingMode getWorkingMode() {
@@ -82,7 +82,7 @@ public class BreakingFlowController {
 
     private static boolean shouldAddNewTargetBlock(BlockPos pos){
         for (int i = 0; i < cachedTargetBlockList.size(); i++) {
-            if (cachedTargetBlockList.get(i).getBlockPos().getSquaredDistance(pos.getX(),pos.getY(),pos.getZ(),false) == 0){
+            if (cachedTargetBlockList.get(i).getBlockPos().getSquaredDistance(pos.getX(),pos.getY(),pos.getZ()) == 0){
                 return false;
             }
         }

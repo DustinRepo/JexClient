@@ -19,7 +19,7 @@ public class BiomeElement extends HudElement {
         if (!isVisible())
             return;
         super.render(matrixStack);
-        String biome = Wrapper.INSTANCE.getWorld().getRegistryManager().get(Registry.BIOME_KEY).getId(Wrapper.INSTANCE.getWorld().getBiome(Wrapper.INSTANCE.getLocalPlayer().getBlockPos())).getPath().replace("_", " ");
+        String biome = Wrapper.INSTANCE.getWorld().getRegistryManager().get(Registry.BIOME_KEY).getId(Wrapper.INSTANCE.getWorld().getBiome(Wrapper.INSTANCE.getLocalPlayer().getBlockPos()).value()).getPath().replace("_", " ");
         biome = WordUtils.capitalizeFully(biome);
         String str = String.format("Biome\247f: \2477%s", biome);
         float x = isLeftSide() ? getX() + 2.5f : getX() + getWidth() - 0.5f - FontHelper.INSTANCE.getStringWidth(str);
