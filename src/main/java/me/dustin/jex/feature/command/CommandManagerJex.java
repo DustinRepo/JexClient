@@ -15,17 +15,17 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.misc.ClassHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IChatScreen;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.CommandSuggestor;
-import org.reflections.Reflections;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 
 public enum CommandManagerJex {
 
@@ -42,12 +42,11 @@ public enum CommandManagerJex {
     public void registerCommands() {
         EventManager.unregister(this);
         this.getCommands().clear();
-        Reflections reflections = new Reflections("me.dustin.jex.feature.command.impl");
-        Set<Class<? extends Command>> allClasses = reflections.getSubTypesOf(Command.class);
-        allClasses.forEach(clazz -> {
+        List<Class<?>> classList = ClassHelper.INSTANCE.getClasses("me.dustin.jex.feature.command.impl", Command.class);
+        classList.forEach(clazz -> {
             try {
                 @SuppressWarnings("deprecation")
-                Command instance = clazz.newInstance();
+                Command instance = (Command) clazz.newInstance();
                 instance.registerCommand();
                 this.getCommands().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {

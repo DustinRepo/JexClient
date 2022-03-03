@@ -1,9 +1,9 @@
 package me.dustin.jex.feature.mod.core;
 
-import org.reflections.Reflections;
+import me.dustin.jex.helper.misc.ClassHelper;
 
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 
 public enum FeatureManager {
     INSTANCE;
@@ -14,11 +14,10 @@ public enum FeatureManager {
         this.getFeatures().clear();
 
         //TODO: better method of doing this without a library
-        Reflections reflections = new Reflections("me.dustin.jex.feature.mod.impl");
-        Set<Class<? extends Feature>> allClasses = reflections.getSubTypesOf(Feature.class);
-        allClasses.forEach(clazz -> {
+        List<Class<?>> classList = ClassHelper.INSTANCE.getClasses("me.dustin.jex.feature.mod.impl", Feature.class);
+        classList.forEach(clazz -> {
             try {
-                Feature instance = clazz.newInstance();
+                Feature instance = (Feature) clazz.newInstance();
                 instance.loadFeature();
                 this.getFeatures().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {

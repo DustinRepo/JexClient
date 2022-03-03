@@ -6,29 +6,17 @@ import com.mojang.authlib.HttpAuthenticationService;
 import com.mojang.authlib.exceptions.*;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import com.mojang.authlib.yggdrasil.request.JoinMinecraftServerRequest;
 import com.mojang.authlib.yggdrasil.response.*;
-import com.mojang.util.UUIDTypeAdapter;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import me.dustin.jex.helper.network.WebHelper;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.*;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class TheAlteningSessionService extends HttpMinecraftSessionService {
 
@@ -101,7 +89,7 @@ public class TheAlteningSessionService extends HttpMinecraftSessionService {
         return makeRequest(url, input, classOfT, null);
     }
 
-    protected <T extends Response> T makeRequest(final URL url, final Object input, final Class<T> classOfT, @Nullable final String authentication) throws AuthenticationException {
+    protected <T extends Response> T makeRequest(final URL url, final Object input, final Class<T> classOfT, final String authentication) throws AuthenticationException {
         try {
             final String jsonResult = input == null ? getAuthenticationService().performGetRequest(url, authentication) : getAuthenticationService().performPostRequest(url, JsonHelper.INSTANCE.gson.toJson(input), "application/json");
             final T result = JsonHelper.INSTANCE.gson.fromJson(jsonResult, classOfT);

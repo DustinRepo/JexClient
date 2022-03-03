@@ -39,10 +39,8 @@ dependencies {
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
 
-    // https://mvnrepository.com/artifact/org.reflections/reflections
-    dependency group: 'org.reflections', name: 'reflections', version: '0.10.2'
     dependency group: 'pircbot', name: 'pircbot', version: '1.5.0'
-    dependency group: 'org.yaml', name: 'snakeyaml', version: '1.29'
+    dependency group: 'org.yaml', name: 'snakeyaml', version: '1.30'
     dependency 'net.jodah:typetools:0.6.3'
 
     implementation files('lib/baritone-1.6.3-dev.jar')

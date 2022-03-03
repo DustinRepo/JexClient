@@ -1,11 +1,10 @@
 package me.dustin.jex.file.core;
 
-import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.file.impl.AltFile;
-import org.reflections.Reflections;
+import me.dustin.jex.helper.misc.ClassHelper;
 
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 
 public enum ConfigManager {
     INSTANCE;
@@ -13,11 +12,10 @@ public enum ConfigManager {
     private final ArrayList<ConfigFile> configFiles = new ArrayList<>();
 
     public void init() {
-        Reflections reflections = new Reflections("me.dustin.jex.file.impl");
-        Set<Class<? extends ConfigFile>> allClasses = reflections.getSubTypesOf(ConfigFile.class);
-        allClasses.forEach(clazz -> {
+        List<Class<?>> classList = ClassHelper.INSTANCE.getClasses("me.dustin.jex.file.impl", ConfigFile.class);
+        classList.forEach(clazz -> {
             try {
-                ConfigFile instance = clazz.newInstance();
+                ConfigFile instance = (ConfigFile) clazz.newInstance();
                 this.getConfigFiles().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
