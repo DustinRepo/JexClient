@@ -24,7 +24,10 @@ You can download Jex Client in the discord or in the releases tab
 2. [Java 17 JDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 3. A Java IDE, like [Intellij](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
 
-## Setup Intellij:
+##Please note
+If your JexClient path has any spaces or special characters in it's path, the Features, Commands, and Config Manager will not properly load. [Why?](https://github.com/google/guava/issues/2152)
+
+## Setup:
 Simply open build.gradle as an Intellij project.
 If you don't see run profiles after it finishes loading, close and re-open the project
 
