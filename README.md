@@ -18,7 +18,7 @@
 
 Jex Client is a Minecraft Utility Client made for Anarchy servers. It has support for mods like custom Baritone Processes, ViaFabric compatibility, a Sodium compatible Xray, and more
 
-##Developers Please note
+## Developers Please note
 If your JexClient path has any spaces or special characters in it's path, the Features, Commands, and Config Manager will not properly load. [Why?](https://github.com/google/guava/issues/2152)
 
 You can download Jex Client in the discord or in the releases tab
