@@ -119,8 +119,6 @@ public class Hud extends Feature {
     public boolean biome = true;
     @OpChild(name = "Player Count", parent = "Info")
     public boolean playerCount = true;
-    @OpChild(name = "Build Info", parent = "Info")
-    public boolean buildInfo = true;
     @OpChild(name = "Yaw/Pitch", parent = "Info")
     public boolean yawAndPitch = true;
     @OpChild(name = "Direction", parent = "Info")
@@ -237,7 +235,6 @@ public class Hud extends Feature {
         hudElements.add(new DirectionElement(0, 89, 20, 11));
         hudElements.add(new SaturationElement(0, 100, 20, 11));
         hudElements.add(new PlayerCountElement(0, 111, 20, 11));
-        hudElements.add(new BuildInfoElement(0, 122, 20, 11));
         hudElements.add(new TabGuiElement(0, 133, 55, 55));
         hudElements.add(new ArmorElement((Render2DHelper.INSTANCE.getScaledWidth() / 2.f) + 5, Render2DHelper.INSTANCE.getScaledHeight() - 50, 16, 16));
         hudElements.add(new RadarElement(Render2DHelper.INSTANCE.getScaledWidth() - 120 - 100, 0, 120, 120));
