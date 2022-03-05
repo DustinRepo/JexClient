@@ -99,6 +99,20 @@ public enum FileHelper {
         }
     }
 
+    public void writeFile(File file, List<String> content) {
+        try {
+            PrintWriter printWriter = new PrintWriter(file);
+            StringBuilder stringBuilder = new StringBuilder();
+            content.forEach(string -> {
+                stringBuilder.append(string + "\r\n");
+            });
+            printWriter.print(stringBuilder);
+            printWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void createFile(File path, String name) {
         try {
             File file = new File(path, name);
