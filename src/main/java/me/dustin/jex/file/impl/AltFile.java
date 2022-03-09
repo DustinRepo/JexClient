@@ -33,9 +33,9 @@ public class AltFile extends ConfigFile {
             accountMap.put("password", EncryptHelper.INSTANCE.encrypt(HWID.INSTANCE.getHWID(), minecraftAccount.getPassword()));
             accountMap.put("account-type", minecraftAccount instanceof MinecraftAccount.MicrosoftAccount ? "msa" : "mojang");
             if (minecraftAccount instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-                accountMap.put("uuid", microsoftAccount.uuid);
-                accountMap.put("accessToken", EncryptHelper.INSTANCE.encrypt(HWID.INSTANCE.getHWID(), microsoftAccount.accessToken));
-                accountMap.put("refreshToken", EncryptHelper.INSTANCE.encrypt(HWID.INSTANCE.getHWID(), microsoftAccount.refreshToken));
+                accountMap.put("uuid", microsoftAccount.getUUID());
+                accountMap.put("accessToken", EncryptHelper.INSTANCE.encrypt(HWID.INSTANCE.getHWID(), microsoftAccount.getAccessToken()));
+                accountMap.put("refreshToken", EncryptHelper.INSTANCE.encrypt(HWID.INSTANCE.getHWID(), microsoftAccount.getRefreshToken()));
             } else if (minecraftAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
                 accountMap.put("cracked", mojangAccount.isCracked());
             }
@@ -97,9 +97,9 @@ public class AltFile extends ConfigFile {
             accountMap.put("password", minecraftAccount.getPassword());
             accountMap.put("account-type", minecraftAccount instanceof MinecraftAccount.MicrosoftAccount ? "msa" : "mojang");
             if (minecraftAccount instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-                accountMap.put("uuid", microsoftAccount.uuid);
-                accountMap.put("accessToken", microsoftAccount.accessToken);
-                accountMap.put("refreshToken", microsoftAccount.refreshToken);
+                accountMap.put("uuid", microsoftAccount.getUUID());
+                accountMap.put("accessToken", microsoftAccount.getAccessToken());
+                accountMap.put("refreshToken", microsoftAccount.getRefreshToken());
             } else if (minecraftAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
                 accountMap.put("cracked", mojangAccount.isCracked());
             }
@@ -161,7 +161,7 @@ public class AltFile extends ConfigFile {
                     if (password.isEmpty())
                         mojangAccount = new MinecraftAccount.MojangAccount(email);
                     else
-                        mojangAccount = new MinecraftAccount.MojangAccount("Imported Alt #" + nameCount, email, password);
+                        mojangAccount = new MinecraftAccount.MojangAccount("Import_" + nameCount, email, password);
                     MinecraftAccountManager.INSTANCE.getAccounts().add(mojangAccount);
                     nameCount++;
                 }

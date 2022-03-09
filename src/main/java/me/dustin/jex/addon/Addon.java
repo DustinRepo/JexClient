@@ -40,25 +40,22 @@ public class Addon {
 			return;
 		requestedUUIds.add(uuid);
 		Thread addonDownload = new Thread(() -> {
-			try {
-				URL url = new URL(JexClient.INSTANCE.getBaseUrl() + "includes/loadprofile.inc.php?uuid=" + uuid);
-				String response = WebHelper.INSTANCE.readURL(url);
-				JsonObject json = new Gson().fromJson(response, JsonObject.class);
-				String cape = json.get("cape").getAsString();
-				String hat = json.get("hat").getAsString();
-				boolean linkedToAccount = json.get("linkedToAccount").getAsBoolean();
-				AddonResponse addonResponse = new AddonResponse(uuid, cape, hat, linkedToAccount);
-				responses.add(addonResponse);
-				if (linkedToAccount) {
-					if (cape != null && !cape.equals("null") && !cape.isEmpty()) {
-						Cape.parseCape(cape, uuid);
-					}
-
-					if (hat != null && !hat.equals("null") && !hat.equals("none")) {
-						Hat.setHat(uuid, hat);
-					}
+			String url = JexClient.INSTANCE.getBaseUrl() + "includes/loadprofile.inc.php?uuid=" + uuid;
+			String response = WebHelper.INSTANCE.httpRequest(url, null, null, "GET").data();
+			JsonObject json = new Gson().fromJson(response, JsonObject.class);
+			String cape = json.get("cape").getAsString();
+			String hat = json.get("hat").getAsString();
+			boolean linkedToAccount = json.get("linkedToAccount").getAsBoolean();
+			AddonResponse addonResponse = new AddonResponse(uuid, cape, hat, linkedToAccount);
+			responses.add(addonResponse);
+			if (linkedToAccount) {
+				if (cape != null && !cape.equals("null") && !cape.isEmpty()) {
+					Cape.parseCape(cape, uuid);
 				}
-			} catch (IOException e) {
+
+				if (hat != null && !hat.equals("null") && !hat.equals("none")) {
+					Hat.setHat(uuid, hat);
+				}
 			}
 		});
 		addonDownload.setDaemon(true);

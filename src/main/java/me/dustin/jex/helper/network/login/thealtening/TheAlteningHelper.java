@@ -59,20 +59,20 @@ public enum TheAlteningHelper {
 
     public TheAlteningAccount generateAccount() {
         String GENERATE_URL = String.format(this.GENERATE_URL, this.getApiKey());
-        String resp = WebHelper.INSTANCE.readURL(GENERATE_URL);
+        String resp = WebHelper.INSTANCE.httpRequest(GENERATE_URL, null, null, "GET").data();
         return JsonHelper.INSTANCE.gson.fromJson(resp, TheAlteningAccount.class);
     }
 
     public void fetchLicense() {
         String LICENSE_URL = String.format(this.LICENSE_URL, this.getApiKey());
-        String resp = WebHelper.INSTANCE.readURL(LICENSE_URL);
+        String resp = WebHelper.INSTANCE.httpRequest(LICENSE_URL, null, null, "GET").data();
         this.license = JsonHelper.INSTANCE.gson.fromJson(resp, TheAlteningLicense.class);
     }
 
     public ArrayList<TheAlteningAccount> getFavorites() {
         ArrayList<TheAlteningAccount> accounts = new ArrayList<>();
         String FAVORITES_URL = String.format(this.FAVORITES_URL, this.getApiKey());
-        String resp = WebHelper.INSTANCE.readURL(FAVORITES_URL);
+        String resp = WebHelper.INSTANCE.httpRequest(FAVORITES_URL, null, null, "GET").data();
         JsonArray array = JsonHelper.INSTANCE.gson.fromJson(resp, JsonArray.class);
         if (array != null) {
             for (int i = 0; i < array.size(); i++) {
@@ -85,7 +85,7 @@ public enum TheAlteningHelper {
     public ArrayList<TheAlteningAccount> getPrivates() {
         ArrayList<TheAlteningAccount> accounts = new ArrayList<>();
         String PRIVATES_URL = String.format(this.PRIVATES_URL, this.getApiKey());
-        String resp = WebHelper.INSTANCE.readURL(PRIVATES_URL);
+        String resp = WebHelper.INSTANCE.httpRequest(PRIVATES_URL, null, null, "GET").data();
         JsonArray array = JsonHelper.INSTANCE.gson.fromJson(resp, JsonArray.class);
         if (array != null) {
             for (int i = 0; i < array.size(); i++) {
@@ -97,7 +97,7 @@ public enum TheAlteningHelper {
 
     public boolean favoriteAcc(TheAlteningAccount theAlteningAccount) {
         String FAVORITE_ACC_URL = String.format(this.FAVORITE_ACC_URL, this.getApiKey(), theAlteningAccount.token);
-        String resp = WebHelper.INSTANCE.readURL(FAVORITE_ACC_URL);
+        String resp = WebHelper.INSTANCE.httpRequest(FAVORITE_ACC_URL, null, null, "GET").data();
         if (resp != null)
             return resp.contains("success") && resp.contains("true");
         return false;
@@ -105,7 +105,7 @@ public enum TheAlteningHelper {
 
     public boolean privateAcc(TheAlteningAccount theAlteningAccount) {
         String PRIVATE_ACC_URL = String.format(this.PRIVATE_ACC_URL, this.getApiKey(), theAlteningAccount.token);
-        String resp = WebHelper.INSTANCE.readURL(PRIVATE_ACC_URL);
+        String resp = WebHelper.INSTANCE.httpRequest(PRIVATE_ACC_URL, null, null, "GET").data();
         if (resp != null)
             return resp.contains("success") && resp.contains("true");
         return false;

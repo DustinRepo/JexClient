@@ -5,15 +5,14 @@ import me.dustin.jex.feature.mod.impl.misc.IRC;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
-import me.dustin.jex.helper.network.irc.IRCManager;
+import me.dustin.jex.helper.network.login.minecraft.MSLoginHelper;
 import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
 import me.dustin.jex.gui.account.impl.AccountButton;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.login.minecraft.MicrosoftLogin;
-import me.dustin.jex.helper.network.login.minecraft.MojangLogin;
+import me.dustin.jex.helper.network.login.minecraft.MojangLoginHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
@@ -302,7 +301,7 @@ public class AccountManagerScreen extends Screen {
     public void login(AccountButton button) {
         if (button.getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
             outputString = "Logging in...";
-            new MojangLogin(mojangAccount, session -> {
+            new MojangLoginHelper(mojangAccount, session -> {
                 if (session == null) {
                     outputString = "Login failed";
                 } else {
@@ -316,10 +315,9 @@ public class AccountManagerScreen extends Screen {
                 }
             }).login();
         } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
-            new MicrosoftLogin(microsoftAccount.getEmail(), microsoftAccount.getPassword(), microsoftAccount.accessToken, microsoftAccount.refreshToken, true, session -> {
-                if (session == null) {
-                    outputString = "Login failed";
-                } else {
+            MSLoginHelper msLoginHelper = new MSLoginHelper(microsoftAccount, true);
+            msLoginHelper.loginThread(session -> {
+                if (session != null) {
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
                     button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
                     outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
@@ -328,7 +326,7 @@ public class AccountManagerScreen extends Screen {
                     if (FabricLoader.getInstance().isDevelopmentEnvironment())
                         Feature.get(IRC.class).ircManager.putNick(session.getUsername());
                 }
-            }).login();
+            }, s -> outputString = s);
         }
     }
 

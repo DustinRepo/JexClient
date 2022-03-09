@@ -22,8 +22,8 @@ public enum UpdateManager {
             try {
                 //lots of changes as I temporarily use GitHub for these things
                 //URL url = new URL(JexClient.INSTANCE.getBaseUrl() + "includes/version.inc.php");
-                URL url = new URL("https://raw.githubusercontent.com/DustinRepo/JexClient/main/JexChangelog.txt");
-                String response = WebHelper.INSTANCE.readURL(url);
+                String url = "https://raw.githubusercontent.com/DustinRepo/JexClient/main/JexChangelog.txt";
+                String response = WebHelper.INSTANCE.httpRequest(url, null, null, "GET").data();
                 latestVersion = new JexVersion(response.split("\n")[0]);
                 JexClient.INSTANCE.getLogger().info(latestVersion.version());
 

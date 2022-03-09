@@ -14,21 +14,22 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.util.Session;
 
-public class MojangLogin {
+public class MojangLoginHelper {
 
     private static final String AUTHENTICATE_URL = "https://authserver.mojang.com/authenticate";
-    private String email, password;
-    private boolean cracked;
-    private Consumer<Session> sessionConsumer;
+    private final String email;
+    private final String password;
+    private final boolean cracked;
+    private final Consumer<Session> sessionConsumer;
 
-    public MojangLogin(String email, String password, Consumer<Session> sessionConsumer) {
+    public MojangLoginHelper(String email, String password, Consumer<Session> sessionConsumer) {
         this.email = email;
         this.password = password;
         this.cracked = !email.contains("@");
         this.sessionConsumer = sessionConsumer;
     }
 
-    public MojangLogin(MinecraftAccount.MojangAccount mojangAccount, Consumer<Session> sessionConsumer) {
+    public MojangLoginHelper(MinecraftAccount.MojangAccount mojangAccount, Consumer<Session> sessionConsumer) {
         this.email = mojangAccount.isCracked() ? mojangAccount.getUsername() : mojangAccount.getEmail();
         this.password = mojangAccount.getPassword();
         this.cracked = mojangAccount.isCracked();
@@ -43,7 +44,7 @@ public class MojangLogin {
         jsonObject.addProperty("requestUser", true);
         Map<String, String> header = new HashMap<>();
         header.put("Content-Type", "application/json");
-        String resp = WebHelper.INSTANCE.sendPOST(AUTHENTICATE_URL, jsonObject.toString(), header);
+        String resp = WebHelper.INSTANCE.httpRequest(AUTHENTICATE_URL, jsonObject.toString(), header, "POST").data();
 
         if (resp != null && !resp.isEmpty()) {
             JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(resp, JsonObject.class);

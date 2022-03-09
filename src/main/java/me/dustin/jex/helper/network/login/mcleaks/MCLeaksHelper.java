@@ -30,7 +30,7 @@ public enum MCLeaksHelper {
         Map<String, String> header = new HashMap<>();
         header.put("Content-Type", "application/json");
         header.put("Accepts", "application/json");
-        String resp = WebHelper.INSTANCE.sendPOST(REDEEM_URL, object.toString(), header);
+        String resp = WebHelper.INSTANCE.httpRequest(REDEEM_URL, object.toString(), header, "POST").data();
         JsonObject responseObj = JsonHelper.INSTANCE.gson.fromJson(resp, JsonObject.class);
         boolean success = responseObj.get("success").getAsBoolean();
         if (success) {
@@ -59,7 +59,7 @@ public enum MCLeaksHelper {
             Map<String, String> header = new HashMap<>();
             header.put("Content-Type", "application/json");
             header.put("Accepts", "application/json");
-            String resp = WebHelper.INSTANCE.sendPOST(JOIN_SERVER_URL, jsonObject.toString(), header);
+            String resp = WebHelper.INSTANCE.httpRequest(JOIN_SERVER_URL, jsonObject.toString(), header, "POST").data();
             JexClient.INSTANCE.getLogger().info(jsonObject.toString());
             if (resp != null && resp.contains("success") && resp.contains("true"))
                 return true;

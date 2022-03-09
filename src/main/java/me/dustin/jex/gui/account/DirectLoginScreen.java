@@ -3,8 +3,8 @@ package me.dustin.jex.gui.account;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.gui.account.impl.GuiPasswordField;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.login.minecraft.MicrosoftLogin;
-import me.dustin.jex.helper.network.login.minecraft.MojangLogin;
+import me.dustin.jex.helper.network.login.minecraft.MSLoginHelper;
+import me.dustin.jex.helper.network.login.minecraft.MojangLoginHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -62,17 +62,18 @@ public class DirectLoginScreen extends Screen {
 			this.errorMessage = "Logging in...";
 			if (isMicrosoft) {
 				MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(username.getText(), email.getText(), password.getText(), "", "", UUID.randomUUID().toString());
-				new MicrosoftLogin(microsoftAccount, session -> {
+				MSLoginHelper msLoginHelper = new MSLoginHelper(microsoftAccount, false);
+				msLoginHelper.loginThread(session -> {
 					if (session != null) {
 						Wrapper.INSTANCE.getIMinecraft().setSession(session);
 						Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 					} else
 						this.errorMessage = "\247cError, could not log in.";
-				}).login();
+				}, s -> this.errorMessage = s);
 			} else {
 				MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
 				mojangAccount.setCracked(!email.getText().contains("@"));
-				new MojangLogin(mojangAccount, session -> {
+				new MojangLoginHelper(mojangAccount, session -> {
 					if (session != null) {
 						Wrapper.INSTANCE.getIMinecraft().setSession(session);
 						Wrapper.INSTANCE.getMinecraft().setScreen(parent);

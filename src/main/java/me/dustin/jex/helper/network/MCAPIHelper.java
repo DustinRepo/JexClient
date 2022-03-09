@@ -58,7 +58,7 @@ public enum MCAPIHelper {
         Map<String, String> jsonData = new HashMap<>();
         jsonData.put("variant", skinVariant.name().toLowerCase());
         jsonData.put("url", skinURL);
-        String response = WebHelper.INSTANCE.sendPOST(CHANGE_SKIN_URL, JsonHelper.INSTANCE.gson.toJson(jsonData), headers);
+        String response = WebHelper.INSTANCE.httpRequest(CHANGE_SKIN_URL, JsonHelper.INSTANCE.gson.toJson(jsonData), headers, "POST").data();
         if (response != null && !response.isEmpty()) {
             JsonArray skins = JsonHelper.INSTANCE.prettyGson.fromJson(response, JsonObject.class).getAsJsonArray("skins");
             if (skins != null) {
@@ -96,7 +96,7 @@ public enum MCAPIHelper {
     public Map<Integer, String> getSecurityQuestions() {
         Map<Integer, String> securityQuestions = new HashMap<>();
         try {
-            String resp = WebHelper.INSTANCE.readURL(SECURITY_QUESTIONS_URL, genAuthHeader());
+            String resp = WebHelper.INSTANCE.httpRequest(SECURITY_QUESTIONS_URL, null, genAuthHeader(), "GET").data();
             if (resp != null && !resp.isEmpty()) {
                 JsonArray jsonArray = JsonHelper.INSTANCE.prettyGson.fromJson(resp, JsonArray.class);
                 for (int i = 0; i < jsonArray.size(); i++) {
@@ -153,7 +153,7 @@ public enum MCAPIHelper {
     }
 
     public boolean isNameAvailable(String name) {
-        String resp = WebHelper.INSTANCE.readURL(String.format(NAME_AVAILABILITY_URL, name), genAuthHeader());
+        String resp = WebHelper.INSTANCE.httpRequest(String.format(NAME_AVAILABILITY_URL, name), null, genAuthHeader(), "GET").data();
         if (resp == null || resp.isEmpty())
             return false;
         JsonObject jsonObject = JsonHelper.INSTANCE.prettyGson.fromJson(resp, JsonObject.class);
@@ -167,7 +167,7 @@ public enum MCAPIHelper {
     }
 
     public boolean canChangeName() {
-        String resp = WebHelper.INSTANCE.readURL(NAME_CHANGE_INFO_URL, genAuthHeader());
+        String resp = WebHelper.INSTANCE.httpRequest(NAME_CHANGE_INFO_URL, null, genAuthHeader(), "GET").data();
         if (resp == null || resp.isEmpty())
             return false;
         JsonObject jsonObject = JsonHelper.INSTANCE.prettyGson.fromJson(resp, JsonObject.class);
@@ -218,7 +218,7 @@ public enum MCAPIHelper {
         String accessToken = getAccessToken();
         if (accessToken == null || accessToken.isEmpty() || accessToken.equalsIgnoreCase("fakeToken"))
             return false;
-        String response = WebHelper.INSTANCE.readURL(CHECK_MIGRATION_STATUS_URL, genAuthHeader());
+        String response = WebHelper.INSTANCE.httpRequest(CHECK_MIGRATION_STATUS_URL, null, genAuthHeader(), "GET").data();
         try {
             JsonObject jsonObject = JsonHelper.INSTANCE.prettyGson.fromJson(response, JsonObject.class);
             String feature = jsonObject.get("feature").getAsString();
@@ -244,7 +244,7 @@ public enum MCAPIHelper {
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept", "application/json");
         headers.put("Content-Type", "application/json");
-        String resp = WebHelper.INSTANCE.sendPOST(STATISTICS_URL, object.toString(), headers);
+        String resp = WebHelper.INSTANCE.httpRequest(STATISTICS_URL, object.toString(), headers, "POST").data();
         if (resp != null && !resp.isEmpty())
             return JsonHelper.INSTANCE.prettyGson.fromJson(resp, JsonObject.class);
         return null;
@@ -253,7 +253,7 @@ public enum MCAPIHelper {
     public Map<String, Long> getNameHistory(UUID uuid) {
         Map<String, Long> names = new HashMap<>();
         try {
-            String result = WebHelper.INSTANCE.readURL(new URL(String.format(UUID_API_URL, uuid.toString().replace("-", ""))));
+            String result = WebHelper.INSTANCE.httpRequest(String.format(UUID_API_URL, uuid.toString().replace("-", "")), null, null,"GET").data();
             JsonArray nameArray = JsonHelper.INSTANCE.gson.fromJson(result, JsonArray.class);
             for (int i = 0; i < nameArray.size(); i++) {
                 JsonObject object = nameArray.get(i).getAsJsonObject();
@@ -275,11 +275,7 @@ public enum MCAPIHelper {
             return "UUID null";
         if (uuidMap.containsKey(uuid))
             return uuidMap.get(uuid);
-        String result = null;
-        try {
-            result = WebHelper.INSTANCE.readURL(new URL(String.format(UUID_API_URL, uuid.toString().replace("-", ""))));
-        } catch (IOException e) {
-        }
+        String result = WebHelper.INSTANCE.httpRequest(String.format(UUID_API_URL, uuid.toString().replace("-", "")), null, null, "GET").data();
         if (result == null)
             return "Player Not found";
         JsonArray nameArray = JsonHelper.INSTANCE.gson.fromJson(result, JsonArray.class);
@@ -300,12 +296,7 @@ public enum MCAPIHelper {
         try {
             if (nameMap.containsKey(name))
                 return nameMap.get(name);
-            String result = null;
-            try {
-                result = WebHelper.INSTANCE.readURL(new URL(String.format(NAME_API_URL, name)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            String result = WebHelper.INSTANCE.httpRequest(String.format(NAME_API_URL, name), null, null, "GET").data();
             if (result == null)
                 return null;
             JsonObject object =  JsonHelper.INSTANCE.gson.fromJson(result, JsonObject.class);

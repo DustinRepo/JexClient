@@ -11,6 +11,7 @@ import com.mojang.authlib.yggdrasil.request.JoinMinecraftServerRequest;
 import com.mojang.authlib.yggdrasil.response.*;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.helper.network.WebHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -30,16 +31,14 @@ public class TheAlteningSessionService extends HttpMinecraftSessionService {
 
     @Override
     public void joinServer(GameProfile profile, String authenticationToken, String serverId) throws AuthenticationException {
-        final JoinMinecraftServerRequest request = new JoinMinecraftServerRequest();
-        request.accessToken = authenticationToken;
-        request.selectedProfile = profile.getId();
-        request.serverId = serverId;
+        JsonObject request = new JsonObject();
+        request.addProperty("accessToken", authenticationToken);
+        request.addProperty("selectedProfile", profile.getId().toString());
+        request.addProperty("serverId", serverId);
+        Map<String, String> header = new HashMap<>();
+        header.put("Content-Type", "application/json");
 
-        try {
-            makeRequest(new URL(JOIN_URL), request, Response.class);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        WebHelper.INSTANCE.httpRequest(JOIN_URL, JsonHelper.INSTANCE.gson.toJson(request), header, "GET");
     }
 
     @Override
@@ -51,25 +50,16 @@ public class TheAlteningSessionService extends HttpMinecraftSessionService {
         if (address != null) {
             arguments.put("ip", address.getHostAddress());
         }
-        try {
-            final URL url = HttpAuthenticationService.concatenateURL(new URL(CHECK_URL), HttpAuthenticationService.buildQuery(arguments));
-            final HasJoinedMinecraftServerResponse response = makeRequest(url, null, HasJoinedMinecraftServerResponse.class);
+        String httpResponse = WebHelper.INSTANCE.httpRequest(CHECK_URL, null, null, "GET").data();
+        final HasJoinedMinecraftServerResponse response = JsonHelper.INSTANCE.gson.fromJson(httpResponse, HasJoinedMinecraftServerResponse.class);
 
-            if (response != null && response.getId() != null) {
-                final GameProfile result = new GameProfile(response.getId(), user.getName());
-                if (response.getProperties() != null) {
-                    result.getProperties().putAll(response.getProperties());
-                }
-                return result;
-            } else {
-                return null;
+        if (response != null && response.getId() != null) {
+            final GameProfile result = new GameProfile(response.getId(), user.getName());
+            if (response.getProperties() != null) {
+                result.getProperties().putAll(response.getProperties());
             }
-        } catch (final AuthenticationUnavailableException e) {
-            throw e;
-        } catch (final AuthenticationException ignored) {
-            return null;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            return result;
+        } else {
             return null;
         }
     }
@@ -85,31 +75,4 @@ public class TheAlteningSessionService extends HttpMinecraftSessionService {
         return NetworkHelper.INSTANCE.getStoredSessionService().fillProfileProperties(profile, requireSecure);
     }
 
-    protected <T extends Response> T makeRequest(final URL url, final Object input, final Class<T> classOfT) throws AuthenticationException {
-        return makeRequest(url, input, classOfT, null);
-    }
-
-    protected <T extends Response> T makeRequest(final URL url, final Object input, final Class<T> classOfT, final String authentication) throws AuthenticationException {
-        try {
-            final String jsonResult = input == null ? getAuthenticationService().performGetRequest(url, authentication) : getAuthenticationService().performPostRequest(url, JsonHelper.INSTANCE.gson.toJson(input), "application/json");
-            final T result = JsonHelper.INSTANCE.gson.fromJson(jsonResult, classOfT);
-            if (result == null) {
-                return null;
-            }
-            if (StringUtils.isNotBlank(result.getError())) {
-                if ("UserMigratedException".equals(result.getCause())) {
-                    throw new UserMigratedException(result.getErrorMessage());
-                } else if ("ForbiddenOperationException".equals(result.getError())) {
-                    throw new InvalidCredentialsException(result.getErrorMessage());
-                } else if ("InsufficientPrivilegesException".equals(result.getError())) {
-                    throw new InsufficientPrivilegesException(result.getErrorMessage());
-                } else {
-                    throw new AuthenticationException(result.getErrorMessage());
-                }
-            }
-            return result;
-        } catch (final IOException | IllegalStateException | JsonParseException e) {
-            throw new AuthenticationUnavailableException("Cannot contact authentication server", e);
-        }
-    }
 }

@@ -32,170 +32,50 @@ import java.util.StringJoiner;
 public enum WebHelper {
     INSTANCE;
 
-    public String readURL(URL url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setConnectTimeout(10 * 1000);
-        BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        StringBuilder buffer = new StringBuilder();
-        for (String line; (line = input.readLine()) != null; ) {
-            buffer.append(line);
-            buffer.append("\n");
-        }
-        input.close();
-        return buffer.toString();
-    }
-
-    public String readURL(String url) {
+    public HttpResponse httpRequest(String url, Object data, Map<String, String> headers, String requestMethod) {
         try {
-            return readURL(new URL(url));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public String readURL(String url, Map<String, String> headers) {
-        try {
-            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-            HttpGet get = new HttpGet(url);
-            headers.forEach(get::setHeader);
-            CloseableHttpResponse response = httpClient.execute(get);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode >= 200 && statusCode < 300) {
-                BufferedReader input = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-                StringBuilder buffer = new StringBuilder();
+            URL theURL = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) theURL.openConnection();
+            connection.setRequestMethod(requestMethod);
+            connection.setConnectTimeout(10 * 1000);
+            connection.setDoInput(true);
+            if (headers != null)
+                headers.forEach(connection::setRequestProperty);
+            if (data != null) {
+                connection.setDoOutput(true);
+                byte[] bytes = new byte[0];
+                if (data instanceof Map<?, ?> m) {
+                    String encoded = encode((Map<Object, Object>) m);
+                    bytes = encoded.getBytes();
+                } else if (data instanceof String s) {
+                    bytes = s.getBytes();
+                }
+                try (OutputStream outputStream = connection.getOutputStream()) {
+                    outputStream.write(bytes);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            int code = connection.getResponseCode();
+            if (code >= 200 && code < 300) {
+                BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 for (String line; (line = input.readLine()) != null; ) {
-                    buffer.append(line);
-                    buffer.append("\n");
-                }
-                input.close();
-                return buffer.toString();
-            } else {
-                JexClient.INSTANCE.getLogger().info("ERROR: HTTP Status code " + statusCode);
-                return null;
-            }
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public String sendPOST(URL url, Map<?, ?> args) {
-        return sendPOST(url, args, new HashMap<>());
-    }
-
-    public String sendPOST(URL url, Map<?, ?> args, Map<?, ?> requestProperties) {
-        String response = "";
-        try {
-            URLConnection con = url.openConnection();
-            HttpURLConnection http = (HttpURLConnection) con;
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-
-            StringJoiner sj = new StringJoiner("&");
-            for (Map.Entry<?, ?> entry : args.entrySet())
-                sj.add(URLEncoder.encode(entry.getKey().toString(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
-
-            byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
-            int length = out.length;
-
-            http.setFixedLengthStreamingMode(length);
-            if (requestProperties.isEmpty()) {
-                http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-            } else {
-                for (Object key : requestProperties.keySet()) {
-                    String str = (String)key;
-                    String str2 = (String)requestProperties.get(key);
-                    http.setRequestProperty(str, str2);
+                    sb.append(line);
+                    sb.append("\n");
                 }
             }
-            http.connect();
-            try (OutputStream os = http.getOutputStream()) {
-                os.write(out);
-            }
-
-            BufferedReader input = new BufferedReader(new InputStreamReader(http.getInputStream()));
-            StringBuilder buffer = new StringBuilder();
-            for (String line; (line = input.readLine()) != null; ) {
-                buffer.append(line);
-                buffer.append("\n");
-            }
-            input.close();
-            response = buffer.toString();
+            connection.disconnect();
+            return new HttpResponse(sb.toString(), code);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return response;
+        return new HttpResponse("", 404);
     }
 
-    public String sendPOST(String url, String jsonData, Map<String, String> headers) {
-        try {
-            CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-            HttpPost post = new HttpPost(url);
-            StringEntity postingString = new StringEntity(jsonData);
-            post.setEntity(postingString);
-            headers.forEach(post::setHeader);
-            CloseableHttpResponse response = httpClient.execute(post);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode >= 200 && statusCode < 300) {
-                BufferedReader input = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-                StringBuilder buffer = new StringBuilder();
-                for (String line; (line = input.readLine()) != null; ) {
-                    buffer.append(line);
-                    buffer.append("\n");
-                }
-                input.close();
-                String resp = buffer.toString();
-                return resp;
-            } else {
-                JexClient.INSTANCE.getLogger().info("ERROR: HTTP Status code " + statusCode);
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public String sendPOSTWithRequestProperties(String url, String s, Map<?, ?> requestProperties) {
-        String response = "";
-        try {
-            URLConnection con = new URL(url).openConnection();
-            HttpURLConnection http = (HttpURLConnection) con;
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-
-
-            byte[] out = s.getBytes(StandardCharsets.UTF_8);
-            int length = out.length;
-
-            http.setFixedLengthStreamingMode(length);
-            if (requestProperties.isEmpty()) {
-                http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-            } else {
-                for (Object key : requestProperties.keySet()) {
-                    String str = (String)key;
-                    String str2 = (String)requestProperties.get(key);
-                    http.setRequestProperty(str, str2);
-                }
-            }
-            http.connect();
-            try (OutputStream os = http.getOutputStream()) {
-                os.write(out);
-            }
-
-            BufferedReader input = new BufferedReader(new InputStreamReader(http.getInputStream()));
-            StringBuilder buffer = new StringBuilder();
-            for (String line; (line = input.readLine()) != null; ) {
-                buffer.append(line);
-                buffer.append("\n");
-            }
-            input.close();
-            response = buffer.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return response;
+    private String encode(Map<Object, Object> map) {
+        StringJoiner sj = new StringJoiner("&");
+        for (Map.Entry<?, ?> entry : map.entrySet())
+            sj.add(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8) + "=" + URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
+        return sj.toString();
     }
 
     public void uploadToImgur(File file) {
@@ -212,14 +92,14 @@ public enum WebHelper {
                 String encodedImage = Base64.encodeBase64String(bytes);
                 fileInputStreamReader.close();
                 encodedImage = encodedImage.replace(System.lineSeparator(), "");
-                final URL imgurApi = new URL("https://api.imgur.com/3/image");
+                String imgurApi = "https://api.imgur.com/3/image";
                 Map<String, String> map = new HashMap<>();
                 map.put("image", encodedImage);
                 map.put("title", "Jex Screenshot");
                 Map<String, String> requestProperties = new HashMap<>();
                 requestProperties.put("Authorization", "Client-ID 57e0280fe5e3a5e");
                 requestProperties.put("Content-Type", "application/x-www-form-urlencoded");
-                String resp = sendPOST(imgurApi, map, requestProperties);
+                String resp = httpRequest(imgurApi, map, requestProperties, "POST").data;
 
                 JsonObject responseJson = JsonHelper.INSTANCE.gson.fromJson(resp, JsonObject.class);
                 JsonObject data = responseJson.getAsJsonObject("data");
@@ -273,4 +153,5 @@ public enum WebHelper {
         }
     }
 
+    public record HttpResponse(String data, int responseCode){}
 }

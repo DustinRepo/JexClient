@@ -46,7 +46,7 @@ public class CommandSkinSteal extends Command {
                 //going to explain what happens so I don't forget
                 //request their minecraft profile, all so we can get a base64 encoded string that contains ANOTHER json that then has the skin URL
                 String PROFILE_REQUEST_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
-                String profileResponse = WebHelper.INSTANCE.readURL(new URL(String.format(PROFILE_REQUEST_URL, uuid.toString().replace("-", ""))));
+                String profileResponse = WebHelper.INSTANCE.httpRequest(String.format(PROFILE_REQUEST_URL, uuid.toString().replace("-", "")), null, null, "GET").data();
 
                 JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(profileResponse, JsonObject.class);
                 //Get the properties array which has what we need

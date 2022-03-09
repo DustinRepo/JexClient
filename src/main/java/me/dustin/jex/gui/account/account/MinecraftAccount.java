@@ -6,9 +6,9 @@ public class MinecraftAccount {
     public long lastUsed;
     protected String email, password;
     public static class MicrosoftAccount extends MinecraftAccount {
-        public String accessToken;
-        public String refreshToken;
-        public String uuid;
+        private String accessToken;
+        private String refreshToken;
+        private String uuid;
 
         public MicrosoftAccount(String name, String email, String password, String token, String refresh, String uuid) {
             this.username = name;
@@ -17,6 +17,30 @@ public class MinecraftAccount {
             this.password = password;
             this.refreshToken = refresh;
             this.uuid = uuid.replace("-", "");
+        }
+
+        public String getAccessToken() {
+            return accessToken;
+        }
+
+        public void setAccessToken(String accessToken) {
+            this.accessToken = accessToken;
+        }
+
+        public String getRefreshToken() {
+            return refreshToken;
+        }
+
+        public void setRefreshToken(String refreshToken) {
+            this.refreshToken = refreshToken;
+        }
+
+        public String getUUID() {
+            return uuid;
+        }
+
+        public void setUUID(String uuid) {
+            this.uuid = uuid;
         }
     }
 

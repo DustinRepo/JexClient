@@ -47,8 +47,8 @@ public class ServerPinger {
     public static int PROTOCOL_VERSION = 758;
     public static int STATUS_PING = 1;
 
-    private static UUID emptyUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-    private String ip;
+    private static final UUID emptyUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+    private final String ip;
 
     public ServerPinger(String ip) {
         this.ip = ip;
@@ -59,7 +59,7 @@ public class ServerPinger {
             ServerAddress serverAddress = ServerAddress.parse(ip);
             Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
             if (optional.isPresent()) {
-                // \/ this one uses code much more intwined with Minecraft, I just thought it would be fun to re-create the packet sending and receiving myself
+                // \/ this one uses code much more intertwined with Minecraft, I just thought it would be fun to re-create the packet sending and receiving myself
                 //ping(optional.get());
                 try {
                     InetAddress inetAddress = InetAddress.getByName(serverAddress.getAddress());
@@ -117,23 +117,6 @@ public class ServerPinger {
                         receivePing(dataInputStream);
                     else
                         ChatHelper.INSTANCE.addClientMessage("Server sent bad packet");
-
-                    //testing doing a simple login, for some reason after the LoginStart packet the server doesn't respond then says we timed out after ~10 seconds
-                    /*socket = new Socket(inetAddress.getHostAddress(), serverAddress.getPort());
-                    dataInputStream = new DataInputStream(socket.getInputStream());
-                    dataOutputStream = new DataOutputStream(socket.getOutputStream());
-
-                    sendHandshake(dataOutputStream, serverAddress, NetworkState.LOGIN);
-                    sendLoginStart(dataOutputStream);
-
-                    size = readVarInt(dataInputStream);
-                    packetID = readVarInt(dataInputStream);
-
-                    if (packetID == 0x01)
-                        receiveEncryptionRequest(size, dataInputStream);
-                    else
-                        ChatHelper.INSTANCE.addClientMessage("Server sent bad packet");*/
-
 
                     socket.close();
                 } catch (Exception e) {
@@ -198,54 +181,6 @@ public class ServerPinger {
             long startTime = buffer.getLong();
             long pingTime = System.currentTimeMillis() - startTime;
             ChatHelper.INSTANCE.addRawMessage("Ping: " + pingTime);
-        } catch (Exception e) {e.printStackTrace();}
-    }
-
-    private void sendLoginStart(DataOutputStream dataOutputStream) {
-        try {//this appears to send properly, but afer ~10 seconds the connection then times out on the server
-            //maybe I have to send another packet after the LoginStart packet before listening for the EncyptionRequest packet?
-            ByteArrayOutputStream loginBytes = new ByteArrayOutputStream();
-            DataOutputStream loginPacket = new DataOutputStream(loginBytes);
-
-            writeVarInt(loginPacket, 0x00);//packet id
-
-            String name = "Herobrine";
-            writeVarInt(loginPacket, name.length());
-            loginPacket.writeBytes(name);
-
-            dataOutputStream.writeByte(loginBytes.size() + 1);//size of data + packet id
-            dataOutputStream.write(loginBytes.toByteArray());
-
-            loginBytes.close();
-            loginPacket.close();
-        } catch (Exception e) {e.printStackTrace();}
-    }
-
-    private void receiveEncryptionRequest(int size, DataInputStream dataInputStream) {
-        size = size - 1;//remove the byte for packet ID
-        try {
-            String serverID = "";
-            int publicKeyLength;
-            byte[] publicKey;
-            int verifyTokenLength;
-            byte[] verifyToken;
-
-            //server id
-            int strSize = dataInputStream.readInt();
-            byte[] strBytes = new byte[strSize];
-            dataInputStream.readFully(strBytes, 0, strSize);
-
-            //public key
-            publicKeyLength = dataInputStream.readInt();
-            publicKey = new byte[publicKeyLength];
-            dataInputStream.readFully(publicKey, 0, size);
-
-            //verifyToken
-            verifyTokenLength = dataInputStream.readInt();
-            verifyToken = new byte[verifyTokenLength];
-            dataInputStream.readFully(verifyToken, 0, size);
-
-            JexClient.INSTANCE.getLogger().info(serverID + " " + publicKey.length + " " + verifyToken.length);
         } catch (Exception e) {e.printStackTrace();}
     }
 

@@ -40,7 +40,7 @@ public class JexChangelog {
     public static void loadChangelogList() {
         new Thread(() -> {
             try {
-                String[] sArray = WebHelper.INSTANCE.readURL(new URL("https://raw.githubusercontent.com/DustinRepo/JexClient/main/JexChangelog.txt")).split("\n");
+                String[] sArray = WebHelper.INSTANCE.httpRequest("https://raw.githubusercontent.com/DustinRepo/JexClient/main/JexChangelog.txt", null, null, "GET").data().split("\n");
                 JexChangelog jexChangelog = null;
                 for (String s : sArray) {
                     if (isVersionLine(s)) {
