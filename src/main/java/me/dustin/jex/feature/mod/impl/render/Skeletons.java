@@ -52,7 +52,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 playerEntityModel.setAngles(playerEntity, q, p, o, k, m);
 
                 boolean swimming = playerEntity.isInSwimmingPose();
-                boolean sneaking = playerEntity.isSneaking();
+                boolean sneaking = playerEntity.isSneaking() && !swimming;
                 boolean flying = playerEntity.isFallFlying();
 
                 ModelPart head = playerEntityModel.head;
