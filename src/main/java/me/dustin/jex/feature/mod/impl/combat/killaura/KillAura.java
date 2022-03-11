@@ -40,8 +40,8 @@ public class KillAura extends Feature {
     public String attackMode = "Pre";
     @Op(name = "Reach", min = 3, max = 6, inc = 0.1f)
     public float reach = 3.8f;
-    @Op(name = "FOV", min = 15, max = 360)
-    public int fov = 360;
+    /*@Op(name = "FOV", min = 15, max = 360)
+    public int fov = 360;*/
     @Op(name = "Ticks Exsited", max = 200, inc = 1f)
     public float ticksExisted = 50;
     @OpChild(name = "APS", min = 1, max = 20, inc = 0.1f, parent = "Ignore 1.9")
@@ -203,9 +203,10 @@ public class KillAura extends Feature {
             return false;
         if (!Wrapper.INSTANCE.getLocalPlayer().canSee(entity) && !ignoreWalls)
             return false;
-        if (PlayerHelper.INSTANCE.getDistanceFromMouse(entity) * 2 > KillAura.INSTANCE.fov) {
+        //TODO: fix this with 180/-180 having some issues
+        /*if (PlayerHelper.INSTANCE.getDistanceFromMouse(entity) * 2 > KillAura.INSTANCE.fov) {
             return false;
-        }
+        }*/
         if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
                 return false;
