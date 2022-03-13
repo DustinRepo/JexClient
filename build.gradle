@@ -33,7 +33,6 @@ dependencies {
 
     dependency group: 'pircbot', name: 'pircbot', version: '1.5.0'
     dependency group: 'org.yaml', name: 'snakeyaml', version: '1.30'
-    dependency 'net.jodah:typetools:0.6.3'
 
     implementation files('lib/baritone-1.6.3-dev.jar')
     //so there's two ways to go about implementing Sodium. First is to just modImplementation with like fabricAPI and use jitpack as host
