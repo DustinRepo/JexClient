@@ -16,7 +16,7 @@ import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -62,7 +62,7 @@ public class AutoFarm extends Feature {
 
     private BlockPos tempPos1;
     private BlockPos tempPos2;
-    private final Timer sortTimer = new Timer();
+    private final StopWatch sortStopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -381,9 +381,9 @@ public class AutoFarm extends Feature {
         }
 
         public BlockPos getClosestCrop() {
-            if (autoFarm.sortTimer.hasPassed(autoFarm.sortDelay)) {
+            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelay)) {
                 sortList();
-                autoFarm.sortTimer.reset();
+                autoFarm.sortStopWatch.reset();
             }
             for (BlockPos blockPos : blockPosList) {
                 if (WorldHelper.INSTANCE.isCrop(blockPos, true)) {
@@ -394,9 +394,9 @@ public class AutoFarm extends Feature {
         }
 
         public BlockPos getClosestFarmland() {
-            if (autoFarm.sortTimer.hasPassed(autoFarm.sortDelay)) {
+            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelay)) {
                 sortList();
-                autoFarm.sortTimer.reset();
+                autoFarm.sortStopWatch.reset();
             }
             for (BlockPos blockPos : blockPosList) {
                 Block block = WorldHelper.INSTANCE.getBlock(blockPos);

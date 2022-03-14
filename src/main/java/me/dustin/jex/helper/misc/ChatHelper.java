@@ -2,12 +2,13 @@ package me.dustin.jex.helper.misc;
 
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public enum ChatHelper {
     INSTANCE;
 
     public void addClientMessage(String message) {
-        Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud().addMessage(new LiteralText("\2478[\247bJex\2478]\247f: \2477" + message));
+        Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud().addMessage(new LiteralText(String.format("%s[%sJex%s]%s: %s%s", Formatting.GRAY, Formatting.BLUE, Formatting.GRAY, Formatting.WHITE, Formatting.GRAY, message)));
     }
 
     public void addRawMessage(String message) {

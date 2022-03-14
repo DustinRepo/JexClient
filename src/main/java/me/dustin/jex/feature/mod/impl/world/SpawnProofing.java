@@ -8,7 +8,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -31,13 +31,13 @@ public class SpawnProofing extends Feature {
     @Op(name = "Use Glass")
     public boolean useGlass = true;
 
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!timer.hasPassed(delay) || KillAura.INSTANCE.hasTarget() || AutoEat.isEating)
+        if (!stopWatch.hasPassed(delay) || KillAura.INSTANCE.hasTarget() || AutoEat.isEating)
             return;
-        timer.reset();
+        stopWatch.reset();
         for (int x = -range; x < range; x++) {
             for (int y = -range; y < range; y++) {
                 for (int z = -range; z < range; z++) {

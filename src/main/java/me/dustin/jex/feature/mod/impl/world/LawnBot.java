@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Replaces mycelium with grass blocks")
 public class LawnBot extends Feature {
 
-    private final me.dustin.jex.helper.misc.Timer timer = new me.dustin.jex.helper.misc.Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     private final ArrayList<BlockPos> myceliumSpots = new ArrayList<>();
 
@@ -68,7 +69,7 @@ public class LawnBot extends Feature {
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     private void updateMyceliumSpots() {
-        if (timer.hasPassed(250)) {
+        if (stopWatch.hasPassed(250)) {
             myceliumSpots.clear();
             for (int x = -5; x < 5; x++) {
                 for (int y = -3; y < 3; y++) {
@@ -80,7 +81,7 @@ public class LawnBot extends Feature {
                     }
                 }
             }
-            timer.reset();
+            stopWatch.reset();
         }
     }
 }

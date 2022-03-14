@@ -39,29 +39,7 @@ public enum ProxyHelper {
         proxy = null;
     }
 
-    public class ClientProxy {
-        private String host;
-        private int port;
-        private SocksType socksType;
-
-        public ClientProxy(String host, int port, SocksType socksType) {
-            this.host = host;
-            this.port = port;
-            this.socksType = socksType;
-        }
-
-        public String getHost() {
-            return host;
-        }
-
-        public int getPort() {
-            return port;
-        }
-
-        public SocksType getSocksType() {
-            return socksType;
-        }
-    }
+    public static record ClientProxy(String host, int port, SocksType socksType){}
 
     public enum SocksType {
         FOUR, FIVE;
@@ -71,21 +49,21 @@ public enum ProxyHelper {
     private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
         if (isConnectedToProxy()) {
             ProxyHelper.ClientProxy proxy = getProxy();
-            String string = "Current Proxy: " + proxy.getHost() + ":" + proxy.getPort();
+            String string = "Current Proxy: " + proxy.host() + ":" + proxy.port();
             FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), string, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(string) - 2, 22, ColorHelper.INSTANCE.getClientColor());
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
 
     public ClientConnection clientConnection;
-    public ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {
+    public final ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {
         protected void initChannel(Channel channel) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
 
             if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
-                if (proxy.getSocksType() == ProxyHelper.SocksType.FIVE) {
-                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.getHost(), proxy.getPort()), null, null));
+                if (proxy.socksType() == ProxyHelper.SocksType.FIVE) {
+                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), null, null));
                 } else {
-                    channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+                    channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port())));
                 }
             }
             try {

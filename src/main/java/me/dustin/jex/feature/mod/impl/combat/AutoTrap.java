@@ -7,7 +7,7 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -37,7 +37,7 @@ public class AutoTrap extends Feature {
     public int placeColor = 0xffff0000;
 
     private int stage = 0;
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
     private BlockPos placingPos;
 
     @EventPointer
@@ -49,7 +49,7 @@ public class AutoTrap extends Feature {
             PlayerHelper.INSTANCE.placeBlockInPos(placingPos, Hand.MAIN_HAND, true);
             placingPos = null;
         }
-        if (!timer.hasPassed(placeDelay))
+        if (!stopWatch.hasPassed(placeDelay))
             return;
         int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
         int obby = InventoryHelper.INSTANCE.getFromHotbar(Items.OBSIDIAN);
@@ -84,7 +84,7 @@ public class AutoTrap extends Feature {
                     if (rotate)
                         ((EventPlayerPackets) event).setRotation(rotationVector);
                     placingPos = pos;
-                    timer.reset();
+                    stopWatch.reset();
                 }
                 stage++;
             } else {
@@ -96,7 +96,7 @@ public class AutoTrap extends Feature {
 
                 InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                 this.setState(false);
-                timer.reset();
+                stopWatch.reset();
                 this.stage = 0;
             }
         }

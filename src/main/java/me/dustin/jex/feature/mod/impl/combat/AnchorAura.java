@@ -8,7 +8,7 @@ import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -62,8 +62,8 @@ public class AnchorAura extends Feature {
     @OpChild(name = "Place Distance", min = 1, max = 6, inc = 0.1f, parent = "Auto Place")
     public float placeDistance = 3.5f;
 
-    private Timer placeTimer = new Timer();
-    private Timer attackTimer = new Timer();
+    private StopWatch placeStopWatch = new StopWatch();
+    private StopWatch attackStopWatch = new StopWatch();
     private BlockPos placePos;
 
     @EventPointer
@@ -72,12 +72,12 @@ public class AnchorAura extends Feature {
         if (WorldHelper.INSTANCE.getDimensionID().toString().equalsIgnoreCase("the_nether"))
             return;
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (attackTimer.hasPassed(attackDelay)) {
+            if (attackStopWatch.hasPassed(attackDelay)) {
                 BlockPos chargedAnchor = getChargedAnchor(Wrapper.INSTANCE.getLocalPlayer());
                 if (chargedAnchor != null && shouldExplode(chargedAnchor)) {
                     Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(chargedAnchor.getX(), chargedAnchor.getY(), chargedAnchor.getZ()), Direction.UP, chargedAnchor, false));
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                    attackTimer.reset();
+                    attackStopWatch.reset();
                     return;
                 }
                 BlockPos anchor = getAnchor(Wrapper.INSTANCE.getLocalPlayer());
@@ -89,12 +89,12 @@ public class AnchorAura extends Feature {
                         Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(anchor.getX(), anchor.getY(), anchor.getZ()), Direction.UP, anchor, false));
                         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                         InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
-                        attackTimer.reset();
+                        attackStopWatch.reset();
                         return;
                     }
                 }
             }
-            if (placeTimer.hasPassed(delay))
+            if (placeStopWatch.hasPassed(delay))
                 if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.RESPAWN_ANCHOR))) {
                     for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                         if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().asString())) {
@@ -104,7 +104,7 @@ public class AnchorAura extends Feature {
                                     RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
                                     event.setRotation(rotation);
                                     placePos = placingPos;
-                                    placeTimer.reset();
+                                    placeStopWatch.reset();
                                     return;
                                 }
                             }

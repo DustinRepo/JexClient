@@ -7,7 +7,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -24,7 +24,7 @@ public class InventorySort extends Feature {
     @Op(name = "Sort Key", isKeybind = true)
     public int sortKey = KeyboardHelper.INSTANCE.MIDDLE_CLICK;
 
-    private Timer timeOutTimer = new Timer();
+    private StopWatch timeOutStopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
@@ -34,7 +34,7 @@ public class InventorySort extends Feature {
             ScreenHandler screenHandler = handledScreen.getScreenHandler();
             int emptySlot = getFirstEmptySlot(screenHandler);
             int nonEmptySlot = getLastNonEmptySlot(screenHandler);
-            timeOutTimer.reset();
+            timeOutStopWatch.reset();
             while (emptySlot != -1 && nonEmptySlot != -1 && emptySlot < nonEmptySlot) {
                 InventoryHelper.INSTANCE.windowClick(screenHandler, screenHandler instanceof PlayerScreenHandler ? (nonEmptySlot < 9 ? nonEmptySlot + 36 : nonEmptySlot) : nonEmptySlot, SlotActionType.PICKUP);
                 InventoryHelper.INSTANCE.windowClick(screenHandler, screenHandler instanceof PlayerScreenHandler ? (emptySlot < 9 ? emptySlot + 36 : emptySlot) :  emptySlot, SlotActionType.PICKUP);
@@ -42,7 +42,7 @@ public class InventorySort extends Feature {
                 emptySlot = getFirstEmptySlot(screenHandler);
                 nonEmptySlot = getLastNonEmptySlot(screenHandler);
 
-                if (timeOutTimer.hasPassed(1000)) {//if this takes longer than a second it borked up
+                if (timeOutStopWatch.hasPassed(1000)) {//if this takes longer than a second it borked up
                     ChatHelper.INSTANCE.addClientMessage("MiddleClickSort timeout - something went wrong.");
                     ChatHelper.INSTANCE.addClientMessage("If you would like to report this, please take a screenshot of the inventory and send it in the Discord while also saying what screen you are in.");
                     break;

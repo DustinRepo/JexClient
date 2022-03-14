@@ -6,7 +6,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.item.Item;
@@ -25,7 +25,7 @@ public class AutoDrop extends Feature {
     public int dropDelay = 50;
 
     private final ArrayList<Item> items = new ArrayList<>();
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     public AutoDrop() {
         INSTANCE = this;
@@ -50,7 +50,7 @@ public class AutoDrop extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!timer.hasPassed(dropDelay))
+        if (!stopWatch.hasPassed(dropDelay))
             return;
         Map<Integer, ItemStack> inventory = InventoryHelper.INSTANCE.getStacksFromInventory(true);
         if (dropDelay == 0) {
@@ -64,7 +64,7 @@ public class AutoDrop extends Feature {
                 ItemStack itemStack = inventory.get(slot);
                 if (items.contains(itemStack.getItem())) {
                     InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot <= 27 ? slot + 9 : slot, SlotActionType.THROW, 1);
-                    timer.reset();
+                    stopWatch.reset();
                     return;
                 }
             }

@@ -1,6 +1,6 @@
 package me.dustin.jex.helper.misc;
 
-public class Timer {
+public class StopWatch {
 
     private long currentMS = 0L;
     private long lastMS = -1L;

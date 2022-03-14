@@ -3,7 +3,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -26,11 +26,11 @@ public class AutoArmor extends Feature {
     @Op(name = "Delay (MS)", max = 1000)
     public int delay = 65;
 
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (timer.hasPassed(delay)) {
+        if (stopWatch.hasPassed(delay)) {
             int stackToMove = -1;
             ArmorItem equipped = null;
             if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof InventoryScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof MerchantScreen)
@@ -79,7 +79,7 @@ public class AutoArmor extends Feature {
                 }
 
                 InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, stackToMove < 9 ? stackToMove + 36 : stackToMove, SlotActionType.QUICK_MOVE);
-                timer.reset();
+                stopWatch.reset();
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));

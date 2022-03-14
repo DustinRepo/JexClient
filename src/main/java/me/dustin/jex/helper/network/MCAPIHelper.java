@@ -1,10 +1,7 @@
 package me.dustin.jex.helper.network;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +15,6 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 
 import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.JsonHelper;
-import me.dustin.jex.helper.misc.Timer;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;

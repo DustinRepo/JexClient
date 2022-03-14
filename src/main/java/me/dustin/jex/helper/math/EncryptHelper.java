@@ -14,26 +14,13 @@ public enum EncryptHelper {
     Cipher ecipher;
     Cipher dcipher;
     // 8-byte Salt
-    byte[] salt = {
+    final byte[] salt = {
             (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32,
             (byte) 0x56, (byte) 0x35, (byte) 0xE3, (byte) 0x03
     };
     // Iteration count
-    int iterationCount = 19;
+    final int iterationCount = 19;
 
-    /**
-     * @param secretKey Key used to encrypt data
-     * @param plainText Text input to be encrypted
-     * @return Returns encrypted text
-     * @throws java.security.NoSuchAlgorithmException
-     * @throws java.security.spec.InvalidKeySpecException
-     * @throws javax.crypto.NoSuchPaddingException
-     * @throws java.security.InvalidKeyException
-     * @throws java.security.InvalidAlgorithmParameterException
-     * @throws java.io.UnsupportedEncodingException
-     * @throws javax.crypto.IllegalBlockSizeException
-     * @throws javax.crypto.BadPaddingException
-     */
     public String encrypt(String secretKey, String plainText) {
         try {
             //Key generation for enc and desc
@@ -56,19 +43,6 @@ public enum EncryptHelper {
         }
     }
 
-    /**
-     * @param secretKey     Key used to decrypt data
-     * @param encryptedText encrypted text input to decrypt
-     * @return Returns plain text after decryption
-     * @throws java.security.NoSuchAlgorithmException
-     * @throws java.security.spec.InvalidKeySpecException
-     * @throws javax.crypto.NoSuchPaddingException
-     * @throws java.security.InvalidKeyException
-     * @throws java.security.InvalidAlgorithmParameterException
-     * @throws java.io.UnsupportedEncodingException
-     * @throws javax.crypto.IllegalBlockSizeException
-     * @throws javax.crypto.BadPaddingException
-     */
     public String decrypt(String secretKey, String encryptedText) {
         try {
             //Key generation for enc and desc

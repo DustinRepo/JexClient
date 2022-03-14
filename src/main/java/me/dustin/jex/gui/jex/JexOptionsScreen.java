@@ -13,7 +13,7 @@ import me.dustin.jex.gui.jex.selection.AutoDropSelectScreen;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -39,7 +39,7 @@ public class JexOptionsScreen extends Screen {
     private ButtonWidget reloadAddonsButton;
     private ButtonWidget changelogButton;
     private ButtonWidget personalSettingsButton;
-    private static Timer timer = new Timer();
+    private static StopWatch stopWatch = new StopWatch();
     private boolean updating = false;
     public JexOptionsScreen() {
         super(new LiteralText("Jex Client"));
@@ -88,7 +88,7 @@ public class JexOptionsScreen extends Screen {
                     }
                 });
             }
-            timer.reset();
+            stopWatch.reset();
         });
 
         //right
@@ -127,8 +127,8 @@ public class JexOptionsScreen extends Screen {
         renderBackground(matrices);
         prefixField.render(matrices, mouseX, mouseY, delta);
         setPrefixButton.active = !prefixField.getText().isEmpty();
-        if (!timer.hasPassed(30 * 1000)) {
-            reloadAddonsButton.setMessage(new LiteralText("Reload Capes and Hats (" + ( 30 - ((timer.getCurrentMS() - timer.getLastMS()) / 1000)) + ")"));
+        if (!stopWatch.hasPassed(30 * 1000)) {
+            reloadAddonsButton.setMessage(new LiteralText("Reload Capes and Hats (" + ( 30 - ((stopWatch.getCurrentMS() - stopWatch.getLastMS()) / 1000)) + ")"));
             reloadAddonsButton.active = false;
         } else {
             reloadAddonsButton.setMessage(new LiteralText("Reload Capes and Hats"));

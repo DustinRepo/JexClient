@@ -11,7 +11,7 @@ import me.dustin.jex.feature.mod.core.Feature.Category;
 import me.dustin.jex.feature.mod.core.Feature.Manifest;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.Render3DHelper.BoxStorage;
@@ -30,11 +30,11 @@ public class BarrierView extends Feature {
 	public int color = 0xffff0000;
 	
 	private final ArrayList<BlockPos> renderPositions = new ArrayList<>();
-	private final Timer timer = new Timer();
+	private final StopWatch stopWatch = new StopWatch();
 
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-		if (timer.hasPassed(250)) {
+		if (stopWatch.hasPassed(250)) {
 			renderPositions.clear();
 			for (int x = -4; x < 4; x++) {
 				for (int y = -4; y < 4; y++) {
@@ -46,7 +46,7 @@ public class BarrierView extends Feature {
 					}
 				}
 			}
-			timer.reset();
+			stopWatch.reset();
 		}
 		ArrayList<BoxStorage> list = new ArrayList<>();
 		renderPositions.forEach(blockPos -> {

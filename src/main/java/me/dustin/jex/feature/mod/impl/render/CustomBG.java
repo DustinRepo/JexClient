@@ -10,7 +10,7 @@ import me.dustin.jex.event.render.EventRenderBackground;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.render.BufferBuilder;
@@ -30,7 +30,7 @@ public class CustomBG extends Feature {
     float offset = 0;
     float a = 0.49f;
     boolean up = false;
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventRenderBackground> eventRenderBackgroundEventListener = new EventListener<>(event -> {
@@ -38,7 +38,7 @@ public class CustomBG extends Feature {
             return;
         event.cancel();
         Matrix4f matrix4f = event.getMatrixStack().peek().getPositionMatrix();
-        if (timer.hasPassed(20)) {
+        if (stopWatch.hasPassed(20)) {
             if (up) {
                 if (a < .49f)
                     a+=0.005f;
@@ -53,7 +53,7 @@ public class CustomBG extends Feature {
             offset += 0.25f;
             if (offset > 270)
                 offset -=270;
-            timer.reset();
+            stopWatch.reset();
         }
         float topLeftColor = offset;
         float topRightColor = offset + 80;

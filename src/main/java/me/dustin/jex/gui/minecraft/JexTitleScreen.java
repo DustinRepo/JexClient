@@ -10,8 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.file.core.ConfigManager;
@@ -34,7 +32,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.CustomMainMenu;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -53,7 +51,6 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -77,7 +74,7 @@ public class JexTitleScreen extends Screen {
     private long backgroundFadeStart;
 
     private CustomMainMenu customMainMenu;
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
     private boolean isDonator;
 
     public JexTitleScreen() {
@@ -182,14 +179,14 @@ public class JexTitleScreen extends Screen {
         if (this.backgroundFadeStart == 0L && this.doBackgroundFade) {
             this.backgroundFadeStart = Util.getMeasuringTimeMs();
         }
-        if (customMainMenu.scroll && timer.hasPassed(customMainMenu.scrollDelay * 1000L)) {
+        if (customMainMenu.scroll && stopWatch.hasPassed(customMainMenu.scrollDelay * 1000L)) {
             background++;
             if (background < 0) {
                 background = backgrounds.size() - 1;
             } else if (background > backgrounds.size() - 1) {
                 background = 0;
             }
-            timer.reset();
+            stopWatch.reset();
         }
         isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
         int midX = Render2DHelper.INSTANCE.getScaledWidth() / 2;

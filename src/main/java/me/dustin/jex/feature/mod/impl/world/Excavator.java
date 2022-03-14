@@ -19,7 +19,7 @@ import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -30,7 +30,6 @@ import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -68,7 +67,7 @@ public class Excavator extends Feature {
 
     private BlockPos tempPos1;
     private BlockPos tempPos2;
-    private final Timer sortTimer = new Timer();
+    private final StopWatch sortStopWatch = new StopWatch();
 
     private boolean baritoneAllowPlace;
 
@@ -337,7 +336,7 @@ public class Excavator extends Feature {
         }
 
         public BlockPos getClosest() {
-            if (excavator.sortTimer.hasPassed(excavator.sortDelay)) {
+            if (excavator.sortStopWatch.hasPassed(excavator.sortDelay)) {
                 sortList();
                 int y = -64;
                 for (BlockPos blockPos : blockPosList) {
@@ -348,7 +347,7 @@ public class Excavator extends Feature {
                     }
                 }
                 highestY = y;
-                excavator.sortTimer.reset();
+                excavator.sortStopWatch.reset();
             }
             for (BlockPos blockPos : blockPosList) {
                 //able to be clicked

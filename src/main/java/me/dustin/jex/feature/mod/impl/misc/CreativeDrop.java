@@ -5,7 +5,7 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -41,12 +41,12 @@ public class CreativeDrop extends Feature {
     public boolean newEnchants = true;
 
     private int slot = 1;
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         Random random = new Random();
         String[] names = new String[]{JexClient.INSTANCE.getBaseUrl(), "Download Jex Client to do this", "Nice FPS", "Oh look a shiny item", "Copper pants", "How do I stop dropping items?", "Can you hear me?", "Please help I am stuck in this item"};
-        if (timer.hasPassed(delay) && Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
+        if (stopWatch.hasPassed(delay) && Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
             for (int i = 0; i < speed; i++) {
                 ItemStack itemStack = new ItemStack(Item.byRawId(slot));
                 if (itemStack.getItem() != null && itemStack.getItem() != Items.AIR) {
@@ -68,7 +68,7 @@ public class CreativeDrop extends Feature {
                 } else
                     slot = 1;
             }
-            timer.reset();
+            stopWatch.reset();
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

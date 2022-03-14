@@ -29,7 +29,6 @@ import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ConnectedServerHelper;
-import me.dustin.jex.helper.network.JexServerHelper;
 import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -92,7 +91,6 @@ public enum JexClient {
         EventManager.register(InventoryHelper.INSTANCE);
         EventManager.register(ColorHelper.INSTANCE);
         EventManager.register(EntityPositionHelper.INSTANCE);
-        EventManager.register(JexServerHelper.INSTANCE);
         EventManager.register(PathingHelper.INSTANCE);
         EventManager.register(ConnectedServerHelper.INSTANCE);
         getLogger().info("Checking for update");
@@ -213,7 +211,7 @@ public enum JexClient {
         ArrayList<String> stringList = new ArrayList<>(Arrays.asList(JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")));
 
         try {
-            FileHelper.INSTANCE.writeFile(ModFileHelper.INSTANCE.getJexDirectory(), "dev" + File.separator + "mods.json", stringList);
+            FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory() + File.separator + "dev", "mods.json"), stringList);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -8,7 +8,7 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -152,7 +152,7 @@ public enum TabGui {
         this.hoverBar = hoverBar;
     }
 
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {

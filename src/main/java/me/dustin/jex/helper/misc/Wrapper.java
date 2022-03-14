@@ -32,10 +32,6 @@ public enum Wrapper {
         return Feature.getState(Freecam.class) ? Freecam.playerEntity : getLocalPlayer();
     }
 
-    public IPlayerEntity getILocalPlayer() {
-        return (IPlayerEntity) getMinecraft().player;
-    }
-
     public ClientWorld getWorld() {
         return getMinecraft().world;
     }
@@ -58,20 +54,12 @@ public enum Wrapper {
         return getMinecraft().textRenderer;
     }
 
-    public IRenderTickCounter getIRenderTickCounter() {
-        return (IRenderTickCounter)getIMinecraft().getRenderTickCounter();
-    }
-
     public WorldRenderer getWorldRenderer() {
         return getMinecraft().worldRenderer;
     }
 
     public GameRenderer getGameRenderer() {
         return getMinecraft().gameRenderer;
-    }
-
-    public IGameRenderer getIGameRenderer() {
-        return (IGameRenderer)getMinecraft().gameRenderer;
     }
 
 }

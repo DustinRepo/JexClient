@@ -34,7 +34,7 @@ public class ProxyScreen extends Screen {
         String currentProxyString = "";
         if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
-            currentProxyString = proxy.getHost() + ":" + proxy.getPort();
+            currentProxyString = proxy.host() + ":" + proxy.port();
         }
         this.addSelectableChild(proxyField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 200, 20, new LiteralText(currentProxyString)));
         this.addDrawableChild(connectButton = new ButtonWidget(width / 2 - 100, height / 2, 200, 20, new LiteralText("Connect to Proxy"), button -> {
@@ -66,7 +66,7 @@ public class ProxyScreen extends Screen {
         FontHelper.INSTANCE.drawCenteredString(matrices, "Proxy hostname:port", width / 2.f, height / 2.f - 38, -1);
         if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
-            FontHelper.INSTANCE.drawCenteredString(matrices, "Current Proxy: " + proxy.getHost() + ":" + proxy.getPort(), width / 2.f, height / 2.f - 70, -1);
+            FontHelper.INSTANCE.drawCenteredString(matrices, "Current Proxy: " + proxy.host() + ":" + proxy.port(), width / 2.f, height / 2.f - 70, -1);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

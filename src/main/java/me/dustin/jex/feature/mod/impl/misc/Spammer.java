@@ -7,7 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -27,24 +27,24 @@ public class Spammer extends Feature {
     @Op(name = "Delay (MS)", max = 30000, inc = 10)
     public int delay = 500;
     private String spamString;
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
     private int currentSpot = 0;
 
     public static void createSpamFile() {
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(baseFileStr.split("\n")));
-        FileHelper.INSTANCE.writeFile(ModFileHelper.INSTANCE.getJexDirectory(), "Spam.txt", arrayList);
+        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), "Spam.txt"), arrayList);
     }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!timer.hasPassed(delay))
+        if (!stopWatch.hasPassed(delay))
             return;
         String sentence = spamString.split("\n")[currentSpot];
         while (containsSyntax(sentence)) {
             sentence = parseSyntax(sentence);
         }
         NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(sentence));
-        timer.reset();
+        stopWatch.reset();
         currentSpot++;
         if (currentSpot > spamString.split("\n").length - 1)
             currentSpot = 0;
@@ -66,7 +66,7 @@ public class Spammer extends Feature {
 
     public String readFile() {
         StringBuilder sb = new StringBuilder();
-        for (String s : FileHelper.INSTANCE.readFile(ModFileHelper.INSTANCE.getJexDirectory(), "Spam.txt")) {
+        for (String s : FileHelper.INSTANCE.readFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), "Spam.txt")).split("\n")) {
             if (!s.startsWith("/*") && !s.startsWith("*") && !s.isEmpty()) {
                 sb.append(s).append("\n");
             }

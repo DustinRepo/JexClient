@@ -2,7 +2,6 @@ package me.dustin.jex.feature.mod.impl.combat.killaura;
 
 import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
-import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
@@ -13,13 +12,12 @@ import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
-import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinEntity;
@@ -108,7 +106,7 @@ public class KillAura extends Feature {
     @OpChild(name = "Sphere Color", isColor = true, parent = "Reach Sphere")
     public int reachCircleColor = 0xff00ff00;
 
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
     private String lastMode;
 
     private boolean hasTarget = false;
@@ -162,8 +160,8 @@ public class KillAura extends Feature {
 
     public boolean canSwing() {
         if (ignoreNewCombat) {
-            if (timer.hasPassed((long) (1000 / aps))) {
-                timer.reset();
+            if (stopWatch.hasPassed((long) (1000 / aps))) {
+                stopWatch.reset();
                 return true;
             }
         } else {

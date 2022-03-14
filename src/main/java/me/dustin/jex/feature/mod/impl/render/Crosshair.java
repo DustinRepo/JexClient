@@ -1,12 +1,10 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderCrosshair;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -38,7 +36,7 @@ public class Crosshair extends Feature {
 	public int spinSpeed = 1;
 
 	private int spinAmount;
-	private final Timer timer = new Timer();
+	private final StopWatch stopWatch = new StopWatch();
 
 	@EventPointer
 	private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
@@ -64,9 +62,9 @@ public class Crosshair extends Feature {
 				Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x - 15, y + gap + size + thickness + 10, x - 15 + (width * Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0)), y + gap + size + thickness + 14, 0x00000000, color, 1);
 			Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x - 15, y + gap + size + thickness + 10, x + 15, y + gap + size + thickness + 14, 0xff000000, 0x00ffffff, 1);
 		}
-		if (!timer.hasPassed(20 / spinSpeed))
+		if (!stopWatch.hasPassed(20 / spinSpeed))
 			return;
-		timer.reset();
+		stopWatch.reset();
 		spinAmount += spinSpeed;
 		if (spinAmount > 360)
 			spinAmount -= 360;

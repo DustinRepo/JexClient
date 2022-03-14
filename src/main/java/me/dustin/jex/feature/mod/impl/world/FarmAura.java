@@ -6,7 +6,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.math.vector.RotationVector;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -33,15 +33,15 @@ public class FarmAura extends Feature {
     @Op(name = "Plant Delay (MS)", max = 1000, inc = 10)
     public int plantDelay = 100;
 
-    private final Timer breakTimer = new Timer();
-    private final Timer plantTimer = new Timer();
+    private final StopWatch breakStopWatch = new StopWatch();
+    private final StopWatch plantStopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (BonemealAura.INSTANCE.isBonemealing())
             return;
-        if (breakTimer.hasPassed(breakDelay)) {
-            breakTimer.reset();
+        if (breakStopWatch.hasPassed(breakDelay)) {
+            breakStopWatch.reset();
             BlockPos crop = getCrop();
             if (crop != null) {
                 RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(crop.getX(), crop.getY(), crop.getZ()));
@@ -52,8 +52,8 @@ public class FarmAura extends Feature {
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             }
         }
-        if (plantTimer.hasPassed(plantDelay)) {
-            plantTimer.reset();
+        if (plantStopWatch.hasPassed(plantDelay)) {
+            plantStopWatch.reset();
             BlockPos farmland = getFarmland();
             if (farmland != null) {
                 int cropSlot = getPlantableCrop();

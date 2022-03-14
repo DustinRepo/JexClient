@@ -6,7 +6,7 @@ import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -83,18 +83,18 @@ public class SuperheroFX extends Feature{
         private Vec3d twoDPosition;
         private FXType fxType;
         private int age = 200;
-        private final Timer timer;
+        private final StopWatch stopWatch;
 
         public KapowParticle(Vec3d position, FXType fxType) {
             this.position = position;
             this.fxType = fxType;
             this.identifier = new Identifier("jex", "comic/" + fxType.name().toLowerCase() + ".png");
-            timer = new Timer();
-            timer.reset();
+            stopWatch = new StopWatch();
+            stopWatch.reset();
         }
 
         public void render(MatrixStack matrixStack) {
-            if (timer.hasPassed(maxAge))
+            if (stopWatch.hasPassed(maxAge))
                 this.age = 0;
             if (visibleOnly) {
                 Vec3d vec3d = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getEyeY(), Wrapper.INSTANCE.getLocalPlayer().getZ());

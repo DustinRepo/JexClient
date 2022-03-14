@@ -18,7 +18,7 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -26,10 +26,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
-import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
@@ -41,7 +39,7 @@ import java.util.ArrayList;
 
 public class NavigatorOptionButton extends Button {
 
-    Timer timer = new Timer();
+    StopWatch stopWatch = new StopWatch();
     int togglePos = 0;
     int cogSpin = 0;
     private Option option;
@@ -244,9 +242,9 @@ public class NavigatorOptionButton extends Button {
     }
 
     private void updateOnOff() {
-        if (!timer.hasPassed(10))
+        if (!stopWatch.hasPassed(10))
             return;
-        timer.reset();
+        stopWatch.reset();
         if (this.getOption().getType() == OpType.BOOL) {
             boolean enabled = ((BoolOption) this.getOption()).getValue();
             for (int i = 0; i < 2; i++) {

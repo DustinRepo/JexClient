@@ -1,3 +1,9 @@
+0.6.3
+Added .ping command
+Added .serverscrub command
+Temporarily removed FOV support in KillAura while I work on fixing a bug with it
+Fixed Skeletons still trying to crouch when sneaking while swimmming
+
 0.6.2
 Added WebSpam mod
 Added .bot command which allows you to login an account to the server you are on

@@ -4,7 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -23,11 +23,11 @@ public class ChestStealer extends Feature {
     @Op(name = "Dump")
     public boolean dump;
 
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!timer.hasPassed(delay))
+        if (!stopWatch.hasPassed(delay))
             return;
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen) {
             if (InventoryHelper.INSTANCE.isInventoryFull() && !dump) {
@@ -43,7 +43,7 @@ public class ChestStealer extends Feature {
                     ItemStack stack = slot.getStack();
                     if (stack != null && stack.getItem() != Items.AIR) {
                         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot.id, dump ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, dump ? 1 : 0);
-                        timer.reset();
+                        stopWatch.reset();
                         if (delay > 0)
                             return;
                     }

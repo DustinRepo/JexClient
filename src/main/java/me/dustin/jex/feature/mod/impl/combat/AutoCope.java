@@ -53,7 +53,7 @@ public class AutoCope extends Feature {
             jsonString = defaultJson;
             ArrayList<String> output = new ArrayList<>();
             Collections.addAll(output, jsonString.split("\n"));
-            FileHelper.INSTANCE.writeFile(ModFileHelper.INSTANCE.getJexDirectory(), "CopeMessages.json", output);
+            FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), "CopeMessages.json"), output);
         } else {
             try {
                 StringBuilder sb = new StringBuilder();

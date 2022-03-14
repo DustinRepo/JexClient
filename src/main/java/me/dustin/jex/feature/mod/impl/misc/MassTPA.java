@@ -10,7 +10,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.client.network.PlayerListEntry;
@@ -26,11 +26,11 @@ public class MassTPA extends Feature {
     @Op(name = "Delay (MS)", max = 5000, inc = 10)
     public int delay = 1000;
 
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!timer.hasPassed(delay))
+        if (!stopWatch.hasPassed(delay))
             return;
         ArrayList<PlayerListEntry> playerList = Lists.newArrayList(Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList());
         for (int i = 0; i < playerList.size(); i++) {
@@ -43,7 +43,7 @@ public class MassTPA extends Feature {
         int size = playerList.size();
         PlayerListEntry playerListEntry = playerList.get(new Random().nextInt(size));
         NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket("/tpa " + playerListEntry.getProfile().getName()));
-        timer.reset();
+        stopWatch.reset();
     },new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer

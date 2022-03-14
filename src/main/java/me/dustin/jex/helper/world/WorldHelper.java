@@ -38,8 +38,7 @@ import java.util.*;
 
 public enum WorldHelper {
     INSTANCE;
-    private Queue<Runnable> var10001 = Queues.newConcurrentLinkedQueue();
-    private ConcurrentMap<BlockPos, BlockEntity> blockEntities = Maps.newConcurrentMap();
+    private final ConcurrentMap<BlockPos, BlockEntity> blockEntities = Maps.newConcurrentMap();
     public static final Box SINGLE_BOX = new Box(0, 0, 0, 1, 1, 1);
 
     public Block getBlock(BlockPos pos) {

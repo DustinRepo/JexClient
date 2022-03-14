@@ -2,17 +2,12 @@ package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
-import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Timer;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class ArrayListElement extends HudElement {
     private ArrayList<Feature> mods = new ArrayList<>();

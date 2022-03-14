@@ -1,11 +1,6 @@
 package me.dustin.jex.helper.math;
 
-import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -24,8 +19,7 @@ public enum ClientMathHelper {
 
     public float getAngleDifference(float alpha, float beta) {
         float phi = Math.abs(beta - alpha) % 360;       // This is either the DistanceCheck or 360 - DistanceCheck
-        float distance = phi > 180 ? 360 - phi : phi;
-        return distance;
+        return phi > 180 ? 360 - phi : phi;
     }
 
     public float cap(float i, float j, float k) {
@@ -103,7 +97,7 @@ public enum ClientMathHelper {
     private StringBuffer getCommonCharacters(String string1, String string2, int distanceSep) {
         StringBuffer returnCommons = new StringBuffer();
 
-        StringBuffer copy = new StringBuffer(string2);
+        StringBuilder copy = new StringBuilder(string2);
 
         int n = string1.length();
         int m = string2.length();

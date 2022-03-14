@@ -6,7 +6,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -27,7 +27,7 @@ public class Fakelag extends Feature {
     public int choke = 100;
 
     private final ArrayList<Packet<?>> packets = new ArrayList<>();
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
     private boolean sending = false;
 
     private FakePlayerEntity fakePlayerEntity;
@@ -38,10 +38,10 @@ public class Fakelag extends Feature {
             return;
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
             packets.clear();
-            timer.reset();
+            stopWatch.reset();
             fakePlayerEntity = null;
         }
-        if (!timer.hasPassed(choke) && shouldCatchPackets()) {
+        if (!stopWatch.hasPassed(choke) && shouldCatchPackets()) {
             packets.add(event.getPacket());
             event.cancel();
         } else {
@@ -56,7 +56,7 @@ public class Fakelag extends Feature {
                 removeFakePlayer();
             }
             packets.clear();
-            timer.reset();
+            stopWatch.reset();
         }
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE));
 

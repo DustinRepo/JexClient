@@ -3,10 +3,8 @@ package me.dustin.jex.load.mixin.minecraft;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
-import me.dustin.jex.load.impl.IGameRenderer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
@@ -29,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
-public abstract class MixinGameRenderer implements IGameRenderer {
+public abstract class MixinGameRenderer {
 
     @Shadow @Final private Camera camera;
 
@@ -148,10 +146,5 @@ public abstract class MixinGameRenderer implements IGameRenderer {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V"))
     public void renderForEvent(float float_1, long long_1, boolean boolean_1, CallbackInfo ci) {
         new EventRender2DNoScale().run();
-    }
-
-    @Override
-    public double getFOV(float tickDelta) {
-        return this.getFov(camera, tickDelta, true);
     }
 }

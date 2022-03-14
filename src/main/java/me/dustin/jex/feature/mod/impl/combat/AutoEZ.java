@@ -94,7 +94,7 @@ public class AutoEZ extends Feature {
             jsonString = defaultJson;
             ArrayList<String> output = new ArrayList<>();
             Collections.addAll(output, jsonString.split("\n"));
-            FileHelper.INSTANCE.writeFile(ModFileHelper.INSTANCE.getJexDirectory(), "KillMessages.json", output);
+            FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), "KillMessages.json"), output);
         } else {
             try {
                 StringBuilder sb = new StringBuilder();

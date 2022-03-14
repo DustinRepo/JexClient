@@ -7,7 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.AutoArmor;
 import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -27,7 +27,7 @@ public class ArmorDerp extends Feature {
 
     private boolean autoArmor;
     private final Random random = new Random();
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -39,7 +39,7 @@ public class ArmorDerp extends Feature {
         }
 
         if (!armorInfos.isEmpty()) {
-            if (timer.hasPassed(delay)) {
+            if (stopWatch.hasPassed(delay)) {
                 int r = random.nextInt(armorInfos.size());
                 ArmorInfo armorInfo = armorInfos.get(r);
                 EquipmentSlot equipmentSlot = armorInfo.armorItem().getSlotType();
@@ -52,7 +52,7 @@ public class ArmorDerp extends Feature {
                         Wrapper.INSTANCE.getInteractionManager().clickSlot(0, armorSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
                 }
                 InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.QUICK_MOVE);
-                timer.reset();
+                stopWatch.reset();
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));

@@ -7,7 +7,6 @@ import me.dustin.jex.event.render.EventWorldRender;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
-import me.dustin.jex.load.impl.IWorldRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderEffect;
@@ -29,11 +28,7 @@ import java.awt.*;
 import java.io.IOException;
 
 @Mixin(WorldRenderer.class)
-public class MixinWorldRenderer implements IWorldRenderer {
-
-    @Shadow
-    @Final
-    private BufferBuilderStorage bufferBuilders;
+public class MixinWorldRenderer {
 
     @Shadow private @Nullable ShaderEffect entityOutlineShader;
     @Shadow @Final private MinecraftClient client;
@@ -108,10 +103,5 @@ public class MixinWorldRenderer implements IWorldRenderer {
     @Inject(method = "onResized", at = @At("HEAD"))
     public void onResized1(int width, int height, CallbackInfo ci) {
         ShaderHelper.INSTANCE.onResized(width, height);
-    }
-
-    @Override
-    public BufferBuilderStorage getBufferBuilders() {
-        return this.bufferBuilders;
     }
 }

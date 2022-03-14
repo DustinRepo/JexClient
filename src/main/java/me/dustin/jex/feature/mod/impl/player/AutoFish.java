@@ -1,6 +1,5 @@
 package me.dustin.jex.feature.mod.impl.player;
 
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
@@ -9,7 +8,7 @@ import me.dustin.jex.event.misc.EventJoinWorld;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -52,8 +51,8 @@ public class AutoFish extends Feature {
 
     double lastY = -1;
     boolean hasReeled = false;
-    Timer timer = new Timer();
-    Timer timer1 = new Timer();
+    StopWatch stopWatch = new StopWatch();
+    StopWatch stopWatch1 = new StopWatch();
     boolean hasReconnected;
 
     @EventPointer
@@ -70,7 +69,7 @@ public class AutoFish extends Feature {
             if (distanceTo(Wrapper.INSTANCE.getLocalPlayer().fishHook, vec3d) < 3 || !distanceCheck) {
                 reel();
                 hasReeled = true;
-                timer.reset();
+                stopWatch.reset();
             }
         }
     }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, PlaySoundS2CPacket.class));
@@ -79,13 +78,13 @@ public class AutoFish extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (AutoEat.isEating && recast) {
             this.hasReeled = true;
-            timer.reset();
+            stopWatch.reset();
             return;
         }
         if (hasReconnected) {
-            if (timer1.hasPassed(5000)) {
+            if (stopWatch1.hasPassed(5000)) {
                 reel();
-                timer1.reset();
+                stopWatch1.reset();
                 hasReconnected = false;
             }
         }
@@ -100,16 +99,16 @@ public class AutoFish extends Feature {
             if (difference > 0.11) {
                 reel();
                 hasReeled = true;
-                timer.reset();
+                stopWatch.reset();
             }
             lastY = hook.getY();
         }
 
         if (hasReeled && recast) {
-            if (timer.hasPassed(delay)) {
+            if (stopWatch.hasPassed(delay)) {
                 reel();
                 hasReeled = false;
-                timer.reset();
+                stopWatch.reset();
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));

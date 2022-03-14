@@ -23,7 +23,7 @@ public class TestPathFinder {
     private boolean isDone, isFailed;
     private int thinkSpeed = 4;
 
-    private int[][] posOffsets = {new int[]{1, 0, 0}, new int[]{0, 0, 1}, new int[]{1, 0, 1}, new int[]{-1, 0, 1}, new int[]{1, 0, -1}, new int[]{-1, 0, -1}, new int[]{-1, 0, 0}, new int[]{0, 0, -1}, new int[]{1, 1, 0}, new int[]{0, 1, 1}, new int[]{1, -1, 0}, new int[]{0, -1, 1}, new int[]{-1, -1, 0}, new int[]{0, -1, -1}};
+    private final int[][] posOffsets = {new int[]{1, 0, 0}, new int[]{0, 0, 1}, new int[]{1, 0, 1}, new int[]{-1, 0, 1}, new int[]{1, 0, -1}, new int[]{-1, 0, -1}, new int[]{-1, 0, 0}, new int[]{0, 0, -1}, new int[]{1, 1, 0}, new int[]{0, 1, 1}, new int[]{1, -1, 0}, new int[]{0, -1, 1}, new int[]{-1, -1, 0}, new int[]{0, -1, -1}};
 
     public TestPathFinder(BlockPos goal) {
         this.goal = goal;

@@ -51,23 +51,6 @@ public enum FileHelper {
         return ret;
     }
 
-    public List<String> readFile(File path, String name) {
-        File file = new File(path, name);
-        ArrayList<String> s = new ArrayList<>();
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
-            String inString;
-            while ((inString = in.readLine()) != null) {
-                s.add(inString);
-            }
-            in.close();
-            return s;
-        } catch (IOException e) {
-            createFile(path, name);
-        }
-        return new ArrayList<>();
-    }
-
     public String readFile(File file) {
         StringBuilder sb = new StringBuilder();
         try {
@@ -84,28 +67,11 @@ public enum FileHelper {
         return "";
     }
 
-    public void writeFile(File path, String name, List<String> content) {
-        try {
-            File file = new File(path, name);
-            PrintWriter printWriter = new PrintWriter(file);
-            StringBuilder stringBuilder = new StringBuilder();
-            content.forEach(string -> {
-                stringBuilder.append(string + "\r\n");
-            });
-            printWriter.print(stringBuilder);
-            printWriter.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public void writeFile(File file, List<String> content) {
         try {
             PrintWriter printWriter = new PrintWriter(file);
             StringBuilder stringBuilder = new StringBuilder();
-            content.forEach(string -> {
-                stringBuilder.append(string + "\r\n");
-            });
+            content.forEach(string -> stringBuilder.append(string).append("\r\n"));
             printWriter.print(stringBuilder);
             printWriter.close();
         } catch (Exception e) {
@@ -124,14 +90,6 @@ public enum FileHelper {
             FileWriter fw = new FileWriter(file);
             fw.close();
         } catch (Exception e) {
-        }
-    }
-
-    public void openFile(File file) {
-        try {
-            Desktop.getDesktop().open(file);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

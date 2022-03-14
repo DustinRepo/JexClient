@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.option;
 
 import me.dustin.jex.JexClient;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.enums.OpType;
@@ -116,10 +116,10 @@ public class Option {
                 this.setValue(value);
             if (this instanceof StringArrayOption castOption) {
                 if (contains(castOption.getAll(), value)) {
-                    Timer timer = new Timer();
+                    StopWatch stopWatch = new StopWatch();
                     while (!castOption.getValue().equalsIgnoreCase(value)) {
                         castOption.inc();
-                        if (timer.hasPassed(1000)) {
+                        if (stopWatch.hasPassed(1000)) {
                             castOption.setValue(value);
                             break;
                         }

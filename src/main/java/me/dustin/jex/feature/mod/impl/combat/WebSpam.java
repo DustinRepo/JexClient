@@ -6,7 +6,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -28,11 +28,11 @@ public class WebSpam extends Feature {
     @Op(name = "Friends")
     public boolean friends;
 
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!timer.hasPassed(delay))
+        if (!stopWatch.hasPassed(delay))
             return;
         int hotbarWeb = InventoryHelper.INSTANCE.getFromHotbar(Items.COBWEB);
         int invWeb = InventoryHelper.INSTANCE.getFromInv(Items.COBWEB);
@@ -47,7 +47,7 @@ public class WebSpam extends Feature {
                 if (playerEntity.distanceTo(Wrapper.INSTANCE.getPlayer()) <= range && WorldHelper.INSTANCE.getBlock(playerEntity.getBlockPos()) == Blocks.AIR && PlayerHelper.INSTANCE.canPlaceHere(playerEntity.getBlockPos())) {
                     InventoryHelper.INSTANCE.setSlot(hotbarWeb, true, true);
                     PlayerHelper.INSTANCE.placeBlockInPos(playerEntity.getBlockPos(), Hand.MAIN_HAND, false);
-                    timer.reset();
+                    stopWatch.reset();
                     if (delay != 0)
                         return;
                 }

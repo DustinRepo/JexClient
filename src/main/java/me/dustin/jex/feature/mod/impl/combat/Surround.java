@@ -7,7 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.vector.RotationVector;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -34,7 +34,7 @@ public class Surround extends Feature {
 	public int placeColor = 0xffff0000;
 
 	private int stage = 0;
-	private Timer timer = new Timer();
+	private StopWatch stopWatch = new StopWatch();
 	private BlockPos placingPos;
 
 	@EventPointer
@@ -48,7 +48,7 @@ public class Surround extends Feature {
 			PlayerHelper.INSTANCE.placeBlockInPos(placingPos, Hand.MAIN_HAND, true);
 			placingPos = null;
 		}
-		if (!timer.hasPassed(placeDelay))
+		if (!stopWatch.hasPassed(placeDelay))
 			return;
 		int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
 		int obby = InventoryHelper.INSTANCE.getFromHotbar(Items.OBSIDIAN);
@@ -79,7 +79,7 @@ public class Surround extends Feature {
 				if (rotate)
 					((EventPlayerPackets) event).setRotation(rotationVector);
 				placingPos = pos;
-				timer.reset();
+				stopWatch.reset();
 			}
 			stage++;
 		} else {
@@ -91,7 +91,7 @@ public class Surround extends Feature {
 			InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
 			if (autoTurnOff)
 				this.setState(false);
-			timer.reset();
+			stopWatch.reset();
 			this.stage = 0;
 		}
 	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));

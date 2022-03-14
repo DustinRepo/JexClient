@@ -7,7 +7,7 @@ import me.dustin.jex.event.player.EventWalkOffBlock;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.helper.math.vector.RotationVector;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -38,7 +38,7 @@ public class Scaffold extends Feature {
     @Op(name = "Range", min = 0, max = 4)
     public int range = 0;
     BlockHitResult blockHitResult;
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
     private final ConcurrentLinkedQueue<BlockInfo> emptyNearBlocks = new ConcurrentLinkedQueue<>();
 
     @EventPointer
@@ -70,7 +70,7 @@ public class Scaffold extends Feature {
                 }
             }
         } else if (blockHitResult != null) {
-            if (!timer.hasPassed(delay)) {
+            if (!stopWatch.hasPassed(delay)) {
                 return;
             }
             if (placeMode.equalsIgnoreCase("Post"))
@@ -78,7 +78,7 @@ public class Scaffold extends Feature {
 
             if (sneak)
                 NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
-            timer.reset();
+            stopWatch.reset();
         }
     });
 

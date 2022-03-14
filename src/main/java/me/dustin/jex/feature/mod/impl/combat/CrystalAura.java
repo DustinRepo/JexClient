@@ -6,7 +6,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -63,7 +63,7 @@ public class CrystalAura extends Feature {
 	@OpChild(name = "Place Distance", min = 1, max = 6, inc = 0.1f, parent = "Auto Place")
 	public float placeDistance = 3.5f;
 
-	private Timer timer = new Timer();
+	private StopWatch stopWatch = new StopWatch();
 	private BlockPos placePos;
 
 	@EventPointer
@@ -76,7 +76,7 @@ public class CrystalAura extends Feature {
 				event.setRotation(rotation);
 			}
 
-			if (timer.hasPassed(delay))
+			if (stopWatch.hasPassed(delay))
 				if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.END_CRYSTAL) || offhand)) {
 					Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 						if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().asString())) {
@@ -87,7 +87,7 @@ public class CrystalAura extends Feature {
 									RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 									event.setRotation(rotation);
 									placePos = placingPos.down();
-									timer.reset();
+									stopWatch.reset();
 									return;
 								}
 							}

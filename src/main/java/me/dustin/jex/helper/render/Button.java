@@ -23,7 +23,7 @@ public class Button {
     private boolean isVisible = true;
     private boolean playClick = true;
 
-    private ArrayList<Button> children = new ArrayList<>();
+    private final ArrayList<Button> children = new ArrayList<>();
 
     private int textColor;
     private int backgroundColor;

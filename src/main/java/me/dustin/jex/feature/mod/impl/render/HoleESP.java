@@ -4,7 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -30,12 +30,12 @@ public class HoleESP extends Feature {
     @Op(name = "Bedrock Color", isColor = true)
     public int bedrockColor = new Color(0, 255, 255).getRGB();
 
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
     private final ArrayList<BlockPos> holes = new ArrayList<>();
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        if (timer.hasPassed(250)) {
+        if (stopWatch.hasPassed(250)) {
             holes.clear();
             BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
 
@@ -49,7 +49,7 @@ public class HoleESP extends Feature {
                     }
                 }
             }
-            timer.reset();
+            stopWatch.reset();
         }
         for (BlockPos blockPos : holes) {
             Vec3d vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());

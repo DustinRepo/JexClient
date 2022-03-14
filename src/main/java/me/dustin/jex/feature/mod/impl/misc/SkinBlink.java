@@ -4,7 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -40,12 +40,12 @@ public class SkinBlink extends Feature {
     Random random = new Random();
 
     private final ArrayList<PlayerModelPart> savedEnabled = new ArrayList<>();
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
     private boolean toggleCustom;
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!timer.hasPassed(delay))
+        if (!stopWatch.hasPassed(delay))
             return;
         switch (mode) {
             case "Random":
@@ -77,7 +77,7 @@ public class SkinBlink extends Feature {
                 toggleCustom = !toggleCustom;
                 break;
         }
-        timer.reset();
+        stopWatch.reset();
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override

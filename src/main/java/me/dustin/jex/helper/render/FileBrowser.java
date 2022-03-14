@@ -24,7 +24,7 @@ public class FileBrowser {
 
     private Scrollbar scrollbar;
     private boolean movingScrollbar;
-    private ButtonListener doubleClickListener;
+    private final ButtonListener doubleClickListener;
 
     public FileBrowser(String openPath, float x, float y, float width, float height, ButtonListener doubleClickListener) {
         this.x = x;

@@ -7,8 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.impl.world.SpawnSphere;
 import me.dustin.jex.helper.math.ClientMathHelper;
-import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -19,8 +18,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.render.*;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -55,7 +52,7 @@ public class SpawnHighlighter extends Feature {
 	public int spawnSphereColor = 0xff00a1ff;
 
 	private final ArrayList<BlockPos> posList = new ArrayList<>();
-	private final Timer timer = new Timer();
+	private final StopWatch stopWatch = new StopWatch();
 
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
@@ -86,7 +83,7 @@ public class SpawnHighlighter extends Feature {
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-		if (timer.hasPassed(checkDelay)) {
+		if (stopWatch.hasPassed(checkDelay)) {
 			posList.clear();
 			for (int x = -radius; x < radius; x++) {
 				for (int y = -yradius; y < 5; y++) {
@@ -99,7 +96,7 @@ public class SpawnHighlighter extends Feature {
 					}
 				}
 			}
-			timer.reset();
+			stopWatch.reset();
 		}
 	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 

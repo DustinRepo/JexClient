@@ -7,7 +7,7 @@ import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -29,7 +29,7 @@ public class SpeedCrafter extends Feature {
 
     public Item craftingItem;
     private boolean alerted;
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -42,7 +42,7 @@ public class SpeedCrafter extends Feature {
                 return;
             }
             alerted = false;
-            if (!timer.hasPassed(delay))
+            if (!stopWatch.hasPassed(delay))
                 return;
             List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_BUILDING_BLOCKS);
             for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList) {
@@ -50,7 +50,7 @@ public class SpeedCrafter extends Feature {
                     if (recipe.getOutput().getItem() == craftingItem) {
                         Wrapper.INSTANCE.getInteractionManager().clickRecipe(craftingScreenHandler.syncId, recipe, true);
                         InventoryHelper.INSTANCE.windowClick(craftingScreenHandler, 0, SlotActionType.QUICK_MOVE, 1);
-                        timer.reset();
+                        stopWatch.reset();
                         if (delay > 0)
                             return;
                     }

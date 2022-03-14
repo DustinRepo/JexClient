@@ -3,7 +3,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -28,7 +28,7 @@ public class AutoSoup extends Feature {
     public int throwdelay = 20;
     public boolean throwing = false;
     int savedSlot;
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
 
 
     @EventPointer
@@ -36,7 +36,7 @@ public class AutoSoup extends Feature {
 
         this.setSuffix(getSoups() + "");
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (!timer.hasPassed(delay) || throwing)
+            if (!stopWatch.hasPassed(delay) || throwing)
                 return;
             if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= health && getSoups() > 0) {
                 if (getFirstSoup() < 9) {
@@ -44,25 +44,25 @@ public class AutoSoup extends Feature {
 
                     savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                     InventoryHelper.INSTANCE.setSlot(getFirstSoup(), true, true);
-                    timer.reset();
+                    stopWatch.reset();
                 } else {
                     InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstSoup() < 9 ? getFirstSoup() + 36 : getFirstSoup(), SlotActionType.SWAP, 8);
                     savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                     InventoryHelper.INSTANCE.setSlot(8, true, true);
                     throwing = true;
-                    timer.reset();
+                    stopWatch.reset();
                 }
             } else {
                 throwing = false;
             }
         } else {
-            if (throwing && timer.hasPassed(throwdelay)) {
+            if (throwing && stopWatch.hasPassed(throwdelay)) {
                 if (getFirstSoup() != -1) {
                     if (getFirstSoup() < 9) {
                         NetworkHelper.INSTANCE.sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND));
                         InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                         throwing = false;
-                        timer.reset();
+                        stopWatch.reset();
                     } else {
                         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstSoup() < 9 ? getFirstSoup() + 36 : getFirstSoup(), SlotActionType.SWAP, 8);
                     }

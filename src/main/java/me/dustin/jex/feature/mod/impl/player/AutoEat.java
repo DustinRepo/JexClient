@@ -8,7 +8,7 @@ import me.dustin.jex.event.player.EventPlayerUpdates;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -40,7 +40,7 @@ public class AutoEat extends Feature {
     private int savedSlot = 0;
     private int lastFood;
 
-    private final Timer baritoneTimer = new Timer();
+    private final StopWatch baritoneStopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPlayerUpdates> eventPlayerUpdatesEventListener = new EventListener<>(event -> {
@@ -58,7 +58,7 @@ public class AutoEat extends Feature {
                 isEating = false;
                 if (BaritoneHelper.INSTANCE.baritoneExists()) {
                     BaritoneHelper.INSTANCE.resume();
-                    baritoneTimer.reset();
+                    baritoneStopWatch.reset();
                 }
                 return;
             }

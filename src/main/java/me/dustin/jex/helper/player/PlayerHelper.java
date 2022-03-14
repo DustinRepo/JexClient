@@ -42,10 +42,10 @@ import java.util.UUID;
 public enum PlayerHelper {
     INSTANCE;
 
-    private ArrayList<UUID> requestedUUIDs = new ArrayList<>();
-    private ArrayList<String> requestedNames = new ArrayList<>();
-    private HashMap<UUID, String> nameMap = Maps.newHashMap();
-    private HashMap<String, UUID> uuidMap = Maps.newHashMap();
+    private final ArrayList<UUID> requestedUUIDs = new ArrayList<>();
+    private final ArrayList<String> requestedNames = new ArrayList<>();
+    private final HashMap<UUID, String> nameMap = Maps.newHashMap();
+    private final HashMap<String, UUID> uuidMap = Maps.newHashMap();
     private float yaw;
     private float pitch;
 

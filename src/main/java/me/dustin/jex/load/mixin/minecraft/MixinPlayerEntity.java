@@ -2,28 +2,15 @@ package me.dustin.jex.load.mixin.minecraft;
 
 import me.dustin.jex.event.player.EventAttackCooldownPerTick;
 import me.dustin.jex.event.player.EventWalkOffBlock;
-import me.dustin.jex.load.impl.IPlayerEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerEntity;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
-public class MixinPlayerEntity implements IPlayerEntity {
-
-    @Shadow
-    @Final
-    private PlayerAbilities abilities;
-
-    @Override
-    public PlayerAbilities getPlayerAbilities() {
-        return this.abilities;
-    }
+public class MixinPlayerEntity {
 
     @Inject(method = "getAttackCooldownProgressPerTick", at = @At("HEAD"), cancellable = true)
     public void getAttackCooldownProgress(CallbackInfoReturnable<Float> ci) {

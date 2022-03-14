@@ -21,7 +21,7 @@ public enum EntityPositionHelper {
             Vec3d head = Render2DHelper.INSTANCE.getHeadPos(entity, event.getPartialTicks(), event.getMatrixStack());
             Vec3d foot = Render2DHelper.INSTANCE.getFootPos(entity, event.getPartialTicks(), event.getMatrixStack());
             headPositions.put(entity, head);
-            headPositions.put(entity, foot);
+            footPositions.put(entity, foot);
         });
     });
 

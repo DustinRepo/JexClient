@@ -2,13 +2,10 @@ package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.math.ClientMathHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -16,18 +13,12 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
-import me.dustin.jex.helper.world.wurstpathfinder.PathPos;
-import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShapes;
-
-import java.util.ArrayList;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Prevent yourself from being detected as AFK and potentially kicked")
 public class AntiAFK extends Feature {
@@ -38,7 +29,7 @@ public class AntiAFK extends Feature {
     @Op(name = "Timer (Seconds)", min = 5, max = 120, inc = 1)
     public int secondsDelay = 5;
 
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     private BlockPos afkSpot;
     private BlockPos[] lastSpots;
@@ -50,7 +41,7 @@ public class AntiAFK extends Feature {
             afkSpot = Wrapper.INSTANCE.getPlayer().getBlockPos();
         if (lastSpots == null)
             lastSpots = new BlockPos[]{Wrapper.INSTANCE.getPlayer().getBlockPos(), Wrapper.INSTANCE.getPlayer().getBlockPos()};
-        if (timer.hasPassed(secondsDelay * 1000L)) {
+        if (stopWatch.hasPassed(secondsDelay * 1000L)) {
             switch (mode) {
                 case "Swing":
                     Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
@@ -67,7 +58,7 @@ public class AntiAFK extends Feature {
                     PathingHelper.INSTANCE.setPathFinder(new WanderPathFinder(afkSpot, this));
                     break;
             }
-            timer.reset();
+            stopWatch.reset();
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 

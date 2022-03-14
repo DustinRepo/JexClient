@@ -7,7 +7,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.load.impl.IShader;
 import net.minecraft.client.gl.GlUniform;
@@ -33,7 +33,7 @@ public class EnchantColor extends Feature{
     public int rainbowSpeed = 1;
 
     private int col;
-    private Timer timer = new Timer();
+    private StopWatch stopWatch = new StopWatch();
     private GlUniform glintColorU;
     private GlUniform crazyRainbowU;
     private GlUniform saturationU;
@@ -71,11 +71,11 @@ public class EnchantColor extends Feature{
         event.setShader(ShaderHelper.getRainbowEnchantShader());
         event.cancel();
 
-        if (timer.hasPassed(25)) {
+        if (stopWatch.hasPassed(25)) {
             col+=rainbowSpeed;
             if (col > 270)
                 col-=270;
-            timer.reset();
+            stopWatch.reset();
         }
     });
 

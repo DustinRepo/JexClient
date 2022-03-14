@@ -17,7 +17,7 @@ import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.misc.Timer;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -35,11 +35,11 @@ public class Announcer extends Feature {
     private final ArrayList<String> joinMessages = new ArrayList<>();
     private final ArrayList<String> leaveMessages = new ArrayList<>();
 
-    private final Timer timer = new Timer();
+    private final StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !timer.hasPassed(messageDelay))
+        if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !stopWatch.hasPassed(messageDelay))
             return;
         PlayerListS2CPacket playerListPacket = (PlayerListS2CPacket) event.getPacket();
 
@@ -49,7 +49,7 @@ public class Announcer extends Feature {
                 String name = entry.getProfile().getName();
                 int rand = ClientMathHelper.INSTANCE.getRandom(leaveMessages.size());
                 NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(leaveMessages.get(rand).replace("%player", name)));
-                timer.reset();
+                stopWatch.reset();
             }
         } else if (playerListPacket.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
             Entry entry = playerListPacket.getEntries().get(0);
@@ -57,7 +57,7 @@ public class Announcer extends Feature {
                 String name = entry.getProfile().getName();
                 int rand = ClientMathHelper.INSTANCE.getRandom(joinMessages.size());
                 NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(joinMessages.get(rand).replace("%player", name)));
-                timer.reset();
+                stopWatch.reset();
             }
         }
     }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, PlayerListS2CPacket.class));
@@ -71,12 +71,8 @@ public class Announcer extends Feature {
     public void loadFiles() {
      if (!announcerFile.exists())
          createDefaultAnnouncerFile();
-     String read = "";
-     for (String s : FileHelper.INSTANCE.readFile(ModFileHelper.INSTANCE.getJexDirectory(), "announcer.json")) {
-         read += s;
-     }
      try {
-         JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(read, JsonObject.class);
+         JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(FileHelper.INSTANCE.readFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), "announcer.json")), JsonObject.class);
          JsonArray joinMessageArray = object.getAsJsonArray("JoinMessages");
          JsonArray leaveMessageArray = object.getAsJsonArray("LeaveMessages");
          joinMessages.clear();
@@ -100,7 +96,7 @@ public class Announcer extends Feature {
         ArrayList<String> arrayList = new ArrayList<>();
         for (String s : defaultAnnounce.split("\n"))
             arrayList.add(s);
-        FileHelper.INSTANCE.writeFile(ModFileHelper.INSTANCE.getJexDirectory(), "announcer.json", arrayList);
+        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), "announcer.json"), arrayList);
     }
 
     public String defaultAnnounce =
