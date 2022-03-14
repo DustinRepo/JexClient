@@ -11,6 +11,8 @@ import me.dustin.jex.feature.mod.core.Feature;
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Goodbye, darkness. You were never my friend.")
 public class Fullbright extends Feature {
 
+    @Op(name = "Brightness", max = 50, min = 10)
+    public int brightness = 50;
     @Op(name = "Reset Gamma", max = 1, inc = 0.05f)
     public float resetGamma = 1;
 
@@ -22,17 +24,19 @@ public class Fullbright extends Feature {
         if (!getState()) {
             if (gamma > resetGamma)
                 Wrapper.INSTANCE.getOptions().gamma -= 0.5f;
-            else {
+            else
                 super.onDisable();
-            }
         } else {
-            if (gamma < 10) {
+            if (gamma < brightness)
                 Wrapper.INSTANCE.getOptions().gamma += 0.5f;
-            }
+                else  if (gamma > brightness)
+                Wrapper.INSTANCE.getOptions().gamma = brightness;
         }
     }, new TickFilter(EventTick.Mode.PRE));
 
     @Override
     public void onDisable() {
+        if (Wrapper.INSTANCE.getOptions().gamma > 20)
+            Wrapper.INSTANCE.getOptions().gamma = 20;
     }
 }
