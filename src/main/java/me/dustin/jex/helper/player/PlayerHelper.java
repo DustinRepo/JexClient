@@ -216,7 +216,7 @@ public enum PlayerHelper {
         return placePos != null;
     }
 
-    public Vec3d getPlacingLookPos(BlockPos blockPos, boolean illegallPlace) {
+    public Vec3d getPlacingLookPos(BlockPos blockPos) {
         BlockPos north = blockPos.north();
         BlockPos east = blockPos.east();
         BlockPos south = blockPos.south();

@@ -36,7 +36,7 @@ public class JexPersonalizationScreen extends Screen {
     private ButtonWidget nextHatButton;
     private ButtonWidget prevHatButton;
     private ButtonWidget setHatButton;
-    int selectedHat = 0;
+    private int selectedHat = 0;
 
     private final ButtonListener doubleClickListener = new ButtonListener() {
         @Override

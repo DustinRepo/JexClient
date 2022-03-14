@@ -59,10 +59,9 @@ public enum MCLeaksHelper {
             Map<String, String> header = new HashMap<>();
             header.put("Content-Type", "application/json");
             header.put("Accepts", "application/json");
-            String resp = WebHelper.INSTANCE.httpRequest(JOIN_SERVER_URL, jsonObject.toString(), header, "POST").data();
+            String resp = WebHelper.INSTANCE.httpRequest(JOIN_SERVER_URL, jsonObject.toString(), header, "GET").data();
             JexClient.INSTANCE.getLogger().info(jsonObject.toString());
-            if (resp != null && resp.contains("success") && resp.contains("true"))
-                return true;
+            return resp != null && resp.contains("success") && resp.contains("true");
         }
         return false;
     }

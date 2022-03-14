@@ -42,7 +42,7 @@ public class Surround extends Feature {
 		if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld().isOutOfHeightLimit((int) Wrapper.INSTANCE.getLocalPlayer().getY()))
 			return;
 		if (placingPos != null) {
-			RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(placingPos, true));
+			RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(placingPos));
 			if (rotate)
 				((EventPlayerPackets) event).setRotation(rotationVector);
 			PlayerHelper.INSTANCE.placeBlockInPos(placingPos, Hand.MAIN_HAND, true);
@@ -75,7 +75,7 @@ public class Surround extends Feature {
 			}
 			BlockPos pos = placePos.get(stage);
 			if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
-				RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(pos, true));
+				RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(pos));
 				if (rotate)
 					((EventPlayerPackets) event).setRotation(rotationVector);
 				placingPos = pos;
