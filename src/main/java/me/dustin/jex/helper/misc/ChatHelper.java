@@ -8,7 +8,7 @@ public enum ChatHelper {
     INSTANCE;
 
     public void addClientMessage(String message) {
-        Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud().addMessage(new LiteralText(String.format("%s[%sJex%s]%s: %s%s", Formatting.GRAY, Formatting.BLUE, Formatting.GRAY, Formatting.WHITE, Formatting.GRAY, message)));
+        Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud().addMessage(new LiteralText(String.format("%s[%sJex%s]%s: %s%s", Formatting.DARK_GRAY, Formatting.AQUA, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY, message)));
     }
 
     public void addRawMessage(String message) {
