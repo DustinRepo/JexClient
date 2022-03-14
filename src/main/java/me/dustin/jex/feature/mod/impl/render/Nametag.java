@@ -10,6 +10,7 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.render.EventRenderNametags;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
+import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -31,6 +32,7 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
@@ -277,8 +279,6 @@ public class Nametag extends Feature {
     }
 
     public void drawPlayerFaces(MatrixStack matrixStack) {
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (isValid(entity)) {
                 Vec3d vec = positions.get(entity);
@@ -289,19 +289,13 @@ public class Nametag extends Feature {
                     if (showPlayerFace && entity instanceof PlayerEntity) {
                         PlayerListEntry playerListEntry = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(entity.getUuid());
                         if (playerListEntry != null) {
-                            Render2DHelper.INSTANCE.drawFace(matrixStack, x - 8, y + 2, 2, playerListEntry.getSkinTexture());
-                            Render2DHelper.INSTANCE.bindTexture(playerListEntry.getSkinTexture());
-                            float width = 16, height = 16, u = 16, v = 16, regionWidth = 16, regionHeight = 16, textureWidth = 128, textureHeight = 128;
-                            Render2DHelper.INSTANCE.drawTexturedQuadNoDraw(matrixStack.peek().getPositionMatrix(), x, x + width, y, y + height, 0, (u + 0.0F) / (float) textureWidth, (u + (float) regionWidth) / (float) textureWidth, (v + 0.0F) / (float) textureHeight, (v + (float) regionHeight) / (float) textureHeight);
-                            u = 80;
-                            Render2DHelper.INSTANCE.drawTexturedQuadNoDraw(matrixStack.peek().getPositionMatrix(), x, x + width, y, y + height, 0, (u + 0.0F) / (float) textureWidth, (u + (float) regionWidth) / (float) textureWidth, (v + 0.0F) / (float) textureHeight, (v + (float) regionHeight) / (float) textureHeight);
+                            Render2DHelper.INSTANCE.drawFace(matrixStack, x, y, 2, playerListEntry.getSkinTexture());
+                            RenderSystem.setShaderTexture(0, 0);
                         }
                     }
                 }
             }
         });
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
     }
 
     private String getEnchantName(NbtCompound compoundTag) {
