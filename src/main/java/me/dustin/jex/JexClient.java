@@ -44,6 +44,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.network.NetworkSide;
+import net.minecraft.network.NetworkState;
 import net.minecraft.sound.SoundEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

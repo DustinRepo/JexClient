@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class ArrayListElement extends HudElement {
-    private ArrayList<Feature> mods = new ArrayList<>();
+    private final ArrayList<ArrayListItem> list = new ArrayList<>();
 
     public ArrayListElement(float x, float y, float minWidth, float minHeight) {
         super("Array List", x, y, minWidth, minHeight);
@@ -22,33 +22,16 @@ public class ArrayListElement extends HudElement {
         if (!isVisible())
             return;
         super.render(matrixStack);
-        if (mods.isEmpty())
-            mods.addAll(FeatureManager.INSTANCE.getFeatures());
 
-        int num = count;
-        count = 0;
-
-        float longest = 0;
-
-        for (Feature mod : mods) {
-            float strWidth = FontHelper.INSTANCE.getStringWidth(mod.getDisplayName());
-            if (strWidth > longest)
-                longest = strWidth;
+        int i = 0;
+        for (ArrayListItem arrayListItem : list) {
+            float strWidth = FontHelper.INSTANCE.getStringWidth(arrayListItem.name());
             float x = isLeftSide() ? getX() + 3 : getX() + getWidth() - strWidth - 1;
-            float y = isTopSide() ? getY() + 3 + (count * 10) : getY() + getHeight() - 10 - (count * 10);
+            float y = isTopSide() ? getY() + 3 + (i * 10) : getY() + getHeight() - 10 - (i * 10);
 
-            int color = getRainbowColor(count, num);
-            if (getHud().colorMode.equalsIgnoreCase("Category"))
-                color = getHud().getCategoryColor(mod.getFeatureCategory());
-            if (getHud().colorMode.equalsIgnoreCase("Client Color"))
-                color = ColorHelper.INSTANCE.getClientColor();
-            if (mod.isVisible() && mod.getState()) {
-                FontHelper.INSTANCE.drawWithShadow(matrixStack, mod.getDisplayName(), x, y, color);
-                count++;
-            }
+            FontHelper.INSTANCE.drawWithShadow(matrixStack, arrayListItem.name(), x, y, arrayListItem.color());
+            i++;
         }
-        this.setHeight(3 + (count * 10));
-        this.setWidth(longest + 7);
     }
 
     @Override
@@ -58,7 +41,29 @@ public class ArrayListElement extends HudElement {
 
     @Override
     public void tick() {
-        reorderArrayList(mods);
+        list.clear();
+        int num = count;
+        count = 0;
+        float longest = 0;
+        for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
+            float strWidth = FontHelper.INSTANCE.getStringWidth(feature.getDisplayName());
+            if (strWidth > longest)
+                longest = strWidth;
+
+            int color = ColorHelper.INSTANCE.getClientColor();
+            if (getHud().colorMode.equalsIgnoreCase("Category"))
+                color = getHud().getCategoryColor(feature.getFeatureCategory());
+            else if (getHud().colorMode.equalsIgnoreCase("Rainbow"))
+                color = getRainbowColor(count, num);
+            if (feature.isVisible() && feature.getState()) {
+                list.add(new ArrayListItem(feature.getDisplayName(), color));
+                count++;
+            }
+        }
+        this.setHeight(3 + (count * 10));
+        this.setWidth(longest + 7);
+
+        reorderArrayList(list);
         rainbowScroll += getHud().rainbowSpeed;
         super.tick();
     }
@@ -72,17 +77,13 @@ public class ArrayListElement extends HudElement {
     }
 
 
-    private void reorderArrayList(ArrayList<Feature> mods) {
-        Collections.sort(mods, (mod, mod1) -> {
-            String name1 = mod.getDisplayName();
-            String name2 = mod1.getDisplayName();
-            if (FontHelper.INSTANCE.getStringWidth(name1) > FontHelper.INSTANCE.getStringWidth(name2)) {
-                return -1;
-            }
-            if (FontHelper.INSTANCE.getStringWidth(name1) < FontHelper.INSTANCE.getStringWidth(name2)) {
-                return 1;
-            }
-            return 0;
+    private void reorderArrayList(ArrayList<ArrayListItem> mods) {
+        mods.sort((i, ii) -> {
+            String name1 = i.name();
+            String name2 = ii.name();
+            return Float.compare(FontHelper.INSTANCE.getStringWidth(name2), FontHelper.INSTANCE.getStringWidth(name1));
         });
     }
+
+    public record ArrayListItem(String name, int color){}
 }
