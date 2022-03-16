@@ -63,6 +63,8 @@ public class Nametag extends Feature {
     public boolean items = false;
     @OpChild(name = "Group Range", max = 10, parent = "Items")
     public int groupRange = 5;
+    @Op(name = "Ping")
+    public boolean ping = true;
     @Op(name = "Distance")
     public boolean distance = true;
     @Op(name = "Show Inv")
@@ -342,6 +344,13 @@ public class Nametag extends Feature {
             if (itemEntity.getStack().getCount() > 1)
                 name += " \247fx" + itemEntity.getStack().getCount();
         }
+        if (ping && entity instanceof PlayerEntity playerEntity) {
+            PlayerListEntry entry = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(playerEntity.getUuid());
+            if (entry != null) {
+                int ping = entry.getLatency();
+                name += String.format(" %s[%s%dms%s]%s", Formatting.GRAY, getPingFormatting(ping), ping, Formatting.GRAY, Formatting.RESET);
+            }
+        }
         if (distance) {
             name += String.format(" %s[%s%.1f%s]%s", Formatting.GRAY, Formatting.WHITE, Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity), Formatting.GRAY, Formatting.RESET);
         }
@@ -350,6 +359,16 @@ public class Nametag extends Feature {
                 name += " " + getHealthString((LivingEntity) entity);
             }
         return name;
+    }
+
+    public Formatting getPingFormatting(int ping) {
+        if (ping <= 50)
+            return Formatting.GREEN;
+        else if (ping <= 75)
+            return Formatting.YELLOW;
+        else if (ping <= 100)
+            return Formatting.RED;
+        return Formatting.DARK_RED;
     }
 
     private int getColor(Entity player) {
