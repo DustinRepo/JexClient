@@ -6,6 +6,7 @@ import me.dustin.jex.event.misc.EventServerTurn;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventExplosionVelocity;
 import me.dustin.jex.event.player.EventPlayerVelocity;
+import me.dustin.jex.event.world.EventLoadChunk;
 import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -27,6 +28,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -66,6 +68,13 @@ public abstract class MixinClientPlayNetworkHandler {
             this.connection.send(eventPacketSent.getPacket());
             ci.cancel();
         }
+    }
+
+    @Inject(method = "loadChunk", at = @At("HEAD"), cancellable = true)
+    public void loadChunk(int x, int z, ChunkData chunkData, CallbackInfo ci) {
+        WorldChunk worldChunk = world.getChunkManager().loadChunkFromPacket(x, z, chunkData.getSectionsDataBuf(), chunkData.getHeightmap(), chunkData.getBlockEntities(x, z));
+        new EventLoadChunk(worldChunk).run();
+        ci.cancel();
     }
 
     @Inject(method = "sendPacket", at = @At("HEAD"))

@@ -80,9 +80,15 @@ public class TestPathFinder {
     }
 
     private boolean canMoveTo(PathNode pathNode, PathNode latestNode) {
+        BlockState lastBelowState = WorldHelper.INSTANCE.getBlockState(new BlockPos(latestNode).down());
         BlockState blockState = WorldHelper.INSTANCE.getBlockState(new BlockPos(pathNode));
-        if (!blockState.getMaterial().blocksMovement()) {
-            return true;
+        BlockState belowState = WorldHelper.INSTANCE.getBlockState(new BlockPos(pathNode).down());
+        if (pathNode.getY() == latestNode.getY()) {
+            return !blockState.getMaterial().blocksMovement() && lastBelowState.getMaterial().blocksMovement();
+        } else if (pathNode.getY() < latestNode.getY()) {//moving down
+            return !blockState.getMaterial().blocksMovement();
+        } else if (pathNode.getY() > latestNode.getY()) {
+            return !belowState.getMaterial().blocksMovement();
         }
         return false;
     }
