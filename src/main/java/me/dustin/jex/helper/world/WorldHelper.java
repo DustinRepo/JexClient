@@ -7,6 +7,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -28,7 +30,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.level.storage.LevelStorage;
 
 import java.io.File;
@@ -474,6 +478,48 @@ public enum WorldHelper {
         } catch (IOException var8) {
             SystemToast.addWorldDeleteFailureToast(Wrapper.INSTANCE.getMinecraft(), "jex_finder");
             JexClient.INSTANCE.getLogger().error("Failed to delete world {}", "jex_finder", var8);
+        }
+    }
+
+    public float calcExplosionDamage(float power, PlayerEntity playerEntity, BlockPos explosionPos) {
+        Vec3d vec3d = ClientMathHelper.INSTANCE.getVec(explosionPos);
+        float j = power * 2.0F;
+        double h = Math.sqrt(playerEntity.squaredDistanceTo(vec3d)) / (double) j;
+        double v = 1 - h * getExposure(vec3d, playerEntity);
+
+        return (float) ((int) ((v * v + v) / 2.0D * 7.0D * (double) j + 1.0D));
+    }
+
+    public static float getExposure(Vec3d source, Entity entity) {
+        Box box = entity.getBoundingBox();
+        double d = 1.0D / ((box.maxX - box.minX) * 2.0D + 1.0D);
+        double e = 1.0D / ((box.maxY - box.minY) * 2.0D + 1.0D);
+        double f = 1.0D / ((box.maxZ - box.minZ) * 2.0D + 1.0D);
+        double g = (1.0D - Math.floor(1.0D / d) * d) / 2.0D;
+        double h = (1.0D - Math.floor(1.0D / f) * f) / 2.0D;
+        if (!(d < 0.0D) && !(e < 0.0D) && !(f < 0.0D)) {
+            int i = 0;
+            int j = 0;
+
+            for(double k = 0.0D; k <= 1.0D; k += d) {
+                for(double l = 0.0D; l <= 1.0D; l += e) {
+                    for(double m = 0.0D; m <= 1.0D; m += f) {
+                        double n = MathHelper.lerp(k, box.minX, box.maxX);
+                        double o = MathHelper.lerp(l, box.minY, box.maxY);
+                        double p = MathHelper.lerp(m, box.minZ, box.maxZ);
+                        Vec3d vec3d = new Vec3d(n + g, o, p + h);
+                        if (Wrapper.INSTANCE.getWorld().raycast(new RaycastContext(vec3d, source, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS) {
+                            ++i;
+                        }
+
+                        ++j;
+                    }
+                }
+            }
+
+            return (float)i / (float)j;
+        } else {
+            return 0.0F;
         }
     }
 }

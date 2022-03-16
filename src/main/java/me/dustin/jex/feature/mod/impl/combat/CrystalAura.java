@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -36,7 +37,7 @@ import java.util.List;
 @Feature.Manifest(category = Feature.Category.COMBAT, description = "Auto place/destroy End Crystals")
 public class CrystalAura extends Feature {
 
-	@Op(name = "Mode", all = { "Suicidal", "Risky", "Safe" })
+	@Op(name = "Mode", all = { "Suicidal", "Risky" })
 	public String mode = "Suicidal";
 
 	@Op(name = "Attack", all = { "Any", "Near Target" })
@@ -60,14 +61,13 @@ public class CrystalAura extends Feature {
 	@OpChild(name = "Place Delay", min = 0, max = 2000, parent = "Auto Place")
 	public int delay = 200;
 
-	@OpChild(name = "Place Distance", min = 1, max = 6, inc = 0.1f, parent = "Auto Place")
-	public float placeDistance = 3.5f;
-
-	private StopWatch stopWatch = new StopWatch();
+	private final StopWatch stopWatch = new StopWatch();
 	private BlockPos placePos;
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+		if (AutoEat.isEating || Feature.get(AutoGapple.class).isEating())
+			return;
 		boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.END_CRYSTAL;
 		if (event.getMode() == EventPlayerPackets.Mode.PRE) {
 			this.setSuffix(mode);
@@ -95,8 +95,7 @@ public class CrystalAura extends Feature {
 					});
 				}
 			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-				if (entity instanceof EndCrystalEntity) {
-					EndCrystalEntity enderCrystalEntity = (EndCrystalEntity) entity;
+				if (entity instanceof EndCrystalEntity enderCrystalEntity) {
 					if (shouldAttack(enderCrystalEntity)) {
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
@@ -119,8 +118,7 @@ public class CrystalAura extends Feature {
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 		if (autoPlace && visualize)
 			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-				if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
-					PlayerEntity entityPlayer = (PlayerEntity) entity;
+				if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
 					BlockPos placingPos = getOpenBlockPos(entityPlayer);
 					if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().asString())) {
 						EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
@@ -133,29 +131,30 @@ public class CrystalAura extends Feature {
 	});
 
 	public BlockPos getOpenBlockPos(PlayerEntity entityPlayer) {
-		double distance = 6;
+		double d = 0;
 		BlockPos closest = null;
 		for (int x = -4; x < 4; x++) {
-			for (int y = 0; y < 4; y++) {
+			for (int y = -1; y < 4; y++) {
 				for (int z = -4; z < 4; z++) {
 					BlockPos pos = new BlockPos(entityPlayer.getX() + x, (int) entityPlayer.getY() - y, entityPlayer.getZ() + z);
 					EndCrystalEntity fakeCrystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), pos.getX(), pos.getY(), pos.getZ());
 
 					List<Entity> list = Wrapper.INSTANCE.getWorld().getOtherEntities((Entity) null, new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0D, pos.getY() + 2.0D, pos.getZ() + 1.0D));
 					boolean collides = !list.isEmpty();
-					if (WorldHelper.INSTANCE.getBlock(pos) == Blocks.AIR && !collides && entityPlayer.canSee(fakeCrystal) && Wrapper.INSTANCE.getLocalPlayer().canSee(fakeCrystal)) {
+					BlockPos above = pos.up();
+					if (WorldHelper.INSTANCE.getBlock(pos) == Blocks.AIR && WorldHelper.INSTANCE.getBlock(above) == Blocks.AIR && !collides) {
 						BlockPos below = pos.down();
 						Block belowBlock = WorldHelper.INSTANCE.getBlock(below);
 						if (belowBlock == Blocks.OBSIDIAN || belowBlock == Blocks.BEDROCK) {
-							if (!isBlocking(pos, entityPlayer)) {
-								if (onlyShowPlacements && !shouldAttack(fakeCrystal))
-									continue;
-								double playerdist = entityPlayer.distanceTo(fakeCrystal);
-								double distToMe = Wrapper.INSTANCE.getLocalPlayer().distanceTo(fakeCrystal);
-								if (playerdist < distance && distToMe < placeDistance) {
-									closest = pos;
-									distance = playerdist;
-								}
+							if (!shouldAttack(fakeCrystal))
+								continue;
+							double playerdist = entityPlayer.distanceTo(fakeCrystal) - (pos.getY() - entityPlayer.getY());
+							double damage = WorldHelper.INSTANCE.calcExplosionDamage(6, entityPlayer, pos);
+							double damageToMe = WorldHelper.INSTANCE.calcExplosionDamage(6, Wrapper.INSTANCE.getLocalPlayer(), pos);
+							double eff = damage - playerdist - damageToMe;
+							if (eff > d) {
+								closest = pos;
+								d = eff;
 							}
 						}
 					}
@@ -173,34 +172,22 @@ public class CrystalAura extends Feature {
 	}
 
 	public boolean shouldAttack(EndCrystalEntity enderCrystalEntity) {
-		float minDistance = 0;
-		float range = attackDistance;
-		switch (mode) {
-			case "Risky":
-				minDistance = 4.5f;
-				break;
-			case "Safe":
-				minDistance = 8;
-				break;
-		}
-
-		if (Wrapper.INSTANCE.getLocalPlayer().getY() <= (enderCrystalEntity.getY() - 1))
-			minDistance = 0;
-
-		if (!Wrapper.INSTANCE.getLocalPlayer().canSee(enderCrystalEntity)) {
-			range = 3;
-			minDistance = 0;
-		}
-
-		if (attackMode.equalsIgnoreCase("Any"))
-			return Wrapper.INSTANCE.getLocalPlayer().distanceTo(enderCrystalEntity) >= minDistance && Wrapper.INSTANCE.getLocalPlayer().distanceTo(enderCrystalEntity) <= range;
-		else {
-			for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities())
-				if (entity instanceof LivingEntity && isTarget((LivingEntity) entity, enderCrystalEntity)) {
-					return Wrapper.INSTANCE.getLocalPlayer().distanceTo(enderCrystalEntity) >= minDistance && Wrapper.INSTANCE.getLocalPlayer().distanceTo(enderCrystalEntity) <= range;
+		if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(enderCrystalEntity) > attackDistance)
+			return false;
+		boolean hasTarget = mode.equalsIgnoreCase("Any");
+		if (!hasTarget)
+			for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+				if (entity instanceof LivingEntity livingEntity && isTarget(livingEntity, enderCrystalEntity)) {
+					hasTarget = true;
+					break;
 				}
-		}
-		return false;
+			}
+		if (!hasTarget)
+			return false;
+		float damage = WorldHelper.INSTANCE.calcExplosionDamage(6, Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity.getBlockPos());
+		if (mode.equalsIgnoreCase("Risky"))
+			return damage <= 65;
+		return true;
 	}
 
 	public boolean isTarget(LivingEntity livingEntity, EndCrystalEntity enderCrystalEntity) {
