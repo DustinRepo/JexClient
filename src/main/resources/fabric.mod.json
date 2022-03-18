@@ -1,38 +1,38 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
-  "version": "${version}",
-
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "id": "jex",
+  "version": "0.6.3",
+  "name": "Jex Client",
+  "description": "A Utility Client mod to be used on Anarchy servers.",
   "authors": [
-    "Me!"
+    "Untrusted/Dustin - Main Dev",
+    "sl - Code Contributor",
+    "c10udburst - Code Contributor",
+    "Vonr/Qther - Code Contributor",
+    "BobIsMyManager - Contributor"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://discord.gg/BUcUGu6gfA",
+    "sources": "https://github.com/DustinRepo/JexClient-main/tree/main"
   },
-
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
-
-  "environment": "*",
+  "license": "GNU General Public",
+  "icon": "assets/jex/icon.png",
+  "environment": "client",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "me.dustin.jex.load.JexLoad"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "jex.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.13.3",
     "fabric": "*",
-    "minecraft": "1.18.x",
-    "java": ">=17"
+    "minecraft": "1.19.x",
+    "java": ">=16"
   },
   "suggests": {
-    "another-mod": "*"
+    "flamingo": "*"
   }
 }
