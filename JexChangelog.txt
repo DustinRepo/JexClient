@@ -1,8 +1,14 @@
 0.6.3
+Added back NewChunks, which functions differently than it used to
 Added .ping command
 Added .serverscrub command
+Added Brightness slider to Fullbright
+Added Ping option to Nametags
 Temporarily removed FOV support in KillAura while I work on fixing a bug with it
 Fixed Skeletons still trying to crouch when sneaking while swimmming
+Fixed Nametags only showing one player face at a time across all players
+Improved performance of ArrayList
+Improved CrystalAura targeting
 
 0.6.2
 Added WebSpam mod

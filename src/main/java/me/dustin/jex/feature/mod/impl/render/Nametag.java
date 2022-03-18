@@ -344,7 +344,7 @@ public class Nametag extends Feature {
             if (itemEntity.getStack().getCount() > 1)
                 name += " \247fx" + itemEntity.getStack().getCount();
         }
-        if (ping && entity instanceof PlayerEntity playerEntity) {
+        if (ping && entity instanceof PlayerEntity playerEntity && Wrapper.INSTANCE.getLocalPlayer().networkHandler != null) {
             PlayerListEntry entry = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(playerEntity.getUuid());
             if (entry != null) {
                 int ping = entry.getLatency();
