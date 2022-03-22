@@ -41,7 +41,7 @@ public class Jesus extends Feature {
             return;
         if (mode.equalsIgnoreCase("Solid") && (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
             Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
-            Wrapper.INSTANCE.getPlayer().setVelocity(orig.getX(), 0.1, orig.getZ());
+            Wrapper.INSTANCE.getPlayer().setVelocity(orig.getX(), 0.11, orig.getZ());
         }
         if ((Wrapper.INSTANCE.getPlayer().hasVehicle() && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer().getVehicle()))) {
             Vec3d orig = Wrapper.INSTANCE.getPlayer().getVehicle().getVelocity();
@@ -98,9 +98,10 @@ public class Jesus extends Feature {
         this.setSuffix(mode);
     });
 
+    @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         if (WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getPlayer()) || WorldHelper.INSTANCE.isTouchingLiquidBlockSpace(Wrapper.INSTANCE.getPlayer())) {
-            if (ticks >= 4) {
+            if (ticks >= 6) {
                 PlayerMoveC2SPacket origPacket = (PlayerMoveC2SPacket) event.getPacket();
                 PlayerMoveC2SPacket playerMoveC2SPacket = new PlayerMoveC2SPacket.Full(origPacket.getX(Wrapper.INSTANCE.getPlayer().getX()), origPacket.getY(Wrapper.INSTANCE.getPlayer().getY()) - 0.02, origPacket.getZ(Wrapper.INSTANCE.getPlayer().getZ()), origPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), origPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), origPacket.isOnGround());
                 event.setPacket(playerMoveC2SPacket);

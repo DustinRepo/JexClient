@@ -10,46 +10,6 @@
       "outtarget": "swap"
     },
     {
-      "name": "blur",
-      "intarget": "swap",
-      "outtarget": "final",
-      "uniforms": [
-        {
-          "name": "BlurDir",
-          "values": [
-            0.0,
-            0.0
-          ]
-        },
-        {
-          "name": "Radius",
-          "values": [
-            1.0
-          ]
-        }
-      ]
-    },
-    {
-      "name": "blur",
-      "intarget": "final",
-      "outtarget": "swap",
-      "uniforms": [
-        {
-          "name": "BlurDir",
-          "values": [
-            0.0,
-            0.0
-          ]
-        },
-        {
-          "name": "Radius",
-          "values": [
-            1.0
-          ]
-        }
-      ]
-    },
-    {
       "name": "blit",
       "intarget": "swap",
       "outtarget": "final"

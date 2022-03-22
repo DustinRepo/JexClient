@@ -141,6 +141,11 @@ public enum WorldHelper {
         return blocks;
     }
 
+    public boolean isSlimeChunk(long seed, int chunkX, int chunkZ) {
+        Random r = new Random(seed + (int)(chunkX * chunkX * 0x4c1906) + (int)(chunkX * 0x5ac0db) + (int)(chunkZ * chunkZ) * 0x4307a7L + (int)(chunkZ * 0x5f24f) ^ 0x3AD8025FL);
+        return (r.nextInt(10) == 0);
+    }
+
     public Vec3d sideOfBlock(BlockPos pos, Direction direction) {
         switch (direction) {
             case NORTH -> Vec3d.ofCenter(pos).add(0, 0, -0.5);
@@ -154,7 +159,7 @@ public enum WorldHelper {
     }
 
     public Block getBlockAboveEntity(Entity entity) {
-        return getBlockAboveEntity(entity, -2.5f);
+        return getBlockAboveEntity(entity, -0.5f);
     }
 
     public Block getBlockBelowEntity(Entity entity) {
@@ -227,9 +232,30 @@ public enum WorldHelper {
         return onLiquid;
     }
 
-    public boolean isSlimeChunk(long seed, int chunkX, int chunkZ) {
-        Random r = new Random(seed + (int)(chunkX * chunkX * 0x4c1906) + (int)(chunkX * 0x5ac0db) + (int)(chunkZ * chunkZ) * 0x4307a7L + (int)(chunkZ * 0x5f24f) ^ 0x3AD8025FL);
-        return (r.nextInt(10) == 0);
+    public boolean isNotOnLiquid(Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+        Box boundingBox = entity.getBoundingBox();
+        boundingBox = boundingBox.expand(-0.01D, -0.0D, -0.01D).offset(0.0D, -0.01D, 0.0D);
+        boolean onBlock = false;
+        int y = (int) boundingBox.minY;
+        for (int x = MathHelper.floor(boundingBox.minX); x < MathHelper.floor(boundingBox.maxX + 1.0D); x++) {
+            for (int z = MathHelper.floor(boundingBox.minZ); z < MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
+                BlockPos blockPos = new BlockPos(x, y, z);
+                Box blockBB = SINGLE_BOX.offset(blockPos);
+                if (boundingBox.minX < blockBB.maxX &&
+                        boundingBox.maxX > blockBB.minX &&
+                        boundingBox.minY < blockBB.maxY &&
+                        boundingBox.maxY > blockBB.minY &&
+                        boundingBox.minZ < blockBB.maxZ &&
+                        boundingBox.maxZ > blockBB.minZ) {
+                    System.out.println("f");
+                    onBlock = true;
+                }
+            }
+        }
+        return onBlock;
     }
 
     public boolean isTouchingLiquidBlockSpace(Entity entity) {
@@ -241,8 +267,7 @@ public enum WorldHelper {
         boolean onLiquid = false;
         int y = (int) boundingBox.minY;
         for (int x = MathHelper.floor(boundingBox.minX); x < MathHelper.floor(boundingBox.maxX + 1.0D); x++) {
-            for (int z = MathHelper.floor(boundingBox.minZ); z <
-                    MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
+            for (int z = MathHelper.floor(boundingBox.minZ); z < MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
                 Block block = getBlock(new BlockPos(x, y, z));
                 if (block != Blocks.AIR) {
                     if (!isWaterlogged(new BlockPos(x, y, z))) {
@@ -405,80 +430,6 @@ public enum WorldHelper {
             }
         }
         return positions;
-    }
-
-    public IntegratedServer createIntegratedServer(Thread thread, long seed, GeneratorType generatorType) {
-        //TODO: recreate this after 1.18.2
-        /*String worldName = "jex_finder" + seed;
-        LevelStorage.Session session2;
-        try {
-            session2 = Wrapper.INSTANCE.getMinecraft().getLevelStorage().createSession(worldName);
-        } catch (IOException var21) {
-            JexClient.INSTANCE.getLogger().warn("Failed to read level {} data {}", worldName, var21);
-            SystemToast.addWorldAccessFailureToast(Wrapper.INSTANCE.getMinecraft(), worldName);
-            Wrapper.INSTANCE.getMinecraft().setScreen(null);
-            return null;
-        }
-        DynamicRegistryManager.MutableImpl registryTracker = DynamicRegistryManager.createAndLoad().create();
-        GeneratorOptions generatorOptions = generatorType.createDefaultOptions(registryTracker, seed, true, false);
-        MinecraftClient.IntegratedResourceManager integratedResourceManager2;
-        LevelInfo levelInfo = new LevelInfo(worldName, GameMode.CREATIVE, false, Difficulty.HARD, true, new GameRules(), DataPackSettings.SAFE_MODE);
-
-        Function<LevelStorage.Session, DataPackSettings> dataPackSettingsGetter = session -> DataPackSettings.SAFE_MODE;
-        Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> savePropertiesGetter = (session, impl, resourceManager, dataPackSettings) -> new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
-        try {
-            integratedResourceManager2 = Wrapper.INSTANCE.getMinecraft().createIntegratedResourceManager(registryTracker, dataPackSettingsGetter, savePropertiesGetter, true, session2);
-        } catch (Exception var20) {
-            JexClient.INSTANCE.getLogger().warn("Failed to load datapacks, can't proceed with server load", var20);
-            try {
-                session2.close();
-            } catch (IOException var16) {
-                JexClient.INSTANCE.getLogger().warn("Failed to unlock access to level {} {}", worldName, var16);
-            }
-
-            return null;
-        }
-        SaveProperties saveProperties = integratedResourceManager2.getSaveProperties();
-        integratedResourceManager2.getServerResourceManager().loadRegistryTags();
-        YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Wrapper.INSTANCE.getMinecraft().getNetworkProxy());
-        MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-        GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-        UserCache userCache = new UserCache(gameProfileRepository, new File(Wrapper.INSTANCE.getMinecraft().runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
-
-        IntegratedServer integratedServer = new IntegratedServer(thread, Wrapper.INSTANCE.getMinecraft(), registryTracker, session2, integratedResourceManager2.getResourcePackManager(), integratedResourceManager2.getServerResourceManager(), saveProperties, minecraftSessionService, gameProfileRepository, userCache, (i) -> {
-            WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i);
-            return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, var10001::add);
-        });
-        if (integratedServer.setupServer()) {
-            return integratedServer;
-        }
-        //cleanupIntegratedServer();*/
-        return null;
-    }
-
-    public void cleanupIntegratedServer() {
-        try {
-            LevelStorage.Session session = Wrapper.INSTANCE.getMinecraft().getLevelStorage().createSession("jex_finder");
-
-            try {
-                session.deleteSessionLock();
-            } catch (Throwable var7) {
-                if (session != null) {
-                    try {
-                        session.close();
-                    } catch (Throwable var6) {
-                        var7.addSuppressed(var6);
-                    }
-                }
-
-                throw var7;
-            }
-
-            session.close();
-        } catch (IOException var8) {
-            SystemToast.addWorldDeleteFailureToast(Wrapper.INSTANCE.getMinecraft(), "jex_finder");
-            JexClient.INSTANCE.getLogger().error("Failed to delete world {}", "jex_finder", var8);
-        }
     }
 
     public float calcExplosionDamage(float power, PlayerEntity playerEntity, BlockPos explosionPos) {
