@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
+import me.dustin.jex.event.misc.EventSetSimpleOption;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -69,4 +70,10 @@ public class Zoom extends Feature {
                 this.resetFOV = true;
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    @EventPointer
+    private final EventListener<EventSetSimpleOption> eventSetSimpleOptionEventListener = new EventListener<>(event -> {
+        if (event.getSimpleOption() == Wrapper.INSTANCE.getOptions().getFov())
+            event.setShouldIgnoreCheck(true);
+    });
 }
