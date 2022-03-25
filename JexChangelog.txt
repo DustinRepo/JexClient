@@ -1,3 +1,7 @@
+0.6.4
+Improved Jesus's ability to fully swim to the top of water and not bob
+Fixed Jesus not working properly on some anticheats since the event manager overhaul
+
 0.6.3
 Added back NewChunks, which functions differently than it used to
 Added .ping command
