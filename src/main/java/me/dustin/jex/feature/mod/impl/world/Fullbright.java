@@ -3,10 +3,12 @@ package me.dustin.jex.feature.mod.impl.world;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.TickFilter;
+import me.dustin.jex.event.misc.EventSetSimpleOption;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
+import net.minecraft.client.option.SimpleOption;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Goodbye, darkness. You were never my friend.")
 public class Fullbright extends Feature {
@@ -20,23 +22,32 @@ public class Fullbright extends Feature {
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getOptions() == null)
             return;
-        double gamma = Wrapper.INSTANCE.getOptions().gamma;
+        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().method_42473();
+        double gamma = gammaOption.getValue();
         if (!getState()) {
             if (gamma > resetGamma)
-                Wrapper.INSTANCE.getOptions().gamma -= 0.5f;
+                gammaOption.setValue(gamma - 0.5);
             else
                 super.onDisable();
         } else {
             if (gamma < brightness)
-                Wrapper.INSTANCE.getOptions().gamma += 0.5f;
+                    gammaOption.setValue(gamma + 0.5);
                 else  if (gamma > brightness)
-                Wrapper.INSTANCE.getOptions().gamma = brightness;
+                    gammaOption.setValue((double) brightness);
         }
     }, new TickFilter(EventTick.Mode.PRE));
 
+    @EventPointer
+    private final EventListener<EventSetSimpleOption> eventSetSimpleOptionEventListener = new EventListener<>(event -> {
+        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().method_42473();
+        if (event.getSimpleOption() == gammaOption)
+            event.setShouldIgnoreCheck(true);
+    });
+
     @Override
     public void onDisable() {
-        if (Wrapper.INSTANCE.getOptions().gamma > 20)
-            Wrapper.INSTANCE.getOptions().gamma = 20;
+        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().method_42473();
+        if (Wrapper.INSTANCE.getOptions().method_42473().getValue() > 20)
+            gammaOption.setValue(20.0);
     }
 }

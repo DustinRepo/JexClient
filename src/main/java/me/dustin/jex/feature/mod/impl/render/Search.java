@@ -75,7 +75,7 @@ public class Search extends Feature {
             }
         })).start();
         if (Wrapper.INSTANCE.getWorld() != null) {
-            int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            int distance = Wrapper.INSTANCE.getOptions().getViewDistance();
             if (Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
@@ -170,7 +170,7 @@ public class Search extends Feature {
         }
 
         if (emptyChunk != null) {
-            int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            int distance = Wrapper.INSTANCE.getOptions().getViewDistance();
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
@@ -185,7 +185,7 @@ public class Search extends Feature {
 
     @EventPointer
     private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
-        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        int distance = Wrapper.INSTANCE.getOptions().getViewDistance();
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
                 for (int j = -distance; j < distance; j++) {

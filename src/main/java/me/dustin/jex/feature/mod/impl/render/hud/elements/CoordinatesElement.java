@@ -30,7 +30,7 @@ public class CoordinatesElement extends HudElement{
         FontHelper.INSTANCE.drawWithShadow(matrixStack, coordString, strX, strY, ColorHelper.INSTANCE.getClientColor());
 
         if (getHud().netherCoords) {
-            double coordScale = Wrapper.INSTANCE.getLocalPlayer().clientWorld.getDimension().getCoordinateScale();
+            double coordScale = Wrapper.INSTANCE.getLocalPlayer().clientWorld.getDimension().coordinateScale();
             if (coordScale != 1.0D) {
                 coordString = String.format("Overworld\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.getX() * coordScale, pos.getY() * coordScale, pos.getZ() * coordScale);
             } else {

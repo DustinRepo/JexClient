@@ -19,7 +19,7 @@ public class CommandXray extends Command {
 
     @Override
     public void registerCommand() {
-        dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState(c)).executes(ctx -> {
+        dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).executes(ctx -> {
             Block block = BlockStateArgumentType.getBlockState(ctx, "block").getBlockState().getBlock();
             if (!Xray.blockList.contains(block)) {
                 Xray.blockList.add(block);
@@ -32,7 +32,7 @@ public class CommandXray extends Command {
                 ChatHelper.INSTANCE.addClientMessage("Xray already contains \247c" + block.getName().getString() + "\2477.");
             }
             return 1;
-        }))).then(literal("del").then(argument("block", BlockStateArgumentType.blockState(c)).executes(ctx -> {
+        }))).then(literal("del").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).executes(ctx -> {
             Block block = BlockStateArgumentType.getBlockState(ctx, "block").getBlockState().getBlock();
             if (Xray.blockList.contains(block)) {
                 Xray.blockList.remove(block);

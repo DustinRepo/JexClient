@@ -58,7 +58,7 @@ public class BedrockObf extends Feature {
                 if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
                     obfuscatedChunks.remove(chunk);
             }
-            int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            int distance = Wrapper.INSTANCE.getOptions().getViewDistance();
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
@@ -86,7 +86,7 @@ public class BedrockObf extends Feature {
                 }
             }
         })).start();
-        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        int distance = Wrapper.INSTANCE.getOptions().getViewDistance();
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
                 for (int j = -distance; j < distance; j++) {

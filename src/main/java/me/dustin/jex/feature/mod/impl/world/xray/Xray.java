@@ -136,7 +136,7 @@ public class Xray extends Feature {
             final int y = (int) Wrapper.INSTANCE.getLocalPlayer().getY() >> 4;
             final int z = (int) Wrapper.INSTANCE.getLocalPlayer().getZ() >> 4;
 
-            final int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            final int distance = Wrapper.INSTANCE.getOptions().getViewDistance();
             for (int i = x - distance; i < x + distance; i++) {
                 for (int k = z - distance; k < z + distance; k++) {
                     for (int j = y - distance; j < 16; j++) {

@@ -65,7 +65,7 @@ public class AccuratePlace extends Feature {
             Vec3d newVec = blockHitResult.getPos().add(blockHitResult.getSide().getOffsetX(), blockHitResult.getSide().getOffsetY(), blockHitResult.getSide().getOffsetZ()).add(facing.getOffsetX(), facing.getOffsetY(), facing.getOffsetZ());
             BlockPos newPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
             BlockHitResult newHitResult = new BlockHitResult(newVec, facing, newPos, blockHitResult.isInsideBlock());
-            PlayerInteractBlockC2SPacket newPacket = new PlayerInteractBlockC2SPacket(playerInteractBlockC2SPacket.getHand(), newHitResult, playerInteractBlockC2SPacket.method_42080());
+            PlayerInteractBlockC2SPacket newPacket = new PlayerInteractBlockC2SPacket(playerInteractBlockC2SPacket.getHand(), newHitResult, playerInteractBlockC2SPacket.getSequence());
             event.setPacket(newPacket);
         }
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, PlayerInteractBlockC2SPacket.class));

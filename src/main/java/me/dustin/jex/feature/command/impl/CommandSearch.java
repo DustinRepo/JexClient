@@ -21,7 +21,7 @@ public class CommandSearch extends Command {
 
     @Override
     public void registerCommand() {
-        dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState(c)).then(argument("color", ColorArgumentType.color()).executes(context -> {
+        dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).then(argument("color", ColorArgumentType.color()).executes(context -> {
             Block block = BlockStateArgumentType.getBlockState(context, "block").getBlockState().getBlock();
             int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColorValue())).getRGB();
             if (block != Blocks.AIR) {
@@ -34,7 +34,7 @@ public class CommandSearch extends Command {
                 }
             }
             return 1;
-        })))).then(literal("del").then(argument("block", BlockStateArgumentType.blockState(c)).executes(context -> {
+        })))).then(literal("del").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).executes(context -> {
             Block block = BlockStateArgumentType.getBlockState(context, "block").getBlockState().getBlock();
             if (!Search.getBlocks().containsKey(block))
                 ChatHelper.INSTANCE.addClientMessage("That block is not in the Search list!");

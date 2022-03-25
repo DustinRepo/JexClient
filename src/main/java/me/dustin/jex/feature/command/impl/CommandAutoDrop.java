@@ -18,7 +18,7 @@ public class CommandAutoDrop extends Command {
 
     @Override
     public void registerCommand() {
-        dispatcher.register(literal(this.name).then(literal("add").then(argument("item", ItemStackArgumentType.itemStack(c)).executes(ctx -> {
+        dispatcher.register(literal(this.name).then(literal("add").then(argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(ctx -> {
             Item item = ItemStackArgumentType.getItemStackArgument(ctx, "item").getItem();
             if (!AutoDrop.INSTANCE.getItems().contains(item)) {
                 AutoDrop.INSTANCE.getItems().add(item);
@@ -28,7 +28,7 @@ public class CommandAutoDrop extends Command {
                 ChatHelper.INSTANCE.addClientMessage("AutoDrop already contains \247c" + item.getName().getString() + "\2477.");
             }
             return 1;
-        }))).then(literal("del").then(argument("item", ItemStackArgumentType.itemStack(c)).executes(ctx -> {
+        }))).then(literal("del").then(argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(ctx -> {
             Item item = ItemStackArgumentType.getItemStackArgument(ctx, "item").getItem();
             if (AutoDrop.INSTANCE.getItems().contains(item)) {
                 AutoDrop.INSTANCE.getItems().remove(item);

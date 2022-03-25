@@ -14,6 +14,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ElytraItem;
@@ -189,7 +190,8 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         boolean bl2 = this.input.sneaking;
         boolean bl3 = this.isWalking();
         this.inSneakingPose = !this.getAbilities().flying && !this.isSwimming() && this.wouldPoseNotCollide(EntityPose.CROUCHING) && (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
-        this.input.tick(this.shouldSlowDown());
+        float f = MathHelper.clamp(0.3F + EnchantmentHelper.getSwiftSneakSpeedBoost(this), 0.0F, 1.0F);
+        this.input.tick(this.shouldSlowDown(), f);
         this.client.getTutorialManager().onMovement(this.input);
         if ((this.isUsingItem() || AutoEat.isEating) && !this.hasVehicle()) {
             EventSlowdown eventSlowdown = new EventSlowdown(EventSlowdown.State.USE_ITEM).run();

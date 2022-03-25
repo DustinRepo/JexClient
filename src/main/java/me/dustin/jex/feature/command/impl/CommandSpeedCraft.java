@@ -11,7 +11,6 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.command.argument.ItemStackArgumentType;
-import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 
 @Cmd(name = "speedcraft", alias = {"sc"}, syntax = ".speedcraft set <item (optional)>/clear", description = "Change the item used for SpeedCrafter mod (hold output item in hand or enter in command)")
@@ -34,7 +33,7 @@ public class CommandSpeedCraft extends Command {
                 ChatHelper.INSTANCE.addClientMessage("SpeedCrafter item set to \247b" + speedCrafter.craftingItem.getName().getString());
             }
             return 1;
-        }).then(argument("item", ItemStackArgumentType.itemStack(c)).executes(context -> {
+        }).then(argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(context -> {
             SpeedCrafter speedCrafter = Feature.get(SpeedCrafter.class);
             speedCrafter.craftingItem = ItemStackArgumentType.getItemStackArgument(context, "item").getItem();
             ChatHelper.INSTANCE.addClientMessage("SpeedCrafter item set to \247b" + speedCrafter.craftingItem.getName().getString());

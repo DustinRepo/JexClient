@@ -4,7 +4,6 @@ import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.login.thealtening.TheAlteningHelper;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
-import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
@@ -13,7 +12,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 
 public enum NetworkHelper {
     INSTANCE;
@@ -68,7 +66,7 @@ public enum NetworkHelper {
         boolean bl2 = Wrapper.INSTANCE.getMinecraft().isConnectedToRealms();
         Wrapper.INSTANCE.getWorld().disconnect();
         if (bl) {
-            Wrapper.INSTANCE.getMinecraft().disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+            Wrapper.INSTANCE.getMinecraft().disconnect(new DisconnectedScreen(new TitleScreen(), new LiteralText("Disconnect"), new TranslatableText("menu.savingLevel")));
         } else {
             Wrapper.INSTANCE.getMinecraft().disconnect();
         }

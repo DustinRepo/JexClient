@@ -20,7 +20,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IChatScreen;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.class_7157;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -49,7 +48,7 @@ public enum CommandManagerJex {
             try {
                 @SuppressWarnings("deprecation")
                 Command instance = (Command) clazz.newInstance();
-                instance.setC(networkHandler);
+                instance.setCommandRegistryAccess(networkHandler);
                 instance.registerCommand();
                 this.getCommands().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {

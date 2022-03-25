@@ -40,7 +40,7 @@ public class CommandSlimeChunks extends Command {
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         ArrayList<Render3DHelper.BoxStorage> slimeChunks = new ArrayList<>();
-       int renderDistance = Wrapper.INSTANCE.getOptions().viewDistance;
+       int renderDistance = Wrapper.INSTANCE.getOptions().getViewDistance();
        int divBy2 = renderDistance / 2 + 1;
         for (int x = -divBy2; x < divBy2; x++) {
             for (int z = -divBy2; z < divBy2; z++) {

@@ -61,7 +61,7 @@ public class TunnelFinder extends Feature {
         }
 
         if (emptyChunk != null) {
-            int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            int distance = Wrapper.INSTANCE.getOptions().getViewDistance();
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
@@ -90,7 +90,7 @@ public class TunnelFinder extends Feature {
     @EventPointer
     private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
         positions.clear();
-        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        int distance = Wrapper.INSTANCE.getOptions().getViewDistance();
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
                 for (int j = -distance; j < distance; j++) {
@@ -116,7 +116,7 @@ public class TunnelFinder extends Feature {
                 }
             }
         })).start();
-        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        int distance = Wrapper.INSTANCE.getOptions().getViewDistance();
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
                 for (int j = -distance; j < distance; j++) {

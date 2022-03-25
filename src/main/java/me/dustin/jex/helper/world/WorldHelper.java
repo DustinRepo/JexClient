@@ -1,10 +1,8 @@
 package me.dustin.jex.helper.world;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -12,8 +10,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.world.GeneratorType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -24,7 +20,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -33,10 +28,8 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.RaycastContext;
-import net.minecraft.world.level.storage.LevelStorage;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.ConcurrentMap;
 import java.util.*;
 

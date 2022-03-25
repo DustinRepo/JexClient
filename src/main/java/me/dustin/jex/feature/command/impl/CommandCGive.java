@@ -12,14 +12,13 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 
 @Cmd(name = "cgive", description = "Give yourself items in creative mode", syntax = ".cgive <item> <amount (optional)>", alias = "i")
 public class CommandCGive extends Command {
     @Override
     public void registerCommand() {
-        CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("item", ItemStackArgumentType.itemStack(c)).executes(context -> {
+        CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(context -> {
             if (!context.getSource().getPlayer().isCreative()) {
                 ChatHelper.INSTANCE.addClientMessage("You must be in creative to use this command");
                 return 0;

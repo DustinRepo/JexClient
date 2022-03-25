@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LlamaEntity.class)
 public class MixinLlamaEntity {
 
-    @Inject(method = "canBeControlledByRider", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "canBeSaddled", at = @At("HEAD"), cancellable = true)
     public void canBeControlledByRider(CallbackInfoReturnable<Boolean> ci) {
         EventControlLlama eventControlLlama = new EventControlLlama().run();
         if (eventControlLlama.isCancelled())

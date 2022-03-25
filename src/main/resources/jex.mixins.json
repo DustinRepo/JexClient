@@ -66,6 +66,7 @@
     "minecraft.MixinScreen",
     "minecraft.MixinShader",
     "minecraft.MixinSignEditScreen",
+    "minecraft.MixinSimpleOption",
     "minecraft.MixinSliderWidget",
     "minecraft.MixinSplashScreen",
     "minecraft.MixinWorldChunk",

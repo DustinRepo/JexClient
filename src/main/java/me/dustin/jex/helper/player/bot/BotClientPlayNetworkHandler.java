@@ -154,7 +154,7 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         float x = chunkPos.x - mePos.x;
         float z = chunkPos.z - mePos.z;
         float distance = x * x + z * z;
-        if (distance <= Wrapper.INSTANCE.getOptions().viewDistance)
+        if (distance <= Wrapper.INSTANCE.getOptions().getViewDistance())
             return;
         super.onUnloadChunk(packet);
     }

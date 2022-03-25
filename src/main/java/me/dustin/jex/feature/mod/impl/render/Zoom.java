@@ -26,7 +26,7 @@ public class Zoom extends Feature {
     @Override
     public void onEnable() {
         if (Wrapper.INSTANCE.getOptions() != null)
-            savedFOV = Wrapper.INSTANCE.getOptions().method_41808().method_41753();
+            savedFOV = Wrapper.INSTANCE.getOptions().getFov().getValue();
         super.onEnable();
     }
 
@@ -41,13 +41,13 @@ public class Zoom extends Feature {
         if(KeyboardHelper.INSTANCE.isPressed(zoomKey) && Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
             if(resetFOV) {
                 this.resetFOV = false;
-                this.savedFOV = Wrapper.INSTANCE.getOptions().method_41808().method_41753();
+                this.savedFOV = Wrapper.INSTANCE.getOptions().getFov().getValue();
             }
             int zoomFov = (int)(30 - (6 * zoomLevel));
             if (zoomFov == 0)
                 zoomFov = 1;
-            if(Wrapper.INSTANCE.getOptions().method_41808().method_41753() > zoomFov) {
-                Wrapper.INSTANCE.getOptions().method_41808().method_41748(zoomFov);
+            if(Wrapper.INSTANCE.getOptions().getFov().getValue() > zoomFov) {
+                Wrapper.INSTANCE.getOptions().getFov().setValue(zoomFov);
                 if (mouseSmooth)
                     Wrapper.INSTANCE.getOptions().smoothCameraEnabled = true;
             }
@@ -55,8 +55,8 @@ public class Zoom extends Feature {
         else
         {
             if(!resetFOV || !getState()) {
-                if (Wrapper.INSTANCE.getOptions().method_41808().method_41753() < savedFOV) {
-                    Wrapper.INSTANCE.getOptions().method_41808().method_41748(savedFOV);
+                if (Wrapper.INSTANCE.getOptions().getFov().getValue() < savedFOV) {
+                    Wrapper.INSTANCE.getOptions().getFov().setValue(savedFOV);
                     if (mouseSmooth)
                         Wrapper.INSTANCE.getOptions().smoothCameraEnabled = false;
                 }

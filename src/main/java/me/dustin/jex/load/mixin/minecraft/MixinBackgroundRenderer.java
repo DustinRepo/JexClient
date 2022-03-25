@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinBackgroundRenderer {
 
     @Inject(method = {"applyFog"}, at = @At("RETURN"))
-    private static void applyFogModifyDensity(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog, CallbackInfo ci) {
+    private static void applyFogModifyDensity(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog, float f, CallbackInfo ci) {
         new EventApplyFog(camera.getSubmersionType()).run();
     }
 }

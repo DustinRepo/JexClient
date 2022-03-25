@@ -168,7 +168,7 @@ public abstract class MixinClientPlayNetworkHandler {
                 if (Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(playerModelPart))
                     i |= playerModelPart.getBitFlag();
             }
-            this.sendPacket(new ClientSettingsC2SPacket(Wrapper.INSTANCE.getOptions().language, Wrapper.INSTANCE.getOptions().viewDistance, Wrapper.INSTANCE.getOptions().chatVisibility, Wrapper.INSTANCE.getOptions().chatColors, i, Wrapper.INSTANCE.getOptions().mainArm, this.client.shouldFilterText(), Wrapper.INSTANCE.getOptions().allowServerListing));
+            this.sendPacket(new ClientSettingsC2SPacket(Wrapper.INSTANCE.getOptions().language, Wrapper.INSTANCE.getOptions().getViewDistance(), Wrapper.INSTANCE.getOptions().method_42539().getValue(), Wrapper.INSTANCE.getOptions().method_42427().getValue(), i, Wrapper.INSTANCE.getOptions().method_42552().getValue(), this.client.shouldFilterText(), Wrapper.INSTANCE.getOptions().method_42441().getValue()));
         }
     }
 
