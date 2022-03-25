@@ -1,4 +1,5 @@
 0.6.4
+Added PingSpoof mod
 Improved Jesus's ability to fully swim to the top of water and not bob
 Fixed Jesus not working properly on some anticheats since the event manager overhaul
 
