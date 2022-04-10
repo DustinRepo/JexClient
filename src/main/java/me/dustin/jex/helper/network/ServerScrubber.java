@@ -40,49 +40,56 @@ public enum ServerScrubber {
             return;
         }
         EventManager.register(this);
-        servers.forEach(ip -> {
+        servers.forEach(ip1 -> {
             Thread thread = new Thread(() -> {
+                int port = 25565;
+                String ip = ip1;
+                if (ip.contains(":")) {
+                    port = Integer.parseInt(ip.split(":")[1]);
+                    ip = ip.split(":")[0];
+                }
+
                 JexClient.INSTANCE.getLogger().info("Searching " + ip + " for player");
-                ServerAddress serverAddress = ServerAddress.parse(ip);
-                Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
-                if (optional.isPresent()) {
-                    try {
-                        isSearching = true;
-                        InetAddress inetAddress = InetAddress.getByName(serverAddress.getAddress());
-                        Socket socket = new Socket(inetAddress.getHostAddress(), serverAddress.getPort());
-                        DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                        DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-
-                        sendHandshake(dataOutputStream, serverAddress);
-                        sendQueryRequest(dataOutputStream);
-
-                        int size = ServerPinger.readVarInt(dataInputStream);//even tho we don't use it currently you MUST read this in order to not mess up the order of others being read
-                        int packetID = ServerPinger.readVarInt(dataInputStream);
-
-                        if (packetID != ServerPinger.PACKET_STATUSREQUEST) {
-                            JexClient.INSTANCE.getLogger().info("bad packet from" + serverAddress.getAddress() + ":" + serverAddress.getPort());
-                            return;
-                        }
-
-                        String resp = receiveQueryRequest(dataInputStream);
-                        JsonObject mainObject = JsonHelper.INSTANCE.gson.fromJson(resp, JsonObject.class);
-
-                        JsonObject playersObject = mainObject.getAsJsonObject("players");
-                        JsonArray jsonArray = playersObject.getAsJsonArray("sample");
-                        if (jsonArray != null)
-                            for (int i = 0; i < jsonArray.size(); i++) {
-                                JsonObject playerObj = jsonArray.get(i).getAsJsonObject();
-                                String playerName = playerObj.get("name").getAsString();
-                                if (playerName.equalsIgnoreCase(name)) {//we found him
-                                    ChatHelper.INSTANCE.addClientMessage(Formatting.GOLD + playerName + Formatting.GRAY + " found on server: " + Formatting.AQUA + serverAddress.getAddress() + ":" + serverAddress.getPort());
-                                    found = true;
-                                    socket.close();
-                                }
-                            }
-                        socket.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                try {
+                    isSearching = true;
+                    MinecraftServerAddress minecraftServerAddress = MinecraftServerAddress.resolve(ip, port);
+                    if (minecraftServerAddress == null) {
+                        System.out.println("NULL: " + ip + ":" + port);
+                        return;
                     }
+                    Socket socket = new Socket(minecraftServerAddress.getIp(), minecraftServerAddress.getPort());
+                    DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                    DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+
+                    sendHandshake(dataOutputStream, minecraftServerAddress);
+                    sendQueryRequest(dataOutputStream);
+
+                    int size = ServerPinger.readVarInt(dataInputStream);//even tho we don't use it currently you MUST read this in order to not mess up the order of others being read
+                    int packetID = ServerPinger.readVarInt(dataInputStream);
+
+                    if (packetID != ServerPinger.PACKET_STATUSREQUEST) {
+                        JexClient.INSTANCE.getLogger().info("bad packet from" + minecraftServerAddress.getIp() + ":" + minecraftServerAddress.getPort());
+                        return;
+                    }
+
+                    String resp = receiveQueryRequest(dataInputStream);
+                    JsonObject mainObject = JsonHelper.INSTANCE.gson.fromJson(resp, JsonObject.class);
+
+                    JsonObject playersObject = mainObject.getAsJsonObject("players");
+                    JsonArray jsonArray = playersObject.getAsJsonArray("sample");
+                    if (jsonArray != null)
+                        for (int i = 0; i < jsonArray.size(); i++) {
+                            JsonObject playerObj = jsonArray.get(i).getAsJsonObject();
+                            String playerName = playerObj.get("name").getAsString();
+                            if (playerName.equalsIgnoreCase(name)) {//we found him
+                                ChatHelper.INSTANCE.addClientMessage(Formatting.GOLD + playerName + Formatting.GRAY + " found on server: " + Formatting.AQUA + minecraftServerAddress.getIp() + ":" + minecraftServerAddress.getPort());
+                                found = true;
+                                socket.close();
+                            }
+                        }
+                    socket.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
             threads.add(thread);
@@ -115,14 +122,14 @@ public enum ServerScrubber {
         }
     }, new TickFilter(EventTick.Mode.PRE));
 
-    private void sendHandshake(DataOutputStream dataOutputStream, ServerAddress serverAddress) {
+    private void sendHandshake(DataOutputStream dataOutputStream, MinecraftServerAddress serverAddress) {
         try {
             ByteArrayOutputStream handshakeBytes = new ByteArrayOutputStream();
             DataOutputStream handshakePacket = new DataOutputStream(handshakeBytes);
             handshakePacket.writeByte(ServerPinger.PACKET_HANDSHAKE);//packet id
             ServerPinger.writeVarInt(handshakePacket, ServerPinger.PROTOCOL_VERSION);//protocol version
-            ServerPinger.writeVarInt(handshakePacket, serverAddress.getAddress().length());//length of address
-            handshakePacket.writeBytes(serverAddress.getAddress());//address
+            ServerPinger.writeVarInt(handshakePacket, serverAddress.getIp().length());//length of address
+            handshakePacket.writeBytes(serverAddress.getIp());//address
             handshakePacket.writeShort(serverAddress.getPort());//port
             ServerPinger.writeVarInt(handshakePacket, NetworkState.STATUS.getId());//status id
 

@@ -62,9 +62,9 @@ public class ServerPinger {
                 // \/ this one uses code much more intertwined with Minecraft, I just thought it would be fun to re-create the packet sending and receiving myself
                 //ping(optional.get());
                 try {
-                    InetAddress inetAddress = InetAddress.getByName(serverAddress.getAddress());
-                    ChatHelper.INSTANCE.addClientMessage("Resolved IP: " + inetAddress.getHostAddress());
-                    Socket socket = new Socket(inetAddress.getHostAddress(), serverAddress.getPort());
+                    MinecraftServerAddress minecraftServerAddress = MinecraftServerAddress.resolve(serverAddress.getAddress(), serverAddress.getPort());
+                    ChatHelper.INSTANCE.addClientMessage("Resolved IP: " + minecraftServerAddress.getIp());
+                    Socket socket = new Socket(minecraftServerAddress.getIp(), serverAddress.getPort());
                     DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                     DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
