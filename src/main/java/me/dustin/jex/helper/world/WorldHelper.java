@@ -197,6 +197,8 @@ public enum WorldHelper {
             String[] list = preString.split("/");
             return list[list.length - 1];
         } else {
+            if (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() == null)
+                return "";
             return Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
         }
     }
