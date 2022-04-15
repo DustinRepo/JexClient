@@ -1,3 +1,8 @@
+0.6.5
+Added HotbarFill mod
+Reworked ElytraPlus with new modes - thanks to https://github.com/alex3236
+Fixed ServerScrubber and ServerPinger not properly resolving some servers
+
 0.6.4
 Added PingSpoof mod
 Improved Jesus's ability to fully swim to the top of water and not bob
