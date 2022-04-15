@@ -1,11 +1,8 @@
 package me.dustin.jex.helper.network.login.thealtening;
 
 import com.google.gson.JsonArray;
-import com.mojang.authlib.Agent;
-import com.mojang.authlib.Environment;
-import com.mojang.authlib.exceptions.AuthenticationException;
+import com.google.gson.JsonObject;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -18,10 +15,10 @@ import net.minecraft.util.Identifier;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -35,10 +32,7 @@ public enum TheAlteningHelper {
     private final String PRIVATE_ACC_URL = "http://api.thealtening.com/v2/private?key=%s&token=%s";
     private final String FAVORITES_URL = "http://api.thealtening.com/v2/favorites?key=%s";
     private final String PRIVATES_URL = "http://api.thealtening.com/v2/privates?key=%s";
-    private final String AUTH_URL = "http://authserver.thealtening.com";
-    private final String ACCOUNT_URL = "https://api.mojang.com";
-    private final String SESSION_URL = "http://sessionserver.thealtening.com";
-    private final String SERVICES_URL = "https://api.minecraftservices.com";
+    private final String AUTH_URL = "http://authserver.thealtening.com/authenticate";
 
     private YggdrasilAuthenticationService THE_ALTENING_AUTH;
     private TheAlteningSessionService THE_ALTENING_SESSION_SERVICE;
@@ -118,18 +112,23 @@ public enum TheAlteningHelper {
     public void login(String token, Consumer<Session> sessionConsumer) {
         new Thread(() -> {
             NetworkHelper.INSTANCE.setSessionService(NetworkHelper.SessionService.THEALTENING);
-            YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) getTheAlteningAuth().createUserAuthentication(Agent.MINECRAFT);
-            auth.setUsername(token);
-            auth.setPassword("JexClient");
-            try {
-                auth.logIn();
-                sessionConsumer.accept(new Session(auth.getSelectedProfile().getName(), auth.getSelectedProfile().getId().toString(), auth.getAuthenticatedToken(), Optional.of(""), Optional.of(""), Session.AccountType.MOJANG));
-                return;
-            } catch (AuthenticationException e) {
-                e.printStackTrace();
-            }
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("agent", "Minecraft");
+            jsonObject.addProperty("username", token);
+            jsonObject.addProperty("password", "JexClient");
+            jsonObject.addProperty("requestUser", true);
+            Map<String, String> header = new HashMap<>();
+            header.put("Content-Type", "application/json");
+            String resp = WebHelper.INSTANCE.httpRequest(AUTH_URL, jsonObject.toString(), header, "POST").data();
 
-            sessionConsumer.accept(null);
+            if (resp != null && !resp.isEmpty()) {
+                JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(resp, JsonObject.class);
+                JsonObject selectedProfile = object.get("selectedProfile").getAsJsonObject();
+                String name = selectedProfile.get("name").getAsString();
+                String uuid = selectedProfile.get("id").getAsString();
+                String accessToken = object.get("accessToken").getAsString();
+                sessionConsumer.accept(new Session(name, uuid, accessToken, Optional.of(""), Optional.of(""), Session.AccountType.MOJANG));
+            }
         }).start();
     }
 
@@ -156,7 +155,7 @@ public enum TheAlteningHelper {
                     }
 
                     image.close();
-                    Identifier id = new Identifier("assets/jex", "thealtening/" + account.username.replace("*", "").toLowerCase() + ".png");
+                    Identifier id = new Identifier("jex", "thealtening/" + account.username.replace("*", "").toLowerCase() + ".png");
                     FileHelper.INSTANCE.applyTexture(id, imgNew);
                     skins.replace(account, id);
                 } catch (Exception e) {
@@ -179,26 +178,20 @@ public enum TheAlteningHelper {
         return this.license;
     }
 
-    public YggdrasilAuthenticationService getTheAlteningAuth() {
-        if (THE_ALTENING_AUTH == null)
-            THE_ALTENING_AUTH = new YggdrasilAuthenticationService(Proxy.NO_PROXY, "", Environment.create(AUTH_URL, ACCOUNT_URL, SESSION_URL, SERVICES_URL, "TheAltening"));
-        return THE_ALTENING_AUTH;
-    }
-
     public TheAlteningSessionService getTheAlteningSessionService() {
         if (THE_ALTENING_SESSION_SERVICE == null)
-            THE_ALTENING_SESSION_SERVICE = new TheAlteningSessionService(getTheAlteningAuth());
+            THE_ALTENING_SESSION_SERVICE = new TheAlteningSessionService();
         return THE_ALTENING_SESSION_SERVICE;
     }
 
-    public class TheAlteningLicense {
+    public static class TheAlteningLicense {
         public String username;
         public boolean hasLicense;
         public String licenseType;
         public String expires;
     }
 
-    public class TheAlteningAccount {
+    public static class TheAlteningAccount {
         public String token;
         public String password;
         public String username;

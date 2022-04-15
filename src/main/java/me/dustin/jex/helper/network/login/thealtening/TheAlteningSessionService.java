@@ -2,19 +2,15 @@ package me.dustin.jex.helper.network.login.thealtening;
 
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.HttpAuthenticationService;
 import com.mojang.authlib.exceptions.*;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.authlib.yggdrasil.request.JoinMinecraftServerRequest;
 import com.mojang.authlib.yggdrasil.response.*;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.network.WebHelper;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,12 +21,12 @@ public class TheAlteningSessionService extends HttpMinecraftSessionService {
     private final String JOIN_URL = SESSION_URL + "/session/minecraft/join";
     private final String CHECK_URL = SESSION_URL + "/session/minecraft/hasJoined";
 
-    public TheAlteningSessionService(YggdrasilAuthenticationService authenticationService) {
-        super(authenticationService);
+    public TheAlteningSessionService() {
+        super(null);
     }
 
     @Override
-    public void joinServer(GameProfile profile, String authenticationToken, String serverId) throws AuthenticationException {
+    public void joinServer(GameProfile profile, String authenticationToken, String serverId){
         JsonObject request = new JsonObject();
         request.addProperty("accessToken", authenticationToken);
         request.addProperty("selectedProfile", profile.getId().toString());
@@ -42,7 +38,7 @@ public class TheAlteningSessionService extends HttpMinecraftSessionService {
     }
 
     @Override
-    public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) throws AuthenticationUnavailableException {
+    public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) {
         final Map<String, Object> arguments = new HashMap<>();
         arguments.put("username", user.getName());
         arguments.put("serverId", serverId);
@@ -50,7 +46,7 @@ public class TheAlteningSessionService extends HttpMinecraftSessionService {
         if (address != null) {
             arguments.put("ip", address.getHostAddress());
         }
-        String httpResponse = WebHelper.INSTANCE.httpRequest(CHECK_URL, null, null, "GET").data();
+        String httpResponse = WebHelper.INSTANCE.httpRequest(CHECK_URL, arguments, null, "GET").data();
         final HasJoinedMinecraftServerResponse response = JsonHelper.INSTANCE.gson.fromJson(httpResponse, HasJoinedMinecraftServerResponse.class);
 
         if (response != null && response.getId() != null) {
