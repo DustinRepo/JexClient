@@ -22,8 +22,13 @@ public class Fullbright extends Feature {
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getOptions() == null)
             return;
-        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().method_42473();
-        double gamma = gammaOption.getValue();
+        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().getGamma();
+        if (Wrapper.INSTANCE.getLocalPlayer() == null && gammaOption.getValue() > 1) {
+            gammaOption.setValue(1.0);
+            return;
+        }
+
+            double gamma = gammaOption.getValue();
         if (!getState()) {
             if (gamma > resetGamma)
                 gammaOption.setValue(gamma - 0.5);
@@ -39,15 +44,15 @@ public class Fullbright extends Feature {
 
     @EventPointer
     private final EventListener<EventSetSimpleOption> eventSetSimpleOptionEventListener = new EventListener<>(event -> {
-        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().method_42473();
+        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().getGamma();
         if (event.getSimpleOption() == gammaOption)
             event.setShouldIgnoreCheck(true);
     });
 
     @Override
     public void onDisable() {
-        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().method_42473();
-        if (Wrapper.INSTANCE.getOptions().method_42473().getValue() > 20)
+        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().getGamma();
+        if (gammaOption.getValue() > 20)
             gammaOption.setValue(20.0);
     }
 }

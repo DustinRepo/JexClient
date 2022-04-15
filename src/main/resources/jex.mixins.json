@@ -46,6 +46,7 @@
     "minecraft.MixinInGameOverlayRenderer",
     "minecraft.MixinItemEntityRenderer",
     "minecraft.MixinItemRenderer",
+    "minecraft.MixinItemStack",
     "minecraft.MixinKeybinding",
     "minecraft.MixinKeyboard",
     "minecraft.MixinLivingEntity",
