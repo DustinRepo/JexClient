@@ -23,8 +23,8 @@ public enum ProxyHelper {
     INSTANCE;
     private ClientProxy proxy;
 
-    public void connectToProxy(SocksType type, String hostname, int port) {
-        this.proxy = new ClientProxy(hostname, port, type);
+    public void connectToProxy(SocksType type, String hostname, int port, String username, String password) {
+        this.proxy = new ClientProxy(hostname, port, type, username, password);
     }
 
     public boolean isConnectedToProxy() {
@@ -39,7 +39,7 @@ public enum ProxyHelper {
         proxy = null;
     }
 
-    public static record ClientProxy(String host, int port, SocksType socksType){}
+    public record ClientProxy(String host, int port, SocksType socksType, String authName, String authPass){}
 
     public enum SocksType {
         FOUR, FIVE;
@@ -58,20 +58,21 @@ public enum ProxyHelper {
     public final ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {
         protected void initChannel(Channel channel) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
-
             if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
                 if (proxy.socksType() == ProxyHelper.SocksType.FIVE) {
-                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), null, null));
+                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), proxy.authName(), proxy.authPass()));
                 } else {
                     channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port())));
                 }
             }
-            try {
-                channel.config().setOption(ChannelOption.TCP_NODELAY, true);
-            } catch (ChannelException var3) {
-            }
+            channel.config().setOption(ChannelOption.TCP_NODELAY, true);
 
-            channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30)).addLast("splitter", new SplitterHandler()).addLast("decoder", new DecoderHandler(NetworkSide.CLIENTBOUND)).addLast("prepender", new SizePrepender()).addLast("encoder", new PacketEncoder(NetworkSide.SERVERBOUND)).addLast("packet_handler", clientConnection);
+            channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
+            channel.pipeline().addLast("splitter", new SplitterHandler());
+            channel.pipeline().addLast("decoder", new DecoderHandler(NetworkSide.CLIENTBOUND));
+            channel.pipeline().addLast("prepender", new SizePrepender());
+            channel.pipeline().addLast("encoder", new PacketEncoder(NetworkSide.SERVERBOUND));
+            channel.pipeline().addLast("packet_handler", clientConnection);
         }
     };
 }
