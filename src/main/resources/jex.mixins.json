@@ -4,8 +4,7 @@
   "package": "me.dustin.jex.load.mixin",
   "compatibilityLevel": "JAVA_16",
   "plugin": "me.dustin.jex.load.JexMixinConfigPlugin",
-  "mixins": [
-  ],
+  "mixins": [],
   "client": [
     "indigo.MixinTerrainRenderContext",
     "minecraft.MixinAbstractBlock",
@@ -46,6 +45,7 @@
     "minecraft.MixinInGameOverlayRenderer",
     "minecraft.MixinItemEntityRenderer",
     "minecraft.MixinItemRenderer",
+    "minecraft.MixinItemStack",
     "minecraft.MixinKeybinding",
     "minecraft.MixinKeyboard",
     "minecraft.MixinLivingEntity",
