@@ -43,7 +43,7 @@ public enum EntityHelper {
     }
 
     public boolean isPassiveMob(Entity entity) {
-        return !(entity instanceof HoglinEntity) && doesPlayerOwn(entity) || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
+        return !(entity instanceof HoglinEntity) && doesPlayerOwn(entity) || entity instanceof AllayEntity || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
     }
 
     public boolean isNeutralMob(Entity entity) {

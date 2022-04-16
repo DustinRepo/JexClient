@@ -45,8 +45,7 @@ public class TwoDeeESP extends FeatureExtension {
                     footPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, -0.2f, eventRender3D.getPartialTicks(), eventRender3D.getMatrixStack()));
                 }
             }
-        } else if (event instanceof EventRender2D) {
-            EventRender2D eventRender2D = (EventRender2D)event;
+        } else if (event instanceof EventRender2D eventRender2D) {
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
             Render2DHelper.INSTANCE.setup2DRender(true);
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
