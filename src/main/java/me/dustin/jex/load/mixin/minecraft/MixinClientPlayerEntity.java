@@ -93,8 +93,6 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
     @Shadow public abstract float getMountJumpStrength();
 
-    @Shadow public float renderPitch;
-
     @Inject(method = "<init>", at = @At("RETURN"))
     public void initPlayer(MinecraftClient client, ClientWorld world, ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook, boolean lastSneaking, boolean lastSprinting, CallbackInfo ci) {
         CommandManagerJex.INSTANCE.registerCommands(networkHandler);

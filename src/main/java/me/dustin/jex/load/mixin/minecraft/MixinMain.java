@@ -21,7 +21,6 @@ import java.util.Optional;
 @Mixin(Main.class)
 public class MixinMain {
 
-    private static MinecraftAccount mcAccount;
     @ModifyArgs(at = @At(value = "INVOKE", target = "net/minecraft/client/util/Session.<init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Optional;Ljava/util/Optional;Lnet/minecraft/client/util/Session$AccountType;)V"), method = "main")
     private static void modifySession(Args args) {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
@@ -32,6 +31,7 @@ public class MixinMain {
             String email = (String)parsedYaml.get("email");
             String password = (String)parsedYaml.get("password");
             String accountType = (String)parsedYaml.get("account-type");
+            MinecraftAccount mcAccount;
             if (accountType.equalsIgnoreCase("msa")) {
                 mcAccount = new MinecraftAccount.MicrosoftAccount(username, email, password, "", "", "");
             } else {

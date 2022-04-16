@@ -4,6 +4,6 @@ import net.minecraft.entity.Entity;
 
 public interface IProjectileEntity {
 
-    boolean method(Entity entity);
+    boolean callCanHit(Entity entity);
 
 }

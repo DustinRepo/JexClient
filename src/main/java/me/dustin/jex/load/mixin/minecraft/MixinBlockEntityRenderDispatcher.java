@@ -1,8 +1,4 @@
 package me.dustin.jex.load.mixin.minecraft;
-/*
- * @Author Dustin
- * 9/28/2019
- */
 
 import me.dustin.jex.event.render.EventRenderBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -14,7 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 
 @Mixin(BlockEntityRenderDispatcher.class)
 public class MixinBlockEntityRenderDispatcher {

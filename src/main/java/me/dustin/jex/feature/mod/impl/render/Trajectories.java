@@ -1,6 +1,5 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
@@ -154,7 +153,7 @@ public class Trajectories extends Feature {
                 for (int j = 0; j < 200; j++) {
                     snowballEntity.tick();
                     positions.add(snowballEntity.getPos());
-                    HitResult hitResult = ProjectileUtil.getCollision(snowballEntity, iProjectileEntity::method);
+                    HitResult hitResult = ProjectileUtil.getCollision(snowballEntity, iProjectileEntity::callCanHit);
                     if (hitResult != null) {
                         if (hitResult.getType() == HitResult.Type.ENTITY) {
                             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
@@ -177,7 +176,7 @@ public class Trajectories extends Feature {
                         hitEntity = Wrapper.INSTANCE.getLocalPlayer();
                     } else {
                         positions.add(enderPearlEntity.getPos());
-                        HitResult hitResult = ProjectileUtil.getCollision(enderPearlEntity, iProjectileEntity::method);
+                        HitResult hitResult = ProjectileUtil.getCollision(enderPearlEntity, iProjectileEntity::callCanHit);
                         if (hitResult != null) {
                             if (hitResult.getType() == HitResult.Type.ENTITY) {
                                 EntityHitResult entityHitResult = (EntityHitResult) hitResult;
@@ -198,7 +197,7 @@ public class Trajectories extends Feature {
                 for (int j = 0; j < 200; j++) {
                     potionEntity.tick();
                     positions.add(potionEntity.getPos());
-                    HitResult hitResult = ProjectileUtil.getCollision(potionEntity, iProjectileEntity::method);
+                    HitResult hitResult = ProjectileUtil.getCollision(potionEntity, iProjectileEntity::callCanHit);
                     if (hitResult != null) {
                         if (hitResult.getType() == HitResult.Type.ENTITY) {
                             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
@@ -235,7 +234,7 @@ public class Trajectories extends Feature {
 
     protected EntityHitResult getEntityCollision(PersistentProjectileEntity persistentProjectileEntity, Vec3d currentPosition, Vec3d nextPosition) {
         IPersistentProjectileEntity iPersistentProjectileEntity = (IPersistentProjectileEntity) persistentProjectileEntity;
-        return ProjectileUtil.getEntityCollision(persistentProjectileEntity.world, persistentProjectileEntity, currentPosition, nextPosition, persistentProjectileEntity.getBoundingBox().stretch(persistentProjectileEntity.getVelocity()).expand(1.0D), iPersistentProjectileEntity::method);
+        return ProjectileUtil.getEntityCollision(persistentProjectileEntity.world, persistentProjectileEntity, currentPosition, nextPosition, persistentProjectileEntity.getBoundingBox().stretch(persistentProjectileEntity.getVelocity()).expand(1.0D), iPersistentProjectileEntity::callCanHit);
     }
 
     private boolean isGoodItem(ItemStack itemStack) {

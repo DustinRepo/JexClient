@@ -38,8 +38,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Shadow
     private int itemUseCooldown;
 
-    @Shadow @Final private RenderTickCounter renderTickCounter;
-
     @Shadow @Final public GameOptions options;
 
     @Shadow @Nullable public ClientPlayerEntity player;
@@ -57,11 +55,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Override
     public void setRightClickDelayTimer(int timer) {
         this.itemUseCooldown = timer;
-    }
-
-    @Override
-    public RenderTickCounter getRenderTickCounter() {
-        return this.renderTickCounter;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

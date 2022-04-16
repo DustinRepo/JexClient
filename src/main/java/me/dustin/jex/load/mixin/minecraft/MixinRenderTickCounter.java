@@ -16,8 +16,7 @@ public class MixinRenderTickCounter {
     @Shadow @Final private float tickTime;
 
     @Inject(method = "beginRenderTick", at = @At("HEAD"))
-    public void beingRenderTick(long timeMillis, CallbackInfoReturnable<Integer> cir)
-    {
+    public void beingRenderTick(long timeMillis, CallbackInfoReturnable<Integer> cir) {
         this.tickTime = ((EventRenderTick)new EventRenderTick(this.tickTime).run()).timeScale;
     }
 }

@@ -21,7 +21,6 @@ public class MixinShader implements IShader {
 
     private Map<String, GlUniform> customUniforms = Maps.newHashMap();
 
-    //fuck optifabric, this method needs to be static with it, but not without
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/util/Identifier.<init> (Ljava/lang/String;)V"), index = 0)
     public String renameID(String originalID) {
         if (originalID.contains("jex:")) {
