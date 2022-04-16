@@ -89,8 +89,6 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
     @Shadow public abstract float getMountJumpStrength();
 
-    @Shadow public float renderPitch;
-
     @Override
     public boolean isTouchingWater() {
         EventIsPlayerTouchingWater eventIsPlayerTouchingWater = new EventIsPlayerTouchingWater(super.isTouchingWater()).run();
@@ -140,7 +138,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     }
 
     @Inject(method = "pushOutOfBlocks", at = @At("INVOKE"), cancellable = true)
-    public void pushOut(double x, double y, CallbackInfo ci) {
+    public void pushOut(double x, double z, CallbackInfo ci) {
         EventPushOutOfBlocks eventPushOutOfBlocks = new EventPushOutOfBlocks().run();
         if (eventPushOutOfBlocks.isCancelled())
             ci.cancel();

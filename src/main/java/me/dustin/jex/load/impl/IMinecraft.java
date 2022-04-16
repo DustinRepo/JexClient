@@ -11,7 +11,5 @@ public interface IMinecraft {
 
     void setRightClickDelayTimer(int timer);
 
-    RenderTickCounter getRenderTickCounter();
-
     void setSessionService(MinecraftSessionService sessionService);
 }

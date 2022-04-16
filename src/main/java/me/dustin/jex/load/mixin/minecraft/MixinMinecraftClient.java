@@ -9,15 +9,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,8 +35,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Shadow
     private int itemUseCooldown;
 
-    @Shadow @Final private RenderTickCounter renderTickCounter;
-
     @Shadow @Final public GameOptions options;
 
     @Shadow @Nullable public ClientPlayerEntity player;
@@ -57,11 +52,6 @@ public abstract class MixinMinecraftClient implements IMinecraft {
     @Override
     public void setRightClickDelayTimer(int timer) {
         this.itemUseCooldown = timer;
-    }
-
-    @Override
-    public RenderTickCounter getRenderTickCounter() {
-        return this.renderTickCounter;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

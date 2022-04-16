@@ -33,8 +33,8 @@ public class MixinWorldRenderer {
     @Shadow private @Nullable ShaderEffect entityOutlineShader;
     @Shadow @Final private MinecraftClient client;
     @Shadow private @Nullable Framebuffer entityOutlinesFramebuffer;
-    private Identifier my_outline = new Identifier("jex", "shaders/entity_outline.json");
-    private Identifier mojang_outline = new Identifier("shaders/post/entity_outline.json");
+    private final Identifier my_outline = new Identifier("jex", "shaders/entity_outline.json");
+    private final Identifier mojang_outline = new Identifier("shaders/post/entity_outline.json");
 
     @Inject(method = "render", at = @At(value = "RETURN"))
     public void render1(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {

@@ -9,10 +9,10 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ProjectileEntity.class)
 public abstract class MixinProjectileEntity implements IProjectileEntity {
     @Shadow
-    protected abstract boolean method_26958(Entity entity);
+    protected abstract boolean canHit(Entity entity);
 
     @Override
-    public boolean method(Entity entity) {
-        return this.method_26958(entity);
+    public boolean callCanHit(Entity entity) {
+        return this.canHit(entity);
     }
 }

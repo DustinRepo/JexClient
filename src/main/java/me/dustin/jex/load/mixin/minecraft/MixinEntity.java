@@ -37,13 +37,7 @@ public abstract class MixinEntity {
     public abstract AbstractTeam getScoreboardTeam();
 
     @Shadow
-    public abstract boolean isSwimming();
-
-    @Shadow
     public abstract boolean isSneaking();
-
-    @Shadow
-    public abstract boolean isAlive();
 
     @Shadow public abstract Box getBoundingBox();
 

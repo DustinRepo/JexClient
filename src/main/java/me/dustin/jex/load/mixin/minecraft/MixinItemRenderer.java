@@ -53,10 +53,10 @@ public abstract class MixinItemRenderer implements IItemRenderer {
 			ci.cancel();
 	}
 
-	@Inject(method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At("RETURN"), cancellable = true)
+	@Inject(method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At("RETURN"))
 	public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, String countLabel, CallbackInfo ci) {
 		ItemRenderer instance = (ItemRenderer) (Object) this;
-		EventRender2DItem eventRender2DItem = new EventRender2DItem(instance, renderer, stack, x, y).run();
+		new EventRender2DItem(instance, renderer, stack, x, y).run();
 	}
 
 	@Override

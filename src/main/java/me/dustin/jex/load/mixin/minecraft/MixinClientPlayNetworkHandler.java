@@ -81,7 +81,7 @@ public abstract class MixinClientPlayNetworkHandler {
     public void sendPacketPost(Packet<?> packet, CallbackInfo ci) {
         if (isBotHandler())
             return;
-        EventPacketSent eventPacketSent = new EventPacketSent(packet, EventPacketSent.Mode.POST).run();
+        new EventPacketSent(packet, EventPacketSent.Mode.POST).run();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

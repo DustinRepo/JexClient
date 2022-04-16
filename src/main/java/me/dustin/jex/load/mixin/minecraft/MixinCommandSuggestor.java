@@ -32,10 +32,6 @@ public abstract class MixinCommandSuggestor implements ICommandSuggestor {
 
     @Shadow @Final private TextFieldWidget textField;
 
-    @Shadow @Nullable private CompletableFuture<Suggestions> pendingSuggestions;
-
-    @Shadow private boolean windowActive;
-
     @Shadow @Nullable private CommandSuggestor.SuggestionWindow window;
 
     @Shadow @Final private static Pattern WHITESPACE_PATTERN;

@@ -26,10 +26,9 @@ public class MixinPowderSnowBlock extends Block {
 
     @Inject(method = "getCollisionShape", at = @At("HEAD"), cancellable = true)
     public void getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context, CallbackInfoReturnable<VoxelShape> ci) {
-        EntityShapeContext entityShapeContext;
         Entity entity;
         VoxelShape shape = null;
-        if (context instanceof EntityShapeContext && (entity = (entityShapeContext = (EntityShapeContext)context).getEntity()) != null) {
+        if (context instanceof EntityShapeContext && (entity = ((EntityShapeContext)context).getEntity()) != null) {
             if (entity.fallDistance > 2.5f) {
                 shape =  FALLING_SHAPE;
             }
