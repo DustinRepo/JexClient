@@ -28,7 +28,7 @@ public class AntiHazard extends Feature {
 
     @EventPointer
     private final EventListener<EventBlockCollisionShape> eventBlockCollisionShapeEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getWorld() == null || Wrapper.INSTANCE.getLocalPlayer() == null)
+        if (Wrapper.INSTANCE.getWorld() == null || Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getLocalPlayer().age < 20)
             return;
        if (event.getBlock() == Blocks.CACTUS && cactus) {
            event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
