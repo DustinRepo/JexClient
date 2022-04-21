@@ -10,6 +10,7 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.network.Address;
 import net.minecraft.client.network.AllowedAddressResolver;
 import net.minecraft.client.network.ServerAddress;
@@ -19,6 +20,7 @@ import net.minecraft.util.Formatting;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -64,10 +66,10 @@ public enum ServerScrubber {
                     sendHandshake(dataOutputStream, minecraftServerAddress);
                     sendQueryRequest(dataOutputStream);
 
-                    int size = ServerPinger.readVarInt(dataInputStream);//even tho we don't use it currently you MUST read this in order to not mess up the order of others being read
-                    int packetID = ServerPinger.readVarInt(dataInputStream);
+                    int size = readVarInt(dataInputStream);//even tho we don't use it currently you MUST read this in order to not mess up the order of others being read
+                    int packetID = readVarInt(dataInputStream);
 
-                    if (packetID != ServerPinger.PACKET_STATUSREQUEST) {
+                    if (packetID != 0x00) {
                         JexClient.INSTANCE.getLogger().info("bad packet from" + minecraftServerAddress.getIp() + ":" + minecraftServerAddress.getPort());
                         return;
                     }
@@ -126,14 +128,14 @@ public enum ServerScrubber {
         try {
             ByteArrayOutputStream handshakeBytes = new ByteArrayOutputStream();
             DataOutputStream handshakePacket = new DataOutputStream(handshakeBytes);
-            handshakePacket.writeByte(ServerPinger.PACKET_HANDSHAKE);//packet id
-            ServerPinger.writeVarInt(handshakePacket, ServerPinger.PROTOCOL_VERSION);//protocol version
-            ServerPinger.writeVarInt(handshakePacket, serverAddress.getIp().length());//length of address
+            handshakePacket.writeByte(0x00);//packet id
+            writeVarInt(handshakePacket, SharedConstants.getProtocolVersion());//protocol version
+            writeVarInt(handshakePacket, serverAddress.getIp().length());//length of address
             handshakePacket.writeBytes(serverAddress.getIp());//address
             handshakePacket.writeShort(serverAddress.getPort());//port
-            ServerPinger.writeVarInt(handshakePacket, NetworkState.STATUS.getId());//status id
+            writeVarInt(handshakePacket, NetworkState.STATUS.getId());//status id
 
-            ServerPinger.writeVarInt(dataOutputStream, handshakeBytes.size());//size of data
+            writeVarInt(dataOutputStream, handshakeBytes.size());//size of data
             dataOutputStream.write(handshakeBytes.toByteArray());//data
             handshakeBytes.close();
             handshakePacket.close();
@@ -143,18 +145,52 @@ public enum ServerScrubber {
     private void sendQueryRequest(DataOutputStream dataOutputStream) {
         try {
             dataOutputStream.writeByte(0x01);//size of data
-            dataOutputStream.writeByte(ServerPinger.PACKET_STATUSREQUEST);//packet id
+            dataOutputStream.writeByte(0x00);//packet id
         } catch (Exception e) {e.printStackTrace();}
     }
 
     private String receiveQueryRequest(DataInputStream dataInputStream) {
         try {
-            int strLength = ServerPinger.readVarInt(dataInputStream);
+            int strLength = readVarInt(dataInputStream);
             byte[] strBytes = new byte[strLength];
             dataInputStream.readFully(strBytes);
             return new String(strBytes);
         } catch (Exception e) {e.printStackTrace();}
         return "null";
+    }
+
+
+
+    private void writeVarInt(DataOutputStream out, int paramInt) throws IOException {
+        while (true) {
+            if ((paramInt & 0xFFFFFF80) == 0) {
+                out.write(paramInt);
+                return;
+            }
+
+            out.write(paramInt & 0x7F | 0x80);
+            paramInt >>>= 7;
+        }
+    }
+
+    private int readVarInt(DataInputStream in) throws IOException {
+        int i = 0;
+        int j = 0;
+        while (true) {
+            int k = in.readByte();
+
+            i |= (k & 0x7F) << j++ * 7;
+
+            if (j > 5) {
+                throw new RuntimeException("VarInt too big");
+            }
+
+            if ((k & 0x80) != 128) {
+                break;
+            }
+        }
+
+        return i;
     }
 
     public void loadDefaultList() {
