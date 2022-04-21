@@ -139,7 +139,7 @@ public class Search extends Feature {
             bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            BufferRenderer.method_43433(bufferBuilder);
 
             Render3DHelper.INSTANCE.end3DRender();
         }

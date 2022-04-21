@@ -94,7 +94,7 @@ public class GuiPasswordField extends ClickableWidget implements Drawable, Eleme
 
     protected MutableText getNarrationMessage() {
         Text text = this.getMessage();
-        return new TranslatableText("gui.narrate.editBox", new Object[]{text, this.text});
+        return Text.translatable("gui.narrate.editBox", text, this.text);
     }
 
     public void setText(String text) {
@@ -606,6 +606,6 @@ public class GuiPasswordField extends ClickableWidget implements Drawable, Eleme
     }
 
     public void appendNarrations(NarrationMessageBuilder builder) {
-        builder.put(NarrationPart.TITLE, new TranslatableText("narration.edit_box", new Object[]{this.getText()}));
+        builder.put(NarrationPart.TITLE, Text.translatable("narration.edit_box", this.getText()));
     }
 }

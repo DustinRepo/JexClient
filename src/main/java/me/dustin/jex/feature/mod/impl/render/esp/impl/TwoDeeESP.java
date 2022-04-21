@@ -77,7 +77,7 @@ public class TwoDeeESP extends FeatureExtension {
                 }
             });
             bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            BufferRenderer.method_43433(bufferBuilder);
             bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             headPos.keySet().forEach(entity -> {
                 Vec3d top = headPos.get(entity);
@@ -107,7 +107,7 @@ public class TwoDeeESP extends FeatureExtension {
                 }
             });
             bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            BufferRenderer.method_43433(bufferBuilder);
             
             Render2DHelper.INSTANCE.end2DRender();
         }

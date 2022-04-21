@@ -12,6 +12,7 @@ import me.dustin.jex.feature.mod.core.FeatureManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -35,7 +36,7 @@ public class FeatureArgumentType implements ArgumentType<String> {
         if (Feature.get(str) != null) {
             return str;
         } else {
-            throw new SimpleCommandExceptionType(new LiteralText("Not a feature")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Text.of("Not a feature")).createWithContext(reader);
         }
     }
 

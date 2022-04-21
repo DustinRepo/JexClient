@@ -12,6 +12,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class ProxyScreen extends Screen {
 
@@ -24,32 +25,32 @@ public class ProxyScreen extends Screen {
     private boolean socks5 = true;
 
     public ProxyScreen() {
-        super(new LiteralText("Proxy"));
+        super(Text.of("Proxy"));
     }
 
     @Override
     protected void init() {
-        this.addDrawableChild(proxyTypeButton = new ButtonWidget(width / 2 - 100, height / 2 - 60, 200, 20, new LiteralText("Proxy: SOCKS5"), button -> {
+        this.addDrawableChild(proxyTypeButton = new ButtonWidget(width / 2 - 100, height / 2 - 60, 200, 20, Text.of("Proxy: SOCKS5"), button -> {
             this.socks5 = !this.socks5;
-            proxyTypeButton.setMessage(new LiteralText("Proxy: " + (socks5 ? "SOCKS5" : "SOCKS4")));
+            proxyTypeButton.setMessage(Text.of("Proxy: " + (socks5 ? "SOCKS5" : "SOCKS4")));
         }));
         String currentProxyString = "";
         if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
             currentProxyString = proxy.host() + ":" + proxy.port();
         }
-        this.addSelectableChild(proxyField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 200, 20, new LiteralText(currentProxyString)));
-        this.addSelectableChild(usernameField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2, 200, 20, new LiteralText("")));
-        this.addSelectableChild(passwordField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 + 25, 200, 20, new LiteralText("")));
-        this.addDrawableChild(connectButton = new ButtonWidget(width / 2 - 100, height / 2 + 50, 200, 20, new LiteralText("Connect to Proxy"), button -> {
+        this.addSelectableChild(proxyField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 200, 20, Text.of(currentProxyString)));
+        this.addSelectableChild(usernameField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2, 200, 20, Text.of("")));
+        this.addSelectableChild(passwordField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 + 25, 200, 20, Text.of("")));
+        this.addDrawableChild(connectButton = new ButtonWidget(width / 2 - 100, height / 2 + 50, 200, 20, Text.of("Connect to Proxy"), button -> {
             HostAndPort hostAndPort = HostAndPort.fromString(proxyField.getText());
             ProxyHelper.INSTANCE.connectToProxy(this.socks5 ? ProxyHelper.SocksType.FIVE : ProxyHelper.SocksType.FOUR, hostAndPort.getHost(), hostAndPort.getPort(), usernameField.getText(), passwordField.getText());
             Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(new TitleScreen()));
         }));
-        this.addDrawableChild(disconnectButton = new ButtonWidget(width / 2 - 100, height / 2 + 75, 200, 20, new LiteralText("Disconnect from Proxy"), button -> {
+        this.addDrawableChild(disconnectButton = new ButtonWidget(width / 2 - 100, height / 2 + 75, 200, 20, Text.of("Disconnect from Proxy"), button -> {
             ProxyHelper.INSTANCE.disconnectFromProxy();
         }));
-        this.addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 100, 200, 20, new LiteralText("Close"), button -> {
+        this.addDrawableChild(new ButtonWidget(width / 2 - 100, height / 2 + 100, 200, 20, Text.of("Close"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(new TitleScreen()));
         }));
         super.init();

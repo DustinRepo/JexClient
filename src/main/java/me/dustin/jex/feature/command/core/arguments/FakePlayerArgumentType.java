@@ -13,6 +13,7 @@ import me.dustin.jex.helper.player.FriendHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -45,7 +46,7 @@ public class FakePlayerArgumentType extends PlayerNameArgumentType {
         if (player != null) {
             return nameString;
         } else {
-            throw new SimpleCommandExceptionType(new LiteralText("Not a fake player")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Text.of("Not a fake player")).createWithContext(reader);
         }
     }
 
@@ -53,7 +54,7 @@ public class FakePlayerArgumentType extends PlayerNameArgumentType {
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof FakePlayerEntity) {
-                builder.suggest(entity.getName().asString());
+                builder.suggest(entity.getName().getString());
             }
         });
         return builder.buildFuture();

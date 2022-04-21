@@ -95,7 +95,7 @@ public class OutlineBox extends FeatureExtension {
 					}
 				});
 				bufferBuilder.end();
-				BufferRenderer.draw(bufferBuilder);
+				BufferRenderer.method_43433(bufferBuilder);
 
 				RenderSystem.disableBlend();
 				RenderSystem.disableDepthTest();

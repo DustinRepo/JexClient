@@ -17,6 +17,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 
 public class TheAlteningScreen extends Screen {
     public TheAlteningScreen(Screen parent) {
-        super(new LiteralText("The Altening"));
+        super(Text.of("The Altening"));
         this.parent = parent;
     }
 
@@ -61,19 +62,19 @@ public class TheAlteningScreen extends Screen {
 
     @Override
     protected void init() {
-        apiKeyWidget = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 150, 12, 200, 20, new LiteralText(""));
-        tokenWidget = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 150, 365, 200, 20, new LiteralText(""));
+        apiKeyWidget = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 150, 12, 200, 20, Text.of(""));
+        tokenWidget = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 150, 365, 200, 20, Text.of(""));
         if (!TheAlteningHelper.INSTANCE.getApiKey().isEmpty()) {
             apiKeyWidget.setText(TheAlteningHelper.INSTANCE.getApiKey().substring(0, 4) + "****-****-****");
             updateAPIKey();
         }
-        setApiKeyButton = new ButtonWidget(width / 2 + 52, 12, 98, 20, new LiteralText("Set API Key"), button -> {
+        setApiKeyButton = new ButtonWidget(width / 2 + 52, 12, 98, 20, Text.of("Set API Key"), button -> {
             TheAlteningHelper.INSTANCE.setApiKey(this.apiKeyWidget.getText());
             apiKeyWidget.setText(TheAlteningHelper.INSTANCE.getApiKey().substring(0, 4) + "****-****-****");
             updateAPIKey();
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
-        loginButton = new ButtonWidget(width / 2 - 152, 330, 150, 20, new LiteralText("Login to Selected"), button -> {
+        loginButton = new ButtonWidget(width / 2 - 152, 330, 150, 20, Text.of("Login to Selected"), button -> {
             if (getSelected() != null) {
                 TheAlteningHelper.INSTANCE.login(getSelected().getAccount(), session -> {
                     if (session != null) {
@@ -86,7 +87,7 @@ public class TheAlteningScreen extends Screen {
                 });
             }
         });
-        loginGeneratedButton = new ButtonWidget(width / 2 + 2, 330, 150, 20, new LiteralText("Login to Generated"), button -> {
+        loginGeneratedButton = new ButtonWidget(width / 2 + 2, 330, 150, 20, Text.of("Login to Generated"), button -> {
             if (generatedAccount != null) {
                 TheAlteningHelper.INSTANCE.login(generatedAccount, session -> {
                     if (session != null) {
@@ -99,7 +100,7 @@ public class TheAlteningScreen extends Screen {
                 });
             }
         });
-        loginTokenButton = new ButtonWidget(width / 2 + 52, 365, 100, 20, new LiteralText("Login With Token"), button -> {
+        loginTokenButton = new ButtonWidget(width / 2 + 52, 365, 100, 20, Text.of("Login With Token"), button -> {
             TheAlteningHelper.INSTANCE.login(this.tokenWidget.getText(), session -> {
                 if (session != null) {
                     JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
@@ -111,8 +112,8 @@ public class TheAlteningScreen extends Screen {
                 this.tokenWidget.setText("");
             });
         });
-        generateButton = new ButtonWidget(width / 2 - 152, 305, 150, 20, new LiteralText("Generate"), button -> generatedAccount = TheAlteningHelper.INSTANCE.generateAccount());
-        favoriteGeneratedButton = new ButtonWidget(width / 2 + 2, 305, 75, 20, new LiteralText("Favorite"), button -> {
+        generateButton = new ButtonWidget(width / 2 - 152, 305, 150, 20, Text.of("Generate"), button -> generatedAccount = TheAlteningHelper.INSTANCE.generateAccount());
+        favoriteGeneratedButton = new ButtonWidget(width / 2 + 2, 305, 75, 20, Text.of("Favorite"), button -> {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.favoriteAcc(generatedAccount)) {
                     this.favoriteAccounts.add(generatedAccount);
@@ -124,7 +125,7 @@ public class TheAlteningScreen extends Screen {
             }
         });
 
-        privateGeneratedButton = new ButtonWidget(width / 2 + 77, 305, 75, 20, new LiteralText("Private"), button -> {
+        privateGeneratedButton = new ButtonWidget(width / 2 + 77, 305, 75, 20, Text.of("Private"), button -> {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.privateAcc(generatedAccount)) {
                     this.privateAccounts.add(generatedAccount);
@@ -135,13 +136,13 @@ public class TheAlteningScreen extends Screen {
                 }
             }
         });
-        getTokenButton = new ButtonWidget(width - 127, 2, 125, 20, new LiteralText("Get Free Token"), button -> {
+        getTokenButton = new ButtonWidget(width - 127, 2, 125, 20, Text.of("Get Free Token"), button -> {
             WebHelper.INSTANCE.openLink("https://thealtening.com/free/free-minecraft-alts");
         });
-        signUpButton = new ButtonWidget(width - 127, 25, 125, 20, new LiteralText("Sign Up For TheAltening"), button -> {
+        signUpButton = new ButtonWidget(width - 127, 25, 125, 20, Text.of("Sign Up For TheAltening"), button -> {
             WebHelper.INSTANCE.openLink("https://thealtening.com/?i=wohc9");
         });
-        ButtonWidget cancelButton = new ButtonWidget(width / 2 - 100, height - 22, 200, 20, new LiteralText("Cancel"), button -> {
+        ButtonWidget cancelButton = new ButtonWidget(width / 2 - 100, height - 22, 200, 20, Text.of("Cancel"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(parent);
         });
         if (TheAlteningHelper.INSTANCE.isConnectedToAltening())

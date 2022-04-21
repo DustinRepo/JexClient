@@ -12,6 +12,7 @@ import me.dustin.jex.feature.mod.core.FeatureManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -34,7 +35,7 @@ public class ParticleTypeArgumentType implements ArgumentType<String> {
         if (Registry.PARTICLE_TYPE.get(new Identifier(str)) != null) {
             return str;
         } else {
-            throw new SimpleCommandExceptionType(new LiteralText("Not a feature")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Text.of("Not a feature")).createWithContext(reader);
         }
     }
 

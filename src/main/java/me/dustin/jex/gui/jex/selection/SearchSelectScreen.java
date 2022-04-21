@@ -20,6 +20,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
 
@@ -38,7 +39,7 @@ public class SearchSelectScreen extends Screen {
     private Scrollbar leftScrollbar;
     private Scrollbar rightScrollbar;
     public SearchSelectScreen() {
-        super(new LiteralText("Search Selection"));
+        super(Text.of("Search Selection"));
     }
 
     @Override
@@ -48,17 +49,17 @@ public class SearchSelectScreen extends Screen {
         float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
         float buttonWidth = 198;
         loadBlocks();
-        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, new LiteralText(""));
+        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, Text.of(""));
         searchField.setVisible(true);
         searchField.setEditable(true);
-        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, new LiteralText("Search"), button -> {
+        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, Text.of("Search"), button -> {
             if (searchField.getText().isEmpty())
                 loadBlocks();
             else
                 loadBlocks(searchField.getText());
         });
 
-        removeSearchBlockButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Remove From Search"), button -> {
+        removeSearchBlockButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Remove From Search"), button -> {
             getSelectedAllowed().forEach(blockButton -> {
                 Search.getBlocks().remove(blockButton.getBlock());
                 allowedBlocks.remove(blockButton);
@@ -70,7 +71,7 @@ public class SearchSelectScreen extends Screen {
                 loadBlocks(searchField.getText());
             ConfigManager.INSTANCE.get(SearchFile.class).write();
         });
-        addSearchBlockButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Add To Search"), button -> {
+        addSearchBlockButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Add To Search"), button -> {
             getSelectedNotAllowed().forEach(blockButton -> {
                 Search.getBlocks().put(blockButton.getBlock(), ColorHelper.INSTANCE.getColorViaHue(new Random().nextFloat() * 270).getRGB());
                 allowedBlocks.add(blockButton);
@@ -83,7 +84,7 @@ public class SearchSelectScreen extends Screen {
             ConfigManager.INSTANCE.get(SearchFile.class).write();
         });
 
-        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, new LiteralText("Done"), button -> {
+        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, Text.of("Done"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexOptionsScreen());
         });
 

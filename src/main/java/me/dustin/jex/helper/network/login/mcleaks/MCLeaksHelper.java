@@ -10,6 +10,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.util.Session;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,7 +79,7 @@ public enum MCLeaksHelper {
             }
             boolean success = login(address, port, event.getServerhash());
             if (!success) {
-                event.getClientConnection().disconnect(new LiteralText("Bad MCLeaks response"));
+                event.getClientConnection().disconnect(Text.of("Bad MCLeaks response"));
                 event.cancel();
             }
             JexClient.INSTANCE.getLogger().info("MCLeaks gave success to server: " + address + ":" + port + " name: " + activeAccount.mcname + " serverhash: " + event.getServerhash());

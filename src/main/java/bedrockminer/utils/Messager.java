@@ -9,14 +9,12 @@ import net.minecraft.text.Text;
 public class Messager {
     public static void actionBar(String message){
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        Text text = new LiteralText(message);
-        minecraftClient.inGameHud.setOverlayMessage(text,false);
+        minecraftClient.inGameHud.setOverlayMessage(Text.of(message),false);
     }
 
     public static void chat(String message){
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        Text text = new LiteralText(message);
-        minecraftClient.inGameHud.addChatMessage(MessageType.SYSTEM,text,minecraftClient.player.getUuid());
+        minecraftClient.inGameHud.addChatMessage(MessageType.SYSTEM, Text.of(message), minecraftClient.player.getUuid());
     }
 }
 

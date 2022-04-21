@@ -18,6 +18,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Random;
@@ -52,7 +53,7 @@ public class CreativeDrop extends Feature {
                 if (itemStack.getItem() != null && itemStack.getItem() != Items.AIR) {
                     String name = "§" + (slot % 9) + names[(int) (random.nextFloat() * (names.length))];
                     if (this.name)
-                        itemStack.setCustomName(new LiteralText(name));
+                        itemStack.setCustomName(Text.of(name));
                     if (enchant)
                         Registry.ENCHANTMENT.forEach(enchantment -> {
                             if (!newEnchants) {

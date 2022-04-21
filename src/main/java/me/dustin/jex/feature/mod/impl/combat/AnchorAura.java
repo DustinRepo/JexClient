@@ -97,7 +97,7 @@ public class AnchorAura extends Feature {
             if (placeStopWatch.hasPassed(delay))
                 if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.RESPAWN_ANCHOR))) {
                     for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                        if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().asString())) {
+                        if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().getString())) {
                             BlockPos placingPos = getOpenBlockPos(entityPlayer);
                             if (placingPos != null) {
                                 if (ClientMathHelper.INSTANCE.getDistance(entityPlayer.getPos(), new Vec3d(placingPos.getX(), placingPos.getY(), placingPos.getZ())) <= 6 && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldExplode(placingPos)) {
@@ -127,7 +127,7 @@ public class AnchorAura extends Feature {
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                 if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
                     BlockPos placingPos = getOpenBlockPos(entityPlayer);
-                    if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().asString())) {
+                    if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().getString())) {
                         Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());
                         Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
                         Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), box, shouldExplode(placingPos) ? placingColor : thinkingColor);

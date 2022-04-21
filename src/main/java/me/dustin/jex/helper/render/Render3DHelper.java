@@ -156,7 +156,7 @@ public enum Render3DHelper {
                 bufferBuilder.vertex(matrix4f, (float)renderPos.x, (float)renderPos.y, (float)renderPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             }
             bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            BufferRenderer.method_43433(bufferBuilder);
         }
         RenderSystem.enableDepthTest();
         RenderSystem.disableTexture();
@@ -232,7 +232,7 @@ public enum Render3DHelper {
             drawOutlineBox(matrixStack, box, color, false);
     	});
         bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.method_43433(bufferBuilder);
 
         bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         list.forEach(blockStorage -> {
@@ -241,7 +241,7 @@ public enum Render3DHelper {
             drawFilledBox(matrixStack, box, color & 0x70ffffff, false);
     	});
         bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.method_43433(bufferBuilder);
         end3DRender();
     }
     
@@ -314,7 +314,7 @@ public enum Render3DHelper {
         bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         if (draw) {
 	        bufferBuilder.end();
-	        BufferRenderer.draw(bufferBuilder);
+	        BufferRenderer.method_43433(bufferBuilder);
         }
     }
 
@@ -361,7 +361,7 @@ public enum Render3DHelper {
         bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0).next();
         bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0).next();
         bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.method_43433(bufferBuilder);
     }
 
     public void doFadeBoxNoDraw(MatrixStack matrixStack, Box bb, int color) {
@@ -426,7 +426,7 @@ public enum Render3DHelper {
         });
         if (draw) {
 	        bufferBuilder.end();
-	        BufferRenderer.draw(bufferBuilder);
+	        BufferRenderer.method_43433(bufferBuilder);
         }
     }
 

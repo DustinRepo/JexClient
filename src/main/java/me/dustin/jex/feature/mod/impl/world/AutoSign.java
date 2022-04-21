@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically write to signs.")
 public class AutoSign extends Feature {
 
-    public Text[] signText = {new LiteralText("     "), new LiteralText(""), new LiteralText(""), new LiteralText("")};
+    public Text[] signText = {Text.of("     "), Text.of(""), Text.of(""), Text.of("")};
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
@@ -32,14 +32,14 @@ public class AutoSign extends Feature {
 
     @EventPointer
     private final EventListener<EventSetScreen> eventSetScreenEventListener = new EventListener<>(event -> {
-        if (!signText[0].asString().equalsIgnoreCase("     ") && event.getScreen() instanceof SignEditScreen) {
+        if (!signText[0].getString().equalsIgnoreCase("     ") && event.getScreen() instanceof SignEditScreen) {
             event.setCancelled(true);
         }
     });
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        if (!signText[0].asString().equalsIgnoreCase("     ")) {
+        if (!signText[0].getString().equalsIgnoreCase("     ")) {
             BlockPos blockPos = ((SignEditorOpenS2CPacket) event.getPacket()).getPos();
             SignBlockEntity signBlockEntity = (SignBlockEntity) Wrapper.INSTANCE.getWorld().getBlockEntity(blockPos);
             if (signBlockEntity == null)
@@ -47,10 +47,10 @@ public class AutoSign extends Feature {
             signBlockEntity.setEditable(true);
             signBlockEntity.setEditor(Wrapper.INSTANCE.getLocalPlayer().getUuid());
             for (int i = 0; i < 4; i++) {
-                signBlockEntity.setTextOnRow(i, new LiteralText(signText[i].getString().replaceAll("(?i)\u00a7|&([0-9A-FK-OR])", "\u00a7\u00a7$1$1")));
+                signBlockEntity.setTextOnRow(i, Text.of(signText[i].getString().replaceAll("(?i)\u00a7|&([0-9A-FK-OR])", "\u00a7\u00a7$1$1")));
             }
             if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getWorld() != null)
-                NetworkHelper.INSTANCE.sendPacket(new UpdateSignC2SPacket(signBlockEntity.getPos(), signBlockEntity.getTextOnRow(0, false).asString(), signBlockEntity.getTextOnRow(1, false).asString(), signBlockEntity.getTextOnRow(2, false).asString(), signBlockEntity.getTextOnRow(3, false).asString()));
+                NetworkHelper.INSTANCE.sendPacket(new UpdateSignC2SPacket(signBlockEntity.getPos(), signBlockEntity.getTextOnRow(0, false).getString(), signBlockEntity.getTextOnRow(1, false).getString(), signBlockEntity.getTextOnRow(2, false).getString(), signBlockEntity.getTextOnRow(3, false).getString()));
             signBlockEntity.markDirty();
             event.cancel();
         }

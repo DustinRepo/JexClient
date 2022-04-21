@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.CommandSource.SuggestedIdType;
 import net.minecraft.tag.TagKey;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -28,8 +29,7 @@ import net.minecraft.world.biome.Biome;
 
 public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPredicateArgumentType.RegistryPredicate<T>> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012", "#skeletons", "#minecraft:skeletons");
-    private static final DynamicCommandExceptionType INVALID_BIOME_EXCEPTION = new DynamicCommandExceptionType((id) -> new TranslatableText("commands.locatebiome.invalid", new Object[]{id}));
-    private static final DynamicCommandExceptionType INVALID_CONFIGURED_STRUCTURE_FEATURE_EXCEPTION = new DynamicCommandExceptionType((id) -> new TranslatableText("commands.locate.invalid", new Object[]{id}));
+    private static final DynamicCommandExceptionType INVALID_BIOME_EXCEPTION = new DynamicCommandExceptionType((id) -> Text.translatable("commands.locatebiome.invalid", new Object[]{id}));
     final RegistryKey<? extends Registry<T>> registryRef;
 
     public RegistryPredicateArgumentType(RegistryKey<? extends Registry<T>> registryRef) {

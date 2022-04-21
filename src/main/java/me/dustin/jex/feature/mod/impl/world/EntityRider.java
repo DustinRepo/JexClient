@@ -1,6 +1,5 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
@@ -9,7 +8,7 @@ import me.dustin.jex.event.misc.EventHorseIsSaddled;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.load.impl.IHorseBaseEntity;
+import me.dustin.jex.load.impl.IAbstractHorseEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -62,20 +61,20 @@ public class EntityRider extends Feature {
             return;
         Entity vehicle = Wrapper.INSTANCE.getLocalPlayer().getVehicle();
         if (horse && isHorse(vehicle)) {
-            HorseBaseEntity horseBaseEntity = (HorseBaseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
-            IHorseBaseEntity iHorseBaseEntity = (IHorseBaseEntity) horseBaseEntity;
-            iHorseBaseEntity.setJumpStrength(horseJump);
-            iHorseBaseEntity.setSpeed(horseSpeed);
+            AbstractHorseEntity horseBaseEntity = (AbstractHorseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
+            IAbstractHorseEntity iAbstractHorseEntity = (IAbstractHorseEntity) horseBaseEntity;
+            iAbstractHorseEntity.setJumpStrength(horseJump);
+            iAbstractHorseEntity.setSpeed(horseSpeed);
             if (horseInstantJump)
-                iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
+                iAbstractHorseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
         }
         if (llama && isLlama(vehicle)) {
-            HorseBaseEntity horseBaseEntity = (HorseBaseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
-            IHorseBaseEntity iHorseBaseEntity = (IHorseBaseEntity) horseBaseEntity;
-            iHorseBaseEntity.setJumpStrength(llamaJump);
-            iHorseBaseEntity.setSpeed(llamaSpeed);
+            AbstractHorseEntity horseBaseEntity = (AbstractHorseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
+            IAbstractHorseEntity iAbstractHorseEntity = (IAbstractHorseEntity) horseBaseEntity;
+            iAbstractHorseEntity.setJumpStrength(llamaJump);
+            iAbstractHorseEntity.setSpeed(llamaSpeed);
             if (llamaInstantJump)
-                iHorseBaseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
+                iAbstractHorseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
         }
         if (boat && vehicle instanceof BoatEntity boatEntity) {
             boatEntity.updateVelocity(boatSpeed / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));

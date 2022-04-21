@@ -32,7 +32,7 @@ public class CommandSlimeChunks extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        seed = SeedHelper.INSTANCE.getSeed(MessageArgumentType.getMessage(context, "seed").asString()).getAsLong();
+        seed = SeedHelper.INSTANCE.getSeed(MessageArgumentType.getMessage(context, "seed").getString()).getAsLong();
         EventManager.register(this);
         return 1;
     }

@@ -25,8 +25,8 @@ public class MiddleClickFriend extends Feature {
             if (hitResult != null && hitResult.getType() == HitResult.Type.ENTITY) {
                 Entity entity = ((EntityHitResult) hitResult).getEntity();
                 if (entity instanceof PlayerEntity) {
-                    String name = entity.getName().asString();
-                    if (FriendHelper.INSTANCE.isFriend(entity.getName().asString())) {
+                    String name = entity.getName().getString();
+                    if (FriendHelper.INSTANCE.isFriend(entity.getName().getString())) {
                         FriendHelper.INSTANCE.removeFriend(name);
                         ChatHelper.INSTANCE.addClientMessage("Removed \247c" + name);
                     } else {

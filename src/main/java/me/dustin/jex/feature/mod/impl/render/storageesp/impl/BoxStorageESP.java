@@ -85,7 +85,7 @@ public class BoxStorageESP extends FeatureExtension {
                 Render3DHelper.INSTANCE.drawOutlineBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
             });
             bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            BufferRenderer.method_43433(bufferBuilder);
 
 
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -96,7 +96,7 @@ public class BoxStorageESP extends FeatureExtension {
                 Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
             });
             bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            BufferRenderer.method_43433(bufferBuilder);
 
             Render3DHelper.INSTANCE.end3DRender();
         }

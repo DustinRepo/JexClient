@@ -79,7 +79,7 @@ public class CrystalAura extends Feature {
 			if (stopWatch.hasPassed(delay))
 				if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.END_CRYSTAL) || offhand)) {
 					Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-						if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().asString())) {
+						if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().getString())) {
 							BlockPos placingPos = getOpenBlockPos(entityPlayer);
 							if (placingPos != null) {
 								EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
@@ -120,7 +120,7 @@ public class CrystalAura extends Feature {
 			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 				if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
 					BlockPos placingPos = getOpenBlockPos(entityPlayer);
-					if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().asString())) {
+					if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().getString())) {
 						EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
 						Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());
 						Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);

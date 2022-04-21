@@ -72,7 +72,7 @@ public enum EntityHelper {
                 return tameableEntity.getOwnerUuid();
             }
         }
-        if (livingEntity instanceof HorseBaseEntity horseBaseEntity) {
+        if (livingEntity instanceof AbstractHorseEntity horseBaseEntity) {
             return horseBaseEntity.getOwnerUuid();
         }
         return null;

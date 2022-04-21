@@ -23,6 +23,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
@@ -42,7 +43,7 @@ public class NavigatorOptionScreen extends Screen {
     public static ArrayList<Button> options = new ArrayList<>();
 
     protected NavigatorOptionScreen(Navigator navigator, Feature feature) {
-        super(new LiteralText("Navigator"));
+        super(Text.of("Navigator"));
         this.navigator = navigator;
         this.feature = feature;
         fade = true;

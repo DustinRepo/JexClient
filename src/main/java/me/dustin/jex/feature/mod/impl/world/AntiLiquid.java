@@ -136,7 +136,7 @@ public class AntiLiquid extends Feature {
             Render3DHelper.INSTANCE.drawOutlineBox(event.getMatrixStack(), box, color, false);
         });
         bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.method_43433(bufferBuilder);
         Render3DHelper.INSTANCE.end3DRender();
     });
 

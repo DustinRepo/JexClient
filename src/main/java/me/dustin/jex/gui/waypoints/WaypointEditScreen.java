@@ -19,6 +19,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
@@ -56,7 +57,7 @@ public class WaypointEditScreen extends Screen {
     private boolean tempDrawTracer = false;
 
     public WaypointEditScreen(String server, Waypoints.Waypoint waypoint) {
-        super(new LiteralText("Waypoint Edit"));
+        super(Text.of("Waypoint Edit"));
         this.waypoint = waypoint;
         this.server = server;
     }
@@ -82,11 +83,11 @@ public class WaypointEditScreen extends Screen {
         String nametagButtonName = waypoint != null ? "Nametag: " + waypoint.isDrawNametag() : "";
         String beaconButtonName = waypoint != null ? "Beacon: " + waypoint.isDrawBeacon() : "";
         String tracerButtonName = waypoint != null ? "Tracer: " + waypoint.isDrawTracer() : "";
-        serverName = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 95, 200, 20, new LiteralText(server));
-        name = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 60, 200, 20, new LiteralText(waypointName));
-        xPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 65, 20, new LiteralText(waypointX));
-        yPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 33, height / 2 - 25, 66, 20, new LiteralText(waypointY));
-        zPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 + 35, height / 2 - 25, 65, 20, new LiteralText(waypointZ));
+        serverName = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 95, 200, 20, Text.of(server));
+        name = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 60, 200, 20, Text.of(waypointName));
+        xPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 65, 20, Text.of(waypointX));
+        yPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 33, height / 2 - 25, 66, 20, Text.of(waypointY));
+        zPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 + 35, height / 2 - 25, 65, 20, Text.of(waypointZ));
         nametagButton = new Button(nametagButtonName, width / 2.f - 100, height / 2.f + 5, 65, 20, nametagListener);
         beaconButton = new Button(beaconButtonName, width / 2.f - 32.5f, height / 2.f + 5, 65, 20, beaconListener);
         tracerButton = new Button(tracerButtonName, width / 2.f + 35, height / 2.f + 5, 65, 20, tracerListener);

@@ -10,6 +10,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 
@@ -26,13 +27,13 @@ public class MCLeaksScreen extends Screen {
     private Screen settingScreen;
 
     public MCLeaksScreen(Screen parent, boolean sessionRestored) {
-        super(new LiteralText("MCLeaks"));
+        super(Text.of("MCLeaks"));
         this.parent = parent;
         this.sessionRestored = sessionRestored;
     }
 
     public MCLeaksScreen(Screen parent, boolean sessionRestored, String message) {
-        super(new LiteralText("MCLeaks"));
+        super(Text.of("MCLeaks"));
         this.parent = parent;
         this.sessionRestored = sessionRestored;
         this.message = message;
@@ -40,18 +41,18 @@ public class MCLeaksScreen extends Screen {
 
     @Override
     protected void init() {
-        restoreButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 96 + 18, 128, 20, new LiteralText(this.sessionRestored ? "Session restored!" : "Restore Session"), button -> {
+        restoreButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 96 + 18, 128, 20, Text.of(this.sessionRestored ? "Session restored!" : "Restore Session"), button -> {
             MCLeaksHelper.INSTANCE.restoreSession();
             Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, true));
             EventManager.unregister(MCLeaksHelper.INSTANCE);
         });
-        useTokenButton = new ButtonWidget(this.width / 2 - 18, this.height / 4 + 96 + 18, 168, 20, new LiteralText("Redeem Token"), button -> {
+        useTokenButton = new ButtonWidget(this.width / 2 - 18, this.height / 4 + 96 + 18, 168, 20, Text.of("Redeem Token"), button -> {
             if (this.tokenField.getText().length() != 16) {
                 Wrapper.INSTANCE.getMinecraft().setScreen(new MCLeaksScreen(this.parent, false, Formatting.RED + "The token has to be 16 characters long!"));
                 return;
             }
             button.active = false;
-            button.setMessage(new LiteralText("Please wait ..."));
+            button.setMessage(Text.of("Please wait ..."));
             new Thread(() -> {
                 MCLeaksHelper.MCLeaksAccount account = MCLeaksHelper.INSTANCE.getAccount(tokenField.getText());
                 if (account != null) {
@@ -63,13 +64,13 @@ public class MCLeaksScreen extends Screen {
                 }
             }).start();
         });
-        ButtonWidget getTokenButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 120 + 18, 158, 20, new LiteralText("Get Token"), button -> {
+        ButtonWidget getTokenButton = new ButtonWidget(this.width / 2 - 150, this.height / 4 + 120 + 18, 158, 20, Text.of("Get Token"), button -> {
             WebHelper.INSTANCE.openLink("https://mcleaks.net/");
         });
-        ButtonWidget cancelButton = new ButtonWidget(this.width / 2 + 12, this.height / 4 + 120 + 18, 138, 20, new LiteralText("Cancel"), button -> {
+        ButtonWidget cancelButton = new ButtonWidget(this.width / 2 + 12, this.height / 4 + 120 + 18, 138, 20, Text.of("Cancel"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(parent);
         });
-        tokenField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), this.width / 2 - 100, 128, 200, 20, new LiteralText(""));
+        tokenField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), this.width / 2 - 100, 128, 200, 20, Text.of(""));
         this.addDrawableChild(restoreButton);
         this.addDrawableChild(useTokenButton);
         this.addDrawableChild(getTokenButton);

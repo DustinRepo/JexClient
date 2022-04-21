@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,7 +24,7 @@ public class JexPersonalizationScreen extends Screen {
 
     private Screen parent;
     protected JexPersonalizationScreen(Screen parent) {
-        super(new LiteralText("Personalization"));
+        super(Text.of("Personalization"));
         this.parent = parent;
     }
     public static String setCape;
@@ -53,7 +54,7 @@ public class JexPersonalizationScreen extends Screen {
     @Override
     protected void init() {
         float midX = width / 2.f;
-        setCapeButton = new ButtonWidget((int)midX - 255 + 2, 215, 250, 20, new LiteralText("Set Cape"), button -> {
+        setCapeButton = new ButtonWidget((int)midX - 255 + 2, 215, 250, 20, Text.of("Set Cape"), button -> {
             if (fileBrowser.getSelectedFiles().isEmpty() || fileBrowser.getSelectedFiles().get(0).isDirectory())
                 return;
             File cape = fileBrowser.getSelectedFiles().get(0);
@@ -61,17 +62,17 @@ public class JexPersonalizationScreen extends Screen {
             Cape.setPersonalCape(cape);
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
-        prevHatButton = new ButtonWidget((int)midX + 8, 137, 40, 20, new LiteralText("<"), button -> {
+        prevHatButton = new ButtonWidget((int)midX + 8, 137, 40, 20, Text.of("<"), button -> {
             selectedHat--;
             if (selectedHat < -1)
                 selectedHat = Hat.HatType.values().length - 1;
         });
-        nextHatButton = new ButtonWidget((int)midX + 88, 137, 40, 20, new LiteralText(">"), button -> {
+        nextHatButton = new ButtonWidget((int)midX + 88, 137, 40, 20, Text.of(">"), button -> {
             selectedHat++;
             if (selectedHat > Hat.HatType.values().length - 1)
                 selectedHat = -1;
         });
-        setHatButton = new ButtonWidget((int)midX + 8, 170, 120, 20, new LiteralText("Set Hat"), button -> {
+        setHatButton = new ButtonWidget((int)midX + 8, 170, 120, 20, Text.of("Set Hat"), button -> {
             String uuid = Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "");
             if (selectedHat == -1) {
                 Hat.clearHat(uuid);

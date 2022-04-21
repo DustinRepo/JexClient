@@ -91,7 +91,7 @@ public class CustomBG extends Feature {
         bufferBuilder.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a).next();
         bufferBuilder.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f).next();
         bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.method_43433(bufferBuilder);
         RenderSystem.enableTexture();
     });
 }

@@ -66,7 +66,7 @@ public enum NetworkHelper {
         boolean bl2 = Wrapper.INSTANCE.getMinecraft().isConnectedToRealms();
         Wrapper.INSTANCE.getWorld().disconnect();
         if (bl) {
-            Wrapper.INSTANCE.getMinecraft().disconnect(new DisconnectedScreen(new TitleScreen(), new LiteralText("Disconnect"), new TranslatableText("menu.savingLevel")));
+            Wrapper.INSTANCE.getMinecraft().disconnect(new DisconnectedScreen(new TitleScreen(), Text.of("Disconnect"), Text.translatable("menu.savingLevel")));
         } else {
             Wrapper.INSTANCE.getMinecraft().disconnect();
         }

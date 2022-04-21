@@ -14,6 +14,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,14 +40,14 @@ public class MixinChatScreen implements IChatScreen {
         CommandManagerJex.INSTANCE.jexCommandSuggestor = new CommandSuggestor(Wrapper.INSTANCE.getMinecraft(), (ChatScreen)(Object)this, this.chatField, Wrapper.INSTANCE.getTextRenderer(), false, true, 1, 10, true, -805306368);
         CommandManagerJex.INSTANCE.jexCommandSuggestor.refresh();
         ircMod = Feature.get(IRC.class);
-        normalChatButton = new ButtonWidget(chatField.x - 2, chatField.y - 22, 40, 18, new LiteralText(ircMod.ircChatOverride ? "\2477Chat": "\247bChat"), button -> {
-            ircChatButton.setMessage(new LiteralText("\2477IRC"));
-            normalChatButton.setMessage(new LiteralText("\247bChat"));
+        normalChatButton = new ButtonWidget(chatField.x - 2, chatField.y - 22, 40, 18, Text.of(ircMod.ircChatOverride ? "\2477Chat": "\247bChat"), button -> {
+            ircChatButton.setMessage(Text.of("\2477IRC"));
+            normalChatButton.setMessage(Text.of("\247bChat"));
             ircMod.ircChatOverride = false;
         });
-        ircChatButton = new ButtonWidget(chatField.x - 2 + 42, chatField.y - 22, 40, 18, new LiteralText(ircMod.ircChatOverride ? "\247cIRC" : "\2477IRC"), button -> {
-            normalChatButton.setMessage(new LiteralText("\2477Chat"));
-            ircChatButton.setMessage(new LiteralText("\247cIRC"));
+        ircChatButton = new ButtonWidget(chatField.x - 2 + 42, chatField.y - 22, 40, 18, Text.of(ircMod.ircChatOverride ? "\247cIRC" : "\2477IRC"), button -> {
+            normalChatButton.setMessage(Text.of("\2477Chat"));
+            ircChatButton.setMessage(Text.of("\247cIRC"));
             ircMod.ircChatOverride = true;
         });
     }

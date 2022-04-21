@@ -21,6 +21,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class Navigator extends Screen {
     private boolean movingScrollbar;
 
     public Navigator() {
-        super(new LiteralText("Navigator"));
+        super(Text.of("Navigator"));
     }
 
     @Override
@@ -49,15 +50,15 @@ public class Navigator extends Screen {
         searchBar.active = true;
         searchBar.setTextFieldFocused(true);
 
-        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, new LiteralText("Load"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, Text.of("Load"), button -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }));
-        this.addDrawableChild(new ButtonWidget(2, height - 44, 100, 20, new LiteralText("Save"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 44, 100, 20, Text.of("Save"), button -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).saveButton();
         }));
-        this.addDrawableChild(new ButtonWidget(2, height - 66, 100, 20, new LiteralText("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 66, 100, 20, Text.of("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")), button -> {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
-            button.setMessage(new LiteralText("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")));
+            button.setMessage(Text.of("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")));
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }));
 
@@ -218,7 +219,7 @@ public class Navigator extends Screen {
             this.scrollbar = new Scrollbar(navigatorX + navigatorWidth + 2, navigatorY, 6, navigatorHeight, navigatorHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
         }
         if (this.searchBar == null) {
-            this.searchBar = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) leftX + (int)FontHelper.INSTANCE.getStringWidth("Search: "), (int) navigatorY - 22, buttonsAmountHorizontal * (int) (buttonWidth + 5) - 5 - (int)FontHelper.INSTANCE.getStringWidth("Search: "), 20, new LiteralText(""));
+            this.searchBar = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) leftX + (int)FontHelper.INSTANCE.getStringWidth("Search: "), (int) navigatorY - 22, buttonsAmountHorizontal * (int) (buttonWidth + 5) - 5 - (int)FontHelper.INSTANCE.getStringWidth("Search: "), 20, Text.of(""));
             searchBar.setDrawsBackground(false);
             searchBar.setFocusUnlocked(false);
             searchBar.setTextFieldFocused(true);

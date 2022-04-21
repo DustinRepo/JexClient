@@ -21,6 +21,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
 
@@ -38,7 +39,7 @@ public class XraySelectScreen extends Screen {
     private Scrollbar leftScrollbar;
     private Scrollbar rightScrollbar;
     public XraySelectScreen() {
-        super(new LiteralText("Xray Selection"));
+        super(Text.of("Xray Selection"));
     }
 
     @Override
@@ -48,17 +49,17 @@ public class XraySelectScreen extends Screen {
         float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
         float buttonWidth = 198;
         loadBlocks();
-        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, new LiteralText(""));
+        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, Text.of(""));
         searchField.setVisible(true);
         searchField.setEditable(true);
-        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, new LiteralText("Search"), button -> {
+        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, Text.of("Search"), button -> {
             if (searchField.getText().isEmpty())
                 loadBlocks();
             else
                 loadBlocks(searchField.getText());
         });
 
-        removeXrayButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Remove From Xray"), button -> {
+        removeXrayButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Remove From Xray"), button -> {
             getSelectedAllowed().forEach(blockButton -> {
                 Xray.blockList.remove(blockButton.getBlock());
                 allowedBlocks.remove(blockButton);
@@ -72,7 +73,7 @@ public class XraySelectScreen extends Screen {
             if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Feature.get(Xray.class).getState())
                 Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
         });
-        addXrayButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Add To Xray"), button -> {
+        addXrayButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Add To Xray"), button -> {
             getSelectedNotAllowed().forEach(blockButton -> {
                 Xray.blockList.add(blockButton.getBlock());
                 allowedBlocks.add(blockButton);
@@ -87,7 +88,7 @@ public class XraySelectScreen extends Screen {
                 Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
         });
 
-        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, new LiteralText("Done"), button -> {
+        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, Text.of("Done"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexOptionsScreen());
         });
 

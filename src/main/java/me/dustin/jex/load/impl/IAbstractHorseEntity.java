@@ -1,6 +1,6 @@
 package me.dustin.jex.load.impl;
 
-public interface IHorseBaseEntity {
+public interface IAbstractHorseEntity {
 
     void setJumpPower(double power);
 

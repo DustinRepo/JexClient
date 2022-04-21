@@ -89,7 +89,7 @@ public class Spammer extends Feature {
             return s.replace("{$rplayer}", "someone");
         }
         if (s.contains("{$me}")) {
-            return s.replace("{$me}", Wrapper.INSTANCE.getLocalPlayer().getName().asString());
+            return s.replace("{$me}", Wrapper.INSTANCE.getLocalPlayer().getName().getString());
         }
         if (s.contains("{$ri}")) {
             return s.replace("{$ri}", String.valueOf(ClientMathHelper.INSTANCE.randInt(0, 30000000)));

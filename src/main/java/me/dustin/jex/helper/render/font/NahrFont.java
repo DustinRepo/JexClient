@@ -240,7 +240,7 @@ public class NahrFont {
                 }
             }
         bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.method_43433(bufferBuilder);
         Render2DHelper.INSTANCE.shaderColor(0xffffffff);
     }
 

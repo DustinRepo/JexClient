@@ -11,6 +11,7 @@ import me.dustin.jex.helper.player.FriendHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -38,7 +39,7 @@ public class FriendArgumentType extends PlayerNameArgumentType {
         if (FriendHelper.INSTANCE.isFriend(nameString)) {
             return nameString;
         } else {
-            throw new SimpleCommandExceptionType(new LiteralText("Not a friend")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Text.of("Not a friend")).createWithContext(reader);
         }
     }
 

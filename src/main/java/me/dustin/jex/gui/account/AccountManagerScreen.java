@@ -25,6 +25,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -52,7 +53,7 @@ public class AccountManagerScreen extends Screen {
     private String lastSearch = "";
 
     public AccountManagerScreen() {
-        super(new LiteralText("Account Manager"));
+        super(Text.of("Account Manager"));
     }
 
     @Override
@@ -65,19 +66,19 @@ public class AccountManagerScreen extends Screen {
         loadAccountButtons("");
 
 
-        loginButton = new ButtonWidget((int) (midX + 3), (height / 2) - 78, 150, 20, new LiteralText("Login"), button -> {
+        loginButton = new ButtonWidget((int) (midX + 3), (height / 2) - 78, 150, 20, Text.of("Login"), button -> {
             if (getSelected() == null)
                 return;
             this.outputString = "Logging in...";
             login(getSelected());
         });
-        editButton = new ButtonWidget((int) (midX + 3), (height / 2) - 56, 150, 20, new LiteralText("Edit"), button -> {
+        editButton = new ButtonWidget((int) (midX + 3), (height / 2) - 56, 150, 20, Text.of("Edit"), button -> {
             if (getSelected().getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
                 Wrapper.INSTANCE.getMinecraft().setScreen(new AddAccountScreen(mojangAccount, this));
             }
         });
 
-        removeButton = new ButtonWidget((int) (midX + 3), (height / 2) - 34, 150, 20, new LiteralText("Remove"), button -> {
+        removeButton = new ButtonWidget((int) (midX + 3), (height / 2) - 34, 150, 20, Text.of("Remove"), button -> {
             if (getSelected() == null)
                 return;
             MinecraftAccountManager.INSTANCE.getAccounts().remove(getSelected().getAccount());
@@ -85,20 +86,20 @@ public class AccountManagerScreen extends Screen {
             loadAccountButtons(searchTextField.getText());
             ConfigManager.INSTANCE.get(AltFile.class).write();
         });
-        randomButton = new ButtonWidget((int) (midX + 3), (height / 2) - 12, 150, 20, new LiteralText("Random"), button -> {
+        randomButton = new ButtonWidget((int) (midX + 3), (height / 2) - 12, 150, 20, Text.of("Random"), button -> {
             Random rand = new Random();
             login(accountButtons.get(rand.nextInt(accountButtons.size())));
         });
-        ButtonWidget addAccountButton = new ButtonWidget((int) (midX - 151), height - 50, 150, 20, new LiteralText("Direct Login"), button -> {
+        ButtonWidget addAccountButton = new ButtonWidget((int) (midX - 151), height - 50, 150, 20, Text.of("Direct Login"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new DirectLoginScreen(this));
         });
-        ButtonWidget directLoginButton = new ButtonWidget((int) (midX + 1), height - 50, 150, 20, new LiteralText("Add Account"), button -> {
+        ButtonWidget directLoginButton = new ButtonWidget((int) (midX + 1), height - 50, 150, 20, Text.of("Add Account"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new AddAccountScreen(null, this));
         });
-        cancelButton = new ButtonWidget((int) (midX - 151), height - 28, 302, 20, new LiteralText("Cancel"), button -> {
+        cancelButton = new ButtonWidget((int) (midX - 151), height - 28, 302, 20, Text.of("Cancel"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(new TitleScreen()));
         });
-        importButton = new ButtonWidget(2, 2, 50, 15, new LiteralText("Import"), button -> {
+        importButton = new ButtonWidget(2, 2, 50, 15, Text.of("Import"), button -> {
             File file = new File(ModFileHelper.INSTANCE.getJexDirectory() + File.separator + "config","Accounts-Unencrypted.yml");
             if (file.exists()) {
                 MinecraftAccountManager.INSTANCE.getAccounts().clear();
@@ -109,18 +110,18 @@ public class AccountManagerScreen extends Screen {
             } else
                 outputString = "Could not import file. Please make sure it is named Accounts-Unencrypted.json";
         });
-        exportButton = new ButtonWidget(width - 52, 2, 50, 15, new LiteralText("Export"), button -> {
+        exportButton = new ButtonWidget(width - 52, 2, 50, 15, Text.of("Export"), button -> {
             ConfigManager.INSTANCE.get(AltFile.class).exportFile();
             outputString = "Exported alts to config/Accounts-Unencrypted.json";
         });
-        importFromTXTButton = new ButtonWidget(width / 2 - 50, height / 2 + 104, 100, 15, new LiteralText("Import From TXT"), button -> {
+        importFromTXTButton = new ButtonWidget(width / 2 - 50, height / 2 + 104, 100, 15, Text.of("Import From TXT"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new ImportFromTXTScreen());
         });
-        searchTextField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) midX - 150, (height / 2) - 124, 250, 20, new LiteralText(""));
+        searchTextField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) midX - 150, (height / 2) - 124, 250, 20, Text.of(""));
         searchTextField.setVisible(true);
         searchTextField.setEditable(true);
         searchTextField.setFocusUnlocked(true);
-        ButtonWidget searchButton = new ButtonWidget((int) midX + 102, (height / 2) - 124, 50, 20, new LiteralText("Search"), button -> {
+        ButtonWidget searchButton = new ButtonWidget((int) midX + 102, (height / 2) - 124, 50, 20, Text.of("Search"), button -> {
             loadAccountButtons(searchTextField.getText());
         });
         this.addDrawableChild(loginButton);

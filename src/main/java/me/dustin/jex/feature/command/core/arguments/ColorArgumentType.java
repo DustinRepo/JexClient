@@ -13,13 +13,14 @@ import java.util.concurrent.CompletableFuture;
 
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.command.CommandSource;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class ColorArgumentType implements ArgumentType<Formatting> {
    private static final Collection<String> EXAMPLES = Arrays.asList("red", "green");
    public static final DynamicCommandExceptionType INVALID_COLOR_EXCEPTION = new DynamicCommandExceptionType((object) -> {
-      return new TranslatableText("argument.color.invalid", new Object[]{object});
+      return Text.translatable("argument.color.invalid", new Object[]{object});
    });
 
    private ColorArgumentType() {

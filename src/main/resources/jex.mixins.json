@@ -41,7 +41,7 @@
     "minecraft.MixinGameRenderer",
     "minecraft.MixinHandledScreen",
     "minecraft.MixinHeldItemRenderer",
-    "minecraft.MixinHorseBaseEntity",
+    "minecraft.MixinAbstractHorseEntity",
     "minecraft.MixinInGameHud",
     "minecraft.MixinInGameOverlayRenderer",
     "minecraft.MixinItemEntityRenderer",

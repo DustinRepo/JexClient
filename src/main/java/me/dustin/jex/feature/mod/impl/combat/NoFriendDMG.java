@@ -14,7 +14,7 @@ public class NoFriendDMG extends Feature {
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
         if (event.getEntity() instanceof PlayerEntity) {
-            if (FriendHelper.INSTANCE.isFriend(event.getEntity().getName().asString()))
+            if (FriendHelper.INSTANCE.isFriend(event.getEntity().getName().getString()))
                 event.cancel();
         } else if (EntityHelper.INSTANCE.doesPlayerOwn(event.getEntity()))
             event.cancel();

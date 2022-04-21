@@ -20,6 +20,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
 
@@ -37,7 +38,7 @@ public class AutoDropSelectScreen extends Screen {
     private Scrollbar leftScrollbar;
     private Scrollbar rightScrollbar;
     public AutoDropSelectScreen() {
-        super(new LiteralText("AutoDrop Selection"));
+        super(Text.of("AutoDrop Selection"));
     }
 
     @Override
@@ -47,17 +48,17 @@ public class AutoDropSelectScreen extends Screen {
         float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
         float buttonWidth = 198;
         loadItems();
-        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, new LiteralText(""));
+        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, Text.of(""));
         searchField.setVisible(true);
         searchField.setEditable(true);
-        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, new LiteralText("Search"), button -> {
+        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, Text.of("Search"), button -> {
             if (searchField.getText().isEmpty())
                 loadItems();
             else
                 loadItems(searchField.getText());
         });
 
-        removeAutoDropButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Remove From AutoDrop"), button -> {
+        removeAutoDropButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Remove From AutoDrop"), button -> {
             getSelectedAllowed().forEach(blockButton -> {
                 AutoDrop.INSTANCE.getItems().remove(blockButton.getItem());
                 allowedBlocks.remove(blockButton);
@@ -69,7 +70,7 @@ public class AutoDropSelectScreen extends Screen {
                 loadItems(searchField.getText());
             ConfigManager.INSTANCE.get(AutoDropFile.class).write();
         });
-        addAutoDropButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Add To AutoDrop"), button -> {
+        addAutoDropButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Add To AutoDrop"), button -> {
             getSelectedNotAllowed().forEach(blockButton -> {
                 AutoDrop.INSTANCE.getItems().add(blockButton.getItem());
                 allowedBlocks.add(blockButton);
@@ -82,7 +83,7 @@ public class AutoDropSelectScreen extends Screen {
             ConfigManager.INSTANCE.get(AutoDropFile.class).write();
         });
 
-        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, new LiteralText("Done"), button -> {
+        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, Text.of("Done"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexOptionsScreen());
         });
 

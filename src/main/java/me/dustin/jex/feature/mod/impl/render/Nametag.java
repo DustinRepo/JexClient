@@ -170,7 +170,7 @@ public class Nametag extends Feature {
             }
         });
         bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.method_43433(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         //draw all text since we can't also do that while rendering the boxes
@@ -371,21 +371,21 @@ public class Nametag extends Feature {
         return Formatting.DARK_RED;
     }
 
-    private int getColor(Entity player) {
-        if ((player instanceof ItemEntity))
+    private int getColor(Entity entity) {
+        if ((entity instanceof ItemEntity))
             return ESP.INSTANCE.itemColor;
-        if (EntityHelper.INSTANCE.isHostileMob(player))
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
             return ESP.INSTANCE.hostileColor;
-        if (EntityHelper.INSTANCE.isPassiveMob(player))
+        if (EntityHelper.INSTANCE.isPassiveMob(entity))
             return ESP.INSTANCE.passiveColor;
-        if (EntityHelper.INSTANCE.isNeutralMob(player))
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return ESP.INSTANCE.neutralColor;
-        if (player instanceof PlayerEntity) {
-            if (FriendHelper.INSTANCE.isFriend(player.getName().asString()))
+        if (entity instanceof PlayerEntity playerEntity) {
+            if (FriendHelper.INSTANCE.isFriend(playerEntity))
                 return ESP.INSTANCE.friendColor;
-            else if (player.isInvisible())
+            else if (entity.isInvisible())
                 return new Color(200, 70, 0).getRGB();
-            else if (player.isSneaking())
+            else if (entity.isSneaking())
                 return Color.red.getRGB();
         }
         return -1;

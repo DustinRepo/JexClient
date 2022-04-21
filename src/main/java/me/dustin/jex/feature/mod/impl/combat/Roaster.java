@@ -99,7 +99,7 @@ public class Roaster extends Feature {
         if (!livingEntity.isOnGround())
             return false;
         if (livingEntity instanceof PlayerEntity) {
-            if (FriendHelper.INSTANCE.isFriend(livingEntity.getName().asString()))
+            if (FriendHelper.INSTANCE.isFriend(livingEntity.getName().getString()))
                 return friends;
             return player;
         }

@@ -13,6 +13,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public class AddAccountScreen extends Screen {
 	private boolean isMicrosoft;
 
 	public AddAccountScreen(MinecraftAccount.MojangAccount editingAccount, Screen parent) {
-		super(new LiteralText("Add Account"));
+		super(Text.of("Add Account"));
 		this.editingAccount = editingAccount;
 		this.parent = parent;
 	}
@@ -42,9 +43,9 @@ public class AddAccountScreen extends Screen {
 	@Override
 	public void init() {
 		Wrapper.INSTANCE.getMinecraft().keyboard.setRepeatEvents(true);
-		username = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 12, 200, 20, new LiteralText("Username"));
-		email = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 47, 200, 20, new LiteralText("Email"));
-		password = new GuiPasswordField(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 82, 200, 20, new LiteralText("Password"));
+		username = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 12, 200, 20, Text.of("Username"));
+		email = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 47, 200, 20, Text.of("Email"));
+		password = new GuiPasswordField(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 82, 200, 20, Text.of("Password"));
 
 		username.setTextFieldFocused(true);
 		username.setMaxLength(16);
@@ -63,11 +64,11 @@ public class AddAccountScreen extends Screen {
 		this.addSelectableChild(username);
 		this.addSelectableChild(email);
 		this.addSelectableChild(password);
-		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, new LiteralText("Cancel"), button -> {
+		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, Text.of("Cancel"), button -> {
 			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 		}));
 
-		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, editingAccount == null ? new LiteralText("Add") : new LiteralText("Save"), button -> {
+		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, editingAccount == null ? Text.of("Add") : Text.of("Save"), button -> {
 			if (isMicrosoft) {
 				MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(username.getText(), email.getText(), password.getText(), "", "", UUID.randomUUID().toString());
 				MinecraftAccountManager.INSTANCE.getAccounts().add(microsoftAccount);
@@ -90,9 +91,9 @@ public class AddAccountScreen extends Screen {
 		}));
 
 		if (editingAccount == null)
-			this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, new LiteralText("\2476Mojang Account"), button -> {
+			this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, Text.of("\2476Mojang Account"), button -> {
 				isMicrosoft = !isMicrosoft;
-				button.setMessage(new LiteralText(isMicrosoft ? "\247aMicrosoft Account" : "\2476Mojang Account"));
+				button.setMessage(Text.of(isMicrosoft ? "\247aMicrosoft Account" : "\2476Mojang Account"));
 			}));
 		super.init();
 	}

@@ -8,6 +8,7 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class ItemButton extends Button {
@@ -25,7 +26,7 @@ public class ItemButton extends Button {
         if (isSelected()) {
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor(), 0x25ffffff, 1);
         }
-        FontHelper.INSTANCE.drawCenteredString(matrixStack, new TranslatableText(item.getTranslationKey()), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 4, isEnabled() ? 0xffaaaaaa : 0xff676767);
+        FontHelper.INSTANCE.drawCenteredString(matrixStack, Text.translatable(item.getTranslationKey()), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 4, isEnabled() ? 0xffaaaaaa : 0xff676767);
 
         Render2DHelper.INSTANCE.drawItem(new ItemStack(item), (int) (getX() + 2), (int) (getY() + 2));
         if (isHovered() && isEnabled())

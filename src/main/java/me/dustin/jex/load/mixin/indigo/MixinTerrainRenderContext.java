@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(TerrainRenderContext.class)
 public class MixinTerrainRenderContext {
 
-	@Inject(at = { @At("HEAD") }, method = "tesselateBlock", cancellable = true, remap = false)
+	@Inject(at = { @At("HEAD") }, method = "tessellateBlock", cancellable = true, remap = false)
 	private void tesselateBlock(BlockState blockState, BlockPos blockPos, BakedModel model, MatrixStack matrixStack, CallbackInfoReturnable<Boolean> cir) {
 		EventRenderBlock eventRenderBlock = new EventRenderBlock(blockState.getBlock()).run();
 		if (eventRenderBlock.isCancelled())

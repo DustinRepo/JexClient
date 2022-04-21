@@ -17,6 +17,7 @@ import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -24,13 +25,13 @@ import java.util.ArrayList;
 public class WaypointScreen extends Screen {
 
     public WaypointScreen() {
-        super(new LiteralText("Waypoints"));
+        super(Text.of("Waypoints"));
     }
 
     private String goToServer;
 
     public WaypointScreen(String server) {
-        super(new LiteralText("Waypoints"));
+        super(Text.of("Waypoints"));
     }
 
 

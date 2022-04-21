@@ -18,6 +18,7 @@ import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -45,7 +46,7 @@ public class PlayerNameArgumentType implements ArgumentType<String> {
         if (nameString.length() <= 16 && !b) {
             return nameString;
         } else {
-            throw new SimpleCommandExceptionType(new LiteralText("Not a name")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Text.of("Not a name")).createWithContext(reader);
         }
     }
 

@@ -41,9 +41,13 @@ import me.dustin.events.EventManager;
 import me.dustin.events.core.annotate.EventPointer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.EntityType;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -99,6 +103,15 @@ public enum JexClient {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             getLogger().info("Creating mods.json for website.");
             createJson();
+
+            //for the entity id lists made for ChatBot
+            /*int i = 0;
+            ArrayList<String> l = new ArrayList<>();
+            for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
+                l.add(i + "=" + ((TranslatableText)entityType.getName()).getKey());
+                i++;
+            }
+            FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_entity_ids.txt"), l);*/
         }
         loadedOnce = true;
     }

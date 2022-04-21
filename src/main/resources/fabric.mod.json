@@ -27,10 +27,10 @@
     "jex.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.13.3",
+    "fabricloader": ">=0.14.0",
     "fabric": "*",
     "minecraft": "1.19.x",
-    "java": ">=16"
+    "java": ">=17"
   },
   "suggests": {
     "flamingo": "*"

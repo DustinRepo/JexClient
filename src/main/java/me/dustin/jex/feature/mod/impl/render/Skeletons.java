@@ -123,7 +123,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 matrixStack.pop();
 
                 bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
+                BufferRenderer.method_43433(bufferBuilder);
 
                 if (swimming) matrixStack.translate(0, 0.95f, 0);
                 if (swimming || flying) matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90 + m, true));

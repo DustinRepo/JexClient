@@ -91,7 +91,7 @@ public final class ClientCommandInternals {
         Text message = Texts.toText(e.getRawMessage());
         String context = e.getContext();
 
-        return context != null ? new TranslatableText("command.context.parse_error", message, context) : message;
+        return context != null ? Text.translatable("command.context.parse_error", message, context) : message;
     }
 
     /**
@@ -135,7 +135,7 @@ public final class ClientCommandInternals {
         Map<CommandNode<FabricClientCommandSource>, String> commands = CommandManagerJex.DISPATCHER.getSmartUsage(startNode, context.getSource());
 
         for (String command : commands.values()) {
-            context.getSource().sendFeedback(new LiteralText("/" + command));
+            context.getSource().sendFeedback(Text.of("/" + command));
         }
 
         return commands.size();

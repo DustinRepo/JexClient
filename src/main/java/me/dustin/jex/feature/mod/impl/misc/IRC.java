@@ -20,6 +20,7 @@ import me.dustin.jex.load.impl.IChatScreen;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.jibble.pircbot.User;
 
 import java.util.ArrayList;
@@ -55,13 +56,13 @@ public class IRC extends Feature {
                     stringJoiner.add(user.getNick());
                 }
                 ChatHelper.INSTANCE.addClientMessage("Users: " + stringJoiner);
-                ircChatHud.addMessage(new LiteralText("Users: " + stringJoiner));
+                ircChatHud.addMessage(Text.of("Users: " + stringJoiner));
                 return;
             }
             ircManager.sendMessage(IRCManager.IRC_ChannelName, message);
 
             String ircString = "\2477[\247aIRC\2477][\247cYou\2477]: \247f" + message;
-            ircChatHud.addMessage(new LiteralText(ircString));
+            ircChatHud.addMessage(Text.of(ircString));
             ChatHelper.INSTANCE.addRawMessage(ircString);
         }
     });
@@ -117,7 +118,7 @@ public class IRC extends Feature {
         } else {
             messageList.add(ircString);
         }
-        ircChatHud.addMessage(new LiteralText(ircString));
+        ircChatHud.addMessage(Text.of(ircString));
     }
 
     @Override

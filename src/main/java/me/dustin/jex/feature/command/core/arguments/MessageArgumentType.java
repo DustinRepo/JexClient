@@ -50,7 +50,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
       }
 
       public Text format(FabricClientCommandSource source, boolean bl) throws CommandSyntaxException {
-         return new LiteralText(this.contents);
+         return Text.of(this.contents);
       }
 
       public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
@@ -102,7 +102,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
       @Nullable
       public Text format(FabricClientCommandSource source) throws CommandSyntaxException {
-         return new LiteralText("");//EntitySelector.getNames(this.selector.getEntities(source));
+         return Text.of("");//EntitySelector.getNames(this.selector.getEntities(source));
       }
    }
 }

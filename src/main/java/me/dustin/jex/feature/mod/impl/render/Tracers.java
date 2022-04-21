@@ -64,7 +64,7 @@ public class Tracers extends Feature {
                     bufferBuilder.vertex(vec.x, vec.y + entity.getEyeHeight(entity.getPose()), vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 }
                 bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
+                BufferRenderer.method_43433(bufferBuilder);
 
                 Render3DHelper.INSTANCE.end3DRender();
             }
@@ -72,8 +72,8 @@ public class Tracers extends Feature {
     });
 
     private int getColor(Entity ent) {
-        if (ent instanceof PlayerEntity playerEntity && colorOnDistance) {
-            if (!FriendHelper.INSTANCE.isFriend(playerEntity.getName().asString())) {
+        if (colorOnDistance && ent instanceof PlayerEntity playerEntity) {
+            if (!FriendHelper.INSTANCE.isFriend(playerEntity)) {
                 return getColor(ent.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64).getRGB();
             }
         }

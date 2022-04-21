@@ -18,6 +18,7 @@ import me.dustin.jex.gui.changelog.ChangelogScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
@@ -82,7 +83,7 @@ public class JexTitleScreen extends Screen {
     }
 
     public JexTitleScreen(boolean doBackgroundFade) {
-        super(new TranslatableText("narrator.screen.title"));
+        super(Text.translatable("narrator.screen.title"));
         this.backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
         this.doBackgroundFade = doBackgroundFade;
         this.isMinceraft = (double) (new Random()).nextFloat() < 1.0E-4D;
@@ -119,14 +120,14 @@ public class JexTitleScreen extends Screen {
 
         if (customMainMenu.customBackground) {
             if (!backgrounds.isEmpty()) {
-                this.addDrawableChild(new ButtonWidget(this.width - 22, this.height - 22, 20, 20, new LiteralText(">"), button -> {
+                this.addDrawableChild(new ButtonWidget(this.width - 22, this.height - 22, 20, 20, Text.of(">"), button -> {
                     JexTitleScreen.background += 1;
                     if (JexTitleScreen.background > backgrounds.size() - 1) {
                         JexTitleScreen.background = 0;
                     }
                     ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
                 }));
-                this.addDrawableChild(new ButtonWidget(this.width - 44, this.height - 22, 20, 20, new LiteralText("<"), button -> {
+                this.addDrawableChild(new ButtonWidget(this.width - 44, this.height - 22, 20, 20, Text.of("<"), button -> {
                     JexTitleScreen.background -= 1;
                     if (JexTitleScreen.background < 0) {
                         JexTitleScreen.background = backgrounds.size() - 1;
@@ -134,7 +135,7 @@ public class JexTitleScreen extends Screen {
                     ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
                 }));
             } else {
-                this.addDrawableChild(new ButtonWidget(this.width - 152, this.height - 22, 150, 20, new LiteralText("Open Backgrounds Folder"), button -> {
+                this.addDrawableChild(new ButtonWidget(this.width - 152, this.height - 22, 150, 20, Text.of("Open Backgrounds Folder"), button -> {
                     Util.getOperatingSystem().open(new File(ModFileHelper.INSTANCE.getJexDirectory(), "backgrounds"));
                 }));
             }
@@ -149,22 +150,22 @@ public class JexTitleScreen extends Screen {
 
     private void initWidgetsNormal(int y) {
         JexTitleScreen titleScreen = this;
-        this.addDrawableChild(new ButtonWidget(2, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y, 200, 20, Text.translatable("menu.singleplayer"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new SelectWorldScreen(titleScreen));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24, 175, 20, new TranslatableText("menu.multiplayer"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24, 175, 20, Text.translatable("menu.multiplayer"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(titleScreen));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24 * 2, 150, 20, new TranslatableText("menu.online"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24 * 2, 150, 20, Text.translatable("menu.online"), button -> {
             titleScreen.switchToRealms();
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24 * 3, 125, 20, new TranslatableText("menu.options"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24 * 3, 125, 20, Text.translatable("menu.options"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24 * 4, 100, 20, new TranslatableText("menu.quit"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24 * 4, 100, 20, Text.translatable("menu.quit"), button -> {
             Wrapper.INSTANCE.getMinecraft().scheduleStop();
         }));
-        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, new TranslatableText("Changelog"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, Text.translatable("Changelog"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new ChangelogScreen());
         }));
     }
