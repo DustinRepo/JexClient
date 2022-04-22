@@ -311,7 +311,7 @@ public class AccountManagerScreen extends Screen {
                     mojangAccount.loginCount++;
                     mojangAccount.lastUsed = System.currentTimeMillis();
                     if (FabricLoader.getInstance().isDevelopmentEnvironment())
-                        Feature.get(IRC.class).ircManager.putNick(session.getUsername());
+                        Feature.get(IRC.class).ircClient.setUsername(session.getUsername());
                 }
             }).login();
         } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
@@ -324,7 +324,7 @@ public class AccountManagerScreen extends Screen {
                     microsoftAccount.loginCount++;
                     microsoftAccount.lastUsed = System.currentTimeMillis();
                     if (FabricLoader.getInstance().isDevelopmentEnvironment())
-                        Feature.get(IRC.class).ircManager.putNick(session.getUsername());
+                        Feature.get(IRC.class).ircClient.setUsername(session.getUsername());
                 }
             }, s -> outputString = s);
         }

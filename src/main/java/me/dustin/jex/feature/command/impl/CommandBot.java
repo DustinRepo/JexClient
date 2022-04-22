@@ -32,23 +32,22 @@ public class CommandBot extends Command {
                 if (MinecraftAccountManager.INSTANCE.getAccounts().isEmpty())
                     ConfigManager.INSTANCE.get(AltFile.class).read();
                 MinecraftAccount minecraftAccount = MinecraftAccountManager.INSTANCE.getAccount(username);
+                Session session = null;
                 if (minecraftAccount != null) {
                     ChatHelper.INSTANCE.addClientMessage("Logging into account...");
                     NetworkHelper.INSTANCE.setStoredSession(Wrapper.INSTANCE.getMinecraft().getSession());
                     if (minecraftAccount instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
                         MSLoginHelper msLoginHelper = new MSLoginHelper(microsoftAccount, true);
-                        Session session = msLoginHelper.login(ChatHelper.INSTANCE::addClientMessage);
-                        Wrapper.INSTANCE.getIMinecraft().setSession(session);
+                        session = msLoginHelper.login(ChatHelper.INSTANCE::addClientMessage);
                     } else if (minecraftAccount instanceof MinecraftAccount.MojangAccount mojangAccount) {
-                        Session session = MojangLoginHelper.login(mojangAccount.getEmail(), mojangAccount.getPassword());
-                        Wrapper.INSTANCE.getIMinecraft().setSession(session);
+                        session = MojangLoginHelper.login(mojangAccount.getEmail(), mojangAccount.getPassword());
                     }
                 } else {
                     ChatHelper.INSTANCE.addClientMessage("No account found in AccountManager, trying cracked");
                 }
                 UUID uuid = minecraftAccount == null ? UUID.randomUUID() : UUID.fromString(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"));
                 GameProfile gameProfile = new GameProfile(uuid, username);
-                PlayerBot playerBot = new PlayerBot(gameProfile);
+                PlayerBot playerBot = new PlayerBot(gameProfile, session);
                 playerBot.connect(ConnectedServerHelper.INSTANCE.getServerAddress());
                 PlayerBot.getPlayerBots().add(playerBot);
             }).start();

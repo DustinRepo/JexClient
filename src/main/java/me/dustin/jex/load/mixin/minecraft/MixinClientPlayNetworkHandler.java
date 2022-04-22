@@ -11,6 +11,7 @@ import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.player.bot.BotClientPlayNetworkHandler;
+import me.dustin.jex.load.impl.IClientPlayNetworkHandler;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
@@ -28,6 +29,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Final;
@@ -39,7 +41,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
-public abstract class MixinClientPlayNetworkHandler {
+public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetworkHandler {
 
     @Shadow private ClientWorld world;
     @Shadow @Final private MinecraftClient client;
@@ -143,33 +145,9 @@ public abstract class MixinClientPlayNetworkHandler {
         }
     }
 
-    //bot stuff
-    @Redirect(method = "onGameJoin", at = @At(value = "NEW", target = "net/minecraft/client/network/ClientPlayerInteractionManager"))
-    public ClientPlayerInteractionManager newInteractionManager(MinecraftClient client, ClientPlayNetworkHandler networkHandler) {
-        if (isBotHandler()) {
-            return Wrapper.INSTANCE.getInteractionManager();
-        }
-        return new ClientPlayerInteractionManager(client, networkHandler);
-    }
-
-    @Inject(method = "onGameJoin", at = @At(value = "INVOKE", target = "net/minecraft/client/MinecraftClient.joinWorld (Lnet/minecraft/client/world/ClientWorld;)V"), cancellable = true)
-    public void onJoinBot(GameJoinS2CPacket packet, CallbackInfo ci) {
-        if (isBotHandler()) {
-            ci.cancel();
-            sendClientSettings();
-            this.connection.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
-        }
-    }
-
-    public void sendClientSettings() {
-        if (this.client.player != null) {
-            int i = 0;
-            for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
-                if (Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(playerModelPart))
-                    i |= playerModelPart.getBitFlag();
-            }
-            this.sendPacket(new ClientSettingsC2SPacket(Wrapper.INSTANCE.getOptions().language, Wrapper.INSTANCE.getOptions().viewDistance, Wrapper.INSTANCE.getOptions().chatVisibility, Wrapper.INSTANCE.getOptions().chatColors, i, Wrapper.INSTANCE.getOptions().mainArm, this.client.shouldFilterText(), Wrapper.INSTANCE.getOptions().allowServerListing));
-        }
+    @Override
+    public void setWorld(ClientWorld world) {
+        this.world = world;
     }
 
     private boolean isBotHandler() {
