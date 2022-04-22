@@ -2,6 +2,7 @@ package me.dustin.jex.helper.player.bot;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollSocketChannel;
@@ -18,6 +19,8 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.client.network.*;
+import net.minecraft.client.util.Session;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -34,6 +37,7 @@ import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.*;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Lazy;
 import net.minecraft.util.hit.BlockHitResult;
@@ -42,14 +46,17 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.RaycastContext;
+import net.minecraft.world.World;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class PlayerBot {
     private static final ArrayList<PlayerBot> playerBots = new ArrayList<>();
     private final GameProfile gameProfile;
+    private final Session session;
     public static ClientPlayNetworkHandler savedNetworkHandler;
     public static BotClientConnection currentConnection;
     private BotClientConnection clientConnection;
@@ -61,8 +68,11 @@ public class PlayerBot {
     private int useDelay, attackDelay;
     private int countedTicks;
 
-    public PlayerBot(GameProfile gameProfile) {
+    private ClientWorld world;
+
+    public PlayerBot(GameProfile gameProfile, Session session) {
         this.gameProfile = gameProfile;
+        this.session = session;
         EventManager.register(this);
     }
 
@@ -189,7 +199,7 @@ public class PlayerBot {
             player.resetLastAttackedTicks();
             clientConnection.send(PlayerInteractEntityC2SPacket.attack(crosshair, player.isSneaking()));
             clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
-        } else if (raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && WorldHelper.INSTANCE.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
+        } else if (raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && world.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
             clientConnection.send(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getSide()));
             clientConnection.send(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getSide()));
             clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
@@ -199,11 +209,15 @@ public class PlayerBot {
         }
     }
 
+    public boolean canUseOnPos(BlockPos pos) {
+        return world.getBlockState(pos).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) != ActionResult.PASS;
+    }
+
     public HitResult raycast(double maxDistance, float tickDelta, boolean includeFluids) {
         Vec3d vec3d = getCameraPosVec();
         Vec3d vec3d2 = getRotationVector(player.getPitch(), player.getYaw());
         Vec3d vec3d3 = vec3d.add(vec3d2.x * maxDistance, vec3d2.y * maxDistance, vec3d2.z * maxDistance);
-        return player.getWorld().raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, player));
+        return world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, player));
     }
 
     protected final Vec3d getRotationVector(float pitch, float yaw) {
@@ -224,13 +238,13 @@ public class PlayerBot {
 
     public Entity getCrosshairEntity(float reach) {
         if (player != null) {
-            if (player.world != null) {
+            if (world != null) {
                 Vec3d vec3d = getCameraPosVec();
                 Vec3d vec3d2 = getRotationVector(player.getPitch(), player.getYaw());
                 Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
 
                 Box box = player.getBoundingBox().stretch(vec3d2.multiply(reach)).expand(1.0D, 1.0D, 1.0D);
-                EntityHitResult entityHitResult = ProjectileUtil.raycast(player, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.collides(), reach);
+                EntityHitResult entityHitResult = raycast(player, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.collides(), reach);
                 if (entityHitResult != null) {
                     Entity entity2 = entityHitResult.getEntity();
                     if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {
@@ -240,6 +254,39 @@ public class PlayerBot {
             }
         }
         return null;
+    }
+
+    public EntityHitResult raycast(Entity entity, Vec3d min, Vec3d max, Box box, Predicate<Entity> predicate, double d) {
+        double e = d;
+        Entity entity2 = null;
+        Vec3d vec3d = null;
+        for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
+            Vec3d vec3d2;
+            double f;
+            Box box2 = entity3.getBoundingBox().expand(entity3.getTargetingMargin());
+            Optional<Vec3d> optional = box2.raycast(min, max);
+            if (box2.contains(min)) {
+                if (!(e >= 0.0)) continue;
+                entity2 = entity3;
+                vec3d = optional.orElse(min);
+                e = 0.0;
+                continue;
+            }
+            if (optional.isEmpty() || !((f = min.squaredDistanceTo(vec3d2 = optional.get())) < e) && e != 0.0) continue;
+            if (entity3.getRootVehicle() == entity.getRootVehicle()) {
+                if (e != 0.0) continue;
+                entity2 = entity3;
+                vec3d = vec3d2;
+                continue;
+            }
+            entity2 = entity3;
+            vec3d = vec3d2;
+            e = f;
+        }
+        if (entity2 == null) {
+            return null;
+        }
+        return new EntityHitResult(entity2, vec3d);
     }
 
     public void setRotation(Vec3d vec) {
@@ -254,8 +301,8 @@ public class PlayerBot {
 
     private BotClientConnection connect(InetSocketAddress address) {
         final BotClientConnection clientConnection = new BotClientConnection(NetworkSide.CLIENTBOUND);
-        Class class2;
-        Lazy lazy2;
+        Class<? extends Channel> class2;
+        Lazy<?> lazy2;
         if (Epoll.isAvailable() && Wrapper.INSTANCE.getOptions().shouldUseNativeTransport()) {
             class2 = EpollSocketChannel.class;
             lazy2 = ClientConnection.EPOLL_CLIENT_IO_GROUP;
@@ -264,7 +311,11 @@ public class PlayerBot {
             lazy2 = ClientConnection.CLIENT_IO_GROUP;
         }
         ProxyHelper.INSTANCE.clientConnection = clientConnection;
-        ((Bootstrap)((Bootstrap)((Bootstrap)(new Bootstrap()).group((EventLoopGroup)lazy2.get())).handler(ProxyHelper.INSTANCE.channelInitializer)).channel(class2)).connect(address.getAddress(), address.getPort()).syncUninterruptibly();
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap = bootstrap.group((EventLoopGroup)lazy2.get());
+        bootstrap = bootstrap.handler(ProxyHelper.INSTANCE.channelInitializer);
+        bootstrap = bootstrap.channel(class2);
+        bootstrap.connect(address.getAddress(), address.getPort()).syncUninterruptibly();
         return clientConnection;
     }
 
@@ -330,6 +381,18 @@ public class PlayerBot {
 
     public BotClientConnection getClientConnection() {
         return clientConnection;
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public ClientWorld getWorld() {
+        return world;
+    }
+
+    public void setWorld(ClientWorld world) {
+        this.world = world;
     }
 
     public static PlayerBot getBot(String name) {
