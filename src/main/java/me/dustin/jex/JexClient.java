@@ -3,6 +3,7 @@ package me.dustin.jex;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.dustin.events.core.EventListener;
+import me.dustin.irc.IRCClient;
 import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.*;
