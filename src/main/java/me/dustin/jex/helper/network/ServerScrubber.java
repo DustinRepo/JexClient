@@ -11,9 +11,6 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.network.Address;
-import net.minecraft.client.network.AllowedAddressResolver;
-import net.minecraft.client.network.ServerAddress;
 import net.minecraft.network.NetworkState;
 import net.minecraft.util.Formatting;
 
@@ -21,11 +18,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Optional;
 
 public enum ServerScrubber {
     INSTANCE;

@@ -19,7 +19,7 @@ dependencies {
 	def dependency = { id ->
 		implementation id
 		shadow id
-	}
+	} as Object
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
@@ -30,6 +30,7 @@ dependencies {
 
 	dependency group: 'pircbot', name: 'pircbot', version: '1.5.0'
 	dependency group: 'org.yaml', name: 'snakeyaml', version: '1.30'
+	dependency files('lib/IRCClient.jar')
 
 	implementation files('lib/baritone-1.6.3-dev.jar')
 	implementation files('lib/sodium.jar')

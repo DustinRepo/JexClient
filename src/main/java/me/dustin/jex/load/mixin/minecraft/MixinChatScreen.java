@@ -72,7 +72,7 @@ public class MixinChatScreen implements IChatScreen {
         ICommandSuggestor mc = (ICommandSuggestor) this.commandSuggestor;
         ircMod.renderAboveChat = !(jex.isWindowActive() || mc.isWindowActive());
 
-        if (ircMod.renderAboveChat && ircMod.ircManager.isConnected()) {
+        if (ircMod.renderAboveChat && ircMod.ircClient != null && ircMod.ircClient.isConnected()) {
             normalChatButton.render(matrices, mouseX, mouseY, delta);
             ircChatButton.render(matrices, mouseX, mouseY, delta);
         }
@@ -112,7 +112,7 @@ public class MixinChatScreen implements IChatScreen {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (ircMod.getState() && ircMod.renderAboveChat && ircMod.ircManager.isConnected()) {
+        if (ircMod.getState() && ircMod.renderAboveChat && ircMod.ircClient != null && ircMod.ircClient.isConnected()) {
             normalChatButton.mouseClicked(mouseX, mouseY, button);
             ircChatButton.mouseClicked(mouseX, mouseY, button);
         }

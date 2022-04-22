@@ -311,8 +311,6 @@ public class AccountManagerScreen extends Screen {
                     outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
                     mojangAccount.loginCount++;
                     mojangAccount.lastUsed = System.currentTimeMillis();
-                    if (FabricLoader.getInstance().isDevelopmentEnvironment())
-                        Feature.get(IRC.class).ircManager.putNick(session.getUsername());
                 }
             }).login();
         } else if (button.getAccount() instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
@@ -324,8 +322,6 @@ public class AccountManagerScreen extends Screen {
                     outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
                     microsoftAccount.loginCount++;
                     microsoftAccount.lastUsed = System.currentTimeMillis();
-                    if (FabricLoader.getInstance().isDevelopmentEnvironment())
-                        Feature.get(IRC.class).ircManager.putNick(session.getUsername());
                 }
             }, s -> outputString = s);
         }
