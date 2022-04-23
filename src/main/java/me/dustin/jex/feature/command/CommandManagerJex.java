@@ -64,8 +64,9 @@ public enum CommandManagerJex {
             overlayOn = true;
             chatScreen.getWidget().setMaxLength(100000);
         } else {
+            if (overlayOn)
+                chatScreen.getWidget().setMaxLength(256);
             overlayOn = false;
-            chatScreen.getWidget().setMaxLength(256);
         }
         Color color1 = Color.decode("0x" + Integer.toHexString(ColorHelper.INSTANCE.getClientColor()).substring(2));
         int color = new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), overlayAlpha).getRGB();

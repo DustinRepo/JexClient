@@ -22,7 +22,7 @@ import net.minecraft.text.LiteralText;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Connect to an IRC server to chat with other Jex users", visible = false)
+@Feature.Manifest(category = Feature.Category.MISC, description = "Connect to an IRC server to chat with other Jex users", enabled = true)
 public class IRC extends Feature {
 
     @Op(name = "Send Prefix", maxStringLength = 2)
@@ -47,7 +47,7 @@ public class IRC extends Feature {
         ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
         ircClient.setMessageConsumer(messageListener);
         ircClient.setDisconnectConsumer(disconnectListener);
-        ircClient.connect();
+        ircClient.connect("132.145.154.217", 6969);
         super.onEnable();
     }
 
@@ -72,8 +72,7 @@ public class IRC extends Feature {
                 for (String user : ircClient.getUsers()) {
                     stringJoiner.add(user);
                 }
-                ChatHelper.INSTANCE.addClientMessage("Users: " + stringJoiner);
-                ircChatHud.addMessage(new LiteralText("Users: " + stringJoiner));
+                addIRCMessage("Users: " + stringJoiner);
                 return;
             }
             if (message.startsWith("/login")) {
@@ -93,6 +92,39 @@ public class IRC extends Feature {
                     ircClient.ban(username, reason);
                 } else {
                     addIRCMessage("Invalid args. /ban <name> <reason>");
+                }
+                return;
+            }
+
+            if (message.startsWith("/kick")) {
+                if (message.split(" ").length > 2) {
+                    String username = message.split(" ")[1];
+                    String reason = message.replace("/kick " + username + " ", "");
+                    ircClient.kick(username, reason);
+                } else {
+                    addIRCMessage("Invalid args. /kick <name> <reason>");
+                }
+                return;
+            }
+
+            if (message.startsWith("/mute")) {
+                if (message.split(" ").length > 1) {
+                    String username = message.split(" ")[1];
+                    String timeString = message.split(" ")[2];
+                    String reason = message.replace("/mute " + username + " " + timeString + " ", "");
+                    ircClient.mute(username, reason, parseMuteTime(timeString));
+                } else {
+                    addIRCMessage("Invalid args. /mute <name> <time> <reason>");
+                }
+                return;
+            }
+
+            if (message.startsWith("/admin")) {
+                if (message.split(" ").length > 1) {
+                    String username = message.split(" ")[1];
+                    ircClient.admin(username);
+                } else {
+                    addIRCMessage("Invalid args. /admin <name>");
                 }
                 return;
             }
@@ -118,7 +150,7 @@ public class IRC extends Feature {
         if (ircClient != null && ircClient.isConnected() && renderAboveChat) {
             FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"), iChatScreen.getWidget().x + 84, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
         }
-        if ((chatString.startsWith(sendPrefix) || ircChatOverride) && ircClient != null) {
+        if ((chatString.startsWith(sendPrefix) || ircChatOverride) && ircClient != null && ircClient.isConnected()) {
             int color = 0xffFF5555;
             int users = ircClient.getUsers().length;
             String usersString = "IRC Users: \247f" + users;
@@ -133,6 +165,31 @@ public class IRC extends Feature {
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, ChatScreen.class));
 
+    private long parseMuteTime(String s) {
+        long time = 0;
+        try {
+            if (s.length() >= 2) {
+                char aChar = s.toLowerCase().charAt(0);
+                char tChar = s.toLowerCase().charAt(1);
+                int amount = Integer.parseInt(String.valueOf(aChar));
+                if (tChar == 'd')
+                    time += (24L * 60L * 60L) * (1000L * amount);
+                else if (tChar == 'h')
+                    time += (60L * 60L) * (1000L * amount);
+                else if (tChar == 'm')
+                    time += 60L * (1000L * amount);
+                else if (tChar == 's')
+                    time += (1000L * amount);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (s.length() > 2) {
+            s = s.substring(2);
+            time += parseMuteTime(s);
+        }
+        return time;
+    }
 
     public static void addIRCMessage(String message) {
         if (message.isEmpty())
