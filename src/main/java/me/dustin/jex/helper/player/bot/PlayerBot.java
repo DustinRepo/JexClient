@@ -314,7 +314,7 @@ public class PlayerBot {
         bootstrap = bootstrap.group((EventLoopGroup)lazy2.get());
         bootstrap = bootstrap.handler(ProxyHelper.INSTANCE.channelInitializer);
         bootstrap = bootstrap.channel(class2);
-        bootstrap.connect(address.getAddress(), address.getPort()).syncUninterruptibly();
+        bootstrap.connect(address.getAddress(), address.getPort());
         return clientConnection;
     }
 

@@ -3,6 +3,11 @@ package me.dustin.jex.feature.command.impl;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.dustin.events.EventManager;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.filters.TickFilter;
+import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;
@@ -10,6 +15,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.misc.ChatHelper;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ConnectedServerHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -20,6 +26,7 @@ import me.dustin.jex.helper.player.bot.PlayerBot;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.util.Session;
 
+import java.util.Random;
 import java.util.UUID;
 
 @Cmd(name = "bot", syntax = ".bot <connect/disconnect> <name>", description = "Have bots join your server")
@@ -35,7 +42,6 @@ public class CommandBot extends Command {
                 Session session = null;
                 if (minecraftAccount != null) {
                     ChatHelper.INSTANCE.addClientMessage("Logging into account...");
-                    NetworkHelper.INSTANCE.setStoredSession(Wrapper.INSTANCE.getMinecraft().getSession());
                     if (minecraftAccount instanceof MinecraftAccount.MicrosoftAccount microsoftAccount) {
                         MSLoginHelper msLoginHelper = new MSLoginHelper(microsoftAccount, true);
                         session = msLoginHelper.login(ChatHelper.INSTANCE::addClientMessage);
