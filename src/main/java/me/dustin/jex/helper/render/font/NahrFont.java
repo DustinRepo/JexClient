@@ -239,8 +239,8 @@ public class NahrFont {
                 } catch (ArrayIndexOutOfBoundsException indexException) {
                 }
             }
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         Render2DHelper.INSTANCE.shaderColor(0xffffffff);
     }
 

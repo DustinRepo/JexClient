@@ -20,7 +20,6 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.CommandSource.SuggestedIdType;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;

@@ -155,8 +155,8 @@ public enum Render3DHelper {
                 renderPos = Render3DHelper.INSTANCE.getRenderPosition(x, y, z);
                 bufferBuilder.vertex(matrix4f, (float)renderPos.x, (float)renderPos.y, (float)renderPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             }
-            bufferBuilder.end();
-            BufferRenderer.method_43433(bufferBuilder);
+            bufferBuilder.clear();
+            BufferRenderer.drawWithShader(bufferBuilder.end());
         }
         RenderSystem.enableDepthTest();
         RenderSystem.disableTexture();
@@ -231,8 +231,8 @@ public enum Render3DHelper {
             int color = blockStorage.color();
             drawOutlineBox(matrixStack, box, color, false);
     	});
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
 
         bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         list.forEach(blockStorage -> {
@@ -240,8 +240,8 @@ public enum Render3DHelper {
             int color = blockStorage.color();
             drawFilledBox(matrixStack, box, color & 0x70ffffff, false);
     	});
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         end3DRender();
     }
     
@@ -313,8 +313,8 @@ public enum Render3DHelper {
         bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         if (draw) {
-	        bufferBuilder.end();
-	        BufferRenderer.method_43433(bufferBuilder);
+	        BufferRenderer.drawWithShader(bufferBuilder.end());
+            bufferBuilder.clear();
         }
     }
 
@@ -360,8 +360,8 @@ public enum Render3DHelper {
         bufferBuilder.vertex(matrix4f, minX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0).next();
         bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0).next();
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        BufferRenderer.drawWithShader(bufferBuilder.end());
+        bufferBuilder.clear();
     }
 
     public void doFadeBoxNoDraw(MatrixStack matrixStack, Box bb, int color) {
@@ -425,8 +425,8 @@ public enum Render3DHelper {
             bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z2).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         });
         if (draw) {
-	        bufferBuilder.end();
-	        BufferRenderer.method_43433(bufferBuilder);
+	        BufferRenderer.drawWithShader(bufferBuilder.end());
+            bufferBuilder.clear();
         }
     }
 

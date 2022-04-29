@@ -122,8 +122,8 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 bufferBuilder.vertex(matrix4f, 0, -0.55f, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
                 matrixStack.pop();
 
-                bufferBuilder.end();
-                BufferRenderer.method_43433(bufferBuilder);
+                bufferBuilder.clear();
+                BufferRenderer.drawWithShader(bufferBuilder.end());
 
                 if (swimming) matrixStack.translate(0, 0.95f, 0);
                 if (swimming || flying) matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90 + m, true));

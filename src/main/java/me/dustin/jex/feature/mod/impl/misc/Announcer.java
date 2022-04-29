@@ -48,7 +48,7 @@ public class Announcer extends Feature {
             if (entry != null) {
                 String name = entry.getProfile().getName();
                 int rand = ClientMathHelper.INSTANCE.getRandom(leaveMessages.size());
-                NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(leaveMessages.get(rand).replace("%player", name)));
+                ChatHelper.INSTANCE.sendChatMessage(leaveMessages.get(rand).replace("%player", name));
                 stopWatch.reset();
             }
         } else if (playerListPacket.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
@@ -56,7 +56,7 @@ public class Announcer extends Feature {
             if (entry != null) {
                 String name = entry.getProfile().getName();
                 int rand = ClientMathHelper.INSTANCE.getRandom(joinMessages.size());
-                NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(joinMessages.get(rand).replace("%player", name)));
+                ChatHelper.INSTANCE.sendChatMessage(joinMessages.get(rand).replace("%player", name));
                 stopWatch.reset();
             }
         }

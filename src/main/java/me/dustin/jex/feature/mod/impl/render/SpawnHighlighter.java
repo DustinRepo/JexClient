@@ -76,8 +76,8 @@ public class SpawnHighlighter extends Feature {
 			int color = blockStorage.color();
 			Render3DHelper.INSTANCE.drawFilledBox(event.getMatrixStack(), box, color & 0x70ffffff, false);
 		});
-		bufferBuilder.end();
-		BufferRenderer.method_43433(bufferBuilder);
+		bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
 		Render3DHelper.INSTANCE.end3DRender();
 	});
 

@@ -76,8 +76,8 @@ public class TwoDeeESP extends FeatureExtension {
                     drawBox(eventRender2D.getMatrixStack(), x - dif, y + 1, x2 + dif, y2, entity);
                 }
             });
-            bufferBuilder.end();
-            BufferRenderer.method_43433(bufferBuilder);
+            bufferBuilder.clear();
+            BufferRenderer.drawWithShader(bufferBuilder.end());
             bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             headPos.keySet().forEach(entity -> {
                 Vec3d top = headPos.get(entity);
@@ -106,9 +106,8 @@ public class TwoDeeESP extends FeatureExtension {
                     outlineBox(eventRender2D.getMatrixStack(), x - dif, y + 1, x2 + dif, y2, entity);
                 }
             });
-            bufferBuilder.end();
-            BufferRenderer.method_43433(bufferBuilder);
-            
+            bufferBuilder.clear();
+            BufferRenderer.drawWithShader(bufferBuilder.end());
             Render2DHelper.INSTANCE.end2DRender();
         }
     }

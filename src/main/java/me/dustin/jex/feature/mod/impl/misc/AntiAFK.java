@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -51,7 +52,7 @@ public class AntiAFK extends Feature {
                         Wrapper.INSTANCE.getPlayer().jump();
                     break;
                 case "Chat":
-                    NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(Wrapper.INSTANCE.getPlayer().age + ""));
+                    ChatHelper.INSTANCE.sendChatMessage(Wrapper.INSTANCE.getPlayer().age + "");
                     break;
                 case "Wander":
                     PathingHelper.INSTANCE.setAllowMining(false);

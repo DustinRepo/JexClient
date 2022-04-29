@@ -58,8 +58,8 @@ public class SpawnSphere extends Feature {
             int color = blockStorage.color();
             Render3DHelper.INSTANCE.drawFilledBox(matrixStack, box, color & 0x50ffffff, false);
         });
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         Render3DHelper.INSTANCE.end3DRender();
     });
 

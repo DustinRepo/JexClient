@@ -94,8 +94,8 @@ public class OutlineBox extends FeatureExtension {
 						eventRender3D.getMatrixStack().translate(-vec.x, -vec.y, -vec.z);
 					}
 				});
-				bufferBuilder.end();
-				BufferRenderer.method_43433(bufferBuilder);
+				bufferBuilder.clear();
+				BufferRenderer.drawWithShader(bufferBuilder.end());
 
 				RenderSystem.disableBlend();
 				RenderSystem.disableDepthTest();

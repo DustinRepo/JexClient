@@ -12,10 +12,8 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Cmd(name = "librarianroll", alias = {"lr"}, syntax = ".librarianroll <clear/list/add> <enchantment> <level>", description = "Set the enchantment for AutoLibrarianRoll mod")

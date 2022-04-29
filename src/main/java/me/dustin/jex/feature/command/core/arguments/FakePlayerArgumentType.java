@@ -6,13 +6,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.player.FriendHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.util.concurrent.CompletableFuture;

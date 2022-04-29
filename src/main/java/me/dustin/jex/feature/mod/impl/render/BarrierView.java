@@ -94,17 +94,16 @@ public class BarrierView extends Feature {
 			bufferBuilder.vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 			bufferBuilder.vertex(matrix4f, (float)box.maxX, (float)box.minY, (float)box.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 		});
-		bufferBuilder.end();
-		BufferRenderer.method_43433(bufferBuilder);
-
+		bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		list.forEach(blockStorage -> {
 			Box box = blockStorage.box();
 			int color = blockStorage.color();
 			Render3DHelper.INSTANCE.drawFilledBox(event.getMatrixStack(), box, color & 0x45ffffff, false);
 		});
-		bufferBuilder.end();
-		BufferRenderer.method_43433(bufferBuilder);
+		bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
 		Render3DHelper.INSTANCE.end3DRender();
 	});
 }

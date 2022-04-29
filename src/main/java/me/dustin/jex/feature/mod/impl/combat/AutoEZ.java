@@ -82,7 +82,7 @@ public class AutoEZ extends Feature {
         String name = playerEntity.getGameProfile().getName();
         Random random = new Random();
         String message = messages.get(random.nextInt(messages.size())).replace("%player", name);
-        NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(message));
+        ChatHelper.INSTANCE.sendChatMessage(message);
     }
 
     private void loadMessages() {

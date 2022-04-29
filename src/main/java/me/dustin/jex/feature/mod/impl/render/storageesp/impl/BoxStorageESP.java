@@ -84,9 +84,8 @@ public class BoxStorageESP extends FeatureExtension {
                 int color = blockStorage.color();
                 Render3DHelper.INSTANCE.drawOutlineBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
             });
-            bufferBuilder.end();
-            BufferRenderer.method_43433(bufferBuilder);
-
+            bufferBuilder.clear();
+            BufferRenderer.drawWithShader(bufferBuilder.end());
 
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
             list.forEach(blockStorage -> {
@@ -95,9 +94,8 @@ public class BoxStorageESP extends FeatureExtension {
                 int color = blockStorage.color();
                 Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getMatrixStack(), box, color & alphaColor.getRGB(), false);
             });
-            bufferBuilder.end();
-            BufferRenderer.method_43433(bufferBuilder);
-
+            bufferBuilder.clear();
+            BufferRenderer.drawWithShader(bufferBuilder.end());
             Render3DHelper.INSTANCE.end3DRender();
         }
     }

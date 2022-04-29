@@ -50,9 +50,8 @@ public class OutlineStorageESP extends FeatureExtension {
                         renderTileEntity(blockEntity, eventRender3D, storageESP);
                     }
                 });
-                bufferBuilder.end();
-                BufferRenderer.method_43433(bufferBuilder);
-
+                bufferBuilder.clear();
+                BufferRenderer.drawWithShader(bufferBuilder.end());
                 RenderSystem.disableBlend();
                 RenderSystem.disableDepthTest();
                 RenderSystem.enableTexture();

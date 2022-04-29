@@ -83,8 +83,8 @@ public class Trajectories extends Feature {
                     bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
                     bufferBuilder.vertex(matrix4f, (float) x, (float) y, (float) z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                     bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, (float) z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                    bufferBuilder.end();
-                    BufferRenderer.method_43433(bufferBuilder);
+                    bufferBuilder.clear();
+                    BufferRenderer.drawWithShader(bufferBuilder.end());
                     Render3DHelper.INSTANCE.end3DRender();
                 } else {
                     Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z);

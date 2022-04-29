@@ -41,7 +41,7 @@ public class AutoCope extends Feature {
     private void sendMessage() {
         Random random = new Random();
         String message = messages.get(random.nextInt(messages.size()));
-        NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(message));
+        ChatHelper.INSTANCE.sendChatMessage(message);
     }
 
     private void loadMessages() {

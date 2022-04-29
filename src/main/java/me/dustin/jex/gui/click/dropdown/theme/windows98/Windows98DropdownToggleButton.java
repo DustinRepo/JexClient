@@ -34,8 +34,8 @@ public class Windows98DropdownToggleButton extends DropdownButton {
 
         Render2DHelper.INSTANCE.fillNoDraw(matrixStack, x, endY - 1, endX - 1, endY, 0xff000000);
         Render2DHelper.INSTANCE.fillNoDraw(matrixStack, endX - 1, y, endX, endY, 0xff000000);
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         Render2DHelper.INSTANCE.end2DRender();
     }
 

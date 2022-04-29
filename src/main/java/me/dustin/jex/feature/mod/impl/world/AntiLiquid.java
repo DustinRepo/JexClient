@@ -135,8 +135,8 @@ public class AntiLiquid extends Feature {
             int color = blockStorage.color();
             Render3DHelper.INSTANCE.drawOutlineBox(event.getMatrixStack(), box, color, false);
         });
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         Render3DHelper.INSTANCE.end3DRender();
     });
 

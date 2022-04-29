@@ -1,55 +1,33 @@
 package me.dustin.jex.helper.player.bot;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.load.impl.IChatHud;
 import me.dustin.jex.load.impl.IClientPlayNetworkHandler;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.network.*;
-import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.sound.AbstractBeeSoundInstance;
-import net.minecraft.client.sound.AggressiveBeeSoundInstance;
-import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.util.telemetry.TelemetrySender;
-import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.*;
 import net.minecraft.network.packet.s2c.play.*;
-import net.minecraft.stat.StatHandler;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.*;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProperties;
-import net.minecraft.world.chunk.ChunkNibbleArray;
-import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
 
 import java.util.*;
@@ -194,11 +172,11 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
     }
 
     @Override
-    public void onGameMessage(GameMessageS2CPacket packet) {
+    public void onChatMessage(ChatMessageS2CPacket packet) {
         IChatHud iChatHud = (IChatHud) Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud();
         try {
-            if (!iChatHud.containsMessage(packet.getMessage().getString()))
-                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", Formatting.DARK_GRAY, Formatting.GREEN, playerBot.getGameProfile().getName(), Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY, packet.getMessage().getString()));
+            if (!iChatHud.containsMessage(packet.content().getString()))
+                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", Formatting.DARK_GRAY, Formatting.GREEN, playerBot.getGameProfile().getName(), Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY, packet.content().getString()));
         } catch (Exception e){}
     }
 

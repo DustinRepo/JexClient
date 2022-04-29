@@ -78,8 +78,8 @@ public enum Render2DHelper {
         bufferBuilder.vertex(matrices, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
         bufferBuilder.vertex(matrices, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
         bufferBuilder.vertex(matrices, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
     }
 
     public void drawTexturedQuadNoDraw(Matrix4f matrices, float x0, float x1, float y0, float y1, float z, float u0, float u1, float v0, float v1) {
@@ -120,8 +120,8 @@ public enum Render2DHelper {
         bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
@@ -192,8 +192,8 @@ public enum Render2DHelper {
         bufferBuilder.vertex(x, y2, 0).color(f5, f6, f7, f4).next();
         bufferBuilder.vertex(x2, y2, 0).color(f5, f6, f7, f4).next();
 
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
@@ -223,8 +223,8 @@ public enum Render2DHelper {
         bufferBuilder.vertex(matrix4f, x, y2, 0).color(f5, f6, f7, f4).next();
         bufferBuilder.vertex(matrix4f, x2, y2, 0).color(f5, f6, f7, f4).next();
 
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
@@ -254,8 +254,8 @@ public enum Render2DHelper {
         bufferBuilder.vertex(matrix4f, x, y2, 0).color(f1, f2, f3, f).next();
         bufferBuilder.vertex(matrix4f, x2, y2, 0).color(f5, f6, f7, f4).next();
 
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
@@ -276,8 +276,8 @@ public enum Render2DHelper {
         bufferBuilder.vertex(matrix, x2, y2, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, x2, y, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, x, y, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         bufferBuilder.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         f = (float)(bcolor >> 24 & 255) / 255.0F;
         g = (float)(bcolor >> 16 & 255) / 255.0F;
@@ -295,8 +295,8 @@ public enum Render2DHelper {
 
         bufferBuilder.vertex(matrix, x2, y, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, x, y, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
@@ -335,8 +335,8 @@ public enum Render2DHelper {
         bufferBuilder.vertex(matrix, x + 3, y + 8, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, x + 9, y - 1, 0.0F).color(g, h, k, f).next();
 
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
@@ -358,8 +358,8 @@ public enum Render2DHelper {
             double y = Math.cos(i * 3.141592653589793D / 180.0D) * r;
             bufferBuilder.vertex(cx + x, cy + y, -64).color(f1, f2, f3, f).next();
         }
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
         RenderSystem.defaultBlendFunc();
@@ -385,9 +385,8 @@ public enum Render2DHelper {
             double y = Math.cos(i * 3.141592653589793D / 180.0D) * r;
             bufferBuilder.vertex(cx + x, cy + y, 0).color(f1, f2, f3, f).next();
         }
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
-
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
         RenderSystem.defaultBlendFunc();
@@ -412,8 +411,8 @@ public enum Render2DHelper {
         bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(matrix4f, x, y, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.vertex(matrix4f, endX, y, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         Render2DHelper.INSTANCE.end2DRender();
     }
 

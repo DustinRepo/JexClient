@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class ColorArgumentType implements ArgumentType<Formatting> {

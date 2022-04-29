@@ -1,6 +1,8 @@
 package me.dustin.jex.helper.player.bot;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.UserApiService;
+import com.mojang.authlib.yggdrasil.response.KeyPairResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -14,10 +16,13 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ProxyHelper;
+import me.dustin.jex.helper.network.WebHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.class_7427;
 import net.minecraft.client.network.*;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
@@ -27,11 +32,13 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.NetworkEncryptionException;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.*;
@@ -48,9 +55,13 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.time.Instant;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class PlayerBot {
@@ -68,11 +79,17 @@ public class PlayerBot {
     private int useDelay, attackDelay;
     private int countedTicks;
 
+    private class_7427 keyPair;
     private ClientWorld world;
 
     public PlayerBot(GameProfile gameProfile, Session session) {
         this.gameProfile = gameProfile;
         this.session = session;
+        try {
+            keyPair = generateKeyPair();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         EventManager.register(this);
     }
 
@@ -89,7 +106,7 @@ public class PlayerBot {
                 this.clientConnection = currentConnection = connect(optional.get());
                 clientConnection.setPacketListener(new BotLoginNetworkHandler(clientConnection, Wrapper.INSTANCE.getMinecraft(), null, this::log, gameProfile, this));
                 clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.LOGIN));
-                clientConnection.send(new LoginHelloC2SPacket(gameProfile));
+                clientConnection.send(new LoginHelloC2SPacket(gameProfile.getName(), Optional.ofNullable(keyPair.publicKey())));
             } catch (Exception e) {
                 ChatHelper.INSTANCE.addClientMessage("Error logging in player");
                 e.printStackTrace();
@@ -98,6 +115,18 @@ public class PlayerBot {
         });
         loginThread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(JexClient.INSTANCE.getLogger()));
         loginThread.start();
+    }
+
+    private class_7427 generateKeyPair() throws NetworkEncryptionException {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json; charset=utf-8");
+        headers.put("Content-Length", "0");
+        headers.put("Authorization", "Bearer " + getSession().getAccessToken());
+        WebHelper.HttpResponse httpResponse = WebHelper.INSTANCE.httpRequest("https://api.minecraftservices.com/player/certificates", null, headers, "POST");
+
+        System.out.println(httpResponse.responseCode() + " data: " + httpResponse.data());
+        KeyPairResponse keyPairResponse = JsonHelper.INSTANCE.gson.fromJson(httpResponse.data(), KeyPairResponse.class);
+        return new class_7427(NetworkEncryptionUtils.method_43519(keyPairResponse.getPrivateKey()), new PlayerPublicKey(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()), Instant.parse(keyPairResponse.getRefreshedAfter()));
     }
 
     public void disconnect() {
@@ -161,8 +190,35 @@ public class PlayerBot {
         return gameProfile;
     }
 
-    public void sendMessage(String message) {
-        this.clientConnection.send(new ChatMessageC2SPacket(message));
+    public void sendMessage(String chat) {
+        Instant instant = Instant.now();
+        this.clientConnection.send(new ChatMessageC2SPacket(instant, chat, sigForMessage(instant, chat)));
+    }
+
+    private NetworkEncryptionUtils.SignatureData sigForMessage(Instant instant, String string) {
+        try {
+            Signature signature = getSignature();
+            if (signature != null) {
+                long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
+                NetworkEncryptionUtils.updateSignature(signature, l, UUID.fromString(session.getUuid()), instant, string);
+                return new NetworkEncryptionUtils.SignatureData(l, signature.sign());
+            }
+        } catch (GeneralSecurityException var6) {
+            JexClient.INSTANCE.getLogger().error("Failed to sign chat message {}", instant, var6);
+        }
+
+        return NetworkEncryptionUtils.SignatureData.field_39040;
+    }
+
+    public Signature getSignature() throws GeneralSecurityException {
+        PrivateKey privateKey = keyPair.privateKey();
+        if (privateKey == null) {
+            return null;
+        } else {
+            Signature signature = Signature.getInstance("SHA1withRSA");
+            signature.initSign(privateKey);
+            return signature;
+        }
     }
 
     public void drop(boolean all) {
@@ -315,7 +371,7 @@ public class PlayerBot {
         bootstrap = bootstrap.group((EventLoopGroup)lazy2.get());
         bootstrap = bootstrap.handler(ProxyHelper.INSTANCE.channelInitializer);
         bootstrap = bootstrap.channel(class2);
-        bootstrap.connect(address.getAddress(), address.getPort()).syncUninterruptibly();
+        bootstrap.connect(address.getAddress(), address.getPort());
         return clientConnection;
     }
 

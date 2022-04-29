@@ -169,8 +169,8 @@ public class Nametag extends Feature {
                 }
             }
         });
-        bufferBuilder.end();
-        BufferRenderer.method_43433(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         //draw all text since we can't also do that while rendering the boxes

@@ -9,7 +9,6 @@ import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.util.Session;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.util.HashMap;

@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -43,7 +44,7 @@ public class Spammer extends Feature {
         while (containsSyntax(sentence)) {
             sentence = parseSyntax(sentence);
         }
-        NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(sentence));
+        ChatHelper.INSTANCE.sendChatMessage(sentence);
         stopWatch.reset();
         currentSpot++;
         if (currentSpot > spamString.split("\n").length - 1)

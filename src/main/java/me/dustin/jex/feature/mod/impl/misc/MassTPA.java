@@ -12,10 +12,8 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -42,16 +40,16 @@ public class MassTPA extends Feature {
             return;
         int size = playerList.size();
         PlayerListEntry playerListEntry = playerList.get(new Random().nextInt(size));
-        NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket("/tpa " + playerListEntry.getProfile().getName()));
+        ChatHelper.INSTANCE.sendChatMessage("/tpa " + playerListEntry.getProfile().getName());
         stopWatch.reset();
     },new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        GameMessageS2CPacket gameMessageS2CPacket = (GameMessageS2CPacket) event.getPacket();
-        if (gameMessageS2CPacket.getMessage().getString().toLowerCase().contains("accepted your tpa")) {
+        ChatMessageS2CPacket gameMessageS2CPacket = (ChatMessageS2CPacket) event.getPacket();
+        if (gameMessageS2CPacket.content().getString().toLowerCase().contains("accepted your tpa")) {
             ChatHelper.INSTANCE.addClientMessage("TPA accepted. Turning off");
             setState(false);
         }
-    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, GameMessageS2CPacket.class));
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ChatMessageS2CPacket.class));
 }

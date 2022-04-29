@@ -63,8 +63,8 @@ public class Tracers extends Feature {
                     bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                     bufferBuilder.vertex(vec.x, vec.y + entity.getEyeHeight(entity.getPose()), vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 }
-                bufferBuilder.end();
-                BufferRenderer.method_43433(bufferBuilder);
+                bufferBuilder.clear();
+                BufferRenderer.drawWithShader(bufferBuilder.end());
 
                 Render3DHelper.INSTANCE.end3DRender();
             }

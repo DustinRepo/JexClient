@@ -6,11 +6,9 @@ import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
 import me.dustin.jex.gui.click.dropdown.theme.aris.ArisTheme;
 import me.dustin.jex.gui.click.dropdown.theme.flare.FlareTheme;
 import me.dustin.jex.gui.click.dropdown.theme.jex.JexTheme;
-import me.dustin.jex.gui.click.dropdown.theme.windows98.Windows98Theme;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
