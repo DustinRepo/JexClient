@@ -22,6 +22,8 @@ public class AntiEffect extends Feature {
     public boolean levitation = false;
     @Op(name = "Slow Falling")
     public boolean slowFalling = true;
+    @Op(name = "Darkness")
+    public boolean darkness = true;
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -35,5 +37,7 @@ public class AntiEffect extends Feature {
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.LEVITATION);
         if (slowFalling)
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.SLOW_FALLING);
+        if (darkness)
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.DARKNESS);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
