@@ -40,8 +40,11 @@ import me.dustin.events.EventManager;
 import me.dustin.events.core.annotate.EventPointer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.network.NetworkSide;
+import net.minecraft.network.NetworkState;
 import net.minecraft.sound.SoundEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,6 +53,7 @@ import org.lwjgl.glfw.GLFW;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public enum JexClient {
     INSTANCE;
@@ -107,6 +111,7 @@ public enum JexClient {
                 i++;
             }
             FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_entity_ids.txt"), l);*/
+            createVersionsJson();
         }
         loadedOnce = true;
     }
@@ -222,5 +227,41 @@ public enum JexClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void createVersionsJson() {
+        JsonObject jsonObject = new JsonObject();
+        JsonObject protocolObject = new JsonObject();
+        JsonObject packets = new JsonObject();
+        JsonArray c2s = new JsonArray();
+        JsonArray s2c = new JsonArray();
+
+        protocolObject.addProperty("name", SharedConstants.getGameVersion().getName());
+        protocolObject.addProperty("protocol_id", SharedConstants.getProtocolVersion());
+
+        String[] c2sPackets = new String[150];
+        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.SERVERBOUND).forEach((integer, aClass) -> {
+            c2sPackets[integer] = aClass.getSimpleName().split("C2S")[0];
+        });
+        String[] s2cPackets = new String[150];
+        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.CLIENTBOUND).forEach((integer, aClass) -> {
+            s2cPackets[integer] = aClass.getSimpleName().split("S2C")[0];
+        });
+        for (String c2sPacket : c2sPackets) {
+            if (c2sPacket == null)
+                break;
+            c2s.add(c2sPacket);
+        }
+        for (String s2cPacket : s2cPackets) {
+            if (s2cPacket == null)
+                break;
+            s2c.add(s2cPacket);
+        }
+        packets.add("c2s", c2s);
+        packets.add("s2c", s2c);
+        protocolObject.add("packets", packets);
+        jsonObject.add("838", protocolObject);
+
+        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_packetIds.json"), List.of(jsonObject.toString().split("\n")));
     }
 }
