@@ -97,7 +97,7 @@ public class PlayerBot {
         Thread loginThread = new Thread(() -> {
             try {
                 Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
-                if (!optional.isPresent()) {
+                if (optional.isEmpty()) {
                     ChatHelper.INSTANCE.addClientMessage("Error logging in player while grabbing IP");
                     disconnect();
                     return;
@@ -106,7 +106,7 @@ public class PlayerBot {
                 this.clientConnection = currentConnection = connect(optional.get());
                 clientConnection.setPacketListener(new BotLoginNetworkHandler(clientConnection, Wrapper.INSTANCE.getMinecraft(), null, this::log, gameProfile, this));
                 clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.LOGIN));
-                clientConnection.send(new LoginHelloC2SPacket(gameProfile.getName(), Optional.ofNullable(keyPair.publicKey())));
+                clientConnection.send(new LoginHelloC2SPacket(gameProfile.getName(), keyPair == null ? Optional.empty() : Optional.ofNullable(keyPair.publicKey())));
             } catch (Exception e) {
                 ChatHelper.INSTANCE.addClientMessage("Error logging in player");
                 e.printStackTrace();
@@ -124,7 +124,6 @@ public class PlayerBot {
         headers.put("Authorization", "Bearer " + getSession().getAccessToken());
         WebHelper.HttpResponse httpResponse = WebHelper.INSTANCE.httpRequest("https://api.minecraftservices.com/player/certificates", null, headers, "POST");
 
-        System.out.println(httpResponse.responseCode() + " data: " + httpResponse.data());
         KeyPairResponse keyPairResponse = JsonHelper.INSTANCE.gson.fromJson(httpResponse.data(), KeyPairResponse.class);
         return new class_7427(NetworkEncryptionUtils.method_43519(keyPairResponse.getPrivateKey()), new PlayerPublicKey(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()), Instant.parse(keyPairResponse.getRefreshedAfter()));
     }
@@ -211,6 +210,8 @@ public class PlayerBot {
     }
 
     public Signature getSignature() throws GeneralSecurityException {
+        if (keyPair == null)
+            return null;
         PrivateKey privateKey = keyPair.privateKey();
         if (privateKey == null) {
             return null;
@@ -227,6 +228,7 @@ public class PlayerBot {
             this.getPlayerInventory().dropSelectedItem(all);
         this.clientConnection.send(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
     }
+
     public void dropInventory() {
         for (int i = 0; i < playerInventory.size(); i++) {
             ItemStack stack = playerInventory.getStack(i);
