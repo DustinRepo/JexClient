@@ -1,7 +1,6 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import com.mojang.brigadier.CommandDispatcher;
-import io.netty.buffer.Unpooled;
 import me.dustin.jex.event.misc.EventServerTurn;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventExplosionVelocity;
@@ -9,27 +8,21 @@ import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.event.world.EventLoadChunk;
 import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.ConnectedServerHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.player.bot.BotClientPlayNetworkHandler;
 import me.dustin.jex.load.impl.IClientPlayNetworkHandler;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
-import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.*;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Final;
@@ -37,7 +30,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
@@ -70,6 +62,13 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetwor
             this.connection.send(eventPacketSent.getPacket());
             ci.cancel();
         }
+    }
+
+    @Inject(method = "onPlayerPositionLook", at = @At("HEAD"))
+    public void posLook(PlayerPositionLookS2CPacket packet, CallbackInfo ci) {
+        //fix for viafabric getting stuck on "Loading terrain..." on 2b2t specifically
+        if (ConnectedServerHelper.INSTANCE.getServerAddress().getAddress().contains("2b2t.org") && Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null)
+            Wrapper.INSTANCE.getMinecraft().setScreen(null);
     }
 
     @Inject(method = "loadChunk", at = @At("HEAD"), cancellable = true)
