@@ -7,6 +7,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -21,12 +22,12 @@ public abstract class MixinAbstractClientPlayerEntity extends PlayerEntity {
 
     private final Identifier jex_cape = new Identifier("jex", "cape/jex_cape.png");
 
-    public MixinAbstractClientPlayerEntity(World world, BlockPos pos, float yaw, GameProfile profile) {
-        super(world, pos, yaw, profile);
+    public MixinAbstractClientPlayerEntity(World world, BlockPos pos, float yaw, GameProfile profile, PlayerPublicKey playerPublicKey) {
+        super(world, pos, yaw, profile, playerPublicKey);
     }
 
     @Inject(method = "<init>*", at = @At("RETURN"))
-    public void constructor(ClientWorld clientWorld_1, GameProfile gameProfile_1, CallbackInfo ci) {
+    public void constructor(ClientWorld clientWorld_1, GameProfile gameProfile_1, PlayerPublicKey playerPublicKey, CallbackInfo ci) {
         Addon.loadAddons((AbstractClientPlayerEntity) (Object) this);
     }
 

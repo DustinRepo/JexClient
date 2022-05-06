@@ -31,6 +31,9 @@ dependencies {
 	dependency group: 'pircbot', name: 'pircbot', version: '1.5.0'
 	dependency group: 'org.yaml', name: 'snakeyaml', version: '1.30'
 	dependency files('lib/IRCClient.jar')
+	implementation group: 'io.netty', name: 'netty-handler-proxy', version: '4.1.76.Final'
+
+
 
 	implementation files('lib/baritone-1.6.3-dev.jar')
 	implementation files('lib/sodium.jar')

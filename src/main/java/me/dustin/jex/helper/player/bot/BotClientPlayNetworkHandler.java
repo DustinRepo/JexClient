@@ -65,7 +65,7 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         IClientPlayNetworkHandler iClientPlayNetworkHandler = (IClientPlayNetworkHandler)this;
         iClientPlayNetworkHandler.setWorld(playerBot.getWorld());
 
-        playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile()));
+        playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile(), playerBot.getKeyPair().publicKey()));
         if (playerBot.getPlayerInventory() == null)
             playerBot.setPlayerInventory(new PlayerInventory(playerBot.getPlayer()));
         playerBot.getPlayer().world = playerBot.getWorld();
@@ -156,7 +156,7 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         NetworkThreadUtils.forceMainThread(packet, this, Wrapper.INSTANCE.getMinecraft());
         if (packet.getEntityId() == entityId) {
             sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
-            playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile()));
+            playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile(), playerBot.getKeyPair().publicKey()));
             playerBot.setPlayerInventory(new PlayerInventory(playerBot.getPlayer()));
         }
     }

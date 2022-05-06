@@ -6,6 +6,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.util.Identifier;
 
 import java.util.UUID;
@@ -13,7 +14,7 @@ import java.util.UUID;
 public class FakePlayerEntity extends AbstractClientPlayerEntity {
 
     public FakePlayerEntity(ClientWorld world, GameProfile profile) {
-        super(world, profile);
+        super(world, profile, null);
     }
 
     public void setUUID(UUID uuid) {

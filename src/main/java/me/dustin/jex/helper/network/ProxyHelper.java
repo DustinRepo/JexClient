@@ -1,7 +1,6 @@
 package me.dustin.jex.helper.network;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelException;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.proxy.Socks4ProxyHandler;

@@ -46,9 +46,9 @@ public class BotLoginNetworkHandler extends ClientLoginNetworkHandler {
         Cipher cipher;
         String string;
         try {
-            SecretKey secretKey = NetworkEncryptionUtils.generateKey();
+            SecretKey secretKey = NetworkEncryptionUtils.generateSecretKey();
             PublicKey publicKey = packet.getPublicKey();
-            string = new BigInteger(NetworkEncryptionUtils.generateServerId(packet.getServerId(), publicKey, secretKey)).toString(16);
+            string = new BigInteger(NetworkEncryptionUtils.computeServerId(packet.getServerId(), publicKey, secretKey)).toString(16);
             cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
             cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
             loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, packet.getNonce());

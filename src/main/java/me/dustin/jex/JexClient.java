@@ -260,8 +260,8 @@ public enum JexClient {
         packets.add("c2s", c2s);
         packets.add("s2c", s2c);
         protocolObject.add("packets", packets);
-        jsonObject.add("838", protocolObject);
+        jsonObject.add("839", protocolObject);
 
-        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_packetIds.json"), List.of(jsonObject.toString().split("\n")));
+        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_packetIds.json"), List.of(JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")));
     }
 }

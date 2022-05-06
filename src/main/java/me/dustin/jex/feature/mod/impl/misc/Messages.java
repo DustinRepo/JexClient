@@ -6,6 +6,8 @@ import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.helper.misc.Wrapper;
+import net.minecraft.class_7469;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 
@@ -21,8 +23,7 @@ public class Messages extends Feature {
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         ChatMessageC2SPacket chatMessageC2SPacket = (ChatMessageC2SPacket) event.getPacket();
-        Instant instant = chatMessageC2SPacket.getTime();
-        NetworkEncryptionUtils.SignatureData saltAndSig = chatMessageC2SPacket.getSignature();
+        class_7469 sigData = chatMessageC2SPacket.method_43899(Wrapper.INSTANCE.getLocalPlayer().getUuid());
         String message = chatMessageC2SPacket.getChatMessage();
         if (message.startsWith("/"))
             return;
@@ -36,11 +37,11 @@ public class Messages extends Feature {
                     char replace = fancyChars.charAt(replaceChars.indexOf(currentChar));
                     s = s.replace(currentChar, replace);
                 }
-                event.setPacket(new ChatMessageC2SPacket(instant, s, saltAndSig));
+                event.setPacket(new ChatMessageC2SPacket(s, sigData));
             }
-            case "Upside-Down" -> event.setPacket(new ChatMessageC2SPacket(instant, upsideDown(message), saltAndSig));
-            case "Backwards" -> event.setPacket(new ChatMessageC2SPacket(instant, new StringBuilder(message).reverse().toString(), saltAndSig));
-            case "Random Capital" -> event.setPacket(new ChatMessageC2SPacket(instant, randomCapitalize(message), saltAndSig));
+            case "Upside-Down" -> event.setPacket(new ChatMessageC2SPacket(upsideDown(message), sigData));
+            case "Backwards" -> event.setPacket(new ChatMessageC2SPacket(new StringBuilder(message).reverse().toString(), sigData));
+            case "Random Capital" -> event.setPacket(new ChatMessageC2SPacket(randomCapitalize(message), sigData));
         }
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ChatMessageC2SPacket.class));
 

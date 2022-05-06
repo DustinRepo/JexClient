@@ -1,11 +1,15 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.ParseResults;
+import me.dustin.jex.JexClient;
 import me.dustin.jex.event.chat.EventSendMessage;
 import me.dustin.jex.event.misc.EventPortalCloseGUI;
 import me.dustin.jex.event.player.*;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
+import net.minecraft.class_7450;
+import net.minecraft.class_7470;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.Input;
@@ -14,17 +18,21 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.command.CommandSource;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.checkerframework.checker.units.qual.A;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,6 +40,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity {
@@ -56,8 +67,8 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     @Shadow
     private boolean inSneakingPose;
 
-    public MixinClientPlayerEntity(ClientWorld world, GameProfile profile) {
-        super(world, profile);
+    public MixinClientPlayerEntity(ClientWorld world, GameProfile profile, PlayerPublicKey playerPublicKey) {
+        super(world, profile, playerPublicKey);
     }
 
     @Shadow

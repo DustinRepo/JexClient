@@ -37,6 +37,7 @@ public class NewChunks extends Feature {
             return;
         WorldChunk chunk = event.getWorldChunk();
         if (chunk != null)
+            new Thread(() -> {
             for (int x = 0; x < 16; x++)
                 for (int y = chunk.getBottomY(); y < chunk.getHighestNonEmptySectionYOffset(); y++)
                     for (int z = 0; z < 16; z++) {
@@ -48,6 +49,7 @@ public class NewChunks extends Feature {
                             }
                         }
                     }
+            }).start();
     });
 
     @EventPointer
