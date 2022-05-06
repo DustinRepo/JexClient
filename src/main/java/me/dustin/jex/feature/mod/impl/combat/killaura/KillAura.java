@@ -183,14 +183,14 @@ public class KillAura extends Feature {
         }
         if (livingEntity.isSleeping())
             return false;
-        if (rangecheck)
-            if (!(livingEntity.canSee(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()))) {
-                if (entity.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) > 3)
-                    return false;
-            } else {
-                if (entity.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) > reach)
+        if (rangecheck) {
+            if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > reach)
+                return false;
+            if (!(livingEntity.canSee(Wrapper.INSTANCE.getPlayer()))) {
+                if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > 3)
                     return false;
             }
+        }
         if (entity.age < ticksExisted)
             return false;
         if (entity.hasCustomName() && !nametagged)
