@@ -1,3 +1,8 @@
+0.6.7
+Added Darkness to AntiEffect
+Fixed FakeLag breaking Nametags on snapshots
+Fixed random instances where KillAura might tank fps
+
 0.6.6
 Added custom IRC software to be used for the IRC mod
 Added optional authentication for SOCKS5 proxies
