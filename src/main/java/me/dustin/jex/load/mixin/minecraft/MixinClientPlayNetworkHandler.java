@@ -9,6 +9,7 @@ import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.event.world.EventLoadChunk;
 import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.ConnectedServerHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.player.bot.BotClientPlayNetworkHandler;
 import me.dustin.jex.load.impl.IClientPlayNetworkHandler;
@@ -69,6 +70,13 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetwor
             this.connection.send(eventPacketSent.getPacket());
             ci.cancel();
         }
+    }
+
+    @Inject(method = "onPlayerPositionLook", at = @At("HEAD"))
+    public void posLook(PlayerPositionLookS2CPacket packet, CallbackInfo ci) {
+        //fix for viafabric getting stuck on "Loading terrain..." on 2b2t specifically
+        if (ConnectedServerHelper.INSTANCE.getServerAddress().getAddress().contains("2b2t.org") && Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null)
+            Wrapper.INSTANCE.getMinecraft().setScreen(null);
     }
 
     @Inject(method = "loadChunk", at = @At("HEAD"), cancellable = true)
