@@ -1,5 +1,6 @@
 0.6.8
 Massively improved performance of 2D rendering
+Fixed IRC throwing errors on some long messages
 Fixed snapshots not properly displaying Jex version
 Fixed CreativeDrop not working since the event manager recode
 
