@@ -23,7 +23,7 @@ public class MixinInGameHud {
 
     @Shadow @Final private static Identifier POWDER_SNOW_OUTLINE;
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/scoreboard/Scoreboard.getObjectiveForSlot(I)Lnet/minecraft/scoreboard/ScoreboardObjective;"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;isPressed()Z"))
     public void draw(MatrixStack matrixStack, float float_1, CallbackInfo ci) {
         try {
             new EventRender2D(matrixStack).run();
