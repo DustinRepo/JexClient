@@ -7,7 +7,7 @@
  */
 package me.dustin.jex.helper.world.wurstpathfinder;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public class PathPos extends BlockPos
 {

@@ -1,6 +1,5 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.TickFilter;
@@ -13,14 +12,13 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import me.dustin.jex.load.impl.ISliderWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
-
+import me.dustin.jex.load.impl.IAbstractSliderButton;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.util.Mth;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +30,8 @@ public class CustomWidgets extends Feature {
     @Op(name = "Grow Speed", min = 1, max = 10, inc = 0.1f)
     public float growSpeed = 1.2f;
 
-    private final Map<ClickableWidget, Integer> hoverChecks = new HashMap<>();
-    private final Map<ClickableWidget, Float> offsets = new HashMap<>();
+    private final Map<AbstractWidget, Integer> hoverChecks = new HashMap<>();
+    private final Map<AbstractWidget, Float> offsets = new HashMap<>();
 
     @EventPointer
     private final EventListener<EventRenderWidget> eventRenderWidgetEventListener = new EventListener<>(event -> {
@@ -43,8 +41,8 @@ public class CustomWidgets extends Feature {
         int activeTextColor = 0xffbbbbbb;
         int inactiveTextColor = 0xff333333;
 
-        ClickableWidget widget = event.getClickableWidget();
-        MatrixStack matrixStack = event.getMatrixStack();
+        AbstractWidget widget = event.getAbstractWidget();
+        PoseStack matrixStack = event.getPoseStack();
         if (!hoverChecks.containsKey(widget)) {
             hoverChecks.put(widget, 0);
             offsets.put(widget, 0.f);
@@ -54,15 +52,15 @@ public class CustomWidgets extends Feature {
         float newOffset;
         if (hoverTime != 0){
             newOffset = 5 / (10.f / hoverTime);
-            offset = offset + ((newOffset - offset) * Wrapper.INSTANCE.getMinecraft().getTickDelta());
+            offset = offset + ((newOffset - offset) * Wrapper.INSTANCE.getMinecraft().getFrameTime());
         } else {
             newOffset = 0;
         }
         offsets.replace(widget, newOffset);
-        if (widget instanceof ButtonWidget || widget instanceof CyclingButtonWidget) {
-            Render2DHelper.INSTANCE.fillAndBorder(matrixStack, widget.x + offset, widget.y + (offset / 3.f), widget.x + widget.getWidth() - offset, widget.y + widget.getHeight() - (offset / 3.f), borderColor, widget.active && widget.isHovered() ? hoverColor : nonHoverColor, 1);
-        } else if (widget instanceof SliderWidget sliderWidget) {
-            ISliderWidget islider = (ISliderWidget) sliderWidget;
+        if (widget instanceof Button || widget instanceof CycleButton) {
+            Render2DHelper.INSTANCE.fillAndBorder(matrixStack, widget.x + offset, widget.y + (offset / 3.f), widget.x + widget.getWidth() - offset, widget.y + widget.getHeight() - (offset / 3.f), borderColor, widget.active && widget.isHoveredOrFocused() ? hoverColor : nonHoverColor, 1);
+        } else if (widget instanceof AbstractSliderButton sliderWidget) {
+            IAbstractSliderButton islider = (IAbstractSliderButton) sliderWidget;
             double value = islider.getValue();
             float x = widget.x + 4;
             float width = widget.getWidth() - 8;
@@ -77,15 +75,15 @@ public class CustomWidgets extends Feature {
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
-        for (ClickableWidget widget : hoverChecks.keySet()) {
+        for (AbstractWidget widget : hoverChecks.keySet()) {
             int hovered = hoverChecks.get(widget);
-            if (widget.isHovered() && widget.active) {
+            if (widget.isHoveredOrFocused() && widget.active) {
                 if (hovered < 10)
                     hovered+=shrinkSpeed;
             } else if (hovered > 0) {
                 hovered-=growSpeed;
             }
-            hovered = MathHelper.clamp(hovered, 0, 10);
+            hovered = Mth.clamp(hovered, 0, 10);
             hoverChecks.replace(widget, hovered);
         }
     }, new TickFilter(EventTick.Mode.PRE));

@@ -1,14 +1,14 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.client.gui.screens.ChatScreen;
 
 public class WatermarkElement extends HudElement {
     public WatermarkElement(float x, float y, float minWidth, float minHeight) {
@@ -19,10 +19,10 @@ public class WatermarkElement extends HudElement {
     private boolean flipRot;
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         if (!isVisible())
             return;
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().screen instanceof ChatScreen) {
             if (isHovered())
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getName(), getX() + (getWidth() / 2.f), getY() - 10, -1);
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), isHovered() ? ColorHelper.INSTANCE.getClientColor() : 0xff696969, 0x00000000, 1);
@@ -31,19 +31,19 @@ public class WatermarkElement extends HudElement {
         handleElement();
         int x = (int)this.getX() + 17;
         int y = (int)this.getY() + 17;
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(x, y, 0);
         switch (getHud().watermarkMode) {
             case "Static":
                 break;
             case "Spin Only":
-                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), rot, true));
+                matrixStack.mulPose(new Quaternion(new Vector3f(0.0F, 0.0F, 1.0F), rot, true));
                 break;
             case "Flip Only":
-                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 1F, 0F), rot, true));
+                matrixStack.mulPose(new Quaternion(new Vector3f(0.0F, 1F, 0F), rot, true));
                 break;
             case "SpinFlip":
-                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.5f, 1F), rot, true));
+                matrixStack.mulPose(new Quaternion(new Vector3f(0.0F, 0.5f, 1F), rot, true));
                 break;
         }
 
@@ -62,16 +62,16 @@ public class WatermarkElement extends HudElement {
             case "Static":
                 break;
             case "Spin Only":
-                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, -1.0F), rot, true));
+                matrixStack.mulPose(new Quaternion(new Vector3f(0.0F, 0.0F, -1.0F), rot, true));
                 break;
             case "Flip Only":
-                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, -1F, 0F), rot, true));
+                matrixStack.mulPose(new Quaternion(new Vector3f(0.0F, -1F, 0F), rot, true));
                 break;
             case "SpinFlip":
-                matrixStack.multiply(new Quaternion(new Vec3f(0.0F, -0.5f, -1F), rot, true));
+                matrixStack.mulPose(new Quaternion(new Vector3f(0.0F, -0.5f, -1F), rot, true));
                 break;
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override

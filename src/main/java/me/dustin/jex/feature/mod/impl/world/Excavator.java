@@ -29,17 +29,17 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -81,17 +81,17 @@ public class Excavator extends Feature {
             return;
         BlockPos closestBlock = miningArea.getClosest();
         if (closestBlock != null) {
-            double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(closestBlock));
-            if (distanceTo <= (WorldHelper.INSTANCE.getBlock(closestBlock) == Blocks.BEDROCK ? 3 : Wrapper.INSTANCE.getInteractionManager().getReachDistance() - 1)) {
+            double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().position(), Vec3.atCenterOf(closestBlock));
+            if (distanceTo <= (WorldHelper.INSTANCE.getBlock(closestBlock) == Blocks.BEDROCK ? 3 : Wrapper.INSTANCE.getMultiPlayerGameMode().getPickRange() - 1)) {
                 if (!KillAura.INSTANCE.hasTarget() && !BreakingFlowController.isWorking()) {
                     BlockHitResult blockHitResult = rayCast(Wrapper.INSTANCE.getPlayer(), closestBlock);
-                    RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), Vec3d.ofCenter(closestBlock));
+                    RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), Vec3.atCenterOf(closestBlock));
                     event.setRotation(rotationVector);
-                    Wrapper.INSTANCE.getPlayer().setHeadYaw(rotationVector.getYaw());
-                    Wrapper.INSTANCE.getPlayer().setBodyYaw(rotationVector.getYaw());
+                    Wrapper.INSTANCE.getPlayer().setYHeadRot(rotationVector.getYaw());
+                    Wrapper.INSTANCE.getPlayer().setYBodyRot(rotationVector.getYaw());
 
-                    Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(closestBlock, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
-                    PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
+                    Wrapper.INSTANCE.getMultiPlayerGameMode().continueDestroyBlock(closestBlock, blockHitResult == null ? Direction.UP : blockHitResult.getDirection());
+                    PlayerHelper.INSTANCE.swing(InteractionHand.MAIN_HAND);
                 }
                 if (distanceTo <= 1.5f && WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getPlayer()) != Blocks.AIR) {
                     PathingHelper.INSTANCE.cancelPathing();
@@ -115,7 +115,7 @@ public class Excavator extends Feature {
             ChatHelper.INSTANCE.addClientMessage("Excavator finished.");
             setState(false);
             if (logoutWhenDone) {
-                NetworkHelper.INSTANCE.disconnect(Formatting.AQUA + "Excavator", Formatting.GREEN + "Excavator has finished.");
+                NetworkHelper.INSTANCE.disconnect(ChatFormatting.AQUA + "Excavator", ChatFormatting.GREEN + "Excavator has finished.");
             }
             return;
         }
@@ -129,32 +129,32 @@ public class Excavator extends Feature {
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (renderAreaBox && (tempPos1 != null && tempPos2 != null) || miningArea != null) {
             MiningArea copy = miningArea != null ? miningArea : new MiningArea(tempPos1, tempPos2);
-            Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(copy.getAreaBB().minX, copy.getAreaBB().minY, copy.getAreaBB().minZ));
-            Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(copy.getAreaBB().maxX, copy.getAreaBB().maxY, copy.getAreaBB().maxZ));
-            Box miningAreaBox = new Box(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), miningAreaBox, 0xffffff00);
+            Vec3 miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(copy.getAreaBB().minX, copy.getAreaBB().minY, copy.getAreaBB().minZ));
+            Vec3 miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(copy.getAreaBB().maxX, copy.getAreaBB().maxY, copy.getAreaBB().maxZ));
+            AABB miningAreaBox = new AABB(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), miningAreaBox, 0xffffff00);
         }
         if (tempPos1 != null) {//draws yellow box on first set pos
-            Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos1);
-            Box closestBox = new Box(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), closestBox, 0xffffff00);
+            Vec3 tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos1);
+            AABB closestBox = new AABB(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), closestBox, 0xffffff00);
         }
         if (tempPos2 != null) {//draws yellow box on first set pos
-            Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos2);
-            Box closestBox = new Box(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), closestBox, 0xffffff00);
+            Vec3 tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos2);
+            AABB closestBox = new AABB(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), closestBox, 0xffffff00);
         }
         //draws yellow box on crosshair block
-        if (miningArea == null && Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof BlockHitResult blockHitResult) {
-            Vec3d hitVec = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
-            Box hoverBox = new Box(hitVec.x, hitVec.y, hitVec.z, hitVec.x + 1, hitVec.y + 1, hitVec.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), hoverBox, 0xff00ff00);
+        if (miningArea == null && Wrapper.INSTANCE.getMinecraft().hitResult instanceof BlockHitResult blockHitResult) {
+            Vec3 hitVec = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
+            AABB hoverBox = new AABB(hitVec.x, hitVec.y, hitVec.z, hitVec.x + 1, hitVec.y + 1, hitVec.z + 1);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), hoverBox, 0xff00ff00);
         }
     });
 
     @EventPointer
     private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof BlockHitResult blockHitResult) {
+        if (Wrapper.INSTANCE.getMinecraft().hitResult instanceof BlockHitResult blockHitResult) {
             switch (stage) {
                 case SET_POS1 -> tempPos1 = blockHitResult.getBlockPos();
                 case SET_POS2 -> tempPos2 = blockHitResult.getBlockPos();
@@ -183,19 +183,19 @@ public class Excavator extends Feature {
             }
             case EXCAVATING -> {
                 percent = 1 - ((float)miningArea.blocksLeft() / (float)miningArea.totalBlocks());
-                message = Formatting.WHITE + "Excavating... " + Formatting.RESET + String.format("%.2f", percent * 100) + Formatting.WHITE + "%";
+                message = ChatFormatting.WHITE + "Excavating... " + ChatFormatting.RESET + String.format("%.2f", percent * 100) + ChatFormatting.WHITE + "%";
             }
             case PAUSED -> message = "Excavator Paused... Press Enter to Resume";
         }
         float width = FontHelper.INSTANCE.getStringWidth(message);
-        Render2DHelper.INSTANCE.outlineAndFill(event.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 10, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 24, 0x70696969, 0x40000000);
-        FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 13, miningArea != null ? getColor(percent).getRGB() : -1);
+        Render2DHelper.INSTANCE.outlineAndFill(event.getPoseStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 10, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 24, 0x70696969, 0x40000000);
+        FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 13, miningArea != null ? getColor(percent).getRGB() : -1);
 
         if (PathingHelper.INSTANCE.isThinking()) {
-            message = Formatting.GREEN + "Wurst AI" + Formatting.GRAY + ": " + Formatting.WHITE + "Thinking";
+            message = ChatFormatting.GREEN + "Wurst AI" + ChatFormatting.GRAY + ": " + ChatFormatting.WHITE + "Thinking";
             width = FontHelper.INSTANCE.getStringWidth(message);
-            Render2DHelper.INSTANCE.outlineAndFill(event.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 25, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 39, 0x70696969, 0x40000000);
-            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 28,-1);
+            Render2DHelper.INSTANCE.outlineAndFill(event.getPoseStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 25, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 39, 0x70696969, 0x40000000);
+            FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 28,-1);
         }
     });
 
@@ -279,14 +279,14 @@ public class Excavator extends Feature {
         return Color.getHSBColor((float) H, (float) S, (float) B);
     }
 
-    public BlockHitResult rayCast(PlayerEntity player, BlockPos blockPos) {
-        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(player, Vec3d.of(blockPos).add(0.5, 0, 0.5));
+    public BlockHitResult rayCast(Player player, BlockPos blockPos) {
+        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(player, Vec3.atLowerCornerOf(blockPos).add(0.5, 0, 0.5));
         RotationVector saved = new RotationVector(player);
-        Wrapper.INSTANCE.getPlayer().setYaw(rotationVector.getYaw());
-        Wrapper.INSTANCE.getPlayer().setPitch(rotationVector.getPitch());
-        HitResult result = player.raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
-        Wrapper.INSTANCE.getPlayer().setYaw(saved.getYaw());
-        Wrapper.INSTANCE.getPlayer().setPitch(saved.getPitch());
+        Wrapper.INSTANCE.getPlayer().setYRot(rotationVector.getYaw());
+        Wrapper.INSTANCE.getPlayer().setXRot(rotationVector.getPitch());
+        HitResult result = player.pick(Wrapper.INSTANCE.getMultiPlayerGameMode().getPickRange(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
+        Wrapper.INSTANCE.getPlayer().setYRot(saved.getYaw());
+        Wrapper.INSTANCE.getPlayer().setXRot(saved.getPitch());
         if (result instanceof BlockHitResult blockHitResult)
             return blockHitResult;
         return null;
@@ -294,7 +294,7 @@ public class Excavator extends Feature {
 
     public static class MiningArea {
         private final Excavator excavator;
-        private final Box areaBB;
+        private final AABB areaBB;
 
         private final ArrayList<BlockPos> blockPosList = new ArrayList<>();
 
@@ -304,7 +304,7 @@ public class Excavator extends Feature {
         public MiningArea(BlockPos pos1, BlockPos pos2) {
             BlockPos min = new BlockPos(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()));
             BlockPos max = new BlockPos(Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
-            this.areaBB = new Box(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
+            this.areaBB = new AABB(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
             this.excavator = Feature.get(Excavator.class);
 
             for (int x = min.getX(); x <= max.getX(); x++) {
@@ -321,7 +321,7 @@ public class Excavator extends Feature {
         public int blocksLeft() {
             int blocks = 0;
             for (BlockPos blockPos : blockPosList) {
-                if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty())
+                if (WorldHelper.INSTANCE.getBlockState(blockPos).getShape(Wrapper.INSTANCE.getWorld(), blockPos) != Shapes.empty())
                    blocks++;
             }
             return blocks;
@@ -340,7 +340,7 @@ public class Excavator extends Feature {
                 sortList();
                 int y = -64;
                 for (BlockPos blockPos : blockPosList) {
-                    if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
+                    if (WorldHelper.INSTANCE.getBlockState(blockPos).getShape(Wrapper.INSTANCE.getWorld(), blockPos) != Shapes.empty()) {
                         if (blockPos.getY() > y) {
                             y = blockPos.getY();
                         }
@@ -351,7 +351,7 @@ public class Excavator extends Feature {
             }
             for (BlockPos blockPos : blockPosList) {
                 //able to be clicked
-                if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
+                if (WorldHelper.INSTANCE.getBlockState(blockPos).getShape(Wrapper.INSTANCE.getWorld(), blockPos) != Shapes.empty()) {
                     //cheeky little workaround for being able to dig layers
                     if (Math.abs(blockPos.getY() - getHighestBlockY()) <= excavator.layerDepth - 1) {
                         return blockPos;
@@ -365,12 +365,12 @@ public class Excavator extends Feature {
             return highestY;
         }
 
-        public Box getAreaBB() {
+        public AABB getAreaBB() {
             return areaBB;
         }
 
         public void sortList() {
-            blockPosList.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, 2, 0), Vec3d.ofCenter(value))));
+            blockPosList.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().position().add(0, 2, 0), Vec3.atCenterOf(value))));
         }
     }
 

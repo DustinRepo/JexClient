@@ -1,14 +1,8 @@
 package me.dustin.jex.helper.update;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import me.dustin.jex.JexClient;
-import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.SharedConstants;
-
-import java.io.IOException;
-import java.net.URL;
 
 public enum UpdateManager {
     INSTANCE;
@@ -25,14 +19,13 @@ public enum UpdateManager {
                 String url = "https://raw.githubusercontent.com/DustinRepo/JexClient/main/JexChangelog.txt";
                 String response = WebHelper.INSTANCE.httpRequest(url, null, null, "GET").data();
                 latestVersion = new JexVersion(response.split("\n")[0]);
-                JexClient.INSTANCE.getLogger().info(latestVersion.version());
 
                 /*JsonObject updateResponse = new Gson().fromJson(response, JsonObject.class);
                 latestMCVersion = updateResponse.get("mcVersion").getAsString();
                 latestVersion = new JexVersion(updateResponse.get("version").getAsString());
                 latestSnapshotVersion = updateResponse.get("snapVersion").getAsString();*/
 
-                boolean isCurrentlySnapshot = SharedConstants.getGameVersion().getName().contains("w");
+                boolean isCurrentlySnapshot = SharedConstants.getCurrentVersion().getName().contains("w");
                 boolean isVersionSame = JexClient.INSTANCE.getVersion().version().equalsIgnoreCase(latestVersion.version());
                 boolean isMCVersionSame = true;//SharedConstants.getGameVersion().getName().equalsIgnoreCase(isCurrentlySnapshot ? latestSnapshotVersion : latestMCVersion);
                 if (isVersionSame && isMCVersionSame)

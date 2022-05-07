@@ -13,7 +13,7 @@ public class YawLock extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        switch (Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing()) {
+        switch (Wrapper.INSTANCE.getLocalPlayer().getDirection()) {
             case NORTH -> PlayerHelper.INSTANCE.setYaw(-180);
             case SOUTH -> PlayerHelper.INSTANCE.setYaw(0);
             case EAST -> PlayerHelper.INSTANCE.setYaw(-90);

@@ -7,7 +7,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 
 public class EventPlayerPackets extends Event {
 
-    private Mode mode;
+    private final Mode mode;
     private float yaw;
     private float pitch;
     private boolean onGround;
@@ -44,8 +44,8 @@ public class EventPlayerPackets extends Event {
         this.yaw = rotation.getYaw();
         this.pitch = rotation.getPitch();
         if (Wrapper.INSTANCE.getPlayer() == Freecam.playerEntity) {
-            Freecam.playerEntity.setYaw(yaw);
-            Freecam.playerEntity.setPitch(pitch);
+            Freecam.playerEntity.setYRot(yaw);
+            Freecam.playerEntity.setXRot(pitch);
         }
     }
 

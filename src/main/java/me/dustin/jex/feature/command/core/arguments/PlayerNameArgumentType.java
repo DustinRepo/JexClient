@@ -9,8 +9,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.text.Text;
-
+import net.minecraft.network.chat.Component;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
@@ -37,7 +36,7 @@ public class PlayerNameArgumentType implements ArgumentType<String> {
         if (nameString.length() <= 16 && !b) {
             return nameString;
         } else {
-            throw new SimpleCommandExceptionType(Text.of("Not a name")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Component.nullToEmpty("Not a name")).createWithContext(reader);
         }
     }
 
@@ -64,7 +63,7 @@ public class PlayerNameArgumentType implements ArgumentType<String> {
     }
 
     private Collection<String> getPlayerNames() {
-        return Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList().stream().map(e -> e.getProfile().getName()).collect(Collectors.toList());
+        return Wrapper.INSTANCE.getLocalPlayer().connection.getOnlinePlayers().stream().map(e -> e.getProfile().getName()).collect(Collectors.toList());
     }
 
     @Override

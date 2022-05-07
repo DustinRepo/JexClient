@@ -13,7 +13,7 @@ public class AntiHunger extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getLocalPlayer() == null)
             return;
-        if (Wrapper.INSTANCE.getLocalPlayer().prevY == Wrapper.INSTANCE.getLocalPlayer().getY())
+        if (Wrapper.INSTANCE.getLocalPlayer().yo == Wrapper.INSTANCE.getLocalPlayer().getY())
             event.setOnGround(false);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

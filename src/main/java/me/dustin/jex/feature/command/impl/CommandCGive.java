@@ -10,24 +10,24 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.command.argument.ItemStackArgumentType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
+import net.minecraft.world.item.ItemStack;
 
 @Cmd(name = "cgive", description = "Give yourself items in creative mode", syntax = ".cgive <item> <amount (optional)>", alias = "i")
 public class CommandCGive extends Command {
     @Override
     public void registerCommand() {
-        CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(context -> {
+        CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("item", ItemArgument.item(commandRegistryAccess)).executes(context -> {
             if (!context.getSource().getPlayer().isCreative()) {
                 ChatHelper.INSTANCE.addClientMessage("You must be in creative to use this command");
                 return 0;
             }
-            ItemStack stack = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(1, true);
-            int amount = stack.getMaxCount();
+            ItemStack stack = ItemArgument.getItem(context, "item").createItemStack(1, true);
+            int amount = stack.getMaxStackSize();
             stack.setCount(amount);
 
-            NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(36 + InventoryHelper.INSTANCE.getInventory().selectedSlot, stack));
+            NetworkHelper.INSTANCE.sendPacket(new ServerboundSetCreativeModeSlotPacket(36 + InventoryHelper.INSTANCE.getInventory().selected, stack));
             ChatHelper.INSTANCE.addClientMessage("Item given");
             return 1;
         }).then(argument("amount", IntegerArgumentType.integer()).executes(this))));
@@ -41,9 +41,9 @@ public class CommandCGive extends Command {
             return 0;
         }
         int amount = IntegerArgumentType.getInteger(context, "amount");
-        ItemStack stack = ItemStackArgumentType.getItemStackArgument(context, "item").createStack(amount, true);
+        ItemStack stack = ItemArgument.getItem(context, "item").createItemStack(amount, true);
 
-        NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(36 + InventoryHelper.INSTANCE.getInventory().selectedSlot, stack));
+        NetworkHelper.INSTANCE.sendPacket(new ServerboundSetCreativeModeSlotPacket(36 + InventoryHelper.INSTANCE.getInventory().selected, stack));
         ChatHelper.INSTANCE.addClientMessage("Item given");
         return 1;
     }

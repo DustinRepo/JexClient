@@ -11,11 +11,10 @@ import me.dustin.jex.file.impl.TrailsFile;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.particle.ParticleTypes;
-
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.player.Player;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -33,12 +32,12 @@ public class Trail extends Feature {
         particles.sort((c1, c2) -> r.nextInt(2) - 1);
         particles.forEach(particleType -> {
             if (PlayerHelper.INSTANCE.isMoving())
-                Wrapper.INSTANCE.getMinecraft().particleManager.addParticle((ParticleEffect) particleType, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), 0, 0, 0);
+                Wrapper.INSTANCE.getMinecraft().particleEngine.createParticle((ParticleOptions) particleType, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), 0, 0, 0);
             if (showOnFriends)
-                Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                    if (entity != Wrapper.INSTANCE.getLocalPlayer() && entity instanceof PlayerEntity playerEntity) {
-                        if (FriendHelper.INSTANCE.isFriend(playerEntity.getGameProfile().getName()) && (playerEntity.getVelocity().getX() != 0 || playerEntity.getVelocity().getZ() != 0))
-                            Wrapper.INSTANCE.getMinecraft().particleManager.addParticle((ParticleEffect) particleType, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), 0, 0, 0);
+                Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
+                    if (entity != Wrapper.INSTANCE.getLocalPlayer() && entity instanceof Player playerEntity) {
+                        if (FriendHelper.INSTANCE.isFriend(playerEntity.getGameProfile().getName()) && (playerEntity.getDeltaMovement().x() != 0 || playerEntity.getDeltaMovement().z() != 0))
+                            Wrapper.INSTANCE.getMinecraft().particleEngine.createParticle((ParticleOptions) particleType, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), 0, 0, 0);
                     }
                 });
         });

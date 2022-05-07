@@ -1,11 +1,11 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
 import org.apache.commons.lang3.StringUtils;
 
 public class DirectionElement extends HudElement {
@@ -14,11 +14,11 @@ public class DirectionElement extends HudElement {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         if (!isVisible())
             return;
         super.render(matrixStack);
-        String str = String.format("Direction\247f: \2477%s %s", StringUtils.capitalize(Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing().getName()), getDirection());
+        String str = String.format("Direction\247f: \2477%s %s", StringUtils.capitalize(Wrapper.INSTANCE.getLocalPlayer().getDirection().getName()), getDirection());
         float x = isLeftSide() ? getX() + 2.5f : getX() + getWidth() - 0.5f - FontHelper.INSTANCE.getStringWidth(str);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, str, x, getY() + 1.5f, ColorHelper.INSTANCE.getClientColor());
         this.setWidth(FontHelper.INSTANCE.getStringWidth(str) + 3);
@@ -30,7 +30,7 @@ public class DirectionElement extends HudElement {
     }
 
     private String getDirection() {
-        Direction direction = Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing();
+        Direction direction = Wrapper.INSTANCE.getLocalPlayer().getDirection();
         String string7;
         switch (direction) {
             case NORTH:

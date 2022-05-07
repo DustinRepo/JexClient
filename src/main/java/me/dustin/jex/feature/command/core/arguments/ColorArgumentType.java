@@ -12,14 +12,14 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.command.CommandSource;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
 
-public class ColorArgumentType implements ArgumentType<Formatting> {
+public class ColorArgumentType implements ArgumentType<ChatFormatting> {
    private static final Collection<String> EXAMPLES = Arrays.asList("red", "green");
    public static final DynamicCommandExceptionType INVALID_COLOR_EXCEPTION = new DynamicCommandExceptionType((object) -> {
-      return Text.translatable("argument.color.invalid", new Object[]{object});
+      return Component.translatable("argument.color.invalid", new Object[]{object});
    });
 
    private ColorArgumentType() {
@@ -29,14 +29,14 @@ public class ColorArgumentType implements ArgumentType<Formatting> {
       return new ColorArgumentType();
    }
 
-   public static Formatting getColor(CommandContext<FabricClientCommandSource> context, String name) {
-      return (Formatting)context.getArgument(name, Formatting.class);
+   public static ChatFormatting getColor(CommandContext<FabricClientCommandSource> context, String name) {
+      return (ChatFormatting)context.getArgument(name, ChatFormatting.class);
    }
 
-   public Formatting parse(StringReader stringReader) throws CommandSyntaxException {
+   public ChatFormatting parse(StringReader stringReader) throws CommandSyntaxException {
       String string = stringReader.readUnquotedString();
-      Formatting formatting = Formatting.byName(string);
-      if (formatting != null && !formatting.isModifier()) {
+      ChatFormatting formatting = ChatFormatting.getByName(string);
+      if (formatting != null && !formatting.isFormat()) {
          return formatting;
       } else {
          throw INVALID_COLOR_EXCEPTION.create(string);
@@ -44,7 +44,7 @@ public class ColorArgumentType implements ArgumentType<Formatting> {
    }
 
    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-      return CommandSource.suggestMatching((Iterable)Formatting.getNames(true, false), builder);
+      return SharedSuggestionProvider.suggest((Iterable)ChatFormatting.getNames(true, false), builder);
    }
 
    public Collection<String> getExamples() {

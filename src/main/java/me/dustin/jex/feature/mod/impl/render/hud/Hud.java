@@ -26,13 +26,12 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.*;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
-
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import java.awt.*;
 import java.util.*;
 
@@ -154,7 +153,7 @@ public class Hud extends Feature {
 
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getOptions().debugEnabled)
+        if (Wrapper.INSTANCE.getOptions().renderDebug)
             return;
         if (!gaveEditorMessage && ModFileHelper.INSTANCE.isFirstTimeLoading()) {
             ChatHelper.INSTANCE.addClientMessage("Welcome to Jex Client");
@@ -166,13 +165,13 @@ public class Hud extends Feature {
         if (hudElements.isEmpty())
             loadElements();
         hudElements.forEach(hudElement -> {
-            hudElement.render(event.getMatrixStack());
+            hudElement.render(event.getPoseStack());
         });
         if (lagometer)
             drawLagometer(event);
         for (DropdownWindow window : DropDownGui.getCurrentTheme().windows) {
-            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DropDownGui || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof Navigator)) {
-                window.render(event.getMatrixStack());
+            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().screen instanceof DropDownGui || Wrapper.INSTANCE.getMinecraft().screen instanceof Navigator)) {
+                window.render(event.getPoseStack());
             }
         }
     });
@@ -185,16 +184,16 @@ public class Hud extends Feature {
 
     @EventPointer
     private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen)
+        if (Wrapper.INSTANCE.getMinecraft().screen instanceof ChatScreen)
             hudElements.forEach(hudElement -> hudElement.click(MouseHelper.INSTANCE.getMouseX(), MouseHelper.INSTANCE.getMouseY(), event.getButton()));
     });
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen && event.getKey() == this.constrictKey)
+        if (Wrapper.INSTANCE.getMinecraft().screen instanceof ChatScreen && event.getKey() == this.constrictKey)
             hudElements.forEach(hudElement -> {
-                hudElement.setX(MathHelper.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
-                hudElement.setY(MathHelper.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
+                hudElement.setX(Mth.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
+                hudElement.setY(Mth.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
             });
     });
 
@@ -242,26 +241,26 @@ public class Hud extends Feature {
     }
 
     public void drawLagometer(EventRender2D eventRender2D) {
-        FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), String.format("Server is lagging: %.1f", (float) Lagometer.INSTANCE.getLagTime() / 1000), Render2DHelper.INSTANCE.getScaledWidth() / 2, lagOMeterY, ColorHelper.INSTANCE.getClientColor());
+        FontHelper.INSTANCE.drawCenteredString(eventRender2D.getPoseStack(), String.format("Server is lagging: %.1f", (float) Lagometer.INSTANCE.getLagTime() / 1000), Render2DHelper.INSTANCE.getScaledWidth() / 2, lagOMeterY, ColorHelper.INSTANCE.getClientColor());
     }
 
     private void drawItemDurability(EventRender2DItem eventRender2DItem) {
         if (eventRender2DItem.getStack().getMaxDamage() > 0) {
             int maxDamage = eventRender2DItem.getStack().getMaxDamage();
-            int damage = eventRender2DItem.getStack().getDamage();
+            int damage = eventRender2DItem.getStack().getDamageValue();
             int durability = maxDamage - damage;
-            float percent = (((float) eventRender2DItem.getStack().getMaxDamage() - (float) eventRender2DItem.getStack().getDamage()) / (float) eventRender2DItem.getStack().getMaxDamage()) * 100;
+            float percent = (((float) eventRender2DItem.getStack().getMaxDamage() - (float) eventRender2DItem.getStack().getDamageValue()) / (float) eventRender2DItem.getStack().getMaxDamage()) * 100;
             int color = Render2DHelper.INSTANCE.getPercentColor(percent);
 
-            MatrixStack matrixStack = new MatrixStack();
-            matrixStack.translate(0.0, 0.0, eventRender2DItem.getItemRenderer().zOffset + 200.0);
+            PoseStack matrixStack = new PoseStack();
+            matrixStack.translate(0.0, 0.0, eventRender2DItem.getItemRenderer().blitOffset + 200.0);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
-            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            eventRender2DItem.getFontRenderer().draw(Integer.toString(durability), eventRender2DItem.getX() * 2.0f, eventRender2DItem.getY() * 2.0f, staticColor ? 0xFFFFFF : color, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, 15728880);
-            immediate.draw();
+            MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+            eventRender2DItem.getFontRenderer().drawInBatch(Integer.toString(durability), eventRender2DItem.getX() * 2.0f, eventRender2DItem.getY() * 2.0f, staticColor ? 0xFFFFFF : color, true, matrixStack.last().pose(), immediate, false, 0, 15728880);
+            immediate.endBatch();
         }
     }
-    public int getCategoryColor(Feature.Category category) {
+    public int getCategoryColor(Category category) {
         return switch (category) {
             case MOVEMENT -> movementColor;
             case VISUAL -> visualColor;

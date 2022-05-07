@@ -8,11 +8,10 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.UUID;
 
 public class AccountButton {
@@ -32,7 +31,7 @@ public class AccountButton {
         uuid = PlayerHelper.INSTANCE.getUUID(account.getUsername());
     }
 
-    public void draw(MatrixStack matrixStack) {
+    public void draw(PoseStack matrixStack) {
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), !isSelected() ? 0x85000000 : ColorHelper.INSTANCE.getClientColor(), 0x45000000, 1);
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x30ffffff);
@@ -51,7 +50,7 @@ public class AccountButton {
         } else {
             FontHelper.INSTANCE.drawWithShadow(matrixStack, "Microsoft Account", getX() + 40, getY() + 15, 0xff00ff00);
         }
-        if (this.getAccount().getUsername().equalsIgnoreCase(Wrapper.INSTANCE.getMinecraft().getSession().getUsername())) {
+        if (this.getAccount().getUsername().equalsIgnoreCase(Wrapper.INSTANCE.getMinecraft().getUser().getName())) {
             Render2DHelper.INSTANCE.drawItem(new ItemStack(Items.EMERALD), getX() + getWidth() - 20, getY() + getHeight() - 20);
         }
         FontHelper.INSTANCE.drawWithShadow(matrixStack, pword, getX() + 40, getY() + 25, 0xff676767);

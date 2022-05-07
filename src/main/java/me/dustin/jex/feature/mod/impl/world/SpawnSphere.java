@@ -1,21 +1,22 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Boxes;
-import net.minecraft.util.math.Vec3d;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -31,35 +32,35 @@ public class SpawnSphere extends Feature {
     @Op(name = "See-Through")
     public boolean seethrough = false;
 
-    public Vec3d pos;
+    public Vec3 pos;
     private final ArrayList<BlockPos> innerSphere = new ArrayList<>();
     private final ArrayList<BlockPos> outerSphere = new ArrayList<>();
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        MatrixStack matrixStack = event.getMatrixStack();
+        PoseStack matrixStack = event.getPoseStack();
         ArrayList<Render3DHelper.BoxStorage> boxes = new ArrayList<>();
         innerSphere.forEach(blockPos -> {
-            Vec3d vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
-            Box box = WorldHelper.SINGLE_BOX.offset(vec3d);
+            Vec3 vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
+            AABB box = WorldHelper.SINGLE_BOX.move(vec3d);
             boxes.add(new Render3DHelper.BoxStorage(box, nonSpawnableSphereColor));
         });
         outerSphere.forEach(blockPos -> {
-            Vec3d vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
-            Box box = WorldHelper.SINGLE_BOX.offset(vec3d);
+            Vec3 vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
+            AABB box = WorldHelper.SINGLE_BOX.move(vec3d);
             boxes.add(new Render3DHelper.BoxStorage(box, spawnableSphereColor));
         });
 
         Render3DHelper.INSTANCE.setup3DRender(seethrough);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         boxes.forEach(blockStorage -> {
-            Box box = blockStorage.box();
+            AABB box = blockStorage.box();
             int color = blockStorage.color();
             Render3DHelper.INSTANCE.drawFilledBox(matrixStack, box, color & 0x50ffffff, false);
         });
         bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        BufferUploader.drawWithShader(bufferBuilder.end());
         Render3DHelper.INSTANCE.end3DRender();
     });
 
@@ -68,7 +69,7 @@ public class SpawnSphere extends Feature {
         innerSphere.clear();
         outerSphere.clear();
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
-            pos = Wrapper.INSTANCE.getLocalPlayer().getPos();
+            pos = Wrapper.INSTANCE.getLocalPlayer().position();
             innerSphere.addAll(WorldHelper.INSTANCE.cubeSphere(pos, 24, density, density));
             outerSphere.addAll(WorldHelper.INSTANCE.cubeSphere(pos, 128, density, density));
         } else {

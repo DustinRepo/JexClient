@@ -10,8 +10,8 @@ import me.dustin.jex.feature.mod.impl.misc.SpeedCrafter;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.command.argument.ItemStackArgumentType;
-import net.minecraft.item.Items;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.world.item.Items;
 
 @Cmd(name = "speedcraft", alias = {"sc"}, syntax = ".speedcraft set <item (optional)>/clear", description = "Change the item used for SpeedCrafter mod (hold output item in hand or enter in command)")
 public class CommandSpeedCraft extends Command {
@@ -26,17 +26,17 @@ public class CommandSpeedCraft extends Command {
             return 1;
         })).then(literal("set").executes(context -> {
             SpeedCrafter speedCrafter = Feature.get(SpeedCrafter.class);
-            if (Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.AIR) {
+            if (Wrapper.INSTANCE.getLocalPlayer().getMainHandItem().getItem() == Items.AIR) {
                 ChatHelper.INSTANCE.addClientMessage("No item in hand");
             } else {
-                speedCrafter.craftingItem = Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem();
-                ChatHelper.INSTANCE.addClientMessage("SpeedCrafter item set to \247b" + speedCrafter.craftingItem.getName().getString());
+                speedCrafter.craftingItem = Wrapper.INSTANCE.getLocalPlayer().getMainHandItem().getItem();
+                ChatHelper.INSTANCE.addClientMessage("SpeedCrafter item set to \247b" + speedCrafter.craftingItem.getDescription().getString());
             }
             return 1;
-        }).then(argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(context -> {
+        }).then(argument("item", ItemArgument.item(commandRegistryAccess)).executes(context -> {
             SpeedCrafter speedCrafter = Feature.get(SpeedCrafter.class);
-            speedCrafter.craftingItem = ItemStackArgumentType.getItemStackArgument(context, "item").getItem();
-            ChatHelper.INSTANCE.addClientMessage("SpeedCrafter item set to \247b" + speedCrafter.craftingItem.getName().getString());
+            speedCrafter.craftingItem = ItemArgument.getItem(context, "item").getItem();
+            ChatHelper.INSTANCE.addClientMessage("SpeedCrafter item set to \247b" + speedCrafter.craftingItem.getDescription().getString());
             return 1;
         }))));
         dispatcher.register(literal("sc").redirect(node));

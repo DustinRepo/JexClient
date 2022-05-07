@@ -10,8 +10,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.text.Text;
-
+import net.minecraft.network.chat.Component;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
@@ -31,7 +30,7 @@ public class FeatureArgumentType implements ArgumentType<String> {
         if (Feature.get(str) != null) {
             return str;
         } else {
-            throw new SimpleCommandExceptionType(Text.of("Not a feature")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Component.nullToEmpty("Not a feature")).createWithContext(reader);
         }
     }
 

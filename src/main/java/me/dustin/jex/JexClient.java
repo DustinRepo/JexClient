@@ -2,6 +2,7 @@ package me.dustin.jex;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.platform.InputConstants;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.filters.TickFilter;
@@ -18,6 +19,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.gui.changelog.changelog.JexChangelog;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
+import me.dustin.jex.helper.file.ClassHelper;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -41,19 +43,19 @@ import me.dustin.events.core.annotate.EventPointer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.network.NetworkSide;
-import net.minecraft.network.NetworkState;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.sounds.SoundEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public enum JexClient {
     INSTANCE;
@@ -147,26 +149,24 @@ public enum JexClient {
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_GAME));
 
     @EventPointer
-    private final EventListener<EventScheduleStop> eventScheduleStopEventListener = new EventListener<>(event -> {
+    private final EventListener<EventStop> eventScheduleStopEventListener = new EventListener<>(event -> {
         ModFileHelper.INSTANCE.closeGame();
     });
 
     @EventPointer
     private final EventListener<EventGameFinishedLoading> eventGameFinishedLoadingEventListener = new EventListener<>(event -> {
         if (playSoundOnLaunch())
-            Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F));
+            Wrapper.INSTANCE.getMinecraft().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.PLAYER_LEVELUP, 1.0F));
     });
 
     public ModContainer getModContainer() {
-        return FabricLoader.getInstance().getModContainer("assets/jex").orElse(null);
+        return FabricLoader.getInstance().getModContainer("jex").orElse(null);
     }
 
     public JexVersion getVersion() {
         if (version == null) {
             String v;
-            if (this.getModContainer() == null)
-                v = "0.0.0";
-            else if (this.getModContainer().getMetadata().getVersion().getFriendlyString().equals("${version}")) {
+            if (this.getModContainer().getMetadata().getVersion().getFriendlyString().equals("${version}")) {
                 v = "0.0.0-unknown";
             } else {
                 v = this.getModContainer().getMetadata().getVersion().getFriendlyString();
@@ -174,10 +174,6 @@ public enum JexClient {
             version = new JexVersion(v);
         }
         return version;
-    }
-
-    public String getBuildMetaData() {
-        return this.getModContainer().getMetadata().getCustomValue("buildVersion").getAsString();
     }
 
     public Logger getLogger() {
@@ -212,7 +208,7 @@ public enum JexClient {
                 JsonObject object = new JsonObject();
                 object.addProperty("name", feature.getName());
                 object.addProperty("description", feature.getDescription());
-                object.addProperty("key", (GLFW.glfwGetKeyName(feature.getKey(), 0) == null ? InputUtil.fromKeyCode(feature.getKey(), 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(feature.getKey(), 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_"));
+                object.addProperty("key", (GLFW.glfwGetKeyName(feature.getKey(), 0) == null ? InputConstants.getKey(feature.getKey(), 0).getName().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(feature.getKey(), 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_"));
                 object.addProperty("enabled", feature.getState());
                 object.addProperty("visible", feature.isVisible());
                 categoryArray.add(object);
@@ -236,17 +232,13 @@ public enum JexClient {
         JsonArray c2s = new JsonArray();
         JsonArray s2c = new JsonArray();
 
-        protocolObject.addProperty("name", SharedConstants.getGameVersion().getName());
+        protocolObject.addProperty("name", SharedConstants.getCurrentVersion().getName());
         protocolObject.addProperty("protocol_id", SharedConstants.getProtocolVersion());
 
         String[] c2sPackets = new String[150];
-        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.SERVERBOUND).forEach((integer, aClass) -> {
-            c2sPackets[integer] = aClass.getSimpleName().split("C2S")[0];
-        });
         String[] s2cPackets = new String[150];
-        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.CLIENTBOUND).forEach((integer, aClass) -> {
-            s2cPackets[integer] = aClass.getSimpleName().split("S2C")[0];
-        });
+        ConnectionProtocol.PLAY.getPacketsByIds(PacketFlow.SERVERBOUND).forEach((integer, aClass) -> c2sPackets[integer] = aClass.getSimpleName().replace("Serverbound", "").replace("Packet", ""));
+        ConnectionProtocol.PLAY.getPacketsByIds(PacketFlow.CLIENTBOUND).forEach((integer, aClass) -> s2cPackets[integer] = aClass.getSimpleName().replace("Clientbound", "").replace("Packet", ""));
         for (String c2sPacket : c2sPackets) {
             if (c2sPacket == null)
                 break;
@@ -262,6 +254,6 @@ public enum JexClient {
         protocolObject.add("packets", packets);
         jsonObject.add("839", protocolObject);
 
-        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_packetIds.json"), List.of(JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")));
+        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getCurrentVersion().getName() + "_packetIds.json"), List.of(JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")));
     }
 }

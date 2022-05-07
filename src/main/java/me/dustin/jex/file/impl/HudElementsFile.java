@@ -8,8 +8,7 @@ import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.YamlHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.minecraft.util.math.MathHelper;
-
+import net.minecraft.util.Mth;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -93,8 +92,8 @@ public class HudElementsFile extends ConfigFile {
                 }
                 hudElement.setLastWidth(hudElement.getWidth());
                 hudElement.setLastHeight(hudElement.getHeight());
-                hudElement.setX(MathHelper.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
-                hudElement.setY(MathHelper.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
+                hudElement.setX(Mth.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
+                hudElement.setY(Mth.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
                 hudElement.setLastX(hudElement.getX());
                 hudElement.setLastY(hudElement.getY());
             }
@@ -165,8 +164,8 @@ public class HudElementsFile extends ConfigFile {
                         }
                         hudElement.setLastWidth(hudElement.getWidth());
                         hudElement.setLastHeight(hudElement.getHeight());
-                        hudElement.setX(MathHelper.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
-                        hudElement.setY(MathHelper.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
+                        hudElement.setX(Mth.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
+                        hudElement.setY(Mth.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
                         hudElement.setLastX(hudElement.getX());
                         hudElement.setLastY(hudElement.getY());
                     }

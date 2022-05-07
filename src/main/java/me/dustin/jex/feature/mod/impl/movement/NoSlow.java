@@ -7,10 +7,10 @@ import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventSlowdown;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Prevent actions from slowing you down")
 public class NoSlow extends Feature {

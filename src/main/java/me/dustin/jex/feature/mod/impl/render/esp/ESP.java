@@ -3,24 +3,23 @@ package me.dustin.jex.feature.mod.impl.render.esp;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.misc.EventJoinWorld;
+import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.feature.mod.impl.render.esp.impl.OutlineBox;
-import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.FriendHelper;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.impl.BoxESP;
 import me.dustin.jex.feature.mod.impl.render.esp.impl.ShaderESP;
 import me.dustin.jex.feature.mod.impl.render.esp.impl.TwoDeeESP;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
 import java.awt.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Mark entities/players through walls")
@@ -77,9 +76,9 @@ public class ESP extends Feature {
     @EventPointer
     private final EventListener<EventRender2DNoScale> eventRender2DNoScaleEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
-    private final EventListener<EventOutlineColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
+    private final EventListener<EventTeamColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
-    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> sendEvent(event));
+    private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
     private final EventListener<EventHasOutline> eventHasOutlineEventListener = new EventListener<>(event -> sendEvent(event));
 
@@ -114,9 +113,9 @@ public class ESP extends Feature {
             return false;
         if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
             return false;
-        if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
+        if (livingEntity instanceof Player && EntityHelper.INSTANCE.isNPC((Player) livingEntity))
             return false;
-        if (livingEntity instanceof PlayerEntity)
+        if (livingEntity instanceof Player)
             return player;
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutral;
@@ -132,7 +131,7 @@ public class ESP extends Feature {
             return itemColor;
         if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendColor;
-        if (entity instanceof PlayerEntity) {
+        if (entity instanceof Player) {
             if (colorOnDistance) {
                 return getColor(entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64).getRGB();
             }

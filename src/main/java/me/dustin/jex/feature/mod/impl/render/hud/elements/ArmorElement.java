@@ -1,16 +1,16 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.feature.mod.impl.render.CustomFont;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class ArmorElement extends HudElement{
     public ArmorElement(float x, float y, float minWidth, float minHeight) {
@@ -18,7 +18,7 @@ public class ArmorElement extends HudElement{
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         if (!isVisible())
             return;
         super.render(matrixStack);
@@ -28,14 +28,14 @@ public class ArmorElement extends HudElement{
                 continue;
             float x = (getX() + getWidth() - 16 - (16 * count));
             Render2DHelper.INSTANCE.drawItem(itemStack, x, getY());
-            if (itemStack.hasEnchantments() && getHud().drawEnchants) {
+            if (itemStack.isEnchanted() && getHud().drawEnchants) {
                 float scale = 0.5f;
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.scale(scale, scale, 1);
                 int enchCount = 1;
-                for (NbtElement tag : itemStack.getEnchantments()) {
+                for (Tag tag : itemStack.getEnchantmentTags()) {
                     try {
-                        NbtCompound compoundTag = (NbtCompound) tag;
+                        CompoundTag compoundTag = (CompoundTag) tag;
                         float newY = !isTopSide() ? ((getY() + getHeight() + ((10 * scale) * (enchCount - 1)) + 0.5f) / scale) : ((getY() - ((10 * scale) * enchCount) + 0.5f) / scale);
                         float newerX = (x / scale) + 1;
                         String name = getEnchantName(compoundTag);
@@ -47,7 +47,7 @@ public class ArmorElement extends HudElement{
                         enchCount++;
                     } catch (Exception ignored) {}
                 }
-                matrixStack.pop();
+                matrixStack.popPose();
             }
             count++;
         }
@@ -59,7 +59,7 @@ public class ArmorElement extends HudElement{
         return getHud().armor;
     }
 
-    private String getEnchantName(NbtCompound compoundTag) {
+    private String getEnchantName(CompoundTag compoundTag) {
         int level = compoundTag.getShort("lvl");
         String name = compoundTag.getString("id").split(":")[1];
         if (name.contains("_")) {

@@ -12,12 +12,11 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
+import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -29,8 +28,8 @@ public class Blink extends Feature {
 	@OpChild(name = "Send Amount PT", min = 5, max = 50, parent = "Buffer Packets")
 	public int amountPT = 25;
 
-	private final ArrayList<PlayerMoveC2SPacket> packets = new ArrayList<>();
-	public static PlayerEntity playerEntity;
+	private final ArrayList<ServerboundMovePlayerPacket> packets = new ArrayList<>();
+	public static Player playerEntity;
 	private boolean stopCatching;
 
 	@EventPointer
@@ -42,11 +41,11 @@ public class Blink extends Feature {
 		}
 		if (!stopCatching) {
 			if (PlayerHelper.INSTANCE.isMoving()) {
-				packets.add((PlayerMoveC2SPacket) event.getPacket());
+				packets.add((ServerboundMovePlayerPacket) event.getPacket());
 			}
 			event.cancel();
 		}
-	}, new ClientPacketFilter(EventPacketSent.Mode.PRE, PlayerMoveC2SPacket.class));
+	}, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundMovePlayerPacket.class));
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -61,10 +60,10 @@ public class Blink extends Feature {
 	public void onEnable() {
 		stopCatching = false;
 		if (Wrapper.INSTANCE.getLocalPlayer() != null) {
-			playerEntity = new FakePlayerEntity(Wrapper.INSTANCE.getWorld(), new GameProfile(UUID.randomUUID(), Wrapper.INSTANCE.getMinecraft().getSession().getUsername()));
-			playerEntity.copyFrom(Wrapper.INSTANCE.getLocalPlayer());
-			playerEntity.copyPositionAndRotation(Wrapper.INSTANCE.getLocalPlayer());
-			Wrapper.INSTANCE.getWorld().addEntity(42069, playerEntity);
+			playerEntity = new FakePlayerEntity(Wrapper.INSTANCE.getWorld(), new GameProfile(UUID.randomUUID(), Wrapper.INSTANCE.getMinecraft().getUser().getName()));
+			playerEntity.restoreFrom(Wrapper.INSTANCE.getLocalPlayer());
+			playerEntity.copyPosition(Wrapper.INSTANCE.getLocalPlayer());
+			Wrapper.INSTANCE.getWorld().putNonPlayerEntity(42069, playerEntity);
 		}
 		super.onEnable();
 	}
@@ -78,7 +77,7 @@ public class Blink extends Feature {
 			packets.forEach(NetworkHelper.INSTANCE::sendPacket);
 		packets.clear();
 		if (playerEntity != null) {
-			playerEntity.setPos(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+			playerEntity.setPosRaw(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 			if (Wrapper.INSTANCE.getWorld() != null)
 				Wrapper.INSTANCE.getWorld().removeEntity(playerEntity.getId(), Entity.RemovalReason.DISCARDED);
 			playerEntity = null;

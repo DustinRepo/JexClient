@@ -8,7 +8,6 @@ import me.dustin.jex.gui.click.dropdown.impl.button.DropdownButton;
 import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
 import me.dustin.jex.gui.click.dropdown.theme.flare.FlareDropdownToggleButton;
 import me.dustin.jex.helper.render.Scrollbar;
-import net.minecraft.util.Formatting;
 
 public class FlareConfigWindow extends FlareDropdownWindow {
     public FlareConfigWindow(DropdownTheme theme, float x, float y, float width, float maxHeight) {

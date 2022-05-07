@@ -1,21 +1,21 @@
 package me.dustin.jex.event.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.Event;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.item.ItemStack;
 
 public class EventRenderItem extends Event {
 
-    private MatrixStack matrixStack;
-    private ItemStack itemStack;
-    private ModelTransformation.Mode type;
-    private RenderTime renderTime;
-    private boolean leftHanded;
+    private final PoseStack poseStack;
+    private final ItemStack itemStack;
+    private final ItemTransforms.TransformType type;
+    private final RenderTime renderTime;
+    private final boolean leftHanded;
 
-    public EventRenderItem(MatrixStack matrixStack, ItemStack itemStack, ModelTransformation.Mode type, RenderTime renderTime, boolean leftHanded)
+    public EventRenderItem(PoseStack poseStack, ItemStack itemStack, ItemTransforms.TransformType type, RenderTime renderTime, boolean leftHanded)
     {
-        this.matrixStack = matrixStack;
+        this.poseStack = poseStack;
         this.itemStack = itemStack;
         this.type = type;
         this.renderTime = renderTime;
@@ -26,7 +26,7 @@ public class EventRenderItem extends Event {
         return itemStack;
     }
 
-    public ModelTransformation.Mode getType() {
+    public ItemTransforms.TransformType getType() {
         return type;
     }
 
@@ -34,8 +34,8 @@ public class EventRenderItem extends Event {
         return renderTime;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public PoseStack getPoseStack() {
+        return poseStack;
     }
 
     public boolean isLeftHanded() {

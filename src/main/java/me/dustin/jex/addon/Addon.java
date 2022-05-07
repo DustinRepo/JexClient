@@ -7,11 +7,8 @@ import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.network.WebHelper;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
-import java.io.IOException;
-import java.net.URL;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.player.Player;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
@@ -21,14 +18,14 @@ public class Addon {
 
 	public static ArrayList<String> requestedUUIds = new ArrayList<>();
 
-	public static void loadAddons(AbstractClientPlayerEntity player) {
+	public static void loadAddons(AbstractClientPlayer player) {
 		if (EntityHelper.INSTANCE.isNPC(player))
 			return;
 		String s = player.getGameProfile().getId().toString().replace("-", "");
 		loadAddons(s);
 	}
 
-	public static void loadAddons(PlayerEntity player) {
+	public static void loadAddons(Player player) {
 		if (EntityHelper.INSTANCE.isNPC(player))
 			return;
 		String s = player.getGameProfile().getId().toString().replace("-", "");

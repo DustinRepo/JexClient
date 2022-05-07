@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.click.dropdown.theme.flare.option;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.DrawScreenFilter;
@@ -14,8 +15,7 @@ import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
 
 public class FlareModeOptionButton extends ModeOptionButton {
     public FlareModeOptionButton(DropdownWindow window, StringArrayOption option, float x, float y, float width, float height) {
@@ -23,12 +23,12 @@ public class FlareModeOptionButton extends ModeOptionButton {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x40ffffff);
         if (hasChild())
             FontHelper.INSTANCE.drawWithShadow(matrixStack, isOpen() ? "-" : "+", getX() + 2, getY() + (getHeight() / 2 - 4), isOpen() ? 0xff00ffff : -1);
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, Formatting.WHITE + this.getOption().getName() + ": " + Formatting.RESET + stringArrayOption.getValue(), this.getX() + 10, getY() + (getHeight() / 2 - 4), 0xff00ffff);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, ChatFormatting.WHITE + this.getOption().getName() + ": " + ChatFormatting.RESET + stringArrayOption.getValue(), this.getX() + 10, getY() + (getHeight() / 2 - 4), 0xff00ffff);
         if (isOpen()) {
             DropdownButton bottomOption = getVeryBottomOption();
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, getX() + 2, getY() + getHeight() + getWindow().getTheme().getOptionOffset() - 2, getX() + getWidth() - 2, bottomOption.getY() + bottomOption.getHeight() + 2, 0xaa999999, 0x50000000, 1);
@@ -38,7 +38,7 @@ public class FlareModeOptionButton extends ModeOptionButton {
 
     @EventPointer
     private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
-        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DropDownGui)) {
+        if (!(Wrapper.INSTANCE.getMinecraft().screen instanceof DropDownGui)) {
             unregister();
             return;
         }
@@ -67,7 +67,7 @@ public class FlareModeOptionButton extends ModeOptionButton {
 
     @EventPointer
     private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
-        MatrixStack matrixStack = event.getMatrixStack();
+        PoseStack matrixStack = event.getPoseStack();
         if (isSelecting) {
             int i = 1;
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, getX() - 1, getY() + 11, getX() + getWidth() + 1, getY() + 1 + ((stringArrayOption.getAll().length + 1) * 12), 0x99ffffff, 0xaa000000, 1);

@@ -1,15 +1,15 @@
 package me.dustin.jex.event.misc;
 
 import me.dustin.events.core.Event;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Box;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
 
 public class EventEntityHitbox extends Event {
 
-    private Entity entity;
-    private Box box;
+    private final Entity entity;
+    private AABB box;
 
-    public EventEntityHitbox(Entity entity, Box box) {
+    public EventEntityHitbox(Entity entity, AABB box) {
         this.entity = entity;
         this.box = box;
     }
@@ -18,11 +18,11 @@ public class EventEntityHitbox extends Event {
         return entity;
     }
 
-    public Box getBox() {
+    public AABB getBox() {
         return box;
     }
 
-    public void setBox(Box box) {
+    public void setBox(AABB box) {
         this.box = box;
     }
 }

@@ -1,7 +1,16 @@
 package me.dustin.jex.gui.click.navigator.impl;
 
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -22,17 +31,12 @@ import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -46,7 +50,7 @@ public class NavigatorOptionButton extends Button {
     private boolean isSliding;
     private NavigatorOptionButton masterButton;
     private NavigatorOptionButton parentButton;
-    private final Identifier colorSlider = new Identifier("jex", "gui/click/colorslider.png");
+    private final ResourceLocation colorSlider = new ResourceLocation("jex", "gui/click/colorslider.png");
     private int buttonsHeight;
 
     public NavigatorOptionButton(Option option, float x, float y, float width, float height) {
@@ -55,7 +59,7 @@ public class NavigatorOptionButton extends Button {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         updateOnOff();
         if (this.masterButton != null) {
             Render2DHelper.INSTANCE.fill(matrixStack, masterButton.getX(), this.getY(), this.getX(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor());
@@ -94,11 +98,11 @@ public class NavigatorOptionButton extends Button {
                 break;
         }
         if (hasChild()) {
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(this.getX() + this.getWidth() - 7, this.getY() + 7.5f, 0);
-            matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), cogSpin, true));
+            matrixStack.mulPose(new Quaternion(new Vector3f(0.0F, 0.0F, 1.0F), cogSpin, true));
             Render2DHelper.INSTANCE.drawArrow(matrixStack, 0, 0, this.isOpen(), !this.isOpen() ? 0xff999999 : ColorHelper.INSTANCE.getClientColor());
-            matrixStack.pop();
+            matrixStack.popPose();
         }
         if (isOpen())
             this.getChildren().forEach(button -> {
@@ -274,7 +278,7 @@ public class NavigatorOptionButton extends Button {
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventListener = new EventListener<>(event -> {
-        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof NavigatorOptionScreen)) {
+        if (!(Wrapper.INSTANCE.getMinecraft().screen instanceof NavigatorOptionScreen)) {
             while (EventManager.isRegistered(this))
                 EventManager.unregister(this);
             return;
@@ -291,7 +295,7 @@ public class NavigatorOptionButton extends Button {
             ConfigManager.INSTANCE.get(FeatureFile.class).write();
         } else if (this.getOption() instanceof StringOption stringOption) {
             if (Screen.isPaste(keyCode)) {
-                stringOption.setValue(stringOption.getValue() + MinecraftClient.getInstance().keyboard.getClipboard());
+                stringOption.setValue(stringOption.getValue() + Minecraft.getInstance().keyboardHandler.getClipboard());
                 return;
             }
             switch (keyCode) {
@@ -310,7 +314,7 @@ public class NavigatorOptionButton extends Button {
                     stringOption.setValue(str);
                     break;
                 default:
-                    String keyName = InputUtil.fromKeyCode(keyCode, event.getScancode()).getTranslationKey().replace("key.keyboard.", "");
+                    String keyName = InputConstants.getKey(keyCode, event.getScancode()).getName().replace("key.keyboard.", "");
                     if (keyName.length() == 1) {
                         if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
                             keyName = keyName.toUpperCase();
@@ -359,7 +363,7 @@ public class NavigatorOptionButton extends Button {
         return String.valueOf(i);
     }
 
-    public void drawSliders(Option property, MatrixStack matrixStack) {
+    public void drawSliders(Option property, PoseStack matrixStack) {
         if (property instanceof FloatOption) {
             if (!MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
                 isSliding = false;
@@ -419,7 +423,7 @@ public class NavigatorOptionButton extends Button {
 
             //hue slider
             Render2DHelper.INSTANCE.bindTexture(colorSlider);
-            DrawableHelper.drawTexture(matrixStack, (int) this.getX() + (int) this.getWidth() - 10, (int) this.getY() + 15, 0, 0, 5, 80, 10, 80);
+            GuiComponent.blit(matrixStack, (int) this.getX() + (int) this.getWidth() - 10, (int) this.getY() + 15, 0, 0, 5, 80, 10, 80);
             //hue cursor
             Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 10, this.getY() + 15 + huepos - 1, (this.getX() + this.getWidth() - 10) + 5, this.getY() + 15 + huepos + 1, 0xff000000);
 
@@ -428,8 +432,8 @@ public class NavigatorOptionButton extends Button {
     }
 
 
-    protected void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
-        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+    protected void drawGradientRect(PoseStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
+        Matrix4f matrix = matrixStack.last().pose();
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float g = (float) (startColor >> 16 & 255) / 255.0F;
         float h = (float) (startColor >> 8 & 255) / 255.0F;
@@ -443,16 +447,16 @@ public class NavigatorOptionButton extends Button {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-        bufferBuilder.vertex(matrix, (float) right, (float) top, (float) 0).color(g, h, i, f).next();
-        bufferBuilder.vertex(matrix, (float) left, (float) top, (float) 0).color(1, 1, 1, f).next();
-        bufferBuilder.vertex(matrix, (float) left, (float) bottom, (float) 0).color(0, 0, 0, j).next();
-        bufferBuilder.vertex(matrix, (float) right, (float) bottom, (float) 0).color(k, l, m, j).next();
+        bufferBuilder.vertex(matrix, (float) right, (float) top, (float) 0).color(g, h, i, f).endVertex();
+        bufferBuilder.vertex(matrix, (float) left, (float) top, (float) 0).color(1, 1, 1, f).endVertex();
+        bufferBuilder.vertex(matrix, (float) left, (float) bottom, (float) 0).color(0, 0, 0, j).endVertex();
+        bufferBuilder.vertex(matrix, (float) right, (float) bottom, (float) 0).color(k, l, m, j).endVertex();
 
-        tessellator.draw();
+        tessellator.end();
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
     }
@@ -460,7 +464,7 @@ public class NavigatorOptionButton extends Button {
     void handleSliders(IntOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
             float position = MouseHelper.INSTANCE.getMouseX() - this.getX();
-            float percent = MathHelper.clamp(position / this.getWidth(), 0, 1);
+            float percent = Mth.clamp(position / this.getWidth(), 0, 1);
             float increment = v.getInc();
             int value =  v.getMin() + (int)(percent * (v.getMax() - v.getMin()));
             v.setValue((int) ((int) Math.round(value * (1.0D / increment)) / (1.0D / increment)));
@@ -471,7 +475,7 @@ public class NavigatorOptionButton extends Button {
     void handleSliders(FloatOption v) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
             float position = MouseHelper.INSTANCE.getMouseX() - this.getX();
-            float percent = MathHelper.clamp(position / this.getWidth(), 0, 1);
+            float percent = Mth.clamp(position / this.getWidth(), 0, 1);
             float increment = v.getInc();
             float value = v.getMin() + percent * (v.getMax() - v.getMin());
             v.setValue((float) ((float) Math.round(value * (1.0D / increment)) / (1.0D / increment)));
@@ -483,16 +487,16 @@ public class NavigatorOptionButton extends Button {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
             if (MouseHelper.INSTANCE.getMouseX() > this.getX() + (this.getWidth() / 2.f)) {
                 float position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
-                float percent = MathHelper.clamp(position / 79, 0, 1);
+                float percent = Mth.clamp(position / 79, 0, 1);
                 float value = percent * 270;
                 v.setH((int) value);
             } else {
                 float position = MouseHelper.INSTANCE.getMouseX() - (this.getX() + 5);
-                float percent = MathHelper.clamp(position / 80, 0, 1);
+                float percent = Mth.clamp(position / 80, 0, 1);
                 v.setS(percent);
 
                 position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
-                percent = MathHelper.clamp(position / 79, 0, 1);
+                percent = Mth.clamp(position / 79, 0, 1);
                 v.setB(1 - percent);
             }
             v.setValue(ColorHelper.INSTANCE.getColorViaHue(v.getH(), v.getS(), v.getB()).getRGB());

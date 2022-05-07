@@ -10,10 +10,9 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.util.Hand;
+import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Items;
 import org.lwjgl.glfw.GLFW;
 
 @Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically throw ender pearl from hotbar on button press.")
@@ -26,16 +25,16 @@ public class ThrowPearl extends Feature {
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
         if (event.getKey() == throwKey) {
             int slot = InventoryHelper.INSTANCE.getFromHotbar(Items.ENDER_PEARL);
-            boolean offhand = InventoryHelper.INSTANCE.getInventory().getStack(45).getItem() == Items.ENDER_PEARL;
+            boolean offhand = InventoryHelper.INSTANCE.getInventory().getItem(45).getItem() == Items.ENDER_PEARL;
             if (slot == -1 && !offhand) {
                 ChatHelper.INSTANCE.addClientMessage("You have no ender pearls in your hotbar");
             } else {
-                int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
+                int savedSlot = InventoryHelper.INSTANCE.getInventory().selected;
                 if (slot != -1) {
                     InventoryHelper.INSTANCE.setSlot(slot, true, true);
                 }
-                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
-                NetworkHelper.INSTANCE.sendPacket(new HandSwingC2SPacket(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND));
+                Wrapper.INSTANCE.getMultiPlayerGameMode().useItem(Wrapper.INSTANCE.getPlayer(), offhand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
+                NetworkHelper.INSTANCE.sendPacket(new ServerboundSwingPacket(offhand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND));
                 if (slot != -1) {
                     InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                 }

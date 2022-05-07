@@ -1,12 +1,12 @@
 package me.dustin.jex.event.render;
 
 import me.dustin.events.core.Event;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 
 public class EventNametagShouldRender extends Event {
 
-    private Entity entity;
+    private final Entity entity;
 
     public EventNametagShouldRender(Entity entity) {
         this.entity = entity;

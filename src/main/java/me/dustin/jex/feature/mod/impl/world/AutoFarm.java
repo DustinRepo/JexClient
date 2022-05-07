@@ -26,22 +26,22 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -90,7 +90,7 @@ public class AutoFarm extends Feature {
                     PathingHelper.INSTANCE.setAllowMining(false);
                     PathingHelper.INSTANCE.pathTo(closest);
                 }
-                double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(closest));
+                double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().position(), Vec3.atCenterOf(closest));
 
                 if (distanceTo <= 3) {
                     breakBlock(closest, event);
@@ -108,7 +108,7 @@ public class AutoFarm extends Feature {
                 }
 
                 if (cropSlot > 8) {
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, cropSlot, SlotActionType.SWAP, 8);
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, cropSlot, ClickType.SWAP, 8);
                     cropSlot = 8;
                 }
 
@@ -116,12 +116,12 @@ public class AutoFarm extends Feature {
                     PathingHelper.INSTANCE.setAllowMining(false);
                     PathingHelper.INSTANCE.pathTo(closest);
                 }
-                double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), Vec3d.ofCenter(closest));
+                double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().position(), Vec3.atCenterOf(closest));
 
                 InventoryHelper.INSTANCE.setSlot(cropSlot, true, true);
 
                 if (distanceTo <= 3) {
-                    PlayerHelper.INSTANCE.placeBlockInPos(closest, Hand.MAIN_HAND, false);
+                    PlayerHelper.INSTANCE.placeBlockInPos(closest, InteractionHand.MAIN_HAND, false);
                     PathingHelper.INSTANCE.cancelPathing();
                 }
             }
@@ -132,7 +132,7 @@ public class AutoFarm extends Feature {
                     return;
                 }
 
-                closest = getClosestItem().getBlockPos();
+                closest = getClosestItem().blockPosition();
                 if (!PathingHelper.INSTANCE.isPathing()) {
                     PathingHelper.INSTANCE.setAllowMining(false);
                     PathingHelper.INSTANCE.pathTo(closest, 10);
@@ -165,31 +165,31 @@ public class AutoFarm extends Feature {
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 
         if (farmArea != null && renderAreaBox) {
-            Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(farmArea.getAreaBB().minX, farmArea.getAreaBB().minY, farmArea.getAreaBB().minZ));
-            Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(farmArea.getAreaBB().maxX, farmArea.getAreaBB().maxY, farmArea.getAreaBB().maxZ));
-            Box miningAreaBox = new Box(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), miningAreaBox, 0xffffff00);
+            Vec3 miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(farmArea.getAreaBB().minX, farmArea.getAreaBB().minY, farmArea.getAreaBB().minZ));
+            Vec3 miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(farmArea.getAreaBB().maxX, farmArea.getAreaBB().maxY, farmArea.getAreaBB().maxZ));
+            AABB miningAreaBox = new AABB(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), miningAreaBox, 0xffffff00);
         } else if (tempPos1 != null) {//draws yellow box on first set pos
-            Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos1);
-            Box closestBox = new Box(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), closestBox, 0xffffff00);
+            Vec3 tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos1);
+            AABB closestBox = new AABB(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), closestBox, 0xffffff00);
         }
         if (tempPos2 != null) {//draws yellow box on first set pos
-            Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos2);
-            Box closestBox = new Box(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), closestBox, 0xffffff00);
+            Vec3 tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos2);
+            AABB closestBox = new AABB(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), closestBox, 0xffffff00);
         }
         //draws yellow box on crosshair block
-        if (farmArea == null && Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof BlockHitResult blockHitResult) {
-            Vec3d hitVec = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
-            Box hoverBox = new Box(hitVec.x, hitVec.y, hitVec.z, hitVec.x + 1, hitVec.y + 1, hitVec.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), hoverBox, 0xff00ff00);
+        if (farmArea == null && Wrapper.INSTANCE.getMinecraft().hitResult instanceof BlockHitResult blockHitResult) {
+            Vec3 hitVec = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
+            AABB hoverBox = new AABB(hitVec.x, hitVec.y, hitVec.z, hitVec.x + 1, hitVec.y + 1, hitVec.z + 1);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), hoverBox, 0xff00ff00);
         }
     });
 
     @EventPointer
     private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof BlockHitResult blockHitResult) {
+        if (Wrapper.INSTANCE.getMinecraft().hitResult instanceof BlockHitResult blockHitResult) {
             switch (stage) {
                 case SET_POS1 -> tempPos1 = blockHitResult.getBlockPos();
                 case SET_POS2 -> tempPos2 = blockHitResult.getBlockPos();
@@ -218,11 +218,11 @@ public class AutoFarm extends Feature {
             case PAUSED -> message = "AutoFarm Paused... Press Enter to Resume";
         }
         if (message.isEmpty())
-            message = Formatting.WHITE + "AutoFarm Stage: " + Formatting.GREEN + StringUtils.capitalize(stage.name().toLowerCase().replace("_", " "));
+            message = ChatFormatting.WHITE + "AutoFarm Stage: " + ChatFormatting.GREEN + StringUtils.capitalize(stage.name().toLowerCase().replace("_", " "));
 
         float width = FontHelper.INSTANCE.getStringWidth(message);
-        Render2DHelper.INSTANCE.outlineAndFill(event.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 10, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 24, 0x70696969, 0x40000000);
-        FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 13, farmArea != null ? 0xffff0000 : -1);
+        Render2DHelper.INSTANCE.outlineAndFill(event.getPoseStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 10, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 24, 0x70696969, 0x40000000);
+        FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 13, farmArea != null ? 0xffff0000 : -1);
     });
 
     @EventPointer
@@ -268,12 +268,12 @@ public class AutoFarm extends Feature {
     private ItemEntity getClosestItem() {
         double distance = 9999;
         ItemEntity closest = null;
-        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+        for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
             if (entity instanceof ItemEntity itemEntity) {
-                if (itemEntity.age < 20)//let it be alive for 1 second before we go for it
+                if (itemEntity.tickCount < 20)//let it be alive for 1 second before we go for it
                     continue;
-                double distanceTo = ClientMathHelper.INSTANCE.getDistance(entity.getPos(), Wrapper.INSTANCE.getLocalPlayer().getPos());
-                if (isPlantableCrop(itemEntity.getStack().getItem()) && (closest == null || distanceTo < distance))
+                double distanceTo = ClientMathHelper.INSTANCE.getDistance(entity.position(), Wrapper.INSTANCE.getLocalPlayer().position());
+                if (isPlantableCrop(itemEntity.getItem().getItem()) && (closest == null || distanceTo < distance))
                     closest = itemEntity;
             }
         }
@@ -304,17 +304,17 @@ public class AutoFarm extends Feature {
         BlockHitResult blockHitResult = rayCast(closestBlock);
         BlockPos blockPos = closestBlock;
         if (blockHitResult != null) {
-            if (ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(blockHitResult.getBlockPos())) < ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(closestBlock))) {
+            if (ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().position(), ClientMathHelper.INSTANCE.getVec(blockHitResult.getBlockPos())) < ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().position(), ClientMathHelper.INSTANCE.getVec(closestBlock))) {
                 blockPos = blockHitResult.getBlockPos();
             }
         }
-        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(blockPos));
+        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3.atCenterOf(blockPos));
         event.setRotation(rotationVector);
-        Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
-        Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
+        Wrapper.INSTANCE.getLocalPlayer().setYHeadRot(rotationVector.getYaw());
+        Wrapper.INSTANCE.getLocalPlayer().setYBodyRot(rotationVector.getYaw());
 
-        Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
-        Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+        Wrapper.INSTANCE.getMultiPlayerGameMode().continueDestroyBlock(blockPos, blockHitResult == null ? Direction.UP : blockHitResult.getDirection());
+        Wrapper.INSTANCE.getLocalPlayer().swing(InteractionHand.MAIN_HAND);
     }
 
     public boolean isPaused() {
@@ -348,10 +348,10 @@ public class AutoFarm extends Feature {
     }
 
     public BlockHitResult rayCast(BlockPos blockPos) {
-        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.of(blockPos).add(0.5, 0, 0.5));
+        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3.atLowerCornerOf(blockPos).add(0.5, 0, 0.5));
         RotationVector saved = new RotationVector(Wrapper.INSTANCE.getLocalPlayer());
         PlayerHelper.INSTANCE.setRotation(rotationVector);
-        HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
+        HitResult result = Wrapper.INSTANCE.getLocalPlayer().pick(Wrapper.INSTANCE.getMultiPlayerGameMode().getPickRange(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
         PlayerHelper.INSTANCE.setRotation(saved);
         if (result instanceof BlockHitResult blockHitResult)
             return blockHitResult;
@@ -360,14 +360,14 @@ public class AutoFarm extends Feature {
 
     public static class FarmingArea {
         private final AutoFarm autoFarm;
-        private final Box areaBB;
+        private final AABB areaBB;
 
         private final ArrayList<BlockPos> blockPosList = new ArrayList<>();
 
         public FarmingArea(BlockPos pos1, BlockPos pos2) {
             BlockPos min = new BlockPos(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()));
             BlockPos max = new BlockPos(Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
-            this.areaBB = new Box(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
+            this.areaBB = new AABB(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
             this.autoFarm = Feature.get(AutoFarm.class);
 
             for (int x = min.getX(); x <= max.getX(); x++) {
@@ -400,7 +400,7 @@ public class AutoFarm extends Feature {
             }
             for (BlockPos blockPos : blockPosList) {
                 Block block = WorldHelper.INSTANCE.getBlock(blockPos);
-                Block below = WorldHelper.INSTANCE.getBlock(blockPos.down());
+                Block below = WorldHelper.INSTANCE.getBlock(blockPos.below());
                 if (block == Blocks.AIR && below == Blocks.FARMLAND) {
                     return blockPos;
                 }
@@ -408,12 +408,12 @@ public class AutoFarm extends Feature {
             return null;
         }
 
-        public Box getAreaBB() {
+        public AABB getAreaBB() {
             return areaBB;
         }
 
         public void sortList() {
-            blockPosList.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, 2, 0), Vec3d.ofCenter(value))));
+            blockPosList.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().position().add(0, 2, 0), Vec3.atCenterOf(value))));
         }
     }
 

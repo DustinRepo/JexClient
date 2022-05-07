@@ -5,15 +5,13 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.events.core.annotate.EventPointer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.Hand;
 
 @Feature.Manifest(category = Feature.Category.COMBAT, description = "Eats soup when your health gets below a certain amount.")
 public class AutoSoup extends Feature {
@@ -42,12 +40,12 @@ public class AutoSoup extends Feature {
                 if (getFirstSoup() < 9) {
                     throwing = true;
 
-                    savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
+                    savedSlot = InventoryHelper.INSTANCE.getInventory().selected;
                     InventoryHelper.INSTANCE.setSlot(getFirstSoup(), true, true);
                     stopWatch.reset();
                 } else {
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstSoup() < 9 ? getFirstSoup() + 36 : getFirstSoup(), SlotActionType.SWAP, 8);
-                    savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, getFirstSoup() < 9 ? getFirstSoup() + 36 : getFirstSoup(), ClickType.SWAP, 8);
+                    savedSlot = InventoryHelper.INSTANCE.getInventory().selected;
                     InventoryHelper.INSTANCE.setSlot(8, true, true);
                     throwing = true;
                     stopWatch.reset();
@@ -59,12 +57,12 @@ public class AutoSoup extends Feature {
             if (throwing && stopWatch.hasPassed(throwdelay)) {
                 if (getFirstSoup() != -1) {
                     if (getFirstSoup() < 9) {
-                        Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
+                        Wrapper.INSTANCE.getMultiPlayerGameMode().useItem(Wrapper.INSTANCE.getPlayer(), InteractionHand.MAIN_HAND);
                         InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                         throwing = false;
                         stopWatch.reset();
                     } else {
-                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstSoup() < 9 ? getFirstSoup() + 36 : getFirstSoup(), SlotActionType.SWAP, 8);
+                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, getFirstSoup() < 9 ? getFirstSoup() + 36 : getFirstSoup(), ClickType.SWAP, 8);
                     }
                 } else {
                     throwing = false;
@@ -78,7 +76,7 @@ public class AutoSoup extends Feature {
     public int getSoups() {
         int potions = 0;
         for (int i = 0; i < 45; i++) {
-            ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
+            ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getItem(i);
             if (isSoup(itemStack)) {
                 potions++;
             }
@@ -88,7 +86,7 @@ public class AutoSoup extends Feature {
 
     public int getFirstSoup() {
         for (int i = 0; i < 45; i++) {
-            ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
+            ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getItem(i);
             if (isSoup(itemStack)) {
                 return i;
             }

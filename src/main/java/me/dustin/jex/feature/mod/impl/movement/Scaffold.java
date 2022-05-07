@@ -13,17 +13,16 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Place blocks under yourself automatically.")
@@ -50,7 +49,7 @@ public class Scaffold extends Feature {
             return;
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
             blockHitResult = null;
-            BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
+            BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().position().x, Wrapper.INSTANCE.getLocalPlayer().position().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().position().z);
             if (AutoEat.isEating)
                 return;
             getNearBlocks(below);
@@ -74,16 +73,16 @@ public class Scaffold extends Feature {
                 return;
             }
             if (placeMode.equalsIgnoreCase("Post"))
-                PlayerHelper.INSTANCE.placeBlockInPos(blockHitResult.getBlockPos(), Hand.MAIN_HAND, false);
+                PlayerHelper.INSTANCE.placeBlockInPos(blockHitResult.getBlockPos(), InteractionHand.MAIN_HAND, false);
 
             if (sneak)
-                NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
+                NetworkHelper.INSTANCE.sendPacket(new ServerboundPlayerCommandPacket(Wrapper.INSTANCE.getLocalPlayer(), ServerboundPlayerCommandPacket.Action.RELEASE_SHIFT_KEY));
             stopWatch.reset();
         }
     });
 
     private boolean isReplaceable(Block block) {
-        return block.getDefaultState().getMaterial().isReplaceable();
+        return block.defaultBlockState().getMaterial().isReplaceable();
     }
 
     private boolean goingToPlace(BlockPos blockPos) {
@@ -101,18 +100,18 @@ public class Scaffold extends Feature {
     private void getNearBlocks(BlockPos blockPos) {
         emptyNearBlocks.clear();
         if (range == 0) {
-            BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
+            BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().position().x, Wrapper.INSTANCE.getLocalPlayer().position().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().position().z);
             if (!isReplaceable(WorldHelper.INSTANCE.getBlock(below)))
                 return;
             BlockInfo blockInfo = getBlockInfo(blockPos);
             if (blockInfo == null) {
-                blockInfo = getBlockInfo(blockPos.add(1, 0, 0));
+                blockInfo = getBlockInfo(blockPos.offset(1, 0, 0));
                 if (blockInfo == null) {
-                    blockInfo = getBlockInfo(blockPos.add(-1, 0, 0));
+                    blockInfo = getBlockInfo(blockPos.offset(-1, 0, 0));
                     if (blockInfo == null) {
-                        blockInfo = getBlockInfo(blockPos.add(0, 0, 1));
+                        blockInfo = getBlockInfo(blockPos.offset(0, 0, 1));
                         if (blockInfo == null) {
-                            blockInfo = getBlockInfo(blockPos.add(0, 0, -1));
+                            blockInfo = getBlockInfo(blockPos.offset(0, 0, -1));
                         }
                     }
                 }
@@ -126,7 +125,7 @@ public class Scaffold extends Feature {
         }
         for (int x = -range - 1; x < range + 1; x++) {
             for (int z = -range - 1; z < range + 1; z++) {
-                BlockPos blockPos1 = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, -0.5f, 0)).add(x, 0, z);
+                BlockPos blockPos1 = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().position().add(0, -0.5f, 0)).offset(x, 0, z);
                 if (isReplaceable(WorldHelper.INSTANCE.getBlock(blockPos1)) || goingToPlace(blockPos1)) {
                     BlockInfo blockInfo = getBlockInfo(blockPos1);
                     if (blockInfo != null)
@@ -143,23 +142,23 @@ public class Scaffold extends Feature {
         if (blockInfo == null)
             return;
         if (sneak) {
-            NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
+            NetworkHelper.INSTANCE.sendPacket(new ServerboundPlayerCommandPacket(Wrapper.INSTANCE.getLocalPlayer(), ServerboundPlayerCommandPacket.Action.PRESS_SHIFT_KEY));
         }
         BlockPos lookAtPos = blockInfo.blockpos();
-        RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(lookAtPos.getX(), lookAtPos.getY(), lookAtPos.getZ()));
+        RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3(lookAtPos.getX(), lookAtPos.getY(), lookAtPos.getZ()));
         event.setYaw(rotation.getYaw());
         event.setPitch(80);
 
-        Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
-        Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
+        Wrapper.INSTANCE.getLocalPlayer().yHeadRot = event.getYaw();
+        Wrapper.INSTANCE.getLocalPlayer().yBodyRot = event.getYaw();
 
-        blockHitResult = new BlockHitResult(new Vec3d(blockInfo.blockpos().getX(), blockInfo.blockpos().getY(), blockInfo.blockpos().getZ()), blockInfo.facing(), blockInfo.blockpos(), false);
+        blockHitResult = new BlockHitResult(new Vec3(blockInfo.blockpos().getX(), blockInfo.blockpos().getY(), blockInfo.blockpos().getZ()), blockInfo.facing(), blockInfo.blockpos(), false);
         if (placeMode.equalsIgnoreCase("Pre"))
-            PlayerHelper.INSTANCE.placeBlockInPos(blockInfo.blockpos(), Hand.MAIN_HAND, false);
+            PlayerHelper.INSTANCE.placeBlockInPos(blockInfo.blockpos(), InteractionHand.MAIN_HAND, false);
     }
 
     public BlockInfo getBlockInfo(BlockPos pos) {
-        BlockPos down = pos.down();
+        BlockPos down = pos.below();
         BlockPos north = pos.north();
         BlockPos east = pos.east();
         BlockPos south = pos.south();
@@ -180,8 +179,8 @@ public class Scaffold extends Feature {
 
     public int getBlockFromInv() {
         for (int i = 0; i < 36; i++) {
-            if (InventoryHelper.INSTANCE.getInventory().getStack(i) != null && InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() instanceof BlockItem)
-                if (shouldUse((BlockItem) InventoryHelper.INSTANCE.getInventory().getStack(i).getItem()))
+            if (InventoryHelper.INSTANCE.getInventory().getItem(i) != null && InventoryHelper.INSTANCE.getInventory().getItem(i).getItem() instanceof BlockItem)
+                if (shouldUse((BlockItem) InventoryHelper.INSTANCE.getInventory().getItem(i).getItem()))
                     return i;
         }
         return -1;
@@ -189,15 +188,15 @@ public class Scaffold extends Feature {
 
     public int getBlockFromHotbar() {
         for (int i = 0; i < 9; i++) {
-            if (InventoryHelper.INSTANCE.getInventory().getStack(i) != null && InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() instanceof BlockItem)
-                if (shouldUse((BlockItem) InventoryHelper.INSTANCE.getInventory().getStack(i).getItem()))
+            if (InventoryHelper.INSTANCE.getInventory().getItem(i) != null && InventoryHelper.INSTANCE.getInventory().getItem(i).getItem() instanceof BlockItem)
+                if (shouldUse((BlockItem) InventoryHelper.INSTANCE.getInventory().getItem(i).getItem()))
                     return i;
         }
         return -1;
     }
 
     public boolean shouldUse(BlockItem blockItem) {
-        return blockItem.getBlock().getDefaultState().hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN, Wrapper.INSTANCE.getLocalPlayer()) && blockItem.getBlock().getDefaultState().onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS;
+        return blockItem.getBlock().defaultBlockState().entityCanStandOn(Wrapper.INSTANCE.getWorld(), BlockPos.ZERO, Wrapper.INSTANCE.getLocalPlayer()) && blockItem.getBlock().defaultBlockState().use(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.ZERO, Direction.UP, BlockPos.ZERO, false)) == InteractionResult.PASS;
     }
 
     public record BlockInfo (BlockPos blockpos, Direction facing) {}

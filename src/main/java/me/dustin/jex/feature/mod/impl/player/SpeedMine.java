@@ -12,11 +12,9 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 
 @Feature.Manifest(category = Feature.Category.PLAYER, description = "Break blocks faster")
 public class SpeedMine extends Feature {
@@ -38,28 +36,28 @@ public class SpeedMine extends Feature {
             return;
         switch (mode) {
             case "Progress", "Instant" -> {
-                if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
-                    Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
+                if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasEffect(MobEffects.DIG_SPEED))
+                    Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.DIG_SPEED);
                 float bProgress = mode.equalsIgnoreCase("Progress") ? progress : 0;
-                if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(Wrapper.INSTANCE.getIInteractionManager().currentBreakingPos()))) {
+                if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(Wrapper.INSTANCE.getIMultiPlayerGameMode().currentBreakingPos()))) {
                     givenHaste = false;
                     break;
                 }
-                if (Wrapper.INSTANCE.getIInteractionManager().getBlockBreakProgress() >= bProgress) {
-                    Wrapper.INSTANCE.getIInteractionManager().setBlockBreakProgress(1);
+                if (Wrapper.INSTANCE.getIMultiPlayerGameMode().getBlockBreakProgress() >= bProgress) {
+                    Wrapper.INSTANCE.getIMultiPlayerGameMode().setBlockBreakProgress(1);
                 }
                 givenHaste = false;
             }
             case "Haste" -> {
                 givenHaste = true;
-                if (Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE) && Wrapper.INSTANCE.getLocalPlayer().getStatusEffect(StatusEffects.HASTE).getAmplifier() > haste - 1)
-                    Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
+                if (Wrapper.INSTANCE.getLocalPlayer().hasEffect(MobEffects.DIG_SPEED) && Wrapper.INSTANCE.getLocalPlayer().getEffect(MobEffects.DIG_SPEED).getAmplifier() > haste - 1)
+                    Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.DIG_SPEED);
                 if (event.getMode() == EventPlayerPackets.Mode.PRE)
-                    Wrapper.INSTANCE.getLocalPlayer().addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 5200, haste - 1));
+                    Wrapper.INSTANCE.getLocalPlayer().addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 5200, haste - 1));
             }
         }
-        if (Wrapper.INSTANCE.getIInteractionManager().getBlockBreakingCooldown() > breakCooldown)
-            Wrapper.INSTANCE.getIInteractionManager().setBlockBreakingCooldown(breakCooldown);
+        if (Wrapper.INSTANCE.getIMultiPlayerGameMode().getBlockBreakingCooldown() > breakCooldown)
+            Wrapper.INSTANCE.getIMultiPlayerGameMode().setBlockBreakingCooldown(breakCooldown);
         this.setSuffix(mode);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
@@ -72,16 +70,16 @@ public class SpeedMine extends Feature {
         if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
             return;
         for (int i = 0; i < 10; i++) {
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
+            NetworkHelper.INSTANCE.sendPacket(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
+            NetworkHelper.INSTANCE.sendPacket(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
         }
-        Wrapper.INSTANCE.getIInteractionManager().setBlockBreakProgress(1);
+        Wrapper.INSTANCE.getIMultiPlayerGameMode().setBlockBreakProgress(1);
     }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
     @Override
     public void onDisable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null)
-            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
+            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.DIG_SPEED);
         super.onDisable();
     }
 

@@ -14,15 +14,18 @@ import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.render.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.LightType;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.ArrayList;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Show all blocks near you that mobs can spawn on.")
@@ -60,24 +63,24 @@ public class SpawnHighlighter extends Feature {
 		posList.forEach(blockPos -> {
 			int color = this.color;
 			if (Feature.getState(SpawnSphere.class)) {
-				Vec3d pos = Feature.get(SpawnSphere.class).pos;
-				if (ClientMathHelper.INSTANCE.getDistance(pos, Vec3d.of(blockPos)) <= 128)
+				Vec3 pos = Feature.get(SpawnSphere.class).pos;
+				if (ClientMathHelper.INSTANCE.getDistance(pos, Vec3.atLowerCornerOf(blockPos)) <= 128)
 					color = spawnSphereColor;
 			}
-			Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-			Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
+			Vec3 renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+			AABB box = new AABB(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
 			boxes.add(new Render3DHelper.BoxStorage(box, color));
 		});
 		Render3DHelper.INSTANCE.setup3DRender(disableDepth);
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+		BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 		boxes.forEach(blockStorage -> {
-			Box box = blockStorage.box();
+			AABB box = blockStorage.box();
 			int color = blockStorage.color();
-			Render3DHelper.INSTANCE.drawFilledBox(event.getMatrixStack(), box, color & 0x70ffffff, false);
+			Render3DHelper.INSTANCE.drawFilledBox(event.getPoseStack(), box, color & 0x70ffffff, false);
 		});
 		bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        BufferUploader.drawWithShader(bufferBuilder.end());
 		Render3DHelper.INSTANCE.end3DRender();
 	});
 
@@ -88,9 +91,9 @@ public class SpawnHighlighter extends Feature {
 			for (int x = -radius; x < radius; x++) {
 				for (int y = -yradius; y < 5; y++) {
 					for (int z = -radius; z < radius; z++) {
-						BlockPos blockPos = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z));
+						BlockPos blockPos = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().blockPosition().offset(x, y, z));
 						if (isValidBlock(blockPos)) {
-							BlockPos abovePos = blockPos.add(0, 1, 0);
+							BlockPos abovePos = blockPos.offset(0, 1, 0);
 							posList.add(abovePos);
 						}
 					}
@@ -101,10 +104,10 @@ public class SpawnHighlighter extends Feature {
 	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
 	private boolean isValidBlock(BlockPos blockPos) {
-		BlockPos above = blockPos.add(0, 1, 0);
+		BlockPos above = blockPos.offset(0, 1, 0);
 		BlockState thisState = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
 		BlockState aboveState = Wrapper.INSTANCE.getWorld().getBlockState(above);
-		BlockState twoAboveState = Wrapper.INSTANCE.getWorld().getBlockState(above.up());
+		BlockState twoAboveState = Wrapper.INSTANCE.getWorld().getBlockState(above.above());
 		Block thisBlock = thisState.getBlock();
 		Block aboveBlock = aboveState.getBlock();
 		if (thisBlock == Blocks.AIR)
@@ -119,7 +122,7 @@ public class SpawnHighlighter extends Feature {
 		if (!WorldHelper.INSTANCE.canMobSpawnInside(aboveState) || (checkHeight && !WorldHelper.INSTANCE.canMobSpawnInside(twoAboveState)))
 			return false;
 		if (checkLight) {
-			int light = Wrapper.INSTANCE.getWorld().getLightLevel(LightType.BLOCK, above);
+			int light = Wrapper.INSTANCE.getWorld().getBrightness(LightLayer.BLOCK, above);
 			return light <= lightValue;
 		}
 		return true;

@@ -10,8 +10,8 @@ import java.util.Collection;
 import java.util.List;
 
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.text.Text;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 public class MessageArgumentType implements ArgumentType<MessageArgumentType.MessageFormat> {
@@ -21,12 +21,12 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
       return new MessageArgumentType();
    }
 
-   public static Text getMessage(CommandContext<FabricClientCommandSource> command, String name) throws CommandSyntaxException {
-      return ((MessageArgumentType.MessageFormat)command.getArgument(name, MessageArgumentType.MessageFormat.class)).format((FabricClientCommandSource)command.getSource(), ((FabricClientCommandSource)command.getSource()).hasPermissionLevel(2));
+   public static Component getMessage(CommandContext<FabricClientCommandSource> command, String name) throws CommandSyntaxException {
+      return ((MessageFormat)command.getArgument(name, MessageFormat.class)).format((FabricClientCommandSource)command.getSource(), ((FabricClientCommandSource)command.getSource()).hasPermission(2));
    }
 
-   public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
-      return MessageArgumentType.MessageFormat.parse(stringReader, true);
+   public MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
+      return MessageFormat.parse(stringReader, true);
    }
 
    public Collection<String> getExamples() {
@@ -35,9 +35,9 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
    public static class MessageFormat {
       private final String contents;
-      private final MessageArgumentType.MessageSelector[] selectors;
+      private final MessageSelector[] selectors;
 
-      public MessageFormat(String contents, MessageArgumentType.MessageSelector[] selectors) {
+      public MessageFormat(String contents, MessageSelector[] selectors) {
          this.contents = contents;
          this.selectors = selectors;
       }
@@ -46,17 +46,17 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
          return this.contents;
       }
 
-      public Text format(FabricClientCommandSource source, boolean bl) throws CommandSyntaxException {
-         return Text.of(this.contents);
+      public Component format(FabricClientCommandSource source, boolean bl) throws CommandSyntaxException {
+         return Component.nullToEmpty(this.contents);
       }
 
-      public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
+      public static MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
          String string = reader.getString().substring(reader.getCursor(), reader.getTotalLength());
          if (!bl) {
             reader.setCursor(reader.getTotalLength());
-            return new MessageArgumentType.MessageFormat(string, new MessageArgumentType.MessageSelector[0]);
+            return new MessageFormat(string, new MessageSelector[0]);
          } else {
-            List<MessageArgumentType.MessageSelector> list = Lists.newArrayList();
+            List<MessageSelector> list = Lists.newArrayList();
             int i = reader.getCursor();
 
             while(true) {
@@ -67,7 +67,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
                         reader.skip();
                   }
 
-                  return new MessageArgumentType.MessageFormat(string, (MessageArgumentType.MessageSelector[])list.toArray(new MessageArgumentType.MessageSelector[list.size()]));
+                  return new MessageFormat(string, (MessageSelector[])list.toArray(new MessageSelector[list.size()]));
                }
             }
          }
@@ -98,8 +98,8 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
       }
 
       @Nullable
-      public Text format(FabricClientCommandSource source) throws CommandSyntaxException {
-         return Text.of("");//EntitySelector.getNames(this.selector.getEntities(source));
+      public Component format(FabricClientCommandSource source) throws CommandSyntaxException {
+         return Component.nullToEmpty("");//EntitySelector.getNames(this.selector.getEntities(source));
       }
    }
 }

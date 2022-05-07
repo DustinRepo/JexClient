@@ -20,10 +20,9 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IChatScreen;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.CommandSuggestor;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-
+import net.minecraft.client.gui.components.CommandSuggestions;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +34,12 @@ public enum CommandManagerJex {
     private int overlayAlpha = 0;
     private boolean overlayOn = false;
 
-    public CommandSuggestor jexCommandSuggestor;
+    public CommandSuggestions jexCommandSuggestor;
 
     private static ArrayList<Command> commands = new ArrayList<>();
     public static final CommandDispatcher<FabricClientCommandSource> DISPATCHER = new CommandDispatcher<>();
 
-    public void registerCommands(ClientPlayNetworkHandler networkHandler) {
+    public void registerCommands(ClientPacketListener networkHandler) {
         EventManager.unregister(this);
         this.getCommands().clear();
         List<Class<?>> classList = ClassHelper.INSTANCE.getClasses("me.dustin.jex.feature.command.impl", Command.class);
@@ -71,13 +70,13 @@ public enum CommandManagerJex {
         }
         Color color1 = Color.decode("0x" + Integer.toHexString(ColorHelper.INSTANCE.getClientColor()).substring(2));
         int color = new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), overlayAlpha).getRGB();
-        Render2DHelper.INSTANCE.fillAndBorder(event.getMatrixStack(), chatScreen.getWidget().x - 2, chatScreen.getWidget().y - 2, chatScreen.getWidget().x + chatScreen.getWidget().getWidth() - 2, chatScreen.getWidget().y + chatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
+        Render2DHelper.INSTANCE.fillAndBorder(event.getPoseStack(), chatScreen.getWidget().x - 2, chatScreen.getWidget().y - 2, chatScreen.getWidget().x + chatScreen.getWidget().getWidth() - 2, chatScreen.getWidget().y + chatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
 
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, ChatScreen.class));
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
-        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen)) {
+        if (!(Wrapper.INSTANCE.getMinecraft().screen instanceof ChatScreen)) {
             overlayOn = false;
             overlayAlpha = 0;
         }

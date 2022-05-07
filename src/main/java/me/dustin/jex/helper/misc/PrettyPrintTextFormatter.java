@@ -4,17 +4,15 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.nbt.*;
-import net.minecraft.nbt.visitor.NbtElementVisitor;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
-
+import net.minecraft.network.chat.Component;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class PrettyPrintTextFormatter implements NbtElementVisitor {
+public class PrettyPrintTextFormatter implements TagVisitor {
 
     private static final Map<String, List<String>> ENTRY_ORDER_OVERRIDES = Util.make(Maps.newHashMap(), (map) -> {
         map.put("{}", Lists.newArrayList("DataVersion", "author", "size", "data", "entities", "palette", "palettes"));
@@ -45,45 +43,45 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
     }
 
     protected static String escapeName(String name) {
-        return SIMPLE_NAME.matcher(name).matches() ? name : NbtString.escape(name);
+        return SIMPLE_NAME.matcher(name).matches() ? name : StringTag.quoteAndEscape(name);
     }
 
-    public RGBColorText apply(NbtElement element) {
+    public RGBColorText apply(Tag element) {
         element.accept(this);
         return this.result;
     }
 
-    public void visitString(NbtString element) {
-        this.result = new RGBColorText(NbtString.escape(element.asString()), STRING_COLOR);
+    public void visitString(StringTag element) {
+        this.result = new RGBColorText(StringTag.quoteAndEscape(element.getAsString()), STRING_COLOR);
     }
 
-    public void visitByte(NbtByte element) {
-        this.result = new RGBColorText(element.numberValue(), NUMBER_COLOR).append("b", TYPE_SUFFIX_COLOR);
+    public void visitByte(ByteTag element) {
+        this.result = new RGBColorText(element.getAsNumber(), NUMBER_COLOR).append("b", TYPE_SUFFIX_COLOR);
     }
 
-    public void visitShort(NbtShort element) {
-        this.result = new RGBColorText(element.numberValue(), NUMBER_COLOR).append("s", TYPE_SUFFIX_COLOR);
+    public void visitShort(ShortTag element) {
+        this.result = new RGBColorText(element.getAsNumber(), NUMBER_COLOR).append("s", TYPE_SUFFIX_COLOR);
     }
 
-    public void visitInt(NbtInt element) {
-        this.result = new RGBColorText(element.numberValue(), NUMBER_COLOR);
+    public void visitInt(IntTag element) {
+        this.result = new RGBColorText(element.getAsNumber(), NUMBER_COLOR);
     }
 
-    public void visitLong(NbtLong element) {
-        this.result = new RGBColorText(element.numberValue(), NUMBER_COLOR).append("L", TYPE_SUFFIX_COLOR);
+    public void visitLong(LongTag element) {
+        this.result = new RGBColorText(element.getAsNumber(), NUMBER_COLOR).append("L", TYPE_SUFFIX_COLOR);
     }
 
-    public void visitFloat(NbtFloat element) {
-        this.result = new RGBColorText(element.floatValue(), NUMBER_COLOR).append("f", TYPE_SUFFIX_COLOR);
+    public void visitFloat(FloatTag element) {
+        this.result = new RGBColorText(element.getAsFloat(), NUMBER_COLOR).append("f", TYPE_SUFFIX_COLOR);
     }
 
-    public void visitDouble(NbtDouble element) {
-        this.result = new RGBColorText(element.doubleValue(), NUMBER_COLOR).append("d", TYPE_SUFFIX_COLOR);
+    public void visitDouble(DoubleTag element) {
+        this.result = new RGBColorText(element.getAsDouble(), NUMBER_COLOR).append("d", TYPE_SUFFIX_COLOR);
     }
 
-    public void visitByteArray(NbtByteArray element) {
+    public void visitByteArray(ByteArrayTag element) {
         RGBColorText stringBuilder = (new RGBColorText("[")).append("B", TYPE_SUFFIX_COLOR).append(";");
-        byte[] bs = element.getByteArray();
+        byte[] bs = element.getAsByteArray();
 
         for (int i = 0; i < bs.length; ++i) {
             stringBuilder.append(" ").append(bs[i] + "", NUMBER_COLOR).append("B", TYPE_SUFFIX_COLOR);
@@ -96,9 +94,9 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
         this.result = new RGBColorText(stringBuilder);
     }
 
-    public void visitIntArray(NbtIntArray element) {
+    public void visitIntArray(IntArrayTag element) {
         RGBColorText stringBuilder = (new RGBColorText("[")).append("I", TYPE_SUFFIX_COLOR).append(";");
-        int[] is = element.getIntArray();
+        int[] is = element.getAsIntArray();
 
         for (int i = 0; i < is.length; ++i) {
             stringBuilder.append(" ").append(is[i] + "", NUMBER_COLOR);
@@ -111,9 +109,9 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
         this.result = new RGBColorText(stringBuilder);
     }
 
-    public void visitLongArray(NbtLongArray element) {
+    public void visitLongArray(LongArrayTag element) {
         RGBColorText stringBuilder = (new RGBColorText("[")).append("L", TYPE_SUFFIX_COLOR).append(";");
-        long[] ls = element.getLongArray();
+        long[] ls = element.getAsLongArray();
 
         for (int i = 0; i < ls.length; ++i) {
             stringBuilder.append(" ").append(ls[i] + "", NUMBER_COLOR).append("L", TYPE_SUFFIX_COLOR);
@@ -126,7 +124,7 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
         this.result = new RGBColorText(stringBuilder);
     }
 
-    public void visitList(NbtList element) {
+    public void visitList(ListTag element) {
         if (element.isEmpty()) {
             this.result = new RGBColorText("[]");
         } else {
@@ -155,7 +153,7 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
         }
     }
 
-    public void visitCompound(NbtCompound compound) {
+    public void visitCompound(CompoundTag compound) {
         if (compound.isEmpty()) {
             this.result = new RGBColorText("{}");
         } else {
@@ -171,7 +169,7 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
 
             while (iterator.hasNext()) {
                 String string2 = iterator.next();
-                NbtElement nbtElement = compound.get(string2);
+                Tag nbtElement = compound.get(string2);
                 this.pushPathPart(string2);
                 stringBuilder.append(Strings.repeat(string, this.indentationLevel + 1)).append(escapeName(string2), NAME_COLOR).append(KEY_VALUE_SEPARATOR).append(" ")
                         .append((new PrettyPrintTextFormatter(string, this.indentationLevel + 1, this.pathParts)).apply(Objects.requireNonNull(nbtElement)));
@@ -192,7 +190,7 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
     }
 
     @Override
-    public void visitEnd(NbtEnd element) {
+    public void visitEnd(EndTag element) {
 
     }
 
@@ -204,8 +202,8 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
         this.pathParts.add(part);
     }
 
-    protected List<String> getSortedNames(NbtCompound compound) {
-        Set<String> set = Sets.newHashSet(compound.getKeys());
+    protected List<String> getSortedNames(CompoundTag compound) {
+        Set<String> set = Sets.newHashSet(compound.getAllKeys());
         List<String> list = Lists.newArrayList();
         List<String> list2 = ENTRY_ORDER_OVERRIDES.get(this.joinPath());
         if (list2 != null) {
@@ -273,29 +271,29 @@ public class PrettyPrintTextFormatter implements NbtElementVisitor {
             return entries;
         }
 
-        public List<Text> entriesAsText() {
-            List<Text> textList = new ArrayList<>();
+        public List<Component> entriesAsText() {
+            List<Component> textList = new ArrayList<>();
 
             StringBuilder line = new StringBuilder();
             for (RGBEntry entry : this.getEntries()) {
                 line.append(byColor(entry.color())).append(entry.value.replace("\247", "\\247"));
                 if (entry.value().endsWith("\n")) {
-                    textList.add(Text.of(line.toString().replace("\n", "")));
+                    textList.add(Component.nullToEmpty(line.toString().replace("\n", "")));
                     line = new StringBuilder();
                 }
             }
-            textList.add(Text.of(this.getEntries().get(this.getEntries().size() - 1).value()));
+            textList.add(Component.nullToEmpty(this.getEntries().get(this.getEntries().size() - 1).value()));
             return textList;
         }
 
-        private Formatting byColor(int color) {
-            for (Formatting value : Formatting.values()) {
+        private ChatFormatting byColor(int color) {
+            for (ChatFormatting value : ChatFormatting.values()) {
                 if (value == null)
                     continue;
-                if (value.getColorValue() == color)
+                if (value.getColor() == color)
                     return value;
             }
-            return Formatting.WHITE;
+            return ChatFormatting.WHITE;
         }
 
         public record RGBEntry(String value, int color) {

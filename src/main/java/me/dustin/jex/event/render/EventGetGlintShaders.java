@@ -1,21 +1,21 @@
 package me.dustin.jex.event.render;
 
 import me.dustin.events.core.Event;
-import net.minecraft.client.render.Shader;
+import net.minecraft.client.renderer.ShaderInstance;
 
 public class EventGetGlintShaders extends Event {
 
-    private Shader shader;
+    private ShaderInstance shader;
 
-    public EventGetGlintShaders(Shader shader) {
+    public EventGetGlintShaders(ShaderInstance shader) {
         this.shader = shader;
     }
 
-    public Shader getShader() {
+    public ShaderInstance getShader() {
         return shader;
     }
 
-    public void setShader(Shader shader) {
+    public void setShader(ShaderInstance shader) {
         this.shader = shader;
     }
 }

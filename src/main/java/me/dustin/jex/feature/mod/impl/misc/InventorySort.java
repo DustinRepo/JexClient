@@ -10,13 +10,13 @@ import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Sort your inventory with a middle click while it's open.")
 public class InventorySort extends Feature {
@@ -30,14 +30,14 @@ public class InventorySort extends Feature {
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
         if (event.getKey() != sortKey)
             return;
-        if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen<?> handledScreen) {
-            ScreenHandler screenHandler = handledScreen.getScreenHandler();
+        if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getMinecraft().screen instanceof AbstractContainerScreen<?> handledScreen) {
+            AbstractContainerMenu screenHandler = handledScreen.getMenu();
             int emptySlot = getFirstEmptySlot(screenHandler);
             int nonEmptySlot = getLastNonEmptySlot(screenHandler);
             timeOutStopWatch.reset();
             while (emptySlot != -1 && nonEmptySlot != -1 && emptySlot < nonEmptySlot) {
-                InventoryHelper.INSTANCE.windowClick(screenHandler, screenHandler instanceof PlayerScreenHandler ? (nonEmptySlot < 9 ? nonEmptySlot + 36 : nonEmptySlot) : nonEmptySlot, SlotActionType.PICKUP);
-                InventoryHelper.INSTANCE.windowClick(screenHandler, screenHandler instanceof PlayerScreenHandler ? (emptySlot < 9 ? emptySlot + 36 : emptySlot) :  emptySlot, SlotActionType.PICKUP);
+                InventoryHelper.INSTANCE.windowClick(screenHandler, screenHandler instanceof InventoryMenu ? (nonEmptySlot < 9 ? nonEmptySlot + 36 : nonEmptySlot) : nonEmptySlot, ClickType.PICKUP);
+                InventoryHelper.INSTANCE.windowClick(screenHandler, screenHandler instanceof InventoryMenu ? (emptySlot < 9 ? emptySlot + 36 : emptySlot) :  emptySlot, ClickType.PICKUP);
 
                 emptySlot = getFirstEmptySlot(screenHandler);
                 nonEmptySlot = getLastNonEmptySlot(screenHandler);
@@ -51,19 +51,19 @@ public class InventorySort extends Feature {
         }
     });
 
-    int getLastNonEmptySlot(ScreenHandler screenHandler) {
+    int getLastNonEmptySlot(AbstractContainerMenu screenHandler) {
         int s = -1;
-        if (screenHandler instanceof PlayerScreenHandler) {
+        if (screenHandler instanceof InventoryMenu) {
             for (int i = 9; i < 36; i++) {
-                if (InventoryHelper.INSTANCE.getInventory().getStack(i) != null && InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() != Items.AIR)
+                if (InventoryHelper.INSTANCE.getInventory().getItem(i) != null && InventoryHelper.INSTANCE.getInventory().getItem(i).getItem() != Items.AIR)
                     s = i;
             }
             return s;
         }
-        int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
+        int most = Wrapper.INSTANCE.getLocalPlayer().containerMenu.slots.size() - 36;
 
         for (int i = 0; i < most; i++) {
-            ItemStack stack = screenHandler.getSlot(i).getStack();
+            ItemStack stack = screenHandler.getSlot(i).getItem();
             if (stack != null && stack.getItem() != Items.AIR) {
                 s = i;
             }
@@ -71,17 +71,17 @@ public class InventorySort extends Feature {
         return s;
     }
 
-    int getFirstEmptySlot(ScreenHandler screenHandler) {
-        if (screenHandler instanceof PlayerScreenHandler) {
+    int getFirstEmptySlot(AbstractContainerMenu screenHandler) {
+        if (screenHandler instanceof InventoryMenu) {
             for (int i = 9; i < 36; i++) {
-                if (InventoryHelper.INSTANCE.getInventory().getStack(i) == null || InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() == Items.AIR)
+                if (InventoryHelper.INSTANCE.getInventory().getItem(i) == null || InventoryHelper.INSTANCE.getInventory().getItem(i).getItem() == Items.AIR)
                     return i;
             }
             return -1;
         }
-        int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
+        int most = Wrapper.INSTANCE.getLocalPlayer().containerMenu.slots.size() - 36;
         for (int i = 0; i < most; i++) {
-            ItemStack stack = screenHandler.getSlot(i).getStack();
+            ItemStack stack = screenHandler.getSlot(i).getItem();
             if (stack == null || stack.getItem() == Items.AIR) {
                 return i;
             }
@@ -90,8 +90,8 @@ public class InventorySort extends Feature {
     }
 
     int getInvSlot(Slot slot) {
-        for (int i = 0; i < Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size(); i++) {
-            Slot testSlot = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getSlot(i);
+        for (int i = 0; i < Wrapper.INSTANCE.getLocalPlayer().containerMenu.slots.size(); i++) {
+            Slot testSlot = Wrapper.INSTANCE.getLocalPlayer().containerMenu.getSlot(i);
             if (slot == testSlot)
                 return i;
         }

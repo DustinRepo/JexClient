@@ -5,8 +5,8 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import net.minecraft.world.phys.Vec3;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
-import net.minecraft.util.math.Vec3d;
 
 public class BoxESP extends FeatureExtension {
 
@@ -20,11 +20,11 @@ public class BoxESP extends FeatureExtension {
             return;
         EventRender3D event = (EventRender3D) event1;
 
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
             if (ESP.INSTANCE.isValid(entity)) {
                 try {
-                    Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, event.getPartialTicks());
-                    Render3DHelper.INSTANCE.drawEntityBox(event.getMatrixStack(), entity, vec.getX(), vec.getY(), vec.getZ(), ESP.INSTANCE.getColor(entity));
+                    Vec3 vec = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, event.getPartialTicks());
+                    Render3DHelper.INSTANCE.drawEntityBox(event.getPoseStack(), entity, vec.x(), vec.y(), vec.z(), ESP.INSTANCE.getColor(entity));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

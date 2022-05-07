@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.click.dropdown.theme.jex.option;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.DrawScreenFilter;
@@ -13,7 +14,6 @@ import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
 
 public class JexModeOptionButton extends ModeOptionButton {
     public JexModeOptionButton(DropdownWindow window, StringArrayOption option, float x, float y, float width, float height) {
@@ -21,7 +21,7 @@ public class JexModeOptionButton extends ModeOptionButton {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x40ffffff);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName() + ": \247f" + stringArrayOption.getValue(), this.getX() + 2, getY() + (getHeight() / 2 - 4), 0xffaaaaaa);
@@ -30,7 +30,7 @@ public class JexModeOptionButton extends ModeOptionButton {
 
     @EventPointer
     private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
-        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DropDownGui)) {
+        if (!(Wrapper.INSTANCE.getMinecraft().screen instanceof DropDownGui)) {
             unregister();
             return;
         }
@@ -59,7 +59,7 @@ public class JexModeOptionButton extends ModeOptionButton {
 
     @EventPointer
     private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
-        MatrixStack matrixStack = event.getMatrixStack();
+        PoseStack matrixStack = event.getPoseStack();
         if (isSelecting) {
             int i = 1;
             for (String s : stringArrayOption.getAll()) {

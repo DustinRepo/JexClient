@@ -7,10 +7,9 @@ import me.dustin.jex.gui.click.dropdown.theme.aris.ArisTheme;
 import me.dustin.jex.gui.click.dropdown.theme.flare.FlareTheme;
 import me.dustin.jex.gui.click.dropdown.theme.jex.JexTheme;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 
 public class DropDownGui extends Screen {
@@ -26,7 +25,7 @@ public class DropDownGui extends Screen {
     }
 
     public DropDownGui() {
-        super(Text.of("ClickGui"));
+        super(Component.nullToEmpty("ClickGui"));
     }
 
     @Override
@@ -37,7 +36,7 @@ public class DropDownGui extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         if (Wrapper.INSTANCE.getWorld() == null)
             renderBackground(matrices);
         currentTheme.render(matrices);
@@ -63,9 +62,9 @@ public class DropDownGui extends Screen {
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         ConfigManager.INSTANCE.get(GuiFile.class).write();
-        super.close();
+        super.onClose();
     }
 
     public static DropdownTheme getCurrentTheme() {

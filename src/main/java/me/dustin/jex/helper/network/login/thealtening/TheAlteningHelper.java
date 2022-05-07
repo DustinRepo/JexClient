@@ -3,15 +3,14 @@ package me.dustin.jex.helper.network.login.thealtening;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.blaze3d.platform.NativeImage;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.network.WebHelper;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.util.Session;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.User;
+import net.minecraft.resources.ResourceLocation;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -40,8 +39,8 @@ public enum TheAlteningHelper {
     private String apiKey = "";
     private TheAlteningLicense license;
     private final ArrayList<TheAlteningAccount> avatarsRequested = new ArrayList<>();
-    private final HashMap<TheAlteningAccount, Identifier> skins = new HashMap<>();
-    private final Identifier STEVE_SKIN = new Identifier("textures/entity/steve.png");
+    private final HashMap<TheAlteningAccount, ResourceLocation> skins = new HashMap<>();
+    private final ResourceLocation STEVE_SKIN = new ResourceLocation("textures/entity/steve.png");
 
     public String getApiKey() {
         return apiKey;
@@ -105,11 +104,11 @@ public enum TheAlteningHelper {
         return false;
     }
 
-    public void login(TheAlteningAccount theAlteningAccount, Consumer<Session> sessionConsumer) {
+    public void login(TheAlteningAccount theAlteningAccount, Consumer<User> sessionConsumer) {
         login(theAlteningAccount.token, sessionConsumer);
     }
 
-    public void login(String token, Consumer<Session> sessionConsumer) {
+    public void login(String token, Consumer<User> sessionConsumer) {
         new Thread(() -> {
             NetworkHelper.INSTANCE.setSessionService(NetworkHelper.SessionService.THEALTENING);
             JsonObject jsonObject = new JsonObject();
@@ -127,12 +126,12 @@ public enum TheAlteningHelper {
                 String name = selectedProfile.get("name").getAsString();
                 String uuid = selectedProfile.get("id").getAsString();
                 String accessToken = object.get("accessToken").getAsString();
-                sessionConsumer.accept(new Session(name, uuid, accessToken, Optional.of(""), Optional.of(""), Session.AccountType.MOJANG));
+                sessionConsumer.accept(new User(name, uuid, accessToken, Optional.of(""), Optional.of(""), User.Type.MOJANG));
             }
         }).start();
     }
 
-    public Identifier getSkin(TheAlteningAccount account) {
+    public ResourceLocation getSkin(TheAlteningAccount account) {
         if (!avatarsRequested.contains(account)) {
             String SKIN_URL = String.format(this.SKIN_URL, account.skin);
             skins.put(account, STEVE_SKIN);
@@ -150,12 +149,12 @@ public enum TheAlteningHelper {
                     NativeImage imgNew = new NativeImage(image.getWidth(), image.getHeight(), true);
                     for (int x = 0; x < image.getWidth(); x++) {
                         for (int y = 0; y < image.getHeight(); y++) {
-                            imgNew.setColor(x, y, image.getColor(x, y));
+                            imgNew.setPixelRGBA(x, y, image.getPixelRGBA(x, y));
                         }
                     }
 
                     image.close();
-                    Identifier id = new Identifier("jex", "thealtening/" + account.username.replace("*", "").toLowerCase() + ".png");
+                    ResourceLocation id = new ResourceLocation("jex", "thealtening/" + account.username.replace("*", "").toLowerCase() + ".png");
                     FileHelper.INSTANCE.applyTexture(id, imgNew);
                     skins.replace(account, id);
                 } catch (Exception e) {
@@ -167,7 +166,7 @@ public enum TheAlteningHelper {
     }
 
     public boolean isConnectedToAltening() {
-        return Wrapper.INSTANCE.getMinecraft().getSession().getAccessToken().startsWith("alt_");
+        return Wrapper.INSTANCE.getMinecraft().getUser().getAccessToken().startsWith("alt_");
     }
 
     public boolean hasValidLicense() {

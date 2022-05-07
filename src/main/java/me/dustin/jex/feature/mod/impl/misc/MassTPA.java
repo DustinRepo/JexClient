@@ -12,9 +12,8 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
-
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -30,26 +29,26 @@ public class MassTPA extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (!stopWatch.hasPassed(delay))
             return;
-        ArrayList<PlayerListEntry> playerList = Lists.newArrayList(Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList());
+        ArrayList<PlayerInfo> playerList = Lists.newArrayList(Wrapper.INSTANCE.getLocalPlayer().connection.getOnlinePlayers());
         for (int i = 0; i < playerList.size(); i++) {
-            PlayerListEntry entry = playerList.get(i);
+            PlayerInfo entry = playerList.get(i);
             if (entry.getProfile().getName().equalsIgnoreCase(Wrapper.INSTANCE.getLocalPlayer().getGameProfile().getName()))
                 playerList.remove(entry);
         }
         if (playerList.isEmpty())
             return;
         int size = playerList.size();
-        PlayerListEntry playerListEntry = playerList.get(new Random().nextInt(size));
+        PlayerInfo playerListEntry = playerList.get(new Random().nextInt(size));
         ChatHelper.INSTANCE.sendChatMessage("/tpa " + playerListEntry.getProfile().getName());
         stopWatch.reset();
     },new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        ChatMessageS2CPacket gameMessageS2CPacket = (ChatMessageS2CPacket) event.getPacket();
+        ClientboundPlayerChatPacket gameMessageS2CPacket = (ClientboundPlayerChatPacket) event.getPacket();
         if (gameMessageS2CPacket.content().getString().toLowerCase().contains("accepted your tpa")) {
             ChatHelper.INSTANCE.addClientMessage("TPA accepted. Turning off");
             setState(false);
         }
-    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ChatMessageS2CPacket.class));
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ClientboundPlayerChatPacket.class));
 }

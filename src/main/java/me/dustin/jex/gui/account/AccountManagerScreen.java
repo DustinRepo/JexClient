@@ -18,14 +18,13 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.network.chat.Component;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,15 +35,15 @@ public class AccountManagerScreen extends Screen {
 
     private final ArrayList<AccountButton> accountButtons = new ArrayList<>();
     private final MinecraftAccountManager accountManager = MinecraftAccountManager.INSTANCE;
-    private ButtonWidget loginButton;
-    private ButtonWidget editButton;
-    private ButtonWidget removeButton;
-    private ButtonWidget randomButton;
-    private ButtonWidget cancelButton;
-    private ButtonWidget importButton;
-    private ButtonWidget exportButton;
-    private ButtonWidget importFromTXTButton;
-    private TextFieldWidget searchTextField;
+    private Button loginButton;
+    private Button editButton;
+    private Button removeButton;
+    private Button randomButton;
+    private Button cancelButton;
+    private Button importButton;
+    private Button exportButton;
+    private Button importFromTXTButton;
+    private EditBox searchTextField;
 
     public String outputString;
     private Scrollbar scrollbar;
@@ -52,7 +51,7 @@ public class AccountManagerScreen extends Screen {
     private String lastSearch = "";
 
     public AccountManagerScreen() {
-        super(Text.of("Account Manager"));
+        super(Component.nullToEmpty("Account Manager"));
     }
 
     @Override
@@ -65,40 +64,40 @@ public class AccountManagerScreen extends Screen {
         loadAccountButtons("");
 
 
-        loginButton = new ButtonWidget((int) (midX + 3), (height / 2) - 78, 150, 20, Text.of("Login"), button -> {
+        loginButton = new Button((int) (midX + 3), (height / 2) - 78, 150, 20, Component.nullToEmpty("Login"), button -> {
             if (getSelected() == null)
                 return;
             this.outputString = "Logging in...";
             login(getSelected());
         });
-        editButton = new ButtonWidget((int) (midX + 3), (height / 2) - 56, 150, 20, Text.of("Edit"), button -> {
+        editButton = new Button((int) (midX + 3), (height / 2) - 56, 150, 20, Component.nullToEmpty("Edit"), button -> {
             if (getSelected().getAccount() instanceof MinecraftAccount.MojangAccount mojangAccount) {
                 Wrapper.INSTANCE.getMinecraft().setScreen(new AddAccountScreen(mojangAccount, this));
             }
         });
 
-        removeButton = new ButtonWidget((int) (midX + 3), (height / 2) - 34, 150, 20, Text.of("Remove"), button -> {
+        removeButton = new Button((int) (midX + 3), (height / 2) - 34, 150, 20, Component.nullToEmpty("Remove"), button -> {
             if (getSelected() == null)
                 return;
             MinecraftAccountManager.INSTANCE.getAccounts().remove(getSelected().getAccount());
             accountButtons.remove(getSelected());
-            loadAccountButtons(searchTextField.getText());
+            loadAccountButtons(searchTextField.getValue());
             ConfigManager.INSTANCE.get(AltFile.class).write();
         });
-        randomButton = new ButtonWidget((int) (midX + 3), (height / 2) - 12, 150, 20, Text.of("Random"), button -> {
+        randomButton = new Button((int) (midX + 3), (height / 2) - 12, 150, 20, Component.nullToEmpty("Random"), button -> {
             Random rand = new Random();
             login(accountButtons.get(rand.nextInt(accountButtons.size())));
         });
-        ButtonWidget addAccountButton = new ButtonWidget((int) (midX - 151), height - 50, 150, 20, Text.of("Direct Login"), button -> {
+        Button addAccountButton = new Button((int) (midX - 151), height - 50, 150, 20, Component.nullToEmpty("Direct Login"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new DirectLoginScreen(this));
         });
-        ButtonWidget directLoginButton = new ButtonWidget((int) (midX + 1), height - 50, 150, 20, Text.of("Add Account"), button -> {
+        Button directLoginButton = new Button((int) (midX + 1), height - 50, 150, 20, Component.nullToEmpty("Add Account"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new AddAccountScreen(null, this));
         });
-        cancelButton = new ButtonWidget((int) (midX - 151), height - 28, 302, 20, Text.of("Cancel"), button -> {
-            Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(new TitleScreen()));
+        cancelButton = new Button((int) (midX - 151), height - 28, 302, 20, Component.nullToEmpty("Cancel"), button -> {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new JoinMultiplayerScreen(new TitleScreen()));
         });
-        importButton = new ButtonWidget(2, 2, 50, 15, Text.of("Import"), button -> {
+        importButton = new Button(2, 2, 50, 15, Component.nullToEmpty("Import"), button -> {
             File file = new File(ModFileHelper.INSTANCE.getJexDirectory() + File.separator + "config","Accounts-Unencrypted.yml");
             if (file.exists()) {
                 MinecraftAccountManager.INSTANCE.getAccounts().clear();
@@ -109,34 +108,34 @@ public class AccountManagerScreen extends Screen {
             } else
                 outputString = "Could not import file. Please make sure it is named Accounts-Unencrypted.json";
         });
-        exportButton = new ButtonWidget(width - 52, 2, 50, 15, Text.of("Export"), button -> {
+        exportButton = new Button(width - 52, 2, 50, 15, Component.nullToEmpty("Export"), button -> {
             ConfigManager.INSTANCE.get(AltFile.class).exportFile();
             outputString = "Exported alts to config/Accounts-Unencrypted.json";
         });
-        importFromTXTButton = new ButtonWidget(width / 2 - 50, height / 2 + 104, 100, 15, Text.of("Import From TXT"), button -> {
+        importFromTXTButton = new Button(width / 2 - 50, height / 2 + 104, 100, 15, Component.nullToEmpty("Import From TXT"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new ImportFromTXTScreen());
         });
-        searchTextField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) midX - 150, (height / 2) - 124, 250, 20, Text.of(""));
+        searchTextField = new EditBox(Wrapper.INSTANCE.getTextRenderer(), (int) midX - 150, (height / 2) - 124, 250, 20, Component.nullToEmpty(""));
         searchTextField.setVisible(true);
         searchTextField.setEditable(true);
-        searchTextField.setFocusUnlocked(true);
-        ButtonWidget searchButton = new ButtonWidget((int) midX + 102, (height / 2) - 124, 50, 20, Text.of("Search"), button -> {
-            loadAccountButtons(searchTextField.getText());
+        searchTextField.setCanLoseFocus(true);
+        Button searchButton = new Button((int) midX + 102, (height / 2) - 124, 50, 20, Component.nullToEmpty("Search"), button -> {
+            loadAccountButtons(searchTextField.getValue());
         });
-        this.addDrawableChild(loginButton);
-        this.addDrawableChild(editButton);
-        this.addDrawableChild(removeButton);
-        this.addDrawableChild(randomButton);
-        this.addDrawableChild(addAccountButton);
-        this.addDrawableChild(directLoginButton);
-        this.addDrawableChild(cancelButton);
-        this.addSelectableChild(searchTextField);
-        this.addDrawableChild(searchButton);
+        this.addRenderableWidget(loginButton);
+        this.addRenderableWidget(editButton);
+        this.addRenderableWidget(removeButton);
+        this.addRenderableWidget(randomButton);
+        this.addRenderableWidget(addAccountButton);
+        this.addRenderableWidget(directLoginButton);
+        this.addRenderableWidget(cancelButton);
+        this.addWidget(searchTextField);
+        this.addRenderableWidget(searchButton);
 
-        this.addDrawableChild(exportButton);
-        this.addDrawableChild(importButton);
-        this.addDrawableChild(importFromTXTButton);
-        this.outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+        this.addRenderableWidget(exportButton);
+        this.addRenderableWidget(importButton);
+        this.addRenderableWidget(importFromTXTButton);
+        this.outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getUser().getName();
 
         if (!accountButtons.isEmpty()) {
             float contentHeight = (accountButtons.get(accountButtons.size() - 1).getY() + (accountButtons.get(accountButtons.size() - 1).getHeight())) - accountButtons.get(0).getY();
@@ -148,11 +147,11 @@ public class AccountManagerScreen extends Screen {
 
     @Override
     public void tick() {
-        if (searchTextField.isFocused() && lastSearch != null && !lastSearch.equalsIgnoreCase(searchTextField.getText())) {
-            String search = searchTextField.getText().toLowerCase();
+        if (searchTextField.isFocused() && lastSearch != null && !lastSearch.equalsIgnoreCase(searchTextField.getValue())) {
+            String search = searchTextField.getValue().toLowerCase();
             loadAccountButtons(search);
         }
-        lastSearch = searchTextField.getText();
+        lastSearch = searchTextField.getValue();
         if (movingScrollbar) {
             if (MouseHelper.INSTANCE.isMouseButtonDown(0))
                 moveScrollbar();
@@ -164,7 +163,7 @@ public class AccountManagerScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         loginButton.active = getSelected() != null;
         editButton.active = getSelected() != null && getSelected().getAccount() instanceof MinecraftAccount.MojangAccount;
         removeButton.active = getSelected() != null;
@@ -306,8 +305,8 @@ public class AccountManagerScreen extends Screen {
                     outputString = "Login failed";
                 } else {
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                    button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
-                    outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+                    button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getUser().getName());
+                    outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getUser().getName();
                     mojangAccount.loginCount++;
                     mojangAccount.lastUsed = System.currentTimeMillis();
                 }
@@ -317,8 +316,8 @@ public class AccountManagerScreen extends Screen {
             msLoginHelper.loginThread(session -> {
                 if (session != null) {
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                    button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
-                    outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
+                    button.getAccount().setUsername(Wrapper.INSTANCE.getMinecraft().getUser().getName());
+                    outputString = "Logged in as " + Wrapper.INSTANCE.getMinecraft().getUser().getName();
                     microsoftAccount.loginCount++;
                     microsoftAccount.lastUsed = System.currentTimeMillis();
                 }

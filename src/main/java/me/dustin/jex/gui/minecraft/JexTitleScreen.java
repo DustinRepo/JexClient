@@ -15,17 +15,15 @@ import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.changelog.ChangelogScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
-import net.minecraft.text.Text;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
-
-import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
-import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
+import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
+import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.realmsclient.RealmsMainScreen;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -39,33 +37,33 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.update.UpdateManager;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.CubeMapRenderer;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.RotatingCubeMapRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.client.gui.screen.option.OptionsScreen;
-import net.minecraft.client.gui.screen.world.SelectWorldScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.OptionsScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
+import net.minecraft.client.renderer.CubeMap;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.PanoramaRenderer;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 public class JexTitleScreen extends Screen {
-    public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
-    private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
-    private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
-    private static final Identifier JEX_TITLE_TEXTURE = new Identifier("jex", "gui/jex/jex-logo.png");
-    private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
+    public static final CubeMap PANORAMA_CUBE_MAP = new CubeMap(new ResourceLocation("textures/gui/title/background/panorama"));
+    private static final ResourceLocation PANORAMA_OVERLAY = new ResourceLocation("textures/gui/title/background/panorama_overlay.png");
+    private static final ResourceLocation MINECRAFT_TITLE_TEXTURE = new ResourceLocation("textures/gui/title/minecraft.png");
+    private static final ResourceLocation JEX_TITLE_TEXTURE = new ResourceLocation("jex", "gui/jex/jex-logo.png");
+    private static final ResourceLocation EDITION_TITLE_TEXTURE = new ResourceLocation("textures/gui/title/edition.png");
     public static int background = 0;
     private static ArrayList<Background> backgrounds = new ArrayList<>();
     private final boolean isMinceraft;
-    private final RotatingCubeMapRenderer backgroundRenderer;
+    private final PanoramaRenderer backgroundRenderer;
     private final boolean doBackgroundFade;
     @Nullable
     private String splashText;
@@ -81,13 +79,13 @@ public class JexTitleScreen extends Screen {
     }
 
     public JexTitleScreen(boolean doBackgroundFade) {
-        super(Text.translatable("narrator.screen.title"));
-        this.backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
+        super(Component.translatable("narrator.screen.title"));
+        this.backgroundRenderer = new PanoramaRenderer(PANORAMA_CUBE_MAP);
         this.doBackgroundFade = doBackgroundFade;
         this.isMinceraft = (double) (new Random()).nextFloat() < 1.0E-4D;
         customMainMenu = Feature.get(CustomMainMenu.class);
 
-        MCAPIHelper.INSTANCE.downloadPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
+        MCAPIHelper.INSTANCE.downloadPlayerSkin(Wrapper.INSTANCE.getMinecraft().getUser().getGameProfile().getId());
     }
 
     public void tick() {
@@ -109,7 +107,7 @@ public class JexTitleScreen extends Screen {
             e.printStackTrace();
         }
         if (this.splashText == null) {
-            this.splashText = this.client.getSplashTextLoader().get();
+            this.splashText = this.minecraft.getSplashManager().getSplash();
         }
 
         int j = this.height / 4 + 48;
@@ -118,14 +116,14 @@ public class JexTitleScreen extends Screen {
 
         if (customMainMenu.customBackground) {
             if (!backgrounds.isEmpty()) {
-                this.addDrawableChild(new ButtonWidget(this.width - 22, this.height - 22, 20, 20, Text.of(">"), button -> {
+                this.addRenderableWidget(new Button(this.width - 22, this.height - 22, 20, 20, Component.nullToEmpty(">"), button -> {
                     JexTitleScreen.background += 1;
                     if (JexTitleScreen.background > backgrounds.size() - 1) {
                         JexTitleScreen.background = 0;
                     }
                     ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
                 }));
-                this.addDrawableChild(new ButtonWidget(this.width - 44, this.height - 22, 20, 20, Text.of("<"), button -> {
+                this.addRenderableWidget(new Button(this.width - 44, this.height - 22, 20, 20, Component.nullToEmpty("<"), button -> {
                     JexTitleScreen.background -= 1;
                     if (JexTitleScreen.background < 0) {
                         JexTitleScreen.background = backgrounds.size() - 1;
@@ -133,8 +131,8 @@ public class JexTitleScreen extends Screen {
                     ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
                 }));
             } else {
-                this.addDrawableChild(new ButtonWidget(this.width - 152, this.height - 22, 150, 20, Text.of("Open Backgrounds Folder"), button -> {
-                    Util.getOperatingSystem().open(new File(ModFileHelper.INSTANCE.getJexDirectory(), "backgrounds"));
+                this.addRenderableWidget(new Button(this.width - 152, this.height - 22, 150, 20, Component.nullToEmpty("Open Backgrounds Folder"), button -> {
+                    Util.getPlatform().openFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), "backgrounds"));
                 }));
             }
         }
@@ -143,40 +141,40 @@ public class JexTitleScreen extends Screen {
         } else if (JexTitleScreen.background > backgrounds.size() - 1) {
             JexTitleScreen.background = 0;
         }
-        this.client.setConnectedToRealms(false);
+        this.minecraft.setConnectedToRealms(false);
     }
 
     private void initWidgetsNormal(int y) {
         JexTitleScreen titleScreen = this;
-        this.addDrawableChild(new ButtonWidget(2, y, 200, 20, Text.translatable("menu.singleplayer"), button -> {
+        this.addRenderableWidget(new Button(2, y, 200, 20, Component.translatable("menu.singleplayer"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new SelectWorldScreen(titleScreen));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24, 175, 20, Text.translatable("menu.multiplayer"), button -> {
-            Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(titleScreen));
+        this.addRenderableWidget(new Button(2, y + 24, 175, 20, Component.translatable("menu.multiplayer"), button -> {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new JoinMultiplayerScreen(titleScreen));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24 * 2, 150, 20, Text.translatable("menu.online"), button -> {
+        this.addRenderableWidget(new Button(2, y + 24 * 2, 150, 20, Component.translatable("menu.online"), button -> {
             titleScreen.switchToRealms();
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24 * 3, 125, 20, Text.translatable("menu.options"), button -> {
+        this.addRenderableWidget(new Button(2, y + 24 * 3, 125, 20, Component.translatable("menu.options"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24 * 4, 100, 20, Text.translatable("menu.quit"), button -> {
-            Wrapper.INSTANCE.getMinecraft().scheduleStop();
+        this.addRenderableWidget(new Button(2, y + 24 * 4, 100, 20, Component.translatable("menu.quit"), button -> {
+            Wrapper.INSTANCE.getMinecraft().stop();
         }));
-        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, Text.translatable("Changelog"), button -> {
+        this.addRenderableWidget(new Button(2, height - 22, 100, 20, Component.translatable("Changelog"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new ChangelogScreen());
         }));
     }
 
     private void switchToRealms() {
-        this.client.setScreen(new RealmsMainScreen(this));
+        this.minecraft.setScreen(new RealmsMainScreen(this));
     }
 
     float capeYaw = 0;
 
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         if (this.backgroundFadeStart == 0L && this.doBackgroundFade) {
-            this.backgroundFadeStart = Util.getMeasuringTimeMs();
+            this.backgroundFadeStart = Util.getMillis();
         }
         if (customMainMenu.scroll && stopWatch.hasPassed(customMainMenu.scrollDelay * 1000L)) {
             background++;
@@ -187,38 +185,38 @@ public class JexTitleScreen extends Screen {
             }
             stopWatch.reset();
         }
-        isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+        isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replace("-", ""));
         int midX = Render2DHelper.INSTANCE.getScaledWidth() / 2;
-        float f = this.doBackgroundFade ? (float) (Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
+        float f = this.doBackgroundFade ? (float) (Util.getMillis() - this.backgroundFadeStart) / 1000.0F : 1.0F;
         fill(matrices, 0, 0, this.width, this.height, -1);
-        this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0F, 1.0F));
+        this.backgroundRenderer.render(delta, Mth.clamp(f, 0.0F, 1.0F));
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
-        drawTexture(matrices, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
-        float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
-        int l = MathHelper.ceil(g * 255.0F) << 24;
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float) Mth.ceil(Mth.clamp(f, 0.0F, 1.0F)) : 1.0F);
+        blit(matrices, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
+        float g = this.doBackgroundFade ? Mth.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
+        int l = Mth.ceil(g * 255.0F) << 24;
 
         if (!JexTitleScreen.backgrounds.isEmpty() && customMainMenu.customBackground) {
             Background currentBackground = backgrounds.get(background);
             Render2DHelper.INSTANCE.bindTexture(currentBackground.identifier);
-            DrawableHelper.drawTexture(matrices, (int) 0, (int) 0, 0, 0, width, height, width, height);
+            GuiComponent.blit(matrices, (int) 0, (int) 0, 0, 0, width, height, width, height);
         }
 
         if ((l & -67108864) != 0) {
             RenderSystem.setShaderTexture(0, JEX_TITLE_TEXTURE);
             int j1 = this.height / 4 - 10;
             Render2DHelper.INSTANCE.shaderColor(ColorHelper.INSTANCE.getClientColor());
-            drawTexture(matrices, 2, (int) j1, 0.0F, 0.0F, 250, 50, 250, 50);
+            blit(matrices, 2, (int) j1, 0.0F, 0.0F, 250, 50, 250, 50);
 
-            this.splashText = isMinceraft ? "Minceraft" : "Build " + JexClient.INSTANCE.getVersion().version() + " for MC" + SharedConstants.getGameVersion().getName();
-            matrices.push();
-            float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * 6.2831855F) * 0.1F);
-            h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
+            this.splashText = isMinceraft ? "Minceraft" : "Build " + JexClient.INSTANCE.getVersion().version() + " for MC" + SharedConstants.getCurrentVersion().getName();
+            matrices.pushPose();
+            float h = 1.8F - Mth.abs(Mth.sin((float)(Util.getMillis() % 1000L) / 1000.0F * 6.2831855F) * 0.1F);
+            h = h * 100.0F / (float)(this.font.width(this.splashText) + 32);
             matrices.scale(h, h, h);
             FontHelper.INSTANCE.drawWithShadow(matrices, splashText, 2 / h, (j1 + 44) / h, ColorHelper.INSTANCE.getClientColor());
-            matrices.pop();
+            matrices.popPose();
 
             if (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH) {
                 String updateString = "Jex Client is outdated. You can open the Jex Options screen in Options to update to Build " + UpdateManager.INSTANCE.getLatestVersion().version();
@@ -237,8 +235,8 @@ public class JexTitleScreen extends Screen {
                 }
             }
 
-            for (net.minecraft.client.gui.Element element : this.children()) {
-                ClickableWidget abstractButtonWidget = (ClickableWidget) element;
+            for (net.minecraft.client.gui.components.events.GuiEventListener element : this.children()) {
+                AbstractWidget abstractButtonWidget = (AbstractWidget) element;
                 abstractButtonWidget.setAlpha(g);
             }
             float top = this.height / 4.f + 45;
@@ -246,16 +244,16 @@ public class JexTitleScreen extends Screen {
             float left = -1;
             float right = 205;
 
-            Render2DHelper.INSTANCE.drawFace(matrices, 2, (int)bottom + 2, 4, MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()));
-            FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Welcome, " + (isDonator ? "\247r" : (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")) ? "\247a" : "\247f")) + Wrapper.INSTANCE.getMinecraft().getSession().getUsername(), 37, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
-            if (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
+            Render2DHelper.INSTANCE.drawFace(matrices, 2, (int)bottom + 2, 4, MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getUser().getGameProfile().getId()));
+            FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Welcome, " + (isDonator ? "\247r" : (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replace("-", "")) ? "\247a" : "\247f")) + Wrapper.INSTANCE.getMinecraft().getUser().getName(), 37, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
+            if (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replace("-", ""))) {
                 FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Jex Utility Client", 37, bottom + 12, -1);
-                Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+                Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replace("-", ""));
                 try {
                     if (response.getCape() != null && !response.getCape().isEmpty() && !response.getCape().equalsIgnoreCase("null")) {
-                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("assets/jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")), capeYaw, 0);
+                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new ResourceLocation("assets/jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replace("-", "")), capeYaw, 0);
                     } else {
-                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("assets/jex", "cape/jex_cape.png"), capeYaw, 0);
+                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new ResourceLocation("assets/jex", "cape/jex_cape.png"), capeYaw, 0);
                     }
                 }catch (Exception e) {}
             } else {
@@ -318,12 +316,12 @@ public class JexTitleScreen extends Screen {
         NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
         for (int x = 0; x < image1.getWidth(); x++) {
             for (int y = 0; y < image1.getHeight(); y++) {
-                imgNew.setColor(x, y, image1.getColor(x, y));
+                imgNew.setPixelRGBA(x, y, image1.getPixelRGBA(x, y));
             }
         }
 
         image1.close();
-        Identifier id = new Identifier("jex", "background/" + name);
+        ResourceLocation id = new ResourceLocation("jex", "background/" + name);
         applyTexture(id, imgNew);
         JexTitleScreen.backgrounds.add(new Background(name, imageWidth, imageHeight, id));
     }
@@ -340,17 +338,17 @@ public class JexTitleScreen extends Screen {
         }
     }
 
-    private void applyTexture(Identifier identifier, NativeImage nativeImage) {
-        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(nativeImage)));
+    private void applyTexture(ResourceLocation identifier, NativeImage nativeImage) {
+        Minecraft.getInstance().execute(() -> Minecraft.getInstance().getTextureManager().register(identifier, new DynamicTexture(nativeImage)));
     }
 
 
     public class Background {
         private String name;
         private int width, height;
-        private Identifier identifier;
+        private ResourceLocation identifier;
 
-        public Background(String name, int width, int height, Identifier identifier) {
+        public Background(String name, int width, int height, ResourceLocation identifier) {
             this.name = name;
             this.width = width;
             this.height = height;

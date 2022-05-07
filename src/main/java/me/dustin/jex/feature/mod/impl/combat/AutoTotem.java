@@ -11,10 +11,10 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
+import net.minecraft.world.item.Items;
 import me.dustin.events.core.annotate.EventPointer;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 
 @Feature.Manifest(category = Feature.Category.COMBAT, description = "Keep a Totem in your offhand at all times.")
 public class AutoTotem extends Feature {
@@ -40,8 +40,8 @@ public class AutoTotem extends Feature {
         if (firstTotem == -1)
             return;
         if (needsOffhandTotem()) {
-            if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING) {
-                if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.AIR)
+            if (Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() != Items.TOTEM_OF_UNDYING) {
+                if (Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() != Items.AIR)
                     swappedSlot = firstTotem;
                 moveTotem(firstTotem);
             }
@@ -59,7 +59,7 @@ public class AutoTotem extends Feature {
 
     public boolean needsOffhandTotem() {
         if (activateWhen.equalsIgnoreCase("Always"))
-            return (replaceOffhand && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING) || Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.AIR;
+            return (replaceOffhand && Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() != Items.TOTEM_OF_UNDYING) || Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() == Items.AIR;
         return health >= Wrapper.INSTANCE.getLocalPlayer().getHealth();
     }
 
@@ -68,7 +68,7 @@ public class AutoTotem extends Feature {
             Wrapper.INSTANCE.getMinecraft().setScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));
         InventoryHelper.INSTANCE.moveToOffhand(slot);
         if (openInventory) {
-            NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.syncId));
+            NetworkHelper.INSTANCE.sendPacket(new ServerboundContainerClosePacket(Wrapper.INSTANCE.getLocalPlayer().containerMenu.containerId));
             Wrapper.INSTANCE.getMinecraft().setScreen(null);
         }
     }

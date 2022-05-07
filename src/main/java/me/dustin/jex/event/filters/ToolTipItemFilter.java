@@ -1,11 +1,7 @@
 package me.dustin.jex.event.filters;
 
 import me.dustin.jex.event.misc.EventGetToolTipFromItem;
-import me.dustin.jex.event.misc.EventSetScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-
+import net.minecraft.world.item.Item;
 import java.util.function.Predicate;
 
 public class ToolTipItemFilter implements Predicate<EventGetToolTipFromItem> {

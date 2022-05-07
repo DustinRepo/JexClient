@@ -1,4 +1,5 @@
 package me.dustin.jex.helper.baritone.process;
+import baritone.api.BaritoneAPI;
 import baritone.api.pathing.goals.Goal;
 import baritone.api.pathing.goals.GoalNear;
 import baritone.api.pathing.goals.GoalRunAway;
@@ -7,7 +8,7 @@ import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 
 public class KillauraTargetProcess implements IBaritoneProcess {
 
@@ -33,15 +34,13 @@ public class KillauraTargetProcess implements IBaritoneProcess {
         Goal goal;
 
         float dist = killaura.bMinDist;
-        //had to comment out the original ones because the official baritone jar either builds with already yarn mapped code or running the "jar" gradle command builds with forge mappings even using the baritone.fabric_build property
-        //since I'm not doing any fancy stuff with multiple baritones I don't really have to worry too much though
-        if (!/*BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player()*/Wrapper.INSTANCE.getLocalPlayer().canSee(target))
+        if (!BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player().hasLineOfSight(target))
             dist = 1;
 
-        if (/*BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player()*/Wrapper.INSTANCE.getLocalPlayer().distanceTo(target) > dist)
-            goal = new GoalNear(target.getBlockPos(), (int) killaura.reach);
+        if (BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player().distanceTo(target) > dist)
+            goal = new GoalNear(target.blockPosition(), (int) killaura.reach);
         else
-            goal = new GoalRunAway(dist, target.getBlockPos());
+            goal = new GoalRunAway(dist, target.blockPosition());
         return new PathingCommand(goal, PathingCommandType.REVALIDATE_GOAL_AND_PATH);
     }
 

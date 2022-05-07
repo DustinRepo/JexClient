@@ -9,9 +9,9 @@ import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.item.Items;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.Items;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Spam XP Bottles on a button press")
 public class XPBottleSpammer extends Feature {
@@ -32,9 +32,9 @@ public class XPBottleSpammer extends Feature {
                 int xpBottleInv = InventoryHelper.INSTANCE.getFromInv(Items.EXPERIENCE_BOTTLE);
                 if (xpBottleInv == -1)
                     return;
-                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, xpBottleInv < 9 ? xpBottleInv + 36 : xpBottleInv, SlotActionType.SWAP, 8);
+                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, xpBottleInv < 9 ? xpBottleInv + 36 : xpBottleInv, ClickType.SWAP, 8);
             }
-            event.setRotation(new RotationVector(Wrapper.INSTANCE.getLocalPlayer().getYaw(), 90));
+            event.setRotation(new RotationVector(Wrapper.INSTANCE.getLocalPlayer().getYRot(), 90));
         } else if (event.getMode() == EventPlayerPackets.Mode.POST) {
             if (!KeyboardHelper.INSTANCE.isPressed(throwKey))
                 return;
@@ -43,8 +43,8 @@ public class XPBottleSpammer extends Feature {
                 return;
             InventoryHelper.INSTANCE.setSlot(xpBottleHotbar, false, true);
             for (int i = 0; i < speed; i++)
-                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
-            InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
+                Wrapper.INSTANCE.getMultiPlayerGameMode().useItem(Wrapper.INSTANCE.getLocalPlayer(), InteractionHand.MAIN_HAND);
+            InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selected, false, true);
         }
     });
 }

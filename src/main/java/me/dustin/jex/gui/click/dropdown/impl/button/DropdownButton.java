@@ -7,10 +7,9 @@ import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.sound.SoundEvents;
-
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -46,7 +45,7 @@ public class DropdownButton {
         this.textColor = 0xffaaaaaa;
     }
 
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         Render2DHelper.INSTANCE.fill(matrixStack, x, y, x + width, y + height, backgroundColor);
         if (centerText)
             FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getName(), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 3.5f, isEnabled ? textColor : 0xff676767);
@@ -71,7 +70,7 @@ public class DropdownButton {
                 this.setOpen(!this.isOpen());
             }
             if (isPlayClick())
-                Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                Wrapper.INSTANCE.getMinecraft().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         }
     }
 

@@ -1,29 +1,29 @@
 package me.dustin.jex.event.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.Event;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 
 public class EventRenderHeldItem extends Event {
 
-    private ItemStack itemStack;
-    private Hand hand;
-    private float partialTicks;
-    private MatrixStack matrixStack;
+    private final ItemStack itemStack;
+    private final InteractionHand hand;
+    private final float partialTicks;
+    private final PoseStack poseStack;
 
-    public EventRenderHeldItem(ItemStack itemStack, Hand hand, float partialTicks, MatrixStack matrixStack) {
+    public EventRenderHeldItem(ItemStack itemStack, InteractionHand hand, float partialTicks, PoseStack poseStack) {
         this.itemStack = itemStack;
         this.hand = hand;
         this.partialTicks = partialTicks;
-        this.matrixStack = matrixStack;
+        this.poseStack = poseStack;
     }
 
     public ItemStack getItemStack() {
         return itemStack;
     }
 
-    public Hand getHand() {
+    public InteractionHand getHand() {
         return hand;
     }
 
@@ -31,7 +31,7 @@ public class EventRenderHeldItem extends Event {
         return partialTicks;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public PoseStack getPoseStack() {
+        return poseStack;
     }
 }

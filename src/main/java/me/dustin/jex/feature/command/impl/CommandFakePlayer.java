@@ -15,8 +15,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.entity.Entity;
-
+import net.minecraft.world.entity.Entity;
 import java.util.UUID;
 
 @Cmd(name = "fakeplayer", description = "Create a fake player at your current position", syntax = {".fakeplayer add <name>", ".fakeplayer del <name>"}, alias = {"fp", "player"})
@@ -34,14 +33,14 @@ public class CommandFakePlayer extends Command {
                 uuid = realUUID;
             }
             FakePlayerEntity otherClientPlayerEntity = new FakePlayerEntity(Wrapper.INSTANCE.getWorld(), new GameProfile(uuid, name));
-            Wrapper.INSTANCE.getWorld().addEntity(id, otherClientPlayerEntity);
-            otherClientPlayerEntity.copyPositionAndRotation(Wrapper.INSTANCE.getLocalPlayer());
+            Wrapper.INSTANCE.getWorld().putNonPlayerEntity(id, otherClientPlayerEntity);
+            otherClientPlayerEntity.copyPosition(Wrapper.INSTANCE.getLocalPlayer());
             ChatHelper.INSTANCE.addClientMessage("Added fake player " + name);
             return 1;
         }))).then(literal("del").then(argument("fake player", FakePlayerArgumentType.fakePlayer()).executes(context -> {
             String fakePlayerName = FakePlayerArgumentType.getPlayerName(context, "fake player");
             FakePlayerEntity player = null;
-            for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+            for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
                 if (entity instanceof FakePlayerEntity) {
                     if (entity.getName().getString().equalsIgnoreCase(fakePlayerName)) {
                         player = (FakePlayerEntity)entity;
@@ -52,7 +51,7 @@ public class CommandFakePlayer extends Command {
                 ChatHelper.INSTANCE.addClientMessage("Could not find fake player with that name.");
                 return 0;
             }
-            player.setPos(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+            player.setPosRaw(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
             Wrapper.INSTANCE.getWorld().removeEntity(player.getId(), Entity.RemovalReason.DISCARDED);
             ChatHelper.INSTANCE.addClientMessage("Removed fake player " + name);
             return 1;

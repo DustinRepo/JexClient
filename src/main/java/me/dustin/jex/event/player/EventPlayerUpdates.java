@@ -4,7 +4,7 @@ import me.dustin.events.core.Event;
 
 public class EventPlayerUpdates extends Event {
 
-    private Mode mode;
+    private final Mode mode;
 
     public EventPlayerUpdates(Mode mode) {
         this.mode = mode;

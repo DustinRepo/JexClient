@@ -8,9 +8,9 @@ import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Animal;
 
 @Cmd(name = "breed", description = "Instantly make all animals around you breed with your current food in hand")
 public class CommandBreed extends Command {
@@ -22,10 +22,10 @@ public class CommandBreed extends Command {
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         int entCount = 0;
-        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if (entity instanceof AnimalEntity && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= 6) {
-                if (EntityHelper.INSTANCE.canBreed((AnimalEntity)entity)) {
-                    Wrapper.INSTANCE.getInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), entity, Hand.MAIN_HAND);
+        for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
+            if (entity instanceof Animal && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= 6) {
+                if (EntityHelper.INSTANCE.canBreed((Animal)entity)) {
+                    Wrapper.INSTANCE.getMultiPlayerGameMode().interact(Wrapper.INSTANCE.getLocalPlayer(), entity, InteractionHand.MAIN_HAND);
                     entCount++;
                 }
             }

@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.click.dropdown.theme.aris.option;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -15,7 +16,6 @@ import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
 public class ArisKeybindOptionButton extends KeybindOptionButton {
@@ -24,7 +24,7 @@ public class ArisKeybindOptionButton extends KeybindOptionButton {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
 
         float bottomY = getY() + getHeight();
         if (isOpen()) {

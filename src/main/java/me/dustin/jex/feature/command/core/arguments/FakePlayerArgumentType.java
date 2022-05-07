@@ -8,9 +8,8 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.entity.Entity;
-import net.minecraft.text.Text;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import java.util.concurrent.CompletableFuture;
 
 public class FakePlayerArgumentType extends PlayerNameArgumentType {
@@ -31,7 +30,7 @@ public class FakePlayerArgumentType extends PlayerNameArgumentType {
         String nameString = reader.getString().substring(argBeginning, reader.getCursor());
 
         FakePlayerEntity player = null;
-        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+        for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
             if (entity instanceof FakePlayerEntity) {
                 if (entity.getName().getString().equalsIgnoreCase(nameString)) {
                     player = (FakePlayerEntity)entity;
@@ -42,13 +41,13 @@ public class FakePlayerArgumentType extends PlayerNameArgumentType {
         if (player != null) {
             return nameString;
         } else {
-            throw new SimpleCommandExceptionType(Text.of("Not a fake player")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Component.nullToEmpty("Not a fake player")).createWithContext(reader);
         }
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
             if (entity instanceof FakePlayerEntity) {
                 builder.suggest(entity.getName().getString());
             }

@@ -17,21 +17,21 @@ public enum Update {
     private float progress;
 
     public void update() {
-        if (SharedConstants.getGameVersion().getName().contains("w") && (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_MC || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH)) {
+        if (SharedConstants.getCurrentVersion().getName().contains("w") && (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_MC || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH)) {
             progressText = "Error. New version for another snapshot, and can not run on this Fabric version";
             return;
         }
-        String downloadURL = String.format("https://github.com/DustinRepo/JexClient/releases/download/%s/JexClient%s", UpdateManager.INSTANCE.getLatestVersion().version(), SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar");//JexClient.INSTANCE.getBaseUrl() + "download/JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar");
-        String modsFolder = Wrapper.INSTANCE.getMinecraft().runDirectory.getAbsolutePath() + File.separator + "mods";
+        String downloadURL = String.format("https://github.com/DustinRepo/JexClient/releases/download/%s/JexClient%s", UpdateManager.INSTANCE.getLatestVersion().version(), SharedConstants.getCurrentVersion().getName().contains("w") ? "-Snap.jar" : ".jar");//JexClient.INSTANCE.getBaseUrl() + "download/JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar");
+        String modsFolder = Wrapper.INSTANCE.getMinecraft().gameDirectory.getAbsolutePath() + File.separator + "mods";
 
         new Thread(() -> {
             progressText = "Downloading Jex";
             try {
-                String name = "JexClient" + (SharedConstants.getGameVersion().getName().contains("w") ? "-Snap.jar" : ".jar");
+                String name = "JexClient" + (SharedConstants.getCurrentVersion().getName().contains("w") ? "-Snap.jar" : ".jar");
                 download(downloadURL, modsFolder + File.separator + name);
                 progressText = "Update complete. Closing Minecraft...";
                 Thread.sleep(3000);
-                Wrapper.INSTANCE.getMinecraft().scheduleStop();
+                Wrapper.INSTANCE.getMinecraft().stop();
             } catch (IOException | InterruptedException e) {
                 progressText = "Error while downloading.";
                 e.printStackTrace();

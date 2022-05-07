@@ -1,12 +1,12 @@
 package me.dustin.jex.feature.mod.impl.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderItem;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.client.util.math.MatrixStack;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the scale and positioning of items in your hands")
 public class ItemScale extends Feature {
@@ -35,11 +35,11 @@ public class ItemScale extends Feature {
 
     @EventPointer
     private final EventListener<EventRenderItem> eventRenderItemEventListener = new EventListener<>(event -> {
-        if (event.getType().isFirstPerson()) {
-            MatrixStack matrixStack = event.getMatrixStack();
+        if (event.getType().firstPerson()) {
+            PoseStack matrixStack = event.getPoseStack();
             switch (event.getRenderTime()) {
                 case PRE -> {
-                    matrixStack.push();
+                    matrixStack.pushPose();
                     switch (event.getType()) {
                         case FIRST_PERSON_RIGHT_HAND -> {
                             matrixStack.translate(rightHandX, rightHandY, rightHandZ);
@@ -51,7 +51,7 @@ public class ItemScale extends Feature {
                         }
                     }
                 }
-                case POST -> matrixStack.pop();
+                case POST -> matrixStack.popPose();
             }
         }
     });

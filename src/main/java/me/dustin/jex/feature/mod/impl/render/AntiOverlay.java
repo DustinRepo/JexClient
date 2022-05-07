@@ -4,11 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ApplyFogFilter;
-import me.dustin.jex.event.render.EventApplyFog;
+import me.dustin.jex.event.render.EventSetupFog;
 import me.dustin.jex.event.render.EventRenderOverlay;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.client.render.CameraSubmersionType;
+import net.minecraft.world.level.material.FogType;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Remove overlays")
 public class AntiOverlay extends Feature {
@@ -75,7 +75,7 @@ public class AntiOverlay extends Feature {
     });
 
     @EventPointer
-    private final EventListener<EventApplyFog> eventApplyFogEventListener = new EventListener<>(event -> {
+    private final EventListener<EventSetupFog> eventApplyFogEventListener = new EventListener<>(event -> {
         switch (event.getCameraSubmersionType()){
             case WATER -> {
                 if (water) {
@@ -96,5 +96,5 @@ public class AntiOverlay extends Feature {
                 }
             }
         }
-    }, new ApplyFogFilter(CameraSubmersionType.WATER, CameraSubmersionType.LAVA, CameraSubmersionType.POWDER_SNOW));
+    }, new ApplyFogFilter(FogType.WATER, FogType.LAVA, FogType.POWDER_SNOW));
 }

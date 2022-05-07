@@ -11,7 +11,7 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.protocol.game.ServerboundKeepAlivePacket;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Spoofs your ping to be as high as possible")
 public class PingSpoof extends Feature {
@@ -28,7 +28,7 @@ public class PingSpoof extends Feature {
             packetStopWatch.reset();
             keepAliveId = -1;
         } else if (keepAliveId != -1 && packetStopWatch.hasPassed(ping)) {
-            NetworkHelper.INSTANCE.sendPacketDirect(new KeepAliveC2SPacket(keepAliveId));
+            NetworkHelper.INSTANCE.sendPacketDirect(new ServerboundKeepAlivePacket(keepAliveId));
             keepAliveId = -1;
             packetStopWatch.reset();
         }
@@ -36,9 +36,9 @@ public class PingSpoof extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        keepAliveId = ((KeepAliveC2SPacket)event.getPacket()).getId();
+        keepAliveId = ((ServerboundKeepAlivePacket)event.getPacket()).getId();
         packetStopWatch.reset();
         event.cancel();
-    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, KeepAliveC2SPacket.class));
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundKeepAlivePacket.class));
 
 }

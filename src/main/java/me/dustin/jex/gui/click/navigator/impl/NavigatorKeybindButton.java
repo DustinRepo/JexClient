@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.click.navigator.impl;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -12,7 +13,6 @@ import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
 public class NavigatorKeybindButton extends Button {
@@ -23,7 +23,7 @@ public class NavigatorKeybindButton extends Button {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         String keyString = feature.getKey() == 0 ? "None" : KeyboardHelper.INSTANCE.getKeyName(feature.getKey());
         if (EventManager.isRegistered(this))
             keyString = "...";

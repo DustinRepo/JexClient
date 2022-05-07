@@ -29,16 +29,16 @@ public class Sprint extends Feature {
     });
 
     private boolean canSprint() {
-        if (!inInventory && Wrapper.INSTANCE.getMinecraft().currentScreen != null)
+        if (!inInventory && Wrapper.INSTANCE.getMinecraft().screen != null)
             return false;
-        return isMoving() && !Wrapper.INSTANCE.getLocalPlayer().horizontalCollision && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() > 6;
+        return isMoving() && !Wrapper.INSTANCE.getLocalPlayer().horizontalCollision && Wrapper.INSTANCE.getLocalPlayer().getFoodData().getFoodLevel() > 6;
     }
 
     private boolean isMoving() {
         if (multiDir) {
             return PlayerHelper.INSTANCE.isMoving();
         } else {
-            return Wrapper.INSTANCE.getLocalPlayer().input.movementForward == 1;
+            return Wrapper.INSTANCE.getLocalPlayer().input.forwardImpulse == 1;
         }
     }
 }

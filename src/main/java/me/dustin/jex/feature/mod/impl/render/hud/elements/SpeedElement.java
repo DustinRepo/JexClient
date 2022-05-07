@@ -1,11 +1,11 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 public class SpeedElement extends HudElement {
     public SpeedElement(float x, float y, float minWidth, float minHeight) {
@@ -13,7 +13,7 @@ public class SpeedElement extends HudElement {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         if (!isVisible())
             return;
         super.render(matrixStack);
@@ -29,18 +29,18 @@ public class SpeedElement extends HudElement {
     }
 
     private String generateSpeedText() {
-        Vec3d move = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX, 0, Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ).multiply(20);
+        Vec3 move = new Vec3(Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().xo, 0, Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().zo).scale(20);
         switch (getHud().distanceMode) {
             case "Blocks":
                 break;
             case "Feet":
-                move = move.multiply(3.281);
+                move = move.scale(3.281);
                 break;
             case "Miles":
-                move = move.multiply(0.000621371);
+                move = move.scale(0.000621371);
                 break;
             case "KM":
-                move = move.multiply(0.001);
+                move = move.scale(0.001);
                 break;
 
         }
@@ -64,7 +64,7 @@ public class SpeedElement extends HudElement {
         return String.format("%.2f %s/%s", (float) (Math.abs(length2D(move)) * time), getHud().distanceMode, getHud().timeMode);
     }
 
-    public double length2D(Vec3d vec3d) {
-        return MathHelper.sqrt((float)(vec3d.x * vec3d.x + vec3d.z * vec3d.z));
+    public double length2D(Vec3 vec3d) {
+        return Mth.sqrt((float)(vec3d.x * vec3d.x + vec3d.z * vec3d.z));
     }
 }

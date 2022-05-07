@@ -7,16 +7,16 @@ import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Change how the Elytra flies.")
@@ -54,36 +54,36 @@ public class ElytraPlus extends Feature {
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
         this.setSuffix(mode);
         if (wearingElytra() && (autoElytra && Wrapper.INSTANCE.getLocalPlayer().fallDistance >= fallDistance && !Wrapper.INSTANCE.getLocalPlayer().isOnGround() && !Wrapper.INSTANCE.getLocalPlayer().isFallFlying())) {
-            if (Wrapper.INSTANCE.getLocalPlayer().age % 5 == 0)
-                NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.START_FALL_FLYING));
+            if (Wrapper.INSTANCE.getLocalPlayer().tickCount % 5 == 0)
+                NetworkHelper.INSTANCE.sendPacket(new ServerboundPlayerCommandPacket(Wrapper.INSTANCE.getLocalPlayer(), ServerboundPlayerCommandPacket.Action.START_FALL_FLYING));
         }
 
         if (Wrapper.INSTANCE.getLocalPlayer().isFallFlying() && elytraFly) {
             if (mode.equalsIgnoreCase("Boost")) {
-                ClientPlayerEntity player = Wrapper.INSTANCE.getLocalPlayer();
-                double currentVel = Math.abs(player.getVelocity().x) + Math.abs(player.getVelocity().y) + Math.abs(player.getVelocity().z);
-                float radianYaw = (float) Math.toRadians(player.getYaw());
+                LocalPlayer player = Wrapper.INSTANCE.getLocalPlayer();
+                double currentVel = Math.abs(player.getDeltaMovement().x) + Math.abs(player.getDeltaMovement().y) + Math.abs(player.getDeltaMovement().z);
+                float radianYaw = (float) Math.toRadians(player.getYRot());
                 if (currentVel <= maxBoost) {
                     if (KeyboardHelper.INSTANCE.isPressed(boostKey)) {
-                        player.addVelocity(MathHelper.sin(radianYaw) * -boost, 0, MathHelper.cos(radianYaw) * boost);
+                        player.push(Mth.sin(radianYaw) * -boost, 0, Mth.cos(radianYaw) * boost);
                     } else if (KeyboardHelper.INSTANCE.isPressed(slowKey)) {
-                        player.addVelocity(MathHelper.sin(radianYaw) * boost, 0, MathHelper.cos(radianYaw) * -boost);
+                        player.push(Mth.sin(radianYaw) * boost, 0, Mth.cos(radianYaw) * -boost);
                     }
                 }
             } else if (mode.equalsIgnoreCase("AlwaysBoost")) {
-                Vec3d vec3d_1 = Wrapper.INSTANCE.getLocalPlayer().getRotationVector();
-                Vec3d vec3d_2 = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
-                Wrapper.INSTANCE.getLocalPlayer().setVelocity(vec3d_2.add(vec3d_1.x * 0.1D + (vec3d_1.x * 1.5D - vec3d_2.x) * 0.5D, vec3d_1.y * 0.1D + (vec3d_1.y * 1.5D - vec3d_2.y) * 0.5D, vec3d_1.z * 0.1D + (vec3d_1.z * 1.5D - vec3d_2.z) * 0.5D));
+                Vec3 vec3d_1 = Wrapper.INSTANCE.getLocalPlayer().getLookAngle();
+                Vec3 vec3d_2 = Wrapper.INSTANCE.getLocalPlayer().getDeltaMovement();
+                Wrapper.INSTANCE.getLocalPlayer().setDeltaMovement(vec3d_2.add(vec3d_1.x * 0.1D + (vec3d_1.x * 1.5D - vec3d_2.x) * 0.5D, vec3d_1.y * 0.1D + (vec3d_1.y * 1.5D - vec3d_2.y) * 0.5D, vec3d_1.z * 0.1D + (vec3d_1.z * 1.5D - vec3d_2.z) * 0.5D));
             } else if (mode.equalsIgnoreCase("Hover")) {
                 PlayerHelper.INSTANCE.setMoveSpeed(event, flySpeed);
                 if (event.getY() <= 0)
-                    event.setY(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? flySpeed : (Wrapper.INSTANCE.getLocalPlayer().isSneaking() ? -flySpeed : (slowGlide ? -0.0001 : 0)));
+                    event.setY(Wrapper.INSTANCE.getOptions().keyJump.isDown() ? flySpeed : (Wrapper.INSTANCE.getLocalPlayer().isShiftKeyDown() ? -flySpeed : (slowGlide ? -0.0001 : 0)));
             }
         }
     });
 
     private boolean wearingElytra() {
-        ItemStack equippedStack = Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(EquipmentSlot.CHEST);
+        ItemStack equippedStack = Wrapper.INSTANCE.getLocalPlayer().getItemBySlot(EquipmentSlot.CHEST);
         return equippedStack != null && equippedStack.getItem() == Items.ELYTRA;
     }
 

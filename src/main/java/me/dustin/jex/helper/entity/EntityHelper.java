@@ -1,26 +1,52 @@
 package me.dustin.jex.helper.entity;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.mob.*;
-import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.RaycastContext;
-
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.animal.AbstractFish;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.animal.Dolphin;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.Ocelot;
+import net.minecraft.world.entity.animal.Panda;
+import net.minecraft.world.entity.animal.PolarBear;
+import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.animal.allay.Allay;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Ghast;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Phantom;
+import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.monster.piglin.PiglinArmPose;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.WanderingTrader;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterials;
+import net.minecraft.world.item.DyeableArmorItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import java.util.UUID;
 
 public enum EntityHelper {
@@ -31,62 +57,62 @@ public enum EntityHelper {
             return false;
         KillAura killaura = Feature.get(KillAura.class);
         if (killaura.getState()) {
-            for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+            for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
                 if (killaura.isValid(entity, false) && (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.autoblockDistance || Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.reach)) {
-                    return killaura.autoBlock && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem;
+                    return killaura.autoBlock && Wrapper.INSTANCE.getLocalPlayer().getOffhandItem() != null && Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() instanceof ShieldItem;
                 }
             }
         }
         if (Wrapper.INSTANCE.getLocalPlayer().isUsingItem())
-            return Wrapper.INSTANCE.getLocalPlayer().getActiveItem() != null && Wrapper.INSTANCE.getLocalPlayer().getActiveItem().getItem() instanceof ShieldItem;
+            return Wrapper.INSTANCE.getLocalPlayer().getUseItem() != null && Wrapper.INSTANCE.getLocalPlayer().getUseItem().getItem() instanceof ShieldItem;
         return false;
     }
 
     public boolean isPassiveMob(Entity entity) {
-        return !(entity instanceof HoglinEntity) && doesPlayerOwn(entity) || entity instanceof AllayEntity || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
+        return !(entity instanceof Hoglin) && doesPlayerOwn(entity) || entity instanceof Allay || entity instanceof WanderingTrader || entity instanceof AbstractFish || entity instanceof Dolphin || entity instanceof Squid || entity instanceof Bat || entity instanceof Villager || entity instanceof Ocelot || entity instanceof Horse || entity instanceof Animal;
     }
 
     public boolean isNeutralMob(Entity entity) {
-        return entity instanceof ZombifiedPiglinEntity || entity instanceof BeeEntity || entity instanceof PiglinEntity || entity instanceof PandaEntity || entity instanceof WolfEntity || entity instanceof PolarBearEntity || entity instanceof IronGolemEntity || entity instanceof EndermanEntity;
+        return entity instanceof ZombifiedPiglin || entity instanceof Bee || entity instanceof Piglin || entity instanceof Panda || entity instanceof Wolf || entity instanceof PolarBear || entity instanceof IronGolem || entity instanceof EnderMan;
     }
 
     public boolean isHostileMob(Entity entity) {
         if (isNeutralMob(entity))
             return isAngryAtPlayer(entity);
-        return entity instanceof ShulkerEntity || entity instanceof HoglinEntity || entity instanceof GhastEntity || entity instanceof HostileEntity || entity instanceof SlimeEntity || entity instanceof EnderDragonEntity || entity instanceof PhantomEntity;
+        return entity instanceof Shulker || entity instanceof Hoglin || entity instanceof Ghast || entity instanceof Monster || entity instanceof Slime || entity instanceof EnderDragon || entity instanceof Phantom;
     }
 
     public boolean doesPlayerOwn(Entity entity) {
         return doesPlayerOwn(entity, Wrapper.INSTANCE.getLocalPlayer());
     }
 
-    public boolean doesPlayerOwn(Entity entity, PlayerEntity playerEntity) {
+    public boolean doesPlayerOwn(Entity entity, Player playerEntity) {
         if (entity instanceof LivingEntity)
-            return getOwnerUUID((LivingEntity)entity) != null && getOwnerUUID((LivingEntity)entity).toString().equals(playerEntity.getUuid().toString());
+            return getOwnerUUID((LivingEntity)entity) != null && getOwnerUUID((LivingEntity)entity).toString().equals(playerEntity.getUUID().toString());
         return false;
     }
 
     public UUID getOwnerUUID(LivingEntity livingEntity) {
-        if (livingEntity instanceof TameableEntity tameableEntity) {
-            if (tameableEntity.isTamed()) {
-                return tameableEntity.getOwnerUuid();
+        if (livingEntity instanceof TamableAnimal tameableEntity) {
+            if (tameableEntity.isTame()) {
+                return tameableEntity.getOwnerUUID();
             }
         }
-        if (livingEntity instanceof AbstractHorseEntity horseBaseEntity) {
-            return horseBaseEntity.getOwnerUuid();
+        if (livingEntity instanceof AbstractHorse horseBaseEntity) {
+            return horseBaseEntity.getOwnerUUID();
         }
         return null;
     }
 
-    public boolean canBreed(AnimalEntity entity) {
-        return !entity.isBaby() && entity.canEat() && entity.isBreedingItem(Wrapper.INSTANCE.getLocalPlayer().getMainHandStack());
+    public boolean canBreed(Animal entity) {
+        return !entity.isBaby() && entity.canFallInLove() && entity.isFood(Wrapper.INSTANCE.getLocalPlayer().getMainHandItem());
     }
 
     public boolean canPlayerSprint() {
-        return Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() > 6 && !Wrapper.INSTANCE.getLocalPlayer().horizontalCollision;
+        return Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getFoodData().getFoodLevel() > 6 && !Wrapper.INSTANCE.getLocalPlayer().horizontalCollision;
     }
 
-    public boolean isOnSameTeam(PlayerEntity player_1, PlayerEntity player_2, boolean armor) {
+    public boolean isOnSameTeam(Player player_1, Player player_2, boolean armor) {
         String all = "0123456789abcdef";
         for (int i = 0; i < all.length(); i++) {
             char s = all.charAt(i);
@@ -95,8 +121,8 @@ public enum EntityHelper {
             }
         }
         if (armor) {
-            ItemStack player_1Armor = InventoryHelper.INSTANCE.getInventory(player_1).getArmorStack(3);
-            ItemStack player_2Armor = InventoryHelper.INSTANCE.getInventory(player_2).getArmorStack(3);
+            ItemStack player_1Armor = InventoryHelper.INSTANCE.getInventory(player_1).getArmor(3);
+            ItemStack player_2Armor = InventoryHelper.INSTANCE.getInventory(player_2).getArmor(3);
             if (player_1Armor != null && player_1Armor.getItem() instanceof ArmorItem && player_2Armor != null && player_2Armor.getItem() instanceof ArmorItem) {
                 ArmorItem armorItemP1 = (ArmorItem) player_1Armor.getItem();
                 ArmorItem armorItemP2 = (ArmorItem) player_2Armor.getItem();
@@ -112,30 +138,30 @@ public enum EntityHelper {
     }
 
     public boolean canSee(Entity entity, BlockPos blockPos) {
-        Vec3d vec3d = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ());
-        Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY() + 0.5f, blockPos.getZ());
-        return Wrapper.INSTANCE.getWorld().raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS;
+        Vec3 vec3d = new Vec3(entity.getX(), entity.getEyeY(), entity.getZ());
+        Vec3 vec3d2 = new Vec3(blockPos.getX(), blockPos.getY() + 0.5f, blockPos.getZ());
+        return Wrapper.INSTANCE.getWorld().clip(new ClipContext(vec3d, vec3d2, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() == HitResult.Type.MISS;
     }
 
     public float distanceFromGround(Entity entity) {
         float dist = 9999;
         float pitch = getPitch(entity);
         setPitch(entity, 90);
-        HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(256, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
+        HitResult result = Wrapper.INSTANCE.getLocalPlayer().pick(256, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
         if (result != null)
-            dist = ClientMathHelper.INSTANCE.getDistance(ClientMathHelper.INSTANCE.getVec(entity), result.getPos());
+            dist = ClientMathHelper.INSTANCE.getDistance(ClientMathHelper.INSTANCE.getVec(entity), result.getLocation());
         setPitch(entity, pitch);
         if (dist > 256 || dist < 0)
             dist = 0;
         return dist;
     }
 
-    public boolean isNPC(PlayerEntity player) {
+    public boolean isNPC(Player player) {
         if (player instanceof FakePlayerEntity)
             return false;
         try {
-            PlayerListEntry p = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(player.getUuid());
-            if (p.getGameMode().isSurvivalLike() || p.getGameMode().isCreative()) {
+            PlayerInfo p = Wrapper.INSTANCE.getLocalPlayer().connection.getPlayerInfo(player.getUUID());
+            if (p.getGameMode().isSurvival() || p.getGameMode().isCreative()) {
                 return false;
             }
         } catch (Exception e) {
@@ -145,39 +171,39 @@ public enum EntityHelper {
     }
 
     public boolean isAngryAtPlayer(Entity entity) {
-        if (entity instanceof BeeEntity bee && (bee.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (bee.getAngryAt() == null && (bee.isAttacking()))))
+        if (entity instanceof Bee bee && (bee.getPersistentAngerTarget() == Wrapper.INSTANCE.getLocalPlayer().getUUID() || (bee.getPersistentAngerTarget() == null && (bee.isAggressive()))))
             return true;
-        if (entity instanceof PiglinEntity piglinEntity && (piglinEntity.getActivity() == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON || piglinEntity.getActivity() == PiglinActivity.CROSSBOW_CHARGE || piglinEntity.getActivity() == PiglinActivity.CROSSBOW_HOLD))
+        if (entity instanceof Piglin piglinEntity && (piglinEntity.getArmPose() == PiglinArmPose.ATTACKING_WITH_MELEE_WEAPON || piglinEntity.getArmPose() == PiglinArmPose.CROSSBOW_CHARGE || piglinEntity.getArmPose() == PiglinArmPose.CROSSBOW_HOLD))
             return true;
-        if (entity instanceof ZombifiedPiglinEntity zombifiedPiglinEntity && (zombifiedPiglinEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (zombifiedPiglinEntity.getAngryAt() == null && (zombifiedPiglinEntity.getAngerTime() > 0))))
+        if (entity instanceof ZombifiedPiglin zombifiedPiglinEntity && (zombifiedPiglinEntity.getPersistentAngerTarget() == Wrapper.INSTANCE.getLocalPlayer().getUUID() || (zombifiedPiglinEntity.getPersistentAngerTarget() == null && (zombifiedPiglinEntity.getRemainingPersistentAngerTime() > 0))))
             return true;
-        if (entity instanceof PandaEntity pandaEntity && pandaEntity.isAttacking())
+        if (entity instanceof Panda pandaEntity && pandaEntity.isAggressive())
             return true;
-        if (entity instanceof PolarBearEntity polarBearEntity && (polarBearEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (polarBearEntity.getAngryAt() == null && polarBearEntity.isAttacking())))
+        if (entity instanceof PolarBear polarBearEntity && (polarBearEntity.getPersistentAngerTarget() == Wrapper.INSTANCE.getLocalPlayer().getUUID() || (polarBearEntity.getPersistentAngerTarget() == null && polarBearEntity.isAggressive())))
             return true;
-        if (entity instanceof EndermanEntity endermanEntity && (endermanEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid() || (endermanEntity.getAngryAt() == null && (endermanEntity.isAngry()))))
+        if (entity instanceof EnderMan endermanEntity && (endermanEntity.getPersistentAngerTarget() == Wrapper.INSTANCE.getLocalPlayer().getUUID() || (endermanEntity.getPersistentAngerTarget() == null && (endermanEntity.isCreepy()))))
             return true;
-        if (entity instanceof IronGolemEntity ironGolemEntity && ironGolemEntity.getAngryAt() == Wrapper.INSTANCE.getLocalPlayer().getUuid())
+        if (entity instanceof IronGolem ironGolemEntity && ironGolemEntity.getPersistentAngerTarget() == Wrapper.INSTANCE.getLocalPlayer().getUUID())
             return true;
-        if (entity instanceof WolfEntity wolf && (wolf.isAttacking() && !doesPlayerOwn(wolf)))
+        if (entity instanceof Wolf wolf && (wolf.isAggressive() && !doesPlayerOwn(wolf)))
             return true;
         return false;
     }
     
     public float getYaw(Entity entity) {
-        return entity.getYaw(Wrapper.INSTANCE.getMinecraft().getTickDelta());
+        return entity.getViewYRot(Wrapper.INSTANCE.getMinecraft().getFrameTime());
     }
 
     public float getPitch(Entity entity) {
-        return entity.getPitch(Wrapper.INSTANCE.getMinecraft().getTickDelta());
+        return entity.getViewXRot(Wrapper.INSTANCE.getMinecraft().getFrameTime());
     }
 
     public void setYaw(Entity entity, float yaw) {
-        entity.setYaw(yaw);
+        entity.setYRot(yaw);
     }
 
     public void setPitch(Entity entity, float pitch) {
-        entity.setPitch(pitch);
+        entity.setXRot(pitch);
     }
 
     public void addYaw(Entity entity, float add) {

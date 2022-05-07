@@ -10,8 +10,7 @@ import me.dustin.jex.gui.click.dropdown.impl.button.DropdownButton;
 import me.dustin.jex.gui.click.dropdown.impl.feature.DropdownFeatureButton;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 
 public class DropdownOptionButton extends DropdownButton {
@@ -25,7 +24,7 @@ public class DropdownOptionButton extends DropdownButton {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         if (hasChild())
             FontHelper.INSTANCE.drawWithShadow(matrixStack, ">", getX() + getWidth() - FontHelper.INSTANCE.getStringWidth(">") - 2, getY() + 2, isOpen() ? getWindow().getColor() : -1);
         if (isOpen())

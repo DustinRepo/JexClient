@@ -1,9 +1,8 @@
 package me.dustin.jex.feature.mod.impl.world;
 
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.misc.EventJoinWorld;
+import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventSpawnEntity;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -12,13 +11,12 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.entity.mob.SlimeEntity;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
-
 import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -45,18 +43,18 @@ public class SlimeSpawnMarker extends Feature {
 
     @EventPointer
     private final EventListener<EventSpawnEntity> eventSpawnEntityEventListener = new EventListener<>(event -> {
-        if (event.getEntity() instanceof SlimeEntity) {
+        if (event.getEntity() instanceof Slime) {
             if (event.getEntity().getY() > 40)
                 return;
             if (notifyPlayer)
-                ChatHelper.INSTANCE.addClientMessage("A Slime has spawned in chunk: \247b" + event.getEntity().getChunkPos().x + " " + event.getEntity().getChunkPos().z);
+                ChatHelper.INSTANCE.addClientMessage("A Slime has spawned in chunk: \247b" + event.getEntity().chunkPosition().x + " " + event.getEntity().chunkPosition().z);
             if (markSlimeChunks)
-                if (!chunkPositions.contains(event.getEntity().getChunkPos())) {
-                    chunkPositions.add(event.getEntity().getChunkPos());
+                if (!chunkPositions.contains(event.getEntity().chunkPosition())) {
+                    chunkPositions.add(event.getEntity().chunkPosition());
                     if (writeToFile) {
                         try {
-                            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SP world" : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry()).address;
-                            String s = server + ":" + event.getEntity().getChunkPos().x + ":" + event.getEntity().getChunkPos().z + "\n";
+                            String server = Wrapper.INSTANCE.getMinecraft().hasSingleplayerServer() ? "SP world" : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServer()).ip;
+                            String s = server + ":" + event.getEntity().chunkPosition().x + ":" + event.getEntity().chunkPosition().z + "\n";
                             FileWriter fileWritter = new FileWriter(chunksFile, true);
                             BufferedWriter bw = new BufferedWriter(fileWritter);
                             bw.write(s);
@@ -74,16 +72,16 @@ public class SlimeSpawnMarker extends Feature {
         if (!markSlimeChunks)
             return;
         chunkPositions.forEach(chunkPos -> {
-            if (Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunkPos.x, chunkPos.z)) {
-                Vec3d renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, -64, chunkPos.z * 16);
-                Box box = new Box(renderVec.getX(), renderVec.getY(), renderVec.getZ(), renderVec.getX() + 16, renderVec.getY() + 64 + 40, renderVec.getZ() + 16);
-                Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, chunkColor);
+            if (Wrapper.INSTANCE.getWorld().getChunkSource().hasChunk(chunkPos.x, chunkPos.z)) {
+                Vec3 renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, -64, chunkPos.z * 16);
+                AABB box = new AABB(renderVec.x(), renderVec.y(), renderVec.z(), renderVec.x() + 16, renderVec.y() + 64 + 40, renderVec.z() + 16);
+                Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getPoseStack(), box, chunkColor);
             }
         });
     });
 
     @EventPointer
-    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+    private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> {
         chunkPositions.clear();
     });
 

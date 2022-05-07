@@ -9,11 +9,11 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.FriendHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.EntityHitResult;
 
 @Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically attack entities you hover over")
 public class Triggerbot extends Feature {
@@ -29,11 +29,11 @@ public class Triggerbot extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof EntityHitResult entityHitResult) {
+        if (Wrapper.INSTANCE.getMinecraft().hitResult instanceof EntityHitResult entityHitResult) {
             Entity entity = entityHitResult.getEntity();
-            if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
-                Wrapper.INSTANCE.getInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
-                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+            if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackStrengthScale(0) == 1) {
+                Wrapper.INSTANCE.getMultiPlayerGameMode().attack(Wrapper.INSTANCE.getLocalPlayer(), entity);
+                Wrapper.INSTANCE.getLocalPlayer().swing(InteractionHand.MAIN_HAND);
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
@@ -47,7 +47,7 @@ public class Triggerbot extends Feature {
             return neutrals;
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostiles;
-        if (entity instanceof PlayerEntity playerEntity && !FriendHelper.INSTANCE.isFriend(playerEntity))
+        if (entity instanceof Player playerEntity && !FriendHelper.INSTANCE.isFriend(playerEntity))
             return players;
         return false;
     }

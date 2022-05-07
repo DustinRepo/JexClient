@@ -14,31 +14,30 @@ import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.world.xray.Xray;
 import me.dustin.jex.helper.render.Scrollbar;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import org.lwjgl.glfw.GLFW;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 
 public class XraySelectScreen extends Screen {
 
     private ArrayList<BlockButton> allowedBlocks = new ArrayList<>();
     private ArrayList<BlockButton> notAllowedBlocks = new ArrayList<>();
-    private TextFieldWidget searchField;
-    private ButtonWidget searchButton;
-    private ButtonWidget addXrayButton;
-    private ButtonWidget removeXrayButton;
-    private ButtonWidget doneButton;
+    private EditBox searchField;
+    private Button searchButton;
+    private Button addXrayButton;
+    private Button removeXrayButton;
+    private Button doneButton;
     private Scrollbar leftScrollbar;
     private Scrollbar rightScrollbar;
     public XraySelectScreen() {
-        super(Text.of("Xray Selection"));
+        super(Component.nullToEmpty("Xray Selection"));
     }
 
     @Override
@@ -48,54 +47,54 @@ public class XraySelectScreen extends Screen {
         float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
         float buttonWidth = 198;
         loadBlocks();
-        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, Text.of(""));
+        searchField = new EditBox(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, Component.nullToEmpty(""));
         searchField.setVisible(true);
         searchField.setEditable(true);
-        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, Text.of("Search"), button -> {
-            if (searchField.getText().isEmpty())
+        searchButton = new Button(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, Component.nullToEmpty("Search"), button -> {
+            if (searchField.getValue().isEmpty())
                 loadBlocks();
             else
-                loadBlocks(searchField.getText());
+                loadBlocks(searchField.getValue());
         });
 
-        removeXrayButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Remove From Xray"), button -> {
+        removeXrayButton = new Button((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Component.nullToEmpty("Remove From Xray"), button -> {
             getSelectedAllowed().forEach(blockButton -> {
                 Xray.blockList.remove(blockButton.getBlock());
                 allowedBlocks.remove(blockButton);
                 notAllowedBlocks.add(blockButton);
             });
-            if (searchField.getText().isEmpty())
+            if (searchField.getValue().isEmpty())
                 loadBlocks();
             else
-                loadBlocks(searchField.getText());
+                loadBlocks(searchField.getValue());
             ConfigManager.INSTANCE.get(XrayFile.class).write();
-            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Feature.get(Xray.class).getState())
-                Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
+            if (Wrapper.INSTANCE.getMinecraft().levelRenderer != null && Feature.get(Xray.class).getState())
+                Wrapper.INSTANCE.getMinecraft().levelRenderer.allChanged();
         });
-        addXrayButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Add To Xray"), button -> {
+        addXrayButton = new Button((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Component.nullToEmpty("Add To Xray"), button -> {
             getSelectedNotAllowed().forEach(blockButton -> {
                 Xray.blockList.add(blockButton.getBlock());
                 allowedBlocks.add(blockButton);
                 notAllowedBlocks.remove(blockButton);
             });
-            if (searchField.getText().isEmpty())
+            if (searchField.getValue().isEmpty())
                 loadBlocks();
             else
-                loadBlocks(searchField.getText());
+                loadBlocks(searchField.getValue());
             ConfigManager.INSTANCE.get(XrayFile.class).write();
-            if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Feature.get(Xray.class).getState())
-                Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
+            if (Wrapper.INSTANCE.getMinecraft().levelRenderer != null && Feature.get(Xray.class).getState())
+                Wrapper.INSTANCE.getMinecraft().levelRenderer.allChanged();
         });
 
-        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, Text.of("Done"), button -> {
+        doneButton = new Button((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, Component.nullToEmpty("Done"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexOptionsScreen());
         });
 
-        this.addSelectableChild(searchField);
-        this.addDrawableChild(searchButton);
-        this.addDrawableChild(addXrayButton);
-        this.addDrawableChild(removeXrayButton);
-        this.addDrawableChild(doneButton);
+        this.addWidget(searchField);
+        this.addRenderableWidget(searchButton);
+        this.addRenderableWidget(addXrayButton);
+        this.addRenderableWidget(removeXrayButton);
+        this.addRenderableWidget(doneButton);
         super.init();
     }
 
@@ -106,7 +105,7 @@ public class XraySelectScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
 
         this.addXrayButton.active = !getSelectedNotAllowed().isEmpty();
@@ -161,10 +160,10 @@ public class XraySelectScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.searchField.isFocused() && keyCode == GLFW.GLFW_KEY_ENTER) {
-            if (searchField.getText().isEmpty())
+            if (searchField.getValue().isEmpty())
                 loadBlocks();
             else
-                loadBlocks(searchField.getText());
+                loadBlocks(searchField.getValue());
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
@@ -288,11 +287,11 @@ public class XraySelectScreen extends Screen {
                 continue;
             if (Xray.blockList.contains(block)) {
                 float y = startY + (buttonHeight * allowedCount);
-                allowedBlocks.add(new BlockButton(block, block.getTranslationKey(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
+                allowedBlocks.add(new BlockButton(block, block.getDescriptionId(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 allowedCount++;
             } else {
                 float y = startY + (buttonHeight * notAllowedCount);
-                notAllowedBlocks.add(new BlockButton(block, block.getTranslationKey(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
+                notAllowedBlocks.add(new BlockButton(block, block.getDescriptionId(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 notAllowedCount++;
             }
         }
@@ -323,18 +322,18 @@ public class XraySelectScreen extends Screen {
         for (Block block : Registry.BLOCK) {
             if (block == Blocks.AIR || block == Hat.cowboyHat || block == Hat.halo || block == Hat.topHat || block == Hat.crown || block == Hat.propeller)
                 continue;
-            String blockName = Registry.BLOCK.getId(block).toString();
+            String blockName = Registry.BLOCK.getKey(block).toString();
             if (blockName.contains(":"))
                 blockName = blockName.split(":")[1];
-            if (!blockName.replace("_", " ").toLowerCase().contains(searchField.getText().toLowerCase()))
+            if (!blockName.replace("_", " ").toLowerCase().contains(searchField.getValue().toLowerCase()))
                 continue;
             if (Xray.blockList.contains(block)) {
                 float y = startY + (buttonHeight * allowedCount);
-                allowedBlocks.add(new BlockButton(block, block.getTranslationKey(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
+                allowedBlocks.add(new BlockButton(block, block.getDescriptionId(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 allowedCount++;
             } else {
                 float y = startY + (buttonHeight * notAllowedCount);
-                notAllowedBlocks.add(new BlockButton(block, block.getTranslationKey(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
+                notAllowedBlocks.add(new BlockButton(block, block.getDescriptionId(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 notAllowedCount++;
             }
         }

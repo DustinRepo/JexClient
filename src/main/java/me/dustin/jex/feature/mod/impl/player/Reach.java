@@ -16,16 +16,16 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.world.phys.Vec3;
 
 @Feature.Manifest(category = Feature.Category.PLAYER, description = "Stretch Armstrong, but nerfed.")
 public class Reach extends Feature {
     @Op(name = "Distance", min = 5, max = 24, inc = 0.05f)
     public float distance = 5.5f;
 
-    private Vec3d storedPos;
+    private Vec3 storedPos;
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -37,15 +37,15 @@ public class Reach extends Feature {
         if (distance <= 6)
             return;
         if (event.getMode() == EventClickBlock.Mode.PRE) {
-            storedPos = Wrapper.INSTANCE.getPlayer().getPos();
+            storedPos = Wrapper.INSTANCE.getPlayer().position();
             BlockPos blockPos = event.getBlockPos();
-            if (ClientMathHelper.INSTANCE.getDistance(storedPos, Vec3d.ofCenter(blockPos)) > 6) {
-                Wrapper.INSTANCE.getPlayer().setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            if (ClientMathHelper.INSTANCE.getDistance(storedPos, Vec3.atCenterOf(blockPos)) > 6) {
+                Wrapper.INSTANCE.getPlayer().setPosRaw(blockPos.getX(), blockPos.getY(), blockPos.getZ());
             } else
                 storedPos = null;
         } else if (event.getMode() == EventClickBlock.Mode.POST) {
             if (storedPos != null) {
-                Wrapper.INSTANCE.getPlayer().setPos(storedPos.getX(), storedPos.getY(), storedPos.getZ());
+                Wrapper.INSTANCE.getPlayer().setPosRaw(storedPos.x(), storedPos.y(), storedPos.z());
                 storedPos = null;
             }
         }
@@ -56,16 +56,16 @@ public class Reach extends Feature {
         if (distance <= 6)
             return;
         if (event.getMode() == EventInteractBlock.Mode.PRE) {
-            storedPos = Wrapper.INSTANCE.getPlayer().getPos();
-            BlockPos blockPos = event.getPos().offset(event.getBlockHitResult().getSide()).offset(event.getBlockHitResult().getSide());
-            if (ClientMathHelper.INSTANCE.getDistance(storedPos, Vec3d.ofCenter(blockPos)) > 6) {
-                Wrapper.INSTANCE.getPlayer().setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                NetworkHelper.INSTANCE.sendPacketDirect(new PlayerMoveC2SPacket.PositionAndOnGround(blockPos.getX(), blockPos.getY(), blockPos.getZ(), false));
+            storedPos = Wrapper.INSTANCE.getPlayer().position();
+            BlockPos blockPos = event.getPos().relative(event.getBlockHitResult().getDirection()).relative(event.getBlockHitResult().getDirection());
+            if (ClientMathHelper.INSTANCE.getDistance(storedPos, Vec3.atCenterOf(blockPos)) > 6) {
+                Wrapper.INSTANCE.getPlayer().setPosRaw(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                NetworkHelper.INSTANCE.sendPacketDirect(new ServerboundMovePlayerPacket.Pos(blockPos.getX(), blockPos.getY(), blockPos.getZ(), false));
             } else
                 storedPos = null;
         } else if (event.getMode() == EventInteractBlock.Mode.POST) {
             if (storedPos != null) {
-                Wrapper.INSTANCE.getPlayer().setPos(storedPos.getX(), storedPos.getY(), storedPos.getZ());
+                Wrapper.INSTANCE.getPlayer().setPosRaw(storedPos.x(), storedPos.y(), storedPos.z());
                 storedPos = null;
             }
         }

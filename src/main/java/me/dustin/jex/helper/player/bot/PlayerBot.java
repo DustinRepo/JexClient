@@ -2,7 +2,6 @@ package me.dustin.jex.helper.player.bot;
 
 import com.google.common.primitives.Longs;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.response.KeyPairResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -23,41 +22,52 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.class_7469;
-import net.minecraft.client.network.*;
-import net.minecraft.client.util.Session;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkSide;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.encryption.NetworkEncryptionException;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.network.encryption.PlayerKeyPair;
-import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
-import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
-import net.minecraft.network.packet.c2s.play.*;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Lazy;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
-
-import java.io.IOException;
+import net.minecraft.client.User;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.resolver.ResolvedServerAddress;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.client.multiplayer.resolver.ServerNameResolver;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.player.RemotePlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.Connection;
+import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MessageSignature;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.game.ServerboundChatPacket;
+import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
+import net.minecraft.network.protocol.game.ServerboundInteractPacket;
+import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
+import net.minecraft.network.protocol.login.ServerboundHelloPacket;
+import net.minecraft.util.Crypt;
+import net.minecraft.util.CryptException;
+import net.minecraft.util.LazyLoadedValue;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.ProfileKeyPair;
+import net.minecraft.world.entity.player.ProfilePublicKey;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -73,22 +83,22 @@ import java.util.function.Predicate;
 public class PlayerBot {
     private static final ArrayList<PlayerBot> playerBots = new ArrayList<>();
     private final GameProfile gameProfile;
-    private final Session session;
-    public static ClientPlayNetworkHandler savedNetworkHandler;
+    private final User session;
+    public static ClientPacketListener savedNetworkHandler;
     public static BotClientConnection currentConnection;
     private BotClientConnection clientConnection;
-    private PlayerEntity player;
-    private PlayerInventory playerInventory;
+    private Player player;
+    private Inventory playerInventory;
     private boolean connected;
 
     private boolean using, attacking;
     private int useDelay, attackDelay;
     private int countedTicks;
 
-    private PlayerKeyPair keyPair;
-    private ClientWorld world;
+    private ProfileKeyPair keyPair;
+    private ClientLevel world;
 
-    public PlayerBot(GameProfile gameProfile, Session session) {
+    public PlayerBot(GameProfile gameProfile, User session) {
         this.gameProfile = gameProfile;
         this.session = session;
         try {
@@ -102,17 +112,17 @@ public class PlayerBot {
     public void connect(ServerAddress serverAddress) {
         Thread loginThread = new Thread(() -> {
             try {
-                Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
+                Optional<InetSocketAddress> optional = ServerNameResolver.DEFAULT.resolveAddress(serverAddress).map(ResolvedServerAddress::asInetSocketAddress);
                 if (optional.isEmpty()) {
                     ChatHelper.INSTANCE.addClientMessage("Error logging in player while grabbing IP");
                     disconnect();
                     return;
                 }
-                savedNetworkHandler = Wrapper.INSTANCE.getMinecraft().getNetworkHandler();
+                savedNetworkHandler = Wrapper.INSTANCE.getMinecraft().getConnection();
                 this.clientConnection = currentConnection = connect(optional.get());
-                clientConnection.setPacketListener(new BotLoginNetworkHandler(clientConnection, Wrapper.INSTANCE.getMinecraft(), null, this::log, gameProfile, this));
-                clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.LOGIN));
-                clientConnection.send(new LoginHelloC2SPacket(gameProfile.getName(), keyPair == null ? Optional.empty() : Optional.ofNullable(keyPair.publicKey().data())));
+                clientConnection.setListener(new BotLoginNetworkHandler(clientConnection, Wrapper.INSTANCE.getMinecraft(), null, this::log, gameProfile, this));
+                clientConnection.send(new ClientIntentionPacket(serverAddress.getHost(), serverAddress.getPort(), ConnectionProtocol.LOGIN));
+                clientConnection.send(new ServerboundHelloPacket(gameProfile.getName(), keyPair == null ? Optional.empty() : Optional.ofNullable(keyPair.publicKey().data())));
             } catch (Exception e) {
                 ChatHelper.INSTANCE.addClientMessage("Error logging in player");
                 e.printStackTrace();
@@ -123,7 +133,7 @@ public class PlayerBot {
         loginThread.start();
     }
 
-    private PlayerKeyPair generateKeyPair() throws NetworkEncryptionException {
+    private ProfileKeyPair generateKeyPair() throws CryptException {
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json; charset=utf-8");
         headers.put("Content-Length", "0");
@@ -131,11 +141,11 @@ public class PlayerBot {
         WebHelper.HttpResponse httpResponse = WebHelper.INSTANCE.httpRequest("https://api.minecraftservices.com/player/certificates", null, headers, "POST");
 
         KeyPairResponse keyPairResponse = JsonHelper.INSTANCE.gson.fromJson(httpResponse.data(), KeyPairResponse.class);
-        return new PlayerKeyPair(NetworkEncryptionUtils.decodeRsaPrivateKeyPem(keyPairResponse.getPrivateKey()), new PlayerPublicKey(new PlayerPublicKey.class_7443(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()), NetworkEncryptionUtils.decodeRsaPublicKeyPem(keyPairResponse.getPublicKey())), Instant.parse(keyPairResponse.getRefreshedAfter()));
+        return new ProfileKeyPair(Crypt.stringToPemRsaPrivateKey(keyPairResponse.getPrivateKey()), new ProfilePublicKey(new ProfilePublicKey.Data(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()), Crypt.stringToRsaPublicKey(keyPairResponse.getPublicKey())), Instant.parse(keyPairResponse.getRefreshedAfter()));
     }
 
     public void disconnect() {
-        if (clientConnection != null && clientConnection.isOpen()) {
+        if (clientConnection != null && clientConnection.isConnected()) {
             this.clientConnection.handleDisconnection();
             this.clientConnection.close();
             this.clientConnection = null;
@@ -147,7 +157,7 @@ public class PlayerBot {
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (this.clientConnection != null) {
-            if (this.clientConnection.isOpen()) {
+            if (this.clientConnection.isConnected()) {
                 this.clientConnection.tick();
             } else {
                 player = null;
@@ -167,26 +177,26 @@ public class PlayerBot {
             }
         }
         if (isAttacking()) {
-            if ((attackDelay == -1 && player.getAttackCooldownProgress(0) == 1) || attackDelay == 0 || countedTicks % attackDelay == 0) {
+            if ((attackDelay == -1 && player.getAttackStrengthScale(0) == 1) || attackDelay == 0 || countedTicks % attackDelay == 0) {
                 attack();
             }
         }
-        if (player != null && !(player instanceof ClientPlayerEntity)) {
-            if (player.getX() != player.prevX || player.getY() != player.prevY || player.getZ() != player.prevZ)
-                this.clientConnection.send(new PlayerMoveC2SPacket.PositionAndOnGround(player.getX(), player.getY(), player.getZ(), player.isOnGround()));
-            if (player.getYaw() != player.prevYaw || player.getPitch() != player.prevPitch)
-                this.clientConnection.send(new PlayerMoveC2SPacket.LookAndOnGround(player.getYaw(), player.getPitch(), player.isOnGround()));
+        if (player != null && !(player instanceof LocalPlayer)) {
+            if (player.getX() != player.xo || player.getY() != player.yo || player.getZ() != player.zo)
+                this.clientConnection.send(new ServerboundMovePlayerPacket.Pos(player.getX(), player.getY(), player.getZ(), player.isOnGround()));
+            if (player.getYRot() != player.yRotO || player.getXRot() != player.xRotO)
+                this.clientConnection.send(new ServerboundMovePlayerPacket.Rot(player.getYRot(), player.getXRot(), player.isOnGround()));
             player.tick();
-            player.setVelocity(0, player.getVelocity().getY(), 0);
-            if (!player.isOnGround() && !player.isTouchingWater() && !player.isInLava()) {
-                player.setVelocity(0, player.getVelocity().getY() - 0.06499, 0);
+            player.setDeltaMovement(0, player.getDeltaMovement().y(), 0);
+            if (!player.isOnGround() && !player.isInWater() && !player.isInLava()) {
+                player.setDeltaMovement(0, player.getDeltaMovement().y() - 0.06499, 0);
             }
-            player.move(MovementType.PLAYER, player.getVelocity());
+            player.move(MoverType.PLAYER, player.getDeltaMovement());
         }
         countedTicks++;
     }, new TickFilter(EventTick.Mode.PRE));
 
-    public void log(Text text) {
+    public void log(Component text) {
         JexClient.INSTANCE.getLogger().info(text.getString());
         ChatHelper.INSTANCE.addClientMessage(text.getString());
     }
@@ -197,23 +207,23 @@ public class PlayerBot {
 
     public void sendMessage(String chat) {
         Instant instant = Instant.now();
-        class_7469 chatSigData = new class_7469(UUID.fromString(getSession().getUuid()), instant, sigForMessage(instant, chat));
-        this.clientConnection.send(new ChatMessageC2SPacket(chat, chatSigData));
+        MessageSignature chatSigData = new MessageSignature(UUID.fromString(getSession().getUuid()), instant, sigForMessage(instant, chat));
+        this.clientConnection.send(new ServerboundChatPacket(chat, chatSigData));
     }
 
-    private NetworkEncryptionUtils.SignatureData sigForMessage(Instant instant, String string) {
+    private Crypt.SaltSignaturePair sigForMessage(Instant instant, String string) {
         try {
             Signature signature = getSignature();
             if (signature != null) {
-                long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
+                long l = Crypt.SaltSupplier.getLong();
                 updateSig(signature, l, UUID.fromString(session.getUuid()), instant, string);
-                return new NetworkEncryptionUtils.SignatureData(l, signature.sign());
+                return new Crypt.SaltSignaturePair(l, signature.sign());
             }
         } catch (GeneralSecurityException var6) {
             JexClient.INSTANCE.getLogger().error("Failed to sign chat message {}", instant, var6);
         }
 
-        return NetworkEncryptionUtils.SignatureData.NONE;
+        return Crypt.SaltSignaturePair.EMPTY;
     }
 
     private static void updateSig(Signature signature, long l, UUID uUID, Instant instant, String string) throws SignatureException {
@@ -243,89 +253,89 @@ public class PlayerBot {
     }
 
     public void drop(boolean all) {
-        PlayerActionC2SPacket.Action action = all ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
+        ServerboundPlayerActionPacket.Action action = all ? ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS : ServerboundPlayerActionPacket.Action.DROP_ITEM;
         if (getPlayerInventory() != null)
-            this.getPlayerInventory().dropSelectedItem(all);
-        this.clientConnection.send(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
+            this.getPlayerInventory().removeFromSelected(all);
+        this.clientConnection.send(new ServerboundPlayerActionPacket(action, BlockPos.ZERO, Direction.DOWN));
     }
 
     public void dropInventory() {
-        for (int i = 0; i < playerInventory.size(); i++) {
-            ItemStack stack = playerInventory.getStack(i);
-            playerInventory.removeStack(i);
+        for (int i = 0; i < playerInventory.getContainerSize(); i++) {
+            ItemStack stack = playerInventory.getItem(i);
+            playerInventory.removeItemNoUpdate(i);
             Int2ObjectOpenHashMap<ItemStack> int2ObjectMap = new Int2ObjectOpenHashMap<ItemStack>();
-            getClientConnection().send(new ClickSlotC2SPacket(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.syncId, Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getRevision(), i, 1, SlotActionType.THROW, stack, int2ObjectMap));
+            getClientConnection().send(new ServerboundContainerClickPacket(Wrapper.INSTANCE.getLocalPlayer().containerMenu.containerId, Wrapper.INSTANCE.getLocalPlayer().containerMenu.getStateId(), i, 1, ClickType.THROW, stack, int2ObjectMap));
         }
     }
 
     public void use() {
-        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getInteractionManager().getReachDistance());
+        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getMultiPlayerGameMode().getPickRange());
         if (crosshair != null) {
-            clientConnection.send(PlayerInteractEntityC2SPacket.interact(crosshair, player.isSneaking(), Hand.MAIN_HAND));
-            clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
-        } else if (raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && WorldHelper.INSTANCE.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
-            Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
+            clientConnection.send(ServerboundInteractPacket.createInteractionPacket(crosshair, player.isShiftKeyDown(), InteractionHand.MAIN_HAND));
+            clientConnection.send(new ServerboundSwingPacket(InteractionHand.MAIN_HAND));
+        } else if (raycast(Wrapper.INSTANCE.getMultiPlayerGameMode().getPickRange(), 1, false) instanceof BlockHitResult blockHitResult && WorldHelper.INSTANCE.getBlockState(blockHitResult.getBlockPos()).getShape(player.getLevel(), blockHitResult.getBlockPos()) != Shapes.empty()) {
+            Wrapper.INSTANCE.getMultiPlayerGameMode().useItemOn(Wrapper.INSTANCE.getLocalPlayer(), InteractionHand.MAIN_HAND, blockHitResult);
             if (WorldHelper.INSTANCE.canUseOnPos(blockHitResult.getBlockPos()))
-                clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
+                clientConnection.send(new ServerboundSwingPacket(InteractionHand.MAIN_HAND));
         } else
-            Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
+            Wrapper.INSTANCE.getMultiPlayerGameMode().useItem(Wrapper.INSTANCE.getLocalPlayer(), InteractionHand.MAIN_HAND);
     }
 
     public void attack() {
-        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getInteractionManager().getReachDistance());
+        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getMultiPlayerGameMode().getPickRange());
         if (crosshair != null) {
-            player.resetLastAttackedTicks();
-            clientConnection.send(PlayerInteractEntityC2SPacket.attack(crosshair, player.isSneaking()));
-            clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
-        } else if (raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && world.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
-            clientConnection.send(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getSide()));
-            clientConnection.send(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getSide()));
-            clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
+            player.resetAttackStrengthTicker();
+            clientConnection.send(ServerboundInteractPacket.createAttackPacket(crosshair, player.isShiftKeyDown()));
+            clientConnection.send(new ServerboundSwingPacket(InteractionHand.MAIN_HAND));
+        } else if (raycast(Wrapper.INSTANCE.getMultiPlayerGameMode().getPickRange(), 1, false) instanceof BlockHitResult blockHitResult && world.getBlockState(blockHitResult.getBlockPos()).getShape(player.getLevel(), blockHitResult.getBlockPos()) != Shapes.empty()) {
+            clientConnection.send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getDirection()));
+            clientConnection.send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getDirection()));
+            clientConnection.send(new ServerboundSwingPacket(InteractionHand.MAIN_HAND));
         } else {
-            clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
-            player.resetLastAttackedTicks();
+            clientConnection.send(new ServerboundSwingPacket(InteractionHand.MAIN_HAND));
+            player.resetAttackStrengthTicker();
         }
     }
 
     public boolean canUseOnPos(BlockPos pos) {
-        return world.getBlockState(pos).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) != ActionResult.PASS;
+        return world.getBlockState(pos).use(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.ZERO, Direction.UP, BlockPos.ZERO, false)) != InteractionResult.PASS;
     }
 
     public HitResult raycast(double maxDistance, float tickDelta, boolean includeFluids) {
-        Vec3d vec3d = getCameraPosVec();
-        Vec3d vec3d2 = getRotationVector(player.getPitch(), player.getYaw());
-        Vec3d vec3d3 = vec3d.add(vec3d2.x * maxDistance, vec3d2.y * maxDistance, vec3d2.z * maxDistance);
-        return world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, player));
+        Vec3 vec3d = getCameraPosVec();
+        Vec3 vec3d2 = getRotationVector(player.getXRot(), player.getYRot());
+        Vec3 vec3d3 = vec3d.add(vec3d2.x * maxDistance, vec3d2.y * maxDistance, vec3d2.z * maxDistance);
+        return world.clip(new ClipContext(vec3d, vec3d3, ClipContext.Block.OUTLINE, includeFluids ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, player));
     }
 
-    protected final Vec3d getRotationVector(float pitch, float yaw) {
+    protected final Vec3 getRotationVector(float pitch, float yaw) {
         float f = pitch * ((float)Math.PI / 180);
         float g = -yaw * ((float)Math.PI / 180);
-        float h = MathHelper.cos(g);
-        float i = MathHelper.sin(g);
-        float j = MathHelper.cos(f);
-        float k = MathHelper.sin(f);
-        return new Vec3d(i * j, -k, h * j);
+        float h = Mth.cos(g);
+        float i = Mth.sin(g);
+        float j = Mth.cos(f);
+        float k = Mth.sin(f);
+        return new Vec3(i * j, -k, h * j);
     }
 
-    public final Vec3d getCameraPosVec() {
+    public final Vec3 getCameraPosVec() {
         if (player == null)
-            return Vec3d.ZERO;
-        return new Vec3d(player.getX(), player.getY() + player.getStandingEyeHeight(), player.getZ());
+            return Vec3.ZERO;
+        return new Vec3(player.getX(), player.getY() + player.getEyeHeight(), player.getZ());
     }
 
     public Entity getCrosshairEntity(float reach) {
         if (player != null) {
             if (world != null) {
-                Vec3d vec3d = getCameraPosVec();
-                Vec3d vec3d2 = getRotationVector(player.getPitch(), player.getYaw());
-                Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
+                Vec3 vec3d = getCameraPosVec();
+                Vec3 vec3d2 = getRotationVector(player.getXRot(), player.getYRot());
+                Vec3 vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
 
-                Box box = player.getBoundingBox().stretch(vec3d2.multiply(reach)).expand(1.0D, 1.0D, 1.0D);
-                EntityHitResult entityHitResult = raycast(player, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.collides(), reach);
+                AABB box = player.getBoundingBox().expandTowards(vec3d2.scale(reach)).inflate(1.0D, 1.0D, 1.0D);
+                EntityHitResult entityHitResult = raycast(player, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.isPickable(), reach);
                 if (entityHitResult != null) {
                     Entity entity2 = entityHitResult.getEntity();
-                    if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {
+                    if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrame) {
                         return entity2;
                     }
                 }
@@ -334,15 +344,15 @@ public class PlayerBot {
         return null;
     }
 
-    public EntityHitResult raycast(Entity entity, Vec3d min, Vec3d max, Box box, Predicate<Entity> predicate, double d) {
+    public EntityHitResult raycast(Entity entity, Vec3 min, Vec3 max, AABB box, Predicate<Entity> predicate, double d) {
         double e = d;
         Entity entity2 = null;
-        Vec3d vec3d = null;
-        for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
-            Vec3d vec3d2;
+        Vec3 vec3d = null;
+        for (Entity entity3 : world.getEntities(entity, box, predicate)) {
+            Vec3 vec3d2;
             double f;
-            Box box2 = entity3.getBoundingBox().expand(entity3.getTargetingMargin());
-            Optional<Vec3d> optional = box2.raycast(min, max);
+            AABB box2 = entity3.getBoundingBox().inflate(entity3.getPickRadius());
+            Optional<Vec3> optional = box2.clip(min, max);
             if (box2.contains(min)) {
                 if (!(e >= 0.0)) continue;
                 entity2 = entity3;
@@ -350,7 +360,7 @@ public class PlayerBot {
                 e = 0.0;
                 continue;
             }
-            if (optional.isEmpty() || !((f = min.squaredDistanceTo(vec3d2 = optional.get())) < e) && e != 0.0) continue;
+            if (optional.isEmpty() || !((f = min.distanceToSqr(vec3d2 = optional.get())) < e) && e != 0.0) continue;
             if (entity3.getRootVehicle() == entity.getRootVehicle()) {
                 if (e != 0.0) continue;
                 entity2 = entity3;
@@ -367,26 +377,26 @@ public class PlayerBot {
         return new EntityHitResult(entity2, vec3d);
     }
 
-    public void setRotation(Vec3d vec) {
+    public void setRotation(Vec3 vec) {
         if (player != null) {
-            this.player.prevYaw = this.player.getYaw();
-            this.player.prevPitch = this.player.getPitch();
-            this.player.setYaw((float) vec.x);
-            this.player.setPitch((float) vec.y);
+            this.player.yRotO = this.player.getYRot();
+            this.player.xRotO = this.player.getXRot();
+            this.player.setYRot((float) vec.x);
+            this.player.setXRot((float) vec.y);
         }
-        this.clientConnection.send(new PlayerMoveC2SPacket.LookAndOnGround((float)vec.x, (float)vec.y, player == null || player.isOnGround()));
+        this.clientConnection.send(new ServerboundMovePlayerPacket.Rot((float)vec.x, (float)vec.y, player == null || player.isOnGround()));
     }
 
     private BotClientConnection connect(InetSocketAddress address) {
-        final BotClientConnection clientConnection = new BotClientConnection(NetworkSide.CLIENTBOUND);
+        final BotClientConnection clientConnection = new BotClientConnection(PacketFlow.CLIENTBOUND);
         Class<? extends Channel> class2;
-        Lazy<?> lazy2;
-        if (Epoll.isAvailable() && Wrapper.INSTANCE.getOptions().shouldUseNativeTransport()) {
+        LazyLoadedValue<?> lazy2;
+        if (Epoll.isAvailable() && Wrapper.INSTANCE.getOptions().useNativeTransport()) {
             class2 = EpollSocketChannel.class;
-            lazy2 = ClientConnection.EPOLL_CLIENT_IO_GROUP;
+            lazy2 = Connection.NETWORK_EPOLL_WORKER_GROUP;
         } else {
             class2 = NioSocketChannel.class;
-            lazy2 = ClientConnection.CLIENT_IO_GROUP;
+            lazy2 = Connection.NETWORK_WORKER_GROUP;
         }
         ProxyHelper.INSTANCE.clientConnection = clientConnection;
         Bootstrap bootstrap = new Bootstrap();
@@ -409,19 +419,19 @@ public class PlayerBot {
         return playerBots;
     }
 
-    public PlayerInventory getPlayerInventory() {
+    public Inventory getPlayerInventory() {
         return playerInventory;
     }
 
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
-    public void setPlayer(OtherClientPlayerEntity player) {
+    public void setPlayer(RemotePlayer player) {
         this.player = player;
     }
 
-    public void setPlayerInventory(PlayerInventory playerInventory) {
+    public void setPlayerInventory(Inventory playerInventory) {
         this.playerInventory = playerInventory;
     }
 
@@ -461,19 +471,19 @@ public class PlayerBot {
         return clientConnection;
     }
 
-    public Session getSession() {
+    public User getSession() {
         return session;
     }
 
-    public ClientWorld getWorld() {
+    public ClientLevel getWorld() {
         return world;
     }
 
-    public void setWorld(ClientWorld world) {
+    public void setWorld(ClientLevel world) {
         this.world = world;
     }
 
-    public PlayerKeyPair getKeyPair() {
+    public ProfileKeyPair getKeyPair() {
         return keyPair;
     }
 

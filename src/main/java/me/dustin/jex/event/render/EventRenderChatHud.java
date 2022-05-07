@@ -1,26 +1,26 @@
 package me.dustin.jex.event.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.Event;
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.components.ChatComponent;
 
 public class EventRenderChatHud extends Event {
-    private ChatHud chatHud;
-    private MatrixStack matrixStack;
-    private int tickDelta;
+    private final ChatComponent chatHud;
+    private final PoseStack poseStack;
+    private final int tickDelta;
 
-    public EventRenderChatHud(ChatHud chatHud, MatrixStack matrixStack, int tickDelta) {
+    public EventRenderChatHud(ChatComponent chatHud, PoseStack poseStack, int tickDelta) {
         this.chatHud = chatHud;
-        this.matrixStack = matrixStack;
+        this.poseStack = poseStack;
         this.tickDelta = tickDelta;
     }
 
-    public ChatHud getChatHud() {
+    public ChatComponent getChatHud() {
         return chatHud;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public PoseStack getPoseStack() {
+        return poseStack;
     }
 
     public int getTickDelta() {

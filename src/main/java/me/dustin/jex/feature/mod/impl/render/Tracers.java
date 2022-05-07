@@ -1,25 +1,29 @@
 package me.dustin.jex.feature.mod.impl.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.client.render.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Vec3d;
-
+import me.dustin.jex.helper.render.Render3DHelper;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import java.awt.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Draw a line to entities in range.")
@@ -42,29 +46,28 @@ public class Tracers extends Feature {
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (entity instanceof LivingEntity && isValid((LivingEntity) entity)) {
-                LivingEntity living = (LivingEntity) entity;
+        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
+            if (entity instanceof LivingEntity living && isValid((LivingEntity) entity)) {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
-                Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, event.getPartialTicks());
+                Vec3 vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, event.getPartialTicks());
                 Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
                 RenderSystem.setShader(GameRenderer::getPositionColorShader);
-                Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
+                Vec3 eyes = new Vec3(0, 0, 1).xRot(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).yRot(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
 
-                BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);//LINES doesn't fucking work for some reason so DEBUG_LINES yolo
-                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+                bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);//LINES doesn't fucking work for some reason so DEBUG_LINES yolo
+                bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
+                bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
                 if (spine) {
-                    bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                    bufferBuilder.vertex(vec.x, vec.y + entity.getEyeHeight(entity.getPose()), vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                    bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
+                    bufferBuilder.vertex(vec.x, vec.y + entity.getEyeHeight(entity.getPose()), vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
                 }
                 bufferBuilder.clear();
-                BufferRenderer.drawWithShader(bufferBuilder.end());
+                BufferUploader.drawWithShader(bufferBuilder.end());
 
                 Render3DHelper.INSTANCE.end3DRender();
             }
@@ -72,7 +75,7 @@ public class Tracers extends Feature {
     });
 
     private int getColor(Entity ent) {
-        if (colorOnDistance && ent instanceof PlayerEntity playerEntity) {
+        if (colorOnDistance && ent instanceof Player playerEntity) {
             if (!FriendHelper.INSTANCE.isFriend(playerEntity)) {
                 return getColor(ent.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64).getRGB();
             }
@@ -97,8 +100,8 @@ public class Tracers extends Feature {
             return false;
         if (e.isSleeping())
             return false;
-        if (e instanceof PlayerEntity)
-            return players && !EntityHelper.INSTANCE.isNPC((PlayerEntity) e);
+        if (e instanceof Player)
+            return players && !EntityHelper.INSTANCE.isNPC((Player) e);
         if (EntityHelper.INSTANCE.isPassiveMob(e))
             return passives;
         if (EntityHelper.INSTANCE.isHostileMob(e))

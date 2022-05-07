@@ -12,11 +12,11 @@ import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 
 @Feature.Manifest(category = Feature.Category.COMBAT, description = "Spam webs at players feet to slow them down")
 public class WebSpam extends Feature {
@@ -42,11 +42,11 @@ public class WebSpam extends Feature {
             InventoryHelper.INSTANCE.swapToHotbar(invWeb, 8);
             hotbarWeb = 8;
         }
-        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if (entity instanceof PlayerEntity playerEntity && playerEntity != Wrapper.INSTANCE.getPlayer() && (friends || !FriendHelper.INSTANCE.isFriend(playerEntity))) {
-                if (playerEntity.distanceTo(Wrapper.INSTANCE.getPlayer()) <= range && WorldHelper.INSTANCE.getBlock(playerEntity.getBlockPos()) == Blocks.AIR && PlayerHelper.INSTANCE.canPlaceHere(playerEntity.getBlockPos())) {
+        for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
+            if (entity instanceof Player playerEntity && playerEntity != Wrapper.INSTANCE.getPlayer() && (friends || !FriendHelper.INSTANCE.isFriend(playerEntity))) {
+                if (playerEntity.distanceTo(Wrapper.INSTANCE.getPlayer()) <= range && WorldHelper.INSTANCE.getBlock(playerEntity.blockPosition()) == Blocks.AIR && PlayerHelper.INSTANCE.canPlaceHere(playerEntity.blockPosition())) {
                     InventoryHelper.INSTANCE.setSlot(hotbarWeb, true, true);
-                    PlayerHelper.INSTANCE.placeBlockInPos(playerEntity.getBlockPos(), Hand.MAIN_HAND, false);
+                    PlayerHelper.INSTANCE.placeBlockInPos(playerEntity.blockPosition(), InteractionHand.MAIN_HAND, false);
                     stopWatch.reset();
                     if (delay != 0)
                         return;

@@ -1,8 +1,7 @@
 package me.dustin.jex.event.filters;
 
 import me.dustin.jex.event.render.EventRenderToolTip;
-import net.minecraft.item.Item;
-
+import net.minecraft.world.item.Item;
 import java.util.function.Predicate;
 
 public class ToolTipFilter implements Predicate<EventRenderToolTip> {

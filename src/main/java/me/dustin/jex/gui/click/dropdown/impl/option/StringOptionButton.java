@@ -1,5 +1,7 @@
 package me.dustin.jex.gui.click.dropdown.impl.option;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -11,10 +13,8 @@ import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import org.lwjgl.glfw.GLFW;
 
 public class StringOptionButton extends DropdownOptionButton {
@@ -25,7 +25,7 @@ public class StringOptionButton extends DropdownOptionButton {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
 
     }
 
@@ -38,14 +38,14 @@ public class StringOptionButton extends DropdownOptionButton {
     }
 
     protected void handleKey(EventKeyPressed event) {
-        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DropDownGui)) {
+        if (!(Wrapper.INSTANCE.getMinecraft().screen instanceof DropDownGui)) {
             while (EventManager.isRegistered(this))
                 EventManager.unregister(this);
             return;
         }
         int keyCode = event.getKey();
         if (Screen.isPaste(keyCode)) {
-            stringOption.setValue(stringOption.getValue() + MinecraftClient.getInstance().keyboard.getClipboard());
+            stringOption.setValue(stringOption.getValue() + Minecraft.getInstance().keyboardHandler.getClipboard());
             return;
         }
         switch (keyCode) {
@@ -64,7 +64,7 @@ public class StringOptionButton extends DropdownOptionButton {
                 stringOption.setValue(str);
                 break;
             default:
-                String keyName = InputUtil.fromKeyCode(keyCode, event.getScancode()).getTranslationKey().replace("key.keyboard.", "");
+                String keyName = InputConstants.getKey(keyCode, event.getScancode()).getName().replace("key.keyboard.", "");
                 if (keyName.length() == 1) {
                     if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
                         keyName = keyName.toUpperCase();

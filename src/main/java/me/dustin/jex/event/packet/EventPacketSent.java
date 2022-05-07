@@ -1,16 +1,12 @@
 package me.dustin.jex.event.packet;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
 import me.dustin.events.core.Event;
-import net.minecraft.network.Packet;
+import net.minecraft.network.protocol.Packet;
 
 public class EventPacketSent extends Event {
 
     private Packet<?> packet;
-    private Mode mode;
+    private final Mode mode;
 
     public EventPacketSent(Packet<?> packet, Mode mode) {
         this.packet = packet;

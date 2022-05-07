@@ -10,9 +10,9 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Break bedrock in survival mode using a well-known bug. Code from https://github.com/aria1th/Fabric-Bedrock-Miner")
 public class BedrockBreaker extends Feature {

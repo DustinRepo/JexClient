@@ -6,43 +6,42 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.FileBrowser;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.io.File;
 
 public class ImportFromTXTScreen extends Screen {
     protected ImportFromTXTScreen() {
-        super(Text.of("Import From TXT"));
+        super(Component.nullToEmpty("Import From TXT"));
     }
 
     private FileBrowser fileBrowser;
-    private ButtonWidget cancelButton;
-    private ButtonWidget importButton;
+    private Button cancelButton;
+    private Button importButton;
     private String message;
 
     @Override
     protected void init() {
         fileBrowser = new FileBrowser(ModFileHelper.INSTANCE.getJexDirectory().getPath(), width / 2.f - 150, height / 2.f - 150, 300, 300, null, "txt");
-        importButton = new ButtonWidget(width / 2 - 150, height / 2 + 152, 300, 20, Text.of("Import"), button -> {
+        importButton = new Button(width / 2 - 150, height / 2 + 152, 300, 20, Component.nullToEmpty("Import"), button -> {
             File file = fileBrowser.getSelectedFiles().get(0);
             ConfigManager.INSTANCE.get(AltFile.class).importFromTXT(file);
-            message = Formatting.GREEN + "Successfully imported " + file.getName();
+            message = ChatFormatting.GREEN + "Successfully imported " + file.getName();
         });
-        cancelButton = new ButtonWidget(width / 2 - 150, height / 2 + 174, 300, 20, Text.of("Cancel"), button -> {
+        cancelButton = new Button(width / 2 - 150, height / 2 + 174, 300, 20, Component.nullToEmpty("Cancel"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new AccountManagerScreen());
         });
-        message = Formatting.AQUA + "Supports username:email:password or email:password";
-        this.addDrawableChild(importButton);
-        this.addDrawableChild(cancelButton);
+        message = ChatFormatting.AQUA + "Supports username:email:password or email:password";
+        this.addRenderableWidget(importButton);
+        this.addRenderableWidget(cancelButton);
         super.init();
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         fileBrowser.render(matrices);
         FontHelper.INSTANCE.drawCenteredString(matrices, message, width / 2.f, height / 2.f - 175, -1);

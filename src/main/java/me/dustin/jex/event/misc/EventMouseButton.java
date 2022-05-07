@@ -1,15 +1,11 @@
 package me.dustin.jex.event.misc;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
 import me.dustin.events.core.Event;
 
 public class EventMouseButton extends Event {
 
-    private int button;
-    private ClickType clickType;
+    private final int button;
+    private final ClickType clickType;
 
     public EventMouseButton(int button, ClickType clickType) {
         this.button = button;

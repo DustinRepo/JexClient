@@ -1,17 +1,17 @@
 package me.dustin.jex.event.world;
 
 import me.dustin.events.core.Event;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 public class EventLoadChunk extends Event {
 
-    private WorldChunk worldChunk;
+    private final LevelChunk worldChunk;
 
-    public EventLoadChunk(WorldChunk worldChunk) {
+    public EventLoadChunk(LevelChunk worldChunk) {
         this.worldChunk = worldChunk;
     }
 
-    public WorldChunk getWorldChunk() {
+    public LevelChunk getWorldChunk() {
         return worldChunk;
     }
 }

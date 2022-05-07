@@ -10,9 +10,8 @@ import me.dustin.jex.feature.command.core.arguments.EnchantmentArgumentType;
 import me.dustin.jex.feature.mod.impl.misc.AutoLibrarianRoll;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.text.Text;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.enchantment.Enchantment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class CommandLibrarianRoll extends Command {
 
             for (Enchantment enchantment : AutoLibrarianRoll.enchantments.keySet()) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(" - \247b").append(Text.translatable(enchantment.getTranslationKey()).getString()).append("\247r: ");
+                sb.append(" - \247b").append(Component.translatable(enchantment.getDescriptionId()).getString()).append("\247r: ");
                 for (int level : AutoLibrarianRoll.enchantments.get(enchantment)) {
                     sb.append("\247b").append(level).append("\247r, ");
                 }
@@ -49,13 +48,13 @@ public class CommandLibrarianRoll extends Command {
                 levels.remove(levels.get(levels.indexOf(level)));
             }
 
-            ChatHelper.INSTANCE.addClientMessage("\247b" + Text.translatable(enchantment.getTranslationKey()).getString() + " \2477lvl \247b" + level + "\2477 removed from LibrarianRoll");
+            ChatHelper.INSTANCE.addClientMessage("\247b" + Component.translatable(enchantment.getDescriptionId()).getString() + " \2477lvl \247b" + level + "\2477 removed from LibrarianRoll");
             return 1;
         })))).then(literal("del").then(argument("enchantment", EnchantmentArgumentType.enchantment()).executes(context -> {
             Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
             AutoLibrarianRoll.enchantments.remove(EnchantmentArgumentType.getEnchantment(context, "enchantment"));
 
-            ChatHelper.INSTANCE.addClientMessage("\247b" + Text.translatable(enchantment.getTranslationKey()).getString() + " \2477lvl \247b*\2477 removed from LibrarianRoll");
+            ChatHelper.INSTANCE.addClientMessage("\247b" + Component.translatable(enchantment.getDescriptionId()).getString() + " \2477lvl \247b*\2477 removed from LibrarianRoll");
             return 1;
         }))).then(literal("add").then(argument("enchantment", EnchantmentArgumentType.enchantment()).then(argument("level", IntegerArgumentType.integer()).executes(this)))));
         dispatcher.register(literal("lr").redirect(node));
@@ -73,7 +72,7 @@ public class CommandLibrarianRoll extends Command {
             AutoLibrarianRoll.enchantments.put(enchantment, new ArrayList<>(List.of(level)));
         }
 
-        ChatHelper.INSTANCE.addClientMessage("\247b" + Text.translatable(enchantment.getTranslationKey()).getString() + " \2477lvl \247b" + level + "\2477 added to LibrarianRoll");
+        ChatHelper.INSTANCE.addClientMessage("\247b" + Component.translatable(enchantment.getDescriptionId()).getString() + " \2477lvl \247b" + level + "\2477 added to LibrarianRoll");
         return 1;
     }
 }

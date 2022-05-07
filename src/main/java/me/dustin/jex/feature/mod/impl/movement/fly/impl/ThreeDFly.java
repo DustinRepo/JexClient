@@ -33,7 +33,7 @@ public class ThreeDFly extends FeatureExtension {
     @Override
     public void disable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
-            Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
+            Wrapper.INSTANCE.getLocalPlayer().setDeltaMovement(0, 0, 0);
         }
         super.disable();
     }

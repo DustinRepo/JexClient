@@ -10,12 +10,11 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.slot.SlotActionType;
-
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -33,7 +32,7 @@ public class ArmorDerp extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         ArrayList<ArmorInfo> armorInfos = new ArrayList<>();
         for (int i = 0; i < 36; i++) {
-            ItemStack stack = InventoryHelper.INSTANCE.getInventory().getStack(i);
+            ItemStack stack = InventoryHelper.INSTANCE.getInventory().getItem(i);
             if (stack.getItem() instanceof ArmorItem armorItem)
                 armorInfos.add(new ArmorInfo(armorItem, i));
         }
@@ -42,23 +41,23 @@ public class ArmorDerp extends Feature {
             if (stopWatch.hasPassed(delay)) {
                 int r = random.nextInt(armorInfos.size());
                 ArmorInfo armorInfo = armorInfos.get(r);
-                EquipmentSlot equipmentSlot = armorInfo.armorItem().getSlotType();
+                EquipmentSlot equipmentSlot = armorInfo.armorItem().getSlot();
                 int armorSlot = getArmorSlot(armorInfo.armorItem());
                 int slot = armorInfo.slot();
-                if (Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(equipmentSlot).getItem() != Items.AIR) {
+                if (Wrapper.INSTANCE.getLocalPlayer().getItemBySlot(equipmentSlot).getItem() != Items.AIR) {
                     if (InventoryHelper.INSTANCE.isInventoryFull())
-                        Wrapper.INSTANCE.getInteractionManager().clickSlot(0, armorSlot, 0, SlotActionType.THROW, Wrapper.INSTANCE.getLocalPlayer());
+                        Wrapper.INSTANCE.getMultiPlayerGameMode().handleInventoryMouseClick(0, armorSlot, 0, ClickType.THROW, Wrapper.INSTANCE.getLocalPlayer());
                     else
-                        Wrapper.INSTANCE.getInteractionManager().clickSlot(0, armorSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
+                        Wrapper.INSTANCE.getMultiPlayerGameMode().handleInventoryMouseClick(0, armorSlot, 0, ClickType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
                 }
-                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.QUICK_MOVE);
+                InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, slot < 9 ? slot + 36 : slot, ClickType.QUICK_MOVE);
                 stopWatch.reset();
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     public int getArmorSlot(ArmorItem armorItem) {
-        return switch (armorItem.getSlotType()) {
+        return switch (armorItem.getSlot()) {
             case FEET -> 8;
             case LEGS -> 7;
             case CHEST -> 6;

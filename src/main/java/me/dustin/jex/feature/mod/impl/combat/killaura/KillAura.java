@@ -9,21 +9,21 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.MultiAura;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.SingleAura;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
-import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.FriendHelper;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.player.Player;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.PiglinEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -111,8 +111,8 @@ public class KillAura extends Feature {
 
     private boolean hasTarget = false;
 
-    public ArrayList<PlayerEntity> touchedGround = new ArrayList<>();
-    public ArrayList<PlayerEntity> swung = new ArrayList<>();
+    public ArrayList<Player> touchedGround = new ArrayList<>();
+    public ArrayList<Player> swung = new ArrayList<>();
 
     public KillAura() {
         INSTANCE = this;
@@ -122,22 +122,22 @@ public class KillAura extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        for(Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if(entity instanceof PlayerEntity playerEntity) {
+        for(Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
+            if(entity instanceof Player playerEntity) {
                 if(playerEntity.isOnGround() && !touchedGround.contains(playerEntity))
                     touchedGround.add(playerEntity);
-                if(playerEntity.handSwingProgress > 0 && !swung.contains(playerEntity))
+                if(playerEntity.attackAnim > 0 && !swung.contains(playerEntity))
                     swung.add(playerEntity);
             }
         }
         for(int i = 0; i < swung.size() - 1; i++) {
-            PlayerEntity playerEntity = swung.get(i);
+            Player playerEntity = swung.get(i);
             if(playerEntity == null) {
                 swung.remove(i);
             }
         }
         for(int i = 0; i < touchedGround.size() - 1; i++) {
-            PlayerEntity playerEntity = touchedGround.get(i);
+            Player playerEntity = touchedGround.get(i);
             if(playerEntity == null) {
                 touchedGround.remove(i);
             }
@@ -165,7 +165,7 @@ public class KillAura extends Feature {
                 return true;
             }
         } else {
-            if (Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
+            if (Wrapper.INSTANCE.getLocalPlayer().getAttackStrengthScale(0) == 1) {
                 return true;
             }
         }
@@ -186,12 +186,12 @@ public class KillAura extends Feature {
         if (rangecheck) {
             if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > reach)
                 return false;
-            if (!(livingEntity.canSee(Wrapper.INSTANCE.getPlayer()))) {
+            if (!(livingEntity.hasLineOfSight(Wrapper.INSTANCE.getPlayer()))) {
                 if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > 3)
                     return false;
             }
         }
-        if (entity.age < ticksExisted)
+        if (entity.tickCount < ticksExisted)
             return false;
         if (entity.hasCustomName() && !nametagged)
             return false;
@@ -199,27 +199,27 @@ public class KillAura extends Feature {
             return false;
         if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
             return false;
-        if (!Wrapper.INSTANCE.getLocalPlayer().canSee(entity) && !ignoreWalls)
+        if (!Wrapper.INSTANCE.getLocalPlayer().hasLineOfSight(entity) && !ignoreWalls)
             return false;
         //TODO: fix this with 180/-180 having some issues
         /*if (PlayerHelper.INSTANCE.getDistanceFromMouse(entity) * 2 > KillAura.INSTANCE.fov) {
             return false;
         }*/
-        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
+        if (entity instanceof Player && entity != Wrapper.INSTANCE.getLocalPlayer()) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
                 return false;
-            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmor) && teamCheck)
+            if (EntityHelper.INSTANCE.isOnSameTeam((Player) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmor) && teamCheck)
                 return false;
-            if (botCheck && isBot((PlayerEntity) entity))
+            if (botCheck && isBot((Player) entity))
                 return false;
             return player;
         }
         if (specificFilter) {
-            if (entity instanceof IronGolemEntity)
+            if (entity instanceof IronGolem)
                 return ironGolem;
-            if (entity instanceof ZombifiedPiglinEntity)
+            if (entity instanceof ZombifiedPiglin)
                 return zombiepiglin;
-            if (entity instanceof PiglinEntity)
+            if (entity instanceof Piglin)
                 return piglin;
         }
         if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
@@ -231,7 +231,7 @@ public class KillAura extends Feature {
         return false;
     }
 
-    public boolean isBot(PlayerEntity playerEntity) {
+    public boolean isBot(Player playerEntity) {
         if (EntityHelper.INSTANCE.isNPC(playerEntity)) {
             return true;
         } else {

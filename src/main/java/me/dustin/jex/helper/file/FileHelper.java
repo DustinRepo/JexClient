@@ -1,13 +1,13 @@
 package me.dustin.jex.helper.file;
 
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.util.Identifier;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.imageio.ImageIO;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.resources.ResourceLocation;
+import com.mojang.blaze3d.platform.NativeImage;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -32,8 +32,8 @@ public enum FileHelper {
         }
     }
 
-    public void applyTexture(Identifier identifier, NativeImage nativeImage) {
-        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(nativeImage)));
+    public void applyTexture(ResourceLocation identifier, NativeImage nativeImage) {
+        Minecraft.getInstance().execute(() -> Minecraft.getInstance().getTextureManager().register(identifier, new DynamicTexture(nativeImage)));
     }
 
     public String imageToBase64String(BufferedImage image, String type) {

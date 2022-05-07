@@ -6,12 +6,11 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
+import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.world.InteractionHand;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
-import net.minecraft.util.Hand;
-
 import java.util.Random;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Randomly look around for other players")
@@ -60,11 +59,11 @@ public class Derp extends Feature {
             }
         }
         if (swing) {
-            Hand hand = random.nextBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+            InteractionHand hand = random.nextBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
             if (showSwing) {
-                Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
+                Wrapper.INSTANCE.getLocalPlayer().swing(hand);
             } else {
-                NetworkHelper.INSTANCE.sendPacket(new HandSwingC2SPacket(hand));
+                NetworkHelper.INSTANCE.sendPacket(new ServerboundSwingPacket(hand));
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));

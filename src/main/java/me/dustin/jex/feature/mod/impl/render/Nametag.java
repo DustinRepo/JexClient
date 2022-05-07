@@ -2,6 +2,12 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.addon.hat.Hat;
@@ -10,31 +16,31 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.render.EventRenderNametags;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
-import me.dustin.jex.helper.network.MCAPIHelper;
-import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.option.Perspective;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.AirItem;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.FishingRodItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TridentItem;
+import net.minecraft.world.phys.Vec3;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,12 +87,12 @@ public class Nametag extends Feature {
     @OpChild(name = "Health Mode", all = {"Bar", "Hearts", "HP", "Percent"}, parent = "Health")
     public String healthMode = "Bar";
     int count = 0;
-    private final HashMap<Entity, Vec3d> positions = Maps.newHashMap();
+    private final HashMap<Entity, Vec3> positions = Maps.newHashMap();
 
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
-        drawNametags(event.getMatrixStack());
-        drawPlayerFaces(event.getMatrixStack());
+        drawNametags(event.getPoseStack());
+        drawPlayerFaces(event.getPoseStack());
     });
 
     @EventPointer
@@ -99,22 +105,22 @@ public class Nametag extends Feature {
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         this.positions.clear();
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
             if (isValid(entity) && !positions.containsKey(entity)) {
-                float offset = entity.getHeight() + 0.2f;
-                if (entity instanceof PlayerEntity playerEntity) {
+                float offset = entity.getBbHeight() + 0.2f;
+                if (entity instanceof Player playerEntity) {
                     if (Hat.hasHat(playerEntity)) {
-                        if (Hat.getType(playerEntity) == Hat.HatType.TOP_HAT || playerEntity.getEquippedStack(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD)
-                            offset = entity.getHeight() + 0.7f;
+                        if (Hat.getType(playerEntity) == Hat.HatType.TOP_HAT || playerEntity.getItemBySlot(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD)
+                            offset = entity.getBbHeight() + 0.7f;
                         else
-                            offset = entity.getHeight() + 0.4f;
+                            offset = entity.getBbHeight() + 0.4f;
                     }
                 }
-                Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, event.getPartialTicks(), event.getMatrixStack());
+                Vec3 vec = Render2DHelper.INSTANCE.getPos(entity, offset, event.getPartialTicks(), event.getPoseStack());
                 if (entity instanceof ItemEntity itemEntity) {
-                    Wrapper.INSTANCE.getWorld().getEntities().forEach(entity1 -> {
+                    Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity1 -> {
                         if (entity1 instanceof ItemEntity itemEntity1 && entity.distanceTo(entity1) <= groupRange && entity.getBlockY() == entity1.getBlockY()) {
-                            if (itemEntity1.getStack().getItem() == itemEntity.getStack().getItem())
+                            if (itemEntity1.getItem().getItem() == itemEntity.getItem().getItem())
                                 this.positions.put(entity1, vec);
                         }
                     });
@@ -124,27 +130,27 @@ public class Nametag extends Feature {
         });
     });
 
-    public void drawNametags(MatrixStack matrixStack) {
+    public void drawNametags(PoseStack matrixStack) {
         ArrayList<Entity> exceptions = new ArrayList<>();
         //draw all backgrounds then render all at once
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
             if (!exceptions.contains(entity) && isValid(entity)) {
-                Vec3d vec = positions.get(entity);
+                Vec3 vec = positions.get(entity);
                 if (isOnScreen(vec)) {
                     float x = (float) vec.x;
-                    float y = (float) vec.y - (showPlayerFace && entity instanceof PlayerEntity ? 18 : 0);
+                    float y = (float) vec.y - (showPlayerFace && entity instanceof Player ? 18 : 0);
                     String nameString = getNameString(entity);
                     if (entity instanceof ItemEntity itemEntity) {
-                        AtomicInteger stackCount = new AtomicInteger(itemEntity.getStack().getCount());
+                        AtomicInteger stackCount = new AtomicInteger(itemEntity.getItem().getCount());
                         positions.forEach((entity1, vec3d) -> {
                             if (!exceptions.contains(entity1) && entity != entity1 && vec3d.equals(vec) && entity1 instanceof ItemEntity itemEntity1) {
-                                if (itemEntity1.getStack().getItem() == itemEntity.getStack().getItem()) {
-                                    stackCount.addAndGet(itemEntity1.getStack().getCount());
+                                if (itemEntity1.getItem().getItem() == itemEntity.getItem().getItem()) {
+                                    stackCount.addAndGet(itemEntity1.getItem().getCount());
                                     exceptions.add(entity1);
                                 }
                             }
@@ -170,25 +176,25 @@ public class Nametag extends Feature {
             }
         });
         bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        BufferUploader.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         //draw all text since we can't also do that while rendering the boxes
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
             if (!exceptions.contains(entity) && isValid(entity)) {
-                Vec3d vec = positions.get(entity);
+                Vec3 vec = positions.get(entity);
                 if (isOnScreen(vec)) {
                     float x = (float) vec.x;
-                    float y = (float) vec.y - (showPlayerFace && entity instanceof PlayerEntity ? 18 : 0);
+                    float y = (float) vec.y - (showPlayerFace && entity instanceof Player ? 18 : 0);
                     String nameString = getNameString(entity);
 
                     if (entity instanceof ItemEntity itemEntity) {
-                        int stackCount = itemEntity.getStack().getCount();
+                        int stackCount = itemEntity.getItem().getCount();
                         for (Entity entity1 : exceptions) {
-                            Vec3d vec3d = positions.get(entity1);
+                            Vec3 vec3d = positions.get(entity1);
                             if (vec3d.equals(vec) && entity1 instanceof ItemEntity itemEntity1) {
-                                if (itemEntity1.getStack().getItem() == itemEntity.getStack().getItem()) {
-                                    stackCount += itemEntity1.getStack().getCount();
+                                if (itemEntity1.getItem().getItem() == itemEntity.getItem().getItem()) {
+                                    stackCount += itemEntity1.getItem().getCount();
                                 }
                             }
                         }
@@ -207,26 +213,26 @@ public class Nametag extends Feature {
         });
     }
 
-    public void drawInventoryItems(MatrixStack matrixStack, Vec3d vec, LivingEntity livingEntity) {
+    public void drawInventoryItems(PoseStack matrixStack, Vec3 vec, LivingEntity livingEntity) {
         float x = (float) vec.x;
-        float y = (float) vec.y - (showPlayerFace && livingEntity instanceof PlayerEntity ? 18 : 0);
+        float y = (float) vec.y - (showPlayerFace && livingEntity instanceof Player ? 18 : 0);
         int itemWidth = 16;
         int totalCount = getItems(livingEntity).size();
         float startX = (x - ((totalCount * itemWidth) / 2.f));
         y -= 28;
         count = 0;
         for (ItemStack itemStack : getItems(livingEntity)) {
-            if (!(itemStack.getItem() instanceof AirBlockItem)) {
+            if (!(itemStack.getItem() instanceof AirItem)) {
                 float newX = startX + (count * 16);
                 Render2DHelper.INSTANCE.drawItem(itemStack, newX, y);
-                if (itemStack.hasEnchantments()) {
+                if (itemStack.isEnchanted()) {
                     float scale = 0.5f;
-                    matrixStack.push();
+                    matrixStack.pushPose();
                     matrixStack.scale(scale, scale, 1);
                     int enchCount = 1;
-                    for (NbtElement tag : itemStack.getEnchantments()) {
+                    for (Tag tag : itemStack.getEnchantmentTags()) {
                         try {
-                            NbtCompound compoundTag = (NbtCompound) tag;
+                            CompoundTag compoundTag = (CompoundTag) tag;
                             float newY = ((y - ((10 * scale) * enchCount) + 0.5f) / scale);
                             float newerX = (newX / scale);
                             String name = getEnchantName(compoundTag);
@@ -236,33 +242,33 @@ public class Nametag extends Feature {
                             enchCount++;
                         } catch (Exception ignored) {}
                     }
-                    matrixStack.pop();
+                    matrixStack.popPose();
                 }
                 count++;
             }
         }
     }
 
-    public void drawInventoryBackgrounds(MatrixStack matrixStack, Vec3d vec, LivingEntity livingEntity) {
+    public void drawInventoryBackgrounds(PoseStack matrixStack, Vec3 vec, LivingEntity livingEntity) {
         float x = (float) vec.x;
-        float y = (float) vec.y - (showPlayerFace && livingEntity instanceof PlayerEntity ? 18 : 0);
+        float y = (float) vec.y - (showPlayerFace && livingEntity instanceof Player ? 18 : 0);
         int itemWidth = 16;
         int totalCount = getItems(livingEntity).size();
         float startX = (x - ((totalCount * itemWidth) / 2.f));
         y -= 28;
         count = 0;
         for (ItemStack itemStack : getItems(livingEntity)) {
-            if (!(itemStack.getItem() instanceof AirBlockItem)) {
+            if (!(itemStack.getItem() instanceof AirItem)) {
                 float newX = startX + (count * 16);
                 Render2DHelper.INSTANCE.fillNoDraw(matrixStack, newX, y, newX + 16, y + 16, 0x35000000);
-                if (itemStack.hasEnchantments()) {
+                if (itemStack.isEnchanted()) {
                     float scale = 0.5f;
-                    matrixStack.push();
+                    matrixStack.pushPose();
                     matrixStack.scale(scale, scale, 1);
                     int enchCount = 1;
-                    for (NbtElement tag : itemStack.getEnchantments()) {
+                    for (Tag tag : itemStack.getEnchantmentTags()) {
                         try {
-                            NbtCompound compoundTag = (NbtCompound) tag;
+                            CompoundTag compoundTag = (CompoundTag) tag;
                             float newY = ((y - ((10 * scale) * enchCount) + 0.5f) / scale);
                             float newerX = (newX / scale);
                             String name = getEnchantName(compoundTag);
@@ -273,25 +279,25 @@ public class Nametag extends Feature {
                             enchCount++;
                         } catch (Exception ignored) {}
                     }
-                    matrixStack.pop();
+                    matrixStack.popPose();
                 }
                 count++;
             }
         }
     }
 
-    public void drawPlayerFaces(MatrixStack matrixStack) {
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+    public void drawPlayerFaces(PoseStack matrixStack) {
+        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
             if (isValid(entity)) {
-                Vec3d vec = positions.get(entity);
+                Vec3 vec = positions.get(entity);
                 if (isOnScreen(vec)) {
                     float x = (float) vec.x - 8;
                     float y = (float) vec.y - 16;
 
-                    if (showPlayerFace && entity instanceof PlayerEntity) {
-                        PlayerListEntry playerListEntry = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(entity.getUuid());
+                    if (showPlayerFace && entity instanceof Player) {
+                        PlayerInfo playerListEntry = Wrapper.INSTANCE.getLocalPlayer().connection.getPlayerInfo(entity.getUUID());
                         if (playerListEntry != null) {
-                            Render2DHelper.INSTANCE.drawFace(matrixStack, x, y, 2, playerListEntry.getSkinTexture());
+                            Render2DHelper.INSTANCE.drawFace(matrixStack, x, y, 2, playerListEntry.getSkinLocation());
                             RenderSystem.setShaderTexture(0, 0);
                         }
                     }
@@ -300,7 +306,7 @@ public class Nametag extends Feature {
         });
     }
 
-    private String getEnchantName(NbtCompound compoundTag) {
+    private String getEnchantName(CompoundTag compoundTag) {
         int level = compoundTag.getShort("lvl");
         String name = compoundTag.getString("id").split(":")[1];
         if (name.contains("_")) {
@@ -315,19 +321,19 @@ public class Nametag extends Feature {
 
     private ArrayList<ItemStack> getItems(LivingEntity player) {
         ArrayList<ItemStack> stackList = new ArrayList<>();
-        player.getArmorItems().forEach(itemStack -> {
+        player.getArmorSlots().forEach(itemStack -> {
             if (itemStack != null) {
-                if (!(itemStack.getItem() instanceof AirBlockItem)) {
+                if (!(itemStack.getItem() instanceof AirItem)) {
                     stackList.add(itemStack);
                 }
             }
         });
-        ItemStack itemStack = player.getEquippedStack(EquipmentSlot.MAINHAND);
-        if (!(itemStack.getItem() instanceof AirBlockItem)) {
+        ItemStack itemStack = player.getItemBySlot(EquipmentSlot.MAINHAND);
+        if (!(itemStack.getItem() instanceof AirItem)) {
             stackList.add(itemStack);
         }
-        itemStack = player.getEquippedStack(EquipmentSlot.OFFHAND);
-        if (!(itemStack.getItem() instanceof AirBlockItem)) {
+        itemStack = player.getItemBySlot(EquipmentSlot.OFFHAND);
+        if (!(itemStack.getItem() instanceof AirItem)) {
             stackList.add(itemStack);
         }
         return stackList;
@@ -337,22 +343,22 @@ public class Nametag extends Feature {
         String name = entity.getDisplayName().getString();
         if (name.trim().isEmpty())
             name = entity.getName().getString();
-        if (entity instanceof PlayerEntity && FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
+        if (entity instanceof Player && FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             name = FriendHelper.INSTANCE.getFriendViaName(entity.getName().getString()).alias();
         if (entity instanceof ItemEntity itemEntity) {
             name = entity.getDisplayName().getString();
-            if (itemEntity.getStack().getCount() > 1)
-                name += " \247fx" + itemEntity.getStack().getCount();
+            if (itemEntity.getItem().getCount() > 1)
+                name += " \247fx" + itemEntity.getItem().getCount();
         }
-        if (ping && entity instanceof PlayerEntity playerEntity && Wrapper.INSTANCE.getLocalPlayer().networkHandler != null) {
-            PlayerListEntry entry = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(playerEntity.getUuid());
+        if (ping && entity instanceof Player playerEntity && Wrapper.INSTANCE.getLocalPlayer().connection != null) {
+            PlayerInfo entry = Wrapper.INSTANCE.getLocalPlayer().connection.getPlayerInfo(playerEntity.getUUID());
             if (entry != null) {
                 int ping = entry.getLatency();
-                name += String.format(" %s[%s%dms%s]%s", Formatting.GRAY, getPingFormatting(ping), ping, Formatting.GRAY, Formatting.RESET);
+                name += String.format(" %s[%s%dms%s]%s", ChatFormatting.GRAY, getPingFormatting(ping), ping, ChatFormatting.GRAY, ChatFormatting.RESET);
             }
         }
         if (distance) {
-            name += String.format(" %s[%s%.1f%s]%s", Formatting.GRAY, Formatting.WHITE, Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity), Formatting.GRAY, Formatting.RESET);
+            name += String.format(" %s[%s%.1f%s]%s", ChatFormatting.GRAY, ChatFormatting.WHITE, Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity), ChatFormatting.GRAY, ChatFormatting.RESET);
         }
         if (entity instanceof LivingEntity)
             if (health && !healthMode.equalsIgnoreCase("Bar")) {
@@ -361,14 +367,14 @@ public class Nametag extends Feature {
         return name;
     }
 
-    public Formatting getPingFormatting(int ping) {
+    public ChatFormatting getPingFormatting(int ping) {
         if (ping <= 50)
-            return Formatting.GREEN;
+            return ChatFormatting.GREEN;
         else if (ping <= 75)
-            return Formatting.YELLOW;
+            return ChatFormatting.YELLOW;
         else if (ping <= 100)
-            return Formatting.RED;
-        return Formatting.DARK_RED;
+            return ChatFormatting.RED;
+        return ChatFormatting.DARK_RED;
     }
 
     private int getColor(Entity entity) {
@@ -380,12 +386,12 @@ public class Nametag extends Feature {
             return ESP.INSTANCE.passiveColor;
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return ESP.INSTANCE.neutralColor;
-        if (entity instanceof PlayerEntity playerEntity) {
+        if (entity instanceof Player playerEntity) {
             if (FriendHelper.INSTANCE.isFriend(playerEntity))
                 return ESP.INSTANCE.friendColor;
             else if (entity.isInvisible())
                 return new Color(200, 70, 0).getRGB();
-            else if (entity.isSneaking())
+            else if (entity.isShiftKeyDown())
                 return Color.red.getRGB();
         }
         return -1;
@@ -437,10 +443,10 @@ public class Nametag extends Feature {
             if (specialMobsOnly && !isSpecialMob(entity))
                 return false;
             return neutrals;
-        } else if (entity instanceof PlayerEntity)
-            if (!EntityHelper.INSTANCE.isNPC((PlayerEntity) entity)) {
+        } else if (entity instanceof Player)
+            if (!EntityHelper.INSTANCE.isNPC((Player) entity)) {
                 if (entity == Wrapper.INSTANCE.getLocalPlayer())
-                    return showself && Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON;
+                    return showself && Wrapper.INSTANCE.getOptions().getCameraType() != CameraType.FIRST_PERSON;
                 return players;
             }
         return false;
@@ -456,8 +462,8 @@ public class Nametag extends Feature {
     }
 
     public boolean hasAbnormalItems(LivingEntity livingEntity) {
-        ItemStack mainHandStack = livingEntity.getMainHandStack();
-        ItemStack offhandStack = livingEntity.getMainHandStack();
+        ItemStack mainHandStack = livingEntity.getMainHandItem();
+        ItemStack offhandStack = livingEntity.getMainHandItem();
 
         if (mainHandStack.getItem() instanceof TridentItem || offhandStack.getItem() instanceof TridentItem)
             return true;
@@ -465,7 +471,7 @@ public class Nametag extends Feature {
             return mainHandStack.getItem() != Items.AIR || offhandStack.getItem() != Items.AIR;
         }
         boolean hasArmor = false;
-        for (ItemStack armorItem : livingEntity.getArmorItems()) {
+        for (ItemStack armorItem : livingEntity.getArmorSlots()) {
             if (armorItem.getItem() != Items.AIR) {
                 hasArmor = true;
                 break;
@@ -474,7 +480,7 @@ public class Nametag extends Feature {
         return hasArmor;
     }
 
-    private boolean isOnScreen(Vec3d pos) {
+    private boolean isOnScreen(Vec3 pos) {
         return pos != null && (pos.z > -1 && pos.z < 1);
     }
 

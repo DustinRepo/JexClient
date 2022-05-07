@@ -20,15 +20,15 @@ public class Feature {
     private boolean state;
     private boolean visible;
     private int key;
-    private Feature.Category featureCategory;
+    private Category featureCategory;
 
     public Feature() {
         this.name = this.getClass().getSimpleName();
         this.displayName = this.getClass().getSimpleName();
-        this.description = this.getClass().getAnnotation(Feature.Manifest.class).description();
-        this.featureCategory = this.getClass().getAnnotation(Feature.Manifest.class).category();
-        this.key = this.getClass().getAnnotation(Feature.Manifest.class).key();
-        this.visible = this.getClass().getAnnotation(Feature.Manifest.class).visible();
+        this.description = this.getClass().getAnnotation(Manifest.class).description();
+        this.featureCategory = this.getClass().getAnnotation(Manifest.class).category();
+        this.key = this.getClass().getAnnotation(Manifest.class).key();
+        this.visible = this.getClass().getAnnotation(Manifest.class).visible();
     }
 
     public static <T extends Feature> T get(Class<T> clazz) {
@@ -51,7 +51,7 @@ public class Feature {
         return get(clazz).getState();
     }
 
-    public static ArrayList<Feature> getModules(Feature.Category category) {
+    public static ArrayList<Feature> getModules(Category category) {
         ArrayList<Feature> features = new ArrayList<>();
         FeatureManager.INSTANCE.getFeatures().forEach(module -> {
             if (module.getFeatureCategory() == category)
@@ -146,11 +146,11 @@ public class Feature {
         this.key = key;
     }
 
-    public Feature.Category getFeatureCategory() {
+    public Category getFeatureCategory() {
         return featureCategory;
     }
 
-    public void setFeatureCategory(Feature.Category featureCategory) {
+    public void setFeatureCategory(Category featureCategory) {
         this.featureCategory = featureCategory;
     }
 
@@ -158,7 +158,7 @@ public class Feature {
 
     public void loadFeature() {
         //fuck-ass workaround for having mods enabled by default in the code messing with the event manager
-        if (this.getClass().getAnnotation(Feature.Manifest.class) != null && this.getClass().getAnnotation(Feature.Manifest.class).enabled()) {
+        if (this.getClass().getAnnotation(Manifest.class) != null && this.getClass().getAnnotation(Manifest.class).enabled()) {
             setState(true);
         }
     }
@@ -168,7 +168,7 @@ public class Feature {
     }
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Manifest {
-        Feature.Category category();
+        Category category();
         String description();
         int key() default 0;
         boolean enabled() default false;

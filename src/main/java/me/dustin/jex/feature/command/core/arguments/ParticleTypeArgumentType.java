@@ -8,11 +8,10 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-
+import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
@@ -29,10 +28,10 @@ public class ParticleTypeArgumentType implements ArgumentType<String> {
         }
         String str = reader.getString().substring(argBeginning, reader.getCursor());
 
-        if (Registry.PARTICLE_TYPE.get(new Identifier(str)) != null) {
+        if (Registry.PARTICLE_TYPE.get(new ResourceLocation(str)) != null) {
             return str;
         } else {
-            throw new SimpleCommandExceptionType(Text.of("Not a feature")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Component.nullToEmpty("Not a feature")).createWithContext(reader);
         }
     }
 
@@ -40,12 +39,12 @@ public class ParticleTypeArgumentType implements ArgumentType<String> {
         return new ParticleTypeArgumentType();
     }
     public static ParticleType<?> getParticleType(CommandContext<FabricClientCommandSource> commandContext, String string) throws CommandSyntaxException {
-        return Registry.PARTICLE_TYPE.get(new Identifier(commandContext.getArgument(string, String.class)));
+        return Registry.PARTICLE_TYPE.get(new ResourceLocation(commandContext.getArgument(string, String.class)));
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        Registry.PARTICLE_TYPE.getIds().forEach(identifier -> {
+        Registry.PARTICLE_TYPE.keySet().forEach(identifier -> {
             builder.suggest(identifier.toString());
         });
         return builder.buildFuture();

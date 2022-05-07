@@ -12,11 +12,15 @@ import me.dustin.jex.load.impl.IAbstractHorseEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.SkeletonHorseEntity;
-import net.minecraft.entity.passive.*;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.Donkey;
+import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.animal.horse.Llama;
+import net.minecraft.world.entity.animal.horse.Mule;
+import net.minecraft.world.entity.animal.horse.SkeletonHorse;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Change how ridable entities work.")
@@ -61,28 +65,28 @@ public class EntityRider extends Feature {
             return;
         Entity vehicle = Wrapper.INSTANCE.getLocalPlayer().getVehicle();
         if (horse && isHorse(vehicle)) {
-            AbstractHorseEntity horseBaseEntity = (AbstractHorseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
+            AbstractHorse horseBaseEntity = (AbstractHorse) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
             IAbstractHorseEntity iAbstractHorseEntity = (IAbstractHorseEntity) horseBaseEntity;
             iAbstractHorseEntity.setJumpStrength(horseJump);
             iAbstractHorseEntity.setSpeed(horseSpeed);
             if (horseInstantJump)
-                iAbstractHorseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
+                iAbstractHorseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isDown() ? 1 : 0);
         }
         if (llama && isLlama(vehicle)) {
-            AbstractHorseEntity horseBaseEntity = (AbstractHorseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
+            AbstractHorse horseBaseEntity = (AbstractHorse) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
             IAbstractHorseEntity iAbstractHorseEntity = (IAbstractHorseEntity) horseBaseEntity;
             iAbstractHorseEntity.setJumpStrength(llamaJump);
             iAbstractHorseEntity.setSpeed(llamaSpeed);
             if (llamaInstantJump)
-                iAbstractHorseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
+                iAbstractHorseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().keyJump.isDown() ? 1 : 0);
         }
-        if (boat && vehicle instanceof BoatEntity boatEntity) {
-            boatEntity.updateVelocity(boatSpeed / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));
+        if (boat && vehicle instanceof Boat boatEntity) {
+            boatEntity.moveRelative(boatSpeed / 10.0f, new Vec3(Wrapper.INSTANCE.getLocalPlayer().input.leftImpulse, 0, Wrapper.INSTANCE.getLocalPlayer().input.forwardImpulse));
             if (allowBoatFly)
-                if (Wrapper.INSTANCE.getOptions().jumpKey.isPressed()) {
-                    boatEntity.addVelocity(0, boatJump / 10.0f, 0);
+                if (Wrapper.INSTANCE.getOptions().keyJump.isDown()) {
+                    boatEntity.push(0, boatJump / 10.0f, 0);
                 } else if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_INSERT)) {
-                    boatEntity.addVelocity(0, -boatJump / 10.0f, 0);
+                    boatEntity.push(0, -boatJump / 10.0f, 0);
                 }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
@@ -106,10 +110,10 @@ public class EntityRider extends Feature {
     });
 
     private boolean isHorse(Entity entity) {
-        return entity instanceof HorseEntity || entity instanceof DonkeyEntity || entity instanceof MuleEntity || entity instanceof SkeletonHorseEntity;
+        return entity instanceof Horse || entity instanceof Donkey || entity instanceof Mule || entity instanceof SkeletonHorse;
     }
 
     private boolean isLlama(Entity entity) {
-        return entity instanceof LlamaEntity;
+        return entity instanceof Llama;
     }
 }

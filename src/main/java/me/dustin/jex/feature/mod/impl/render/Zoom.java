@@ -3,7 +3,7 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
-import me.dustin.jex.event.misc.EventSetSimpleOption;
+import me.dustin.jex.event.misc.EventSetOptionInstance;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -27,7 +27,7 @@ public class Zoom extends Feature {
     @Override
     public void onEnable() {
         if (Wrapper.INSTANCE.getOptions() != null)
-            savedFOV = Wrapper.INSTANCE.getOptions().getFov().getValue();
+            savedFOV = Wrapper.INSTANCE.getOptions().fov().get();
         super.onEnable();
     }
 
@@ -39,32 +39,32 @@ public class Zoom extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if(KeyboardHelper.INSTANCE.isPressed(zoomKey) && Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
+        if(KeyboardHelper.INSTANCE.isPressed(zoomKey) && Wrapper.INSTANCE.getMinecraft().screen == null) {
             if(resetFOV) {
                 this.resetFOV = false;
-                this.savedFOV = Wrapper.INSTANCE.getOptions().getFov().getValue();
+                this.savedFOV = Wrapper.INSTANCE.getOptions().fov().get();
             }
             int zoomFov = (int)(30 - (6 * zoomLevel));
             if (zoomFov == 0)
                 zoomFov = 1;
-            if(Wrapper.INSTANCE.getOptions().getFov().getValue() > zoomFov) {
-                Wrapper.INSTANCE.getOptions().getFov().setValue(zoomFov);
+            if(Wrapper.INSTANCE.getOptions().fov().get() > zoomFov) {
+                Wrapper.INSTANCE.getOptions().fov().set(zoomFov);
                 if (mouseSmooth)
-                    Wrapper.INSTANCE.getOptions().smoothCameraEnabled = true;
+                    Wrapper.INSTANCE.getOptions().smoothCamera = true;
             }
         }
         else
         {
             if(!resetFOV || !getState()) {
-                if (Wrapper.INSTANCE.getOptions().getFov().getValue() < savedFOV) {
-                    Wrapper.INSTANCE.getOptions().getFov().setValue(savedFOV);
+                if (Wrapper.INSTANCE.getOptions().fov().get() < savedFOV) {
+                    Wrapper.INSTANCE.getOptions().fov().set(savedFOV);
                     if (mouseSmooth)
-                        Wrapper.INSTANCE.getOptions().smoothCameraEnabled = false;
+                        Wrapper.INSTANCE.getOptions().smoothCamera = false;
                 }
                 if (!getState()) {
                     super.onDisable();
                     if (mouseSmooth)
-                        Wrapper.INSTANCE.getOptions().smoothCameraEnabled = false;
+                        Wrapper.INSTANCE.getOptions().smoothCamera = false;
                 }
             } else
                 this.resetFOV = true;
@@ -72,8 +72,8 @@ public class Zoom extends Feature {
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
-    private final EventListener<EventSetSimpleOption> eventSetSimpleOptionEventListener = new EventListener<>(event -> {
-        if (event.getSimpleOption() == Wrapper.INSTANCE.getOptions().getFov())
+    private final EventListener<EventSetOptionInstance> eventSetSimpleOptionEventListener = new EventListener<>(event -> {
+        if (event.getOptionInstance() == Wrapper.INSTANCE.getOptions().fov())
             event.setShouldIgnoreCheck(true);
     });
 }

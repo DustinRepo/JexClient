@@ -11,17 +11,16 @@ import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.load.impl.IKeyBinding;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
+import net.minecraft.client.KeyMapping;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 
 public abstract class PathProcessor
 {
-	private static final KeyBinding[] CONTROLS =
-		{Wrapper.INSTANCE.getOptions().forwardKey, Wrapper.INSTANCE.getOptions().backKey, Wrapper.INSTANCE.getOptions().rightKey,
-			Wrapper.INSTANCE.getOptions().leftKey, Wrapper.INSTANCE.getOptions().jumpKey, Wrapper.INSTANCE.getOptions().sneakKey};
+	private static final KeyMapping[] CONTROLS =
+		{Wrapper.INSTANCE.getOptions().keyUp, Wrapper.INSTANCE.getOptions().keyDown, Wrapper.INSTANCE.getOptions().keyRight,
+			Wrapper.INSTANCE.getOptions().keyLeft, Wrapper.INSTANCE.getOptions().keyJump, Wrapper.INSTANCE.getOptions().keyShift};
 	
 	protected final ArrayList<PathPos> path;
 	protected int index;
@@ -57,17 +56,17 @@ public abstract class PathProcessor
 	
 	protected final void facePosition(BlockPos pos)
 	{
-		RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(pos));
-		Wrapper.INSTANCE.getLocalPlayer().setYaw(rotationVector.getYaw());
-		Wrapper.INSTANCE.getLocalPlayer().setPitch(0);
+		RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3.atCenterOf(pos));
+		Wrapper.INSTANCE.getLocalPlayer().setYRot(rotationVector.getYaw());
+		Wrapper.INSTANCE.getLocalPlayer().setXRot(0);
 	}
 	
 	public static final void lockControls()
 	{
 		lockedControls = true;
 		// disable keys
-		for(KeyBinding key : CONTROLS)
-			key.setPressed(false);
+		for(KeyMapping key : CONTROLS)
+			key.setDown(false);
 		
 		// disable sprinting
 		//Wrapper.INSTANCE.getLocalPlayer().setSprinting(false);
@@ -77,7 +76,7 @@ public abstract class PathProcessor
 	{
 		lockedControls = false;
 		// reset keys
-		for(KeyBinding key : CONTROLS)
-			key.setPressed(((IKeyBinding)key).isActuallyPressed());
+		for(KeyMapping key : CONTROLS)
+			key.setDown(((IKeyBinding)key).isActuallyPressed());
 	}
 }

@@ -5,9 +5,8 @@ import me.dustin.jex.helper.network.login.thealtening.TheAlteningHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.UUID;
 
 public class TheAlteningAccountButton {
@@ -27,16 +26,16 @@ public class TheAlteningAccountButton {
         uuid = PlayerHelper.INSTANCE.getUUID(account.username);
     }
 
-    public void draw(MatrixStack matrixStack) {
+    public void draw(PoseStack matrixStack) {
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), !isSelected() ? 0x85000000 : ColorHelper.INSTANCE.getClientColor(), 0x45000000, 1);
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x30ffffff);
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, Formatting.AQUA + account.username, getX() + 24, getY() + 2, -1);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, ChatFormatting.AQUA + account.username, getX() + 24, getY() + 2, -1);
         String token = account.token;
         if (!isSelected()) {
             token = "*****-*****@alt.com";
         }
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, Formatting.GREEN + token, getX() + 24, getY() + 12, -1);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, ChatFormatting.GREEN + token, getX() + 24, getY() + 12, -1);
         Render2DHelper.INSTANCE.bindTexture(TheAlteningHelper.INSTANCE.getSkin(account));
         Render2DHelper.INSTANCE.drawTexture(matrixStack, this.getX() + 4, this.getY() + 2, 0, 0, 16, 25, 16, 25);
 

@@ -1,14 +1,14 @@
 package me.dustin.jex.event.world;
 
 import me.dustin.events.core.Event;
-import net.minecraft.block.Block;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class EventBlockCollisionShape extends Event {
 
-    private BlockPos blockPos;
-    private Block block;
+    private final BlockPos blockPos;
+    private final Block block;
     private VoxelShape voxelShape;
 
     public EventBlockCollisionShape(BlockPos blockPos, Block block, VoxelShape voxelShape) {

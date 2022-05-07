@@ -1,9 +1,9 @@
 package me.dustin.jex.load.impl;
 
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.components.EditBox;
 
 public interface IChatScreen {
     String getText();
     void setText(String text);
-    TextFieldWidget getWidget();
+    EditBox getWidget();
 }

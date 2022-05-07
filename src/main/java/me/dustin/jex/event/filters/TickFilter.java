@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 
 public class TickFilter implements Predicate<EventTick> {
 
-    private EventTick.Mode mode;
+    private final EventTick.Mode mode;
 
     public TickFilter(EventTick.Mode mode) {
         this.mode = mode;

@@ -9,11 +9,10 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.slot.SlotActionType;
-
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -56,14 +55,14 @@ public class AutoDrop extends Feature {
         if (dropDelay == 0) {
             inventory.forEach((slot, itemStack) -> {
                 if (items.contains(itemStack.getItem())) {
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot <= 27 ? slot + 9 : slot, SlotActionType.THROW, 1);
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, slot <= 27 ? slot + 9 : slot, ClickType.THROW, 1);
                 }
             });
         } else {
             for (int slot : inventory.keySet()) {
                 ItemStack itemStack = inventory.get(slot);
                 if (items.contains(itemStack.getItem())) {
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot <= 27 ? slot + 9 : slot, SlotActionType.THROW, 1);
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, slot <= 27 ? slot + 9 : slot, ClickType.THROW, 1);
                     stopWatch.reset();
                     return;
                 }

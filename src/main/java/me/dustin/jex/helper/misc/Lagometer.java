@@ -4,7 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
 
 public enum Lagometer {
     INSTANCE;
@@ -13,12 +13,12 @@ public enum Lagometer {
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        if (!(event.getPacket() instanceof ChatMessageS2CPacket))
+        if (!(event.getPacket() instanceof ClientboundPlayerChatPacket))
             lagStopWatch.reset();
     }, new ServerPacketFilter(EventPacketReceive.Mode.PRE));
 
     public boolean isServerLagging() {
-        return lagStopWatch.getPassed() > 1000 && !(Wrapper.INSTANCE.getMinecraft().isInSingleplayer() && Wrapper.INSTANCE.getMinecraft().isPaused());
+        return lagStopWatch.getPassed() > 1000 && !(Wrapper.INSTANCE.getMinecraft().isLocalServer() && Wrapper.INSTANCE.getMinecraft().isPaused());
     }
 
     public long getLagTime() {

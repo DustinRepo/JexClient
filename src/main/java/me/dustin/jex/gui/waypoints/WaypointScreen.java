@@ -11,26 +11,25 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 
 public class WaypointScreen extends Screen {
 
     public WaypointScreen() {
-        super(Text.of("Waypoints"));
+        super(Component.nullToEmpty("Waypoints"));
     }
 
     private String goToServer;
 
     public WaypointScreen(String server) {
-        super(Text.of("Waypoints"));
+        super(Component.nullToEmpty("Waypoints"));
     }
 
 
@@ -49,7 +48,7 @@ public class WaypointScreen extends Screen {
     private Scrollbar scrollbar;
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
@@ -105,7 +104,7 @@ public class WaypointScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int int_1, int int_2, float float_1) {
+    public void render(PoseStack matrixStack, int int_1, int int_2, float float_1) {
         renderBackground(matrixStack);
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, getMidX() - buttonWidth - 6, getMidY() - 105, getMidX() + buttonWidth + 6, getMidY() + 130, ColorHelper.INSTANCE.getClientColor(), 0x60000000, 1);
 
@@ -243,12 +242,12 @@ public class WaypointScreen extends Screen {
 
     private float getMidX()
     {
-        return Wrapper.INSTANCE.getWindow().getScaledWidth() / 2.f;
+        return Wrapper.INSTANCE.getWindow().getGuiScaledWidth() / 2.f;
     }
 
     private float getMidY()
     {
-        return Wrapper.INSTANCE.getWindow().getScaledHeight() / 2.f;
+        return Wrapper.INSTANCE.getWindow().getGuiScaledHeight() / 2.f;
     }
 
     public static ArrayList<WaypointButton> getWaypointButtons() {

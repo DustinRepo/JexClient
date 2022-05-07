@@ -2,21 +2,20 @@ package me.dustin.jex.helper.network;
 
 import com.mojang.authlib.GameProfile;
 import me.dustin.jex.helper.misc.ChatHelper;
-import net.minecraft.client.network.Address;
-import net.minecraft.client.network.AllowedAddressResolver;
-import net.minecraft.client.network.ServerAddress;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.listener.ClientQueryPacketListener;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
-import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
-import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
-import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
-import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
-import net.minecraft.server.ServerMetadata;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.multiplayer.resolver.ResolvedServerAddress;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.client.multiplayer.resolver.ServerNameResolver;
+import net.minecraft.network.Connection;
+import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
+import net.minecraft.network.protocol.status.ClientStatusPacketListener;
+import net.minecraft.network.protocol.status.ClientboundPongResponsePacket;
+import net.minecraft.network.protocol.status.ClientboundStatusResponsePacket;
+import net.minecraft.network.protocol.status.ServerStatus;
+import net.minecraft.network.protocol.status.ServerboundPingRequestPacket;
+import net.minecraft.network.protocol.status.ServerboundStatusRequestPacket;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,55 +31,55 @@ public class ServerPinger {
 
     public void pingServer() {
         new Thread(() -> {
-            ServerAddress serverAddress = ServerAddress.parse(ip);
-            Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
+            ServerAddress serverAddress = ServerAddress.parseString(ip);
+            Optional<InetSocketAddress> optional = ServerNameResolver.DEFAULT.resolveAddress(serverAddress).map(ResolvedServerAddress::asInetSocketAddress);
             optional.ifPresent(this::ping);
         }).start();
     }
 
     private void ping(InetSocketAddress inetAddress) {
-        final ClientConnection clientConnection = ClientConnection.connect(inetAddress, false);
-        clientConnection.setPacketListener(new ClientQueryPacketListener() {
+        final Connection clientConnection = Connection.connectToServer(inetAddress, false);
+        clientConnection.setListener(new ClientStatusPacketListener() {
             @Override
-            public void onResponse(QueryResponseS2CPacket packet) {
-                ServerMetadata serverMetadata = packet.getServerMetadata();
+            public void handleStatusResponse(ClientboundStatusResponsePacket packet) {
+                ServerStatus serverMetadata = packet.getStatus();
                 //description
-                ChatHelper.INSTANCE.addRawMessage(Formatting.GRAY + "----------------");
+                ChatHelper.INSTANCE.addRawMessage(ChatFormatting.GRAY + "----------------");
                 ChatHelper.INSTANCE.addRawMessage(serverMetadata.getDescription());
-                ChatHelper.INSTANCE.addRawMessage(Formatting.GRAY + "----------------");
+                ChatHelper.INSTANCE.addRawMessage(ChatFormatting.GRAY + "----------------");
 
                 //version info
                 if (serverMetadata.getVersion() != null)
-                    ChatHelper.INSTANCE.addRawMessage("Version: " + Formatting.AQUA + serverMetadata.getVersion().getGameVersion() + Formatting.WHITE + " (Protocol ver: " + Formatting.AQUA + serverMetadata.getVersion().getProtocolVersion() + Formatting.WHITE + ")");
+                    ChatHelper.INSTANCE.addRawMessage("Version: " + ChatFormatting.AQUA + serverMetadata.getVersion().getName() + ChatFormatting.WHITE + " (Protocol ver: " + ChatFormatting.AQUA + serverMetadata.getVersion().getProtocol() + ChatFormatting.WHITE + ")");
                 //players
                 if (serverMetadata.getPlayers() != null) {
-                    ChatHelper.INSTANCE.addRawMessage("Players online: " + serverMetadata.getPlayers().getOnlinePlayerCount() + "/" + serverMetadata.getPlayers().getPlayerLimit());
+                    ChatHelper.INSTANCE.addRawMessage("Players online: " + serverMetadata.getPlayers().getNumPlayers() + "/" + serverMetadata.getPlayers().getMaxPlayers());
 
                     for (GameProfile gameProfile : serverMetadata.getPlayers().getSample()) {
                         if (gameProfile.getId().compareTo(emptyUUID) != 0)
-                            ChatHelper.INSTANCE.addRawMessage(Formatting.GREEN + gameProfile.getName());
+                            ChatHelper.INSTANCE.addRawMessage(ChatFormatting.GREEN + gameProfile.getName());
                     }
                 }
             }
 
             @Override
-            public void onPong(QueryPongS2CPacket packet) {
-                long pingTime = System.currentTimeMillis() - packet.getStartTime();
+            public void handlePongResponse(ClientboundPongResponsePacket packet) {
+                long pingTime = System.currentTimeMillis() - packet.getTime();
                 ChatHelper.INSTANCE.addRawMessage("Ping: " + pingTime);
             }
 
             @Override
-            public void onDisconnected(Text reason) {
+            public void onDisconnect(Component reason) {
                 ChatHelper.INSTANCE.addRawMessage("Disconnected: " + reason);
             }
 
             @Override
-            public ClientConnection getConnection() {
+            public Connection getConnection() {
                 return clientConnection;
             }
         });
-        clientConnection.send(new HandshakeC2SPacket(inetAddress.getAddress().getHostAddress(), inetAddress.getPort(), NetworkState.STATUS));
-        clientConnection.send(new QueryRequestC2SPacket());
-        clientConnection.send(new QueryPingC2SPacket(System.currentTimeMillis()));
+        clientConnection.send(new ClientIntentionPacket(inetAddress.getAddress().getHostAddress(), inetAddress.getPort(), ConnectionProtocol.STATUS));
+        clientConnection.send(new ServerboundStatusRequestPacket());
+        clientConnection.send(new ServerboundPingRequestPacket(System.currentTimeMillis()));
     }
 }

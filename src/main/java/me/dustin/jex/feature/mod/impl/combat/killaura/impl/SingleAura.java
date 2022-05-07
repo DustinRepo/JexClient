@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.combat.killaura.impl;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
@@ -14,14 +15,13 @@ import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.AutoPot;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3d;
 
 public class SingleAura extends FeatureExtension {
 
@@ -50,8 +50,8 @@ public class SingleAura extends FeatureExtension {
                             rotationVector = PlayerHelper.INSTANCE.randomRotateTo(target, KillAura.INSTANCE.randomWidth, KillAura.INSTANCE.randomHeight);
                         }
                         event.setRotation(rotationVector);
-                        Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
-                        Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
+                        Wrapper.INSTANCE.getLocalPlayer().yHeadRot = event.getYaw();
+                        Wrapper.INSTANCE.getLocalPlayer().yBodyRot = event.getYaw();
                         if (KillAura.INSTANCE.lockview) {
                             PlayerHelper.INSTANCE.setRotation(event.getRotation());
                         }
@@ -65,19 +65,19 @@ public class SingleAura extends FeatureExtension {
         }
         if (event1 instanceof EventRender3D) {
             if (target != null && KillAura.INSTANCE.showTarget) {
-                Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getMatrixStack(), target, ((EventRender3D) event1).getPartialTicks(), KillAura.INSTANCE.targetColor);
+                Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getPoseStack(), target, ((EventRender3D) event1).getPartialTicks(), KillAura.INSTANCE.targetColor);
             }
             if (KillAura.INSTANCE.reachCircle) {
-                MatrixStack matrixStack = ((EventRender3D) event1).getMatrixStack();
-                matrixStack.push();
+                PoseStack matrixStack = ((EventRender3D) event1).getPoseStack();
+                matrixStack.pushPose();
                 Render3DHelper.INSTANCE.setup3DRender(false);
                 RenderSystem.lineWidth(1);
-                double x = Wrapper.INSTANCE.getLocalPlayer().prevX + ((Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX) * ((EventRender3D) event1).getPartialTicks());
-                double y = Wrapper.INSTANCE.getLocalPlayer().prevY + ((Wrapper.INSTANCE.getLocalPlayer().getY() - Wrapper.INSTANCE.getLocalPlayer().prevY) * ((EventRender3D) event1).getPartialTicks());
-                double z = Wrapper.INSTANCE.getLocalPlayer().prevZ + ((Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ) * ((EventRender3D) event1).getPartialTicks());
-                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getMatrixStack(), KillAura.INSTANCE.reach, 25, KillAura.INSTANCE.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
+                double x = Wrapper.INSTANCE.getLocalPlayer().xo + ((Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().xo) * ((EventRender3D) event1).getPartialTicks());
+                double y = Wrapper.INSTANCE.getLocalPlayer().yo + ((Wrapper.INSTANCE.getLocalPlayer().getY() - Wrapper.INSTANCE.getLocalPlayer().yo) * ((EventRender3D) event1).getPartialTicks());
+                double z = Wrapper.INSTANCE.getLocalPlayer().zo + ((Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().zo) * ((EventRender3D) event1).getPartialTicks());
+                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getPoseStack(), KillAura.INSTANCE.reach, 25, KillAura.INSTANCE.reachCircleColor, true, new Vec3(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
                 Render3DHelper.INSTANCE.end3DRender();
-                matrixStack.pop();
+                matrixStack.popPose();
             }
         }
     }
@@ -87,14 +87,14 @@ public class SingleAura extends FeatureExtension {
         LivingEntity savedTarget = null;
         if (KillAura.INSTANCE.rayTrace && target != null) {
             savedTarget = target;
-            Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reach);
+            Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getFrameTime(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reach);
             if (possible != null && possible instanceof LivingEntity) {
                 target = (LivingEntity) possible;
             }
         }
         boolean alreadyBlocking = false;
         if (KillAura.INSTANCE.autoBlock && KillAura.INSTANCE.autoblockDistance > KillAura.INSTANCE.reach) {
-            for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+            for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
                 if (KillAura.INSTANCE.isValid(entity, false) && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= KillAura.INSTANCE.autoblockDistance) {
                     PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
                     alreadyBlocking = true;
@@ -102,7 +102,7 @@ public class SingleAura extends FeatureExtension {
                 }
             }
         }
-        if (target != null && Wrapper.INSTANCE.getWorld().getEntityById(target.getId()) != null) {
+        if (target != null && Wrapper.INSTANCE.getWorld().getEntity(target.getId()) != null) {
             if (BaritoneHelper.INSTANCE.baritoneExists()) {
                 if (KillAura.INSTANCE.baritoneOverride)
                     if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
@@ -116,8 +116,8 @@ public class SingleAura extends FeatureExtension {
                     reblock = true;
                     PlayerHelper.INSTANCE.unblock();
                 }
-                Wrapper.INSTANCE.getInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), target);
-                PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
+                Wrapper.INSTANCE.getMultiPlayerGameMode().attack(Wrapper.INSTANCE.getLocalPlayer(), target);
+                PlayerHelper.INSTANCE.swing(InteractionHand.MAIN_HAND);
                 if (KillAura.INSTANCE.autoBlock && reblock) {
                     PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
                 }
@@ -136,7 +136,7 @@ public class SingleAura extends FeatureExtension {
     public LivingEntity getClosest() {
         LivingEntity livingEntity = null;
         float distance = KillAura.INSTANCE.reach;
-        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+        for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
             if (entity instanceof LivingEntity livingEntity1) {
                 if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) <= distance) {
                     livingEntity = livingEntity1;

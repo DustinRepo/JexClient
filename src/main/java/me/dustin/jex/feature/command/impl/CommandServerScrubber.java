@@ -12,7 +12,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.ServerPinger;
 import me.dustin.jex.helper.network.ServerScrubber;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
 
 @Cmd(name = "serverscrub", description = "Search for players by name in a customizable list of servers", syntax = ".serverscrub <add/del> <ip>/.serverscrub search <name>")
 public class CommandServerScrubber extends Command {
@@ -21,19 +21,19 @@ public class CommandServerScrubber extends Command {
         dispatcher.register(literal(this.name).then(literal("add").then(argument("ip(:port)", MessageArgumentType.message()).executes(context -> {
             String ip = MessageArgumentType.getMessage(context, "ip(:port)").getString();
             ServerScrubber.INSTANCE.getServers().add(ip);
-            ChatHelper.INSTANCE.addClientMessage("Added " + Formatting.AQUA + ip + Formatting.GRAY + " to the server scrub list");
+            ChatHelper.INSTANCE.addClientMessage("Added " + ChatFormatting.AQUA + ip + ChatFormatting.GRAY + " to the server scrub list");
             ConfigManager.INSTANCE.get(ServerListFile.class).write();
             return 1;
         }))).then(literal("del").then(argument("ip(:port)", MessageArgumentType.message()).executes(context -> {
             String ip = MessageArgumentType.getMessage(context, "ip(:port)").getString();
             ServerScrubber.INSTANCE.getServers().remove(ip);
-            ChatHelper.INSTANCE.addClientMessage("Removed " + Formatting.RED + ip + Formatting.GRAY + " from the server scrub list");
+            ChatHelper.INSTANCE.addClientMessage("Removed " + ChatFormatting.RED + ip + ChatFormatting.GRAY + " from the server scrub list");
             ConfigManager.INSTANCE.get(ServerListFile.class).write();
             return 1;
         }))).then(literal("list").executes(context -> {
             ChatHelper.INSTANCE.addClientMessage("List of IPs to search: ");
             ServerScrubber.INSTANCE.getServers().forEach(ip -> {
-                ChatHelper.INSTANCE.addClientMessage(Formatting.GREEN + ip);
+                ChatHelper.INSTANCE.addClientMessage(ChatFormatting.GREEN + ip);
             });
             return 1;
         })).then(literal("search").then(argument("name", PlayerNameArgumentType.playerName()).executes(this))));

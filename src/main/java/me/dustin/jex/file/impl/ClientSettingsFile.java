@@ -55,7 +55,7 @@ public class ClientSettingsFile extends ConfigFile {
         if (JexPersonalizationScreen.setCape != null) {
             File capeFile = new File(JexPersonalizationScreen.setCape);
             Cape.setPersonalCape(capeFile);
-            Hat.setHat(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""), JexPersonalizationScreen.setHat);
+            Hat.setHat(Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replace("-", ""), JexPersonalizationScreen.setHat);
         }
     }
 
@@ -86,7 +86,7 @@ public class ClientSettingsFile extends ConfigFile {
                     Cape.setPersonalCape(capeFile);
                     JexPersonalizationScreen.setCape = capeLoc;
                 }
-                Hat.setHat(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""), hat);
+                Hat.setHat(Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replace("-", ""), hat);
                 JexPersonalizationScreen.setHat = hat;
             }
             if (object.get("altening-api-key") != null) {

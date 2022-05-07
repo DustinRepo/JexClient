@@ -1,22 +1,18 @@
 package me.dustin.jex.event.render;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.Event;
-import net.minecraft.client.util.math.MatrixStack;
 
 public class EventRenderCrosshair extends Event {
 
-    private MatrixStack matrixStack;
+    private final PoseStack poseStack;
 
-    public EventRenderCrosshair(MatrixStack matrixStack) {
-        this.matrixStack = matrixStack;
+    public EventRenderCrosshair(PoseStack poseStack) {
+        this.poseStack = poseStack;
     }
 
-    public MatrixStack getMatrixStack() {
-        return this.matrixStack;
+    public PoseStack getPoseStack() {
+        return this.poseStack;
     }
 
 }

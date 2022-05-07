@@ -2,13 +2,13 @@ package me.dustin.jex.helper.player.bot;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkSide;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.PacketFlow;
 
-public class BotClientConnection extends ClientConnection {
+public class BotClientConnection extends Connection {
     private Channel channel;
 
-    public BotClientConnection(NetworkSide side) {
+    public BotClientConnection(PacketFlow side) {
         super(side);
     }
 

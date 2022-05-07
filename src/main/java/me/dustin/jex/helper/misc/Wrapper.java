@@ -1,61 +1,61 @@
 package me.dustin.jex.helper.misc;
 
+import com.mojang.blaze3d.platform.Window;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.load.impl.*;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.Window;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.world.entity.player.Player;
 
 public enum Wrapper {
     INSTANCE;
 
-    public MinecraftClient getMinecraft() {
-        return MinecraftClient.getInstance();
+    public Minecraft getMinecraft() {
+        return Minecraft.getInstance();
     }
     public IMinecraft getIMinecraft() {
-        return (IMinecraft)MinecraftClient.getInstance();
+        return (IMinecraft)Minecraft.getInstance();
     }
 
-    public ClientPlayerEntity getLocalPlayer() {
+    public LocalPlayer getLocalPlayer() {
         return getMinecraft().player;
     }
 
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return Feature.getState(Freecam.class) ? Freecam.playerEntity : getLocalPlayer();
     }
 
-    public ClientWorld getWorld() {
-        return getMinecraft().world;
+    public ClientLevel getWorld() {
+        return getMinecraft().level;
     }
 
-    public GameOptions getOptions() {
+    public Options getOptions() {
         return getMinecraft().options;
     }
 
-    public ClientPlayerInteractionManager getInteractionManager() {
-        return getMinecraft().interactionManager;
+    public MultiPlayerGameMode getMultiPlayerGameMode() {
+        return getMinecraft().gameMode;
     }
 
-    public IClientPlayerInteractionManager getIInteractionManager() { return (IClientPlayerInteractionManager)getMinecraft().interactionManager; }
+    public IMultiPlayerGameMode getIMultiPlayerGameMode() { return (IMultiPlayerGameMode)getMinecraft().gameMode; }
 
     public Window getWindow() {
         return getMinecraft().getWindow();
     }
 
-    public TextRenderer getTextRenderer() {
-        return getMinecraft().textRenderer;
+    public Font getTextRenderer() {
+        return getMinecraft().font;
     }
 
-    public WorldRenderer getWorldRenderer() {
-        return getMinecraft().worldRenderer;
+    public LevelRenderer getWorldRenderer() {
+        return getMinecraft().levelRenderer;
     }
 
     public GameRenderer getGameRenderer() {

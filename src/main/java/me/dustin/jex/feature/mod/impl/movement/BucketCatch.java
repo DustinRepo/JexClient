@@ -5,17 +5,15 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time")
 public class BucketCatch extends Feature {
@@ -38,7 +36,7 @@ public class BucketCatch extends Feature {
                     if (rotate)
                         PlayerHelper.INSTANCE.setPitch(90);
                     event.setPitch(90);
-                    if (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()) {
+                    if (Wrapper.INSTANCE.getLocalPlayer().isInWater()) {
                         click = true;
                         placedBucket = false;
                         return;
@@ -54,7 +52,7 @@ public class BucketCatch extends Feature {
                     if (rotate)
                         PlayerHelper.INSTANCE.setPitch(90);
                     event.setPitch(90);
-                    BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(0, -3f, 0);
+                    BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().blockPosition().offset(0, -3f, 0);
                     if (WorldHelper.INSTANCE.getBlock(pos) != Blocks.AIR) {
                         click = true;
                         placedBucket = true;
@@ -62,7 +60,7 @@ public class BucketCatch extends Feature {
                 }
             }
         } else if (click) {
-            Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
+            Wrapper.INSTANCE.getMultiPlayerGameMode().useItem(Wrapper.INSTANCE.getPlayer(), InteractionHand.MAIN_HAND);
             click = false;
         }
     });

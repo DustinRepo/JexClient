@@ -2,12 +2,10 @@ package me.dustin.jex.helper.network.login.thealtening;
 
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.exceptions.*;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.InsecurePublicKeyException;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.*;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.network.NetworkHelper;

@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.mod.impl.world;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
@@ -14,20 +15,17 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
-import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.BlockItem;
-import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -45,8 +43,8 @@ public class AccuratePlace extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        PlayerInteractBlockC2SPacket playerInteractBlockC2SPacket = (PlayerInteractBlockC2SPacket) event.getPacket();
-        if (Wrapper.INSTANCE.getLocalPlayer().getStackInHand(playerInteractBlockC2SPacket.getHand()).getItem() instanceof BlockItem) {
+        ServerboundUseItemOnPacket playerInteractBlockC2SPacket = (ServerboundUseItemOnPacket) event.getPacket();
+        if (Wrapper.INSTANCE.getLocalPlayer().getItemInHand(playerInteractBlockC2SPacket.getHand()).getItem() instanceof BlockItem) {
             RotationVector rotationVector = null;
             switch (facing) {
                 case NORTH -> rotationVector = new RotationVector(-180, PlayerHelper.INSTANCE.getPitch());
@@ -58,35 +56,35 @@ public class AccuratePlace extends Feature {
             }
             RotationVector saved = RotationVector.fromPlayer();
             PlayerHelper.INSTANCE.setRotation(rotationVector);
-            NetworkHelper.INSTANCE.sendPacketDirect(new PlayerMoveC2SPacket.LookAndOnGround(rotationVector.getYaw(), rotationVector.getPitch(), Wrapper.INSTANCE.getLocalPlayer().isOnGround()));
+            NetworkHelper.INSTANCE.sendPacketDirect(new ServerboundMovePlayerPacket.Rot(rotationVector.getYaw(), rotationVector.getPitch(), Wrapper.INSTANCE.getLocalPlayer().isOnGround()));
             PlayerHelper.INSTANCE.setRotation(saved);
 
-            BlockHitResult blockHitResult = playerInteractBlockC2SPacket.getBlockHitResult();
-            Vec3d newVec = blockHitResult.getPos().add(blockHitResult.getSide().getOffsetX(), blockHitResult.getSide().getOffsetY(), blockHitResult.getSide().getOffsetZ()).add(facing.getOffsetX(), facing.getOffsetY(), facing.getOffsetZ());
-            BlockPos newPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-            BlockHitResult newHitResult = new BlockHitResult(newVec, facing, newPos, blockHitResult.isInsideBlock());
-            PlayerInteractBlockC2SPacket newPacket = new PlayerInteractBlockC2SPacket(playerInteractBlockC2SPacket.getHand(), newHitResult, playerInteractBlockC2SPacket.getSequence());
+            BlockHitResult blockHitResult = playerInteractBlockC2SPacket.getHitResult();
+            Vec3 newVec = blockHitResult.getLocation().add(blockHitResult.getDirection().getStepX(), blockHitResult.getDirection().getStepY(), blockHitResult.getDirection().getStepZ()).add(facing.getStepX(), facing.getStepY(), facing.getStepZ());
+            BlockPos newPos = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());
+            BlockHitResult newHitResult = new BlockHitResult(newVec, facing, newPos, blockHitResult.isInside());
+            ServerboundUseItemOnPacket newPacket = new ServerboundUseItemOnPacket(playerInteractBlockC2SPacket.getHand(), newHitResult, playerInteractBlockC2SPacket.getSequence());
             event.setPacket(newPacket);
         }
-    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, PlayerInteractBlockC2SPacket.class));
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundUseItemOnPacket.class));
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
        //do rendering
-        MatrixStack matrixStack = event.getMatrixStack();
-        HitResult hitResult = Wrapper.INSTANCE.getMinecraft().crosshairTarget;
+        PoseStack matrixStack = event.getPoseStack();
+        HitResult hitResult = Wrapper.INSTANCE.getMinecraft().hitResult;
         if (hitResult instanceof BlockHitResult blockHitResult && WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) != Blocks.AIR) {
-            matrixStack.push();
+            matrixStack.pushPose();
             Render3DHelper.INSTANCE.setup3DRender(true);
-            Vec3d centerOf = Vec3d.ofCenter(blockHitResult.getBlockPos().offset(blockHitResult.getSide()));
-            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(centerOf);
+            Vec3 centerOf = Vec3.atCenterOf(blockHitResult.getBlockPos().relative(blockHitResult.getDirection()));
+            Vec3 renderPos = Render3DHelper.INSTANCE.getRenderPosition(centerOf);
             matrixStack.translate(renderPos.x, renderPos.y, renderPos.z);
             Render3DHelper.INSTANCE.directionTranslate(matrixStack, facing);
-            Box box = new Box(-0.5f, -0.5f, -0.5f, 0.5f, -0.45f, 0.5f);
+            AABB box = new AABB(-0.5f, -0.5f, -0.5f, 0.5f, -0.45f, 0.5f);
             Render3DHelper.INSTANCE.drawBox(matrixStack, box, 0xffff0000);
             matrixStack.translate(-centerOf.x, -centerOf.y, -centerOf.z);
             Render3DHelper.INSTANCE.end3DRender();
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     });
 

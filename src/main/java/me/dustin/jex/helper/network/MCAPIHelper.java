@@ -16,8 +16,8 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -40,10 +40,10 @@ public enum MCAPIHelper {
     private final String SECURITY_LOCATION_URL = "https://api.mojang.com/user/security/location";
     private final String STATISTICS_URL = "https://api.mojang.com/orders/statistics";
 
-    private static final Identifier STEVE_SKIN = new Identifier("textures/entity/steve.png");
+    private static final ResourceLocation STEVE_SKIN = new ResourceLocation("textures/entity/steve.png");
 
     private final HashMap<UUID, String> uuidMap = Maps.newHashMap();
-    private final HashMap<UUID, Identifier> playerSkins = Maps.newHashMap();
+    private final HashMap<UUID, ResourceLocation> playerSkins = Maps.newHashMap();
     private final HashMap<String, UUID> nameMap = Maps.newHashMap();
     private final ArrayList<String> avatarsRequested = new ArrayList<>();
 
@@ -58,9 +58,9 @@ public enum MCAPIHelper {
         if (response != null && !response.isEmpty()) {
             JsonArray skins = JsonHelper.INSTANCE.prettyGson.fromJson(response, JsonObject.class).getAsJsonArray("skins");
             if (skins != null) {
-                MinecraftClient.getInstance().getSkinProvider().loadSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile(), (type, identifier, minecraftProfileTexture) -> {
+                Minecraft.getInstance().getSkinManager().registerSkins(Wrapper.INSTANCE.getMinecraft().getUser().getGameProfile(), (type, identifier, minecraftProfileTexture) -> {
                     if (type == MinecraftProfileTexture.Type.SKIN) {
-                        UUID uuid = Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId();
+                        UUID uuid = Wrapper.INSTANCE.getMinecraft().getUser().getGameProfile().getId();
                         if (playerSkins.containsKey(uuid))
                             playerSkins.replace(uuid, identifier);
                         else
@@ -228,7 +228,7 @@ public enum MCAPIHelper {
     }
 
     public String getAccessToken() {
-        return Wrapper.INSTANCE.getMinecraft().getSession().getAccessToken();
+        return Wrapper.INSTANCE.getMinecraft().getUser().getAccessToken();
     }
 
     public JsonObject getSalesData() {
@@ -312,7 +312,7 @@ public enum MCAPIHelper {
         GameProfile gameProfile = new GameProfile(uuid, "skindl");//name doesn't matter because the url uses the uuid
         avatarsRequested.add(uuid.toString().replace("-", ""));
         //using the handy dandy method Minecraft uses because it actually lets you do something with it rather than just automatically storing them
-        MinecraftClient.getInstance().getSkinProvider().loadSkin(gameProfile, (type, identifier, minecraftProfileTexture) -> {
+        Minecraft.getInstance().getSkinManager().registerSkins(gameProfile, (type, identifier, minecraftProfileTexture) -> {
             if (type == MinecraftProfileTexture.Type.SKIN) {
                 playerSkins.put(uuid, identifier);
             }
@@ -320,7 +320,7 @@ public enum MCAPIHelper {
         }, true);
     }
 
-    public Identifier getPlayerSkin(UUID uuid) {
+    public ResourceLocation getPlayerSkin(UUID uuid) {
         if (playerSkins.containsKey(uuid)) {
             return playerSkins.get(uuid);
         } else {

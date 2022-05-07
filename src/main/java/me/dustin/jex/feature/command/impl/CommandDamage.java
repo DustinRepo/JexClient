@@ -9,7 +9,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 
 @Cmd(name = "damage", description = "Cause yourself to take damage", syntax = ".damage <amount> (max 7)", alias = {"dmg"})
 public class CommandDamage extends Command {
@@ -22,9 +22,9 @@ public class CommandDamage extends Command {
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         int damage = IntegerArgumentType.getInteger(context, "amount");
-        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 2.1 + damage, Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
-        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
+        NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 2.1 + damage, Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
+        NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
+        NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
         ChatHelper.INSTANCE.addClientMessage("Dealing \247b" + damage + " \2477damage.");
         return 1;
     }

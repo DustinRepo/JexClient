@@ -12,7 +12,7 @@ import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.network.WebHelper;
-import net.minecraft.client.util.Session;
+import net.minecraft.client.User;
 
 public class MojangLoginHelper {
 
@@ -20,23 +20,23 @@ public class MojangLoginHelper {
     private final String email;
     private final String password;
     private final boolean cracked;
-    private final Consumer<Session> sessionConsumer;
+    private final Consumer<User> sessionConsumer;
 
-    public MojangLoginHelper(String email, String password, Consumer<Session> sessionConsumer) {
+    public MojangLoginHelper(String email, String password, Consumer<User> sessionConsumer) {
         this.email = email;
         this.password = password;
         this.cracked = !email.contains("@");
         this.sessionConsumer = sessionConsumer;
     }
 
-    public MojangLoginHelper(MinecraftAccount.MojangAccount mojangAccount, Consumer<Session> sessionConsumer) {
+    public MojangLoginHelper(MinecraftAccount.MojangAccount mojangAccount, Consumer<User> sessionConsumer) {
         this.email = mojangAccount.isCracked() ? mojangAccount.getUsername() : mojangAccount.getEmail();
         this.password = mojangAccount.getPassword();
         this.cracked = mojangAccount.isCracked();
         this.sessionConsumer = sessionConsumer;
     }
 
-    public static Session login(String email, String password) {
+    public static User login(String email, String password) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("agent", "Minecraft");
         jsonObject.addProperty("username", email);
@@ -52,7 +52,7 @@ public class MojangLoginHelper {
             String name = selectedProfile.get("name").getAsString();
             String uuid = selectedProfile.get("id").getAsString();
             String accessToken = object.get("accessToken").getAsString();
-            return new Session(name, uuid, accessToken, Optional.of(""), Optional.of(""), Session.AccountType.MOJANG);
+            return new User(name, uuid, accessToken, Optional.of(""), Optional.of(""), User.Type.MOJANG);
         }
         return null;
     }
@@ -61,10 +61,10 @@ public class MojangLoginHelper {
         if (!cracked)
         new Thread(() -> {
             NetworkHelper.INSTANCE.setSessionService(NetworkHelper.SessionService.MOJANG);
-            Session session = login(this.email, this.password);
+            User session = login(this.email, this.password);
             sessionConsumer.accept(session);
         }).start();
         else
-            sessionConsumer.accept(new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY));
+            sessionConsumer.accept(new User(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), User.Type.LEGACY));
     }
 }

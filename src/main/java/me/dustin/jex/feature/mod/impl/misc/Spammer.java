@@ -11,11 +11,9 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,10 +76,10 @@ public class Spammer extends Feature {
     private String parseSyntax(String s) {
         Random random = new Random();
         if (s.contains("{$rplayer}")) {
-            int size = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList().size();
+            int size = Wrapper.INSTANCE.getLocalPlayer().connection.getOnlinePlayers().size();
             int r = random.nextInt(size);
             int c = 0;
-            for (PlayerListEntry playerListEntry1 : Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList()) {
+            for (PlayerInfo playerListEntry1 : Wrapper.INSTANCE.getLocalPlayer().connection.getOnlinePlayers()) {
                 if (c == r) {
                     return s.replace("{$rplayer}", playerListEntry1.getProfile().getName());
                 }

@@ -6,11 +6,10 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
+import net.minecraft.world.entity.player.PlayerModelPart;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.client.render.entity.PlayerModelPart;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -50,30 +49,30 @@ public class SkinBlink extends Feature {
         switch (mode) {
             case "Random":
                 for (PlayerModelPart value : PlayerModelPart.values()) {
-                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, random.nextBoolean());
+                    Wrapper.INSTANCE.getOptions().toggleModelPart(value, random.nextBoolean());
                 }
                 break;
             case "Full Flash":
-                boolean on = Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(PlayerModelPart.HAT);
+                boolean on = Wrapper.INSTANCE.getOptions().isModelPartEnabled(PlayerModelPart.HAT);
                 for (PlayerModelPart value : PlayerModelPart.values()) {
-                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, on);
+                    Wrapper.INSTANCE.getOptions().toggleModelPart(value, on);
                 }
                 break;
             case "Custom":
                 if (head)
-                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.HAT, toggleCustom);
+                    Wrapper.INSTANCE.getOptions().toggleModelPart(PlayerModelPart.HAT, toggleCustom);
                 if (cape)
-                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.CAPE, toggleCustom);
+                    Wrapper.INSTANCE.getOptions().toggleModelPart(PlayerModelPart.CAPE, toggleCustom);
                 if (jacket)
-                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.JACKET, toggleCustom);
+                    Wrapper.INSTANCE.getOptions().toggleModelPart(PlayerModelPart.JACKET, toggleCustom);
                 if (leftArm)
-                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_SLEEVE, toggleCustom);
+                    Wrapper.INSTANCE.getOptions().toggleModelPart(PlayerModelPart.LEFT_SLEEVE, toggleCustom);
                 if (leftLeg)
-                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.LEFT_PANTS_LEG, toggleCustom);
+                    Wrapper.INSTANCE.getOptions().toggleModelPart(PlayerModelPart.LEFT_PANTS_LEG, toggleCustom);
                 if (rightArm)
-                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_SLEEVE, toggleCustom);
+                    Wrapper.INSTANCE.getOptions().toggleModelPart(PlayerModelPart.RIGHT_SLEEVE, toggleCustom);
                 if (rightLeg)
-                    Wrapper.INSTANCE.getOptions().togglePlayerModelPart(PlayerModelPart.RIGHT_PANTS_LEG, toggleCustom);
+                    Wrapper.INSTANCE.getOptions().toggleModelPart(PlayerModelPart.RIGHT_PANTS_LEG, toggleCustom);
                 toggleCustom = !toggleCustom;
                 break;
         }
@@ -85,7 +84,7 @@ public class SkinBlink extends Feature {
         if (Wrapper.INSTANCE.getOptions() != null) {
             savedEnabled.clear();
             for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
-                if (Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(playerModelPart))
+                if (Wrapper.INSTANCE.getOptions().isModelPartEnabled(playerModelPart))
                     savedEnabled.add(playerModelPart);
             }
         }
@@ -96,7 +95,7 @@ public class SkinBlink extends Feature {
     public void onDisable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (PlayerModelPart value : PlayerModelPart.values()) {
-                Wrapper.INSTANCE.getOptions().togglePlayerModelPart(value, savedEnabled.contains(value));
+                Wrapper.INSTANCE.getOptions().toggleModelPart(value, savedEnabled.contains(value));
             }
         }
         super.onDisable();

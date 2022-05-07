@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;

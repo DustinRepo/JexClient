@@ -7,10 +7,8 @@ import me.dustin.jex.helper.network.WebHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.update.JexVersion;
-import net.minecraft.client.util.math.MatrixStack;
-
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.awt.*;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class JexChangelog {
@@ -22,7 +20,7 @@ public class JexChangelog {
         this.version = version;
     }
 
-    public void render(MatrixStack matrixStack, float x, float width) {
+    public void render(PoseStack matrixStack, float x, float width) {
         int count = 0;
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y, x + width, y + getContentHeight(), 0x60999999, 0x60000000, 1);
         FontHelper.INSTANCE.draw(matrixStack, this.version.version(), x + 4, y + 3, JexClient.INSTANCE.getVersion().equals(this.version) ? ColorHelper.INSTANCE.getClientColor() : 0xff999999);

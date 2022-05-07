@@ -15,10 +15,9 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.load.impl.IChatScreen;
-import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.network.chat.Component;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
@@ -30,7 +29,7 @@ public class IRC extends Feature {
 
     public boolean ircChatOverride;
     public boolean renderAboveChat = true;
-    public static ChatHud ircChatHud = new ChatHud(Wrapper.INSTANCE.getMinecraft());
+    public static ChatComponent ircChatHud = new ChatComponent(Wrapper.INSTANCE.getMinecraft());
 
     public IRCClient ircClient;
 
@@ -44,7 +43,7 @@ public class IRC extends Feature {
 
     @Override
     public void onEnable() {
-        ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
+        ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getUser().getName());
         ircClient.setMessageConsumer(messageListener);
         ircClient.setDisconnectConsumer(disconnectListener);
         ircClient.connect("132.145.154.217", 6969);
@@ -135,10 +134,10 @@ public class IRC extends Feature {
 
     @EventPointer
     private final EventListener<EventRenderChatHud> eventRenderChatHudEventListener = new EventListener<>(event -> {
-        if (event.getChatHud() == Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud()) {
+        if (event.getChatHud() == Wrapper.INSTANCE.getMinecraft().gui.getChat()) {
             if (ircChatOverride) {
                 event.cancel();
-                ircChatHud.render(event.getMatrixStack(), event.getTickDelta());
+                ircChatHud.render(event.getPoseStack(), event.getTickDelta());
             }
         }
     });
@@ -148,20 +147,20 @@ public class IRC extends Feature {
         IChatScreen iChatScreen = (IChatScreen) event.getScreen();
         String chatString = iChatScreen.getText();
         if (ircClient != null && ircClient.isConnected() && renderAboveChat) {
-            FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"), iChatScreen.getWidget().x + 84, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"), iChatScreen.getWidget().x + 84, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
         }
         if ((chatString.startsWith(sendPrefix) || ircChatOverride) && ircClient != null && ircClient.isConnected()) {
             int color = 0xffFF5555;
             int users = ircClient.getUsers().length;
             String usersString = "IRC Users: \247f" + users;
             String nameString = "Name: \247f" + ircClient.getUsername();
-            Render2DHelper.INSTANCE.fillAndBorder(event.getMatrixStack(), iChatScreen.getWidget().x - 2, iChatScreen.getWidget().y - 2, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y + iChatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
+            Render2DHelper.INSTANCE.fillAndBorder(event.getPoseStack(), iChatScreen.getWidget().x - 2, iChatScreen.getWidget().y - 2, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y + iChatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
 
             //IRC info right side
-            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), (iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(nameString) - 4, iChatScreen.getWidget().y - 13, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y - 2, 0x90000000);
-            FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), nameString, ((iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(nameString)) - 1.5f, iChatScreen.getWidget().y - 11, color);
-            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), (iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(usersString) - 4, iChatScreen.getWidget().y - 24, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y - 13, 0x90000000);
-            FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), usersString, ((iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(usersString)) - 1.5f, iChatScreen.getWidget().y - 22, color);
+            Render2DHelper.INSTANCE.fill(event.getPoseStack(), (iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(nameString) - 4, iChatScreen.getWidget().y - 13, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y - 2, 0x90000000);
+            FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), nameString, ((iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(nameString)) - 1.5f, iChatScreen.getWidget().y - 11, color);
+            Render2DHelper.INSTANCE.fill(event.getPoseStack(), (iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(usersString) - 4, iChatScreen.getWidget().y - 24, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y - 13, 0x90000000);
+            FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), usersString, ((iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(usersString)) - 1.5f, iChatScreen.getWidget().y - 22, color);
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, ChatScreen.class));
 
@@ -198,6 +197,6 @@ public class IRC extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             ChatHelper.INSTANCE.addRawMessage(ircString);
         }
-        ircChatHud.addMessage(Text.of(ircString));
+        ircChatHud.addMessage(Component.nullToEmpty(ircString));
     }
 }

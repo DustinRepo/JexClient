@@ -12,26 +12,42 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.load.impl.IPersistentProjectileEntity;
-import me.dustin.jex.load.impl.IProjectileEntity;
+import me.dustin.jex.load.impl.IProjectile;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
-import net.minecraft.entity.projectile.thrown.PotionEntity;
-import net.minecraft.entity.projectile.thrown.SnowballEntity;
-import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.entity.projectile.Snowball;
+import net.minecraft.world.entity.projectile.ThrownEnderpearl;
+import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.item.ArrowItem;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.EnderpearlItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SnowballItem;
+import net.minecraft.world.item.ThrowablePotionItem;
+import net.minecraft.world.item.TridentItem;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -46,54 +62,54 @@ public class Trajectories extends Feature {
     public int hitColor = new Color(255, 0, 0).getRGB();
 
     private static float getSpeed(ItemStack stack) {
-        return stack.getItem() == Items.CROSSBOW && CrossbowItem.hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
+        return stack.getItem() == Items.CROSSBOW && CrossbowItem.containsChargedProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
     }
 
     public static boolean isCharged(ItemStack stack) {
-        NbtCompound compoundTag = stack.getNbt();
+        CompoundTag compoundTag = stack.getTag();
         return compoundTag != null && compoundTag.getBoolean("Charged");
     }
 
     private Entity hitEntity = null;
-    private final ArrayList<Vec3d> positions = new ArrayList<>();
+    private final ArrayList<Vec3> positions = new ArrayList<>();
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (!positions.isEmpty()) {
-            MatrixStack matrixStack = event.getMatrixStack();
-            Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+            PoseStack matrixStack = event.getPoseStack();
+            Matrix4f matrix4f = matrixStack.last().pose();
             for (int i = 0; i < positions.size(); i++) {
                 if (i != positions.size() - 1) {
 
                     int color = hitEntity == null ? missColor : hitColor;
                     Color color1 = ColorHelper.INSTANCE.getColor(color);
 
-                    Vec3d vec = positions.get(i);
-                    Vec3d vec1 = positions.get(i + 1);
-                    double x = vec.x - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
-                    double y = vec.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
-                    double z = vec.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
+                    Vec3 vec = positions.get(i);
+                    Vec3 vec1 = positions.get(i + 1);
+                    double x = vec.x - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPosition().x;
+                    double y = vec.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPosition().y;
+                    double z = vec.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPosition().z;
 
-                    double x1 = vec1.x - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
-                    double y1 = vec1.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
-                    double z1 = vec1.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
+                    double x1 = vec1.x - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPosition().x;
+                    double y1 = vec1.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPosition().y;
+                    double z1 = vec1.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPosition().z;
 
                     Render3DHelper.INSTANCE.setup3DRender(disableDepth);
-                    BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                    bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-                    bufferBuilder.vertex(matrix4f, (float) x, (float) y, (float) z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                    bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, (float) z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                    BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+                    bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+                    bufferBuilder.vertex(matrix4f, (float) x, (float) y, (float) z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
+                    bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, (float) z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
                     bufferBuilder.clear();
-                    BufferRenderer.drawWithShader(bufferBuilder.end());
+                    BufferUploader.drawWithShader(bufferBuilder.end());
                     Render3DHelper.INSTANCE.end3DRender();
                 } else {
-                    Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z);
+                    Vec3 vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z);
                     if (hitEntity != null) {
-                        Vec3d vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, event.getPartialTicks());
-                        Render3DHelper.INSTANCE.drawEntityBox(event.getMatrixStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColor);
+                        Vec3 vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, event.getPartialTicks());
+                        Render3DHelper.INSTANCE.drawEntityBox(event.getPoseStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColor);
                     } else {
-                        Box bb1 = new Box(vec.x - 0.2f, vec.y - 0.2f, vec.z - 0.2f, vec.x + 0.2f, vec.y + 0.2f, vec.z + 0.2f);
-                        Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), bb1, missColor);
+                        AABB bb1 = new AABB(vec.x - 0.2f, vec.y - 0.2f, vec.z - 0.2f, vec.x + 0.2f, vec.y + 0.2f, vec.z + 0.2f);
+                        Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb1, missColor);
                     }
                 }
             }
@@ -103,22 +119,22 @@ public class Trajectories extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         positions.clear();
-        ItemStack mainStack = Wrapper.INSTANCE.getLocalPlayer().getMainHandStack();
+        ItemStack mainStack = Wrapper.INSTANCE.getLocalPlayer().getMainHandItem();
         hitEntity = null;
         if (isGoodItem(mainStack)) {
             if (mainStack.getItem() instanceof BowItem) {
                 BowItem bowItem = (BowItem) mainStack.getItem();
-                int i = bowItem.getMaxUseTime(mainStack) - Wrapper.INSTANCE.getLocalPlayer().getItemUseTimeLeft();
-                float f = BowItem.getPullProgress(i);
+                int i = bowItem.getUseDuration(mainStack) - Wrapper.INSTANCE.getLocalPlayer().getUseItemRemainingTicks();
+                float f = BowItem.getPowerForTime(i);
                 if (f == 0)
                     f = 1;
                 ItemStack itemStack = new ItemStack(Items.ARROW);
                 ArrowItem arrowItem = (ArrowItem) itemStack.getItem();
-                PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(Wrapper.INSTANCE.getWorld(), itemStack, Wrapper.INSTANCE.getLocalPlayer());
-                persistentProjectileEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, f * 3.0F, 0);
+                AbstractArrow persistentProjectileEntity = arrowItem.createArrow(Wrapper.INSTANCE.getWorld(), itemStack, Wrapper.INSTANCE.getLocalPlayer());
+                persistentProjectileEntity.shootFromRotation(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, f * 3.0F, 0);
                 for (int j = 0; j < 200; j++) {
                     persistentProjectileEntity.tick();
-                    positions.add(persistentProjectileEntity.getPos());
+                    positions.add(persistentProjectileEntity.position());
                     hitEntity = getHitEntity(persistentProjectileEntity);
                     if (hitEntity != null) {
                         break;
@@ -128,17 +144,17 @@ public class Trajectories extends Feature {
                 if (isCharged(mainStack)) {
                     ItemStack itemStack = new ItemStack(Items.ARROW);
                     ArrowItem arrowItem = (ArrowItem) itemStack.getItem();
-                    PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(Wrapper.INSTANCE.getWorld(), itemStack, Wrapper.INSTANCE.getLocalPlayer());
+                    AbstractArrow persistentProjectileEntity = arrowItem.createArrow(Wrapper.INSTANCE.getWorld(), itemStack, Wrapper.INSTANCE.getLocalPlayer());
 
-                    Vec3d vec3d = Wrapper.INSTANCE.getLocalPlayer().getOppositeRotationVector(1.0F);
-                    Quaternion quaternion = new Quaternion(new Vec3f(vec3d), 0, true);
-                    Vec3d vec3d2 = Wrapper.INSTANCE.getLocalPlayer().getRotationVec(1.0F);
-                    Vec3f vector3f = new Vec3f(vec3d2);
-                    vector3f.rotate(quaternion);
-                    ((ProjectileEntity) persistentProjectileEntity).setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), getSpeed(mainStack), 0);
+                    Vec3 vec3d = Wrapper.INSTANCE.getLocalPlayer().getUpVector(1.0F);
+                    Quaternion quaternion = new Quaternion(new Vector3f(vec3d), 0, true);
+                    Vec3 vec3d2 = Wrapper.INSTANCE.getLocalPlayer().getViewVector(1.0F);
+                    Vector3f vector3f = new Vector3f(vec3d2);
+                    vector3f.transform(quaternion);
+                    ((Projectile) persistentProjectileEntity).shoot(vector3f.x(), vector3f.y(), vector3f.z(), getSpeed(mainStack), 0);
                     for (int j = 0; j < 200; j++) {
                         persistentProjectileEntity.tick();
-                        positions.add(persistentProjectileEntity.getPos());
+                        positions.add(persistentProjectileEntity.position());
                         hitEntity = getHitEntity(persistentProjectileEntity);
                         if (hitEntity != null) {
                             break;
@@ -146,14 +162,14 @@ public class Trajectories extends Feature {
                     }
                 }
             } else if (mainStack.getItem() instanceof SnowballItem) {
-                SnowballEntity snowballEntity = new SnowballEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
+                Snowball snowballEntity = new Snowball(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 snowballEntity.setItem(mainStack);
-                snowballEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
-                IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) snowballEntity;
+                snowballEntity.shootFromRotation(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
+                IProjectile iProjectile = (IProjectile) (Projectile) snowballEntity;
                 for (int j = 0; j < 200; j++) {
                     snowballEntity.tick();
-                    positions.add(snowballEntity.getPos());
-                    HitResult hitResult = ProjectileUtil.getCollision(snowballEntity, iProjectileEntity::callCanHit);
+                    positions.add(snowballEntity.position());
+                    HitResult hitResult = ProjectileUtil.getHitResult(snowballEntity, iProjectile::callCanHit);
                     if (hitResult != null) {
                         if (hitResult.getType() == HitResult.Type.ENTITY) {
                             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
@@ -165,18 +181,18 @@ public class Trajectories extends Feature {
                         }
                     }
                 }
-            } else if (mainStack.getItem() instanceof EnderPearlItem) {
-                EnderPearlEntity enderPearlEntity = new EnderPearlEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
+            } else if (mainStack.getItem() instanceof EnderpearlItem) {
+                ThrownEnderpearl enderPearlEntity = new ThrownEnderpearl(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 enderPearlEntity.setItem(mainStack);
-                enderPearlEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
-                IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) enderPearlEntity;
+                enderPearlEntity.shootFromRotation(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
+                IProjectile iProjectile = (IProjectile) (Projectile) enderPearlEntity;
                 for (int j = 0; j < 200; j++) {
                     enderPearlEntity.tick();
-                    if (WorldHelper.INSTANCE.getBlock(new BlockPos(enderPearlEntity.getPos())) == Blocks.END_GATEWAY) {
+                    if (WorldHelper.INSTANCE.getBlock(new BlockPos(enderPearlEntity.position())) == Blocks.END_GATEWAY) {
                         hitEntity = Wrapper.INSTANCE.getLocalPlayer();
                     } else {
-                        positions.add(enderPearlEntity.getPos());
-                        HitResult hitResult = ProjectileUtil.getCollision(enderPearlEntity, iProjectileEntity::callCanHit);
+                        positions.add(enderPearlEntity.position());
+                        HitResult hitResult = ProjectileUtil.getHitResult(enderPearlEntity, iProjectile::callCanHit);
                         if (hitResult != null) {
                             if (hitResult.getType() == HitResult.Type.ENTITY) {
                                 EntityHitResult entityHitResult = (EntityHitResult) hitResult;
@@ -190,14 +206,14 @@ public class Trajectories extends Feature {
                     }
                 }
             } else if (mainStack.getItem() instanceof ThrowablePotionItem) {
-                PotionEntity potionEntity = new PotionEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
+                ThrownPotion potionEntity = new ThrownPotion(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 potionEntity.setItem(mainStack);
-                potionEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), -20.0F, 0.5F, 0);
-                IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) potionEntity;
+                potionEntity.shootFromRotation(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), -20.0F, 0.5F, 0);
+                IProjectile iProjectile = (IProjectile) (Projectile) potionEntity;
                 for (int j = 0; j < 200; j++) {
                     potionEntity.tick();
-                    positions.add(potionEntity.getPos());
-                    HitResult hitResult = ProjectileUtil.getCollision(potionEntity, iProjectileEntity::callCanHit);
+                    positions.add(potionEntity.position());
+                    HitResult hitResult = ProjectileUtil.getHitResult(potionEntity, iProjectile::callCanHit);
                     if (hitResult != null) {
                         if (hitResult.getType() == HitResult.Type.ENTITY) {
                             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
@@ -211,11 +227,11 @@ public class Trajectories extends Feature {
                 }
             } else if (mainStack.getItem() instanceof TridentItem) {
                 int j1 = EnchantmentHelper.getRiptide(mainStack);
-                TridentEntity tridentEntity = new TridentEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), mainStack);
-                tridentEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 2.5F + (float) j1 * 0.5F, 0);
+                ThrownTrident tridentEntity = new ThrownTrident(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), mainStack);
+                tridentEntity.shootFromRotation(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 2.5F + (float) j1 * 0.5F, 0);
                 for (int j = 0; j < 200; j++) {
                     tridentEntity.tick();
-                    positions.add(tridentEntity.getPos());
+                    positions.add(tridentEntity.position());
                     hitEntity = getHitEntity(tridentEntity);
                     if (hitEntity != null) {
                         break;
@@ -225,16 +241,16 @@ public class Trajectories extends Feature {
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
-    private Entity getHitEntity(PersistentProjectileEntity persistentProjectileEntity) {
-        EntityHitResult entityHitResult = getEntityCollision(persistentProjectileEntity, persistentProjectileEntity.getPos(), persistentProjectileEntity.getPos().add(persistentProjectileEntity.getVelocity()));
+    private Entity getHitEntity(AbstractArrow persistentProjectileEntity) {
+        EntityHitResult entityHitResult = getEntityCollision(persistentProjectileEntity, persistentProjectileEntity.position(), persistentProjectileEntity.position().add(persistentProjectileEntity.getDeltaMovement()));
         if (entityHitResult != null)
             return entityHitResult.getEntity();
         return null;
     }
 
-    protected EntityHitResult getEntityCollision(PersistentProjectileEntity persistentProjectileEntity, Vec3d currentPosition, Vec3d nextPosition) {
+    protected EntityHitResult getEntityCollision(AbstractArrow persistentProjectileEntity, Vec3 currentPosition, Vec3 nextPosition) {
         IPersistentProjectileEntity iPersistentProjectileEntity = (IPersistentProjectileEntity) persistentProjectileEntity;
-        return ProjectileUtil.getEntityCollision(persistentProjectileEntity.world, persistentProjectileEntity, currentPosition, nextPosition, persistentProjectileEntity.getBoundingBox().stretch(persistentProjectileEntity.getVelocity()).expand(1.0D), iPersistentProjectileEntity::callCanHit);
+        return ProjectileUtil.getEntityHitResult(persistentProjectileEntity.level, persistentProjectileEntity, currentPosition, nextPosition, persistentProjectileEntity.getBoundingBox().expandTowards(persistentProjectileEntity.getDeltaMovement()).inflate(1.0D), iPersistentProjectileEntity::callCanHit);
     }
 
     private boolean isGoodItem(ItemStack itemStack) {

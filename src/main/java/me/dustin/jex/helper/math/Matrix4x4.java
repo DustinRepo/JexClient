@@ -1,9 +1,8 @@
 package me.dustin.jex.helper.math;
 
 import me.dustin.jex.helper.math.vector.Vector3D;
-import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.system.MemoryStack;
-
+import com.mojang.math.Matrix4f;
 import java.nio.FloatBuffer;
 
 public class Matrix4x4 {
@@ -71,7 +70,7 @@ public class Matrix4x4 {
     public static Matrix4x4 copyFromRowMajor(Matrix4f matrix4f) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
-            matrix4f.write(floatBuffer, true);
+            matrix4f.store(floatBuffer, true);
             return new Matrix4x4(floatBuffer);
         }
     }
@@ -79,7 +78,7 @@ public class Matrix4x4 {
     public static Matrix4x4 copyFromColumnMajor(Matrix4f matrix4f) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
-            matrix4f.write(floatBuffer, false);
+            matrix4f.store(floatBuffer, false);
             return new Matrix4x4(floatBuffer);
         }
     }
@@ -346,7 +345,7 @@ public class Matrix4x4 {
             floatBuffer.put(13, this.a31);
             floatBuffer.put(14, this.a32);
             floatBuffer.put(15, this.a33);
-            matrix4f.read(floatBuffer, false);
+            matrix4f.load(floatBuffer, false);
             return matrix4f;
         }
     }

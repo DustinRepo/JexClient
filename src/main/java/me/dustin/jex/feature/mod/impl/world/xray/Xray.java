@@ -13,11 +13,11 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FluidBlock;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class Xray extends Feature {
     }
 
     @EventPointer
-    private final EventListener<EventShouldDrawSide> eventShouldDrawSideEventListener = new EventListener<>(event -> sendEvent(event));
+    private final EventListener<EventShouldRenderFace> eventShouldDrawSideEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
     private final EventListener<EventBlockBrightness> eventBlockBrightnessEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
@@ -70,7 +70,7 @@ public class Xray extends Feature {
     @EventPointer
     private final EventListener<EventRenderFluid> eventRenderFluidEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
-    private final EventListener<EventGetRenderLayer> eventGetRenderLayerEventListener = new EventListener<>(event -> sendEvent(event));
+    private final EventListener<EventGetRenderType> eventGetRenderTypeEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
     private final EventListener<EventGetTranslucentShader> eventGetTranslucentShaderEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
@@ -120,27 +120,27 @@ public class Xray extends Feature {
             return false;
         }*/
         switch (side) {//Don't draw side if it can't be seen (e.g don't render inside faces for ore vein)
-            case UP -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.up())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.up())) || WorldHelper.INSTANCE.getBlock(blockPos.up()) instanceof FluidBlock);}
-            case DOWN -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.down())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.down())) || WorldHelper.INSTANCE.getBlock(blockPos.down()) instanceof FluidBlock);}
-            case NORTH -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.north())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.north())) || WorldHelper.INSTANCE.getBlock(blockPos.north()) instanceof FluidBlock);}
-            case SOUTH -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.south())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.south())) || WorldHelper.INSTANCE.getBlock(blockPos.south()) instanceof FluidBlock);}
-            case EAST -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.east())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.east())) || WorldHelper.INSTANCE.getBlock(blockPos.east()) instanceof FluidBlock);}
-            case WEST -> {return currentBlock instanceof FluidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.west())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.west())) || WorldHelper.INSTANCE.getBlock(blockPos.west()) instanceof FluidBlock);}
+            case UP -> {return currentBlock instanceof LiquidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.above())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.above())) || WorldHelper.INSTANCE.getBlock(blockPos.above()) instanceof LiquidBlock);}
+            case DOWN -> {return currentBlock instanceof LiquidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.below())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.below())) || WorldHelper.INSTANCE.getBlock(blockPos.below()) instanceof LiquidBlock);}
+            case NORTH -> {return currentBlock instanceof LiquidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.north())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.north())) || WorldHelper.INSTANCE.getBlock(blockPos.north()) instanceof LiquidBlock);}
+            case SOUTH -> {return currentBlock instanceof LiquidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.south())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.south())) || WorldHelper.INSTANCE.getBlock(blockPos.south()) instanceof LiquidBlock);}
+            case EAST -> {return currentBlock instanceof LiquidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.east())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.east())) || WorldHelper.INSTANCE.getBlock(blockPos.east()) instanceof LiquidBlock);}
+            case WEST -> {return currentBlock instanceof LiquidBlock ? !isValid(WorldHelper.INSTANCE.getBlock(blockPos.west())) : (!isValid(WorldHelper.INSTANCE.getBlock(blockPos.west())) || WorldHelper.INSTANCE.getBlock(blockPos.west()) instanceof LiquidBlock);}
         }
         return true;
     }
 
     public void renderChunksSmooth() {
-        if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
+        if (Wrapper.INSTANCE.getMinecraft().levelRenderer != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             final int x = (int) Wrapper.INSTANCE.getLocalPlayer().getX() >> 4;
             final int y = (int) Wrapper.INSTANCE.getLocalPlayer().getY() >> 4;
             final int z = (int) Wrapper.INSTANCE.getLocalPlayer().getZ() >> 4;
 
-            final int distance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
+            final int distance = Wrapper.INSTANCE.getOptions().renderDistance().get();
             for (int i = x - distance; i < x + distance; i++) {
                 for (int k = z - distance; k < z + distance; k++) {
                     for (int j = y - distance; j < 16; j++) {
-                        Wrapper.INSTANCE.getWorldRenderer().scheduleBlockRender(i, j, k);
+                        Wrapper.INSTANCE.getWorldRenderer().setSectionDirty(i, j, k);
                     }
                 }
             }
@@ -152,6 +152,6 @@ public class Xray extends Feature {
     }
 
     public boolean isValid(Block block) {
-        return blockList.contains(block) || ("Opacity".equalsIgnoreCase(this.mode) && block instanceof FluidBlock);
+        return blockList.contains(block) || ("Opacity".equalsIgnoreCase(this.mode) && block instanceof LiquidBlock);
     }
 }

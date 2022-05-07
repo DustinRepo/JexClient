@@ -1,8 +1,6 @@
 package me.dustin.jex.event.filters;
 
-import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.world.EventTickParticle;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.particle.Particle;
 
 import java.util.function.Predicate;

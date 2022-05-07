@@ -8,8 +8,8 @@ import me.dustin.jex.feature.command.core.arguments.FriendArgumentType;
 import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FriendFile;
-import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
+import me.dustin.jex.helper.player.FriendHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 
 @Cmd(name = "friend", syntax = {".friend add <name> (optional)<alias>", ".friend del <name>", ".friend list"}, description = "Add or remove friends.")

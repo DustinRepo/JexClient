@@ -1,14 +1,13 @@
 package me.dustin.jex.event.render;
 
 import me.dustin.events.core.Event;
-import net.minecraft.client.util.math.MatrixStack;
 
 public class EventRenderChest extends Event {
 
     private boolean christmas;
-    private Mode mode;
+    private final Mode mode;
 
-    public EventRenderChest(MatrixStack matrixStack, Mode mode, boolean christmas) {
+    public EventRenderChest(Mode mode, boolean christmas) {
         this.christmas = christmas;
         this.mode = mode;
     }

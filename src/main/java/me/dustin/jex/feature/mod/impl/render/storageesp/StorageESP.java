@@ -12,13 +12,23 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.storageesp.impl.BoxStorageESP;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import net.minecraft.block.entity.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.vehicle.ChestMinecartEntity;
-import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
-import net.minecraft.entity.vehicle.HopperMinecartEntity;
-import net.minecraft.world.chunk.Chunk;
-
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.vehicle.MinecartChest;
+import net.minecraft.world.entity.vehicle.MinecartFurnace;
+import net.minecraft.world.entity.vehicle.MinecartHopper;
+import net.minecraft.world.level.block.entity.BarrelBlockEntity;
+import net.minecraft.world.level.block.entity.BlastFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
+import net.minecraft.world.level.block.entity.DropperBlockEntity;
+import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
+import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.world.level.block.entity.SmokerBlockEntity;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import java.awt.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Show storage blocks through walls")
@@ -93,7 +103,7 @@ public class StorageESP extends Feature {
     @EventPointer
     private final EventListener<EventHasOutline> eventHasOutlineEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
-    private final EventListener<EventOutlineColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
+    private final EventListener<EventTeamColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
 
 
     private void sendEvent(Event event) {
@@ -119,8 +129,8 @@ public class StorageESP extends Feature {
     }
 
     public boolean isValid(BlockEntity blockEntity) {
-        Chunk chunk = Wrapper.INSTANCE.getWorld().getChunk(blockEntity.getPos());
-        if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
+        ChunkAccess chunk = Wrapper.INSTANCE.getWorld().getChunk(blockEntity.getBlockPos());
+        if (!Wrapper.INSTANCE.getWorld().getChunkSource().hasChunk(chunk.getPos().x, chunk.getPos().z))
             return false;
         if (blockEntity instanceof ChestBlockEntity)
             return chest;
@@ -130,7 +140,7 @@ public class StorageESP extends Feature {
             return shulker;
         if (blockEntity instanceof BarrelBlockEntity)
             return barrel;
-        if (blockEntity instanceof MobSpawnerBlockEntity)
+        if (blockEntity instanceof SpawnerBlockEntity)
             return spawner;
         if (blockEntity instanceof HopperBlockEntity)
             return hopper;
@@ -142,21 +152,21 @@ public class StorageESP extends Feature {
     }
 
     public boolean isValid(Entity entity) {
-        if (entity instanceof HopperMinecartEntity)
+        if (entity instanceof MinecartHopper)
             return hopperMinecart;
-        if (entity instanceof ChestMinecartEntity)
+        if (entity instanceof MinecartChest)
             return chestMinecart;
-        if (entity instanceof FurnaceMinecartEntity)
+        if (entity instanceof MinecartFurnace)
             return furnaceMinecart;
         return false;
     }
 
     public int getColor(Entity entity) {
-        if (entity instanceof HopperMinecartEntity)
+        if (entity instanceof MinecartHopper)
             return hopperMinecartColor;
-        if (entity instanceof ChestMinecartEntity)
+        if (entity instanceof MinecartChest)
             return chestMinecartColor;
-        if (entity instanceof FurnaceMinecartEntity)
+        if (entity instanceof MinecartFurnace)
             return furnaceMinecartColor;
         return -1;
     }
@@ -166,7 +176,7 @@ public class StorageESP extends Feature {
             return chestColor;
         if (blockEntity instanceof EnderChestBlockEntity)
             return enderchestColor;
-        if (blockEntity instanceof MobSpawnerBlockEntity)
+        if (blockEntity instanceof SpawnerBlockEntity)
             return spawnerColor;
         if (blockEntity instanceof ShulkerBoxBlockEntity)
             return shulkerColor;

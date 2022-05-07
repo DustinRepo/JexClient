@@ -5,13 +5,12 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 
 public class TestPathFinder {
@@ -40,7 +39,7 @@ public class TestPathFinder {
         }
         for (int i = 0; i < thinkSpeed; i++) {
             if (path.isEmpty())
-                path.add(new PathNode(Wrapper.INSTANCE.getLocalPlayer().getBlockPos()));
+                path.add(new PathNode(Wrapper.INSTANCE.getLocalPlayer().blockPosition()));
             PathNode latestNode = path.get(path.size() - 1);
             PathNode nextNode = null;
             double bestDistance = Double.POSITIVE_INFINITY;
@@ -51,7 +50,7 @@ public class TestPathFinder {
                         isDone = true;
                         return;
                     } else {
-                        double distance = ClientMathHelper.INSTANCE.getDistance(Vec3d.of(testNode), Vec3d.of(goal));
+                        double distance = ClientMathHelper.INSTANCE.getDistance(Vec3.atLowerCornerOf(testNode), Vec3.atLowerCornerOf(goal));
                         if (distance < bestDistance) {
                             bestDistance = distance;
                             nextNode = testNode;
@@ -69,26 +68,26 @@ public class TestPathFinder {
         }
     }
 
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         ArrayList<Render3DHelper.BoxStorage> boxes = new ArrayList<>();
         path.forEach(pathNode -> {
-            Vec3d renderVec = Render3DHelper.INSTANCE.getRenderPosition(pathNode.getX(), pathNode.getY(), pathNode.getZ());
-            Box box = new Box(0, 0, 0, 1, 1, 1).offset(renderVec);
+            Vec3 renderVec = Render3DHelper.INSTANCE.getRenderPosition(pathNode.getX(), pathNode.getY(), pathNode.getZ());
+            AABB box = new AABB(0, 0, 0, 1, 1, 1).move(renderVec);
             boxes.add(new Render3DHelper.BoxStorage(box, path.indexOf(pathNode) == path.size() - 1 && isDone() ? 0xff00ff00 : 0xffff0000));
         });
         Render3DHelper.INSTANCE.drawList(matrixStack, boxes, true);
     }
 
     private boolean canMoveTo(PathNode pathNode, PathNode latestNode) {
-        BlockState lastBelowState = WorldHelper.INSTANCE.getBlockState(new BlockPos(latestNode).down());
+        BlockState lastBelowState = WorldHelper.INSTANCE.getBlockState(new BlockPos(latestNode).below());
         BlockState blockState = WorldHelper.INSTANCE.getBlockState(new BlockPos(pathNode));
-        BlockState belowState = WorldHelper.INSTANCE.getBlockState(new BlockPos(pathNode).down());
+        BlockState belowState = WorldHelper.INSTANCE.getBlockState(new BlockPos(pathNode).below());
         if (pathNode.getY() == latestNode.getY()) {
-            return !blockState.getMaterial().blocksMovement() && lastBelowState.getMaterial().blocksMovement();
+            return !blockState.getMaterial().blocksMotion() && lastBelowState.getMaterial().blocksMotion();
         } else if (pathNode.getY() < latestNode.getY()) {//moving down
-            return !blockState.getMaterial().blocksMovement();
+            return !blockState.getMaterial().blocksMotion();
         } else if (pathNode.getY() > latestNode.getY()) {
-            return !belowState.getMaterial().blocksMovement();
+            return !belowState.getMaterial().blocksMotion();
         }
         return false;
     }

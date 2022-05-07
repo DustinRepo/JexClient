@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.mod.impl.world.xray.impl;
 
+import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.misc.EventTick;
@@ -9,8 +10,7 @@ import me.dustin.jex.feature.mod.impl.world.xray.Xray;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.render.shader.ShaderUniform;
 import me.dustin.jex.load.impl.IShader;
-import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.renderer.RenderType;
 
 public class OpacityXray extends FeatureExtension {
 
@@ -20,7 +20,7 @@ public class OpacityXray extends FeatureExtension {
 
     public static int alphaLocation = -1;
 
-    private GlUniform vanillaUniform;
+    private Uniform vanillaUniform;
     private ShaderUniform sodiumUniform;
 
     @Override
@@ -34,9 +34,9 @@ public class OpacityXray extends FeatureExtension {
             updateAlpha();
         } else if (!Xray.INSTANCE.isSodiumLoaded() && event instanceof EventTick) {
             updateAlpha();
-        } else if (event instanceof EventGetRenderLayer eventGetRenderLayer) {
-            if (!Xray.INSTANCE.isValid(eventGetRenderLayer.getState().getBlock())) {
-                eventGetRenderLayer.setRenderLayer(RenderLayer.getTranslucent());
+        } else if (event instanceof EventGetRenderType eventGetRenderType) {
+            if (!Xray.INSTANCE.isValid(eventGetRenderType.getState().getBlock())) {
+                eventGetRenderType.setRenderType(RenderType.translucent());
                 event.cancel();
             }
         } else if (!Xray.INSTANCE.isSodiumLoaded() && event instanceof EventGetTranslucentShader eventGetTranslucentShader) {
@@ -45,9 +45,9 @@ public class OpacityXray extends FeatureExtension {
         } else if (event instanceof EventBlockBrightness eventBlockBrightness) {
             if (Xray.INSTANCE.isValid(eventBlockBrightness.getBlock()))
                 eventBlockBrightness.setBrightness(15);
-        } else if (event instanceof EventShouldDrawSide eventShouldDrawSide) {
-            if (Xray.INSTANCE.isValid(eventShouldDrawSide.getBlock())) {
-                eventShouldDrawSide.setShouldDrawSide(Xray.INSTANCE.shouldDrawSide(eventShouldDrawSide.getSide(), eventShouldDrawSide.getBlockPos()));
+        } else if (event instanceof EventShouldRenderFace eventShouldRenderFace) {
+            if (Xray.INSTANCE.isValid(eventShouldRenderFace.getBlock())) {
+                eventShouldRenderFace.setShouldDrawSide(Xray.INSTANCE.shouldDrawSide(eventShouldRenderFace.getSide(), eventShouldRenderFace.getBlockPos()));
                 event.cancel();
             }
         }

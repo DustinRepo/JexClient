@@ -8,13 +8,12 @@ import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -37,14 +36,14 @@ public class HoleESP extends Feature {
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (stopWatch.hasPassed(250)) {
             holes.clear();
-            BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
+            BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().blockPosition();
 
             for (int y = -Math.min(range, playerPos.getY()); y < Math.min(range, 255 - playerPos.getY()); ++y) {
                 for (int x = -range; x < range; ++x) {
                     for (int z = -range; z < range; ++z) {
-                        BlockPos pos = playerPos.add(x, y, z);
-                        if ((Wrapper.INSTANCE.getWorld().getBlockState(pos).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos).getBlock() == Blocks.OBSIDIAN) && Wrapper.INSTANCE.getWorld().getBlockState(pos.up()).getBlock() == Blocks.AIR && (Wrapper.INSTANCE.getWorld().getBlockState(pos.up().offset(Direction.EAST)).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos.up().offset(Direction.EAST)).getBlock() == Blocks.OBSIDIAN) && (Wrapper.INSTANCE.getWorld().getBlockState(pos.up().offset(Direction.WEST)).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos.up().offset(Direction.WEST)).getBlock() == Blocks.OBSIDIAN) && (Wrapper.INSTANCE.getWorld().getBlockState(pos.up().offset(Direction.NORTH)).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos.up().offset(Direction.NORTH)).getBlock() == Blocks.OBSIDIAN) && (Wrapper.INSTANCE.getWorld().getBlockState(pos.up().offset(Direction.SOUTH)).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos.up().offset(Direction.SOUTH)).getBlock() == Blocks.OBSIDIAN) && Wrapper.INSTANCE.getWorld().getBlockState(pos.up(2)).getBlock() == Blocks.AIR && Wrapper.INSTANCE.getWorld().getBlockState(pos.up(3)).getBlock() == Blocks.AIR) {
-                            holes.add(pos.up());
+                        BlockPos pos = playerPos.offset(x, y, z);
+                        if ((Wrapper.INSTANCE.getWorld().getBlockState(pos).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos).getBlock() == Blocks.OBSIDIAN) && Wrapper.INSTANCE.getWorld().getBlockState(pos.above()).getBlock() == Blocks.AIR && (Wrapper.INSTANCE.getWorld().getBlockState(pos.above().relative(Direction.EAST)).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos.above().relative(Direction.EAST)).getBlock() == Blocks.OBSIDIAN) && (Wrapper.INSTANCE.getWorld().getBlockState(pos.above().relative(Direction.WEST)).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos.above().relative(Direction.WEST)).getBlock() == Blocks.OBSIDIAN) && (Wrapper.INSTANCE.getWorld().getBlockState(pos.above().relative(Direction.NORTH)).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos.above().relative(Direction.NORTH)).getBlock() == Blocks.OBSIDIAN) && (Wrapper.INSTANCE.getWorld().getBlockState(pos.above().relative(Direction.SOUTH)).getBlock() == Blocks.BEDROCK || Wrapper.INSTANCE.getWorld().getBlockState(pos.above().relative(Direction.SOUTH)).getBlock() == Blocks.OBSIDIAN) && Wrapper.INSTANCE.getWorld().getBlockState(pos.above(2)).getBlock() == Blocks.AIR && Wrapper.INSTANCE.getWorld().getBlockState(pos.above(3)).getBlock() == Blocks.AIR) {
+                            holes.add(pos.above());
                         }
                     }
                 }
@@ -52,16 +51,16 @@ public class HoleESP extends Feature {
             stopWatch.reset();
         }
         for (BlockPos blockPos : holes) {
-            Vec3d vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-            int color = WorldHelper.INSTANCE.getBlock(blockPos.down()) == Blocks.BEDROCK ? bedrockColor : obsidianColor;
+            Vec3 vec3d = Render3DHelper.INSTANCE.getRenderPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            int color = WorldHelper.INSTANCE.getBlock(blockPos.below()) == Blocks.BEDROCK ? bedrockColor : obsidianColor;
             if (fadeBox) {
-                Box box = new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1, vec3d.y + 1.5f, vec3d.z + 1);
+                AABB box = new AABB(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1, vec3d.y + 1.5f, vec3d.z + 1);
                 Render3DHelper.INSTANCE.setup3DRender(true);
-                Render3DHelper.INSTANCE.drawFadeBox(event.getMatrixStack(), box, color & 0xa9ffffff);
+                Render3DHelper.INSTANCE.drawFadeBox(event.getPoseStack(), box, color & 0xa9ffffff);
                 Render3DHelper.INSTANCE.end3DRender();
             } else {
-                Box box = new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1, vec3d.y + 1, vec3d.z + 1);
-                Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), box, color);
+                AABB box = new AABB(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1, vec3d.y + 1, vec3d.z + 1);
+                Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), box, color);
             }
         }
     });

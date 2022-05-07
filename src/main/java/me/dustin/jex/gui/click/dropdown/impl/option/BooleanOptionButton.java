@@ -1,12 +1,12 @@
 package me.dustin.jex.gui.click.dropdown.impl.option;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.option.types.BoolOption;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.file.impl.GuiFile;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
-import net.minecraft.client.util.math.MatrixStack;
 
 public class BooleanOptionButton extends DropdownOptionButton {
     protected final BoolOption boolOption;
@@ -16,7 +16,7 @@ public class BooleanOptionButton extends DropdownOptionButton {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         super.render(matrixStack);
     }
 

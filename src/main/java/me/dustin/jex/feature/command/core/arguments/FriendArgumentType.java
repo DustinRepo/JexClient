@@ -6,10 +6,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import me.dustin.jex.helper.player.FriendHelper;
-import net.minecraft.text.Text;
-
 import java.util.concurrent.CompletableFuture;
+
+import me.dustin.jex.helper.player.FriendHelper;
+import net.minecraft.network.chat.Component;
 
 public class FriendArgumentType extends PlayerNameArgumentType {
 
@@ -31,7 +31,7 @@ public class FriendArgumentType extends PlayerNameArgumentType {
         if (FriendHelper.INSTANCE.isFriend(nameString)) {
             return nameString;
         } else {
-            throw new SimpleCommandExceptionType(Text.of("Not a friend")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Component.nullToEmpty("Not a friend")).createWithContext(reader);
         }
     }
 

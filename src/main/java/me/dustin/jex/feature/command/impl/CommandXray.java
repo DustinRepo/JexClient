@@ -12,7 +12,7 @@ import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 
 @Cmd(name = "xray", description = "Add or remove blocks from Xray", syntax = {".xray add <blockname>", ".xray del <blockname>", ".xray list"})
 public class CommandXray extends Command {
@@ -20,11 +20,11 @@ public class CommandXray extends Command {
     @Override
     public void registerCommand() {
         dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).executes(ctx -> {
-            Block block = BlockStateArgumentType.getBlockState(ctx, "block").getBlockState().getBlock();
+            Block block = BlockStateArgumentType.getBlockState(ctx, "block").getState().getBlock();
             if (!Xray.blockList.contains(block)) {
                 Xray.blockList.add(block);
                 if (Feature.get(Xray.class).getState()) {
-                    Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
+                    Wrapper.INSTANCE.getMinecraft().levelRenderer.allChanged();
                 }
                 ChatHelper.INSTANCE.addClientMessage("\247b" + block.getName().getString() + "\2477 has been added to Xray.");
                 ConfigManager.INSTANCE.get(XrayFile.class).write();
@@ -33,11 +33,11 @@ public class CommandXray extends Command {
             }
             return 1;
         }))).then(literal("del").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).executes(ctx -> {
-            Block block = BlockStateArgumentType.getBlockState(ctx, "block").getBlockState().getBlock();
+            Block block = BlockStateArgumentType.getBlockState(ctx, "block").getState().getBlock();
             if (Xray.blockList.contains(block)) {
                 Xray.blockList.remove(block);
                 if (Feature.get(Xray.class).getState()) {
-                    Wrapper.INSTANCE.getMinecraft().worldRenderer.reload();
+                    Wrapper.INSTANCE.getMinecraft().levelRenderer.allChanged();
                 }
                 ChatHelper.INSTANCE.addClientMessage("\247c" + block.getName().getString() + "\2477 has been removed from Xray.");
                 ConfigManager.INSTANCE.get(XrayFile.class).write();

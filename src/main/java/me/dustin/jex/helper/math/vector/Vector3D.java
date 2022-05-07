@@ -1,8 +1,8 @@
 package me.dustin.jex.helper.math.vector;
 
+import com.mojang.math.Matrix4f;
 import me.dustin.jex.helper.math.Matrix4x4;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 public class Vector3D {
     
@@ -14,7 +14,7 @@ public class Vector3D {
         this.z = 0;
     }
 
-    public Vector3D(Vec3d vec3d) {
+    public Vector3D(Vec3 vec3d) {
         this.x = vec3d.x;
         this.y = vec3d.y;
         this.z = vec3d.z;
@@ -136,7 +136,7 @@ public class Vector3D {
         return this;
     }
 
-    public Vec3d toMinecraft() {
-        return new Vec3d(x, y, z);
+    public Vec3 toMinecraft() {
+        return new Vec3(x, y, z);
     }
 }

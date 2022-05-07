@@ -5,17 +5,17 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.Wrapper;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import me.dustin.jex.feature.mod.core.Feature;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Keep items in your crafting space in inventory.")
 public class InventoryPlus extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof InventoryScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().screen instanceof InventoryScreen) {
             event.cancel();
         }
-    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, CloseHandledScreenC2SPacket.class));
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundContainerClosePacket.class));
 }

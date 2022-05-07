@@ -6,16 +6,16 @@ import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.ChatHelper;
-import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
+import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Tells you exact coordinates of Wither Spawns and End Portal Activations on vanilla servers.")
 public class CoordFinder extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        WorldEventS2CPacket worldEventS2CPacket = (WorldEventS2CPacket) event.getPacket();
-        if (worldEventS2CPacket.isGlobal()) {
-            switch (worldEventS2CPacket.getEventId()) {
+        ClientboundLevelEventPacket worldEventS2CPacket = (ClientboundLevelEventPacket) event.getPacket();
+        if (worldEventS2CPacket.isGlobalEvent()) {
+            switch (worldEventS2CPacket.getType()) {
                 case 1023 -> //Wither Boss
                         ChatHelper.INSTANCE.addClientMessage("Wither spawned at: " + worldEventS2CPacket.getPos().toShortString());
                 case 1038 ->//End Portal
@@ -25,5 +25,5 @@ public class CoordFinder extends Feature {
                 default -> ChatHelper.INSTANCE.addClientMessage("Unknown global event at: " + worldEventS2CPacket.getPos().toShortString());
             }
         }
-    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, WorldEventS2CPacket.class));
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ClientboundLevelEventPacket.class));
 }

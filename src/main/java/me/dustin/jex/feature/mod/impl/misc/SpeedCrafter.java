@@ -10,15 +10,14 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import net.minecraft.client.RecipeBookCategories;
+import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
-import net.minecraft.client.recipebook.RecipeBookGroup;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.slot.SlotActionType;
-
 import java.util.List;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Automatically turn ingots into blocks by opening a crafting table.")
@@ -33,7 +32,7 @@ public class SpeedCrafter extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
+        if (Wrapper.INSTANCE.getLocalPlayer().containerMenu instanceof CraftingMenu craftingScreenHandler) {
             if (InventoryHelper.INSTANCE.isInventoryFull(new ItemStack(craftingItem))) {
                 if (!alerted) {
                     ChatHelper.INSTANCE.addClientMessage("Inventory is full! Speedcrafter can not craft!");
@@ -44,12 +43,12 @@ public class SpeedCrafter extends Feature {
             alerted = false;
             if (!stopWatch.hasPassed(delay))
                 return;
-            List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_BUILDING_BLOCKS);
-            for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList) {
-                for (Recipe<?> recipe : recipeResultCollection.getRecipes(true)) {
-                    if (recipe.getOutput().getItem() == craftingItem) {
-                        Wrapper.INSTANCE.getInteractionManager().clickRecipe(craftingScreenHandler.syncId, recipe, true);
-                        InventoryHelper.INSTANCE.windowClick(craftingScreenHandler, 0, SlotActionType.QUICK_MOVE, 1);
+            List<RecipeCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getCollection(RecipeBookCategories.CRAFTING_BUILDING_BLOCKS);
+            for (RecipeCollection recipeResultCollection : recipeResultCollectionList) {
+                for (Recipe<?> recipe : recipeResultCollection.getDisplayRecipes(true)) {
+                    if (recipe.getResultItem().getItem() == craftingItem) {
+                        Wrapper.INSTANCE.getMultiPlayerGameMode().handlePlaceRecipe(craftingScreenHandler.containerId, recipe, true);
+                        InventoryHelper.INSTANCE.windowClick(craftingScreenHandler, 0, ClickType.QUICK_MOVE, 1);
                         stopWatch.reset();
                         if (delay > 0)
                             return;
@@ -57,7 +56,7 @@ public class SpeedCrafter extends Feature {
                 }
             }
         }
-        setSuffix(craftingItem == null ? "None" : craftingItem.getName().getString());
+        setSuffix(craftingItem == null ? "None" : craftingItem.getDescription().getString());
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override

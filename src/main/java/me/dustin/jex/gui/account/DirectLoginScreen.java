@@ -7,25 +7,24 @@ import me.dustin.jex.helper.network.login.minecraft.MSLoginHelper;
 import me.dustin.jex.helper.network.login.minecraft.MojangLoginHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.UUID;
 
 public class DirectLoginScreen extends Screen {
 
-	TextFieldWidget username;
-	TextFieldWidget email;
+	EditBox username;
+	EditBox email;
 	GuiPasswordField password;
 	private Screen parent;
 	private String errorMessage = "";
 	private boolean isMicrosoft;
 
 	public DirectLoginScreen(Screen parent) {
-		super(Text.of("Direct Login"));
+		super(Component.nullToEmpty("Direct Login"));
 		this.parent = parent;
 	}
 
@@ -39,29 +38,29 @@ public class DirectLoginScreen extends Screen {
 
 	@Override
 	public void init() {
-		Wrapper.INSTANCE.getMinecraft().keyboard.setRepeatEvents(true);
+		Wrapper.INSTANCE.getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
 
-		username = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 12, 200, 20, Text.of("Username"));
-		email = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 47, 200, 20, Text.of("Email"));
-		password = new GuiPasswordField(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 82, 200, 20, Text.of("Password"));
+		username = new EditBox(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 12, 200, 20, Component.nullToEmpty("Username"));
+		email = new EditBox(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 47, 200, 20, Component.nullToEmpty("Email"));
+		password = new GuiPasswordField(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 82, 200, 20, Component.nullToEmpty("Password"));
 		username.changeFocus(true);
 		username.setMaxLength(16);
 		this.email.setMaxLength(100);
 		this.password.setMaxLength(250);
 		this.children().clear();
-		username.setFocusUnlocked(true);
-		email.setFocusUnlocked(true);
-		this.addSelectableChild(username);
-		this.addSelectableChild(email);
-		this.addSelectableChild(password);
-		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, Text.of("Cancel"), button -> {
+		username.setCanLoseFocus(true);
+		email.setCanLoseFocus(true);
+		this.addWidget(username);
+		this.addWidget(email);
+		this.addWidget(password);
+		this.addRenderableWidget(new Button((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, Component.nullToEmpty("Cancel"), button -> {
 			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 		}));
 
-		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, Text.of("Login"), button -> {
+		this.addRenderableWidget(new Button((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, Component.nullToEmpty("Login"), button -> {
 			this.errorMessage = "Logging in...";
 			if (isMicrosoft) {
-				MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(username.getText(), email.getText(), password.getText(), "", "", UUID.randomUUID().toString());
+				MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(username.getValue(), email.getValue(), password.getText(), "", "", UUID.randomUUID().toString());
 				MSLoginHelper msLoginHelper = new MSLoginHelper(microsoftAccount, false);
 				msLoginHelper.loginThread(session -> {
 					if (session != null) {
@@ -71,8 +70,8 @@ public class DirectLoginScreen extends Screen {
 						this.errorMessage = "\247cError, could not log in.";
 				}, s -> this.errorMessage = s);
 			} else {
-				MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
-				mojangAccount.setCracked(!email.getText().contains("@"));
+				MinecraftAccount.MojangAccount mojangAccount = new MinecraftAccount.MojangAccount(username.getValue(), email.getValue(), password.getText());
+				mojangAccount.setCracked(!email.getValue().contains("@"));
 				new MojangLoginHelper(mojangAccount, session -> {
 					if (session != null) {
 						Wrapper.INSTANCE.getIMinecraft().setSession(session);
@@ -84,21 +83,21 @@ public class DirectLoginScreen extends Screen {
 		}));
 
 
-		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, Text.of("\2476Mojang Account"), button -> {
+		this.addRenderableWidget(new Button((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, Component.nullToEmpty("\2476Mojang Account"), button -> {
 			isMicrosoft = !isMicrosoft;
-			button.setMessage(Text.of(isMicrosoft ? "\247aMicrosoft Account" : "\2476Mojang Account"));
+			button.setMessage(Component.nullToEmpty(isMicrosoft ? "\247aMicrosoft Account" : "\2476Mojang Account"));
 		}));
 		super.init();
 	}
 
 	@Override
-	public void close() {
-		Wrapper.INSTANCE.getMinecraft().keyboard.setRepeatEvents(false);
-		super.close();
+	public void onClose() {
+		Wrapper.INSTANCE.getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
+		super.onClose();
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		renderBackground(matrixStack);
 		username.render(matrixStack, mouseX, mouseY, partialTicks);
 		email.render(matrixStack, mouseX, mouseY, partialTicks);

@@ -12,9 +12,7 @@ import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.bot.PlayerBot;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 @Cmd(name = "botcmd", syntax = ".botcmd <bot> <action> <data>", description = "Send commands to your connected bots")
 public class CommandBotCmd extends Command {
@@ -53,7 +51,7 @@ public class CommandBotCmd extends Command {
             return 1;
         })).then(literal("rotate").then(argument("yaw pitch roll", Vec3ArgumentType.vec3()).executes(context -> {
             String name = PlayerNameArgumentType.getPlayerName(context, "name");
-            Vec3d vec3d = Vec3ArgumentType.getVec3(context, "yaw pitch roll");
+            Vec3 vec3d = Vec3ArgumentType.getVec3(context, "yaw pitch roll");
             PlayerBot playerBot = PlayerBot.getBot(name);
             if (playerBot != null)
                 playerBot.setRotation(vec3d);
@@ -112,7 +110,7 @@ public class CommandBotCmd extends Command {
             String name = PlayerNameArgumentType.getPlayerName(context, "name");
             PlayerBot playerBot = PlayerBot.getBot(name);
             if (playerBot != null) {
-                playerBot.getPlayer().setPos(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY(), Wrapper.INSTANCE.getPlayer().getZ());
+                playerBot.getPlayer().setPosRaw(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY(), Wrapper.INSTANCE.getPlayer().getZ());
             }
             return 1;
         }))));

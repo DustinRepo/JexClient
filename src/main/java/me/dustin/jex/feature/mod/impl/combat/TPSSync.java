@@ -2,7 +2,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.player.EventAttackCooldownPerTick;
+import me.dustin.jex.event.player.EventCurrentItemAttackStrengthDelay;
 import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -14,7 +14,7 @@ public class TPSSync extends Feature {
     public int sampleSize = 15;
 
     @EventPointer
-    private final EventListener<EventAttackCooldownPerTick> eventAttackCooldownPerTickEventListener = new EventListener<>(event -> {
+    private final EventListener<EventCurrentItemAttackStrengthDelay> eventAttackCooldownPerTickEventListener = new EventListener<>(event -> {
         double tps = TPSHelper.INSTANCE.getAverageTPS();
         double value = 20 / tps;
         this.setSuffix(String.format("%.2f", tps));

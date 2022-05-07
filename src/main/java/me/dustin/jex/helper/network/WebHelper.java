@@ -5,24 +5,10 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.text.*;
-import net.minecraft.util.Formatting;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.Header;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -106,7 +92,7 @@ public enum WebHelper {
                 String id = data.get("id").getAsString();
                 String imgURL = "http://i.imgur.com/" + id + ".png";
 
-                Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(imgURL);
+                Wrapper.INSTANCE.getMinecraft().keyboardHandler.setClipboard(imgURL);
                 ChatHelper.INSTANCE.addClientMessage("URL: \247b" + imgURL + " \2477Copied to clipboard");
             } catch (Exception e) {
                 ChatHelper.INSTANCE.addClientMessage("Error");

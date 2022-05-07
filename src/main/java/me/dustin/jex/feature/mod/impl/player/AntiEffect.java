@@ -5,9 +5,9 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
+import net.minecraft.world.effect.MobEffects;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.entity.effect.StatusEffects;
 
 @Feature.Manifest(category = Feature.Category.PLAYER, description = "Remove certain negative effects from yourself.")
 public class AntiEffect extends Feature {
@@ -28,16 +28,16 @@ public class AntiEffect extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (blindness)
-            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.BLINDNESS);
+            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.BLINDNESS);
         if (nausea)
-            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.NAUSEA);
+            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.CONFUSION);
         if (miningFatigue)
-            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.MINING_FATIGUE);
+            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.DIG_SLOWDOWN);
         if (levitation)
-            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.LEVITATION);
+            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.LEVITATION);
         if (slowFalling)
-            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.SLOW_FALLING);
+            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.SLOW_FALLING);
         if (darkness)
-            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.DARKNESS);
+            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.DARKNESS);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

@@ -4,29 +4,29 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.command.argument.CoordinateArgument;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.commands.arguments.coordinates.WorldCoordinate;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 public class DefaultPosArgument implements PosArgument {
-   private final CoordinateArgument x;
-   private final CoordinateArgument y;
-   private final CoordinateArgument z;
+   private final WorldCoordinate x;
+   private final WorldCoordinate y;
+   private final WorldCoordinate z;
 
-   public DefaultPosArgument(CoordinateArgument x, CoordinateArgument y, CoordinateArgument z) {
+   public DefaultPosArgument(WorldCoordinate x, WorldCoordinate y, WorldCoordinate z) {
       this.x = x;
       this.y = y;
       this.z = z;
    }
 
-   public Vec3d toAbsolutePos(FabricClientCommandSource source) {
-      Vec3d vec3d = source.getPlayer().getPos();
-      return new Vec3d(this.x.toAbsoluteCoordinate(vec3d.x), this.y.toAbsoluteCoordinate(vec3d.y), this.z.toAbsoluteCoordinate(vec3d.z));
+   public Vec3 toAbsolutePos(FabricClientCommandSource source) {
+      Vec3 vec3d = source.getPlayer().position();
+      return new Vec3(this.x.get(vec3d.x), this.y.get(vec3d.y), this.z.get(vec3d.z));
    }
 
-   public Vec2f toAbsoluteRotation(FabricClientCommandSource source) {
-      Vec2f vec2f = source.getPlayer().getRotationClient();
-      return new Vec2f((float)this.x.toAbsoluteCoordinate((double)vec2f.x), (float)this.y.toAbsoluteCoordinate((double)vec2f.y));
+   public Vec2 toAbsoluteRotation(FabricClientCommandSource source) {
+      Vec2 vec2f = source.getPlayer().getRotationVector();
+      return new Vec2((float)this.x.get((double)vec2f.x), (float)this.y.get((double)vec2f.y));
    }
 
    public boolean isXRelative() {
@@ -58,13 +58,13 @@ public class DefaultPosArgument implements PosArgument {
 
    public static DefaultPosArgument parse(StringReader reader) throws CommandSyntaxException {
       int i = reader.getCursor();
-      CoordinateArgument coordinateArgument = CoordinateArgument.parse(reader);
+      WorldCoordinate coordinateArgument = WorldCoordinate.parseInt(reader);
       if (reader.canRead() && reader.peek() == ' ') {
          reader.skip();
-         CoordinateArgument coordinateArgument2 = CoordinateArgument.parse(reader);
+         WorldCoordinate coordinateArgument2 = WorldCoordinate.parseInt(reader);
          if (reader.canRead() && reader.peek() == ' ') {
             reader.skip();
-            CoordinateArgument coordinateArgument3 = CoordinateArgument.parse(reader);
+            WorldCoordinate coordinateArgument3 = WorldCoordinate.parseInt(reader);
             return new DefaultPosArgument(coordinateArgument, coordinateArgument2, coordinateArgument3);
          } else {
             reader.setCursor(i);
@@ -78,13 +78,13 @@ public class DefaultPosArgument implements PosArgument {
 
    public static DefaultPosArgument parse(StringReader reader, boolean centerIntegers) throws CommandSyntaxException {
       int i = reader.getCursor();
-      CoordinateArgument coordinateArgument = CoordinateArgument.parse(reader, centerIntegers);
+      WorldCoordinate coordinateArgument = WorldCoordinate.parseDouble(reader, centerIntegers);
       if (reader.canRead() && reader.peek() == ' ') {
          reader.skip();
-         CoordinateArgument coordinateArgument2 = CoordinateArgument.parse(reader, false);
+         WorldCoordinate coordinateArgument2 = WorldCoordinate.parseDouble(reader, false);
          if (reader.canRead() && reader.peek() == ' ') {
             reader.skip();
-            CoordinateArgument coordinateArgument3 = CoordinateArgument.parse(reader, centerIntegers);
+            WorldCoordinate coordinateArgument3 = WorldCoordinate.parseDouble(reader, centerIntegers);
             return new DefaultPosArgument(coordinateArgument, coordinateArgument2, coordinateArgument3);
          } else {
             reader.setCursor(i);
@@ -97,15 +97,15 @@ public class DefaultPosArgument implements PosArgument {
    }
 
    public static DefaultPosArgument absolute(double x, double y, double z) {
-      return new DefaultPosArgument(new CoordinateArgument(false, x), new CoordinateArgument(false, y), new CoordinateArgument(false, z));
+      return new DefaultPosArgument(new WorldCoordinate(false, x), new WorldCoordinate(false, y), new WorldCoordinate(false, z));
    }
 
-   public static DefaultPosArgument absolute(Vec2f vec) {
-      return new DefaultPosArgument(new CoordinateArgument(false, (double)vec.x), new CoordinateArgument(false, (double)vec.y), new CoordinateArgument(true, 0.0D));
+   public static DefaultPosArgument absolute(Vec2 vec) {
+      return new DefaultPosArgument(new WorldCoordinate(false, (double)vec.x), new WorldCoordinate(false, (double)vec.y), new WorldCoordinate(true, 0.0D));
    }
 
    public static DefaultPosArgument zero() {
-      return new DefaultPosArgument(new CoordinateArgument(true, 0.0D), new CoordinateArgument(true, 0.0D), new CoordinateArgument(true, 0.0D));
+      return new DefaultPosArgument(new WorldCoordinate(true, 0.0D), new WorldCoordinate(true, 0.0D), new WorldCoordinate(true, 0.0D));
    }
 
    public int hashCode() {

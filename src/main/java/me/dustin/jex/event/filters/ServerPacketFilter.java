@@ -1,13 +1,12 @@
 package me.dustin.jex.event.filters;
 
 import me.dustin.jex.event.packet.EventPacketReceive;
-import net.minecraft.network.Packet;
-
+import net.minecraft.network.protocol.Packet;
 import java.util.function.Predicate;
 
 public class ServerPacketFilter implements Predicate<EventPacketReceive> {
 
-    private EventPacketReceive.Mode mode;
+    private final EventPacketReceive.Mode mode;
     private final Class<? extends Packet<?>>[] packets;
 
     @SafeVarargs

@@ -13,10 +13,9 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ShulkerBoxScreenHandler;
-
+import net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen;
+import net.minecraft.world.inventory.ShulkerBoxMenu;
+import net.minecraft.world.item.ItemStack;
 import java.util.HashMap;
 
 @Cmd(name = "peek", description = "See inside of shulkers without placing them")
@@ -30,7 +29,7 @@ public class CommandPeek extends Command {
             EventManager.unregister(this);
             return;
         }
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
+        if (Wrapper.INSTANCE.getMinecraft().screen == null) {
             Wrapper.INSTANCE.getMinecraft().setScreen(shulkerBoxScreen);
             EventManager.unregister(this);
         }
@@ -43,14 +42,14 @@ public class CommandPeek extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        ItemStack stack = Wrapper.INSTANCE.getLocalPlayer().getMainHandStack();
-        ShulkerBoxScreenHandler shulkerBoxScreenHandler = new ShulkerBoxScreenHandler(0, InventoryHelper.INSTANCE.getInventory());
+        ItemStack stack = Wrapper.INSTANCE.getLocalPlayer().getMainHandItem();
+        ShulkerBoxMenu shulkerBoxScreenHandler = new ShulkerBoxMenu(0, InventoryHelper.INSTANCE.getInventory());
         if (InventoryHelper.INSTANCE.isShulker(stack)) {
             HashMap<Integer, ItemStack> stackHashMap = InventoryHelper.INSTANCE.getStacksFromShulker(stack);
             stackHashMap.keySet().forEach(slot -> {
-                shulkerBoxScreenHandler.setStackInSlot(slot, shulkerBoxScreenHandler.nextRevision(), stackHashMap.get(slot));
+                shulkerBoxScreenHandler.setItem(slot, shulkerBoxScreenHandler.incrementStateId(), stackHashMap.get(slot));
             });
-            shulkerBoxScreen = new ShulkerBoxScreen(shulkerBoxScreenHandler, InventoryHelper.INSTANCE.getInventory(), stack.getName());
+            shulkerBoxScreen = new ShulkerBoxScreen(shulkerBoxScreenHandler, InventoryHelper.INSTANCE.getInventory(), stack.getHoverName());
             EventManager.register(this);
         } else {
             ChatHelper.INSTANCE.addClientMessage("You must be holding a Shulker Box to use this command.");

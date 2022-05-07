@@ -14,12 +14,11 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Prevent yourself from being detected as AFK and potentially kicked")
 public class AntiAFK extends Feature {
@@ -39,20 +38,20 @@ public class AntiAFK extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         setSuffix(mode);
         if (afkSpot == null)
-            afkSpot = Wrapper.INSTANCE.getPlayer().getBlockPos();
+            afkSpot = Wrapper.INSTANCE.getPlayer().blockPosition();
         if (lastSpots == null)
-            lastSpots = new BlockPos[]{Wrapper.INSTANCE.getPlayer().getBlockPos(), Wrapper.INSTANCE.getPlayer().getBlockPos()};
+            lastSpots = new BlockPos[]{Wrapper.INSTANCE.getPlayer().blockPosition(), Wrapper.INSTANCE.getPlayer().blockPosition()};
         if (stopWatch.hasPassed(secondsDelay * 1000L)) {
             switch (mode) {
                 case "Swing":
-                    Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
+                    Wrapper.INSTANCE.getPlayer().swing(InteractionHand.MAIN_HAND);
                     break;
                 case "Jump":
                     if (Wrapper.INSTANCE.getPlayer().isOnGround())
-                        Wrapper.INSTANCE.getPlayer().jump();
+                        Wrapper.INSTANCE.getPlayer().jumpFromGround();
                     break;
                 case "Chat":
-                    ChatHelper.INSTANCE.sendChatMessage(Wrapper.INSTANCE.getPlayer().age + "");
+                    ChatHelper.INSTANCE.sendChatMessage(Wrapper.INSTANCE.getPlayer().tickCount + "");
                     break;
                 case "Wander":
                     PathingHelper.INSTANCE.setAllowMining(false);
@@ -86,12 +85,12 @@ public class AntiAFK extends Feature {
         @Override
         public boolean checkDone() {
             //more than 5 blocks away from current player position and no more than 15 blocks away from the start position and 3 or more blocks away from the last position so it doesn't loop two spots
-            Vec3d currentVec = Vec3d.of(current);
-            double playerDistance = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), currentVec);
-            double origSpotDistance = ClientMathHelper.INSTANCE.getDistance(Vec3d.of(getGoal()), currentVec);
-            double lastSpotDistance = ClientMathHelper.INSTANCE.getDistance(Vec3d.of(antiAFK.lastSpots[0]), currentVec);
+            Vec3 currentVec = Vec3.atLowerCornerOf(current);
+            double playerDistance = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().position(), currentVec);
+            double origSpotDistance = ClientMathHelper.INSTANCE.getDistance(Vec3.atLowerCornerOf(getGoal()), currentVec);
+            double lastSpotDistance = ClientMathHelper.INSTANCE.getDistance(Vec3.atLowerCornerOf(antiAFK.lastSpots[0]), currentVec);
 
-            Block below = WorldHelper.INSTANCE.getBlock(current.down());
+            Block below = WorldHelper.INSTANCE.getBlock(current.below());
 
             done = below != Blocks.AIR && playerDistance > 5 && origSpotDistance < 15 && origSpotDistance > 4 && lastSpotDistance > 6;
             if (done) {

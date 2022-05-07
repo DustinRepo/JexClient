@@ -1,6 +1,5 @@
 package me.dustin.jex.event.filters;
 
-import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventMouseButton;
 
 import java.util.function.Predicate;

@@ -1,12 +1,12 @@
 package me.dustin.jex.gui.click.navigator.impl;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.util.math.MatrixStack;
 
 public class NavigatorFeatureButton extends Button {
 
@@ -18,7 +18,7 @@ public class NavigatorFeatureButton extends Button {
     }
 
     @Override
-    public void render(MatrixStack matrixStack) {
+    public void render(PoseStack matrixStack) {
         Render2DHelper.INSTANCE.outlineAndFill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x99656565, feature.getState() ? ColorHelper.INSTANCE.getClientColor() & 0x70ffffff : 0x70000000);
         if (isHovered())
             Render2DHelper.INSTANCE.outlineAndFill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x00ffffff, 0x40ffffff);

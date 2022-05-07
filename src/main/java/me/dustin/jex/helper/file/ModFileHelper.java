@@ -49,7 +49,7 @@ public enum ModFileHelper {
     public File getJexDirectory() {
         if (Wrapper.INSTANCE.getMinecraft() == null)
             return new File(FabricLoader.getInstance().getGameDir().toString(), PATH_NAME);
-        return new File(Wrapper.INSTANCE.getMinecraft().runDirectory, PATH_NAME);
+        return new File(Wrapper.INSTANCE.getMinecraft().gameDirectory, PATH_NAME);
     }
 
 }

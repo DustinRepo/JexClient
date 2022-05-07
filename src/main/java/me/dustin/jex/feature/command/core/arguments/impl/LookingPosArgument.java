@@ -6,10 +6,10 @@ import java.util.Objects;
 
 import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.command.argument.CoordinateArgument;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.commands.arguments.coordinates.WorldCoordinate;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 public class LookingPosArgument implements PosArgument {
    public static final char field_32941 = '^';
@@ -23,26 +23,26 @@ public class LookingPosArgument implements PosArgument {
       this.z = z;
    }
 
-   public Vec3d toAbsolutePos(FabricClientCommandSource source) {
-      Vec2f vec2f = source.getPlayer().getRotationClient();
-      Vec3d vec3d = source.getPlayer().getPos();
-      float f = MathHelper.cos((vec2f.y + 90.0F) * 0.017453292F);
-      float g = MathHelper.sin((vec2f.y + 90.0F) * 0.017453292F);
-      float h = MathHelper.cos(-vec2f.x * 0.017453292F);
-      float i = MathHelper.sin(-vec2f.x * 0.017453292F);
-      float j = MathHelper.cos((-vec2f.x + 90.0F) * 0.017453292F);
-      float k = MathHelper.sin((-vec2f.x + 90.0F) * 0.017453292F);
-      Vec3d vec3d2 = new Vec3d((double)(f * h), (double)i, (double)(g * h));
-      Vec3d vec3d3 = new Vec3d((double)(f * j), (double)k, (double)(g * j));
-      Vec3d vec3d4 = vec3d2.crossProduct(vec3d3).multiply(-1.0D);
+   public Vec3 toAbsolutePos(FabricClientCommandSource source) {
+      Vec2 vec2f = source.getPlayer().getRotationVector();
+      Vec3 vec3d = source.getPlayer().position();
+      float f = Mth.cos((vec2f.y + 90.0F) * 0.017453292F);
+      float g = Mth.sin((vec2f.y + 90.0F) * 0.017453292F);
+      float h = Mth.cos(-vec2f.x * 0.017453292F);
+      float i = Mth.sin(-vec2f.x * 0.017453292F);
+      float j = Mth.cos((-vec2f.x + 90.0F) * 0.017453292F);
+      float k = Mth.sin((-vec2f.x + 90.0F) * 0.017453292F);
+      Vec3 vec3d2 = new Vec3((double)(f * h), (double)i, (double)(g * h));
+      Vec3 vec3d3 = new Vec3((double)(f * j), (double)k, (double)(g * j));
+      Vec3 vec3d4 = vec3d2.cross(vec3d3).scale(-1.0D);
       double d = vec3d2.x * this.z + vec3d3.x * this.y + vec3d4.x * this.x;
       double e = vec3d2.y * this.z + vec3d3.y * this.y + vec3d4.y * this.x;
       double l = vec3d2.z * this.z + vec3d3.z * this.y + vec3d4.z * this.x;
-      return new Vec3d(vec3d.x + d, vec3d.y + e, vec3d.z + l);
+      return new Vec3(vec3d.x + d, vec3d.y + e, vec3d.z + l);
    }
 
-   public Vec2f toAbsoluteRotation(FabricClientCommandSource source) {
-      return Vec2f.ZERO;
+   public Vec2 toAbsoluteRotation(FabricClientCommandSource source) {
+      return Vec2.ZERO;
    }
 
    public boolean isXRelative() {
@@ -79,7 +79,7 @@ public class LookingPosArgument implements PosArgument {
 
    private static double readCoordinate(StringReader reader, int startingCursorPos) throws CommandSyntaxException {
       if (!reader.canRead()) {
-         throw CoordinateArgument.MISSING_COORDINATE.createWithContext(reader);
+         throw WorldCoordinate.ERROR_EXPECTED_DOUBLE.createWithContext(reader);
       } else if (reader.peek() != '^') {
          reader.setCursor(startingCursorPos);
          throw Vec3ArgumentType.MIXED_COORDINATE_EXCEPTION.createWithContext(reader);

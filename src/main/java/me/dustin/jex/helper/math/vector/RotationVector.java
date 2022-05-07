@@ -2,8 +2,8 @@ package me.dustin.jex.helper.math.vector;
 
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 
 public class RotationVector {
 
@@ -20,8 +20,8 @@ public class RotationVector {
     }
 
     public void normalize() {
-        this.yaw = MathHelper.wrapDegrees(yaw);
-        this.pitch = MathHelper.wrapDegrees(pitch);
+        this.yaw = Mth.wrapDegrees(yaw);
+        this.pitch = Mth.wrapDegrees(pitch);
     }
 
     public void add(float yaw, float pitch) {
