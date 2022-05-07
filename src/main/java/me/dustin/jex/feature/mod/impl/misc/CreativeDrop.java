@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
 import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -43,6 +44,7 @@ public class CreativeDrop extends Feature {
     private int slot = 1;
     private final StopWatch stopWatch = new StopWatch();
 
+    @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         Random random = new Random();
         String[] names = new String[]{JexClient.INSTANCE.getBaseUrl(), "Download Jex Client to do this", "Nice FPS", "Oh look a shiny item", "Copper pants", "How do I stop dropping items?", "Can you hear me?", "Please help I am stuck in this item"};
