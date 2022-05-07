@@ -191,15 +191,19 @@ public enum WorldHelper {
     }
 
     public String getCurrentServerName() {
-        boolean isSinglePlayer = Wrapper.INSTANCE.getMinecraft().isInSingleplayer();
-        if (isSinglePlayer) {
-            String preString = Wrapper.INSTANCE.getMinecraft().getServer().getIconFile().toString().replace(File.separator + "icon.png", "").replace(File.separator, "/");
-            String[] list = preString.split("/");
-            return list[list.length - 1];
-        } else {
-            if (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() == null)
-                return "";
-            return Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
+        try {
+            boolean isSinglePlayer = Wrapper.INSTANCE.getMinecraft().isInSingleplayer();
+            if (isSinglePlayer) {
+                String preString = Wrapper.INSTANCE.getMinecraft().getServer().getIconFile().toString().replace(File.separator + "icon.png", "").replace(File.separator, "/");
+                String[] list = preString.split("/");
+                return list[list.length - 1];
+            } else {
+                if (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() == null)
+                    return "";
+                return Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
+            }
+        } catch (Exception e) {
+            return e.getMessage();
         }
     }
 
