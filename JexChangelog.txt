@@ -1,3 +1,8 @@
+0.6.8
+Massively improved performance of 2D rendering
+Fixed snapshots not properly displaying Jex version
+Fixed CreativeDrop not working since the event manager recode
+
 0.6.7
 Added Darkness to AntiEffect
 Fixed FakeLag breaking Nametags on snapshots
