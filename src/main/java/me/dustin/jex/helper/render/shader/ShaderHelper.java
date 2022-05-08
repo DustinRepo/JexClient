@@ -17,7 +17,7 @@ public enum ShaderHelper {
     public ShaderEffect storageShader;
     public Framebuffer boxOutlineFBO;
     public ShaderEffect boxOutlineShader;
-    public Identifier identifier_1 = new Identifier("jex", "shaders/entity_outline.json");
+    public Identifier outlineId = new Identifier("jex", "shaders/entity_outline.json");
 
     private static Shader rainbowEnchantShader;
     private static Shader translucentShader;
@@ -62,10 +62,10 @@ public enum ShaderHelper {
             boxOutlineShader.close();
         }
         try {
-            storageShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
+            storageShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), outlineId);
             storageShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
             storageFBO = storageShader.getSecondaryTarget("final");
-            boxOutlineShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
+            boxOutlineShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), outlineId);
             boxOutlineShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
             boxOutlineFBO = boxOutlineShader.getSecondaryTarget("final");
         } catch (Exception var3) {

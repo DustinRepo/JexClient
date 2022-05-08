@@ -4,7 +4,9 @@ import com.google.gson.JsonSyntaxException;
 import me.dustin.jex.event.render.EventBlockOutlineColor;
 import me.dustin.jex.event.render.EventRenderRain;
 import me.dustin.jex.event.render.EventWorldRender;
+import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
+import me.dustin.jex.feature.mod.impl.render.storageesp.StorageESP;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.MinecraftClient;
@@ -28,11 +30,12 @@ import java.awt.*;
 import java.io.IOException;
 
 @Mixin(WorldRenderer.class)
-public class MixinWorldRenderer {
+public abstract class MixinWorldRenderer {
 
     @Shadow private @Nullable ShaderEffect entityOutlineShader;
     @Shadow @Final private MinecraftClient client;
     @Shadow private @Nullable Framebuffer entityOutlinesFramebuffer;
+
     private final Identifier my_outline = new Identifier("jex", "shaders/entity_outline.json");
     private final Identifier mojang_outline = new Identifier("shaders/post/entity_outline.json");
 
@@ -47,7 +50,7 @@ public class MixinWorldRenderer {
             this.entityOutlineShader.close();
         }
 
-        Identifier identifier = getIDForOutline("shaders/post/entity_outline.json");
+        Identifier identifier = getIDForOutline();
 
         try {
             this.entityOutlineShader = new ShaderEffect(this.client.getTextureManager(), this.client.getResourceManager(), this.client.getFramebuffer(), identifier);
@@ -61,9 +64,9 @@ public class MixinWorldRenderer {
         ci.cancel();
     }
 
-    public Identifier getIDForOutline(String id) {
+    public Identifier getIDForOutline() {
         try {
-            if (ESP.INSTANCE.getState() && ESP.INSTANCE.mode.equalsIgnoreCase("Shader")) {
+            if ((ESP.INSTANCE.getState() && ESP.INSTANCE.mode.equalsIgnoreCase("Shader")) || Feature.getState(StorageESP.class) && Feature.get(StorageESP.class).mode.equalsIgnoreCase("Shader")) {
                 return my_outline;
             }
         } catch (Exception e) {

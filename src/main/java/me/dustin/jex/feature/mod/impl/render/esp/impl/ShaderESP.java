@@ -9,8 +9,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 
 public class ShaderESP extends FeatureExtension {
 
-    public static boolean isOutlining;
-
     public ShaderESP() {
         super("Shader", ESP.class);
     }
