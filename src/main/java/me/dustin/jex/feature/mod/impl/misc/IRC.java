@@ -15,6 +15,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.load.impl.IChatScreen;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.network.chat.Component;
@@ -193,6 +194,9 @@ public class IRC extends Feature {
     public static void addIRCMessage(String message) {
         if (message.isEmpty())
             return;
+        for (ChatFormatting value : ChatFormatting.values()) {
+            message = message.replace("&" + value.getChar(), "\247" + value.getChar());
+        }
         String ircString = "\2478[\247cIRC\2478] \2477" + message;
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             ChatHelper.INSTANCE.addRawMessage(ircString);
