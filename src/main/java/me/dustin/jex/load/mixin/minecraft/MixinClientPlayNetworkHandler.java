@@ -67,7 +67,7 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetwor
     @Inject(method = "onPlayerPositionLook", at = @At("HEAD"))
     public void posLook(PlayerPositionLookS2CPacket packet, CallbackInfo ci) {
         //fix for viafabric getting stuck on "Loading terrain..." on 2b2t specifically
-        if (ConnectedServerHelper.INSTANCE.getServerAddress().getAddress().contains("2b2t.org") && Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null)
+        if (!Wrapper.INSTANCE.getMinecraft().isInSingleplayer() && ConnectedServerHelper.INSTANCE.getServerAddress() != null && ConnectedServerHelper.INSTANCE.getServerAddress().getAddress().contains("2b2t.org") && Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null)
             Wrapper.INSTANCE.getMinecraft().setScreen(null);
     }
 
