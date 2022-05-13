@@ -35,11 +35,11 @@ public class Messages extends Feature {
                     char replace = fancyChars.charAt(replaceChars.indexOf(currentChar));
                     s = s.replace(currentChar, replace);
                 }
-                event.setPacket(new ServerboundChatPacket(s, sigData));
+                event.setPacket(new ServerboundChatPacket(s, sigData, chatMessageC2SPacket.signedPreview()));
             }
-            case "Upside-Down" -> event.setPacket(new ServerboundChatPacket(upsideDown(message), sigData));
-            case "Backwards" -> event.setPacket(new ServerboundChatPacket(new StringBuilder(message).reverse().toString(), sigData));
-            case "Random Capital" -> event.setPacket(new ServerboundChatPacket(randomCapitalize(message), sigData));
+            case "Upside-Down" -> event.setPacket(new ServerboundChatPacket(upsideDown(message), sigData, chatMessageC2SPacket.signedPreview()));
+            case "Backwards" -> event.setPacket(new ServerboundChatPacket(new StringBuilder(message).reverse().toString(), sigData, chatMessageC2SPacket.signedPreview()));
+            case "Random Capital" -> event.setPacket(new ServerboundChatPacket(randomCapitalize(message), sigData, chatMessageC2SPacket.signedPreview()));
         }
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundChatPacket.class));
 

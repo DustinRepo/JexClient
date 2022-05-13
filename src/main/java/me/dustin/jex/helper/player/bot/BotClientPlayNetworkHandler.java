@@ -17,6 +17,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.PacketUtils;
@@ -83,7 +84,7 @@ public class BotClientPlayNetworkHandler extends ClientPacketListener {
         ArrayList<ResourceKey<Level>> list = Lists.newArrayList(packet.levels());
         Collections.shuffle(list);
         ResourceKey<Level> registryKey = packet.dimension();
-        Holder<DimensionType> registryEntry = packet.dimensionType();
+        Holder<DimensionType> registryEntry = this.registryAccess().registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY).getHolderOrThrow(packet.dimensionType());
         int chunkLoadDistance = packet.chunkRadius();
         int simulationDistance = packet.simulationDistance();
         boolean bl = packet.isDebug();
@@ -204,8 +205,8 @@ public class BotClientPlayNetworkHandler extends ClientPacketListener {
     public void handlePlayerChat(ClientboundPlayerChatPacket packet) {
         IChatComponent iChatComponent = (IChatComponent) Wrapper.INSTANCE.getMinecraft().gui.getChat();
         try {
-            if (!iChatComponent.containsMessage(packet.content().getString()))
-                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", ChatFormatting.DARK_GRAY, ChatFormatting.GREEN, playerBot.getGameProfile().getName(), ChatFormatting.DARK_GRAY, ChatFormatting.WHITE, ChatFormatting.GRAY, packet.content().getString()));
+            if (!iChatComponent.containsMessage(packet.getMessage().signedContent().getString()))
+                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", ChatFormatting.DARK_GRAY, ChatFormatting.GREEN, playerBot.getGameProfile().getName(), ChatFormatting.DARK_GRAY, ChatFormatting.WHITE, ChatFormatting.GRAY, packet.getMessage().signedContent().getString()));
         } catch (Exception e){}
     }
 

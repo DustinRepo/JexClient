@@ -60,7 +60,7 @@ public class IRC extends Feature {
 
     @EventPointer
     private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {
-        if ((event.getMessage().startsWith(sendPrefix) || ircChatOverride) && ircClient != null) {
+        if (!event.isPreview() && (event.getMessage().startsWith(sendPrefix) || ircChatOverride) && ircClient != null) {
             event.cancel();
             String message = event.getMessage().startsWith(sendPrefix) ? event.getMessage().substring(sendPrefix.length()) : event.getMessage();
             if (message.isEmpty()) {

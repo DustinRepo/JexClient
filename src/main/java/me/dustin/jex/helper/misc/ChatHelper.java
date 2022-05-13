@@ -23,7 +23,7 @@ public enum ChatHelper {
     public void sendChatMessage(String chat) {
         Instant instant = Instant.now();
         MessageSignature chatSigData = new MessageSignature(Wrapper.INSTANCE.getLocalPlayer().getUUID(), instant, sigForMessage(instant, chat));
-        NetworkHelper.INSTANCE.sendPacket(new ServerboundChatPacket(chat, chatSigData));
+        NetworkHelper.INSTANCE.sendPacket(new ServerboundChatPacket(chat, chatSigData, false));
     }
 
     private Crypt.SaltSignaturePair sigForMessage(Instant instant, String string) {

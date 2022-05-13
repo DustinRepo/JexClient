@@ -46,7 +46,7 @@ public class MassTPA extends Feature {
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
         ClientboundPlayerChatPacket gameMessageS2CPacket = (ClientboundPlayerChatPacket) event.getPacket();
-        if (gameMessageS2CPacket.content().getString().toLowerCase().contains("accepted your tpa")) {
+        if (gameMessageS2CPacket.getMessage().signedContent().getString().toLowerCase().contains("accepted your tpa")) {
             ChatHelper.INSTANCE.addClientMessage("TPA accepted. Turning off");
             setState(false);
         }

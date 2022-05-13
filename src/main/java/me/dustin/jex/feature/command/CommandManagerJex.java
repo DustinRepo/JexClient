@@ -1,8 +1,4 @@
 package me.dustin.jex.feature.command;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
 import com.mojang.brigadier.CommandDispatcher;
 import me.dustin.events.EventManager;
@@ -36,7 +32,7 @@ public enum CommandManagerJex {
 
     public CommandSuggestions jexCommandSuggestor;
 
-    private static ArrayList<Command> commands = new ArrayList<>();
+    private static final ArrayList<Command> commands = new ArrayList<>();
     public static final CommandDispatcher<FabricClientCommandSource> DISPATCHER = new CommandDispatcher<>();
 
     public void registerCommands(ClientPacketListener networkHandler) {
@@ -97,7 +93,7 @@ public enum CommandManagerJex {
 
     @EventPointer
     private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {
-        if (event.getMessage().startsWith(prefix) && ClientCommandInternals.executeCommand(event.getMessage())) {
+        if (!event.isPreview() && event.getMessage().startsWith(prefix) && ClientCommandInternals.executeCommand(event.getMessage())) {
             event.cancel();
         }
     });

@@ -72,10 +72,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.SignatureException;
+import java.security.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Predicate;
@@ -141,7 +138,9 @@ public class PlayerBot {
         WebHelper.HttpResponse httpResponse = WebHelper.INSTANCE.httpRequest("https://api.minecraftservices.com/player/certificates", null, headers, "POST");
 
         KeyPairResponse keyPairResponse = JsonHelper.INSTANCE.gson.fromJson(httpResponse.data(), KeyPairResponse.class);
-        return new ProfileKeyPair(Crypt.stringToPemRsaPrivateKey(keyPairResponse.getPrivateKey()), new ProfilePublicKey(new ProfilePublicKey.Data(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()), Crypt.stringToRsaPublicKey(keyPairResponse.getPublicKey())), Instant.parse(keyPairResponse.getRefreshedAfter()));
+        PublicKey publicKey = Crypt.stringToRsaPublicKey(keyPairResponse.getPublicKey());
+        byte[] keySig = Base64.getDecoder().decode(keyPairResponse.getPublicKeySignature());
+        return new ProfileKeyPair(Crypt.stringToPemRsaPrivateKey(keyPairResponse.getPrivateKey()), new ProfilePublicKey(new ProfilePublicKey.Data(Instant.parse(keyPairResponse.getExpiresAt()), publicKey, keySig)), Instant.parse(keyPairResponse.getRefreshedAfter()));
     }
 
     public void disconnect() {
@@ -208,7 +207,7 @@ public class PlayerBot {
     public void sendMessage(String chat) {
         Instant instant = Instant.now();
         MessageSignature chatSigData = new MessageSignature(UUID.fromString(getSession().getUuid()), instant, sigForMessage(instant, chat));
-        this.clientConnection.send(new ServerboundChatPacket(chat, chatSigData));
+        this.clientConnection.send(new ServerboundChatPacket(chat, chatSigData, false));
     }
 
     private Crypt.SaltSignaturePair sigForMessage(Instant instant, String string) {

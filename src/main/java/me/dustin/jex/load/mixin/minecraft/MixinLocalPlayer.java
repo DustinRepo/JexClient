@@ -14,6 +14,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 import net.minecraft.stats.StatsCounter;
 import net.minecraft.tags.FluidTags;
@@ -119,9 +120,9 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer {
         new EventPlayerPackets().run();
     }
 
-    @Inject(method = "chat", at = @At("HEAD"), cancellable = true)
-    public void sendChatMessage(String string, CallbackInfo ci) {
-        EventSendMessage eventSendMessage = new EventSendMessage(string).run();
+    @Inject(method = "chat(Ljava/lang/String;Lnet/minecraft/network/chat/Component;)V", at = @At("HEAD"), cancellable = true)
+    public void sendChatMessage(String string, Component component, CallbackInfo ci) {
+        EventSendMessage eventSendMessage = new EventSendMessage(string, component != null).run();
         if (eventSendMessage.isCancelled()) {
             ci.cancel();
         }
