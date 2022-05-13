@@ -1,3 +1,9 @@
+0.6.9
+Added ECME mode to ElytraPlus
+Fixed IRC not displaying color properly for some people
+Fixed Storage entities not being outlined properly in Shader StorageESP if ESP isn't also on Shader
+Fixed Jex not being able to load into SinglePlayer worlds until you join a server since last update
+
 0.6.8
 Massively improved performance of 2D rendering
 Fixed IRC throwing errors on some long messages
