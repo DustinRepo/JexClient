@@ -10,6 +10,7 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.feature.command.core.Command;
+import me.dustin.jex.feature.plugin.JexPlugin;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ClassHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -50,6 +51,7 @@ public enum CommandManagerJex {
                 e.printStackTrace();
             }
         });
+        JexPlugin.commandsLoad();
         this.getCommands().sort((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()));
         EventManager.register(this);
     }

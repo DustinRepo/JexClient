@@ -54,6 +54,11 @@ public class DropdownFeatureButton extends DropdownButton {
         super.tick();
     }
 
+    @Override
+    public boolean isVisible() {
+        return super.isVisible() && feature != null && Feature.get(feature.getName()) != null;
+    }
+
     public void open() {
         setOpen(true);
         buttonsHeight = 0;

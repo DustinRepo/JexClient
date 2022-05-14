@@ -1,6 +1,5 @@
 plugins {
 	id 'fabric-loom' version '0.11-SNAPSHOT'
-	id 'maven-publish'
 	id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
@@ -29,12 +28,9 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	dependency group: 'pircbot', name: 'pircbot', version: '1.5.0'
 	dependency group: 'org.yaml', name: 'snakeyaml', version: '1.30'
 	dependency files('lib/IRCClient.jar')
 	implementation group: 'io.netty', name: 'netty-handler-proxy', version: '4.1.76.Final'
-
-
 
 	implementation files('lib/baritone-1.8.3-dev.jar')
 	implementation files('lib/sodium.jar')
@@ -68,11 +64,11 @@ jar {
 
 remapJar {
 	input.set(shadowJar.archiveFile)
-	archiveName = "JexClient-Snap.jar"
+	archiveName("JexClient-Snap.jar")
 }
 
 shadowJar {
-	archiveName = "shadow-unmapped.jar"
+	archiveName("jex-plugin-dev.jar")
 	configurations = [project.configurations.shadow]
 	exclude("com/google/")
 }
