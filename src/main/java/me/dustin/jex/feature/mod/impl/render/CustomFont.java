@@ -77,17 +77,4 @@ public class CustomFont extends Feature {
         assert fontOption != null;
         fontOption.setAll(finalArray);
     }
-
-    @Override
-    public Map<String, ButtonListener> addButtons() {
-        Map<String, ButtonListener> map = Maps.newHashMap();
-        ButtonListener listener = new ButtonListener() {
-            @Override
-            public void invoke() {
-                loadFont();
-            }
-        };
-        map.put("Set Font", listener);
-        return map;
-    }
 }

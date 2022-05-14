@@ -6,6 +6,7 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.FeatureArgumentType;
+import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -26,7 +27,8 @@ public class CommandToggle extends Command {
         feature.toggleState();
         if (JexClient.INSTANCE.isAutoSaveEnabled())
             ConfigManager.INSTANCE.get(FeatureFile.class).write();
-        ChatHelper.INSTANCE.addClientMessage(String.format("%s %s", feature.getName(), feature.getState() ? "\247a\247lON" : "\2474\247lOFF"));
+        if (!(feature instanceof Gui))
+            ChatHelper.INSTANCE.addClientMessage("%s %s".formatted(feature.getName(), feature.getState() ? "\247a\247lON" : "\2474\247lOFF"));
         return 1;
     }
 }

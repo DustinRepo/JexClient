@@ -2,11 +2,11 @@ package me.dustin.jex;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.platform.InputConstants;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.*;
+import me.dustin.jex.feature.keybind.Keybind;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
@@ -15,17 +15,15 @@ import me.dustin.jex.feature.mod.impl.movement.Step;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.feature.mod.impl.render.CustomFont;
-import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.gui.changelog.changelog.JexChangelog;
-import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
-import me.dustin.jex.helper.file.ClassHelper;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
+import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ConnectedServerHelper;
@@ -51,10 +49,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 
 public enum JexClient {
@@ -100,7 +95,6 @@ public enum JexClient {
         CustomFont.INSTANCE.loadFont();
         JexChangelog.loadChangelogList();
         getLogger().info("Jex load finished.");
-
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             getLogger().info("Creating mods.json for website.");
             createJson();
@@ -140,12 +134,7 @@ public enum JexClient {
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
         if (event.getKey() == GLFW.GLFW_KEY_INSERT)
             Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
-        FeatureManager.INSTANCE.getFeatures().forEach(module -> {
-            if (module.getKey() == event.getKey()) {
-                module.toggleState();
-                ConfigManager.INSTANCE.get(FeatureFile.class).write();
-            }
-        });
+        Keybind.get(event.getKey()).forEach(Keybind::execute);
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_GAME));
 
     @EventPointer
@@ -208,7 +197,7 @@ public enum JexClient {
                 JsonObject object = new JsonObject();
                 object.addProperty("name", feature.getName());
                 object.addProperty("description", feature.getDescription());
-                object.addProperty("key", (GLFW.glfwGetKeyName(feature.getKey(), 0) == null ? InputConstants.getKey(feature.getKey(), 0).getName().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(feature.getKey(), 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_"));
+                object.addProperty("key", KeyboardHelper.INSTANCE.getKeyName(feature.getKey()));
                 object.addProperty("enabled", feature.getState());
                 object.addProperty("visible", feature.isVisible());
                 categoryArray.add(object);
