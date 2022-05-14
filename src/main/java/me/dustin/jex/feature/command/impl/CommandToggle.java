@@ -12,6 +12,7 @@ import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.minecraft.ChatFormatting;
 
 @Cmd(name = "toggle", description = "Toggle modules.", alias = {"t"}, syntax = ".toggle <mod>")
 public class CommandToggle extends Command {
@@ -28,7 +29,7 @@ public class CommandToggle extends Command {
         if (JexClient.INSTANCE.isAutoSaveEnabled())
             ConfigManager.INSTANCE.get(FeatureFile.class).write();
         if (!(feature instanceof Gui))
-            ChatHelper.INSTANCE.addClientMessage("%s %s".formatted(feature.getName(), feature.getState() ? "\247a\247lON" : "\2474\247lOFF"));
+            ChatHelper.INSTANCE.addClientMessage("%s set to: %s%s".formatted(feature.getName(), feature.getState() ? ChatFormatting.AQUA : ChatFormatting.RED, feature.getState()));
         return 1;
     }
 }
