@@ -7,7 +7,7 @@ import me.dustin.jex.helper.file.YamlHelper;
 import java.util.HashMap;
 import java.util.Map;
 
-@ConfigFile.CFG(fileName = "keybinds.json", folder = "config")
+@ConfigFile.CFG(fileName = "Keybinds.yml", folder = "config")
 public class KeybindFile extends ConfigFile {
     @Override
     public void read() {
