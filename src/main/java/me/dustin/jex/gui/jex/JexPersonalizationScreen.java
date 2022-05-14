@@ -75,6 +75,7 @@ public class JexPersonalizationScreen extends Screen {
             String uuid = Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "");
             if (selectedHat == -1) {
                 Hat.clearHat(uuid);
+                setHat = "None";
             } else {
                 Hat.HatType hatType = Hat.HatType.values()[selectedHat];
                 Hat.setHat(uuid, hatType.name());
