@@ -1,3 +1,8 @@
+0.7.0
+Added support for plugins
+Added more flexible keybinds, allowing for jex commands, server commands, or normal chat
+Changed output of toggle command to look nicer
+
 0.6.9
 Added ECME mode to ElytraPlus
 Fixed IRC not displaying color properly for some people
