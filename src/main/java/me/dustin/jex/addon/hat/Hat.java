@@ -48,20 +48,16 @@ public class Hat {
         HatInfo info = getInfo(playerEntity);
         if (info == null)
             return new ItemStack(Items.AIR);
-        switch (info.type) {
-            case TOP_HAT:
-                return new ItemStack(topHat);
-            case HALO:
-                return new ItemStack(halo);
-            case PROPELLER:
-                return new ItemStack(propeller);
-            case CROWN:
-                return new ItemStack(crown);
-            case COWBOY_HAT:
-                return new ItemStack(cowboyHat);
-        }
-        return new ItemStack(topHat);
+        return switch (info.type) {
+            case TOP_HAT -> new ItemStack(topHat);
+            case HALO -> new ItemStack(halo);
+            case PROPELLER -> new ItemStack(propeller);
+            case CROWN -> new ItemStack(crown);
+            case COWBOY_HAT -> new ItemStack(cowboyHat);
+            default -> new ItemStack(Items.AIR);
+        };
     }
+
 
     public static HatType getType(Player playerEntity) {
         HatInfo info = getInfo(playerEntity);

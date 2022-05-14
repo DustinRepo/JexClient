@@ -55,6 +55,8 @@ public class ClientSettingsFile extends ConfigFile {
         if (JexPersonalizationScreen.setCape != null) {
             File capeFile = new File(JexPersonalizationScreen.setCape);
             Cape.setPersonalCape(capeFile);
+        }
+        if (JexPersonalizationScreen.setHat != null && !JexPersonalizationScreen.setHat.equalsIgnoreCase("None")) {
             Hat.setHat(Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replace("-", ""), JexPersonalizationScreen.setHat);
         }
     }
