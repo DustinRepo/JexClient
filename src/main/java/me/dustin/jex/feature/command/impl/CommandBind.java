@@ -7,6 +7,8 @@ import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.keybind.Keybind;
+import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.file.impl.KeybindFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
@@ -22,6 +24,7 @@ public class CommandBind extends Command {
             boolean isJexCommand = command.startsWith(CommandManagerJex.INSTANCE.getPrefix());
             Keybind.add(key, isJexCommand ? command.substring(1) : command, isJexCommand);
             ChatHelper.INSTANCE.addClientMessage("Added %s to key: %s".formatted(command, StringArgumentType.getString(context, "key")));
+            ConfigManager.INSTANCE.get(KeybindFile.class).write();
             return 1;
         })))).then(literal("remove").then(argument("command", StringArgumentType.string()).executes(context -> {
             String command = StringArgumentType.getString(context, "command");
@@ -34,11 +37,13 @@ public class CommandBind extends Command {
             }
             Keybind.remove(bind);
             ChatHelper.INSTANCE.addClientMessage("Removed keybind");
+            ConfigManager.INSTANCE.get(KeybindFile.class).write();
             return 1;
         }))).then(literal("clear").then(argument("key", StringArgumentType.string()).executes(context -> {
             int key = KeyboardHelper.INSTANCE.getKeyFromName(StringArgumentType.getString(context, "key"));
             Keybind.clear(key);
             ChatHelper.INSTANCE.addClientMessage("Cleared all binds from %s".formatted(StringArgumentType.getString(context, "key")));
+            ConfigManager.INSTANCE.get(KeybindFile.class).write();
             return 1;
         }))));
     }
