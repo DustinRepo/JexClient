@@ -16,9 +16,8 @@ import me.dustin.jex.feature.mod.impl.movement.Step;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.feature.mod.impl.render.CustomFont;
-import me.dustin.jex.file.core.ConfigManager;
+import me.dustin.jex.feature.plugin.JexPlugin;
 import me.dustin.jex.gui.changelog.changelog.JexChangelog;
-import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
@@ -44,7 +43,6 @@ import me.dustin.events.core.annotate.EventPointer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.sound.SoundEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,6 +66,8 @@ public enum JexClient {
         if (loadedOnce)
             return;
         getLogger().info("Loading Jex Client");
+        getLogger().info("Loading plugins");
+        JexPlugin.loadPlugins();
 
         if (BaritoneHelper.INSTANCE.baritoneExists()) {
             getLogger().info("Creating Baritone processes");
@@ -98,6 +98,7 @@ public enum JexClient {
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();
         JexChangelog.loadChangelogList();
+        JexPlugin.clientLoad();
         getLogger().info("Jex load finished.");
 
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {

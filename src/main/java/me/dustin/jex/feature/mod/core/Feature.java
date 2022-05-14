@@ -20,8 +20,10 @@ public class Feature {
     private final Category featureCategory;
 
     public Feature() {
-        this.name = this.getClass().getSimpleName();
-        this.displayName = this.getClass().getSimpleName();
+        this.name = this.getClass().getAnnotation(Manifest.class).name();
+        if (name.equalsIgnoreCase("\\"))
+            name = this.getClass().getSimpleName();
+        this.displayName = this.name;
         this.description = this.getClass().getAnnotation(Manifest.class).description();
         this.featureCategory = this.getClass().getAnnotation(Manifest.class).category();
         int key = this.getClass().getAnnotation(Manifest.class).key();
@@ -141,11 +143,12 @@ public class Feature {
         return featureCategory;
     }
 
-    public void loadFeature() {
+    public Feature loadFeature() {
         //fuck-ass workaround for having mods enabled by default in the code messing with the event manager
         if (this.getClass().getAnnotation(Manifest.class) != null && this.getClass().getAnnotation(Manifest.class).enabled()) {
             setState(true);
         }
+        return this;
     }
 
     public void setKey(int key) {
@@ -168,6 +171,7 @@ public class Feature {
     }
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Manifest {
+        String name() default "\\";
         Category category();
         String description();
         int key() default 0;

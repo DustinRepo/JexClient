@@ -2,8 +2,6 @@ package me.dustin.jex.gui.click.dropdown.impl.feature;
 
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.Option;
-import me.dustin.jex.feature.option.types.*;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.dropdown.impl.button.DropdownButton;
@@ -46,6 +44,11 @@ public class DropdownFeatureButton extends DropdownButton {
         } else {
             this.getChildren().forEach(dropdownButton -> dropdownButton.click(double_1, double_2, int_1));
         }
+    }
+
+    @Override
+    public boolean isVisible() {
+        return super.isVisible() && feature != null && Feature.get(feature.getName()) != null;
     }
 
     @Override
