@@ -1,8 +1,7 @@
 package me.dustin.jex.feature.mod.core;
 
-import com.google.common.collect.Maps;
+import me.dustin.jex.feature.keybind.Keybind;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
-import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.feature.option.Option;
 import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.events.EventManager;
@@ -10,7 +9,6 @@ import me.dustin.events.EventManager;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Feature {
 
@@ -19,16 +17,17 @@ public class Feature {
     private String description;
     private boolean state;
     private boolean visible;
-    private int key;
-    private Feature.Category featureCategory;
+    private final Category featureCategory;
 
     public Feature() {
         this.name = this.getClass().getSimpleName();
         this.displayName = this.getClass().getSimpleName();
-        this.description = this.getClass().getAnnotation(Feature.Manifest.class).description();
-        this.featureCategory = this.getClass().getAnnotation(Feature.Manifest.class).category();
-        this.key = this.getClass().getAnnotation(Feature.Manifest.class).key();
-        this.visible = this.getClass().getAnnotation(Feature.Manifest.class).visible();
+        this.description = this.getClass().getAnnotation(Manifest.class).description();
+        this.featureCategory = this.getClass().getAnnotation(Manifest.class).category();
+        int key = this.getClass().getAnnotation(Manifest.class).key();
+        if (key != 0)
+            Keybind.add(key, "t " + this.getName(), true);
+        this.visible = this.getClass().getAnnotation(Manifest.class).visible();
     }
 
     public static <T extends Feature> T get(Class<T> clazz) {
@@ -51,7 +50,7 @@ public class Feature {
         return get(clazz).getState();
     }
 
-    public static ArrayList<Feature> getModules(Feature.Category category) {
+    public static ArrayList<Feature> getModules(Category category) {
         ArrayList<Feature> features = new ArrayList<>();
         FeatureManager.INSTANCE.getFeatures().forEach(module -> {
             if (module.getFeatureCategory() == category)
@@ -138,29 +137,30 @@ public class Feature {
         this.visible = visible;
     }
 
-    public int getKey() {
-        return key;
-    }
-
-    public void setKey(int key) {
-        this.key = key;
-    }
-
-    public Feature.Category getFeatureCategory() {
+    public Category getFeatureCategory() {
         return featureCategory;
     }
 
-    public void setFeatureCategory(Feature.Category featureCategory) {
-        this.featureCategory = featureCategory;
-    }
-
-    public Map<String, ButtonListener> addButtons() {return Maps.newHashMap();}
-
     public void loadFeature() {
         //fuck-ass workaround for having mods enabled by default in the code messing with the event manager
-        if (this.getClass().getAnnotation(Feature.Manifest.class) != null && this.getClass().getAnnotation(Feature.Manifest.class).enabled()) {
+        if (this.getClass().getAnnotation(Manifest.class) != null && this.getClass().getAnnotation(Manifest.class).enabled()) {
             setState(true);
         }
+    }
+
+    public void setKey(int key) {
+        Keybind keybind = Keybind.get("t " + getName());
+        if (keybind != null)
+            Keybind.remove(keybind);
+        Keybind.add(key, "t " + getName(), true);
+    }
+
+
+    public int getKey() {
+        Keybind keybind = Keybind.get("t " + getName());
+        if (keybind != null)
+            return keybind.key();
+        else return 0;
     }
 
     public enum Category {
@@ -168,7 +168,7 @@ public class Feature {
     }
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Manifest {
-        Feature.Category category();
+        Category category();
         String description();
         int key() default 0;
         boolean enabled() default false;

@@ -7,6 +7,7 @@ import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.*;
 import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.keybind.Keybind;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
@@ -25,6 +26,7 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
+import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Lagometer;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ConnectedServerHelper;
@@ -127,12 +129,7 @@ public enum JexClient {
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
         if (event.getKey() == GLFW.GLFW_KEY_INSERT)
             Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
-        FeatureManager.INSTANCE.getFeatures().forEach(module -> {
-            if (module.getKey() == event.getKey()) {
-                module.toggleState();
-                ConfigManager.INSTANCE.get(FeatureFile.class).write();
-            }
-        });
+        Keybind.get(event.getKey()).forEach(Keybind::execute);
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_GAME));
 
     @EventPointer
@@ -199,7 +196,7 @@ public enum JexClient {
                 JsonObject object = new JsonObject();
                 object.addProperty("name", feature.getName());
                 object.addProperty("description", feature.getDescription());
-                object.addProperty("key", (GLFW.glfwGetKeyName(feature.getKey(), 0) == null ? InputUtil.fromKeyCode(feature.getKey(), 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(feature.getKey(), 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_"));
+                object.addProperty("key", KeyboardHelper.INSTANCE.getKeyName(feature.getKey()));
                 object.addProperty("enabled", feature.getState());
                 object.addProperty("visible", feature.isVisible());
                 categoryArray.add(object);

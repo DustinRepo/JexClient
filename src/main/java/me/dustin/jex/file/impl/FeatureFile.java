@@ -1,7 +1,5 @@
 package me.dustin.jex.file.impl;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
@@ -10,11 +8,8 @@ import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.feature.option.types.ColorOption;
 import me.dustin.jex.file.core.ConfigFile;
 import me.dustin.jex.file.core.ConfigManager;
-import me.dustin.jex.helper.file.JsonHelper;
-import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.YamlHelper;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +23,6 @@ public class FeatureFile extends ConfigFile {
         Map<String, Object> yamlMap = new HashMap<>();
         for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
             Map<String, Object> featureMap = new HashMap<>();
-            featureMap.put("key", feature.getKey());
             featureMap.put("state", feature.getState());
             featureMap.put("visible", feature.isVisible());
             if (OptionManager.INSTANCE.hasOption(feature)) {
@@ -42,7 +36,6 @@ public class FeatureFile extends ConfigFile {
             }
             yamlMap.put(feature.getName(), featureMap);
         }
-
         YamlHelper.INSTANCE.writeFile(yamlMap, getFile());
     }
 
@@ -50,7 +43,6 @@ public class FeatureFile extends ConfigFile {
         Map<String, Object> yamlMap = new HashMap<>();
         for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
             Map<String, Object> featureMap = new HashMap<>();
-            featureMap.put("key", feature.getKey());
             featureMap.put("state", feature.getState());
             featureMap.put("visible", feature.isVisible());
             if (OptionManager.INSTANCE.hasOption(feature)) {
@@ -81,7 +73,6 @@ public class FeatureFile extends ConfigFile {
             }
             if (o instanceof Map) {
                 Map<String, Object> featureValues = (Map<String, Object>) o;
-                int key = (int) featureValues.get("key");
                 boolean visible = (boolean) featureValues.get("visible");
                 boolean state = (boolean) featureValues.get("state");
                 Map<String, Object> optionsMap = (Map<String, Object>) featureValues.get("Options");
@@ -96,7 +87,6 @@ public class FeatureFile extends ConfigFile {
                     });
                 if (feature.getState() != state)
                     feature.setState(state);
-                feature.setKey(key);
                 feature.setVisible(visible);
             }
         });
