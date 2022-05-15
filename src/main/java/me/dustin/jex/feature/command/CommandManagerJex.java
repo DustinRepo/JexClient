@@ -43,7 +43,6 @@ public enum CommandManagerJex {
                 @SuppressWarnings("deprecation")
                 Command instance = (Command) clazz.newInstance();
                 instance.setCommandRegistryAccess(networkHandler);
-                instance.registerCommand();
                 this.getCommands().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
@@ -51,6 +50,7 @@ public enum CommandManagerJex {
         });
         JexPlugin.commandsLoad();
         this.getCommands().sort((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()));
+        this.getCommands().forEach(Command::registerCommand);
         EventManager.register(this);
     }
 

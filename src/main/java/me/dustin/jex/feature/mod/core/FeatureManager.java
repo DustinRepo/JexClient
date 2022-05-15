@@ -18,7 +18,6 @@ public enum FeatureManager {
         classList.forEach(clazz -> {
             try {
                 Feature instance = (Feature) clazz.newInstance();
-                instance.loadFeature();
                 this.getFeatures().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
@@ -26,6 +25,7 @@ public enum FeatureManager {
         });
         JexPlugin.featuresLoad();
         features.sort((f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName()));
+        features.forEach(Feature::loadFeature);
     }
 
     public ArrayList<Feature> getFeatures() {
