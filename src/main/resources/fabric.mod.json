@@ -22,6 +22,9 @@
   "entrypoints": {
     "main": [
       "me.dustin.jex.load.JexLoad"
+    ],
+    "preLaunch": [
+      "me.dustin.jex.load.PreLaunch"
     ]
   },
   "mixins": [
@@ -31,7 +34,7 @@
     "fabricloader": ">=0.11.3",
     "fabric": "*",
     "minecraft": "1.18.x",
-    "java": ">=16"
+    "java": ">=17"
   },
   "suggests": {
     "flamingo": "*"
