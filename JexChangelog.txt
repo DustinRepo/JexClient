@@ -1,3 +1,10 @@
+0.7.1
+Added Mixin support to plugins
+Added ability for plugins to have their resources loaded directly into Minecraft
+Added ability for plugins to specify required mods that must be loaded to load the plugin
+Fixed a Hat being set even if you don't have one enabled in the Personalization screen
+Fixed command suggestions not working properly in some instances
+
 0.7.0
 Added support for plugins
 Added more flexible keybinds, allowing for jex commands, server commands, or normal chat
