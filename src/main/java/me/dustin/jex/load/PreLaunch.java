@@ -9,15 +9,15 @@ import org.spongepowered.asm.mixin.Mixins;
 
 public class PreLaunch implements PreLaunchEntrypoint {
     private final Logger LOGGER = LogManager.getFormatterLogger("JexPlugins");
-    //this method is called just slightly too late to actually load before the mixins
-    //the only earlier I could find was in onLoad in a IMixinConfigPlugin, but that causes ConcurrentModificationException since it's already iterating the mixin configs
     @Override
     public void onPreLaunch() {
         LOGGER.info("Adding Jex plugins to class path");
         JexPluginManager.INSTANCE.loadPlugins();
         JexPluginManager.INSTANCE.getPlugins().forEach(jexPlugin -> {
-            if (!jexPlugin.getMixins().isEmpty())
+            if (!jexPlugin.getMixins().isEmpty()) {
+                LOGGER.info("Adding mixin config %s from plugin %s".formatted(jexPlugin.getMixins(), jexPlugin.getName()));
                 Mixins.addConfiguration(jexPlugin.getMixins());
+            }
         });
     }
 }
