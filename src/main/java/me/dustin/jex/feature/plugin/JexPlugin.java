@@ -7,14 +7,16 @@ import java.lang.reflect.Method;
 
 public class JexPlugin {
     private final String name;
+    private final String version;
     private final Class<?> clazz;
     private final String description;
     private final String[] authors;
     private final boolean allowDisable;
     private Object instance;
     private String mixinFile = "";
-    public JexPlugin(String name, Class<?> clazz, String description, String[] authors, boolean allowDisable) {
+    public JexPlugin(String name, String version, Class<?> clazz, String description, String[] authors, boolean allowDisable) {
         this.name = name;
+        this.version = version;
         this.clazz = clazz;
         this.description = description;
         this.authors = authors;
@@ -124,6 +126,10 @@ public class JexPlugin {
 
     public boolean isAllowDisable() {
         return allowDisable;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     public String getMixins() {

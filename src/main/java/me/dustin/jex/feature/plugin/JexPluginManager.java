@@ -1,9 +1,12 @@
 package me.dustin.jex.feature.plugin;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.dustin.jex.helper.file.JsonHelper;
-import me.dustin.jex.helper.file.ModFileHelper;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.launch.FabricLauncherBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,13 +24,13 @@ public enum JexPluginManager {
     private final Logger LOGGER = LogManager.getFormatterLogger("JexPlugins");
     private final ArrayList<JexPlugin> plugins = new ArrayList<>();
 
-    public JexPlugin add(String name, Class<?> clazz, String description, String[] authors, boolean allowDisable) {
-        JexPlugin jexPlugin = new JexPlugin(name, clazz, description, authors, allowDisable);
+    public JexPlugin add(String name, String version, Class<?> clazz, String description, String[] authors, boolean allowDisable) {
+        JexPlugin jexPlugin = new JexPlugin(name, version, clazz, description, authors, allowDisable);
         JexPluginManager.INSTANCE.getPlugins().add(jexPlugin);
         return jexPlugin;
     }
     public void loadPlugins() {
-        File pluginsFolder = new File(ModFileHelper.INSTANCE.getJexDirectory(), "plugins");
+        File pluginsFolder = new File(new File(FabricLoader.getInstance().getGameDir().toString(), "JexClient"), "plugins");
         if (!pluginsFolder.exists()) {
             pluginsFolder.mkdirs();
             return;
@@ -62,7 +65,9 @@ public enum JexPluginManager {
             }
         }
         //just to make sure there's not some weird order-dependant loads
-        Collections.shuffle(plugins);
+        Collections.shuffle(getPlugins());
+        LOGGER.info("Loaded Plugins: %d".formatted(getPlugins().size()));
+        getPlugins().forEach(jexPlugin -> LOGGER.info("%s v%s".formatted(jexPlugin.getName(), jexPlugin.getVersion())));
     }
 
     private String read(InputStream inputStream) throws IOException {
@@ -79,19 +84,37 @@ public enum JexPluginManager {
 
     private void loadFromJson(JsonObject jsonObject) throws ClassNotFoundException {
         String name = jsonObject.get("name").getAsString();
+        String version = jsonObject.get("version").getAsString();
         String mainClass = jsonObject.get("mainClass").getAsString();
         String description = jsonObject.get("description").getAsString();
         ArrayList<String> list = new ArrayList<>();
         JsonArray jsonArray = jsonObject.getAsJsonArray("authors");
         jsonArray.forEach(jsonElement -> list.add(jsonElement.getAsString()));
         boolean allowDisable = jsonObject.get("allowDisable").getAsBoolean();
+        if (jsonObject.has("required_mods")) {
+            JsonArray requiredMods = jsonObject.getAsJsonArray("required_mods");
+            for (JsonElement requiredMod : requiredMods) {
+                if (!isModPresent(requiredMod.getAsString())) {
+                    LOGGER.error("Could not load plugin: %s. Client does not have required mod: %s".formatted(name, requiredMod.getAsString()));
+                    return;
+                }
+            }
+        }
 
-        LOGGER.info("Found Plugin: %s".formatted(name));
-        JexPlugin jexPlugin = add(name, Class.forName(mainClass), description, toArray(list), allowDisable);
+        JexPlugin jexPlugin = add(name, version, Class.forName(mainClass), description, toArray(list), allowDisable);
         if (jsonObject.has("mixins")) {
             String mixinsFile = jsonObject.get("mixins").getAsString();
             jexPlugin.setMixins(mixinsFile);
         }
+    }
+
+    //FabricLoaderImpl.getModContainer() was returning null for some reason so I made this workaround
+    private boolean isModPresent(String modId) {
+        for (ModContainer allMod : FabricLoaderImpl.INSTANCE.getAllMods()) {
+            if (allMod.getMetadata().getId().equalsIgnoreCase(modId))
+                return true;
+        }
+        return false;
     }
 
     private String[] toArray(ArrayList<String> list) {
