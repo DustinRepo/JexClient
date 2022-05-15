@@ -21,6 +21,9 @@
   "entrypoints": {
     "main": [
       "me.dustin.jex.load.JexLoad"
+    ],
+    "preLaunch": [
+      "me.dustin.jex.load.PreLaunch"
     ]
   },
   "mixins": [

@@ -67,8 +67,6 @@ public enum JexClient {
         if (loadedOnce)
             return;
         getLogger().info("Loading Jex Client");
-        getLogger().info("Loading plugins");
-        JexPlugin.loadPlugins();
         if (BaritoneHelper.INSTANCE.baritoneExists()) {
             getLogger().info("Creating Baritone processes");
             BaritoneHelper.INSTANCE.initBaritoneProcesses();

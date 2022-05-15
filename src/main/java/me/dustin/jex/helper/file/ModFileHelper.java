@@ -1,9 +1,7 @@
 package me.dustin.jex.helper.file;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.impl.render.Search;
 import me.dustin.jex.file.core.ConfigManager;
-import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.file.impl.SearchFile;
 import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -15,7 +13,7 @@ import java.io.File;
 public enum ModFileHelper {
     INSTANCE;
 
-    private String PATH_NAME = "JexClient";
+    private final String PATH_NAME = "JexClient";
     private boolean firstLoad;
 
     public void gameBootLoad() {
