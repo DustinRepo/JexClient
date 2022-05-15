@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -35,84 +36,49 @@ public abstract class MixinCommandSuggestions implements ICommandSuggestions {
 
     @Redirect(method = "updateCommandInfo", at = @At(value = "INVOKE", target = "com/mojang/brigadier/StringReader.peek()C"))
     public char refresh(StringReader stringReader) {
-        if (getThis() == CommandManagerJex.INSTANCE.jexCommandSuggestor) {
-            String string = this.input.getValue();
-            boolean bl = string.startsWith(CommandManagerJex.INSTANCE.getPrefix());
-            if (bl) {
-                return '/';
-            }
+        String string = this.input.getValue();
+        boolean bl = string.startsWith(CommandManagerJex.INSTANCE.getPrefix());
+        if (bl) {
+            return '/';
         }
         return stringReader.peek();
     }
 
     @Inject(method = "sortSuggestions", at = @At("HEAD"), cancellable = true)
     public void sort(Suggestions suggestions, CallbackInfoReturnable<List<Suggestion>> cir) {
-        if (getThis() == CommandManagerJex.INSTANCE.jexCommandSuggestor) {
-            String string = this.input.getValue().substring(0, this.input.getCursorPosition());
-            int i = getLastPlayerNameStart(string);
-            String string2 = string.substring(i).toLowerCase(Locale.ROOT);
-            List<Suggestion> list = Lists.newArrayList();
-            List<Suggestion> list2 = Lists.newArrayList();
-            Iterator var7 = suggestions.getList().iterator();
-
-            while(true) {
-                while(var7.hasNext()) {
-                    Suggestion suggestion = (Suggestion)var7.next();
-                    if (!CommandManagerJex.INSTANCE.isJexCommand(suggestion.getText()) && !this.input.getValue().contains(" ")){
-                        continue;
-                    }
-
-                    if (!suggestion.getText().startsWith(string2) && !suggestion.getText().startsWith("minecraft:" + string2)) {
-                    list2.add(suggestion);
-                    } else {
-                        list.add(suggestion);
-                    }
-                }
-
-                list.addAll(list2);
-                cir.setReturnValue(list);
-                break;
+        String s = this.input.getValue();
+        boolean bl = s.startsWith(CommandManagerJex.INSTANCE.getPrefix());
+        String string = this.input.getValue().substring(0, this.input.getCursorPosition());
+        int i = getLastPlayerNameStart(string);
+        String string2 = string.substring(i).toLowerCase(Locale.ROOT);
+        ArrayList<Suggestion> list = Lists.newArrayList();
+        ArrayList<Suggestion> list2 = Lists.newArrayList();
+        for (Suggestion suggestion : suggestions.getList()) {
+            if (bl) {
+                if (!CommandManagerJex.INSTANCE.isJexCommand(suggestion.getText()) && !this.input.getValue().contains(" "))
+                    continue;
+            } else if (CommandManagerJex.INSTANCE.isJexCommand(suggestion.getText()))
+                continue;
+            if (suggestion.getText().startsWith(string2) || (!bl && suggestion.getText().startsWith("minecraft:" + string2))) {
+                list.add(suggestion);
+                continue;
             }
-        } else {
-            String string = this.input.getValue().substring(0, this.input.getCursorPosition());
-            int i = getLastPlayerNameStart(string);
-            String string2 = string.substring(i).toLowerCase(Locale.ROOT);
-            List<Suggestion> list = Lists.newArrayList();
-            List<Suggestion> list2 = Lists.newArrayList();
-            Iterator var7 = suggestions.getList().iterator();
-
-            while(true) {
-                while (var7.hasNext()) {
-                    Suggestion suggestion = (Suggestion) var7.next();
-                    if (CommandManagerJex.INSTANCE.isJexCommand(suggestion.getText()) && !this.input.getValue().contains(" ")) {
-                        continue;
-                    }
-
-                    if (!suggestion.getText().startsWith(string2) && !suggestion.getText().startsWith("minecraft:" + string2)) {
-                        list2.add(suggestion);
-                    } else {
-                        list.add(suggestion);
-                    }
-                }
-
-                list.addAll(list2);
-                cir.setReturnValue(list);
-                break;
-            }
+            list2.add(suggestion);
         }
+        list.addAll(list2);
+        cir.setReturnValue(list);
     }
 
     private static int getLastPlayerNameStart(String input) {
         if (Strings.isNullOrEmpty(input)) {
             return 0;
-        } else {
-            int i = 0;
-
-            for(Matcher matcher = WHITESPACE_PATTERN.matcher(input); matcher.find(); i = matcher.end()) {
-            }
-
-            return i;
         }
+        int i = 0;
+        Matcher matcher = WHITESPACE_PATTERN.matcher(input);
+        while (matcher.find()) {
+            i = matcher.end();
+        }
+        return i;
     }
 
     @Override

@@ -31,8 +31,6 @@ public enum CommandManagerJex {
     private int overlayAlpha = 0;
     private boolean overlayOn = false;
 
-    public CommandSuggestions jexCommandSuggestor;
-
     private static final ArrayList<Command> commands = new ArrayList<>();
     public static final CommandDispatcher<FabricClientCommandSource> DISPATCHER = new CommandDispatcher<>();
 

@@ -28,7 +28,6 @@
     "minecraft.MixinClientLevel",
     "minecraft.MixinClientPacketListener",
     "minecraft.MixinCommandSuggestions",
-    "minecraft.MixinCommandSuggestionsSuggestionsList",
     "minecraft.MixinConnection",
     "minecraft.MixinConnectScreen",
     "minecraft.MixinEntity",
