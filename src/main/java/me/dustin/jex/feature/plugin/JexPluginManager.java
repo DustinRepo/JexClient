@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -39,7 +40,7 @@ public enum JexPluginManager {
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("JexPlugin.json");
             if (inputStream != null) {
                 JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(read(inputStream), JsonObject.class);
-                loadFromJson(jsonObject);
+                loadFromJson(jsonObject, null, null);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,11 +53,11 @@ public enum JexPluginManager {
                     while (entries.hasMoreElements()) {
                         final JarEntry entry = entries.nextElement();
                         if (!entry.isDirectory() && entry.getName().equalsIgnoreCase("JexPlugin.json")) {
-                            FabricLauncherBase.getLauncher().addToClassPath(file.toPath());
                             InputStream inputStream = jarFile.getInputStream(entry);
 
                             JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(read(inputStream), JsonObject.class);
-                            loadFromJson(jsonObject);
+                            loadFromJson(jsonObject, file, jarFile);
+                            break;
                         }
                     }
                 }
@@ -82,7 +83,7 @@ public enum JexPluginManager {
         return sb.toString();
     }
 
-    private void loadFromJson(JsonObject jsonObject) throws ClassNotFoundException {
+    private void loadFromJson(JsonObject jsonObject, File fileOfJar, JarFile jarFile) throws ClassNotFoundException {
         String name = jsonObject.get("name").getAsString();
         String version = jsonObject.get("version").getAsString();
         String mainClass = jsonObject.get("mainClass").getAsString();
@@ -94,13 +95,15 @@ public enum JexPluginManager {
         if (jsonObject.has("required_mods")) {
             JsonArray requiredMods = jsonObject.getAsJsonArray("required_mods");
             for (JsonElement requiredMod : requiredMods) {
-                if (!isModPresent(requiredMod.getAsString())) {
+                if (!FabricLoader.getInstance().isModLoaded(requiredMod.toString())) {
                     LOGGER.error("Could not load plugin: %s. Client does not have required mod: %s".formatted(name, requiredMod.getAsString()));
                     return;
                 }
             }
         }
-
+        sanityCheckFiles(mainClass, jsonObject.get("mixins").getAsString(), jarFile);
+        if (fileOfJar != null)
+            FabricLauncherBase.getLauncher().addToClassPath(fileOfJar.toPath());
         JexPlugin jexPlugin = add(name, version, Class.forName(mainClass), description, toArray(list), allowDisable);
         if (jsonObject.has("mixins")) {
             String mixinsFile = jsonObject.get("mixins").getAsString();
@@ -108,13 +111,28 @@ public enum JexPluginManager {
         }
     }
 
-    //FabricLoaderImpl.getModContainer() was returning null for some reason so I made this workaround
-    private boolean isModPresent(String modId) {
-        for (ModContainer allMod : FabricLoaderImpl.INSTANCE.getAllMods()) {
-            if (allMod.getMetadata().getId().equalsIgnoreCase(modId))
-                return true;
+    private void sanityCheckFiles(String mainClass, String mixinsLocation, JarFile jarFile) {
+        //plugin loaded from dev environment
+        if (jarFile == null) {
+            try {
+                Class.forName(mainClass);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Main class %s not found! Plugin will not be loaded!".formatted(mainClass));
+            }
+            if (mixinsLocation != null && !mixinsLocation.isEmpty()) {
+                if (FabricLauncherBase.getLauncher().getResourceAsStream(mixinsLocation) == null)
+                    throw new RuntimeException("Mixins file %s not found! Plugin will not be loaded!".formatted(mixinsLocation));
+            }
+            return;
         }
-        return false;
+        JarEntry mainClassEntry = jarFile.getJarEntry(mainClass);
+        if (mainClassEntry == null)
+            throw new RuntimeException("Main class %s not found! Plugin will not be loaded!".formatted(mainClass));
+        if (mixinsLocation != null && !mixinsLocation.isEmpty()) {
+            JarEntry mixinsEntry = jarFile.getJarEntry(mixinsLocation);
+            if (mixinsEntry == null)
+                throw new RuntimeException("Mixins file %s not found! Plugin will not be loaded!".formatted(mixinsLocation));
+        }
     }
 
     private String[] toArray(ArrayList<String> list) {
