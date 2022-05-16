@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -95,7 +94,7 @@ public enum JexPluginManager {
         if (jsonObject.has("required_mods")) {
             JsonArray requiredMods = jsonObject.getAsJsonArray("required_mods");
             for (JsonElement requiredMod : requiredMods) {
-                if (!FabricLoader.getInstance().isModLoaded(requiredMod.toString())) {
+                if (!isModPresent(requiredMod.getAsString())) {
                     LOGGER.error("Could not load plugin: %s. Client does not have required mod: %s".formatted(name, requiredMod.getAsString()));
                     return;
                 }
@@ -133,6 +132,15 @@ public enum JexPluginManager {
             if (mixinsEntry == null)
                 throw new RuntimeException("Mixins file %s not found! Plugin will not be loaded!".formatted(mixinsLocation));
         }
+    }
+
+    //FabricLoaderImpl.getModContainer() was returning null for some reason so I made this workaround
+    private boolean isModPresent(String modId) {
+        for (ModContainer allMod : FabricLoaderImpl.INSTANCE.getAllMods()) {
+            if (allMod.getMetadata().getId().equalsIgnoreCase(modId))
+                return true;
+        }
+        return false;
     }
 
     private String[] toArray(ArrayList<String> list) {
