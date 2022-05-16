@@ -93,7 +93,7 @@ public enum CommandManagerJex {
 
     @EventPointer
     private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {
-        if (!event.isPreview() && event.getMessage().startsWith(prefix) && ClientCommandInternals.executeCommand(event.getMessage())) {
+        if (event.getMessage().startsWith(prefix) && ClientCommandInternals.executeCommand(event.getMessage())) {
             event.cancel();
         }
     });

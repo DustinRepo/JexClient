@@ -26,7 +26,7 @@ public class HotbarRefill extends Feature {
 
     @EventPointer
     private final EventListener<EventItemStackDecrement> eventItemStackDecrement = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().screen instanceof AbstractContainerScreen<?>)
+        if (Wrapper.INSTANCE.getMinecraft().screen instanceof AbstractContainerScreen<?> || Wrapper.INSTANCE.getLocalPlayer() == null)
             return;
         ItemStack stack = event.getItemStack();
         int slot = InventoryHelper.INSTANCE.getInventory().findSlotMatchingItem(stack);
