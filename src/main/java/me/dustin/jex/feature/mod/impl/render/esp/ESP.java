@@ -29,18 +29,16 @@ public class ESP extends Feature {
     @Op(name = "Mode", all = {"Shader", "2D", "Box Outline", "Box"})
     public String mode = "Shader";
 
-    @OpChild(name = "Line Width", min = 1, max = 10, inc = 0.1f, parent = "Mode", dependency = "Box Outline")
-    public float lineWidth = 2;
-
     @Op(name = "Player")
     public boolean player = true;
     @Op(name = "Neutral")
     public boolean neutral = true;
+    @Op(name = "Boss")
+    public boolean boss = true;
     @Op(name = "Hostile")
     public boolean hostile = true;
     @Op(name = "Passive")
     public boolean passive = true;
-
     @Op(name = "Item")
     public boolean item = false;
 
@@ -50,6 +48,8 @@ public class ESP extends Feature {
     public boolean colorOnDistance;
     @OpChild(name = "Friend Color", isColor = true, parent = "Player Color")
     public int friendColor = 0xff0080ff;
+    @OpChild(name = "Boss Color", isColor = true, parent = "Boss")
+    public int bossColor = 0xffff0000;
     @OpChild(name = "Hostile Color", isColor = true, parent = "Hostile")
     public int hostileColor = 0xffff8000;
     @OpChild(name = "Neutral Color", isColor = true, parent = "Neutral")
@@ -120,6 +120,8 @@ public class ESP extends Feature {
             return player;
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutral;
+        if (EntityHelper.INSTANCE.isBossMob(entity))
+            return boss;
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostile;
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
@@ -144,6 +146,8 @@ public class ESP extends Feature {
                 return petColor;
             else
                 return passiveColor;
+        if (EntityHelper.INSTANCE.isBossMob(entity))
+            return bossColor;
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostileColor;
         if (EntityHelper.INSTANCE.isNeutralMob(entity))

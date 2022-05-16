@@ -61,6 +61,8 @@ public class KillAura extends Feature {
     public boolean player = true;
     @Op(name = "Neutral")
     public boolean neutral = false;
+    @Op(name = "Boss")
+    public boolean boss = true;
     @Op(name = "Hostile")
     public boolean hostile = true;
     @Op(name = "Passive")
@@ -224,6 +226,8 @@ public class KillAura extends Feature {
         }
         if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
             return passive;
+        if (EntityHelper.INSTANCE.isBossMob(entity))
+            return boss;
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostile;
         if (EntityHelper.INSTANCE.isNeutralMob(entity))

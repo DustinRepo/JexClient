@@ -10,6 +10,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.*;
@@ -54,6 +55,10 @@ public enum EntityHelper {
         if (isNeutralMob(entity))
             return isAngryAtPlayer(entity);
         return entity instanceof ShulkerEntity || entity instanceof HoglinEntity || entity instanceof GhastEntity || entity instanceof HostileEntity || entity instanceof SlimeEntity || entity instanceof EnderDragonEntity || entity instanceof PhantomEntity;
+    }
+
+    public boolean isBossMob(Entity entity) {
+        return entity instanceof WitherEntity || entity instanceof ElderGuardianEntity || entity instanceof EnderDragonEntity;
     }
 
     public boolean doesPlayerOwn(Entity entity) {
