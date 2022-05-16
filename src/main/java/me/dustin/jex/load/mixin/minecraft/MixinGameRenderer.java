@@ -91,11 +91,6 @@ public abstract class MixinGameRenderer {
         });
     }
 
-    @Inject(method = "reload(Lnet/minecraft/resource/ResourceManager;)V", at = @At("HEAD"))
-    private void hookReload(ResourceManager manager, CallbackInfo info) {
-        ShaderHelper.loadCustomMCShaders(manager);
-    }
-
     @Inject(method = "getRenderTypeTranslucentShader", at = @At("HEAD"), cancellable = true)
     private static void overrideTranslucentShader(CallbackInfoReturnable<Shader> cir) {
         EventGetTranslucentShader eventGetTranslucentShader = new EventGetTranslucentShader(renderTypeTranslucentShader).run();

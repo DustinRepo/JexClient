@@ -33,7 +33,7 @@ public class EnchantColor extends Feature{
     public int rainbowSpeed = 1;
 
     private int col;
-    private StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
     private GlUniform glintColorU;
     private GlUniform crazyRainbowU;
     private GlUniform saturationU;

@@ -105,10 +105,12 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         return super.getPose();
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.hasVehicle()Z"))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "net/minecraft/client/network/ClientPlayerEntity.hasVehicle()Z"), cancellable = true)
     public void tick(CallbackInfo ci) {
         ClientPlayerEntity me = (ClientPlayerEntity) (Object) this;
         preEvent = new EventPlayerPackets(me.getYaw(1), me.getPitch(1), me.isOnGround()).run();
+        if (preEvent.isCancelled())
+            ci.cancel();
     }
 
     @Inject(method = "tick", at = @At(value = "RETURN"))
