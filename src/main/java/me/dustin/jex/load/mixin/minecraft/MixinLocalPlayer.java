@@ -113,6 +113,8 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer {
     public void tick(CallbackInfo ci) {
         LocalPlayer me = (LocalPlayer) (Object) this;
         preEvent = new EventPlayerPackets(me.getViewYRot(1), me.getViewXRot(1), me.isOnGround()).run();
+        if (preEvent.isCancelled())
+            ci.cancel();
     }
 
     @Inject(method = "tick", at = @At(value = "RETURN"))
