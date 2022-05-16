@@ -17,6 +17,8 @@ public class GuiThemeFile extends ConfigFile {
             return;
         }
         Map<String, Object> parsedYaml = YamlHelper.INSTANCE.readFile(getFile());
+        if (parsedYaml == null)
+            return;
         DropDownGui.setCurrentTheme(DropDownGui.getTheme((String)parsedYaml.get("Theme")));
     }
 
