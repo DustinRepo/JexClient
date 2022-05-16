@@ -26,16 +26,12 @@ import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.monster.EnderMan;
-import net.minecraft.world.entity.monster.Ghast;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Phantom;
-import net.minecraft.world.entity.monster.Shulker;
-import net.minecraft.world.entity.monster.Slime;
-import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.piglin.PiglinArmPose;
+import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
@@ -81,6 +77,11 @@ public enum EntityHelper {
             return isAngryAtPlayer(entity);
         return entity instanceof Shulker || entity instanceof Hoglin || entity instanceof Ghast || entity instanceof Monster || entity instanceof Slime || entity instanceof EnderDragon || entity instanceof Phantom;
     }
+
+    public boolean isBossMob(Entity entity) {
+        return entity instanceof WitherBoss || entity instanceof ElderGuardian || entity instanceof EnderDragon || entity instanceof Warden;
+    }
+
 
     public boolean doesPlayerOwn(Entity entity) {
         return doesPlayerOwn(entity, Wrapper.INSTANCE.getLocalPlayer());

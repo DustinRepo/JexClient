@@ -35,6 +35,8 @@ public class Tracers extends Feature {
     public boolean players = true;
     @OpChild(name = "Color on distance", parent = "Players")
     public boolean colorOnDistance;
+    @Op(name = "Bosses")
+    public boolean bosses = true;
     @Op(name = "Hostiles")
     public boolean hostiles = true;
     @Op(name = "Passives")
@@ -47,7 +49,7 @@ public class Tracers extends Feature {
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
-            if (entity instanceof LivingEntity living && isValid((LivingEntity) entity)) {
+            if (entity instanceof LivingEntity living && isValid(living)) {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
                 Vec3 vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, event.getPartialTicks());
@@ -104,6 +106,8 @@ public class Tracers extends Feature {
             return players && !EntityHelper.INSTANCE.isNPC((Player) e);
         if (EntityHelper.INSTANCE.isPassiveMob(e))
             return passives;
+        if (EntityHelper.INSTANCE.isBossMob(e))
+            return bosses;
         if (EntityHelper.INSTANCE.isHostileMob(e))
             return hostiles;
         if (EntityHelper.INSTANCE.isNeutralMob(e))
