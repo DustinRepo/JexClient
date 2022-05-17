@@ -260,15 +260,17 @@ public class Hud extends Feature {
             immediate.endBatch();
         }
     }
-    public int getCategoryColor(Category category) {
-        return switch (category) {
-            case MOVEMENT -> movementColor;
-            case VISUAL -> visualColor;
-            case PLAYER -> playerColor;
-            case MISC -> miscColor;
-            case WORLD -> worldColor;
-            case COMBAT -> combatColor;
-        };
+
+    public int getCategoryColor(Feature.Category category) {
+        switch (category) {
+            case MOVEMENT -> { return movementColor; }
+            case VISUAL -> { return visualColor; }
+            case PLAYER -> { return playerColor; }
+            case MISC -> { return miscColor; }
+            case WORLD -> { return worldColor; }
+            case COMBAT -> { return combatColor; }
+        }
+        return 0xffffffff;
     }
 
     public HudElement getElement(String name) {

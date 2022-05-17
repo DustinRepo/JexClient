@@ -17,14 +17,13 @@ public class Feature {
     private String description;
     private boolean state;
     private boolean visible;
-    private final Category featureCategory;
+    private Category featureCategory;
 
     public Feature() {
         this.name = this.getClass().getAnnotation(Manifest.class).name();
         if (name.equalsIgnoreCase("\\"))
             name = this.getClass().getSimpleName();
-        this.name = this.getClass().getSimpleName();
-        this.displayName = this.getClass().getSimpleName();
+        this.displayName = this.name;
         this.description = this.getClass().getAnnotation(Manifest.class).description();
         this.featureCategory = this.getClass().getAnnotation(Manifest.class).category();
         int key = this.getClass().getAnnotation(Manifest.class).key();
@@ -105,6 +104,10 @@ public class Feature {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setFeatureCategory(Category category) {
+        this.featureCategory = category;
     }
 
     public boolean getState() {
