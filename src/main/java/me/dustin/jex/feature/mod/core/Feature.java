@@ -17,7 +17,7 @@ public class Feature {
     private String description;
     private boolean state;
     private boolean visible;
-    private final Category featureCategory;
+    private Category featureCategory;
 
     public Feature() {
         this.name = this.getClass().getAnnotation(Manifest.class).name();
@@ -104,6 +104,10 @@ public class Feature {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setFeatureCategory(Category category) {
+        this.featureCategory = category;
     }
 
     public boolean getState() {
