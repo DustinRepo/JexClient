@@ -1,21 +1,21 @@
 package me.dustin.jex.event.player;
 
 import me.dustin.events.core.Event;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.entity.EntityPose;
 
 public class EventGetPose extends Event {
 
-    private Pose pose;
+    private EntityPose pose;
 
-    public EventGetPose(Pose pose) {
+    public EventGetPose(EntityPose pose) {
         this.pose = pose;
     }
 
-    public Pose getPose() {
+    public EntityPose getPose() {
         return pose;
     }
 
-    public void setPose(Pose pose) {
+    public void setPose(EntityPose pose) {
         this.pose = pose;
     }
 }

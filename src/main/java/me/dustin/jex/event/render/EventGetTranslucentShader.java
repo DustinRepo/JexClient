@@ -1,21 +1,21 @@
 package me.dustin.jex.event.render;
 
 import me.dustin.events.core.Event;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.render.Shader;
 
 public class EventGetTranslucentShader extends Event {
 
-    private ShaderInstance shader;
+    private Shader shader;
 
-    public EventGetTranslucentShader(ShaderInstance shader) {
+    public EventGetTranslucentShader(Shader shader) {
         this.shader = shader;
     }
 
-    public ShaderInstance getShader() {
+    public Shader getShader() {
         return shader;
     }
 
-    public void setShader(ShaderInstance shader) {
+    public void setShader(Shader shader) {
         this.shader = shader;
     }
 }

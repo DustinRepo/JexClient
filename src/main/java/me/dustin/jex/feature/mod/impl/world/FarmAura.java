@@ -12,14 +12,14 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.Items;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
@@ -44,12 +44,12 @@ public class FarmAura extends Feature {
             breakStopWatch.reset();
             BlockPos crop = getCrop();
             if (crop != null) {
-                RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3(crop.getX(), crop.getY(), crop.getZ()));
+                RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(crop.getX(), crop.getY(), crop.getZ()));
                 rot.normalize();
                 event.setRotation(rot);
-                Direction facing = Direction.fromYRot(-rot.getYaw());
-                Wrapper.INSTANCE.getMultiPlayerGameMode().continueDestroyBlock(crop, facing);
-                Wrapper.INSTANCE.getLocalPlayer().swing(InteractionHand.MAIN_HAND);
+                Direction facing = Direction.fromRotation(-rot.getYaw());
+                Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(crop, facing);
+                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             }
         }
         if (plantStopWatch.hasPassed(plantDelay)) {
@@ -60,15 +60,15 @@ public class FarmAura extends Feature {
                 if (cropSlot == -1)
                     return;
                 if (cropSlot > 8) {
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, cropSlot, ClickType.SWAP, 8);
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, cropSlot, SlotActionType.SWAP, 8);
                     cropSlot = 8;
                 }
                 InventoryHelper.INSTANCE.setSlot(cropSlot, true, true);
 
-                RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3.atCenterOf(farmland));
+                RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(farmland));
                 rot.normalize();
                 event.setRotation(rot);
-                PlayerHelper.INSTANCE.placeBlockInPos(getFarmland().above(), InteractionHand.MAIN_HAND, false);
+                PlayerHelper.INSTANCE.placeBlockInPos(getFarmland().up(), Hand.MAIN_HAND, false);
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
@@ -78,14 +78,14 @@ public class FarmAura extends Feature {
         for (int x = -4; x < 4; x++) {
             for (int y = -2; y < 2; y++) {
                 for (int z = -4; z < 4; z++) {
-                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().blockPosition().offset(x, y, z);
+                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (WorldHelper.INSTANCE.isCrop(blockPos, checkAge)) {
-                        Vec3 renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
-                        AABB box = new AABB(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
+                        Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
+                        Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
                         Render3DHelper.INSTANCE.drawBoxOutline(event.getPoseStack(), box, 0xffff0000);
-                    } else if (WorldHelper.INSTANCE.getBlock(blockPos.below()) == Blocks.FARMLAND && WorldHelper.INSTANCE.getBlock(blockPos) == Blocks.AIR) {
-                        Vec3 renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos.below());
-                        AABB box = new AABB(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
+                    } else if (WorldHelper.INSTANCE.getBlock(blockPos.down()) == Blocks.FARMLAND && WorldHelper.INSTANCE.getBlock(blockPos) == Blocks.AIR) {
+                        Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos.down());
+                        Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
                         Render3DHelper.INSTANCE.drawBoxOutline(event.getPoseStack(), box, 0xff00ff00);
                     }
                 }
@@ -111,8 +111,8 @@ public class FarmAura extends Feature {
         for (int x = -4; x < 4; x++) {
             for (int y = -2; y < 2; y++) {
                 for (int z = -4; z < 4; z++) {
-                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().blockPosition().offset(x, y, z).below();
-                    if (WorldHelper.INSTANCE.getBlock(blockPos) == Blocks.FARMLAND && WorldHelper.INSTANCE.getBlock(blockPos.above()) == Blocks.AIR)
+                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z).down();
+                    if (WorldHelper.INSTANCE.getBlock(blockPos) == Blocks.FARMLAND && WorldHelper.INSTANCE.getBlock(blockPos.up()) == Blocks.AIR)
                         return blockPos;
                 }
             }
@@ -124,7 +124,7 @@ public class FarmAura extends Feature {
         for (int x = -4; x < 4; x++) {
             for (int y = -2; y < 2; y++) {
                 for (int z = -4; z < 4; z++) {
-                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().blockPosition().offset(x, y, z);
+                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (WorldHelper.INSTANCE.isCrop(blockPos, checkAge))
                         return blockPos;
                 }

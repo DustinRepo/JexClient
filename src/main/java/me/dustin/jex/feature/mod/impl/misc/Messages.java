@@ -7,8 +7,8 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.network.chat.MessageSignature;
-import net.minecraft.network.protocol.game.ServerboundChatPacket;
+import net.minecraft.network.encryption.ChatMessageSignature;
+import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import java.time.Instant;
 import java.util.Random;
 
@@ -20,9 +20,9 @@ public class Messages extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        ServerboundChatPacket chatMessageC2SPacket = (ServerboundChatPacket) event.getPacket();
-        MessageSignature sigData = chatMessageC2SPacket.getSignature(Wrapper.INSTANCE.getLocalPlayer().getUUID());
-        String message = chatMessageC2SPacket.getMessage();
+        ChatMessageC2SPacket chatMessageC2SPacket = (ChatMessageC2SPacket) event.getPacket();
+        ChatMessageSignature sigData = chatMessageC2SPacket.createSignatureInstance(Wrapper.INSTANCE.getLocalPlayer().getUuid());
+        String message = chatMessageC2SPacket.getChatMessage();
         if (message.startsWith("/"))
             return;
         switch (mode) {
@@ -35,13 +35,13 @@ public class Messages extends Feature {
                     char replace = fancyChars.charAt(replaceChars.indexOf(currentChar));
                     s = s.replace(currentChar, replace);
                 }
-                event.setPacket(new ServerboundChatPacket(s, sigData, chatMessageC2SPacket.signedPreview()));
+                event.setPacket(new ChatMessageC2SPacket(s, sigData, chatMessageC2SPacket.isPreviewed()));
             }
-            case "Upside-Down" -> event.setPacket(new ServerboundChatPacket(upsideDown(message), sigData, chatMessageC2SPacket.signedPreview()));
-            case "Backwards" -> event.setPacket(new ServerboundChatPacket(new StringBuilder(message).reverse().toString(), sigData, chatMessageC2SPacket.signedPreview()));
-            case "Random Capital" -> event.setPacket(new ServerboundChatPacket(randomCapitalize(message), sigData, chatMessageC2SPacket.signedPreview()));
+            case "Upside-Down" -> event.setPacket(new ChatMessageC2SPacket(upsideDown(message), sigData, chatMessageC2SPacket.isPreviewed()));
+            case "Backwards" -> event.setPacket(new ChatMessageC2SPacket(new StringBuilder(message).reverse().toString(), sigData, chatMessageC2SPacket.isPreviewed()));
+            case "Random Capital" -> event.setPacket(new ChatMessageC2SPacket(randomCapitalize(message), sigData, chatMessageC2SPacket.isPreviewed()));
         }
-    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundChatPacket.class));
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ChatMessageC2SPacket.class));
 
     public String randomCapitalize(String str) {
         StringBuilder newString = new StringBuilder();

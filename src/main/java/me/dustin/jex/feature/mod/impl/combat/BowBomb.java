@@ -16,10 +16,10 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
-import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-import net.minecraft.world.item.Items;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import me.dustin.events.core.annotate.EventPointer;
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,12 +35,12 @@ public class BowBomb extends Feature {
 
     @EventPointer
     private final EventListener<EventStopUsingItem> eventStopUsingItem = new EventListener<>(event -> {
-        LocalPlayer player = Wrapper.INSTANCE.getLocalPlayer();
-        if (player.getMainHandItem().getItem().equals(Items.BOW)) {
-            player.connection.send(new ServerboundPlayerCommandPacket(player, ServerboundPlayerCommandPacket.Action.START_SPRINTING));
+        ClientPlayerEntity player = Wrapper.INSTANCE.getLocalPlayer();
+        if (player.getMainHandStack().getItem().equals(Items.BOW)) {
+            player.networkHandler.sendPacket(new ClientCommandC2SPacket(player, ClientCommandC2SPacket.Mode.START_SPRINTING));
             for (int i = 0; i < amount; ++i) {
-                player.connection.send(new ServerboundMovePlayerPacket.Pos(player.getX(), player.getY() - 1.0E-9, player.getZ(), true));
-                player.connection.send(new ServerboundMovePlayerPacket.Pos(player.getX(), player.getY() + 1.0E-9, player.getZ(), false));
+                player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(player.getX(), player.getY() - 1.0E-9, player.getZ(), true));
+                player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(player.getX(), player.getY() + 1.0E-9, player.getZ(), false));
             }
         }
     });

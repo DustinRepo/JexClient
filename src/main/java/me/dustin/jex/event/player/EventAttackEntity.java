@@ -1,7 +1,7 @@
 package me.dustin.jex.event.player;
 
 import me.dustin.events.core.Event;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.entity.Entity;
 
 public class EventAttackEntity extends Event {
 

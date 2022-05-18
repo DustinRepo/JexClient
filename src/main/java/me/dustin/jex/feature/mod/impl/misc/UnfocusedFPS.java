@@ -15,7 +15,7 @@ public class UnfocusedFPS extends Feature {
 
     @EventPointer
     private final EventListener<EventGetFramerateLimit> eventGetFramerateLimitEventListener = new EventListener<>(event -> {
-        boolean focused = Wrapper.INSTANCE.getMinecraft().isWindowActive();
+        boolean focused = Wrapper.INSTANCE.getMinecraft().isWindowFocused();
         if (!focused) {
             event.setLimit(unfocusedFPS);
         }

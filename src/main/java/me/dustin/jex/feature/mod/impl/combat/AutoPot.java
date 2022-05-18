@@ -7,10 +7,10 @@ import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SplashPotionItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SplashPotionItem;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.Hand;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.events.core.annotate.EventPointer;
 
@@ -44,14 +44,14 @@ public class AutoPot extends Feature {
 
 					event.setPitch(90);
 					event.setYaw(PlayerHelper.INSTANCE.getYaw());
-					savedSlot = InventoryHelper.INSTANCE.getInventory().selected;
+					savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
 					InventoryHelper.INSTANCE.setSlot(getFirstPotion(), true, true);
 					stopWatch.reset();
 				} else {
-					InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, getFirstPotion() < 9 ? getFirstPotion() + 36 : getFirstPotion(), ClickType.SWAP, 8);
+					InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstPotion() < 9 ? getFirstPotion() + 36 : getFirstPotion(), SlotActionType.SWAP, 8);
 					event.setPitch(90);
 					event.setYaw(PlayerHelper.INSTANCE.getYaw());
-					savedSlot = InventoryHelper.INSTANCE.getInventory().selected;
+					savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
 					InventoryHelper.INSTANCE.setSlot(8, true, true);
 					throwing = true;
 					stopWatch.reset();
@@ -63,12 +63,12 @@ public class AutoPot extends Feature {
 			if (throwing && stopWatch.hasPassed(throwdelay)) {
 				if (getFirstPotion() != -1) {
 					if (getFirstPotion() < 9) {
-						Wrapper.INSTANCE.getMultiPlayerGameMode().useItem(Wrapper.INSTANCE.getPlayer(), InteractionHand.MAIN_HAND);
+						Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
 						InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
 						throwing = false;
 						stopWatch.reset();
 					} else {
-						InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, getFirstPotion() < 9 ? getFirstPotion() + 36 : getFirstPotion(), ClickType.SWAP, 8);
+						InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstPotion() < 9 ? getFirstPotion() + 36 : getFirstPotion(), SlotActionType.SWAP, 8);
 					}
 				} else {
 					throwing = false;
@@ -82,7 +82,7 @@ public class AutoPot extends Feature {
 	public int getPotions() {
 		int potions = 0;
 		for (int i = 0; i < 45; i++) {
-			ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getItem(i);
+			ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
 			if (isPotion(itemStack)) {
 				potions++;
 			}
@@ -92,7 +92,7 @@ public class AutoPot extends Feature {
 
 	public int getFirstPotion() {
 		for (int i = 0; i < 45; i++) {
-			ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getItem(i);
+			ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
 			if (isPotion(itemStack)) {
 				return i;
 			}
@@ -102,7 +102,7 @@ public class AutoPot extends Feature {
 
 	public boolean isPotion(ItemStack itemStack) {
 		if (itemStack != null && itemStack.getItem() instanceof SplashPotionItem) {
-			if (itemStack.getTag().getString("Potion").equalsIgnoreCase("minecraft:healing") || itemStack.getTag().getString("Potion").equalsIgnoreCase("minecraft:strong_healing"))
+			if (itemStack.getNbt().getString("Potion").equalsIgnoreCase("minecraft:healing") || itemStack.getNbt().getString("Potion").equalsIgnoreCase("minecraft:strong_healing"))
 				return true;
 		}
 		return false;

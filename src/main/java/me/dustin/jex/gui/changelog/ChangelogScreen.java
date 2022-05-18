@@ -10,11 +10,11 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.network.chat.Component;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import java.util.ArrayList;
 
 public class ChangelogScreen extends Screen {
@@ -24,7 +24,7 @@ public class ChangelogScreen extends Screen {
     private boolean movingScrollbar;
 
     public ChangelogScreen() {
-        super(Component.nullToEmpty("Changelog"));
+        super(Text.of("Changelog"));
     }
 
     @Override
@@ -35,14 +35,14 @@ public class ChangelogScreen extends Screen {
             height += changelog.getContentHeight() + 5;
         }
         scrollbar = new Scrollbar(Render2DHelper.INSTANCE.getScaledWidth() - 15, 10, 9, 0, Render2DHelper.INSTANCE.getScaledHeight() - 45, height - 15, 0xff696969);
-        this.addRenderableWidget(new Button(width / 2 - 40, this.height - 22, 80, 20, Component.nullToEmpty("Back"), button -> {
+        this.addDrawableChild(new ButtonWidget(width / 2 - 40, this.height - 22, 80, 20, Text.of("Back"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new TitleScreen());
         }));
         super.init();
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         FontHelper.INSTANCE.drawCenteredString(matrices, "Changelog", width / 2.f, 1, ColorHelper.INSTANCE.getClientColor());
         float changelogX = 20;

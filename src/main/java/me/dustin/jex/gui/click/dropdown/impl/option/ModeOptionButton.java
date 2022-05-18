@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.click.dropdown.impl.option;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -18,6 +17,7 @@ import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class ModeOptionButton extends DropdownOptionButton {
     protected StringArrayOption stringArrayOption;
@@ -28,7 +28,7 @@ public class ModeOptionButton extends DropdownOptionButton {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         super.render(matrixStack);
     }
 

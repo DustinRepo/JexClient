@@ -15,16 +15,16 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.block.FluidBlock;
+import net.minecraft.item.BlockItem;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShapes;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -45,14 +45,14 @@ public class Tunneller extends Feature {
         if (AutoEat.isEating || KillAura.INSTANCE.hasTarget())
             return;
         if (direction == null)
-            direction = Wrapper.INSTANCE.getPlayer().getDirection();
+            direction = Wrapper.INSTANCE.getPlayer().getHorizontalFacing();
         setSuffix(getDirectionString());
         //do liquid replacing
         if (handleLiquids)
             for (BlockPos liquidCheckSpot : getLiquidCheckSpots()) {
-                if (WorldHelper.INSTANCE.getBlock(liquidCheckSpot) instanceof LiquidBlock) {
+                if (WorldHelper.INSTANCE.getBlock(liquidCheckSpot) instanceof FluidBlock) {
                     if (moveToBlocks()) {
-                        PlayerHelper.INSTANCE.placeBlockInPos(liquidCheckSpot, InteractionHand.MAIN_HAND, true);
+                        PlayerHelper.INSTANCE.placeBlockInPos(liquidCheckSpot, Hand.MAIN_HAND, true);
                         return;
                     } else {
                         ChatHelper.INSTANCE.addClientMessage("Tunneller ran out of blocks. Disabling.");
@@ -60,27 +60,27 @@ public class Tunneller extends Feature {
                         return;
                     }
                 } else if (WorldHelper.INSTANCE.isWaterlogged(liquidCheckSpot)){
-                    Wrapper.INSTANCE.getMultiPlayerGameMode().continueDestroyBlock(liquidCheckSpot, Direction.UP);
-                    Wrapper.INSTANCE.getPlayer().swing(InteractionHand.MAIN_HAND);
+                    Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(liquidCheckSpot, Direction.UP);
+                    Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                     return;
                 }
             }
         //break-a da blocks
         for (BlockPos blockPos : getBlocksInTunnel()) {
-            if (WorldHelper.INSTANCE.getBlockState(blockPos).getShape(Wrapper.INSTANCE.getWorld(), blockPos) != Shapes.empty()) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().continueDestroyBlock(blockPos, Direction.UP);
-                Wrapper.INSTANCE.getPlayer().swing(InteractionHand.MAIN_HAND);
+            if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
+                Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(blockPos, Direction.UP);
+                Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                 return;
             }
         }
         //make sure floor is there
-        AABB tunnelBox = getTunnelBox();
-        AABB floorBox = new AABB(tunnelBox.minX, tunnelBox.minY - 1, tunnelBox.minZ, tunnelBox.maxX, tunnelBox.minY - 1, tunnelBox.maxZ);
+        Box tunnelBox = getTunnelBox();
+        Box floorBox = new Box(tunnelBox.minX, tunnelBox.minY - 1, tunnelBox.minZ, tunnelBox.maxX, tunnelBox.minY - 1, tunnelBox.maxZ);
         ArrayList<BlockPos> floorBlocks = WorldHelper.INSTANCE.getBlocksInBox(floorBox);
         for (BlockPos floorBlock : floorBlocks) {
-            if (WorldHelper.INSTANCE.getBlockState(floorBlock).getShape(Wrapper.INSTANCE.getWorld(), floorBlock) == Shapes.empty()) {
+            if (WorldHelper.INSTANCE.getBlockState(floorBlock).getOutlineShape(Wrapper.INSTANCE.getWorld(), floorBlock) == VoxelShapes.empty()) {
                 if (moveToBlocks()) {
-                    PlayerHelper.INSTANCE.placeBlockInPos(floorBlock, InteractionHand.MAIN_HAND, true);
+                    PlayerHelper.INSTANCE.placeBlockInPos(floorBlock, Hand.MAIN_HAND, true);
                 } else {
                     ChatHelper.INSTANCE.addClientMessage("Tunneller ran out of blocks. Disabling.");
                     this.setState(false);
@@ -100,7 +100,7 @@ public class Tunneller extends Feature {
     @Override
     public void onEnable() {
         if (Wrapper.INSTANCE.getPlayer() != null) {
-            direction = Wrapper.INSTANCE.getPlayer().getDirection();
+            direction = Wrapper.INSTANCE.getPlayer().getHorizontalFacing();
             PlayerHelper.INSTANCE.centerPerfectlyOnBlock();
         }
         super.onEnable();
@@ -122,7 +122,7 @@ public class Tunneller extends Feature {
 
     public int getBlockFromInv() {
         for (int i = 0; i < 36; i++) {
-            if (InventoryHelper.INSTANCE.getInventory().getItem(i) != null && InventoryHelper.INSTANCE.getInventory().getItem(i).getItem() instanceof BlockItem blockItem)
+            if (InventoryHelper.INSTANCE.getInventory().getStack(i) != null && InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() instanceof BlockItem blockItem)
                 if (shouldUse(blockItem))
                     return i;
         }
@@ -131,7 +131,7 @@ public class Tunneller extends Feature {
 
     public int getBlockFromHotbar() {
         for (int i = 0; i < 9; i++) {
-            if (InventoryHelper.INSTANCE.getInventory().getItem(i) != null && InventoryHelper.INSTANCE.getInventory().getItem(i).getItem() instanceof BlockItem blockItem)
+            if (InventoryHelper.INSTANCE.getInventory().getStack(i) != null && InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() instanceof BlockItem blockItem)
                 if (shouldUse(blockItem))
                     return i;
         }
@@ -139,32 +139,32 @@ public class Tunneller extends Feature {
     }
 
     public boolean shouldUse(BlockItem blockItem) {
-        return blockItem.getBlock().defaultBlockState().entityCanStandOn(Wrapper.INSTANCE.getWorld(), BlockPos.ZERO, Wrapper.INSTANCE.getPlayer()) && blockItem.getBlock().defaultBlockState().use(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getPlayer(), InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.ZERO, Direction.UP, BlockPos.ZERO, false)) == InteractionResult.PASS;
+        return blockItem.getBlock().getDefaultState().hasSolidTopSurface(Wrapper.INSTANCE.getWorld(), BlockPos.ORIGIN, Wrapper.INSTANCE.getPlayer()) && blockItem.getBlock().getDefaultState().onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) == ActionResult.PASS;
     }
 
     private ArrayList<BlockPos> getLiquidCheckSpots() {
-        AABB box = getTunnelBox().inflate(1);
+        Box box = getTunnelBox().expand(1);
         ArrayList<BlockPos> blocks = WorldHelper.INSTANCE.getBlocksInBox(box);
-        blocks.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().position(), Vec3.atCenterOf(value))));
+        blocks.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(value))));
         blocks.sort(Comparator.comparingInt(value -> -value.getY()));
         return blocks;
     }
 
     private ArrayList<BlockPos> getBlocksInTunnel() {
-        AABB box = getTunnelBox();
+        Box box = getTunnelBox();
         ArrayList<BlockPos> blocks = WorldHelper.INSTANCE.getBlocksInBox(box);
-        blocks.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().position(), Vec3.atCenterOf(value))));
+        blocks.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(value))));
         blocks.sort(Comparator.comparingInt(value -> -value.getY()));
         return blocks;
     }
 
-    private AABB getTunnelBox() {
-        AABB box = new AABB(Wrapper.INSTANCE.getPlayer().getBlockX() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockX() + width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY() + height - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + width / 2.f);
+    private Box getTunnelBox() {
+        Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockX() + width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY() + height - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + width / 2.f);
         switch (direction) {
-            case NORTH -> box = box.move(0, 0, -width / 2.f);
-            case SOUTH -> box = box.move(0, 0, width / 2.f);
-            case EAST -> box = box.move(width / 2.f, 0, 0);
-            case WEST -> box = box.move(-width / 2.f, 0, 0);
+            case NORTH -> box = box.offset(0, 0, -width / 2.f);
+            case SOUTH -> box = box.offset(0, 0, width / 2.f);
+            case EAST -> box = box.offset(width / 2.f, 0, 0);
+            case WEST -> box = box.offset(-width / 2.f, 0, 0);
         }
         return box;
     }

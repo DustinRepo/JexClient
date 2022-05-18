@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.click.dropdown.theme.jex.option;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.feature.option.types.FloatOption;
 import me.dustin.jex.gui.click.dropdown.impl.option.FloatOptionButton;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
@@ -8,6 +7,7 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class JexFloatOptionButton extends FloatOptionButton {
     public JexFloatOptionButton(DropdownWindow window, FloatOption option, float x, float y, float width, float height) {
@@ -15,7 +15,7 @@ public class JexFloatOptionButton extends FloatOptionButton {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x40ffffff);
         FloatOption v = (FloatOption) getOption();

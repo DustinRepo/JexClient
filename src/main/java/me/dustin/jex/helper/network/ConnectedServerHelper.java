@@ -3,7 +3,7 @@ package me.dustin.jex.helper.network;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.packet.EventConnect;
-import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.client.network.ServerAddress;
 
 public enum ConnectedServerHelper {
     INSTANCE;

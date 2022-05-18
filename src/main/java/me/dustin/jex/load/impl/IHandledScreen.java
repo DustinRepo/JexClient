@@ -1,6 +1,6 @@
 package me.dustin.jex.load.impl;
 
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.screen.slot.Slot;
 
 public interface IHandledScreen {
 

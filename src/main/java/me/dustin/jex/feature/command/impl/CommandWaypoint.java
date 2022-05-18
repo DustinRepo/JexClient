@@ -16,7 +16,7 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.math.Vec3d;
 
 @Cmd(name = "waypoint", description = "Add or remove waypoints", syntax = {".waypoint add <name> <x/y/z/here> <color>", ".waypoint del <name>"})
 public class CommandWaypoint extends Command {
@@ -27,7 +27,7 @@ public class CommandWaypoint extends Command {
             //adding "here"
             String server = WorldHelper.INSTANCE.getCurrentServerName();
             String name = StringArgumentType.getString(context,"name").replace("_", " ");
-            int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColor())).getRGB();
+            int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColorValue())).getRGB();
             float x = (float) Wrapper.INSTANCE.getLocalPlayer().getX();
             float y = (float) Wrapper.INSTANCE.getLocalPlayer().getY();
             float z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ();
@@ -38,12 +38,12 @@ public class CommandWaypoint extends Command {
         }))).then(argument("pos", Vec3ArgumentType.vec3()).then(argument("color", ColorArgumentType.color()).executes(context -> {
             //adding with coords
             String server = WorldHelper.INSTANCE.getCurrentServerName();
-            Vec3 pos = Vec3ArgumentType.getVec3(context, "pos");
+            Vec3d pos = Vec3ArgumentType.getVec3(context, "pos");
             String name = StringArgumentType.getString(context,"name").replace("_", " ");
-            int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColor())).getRGB();
-            float x = (float) pos.x();
-            float y = (float) pos.y();
-            float z = (float) pos.z();
+            int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColorValue())).getRGB();
+            float x = (float) pos.getX();
+            float y = (float) pos.getY();
+            float z = (float) pos.getZ();
             Waypoints.waypoints.add(new Waypoints.Waypoint(name, server, x, y, z, WorldHelper.INSTANCE.getDimensionID().toString(), color));
             ConfigManager.INSTANCE.get(WaypointFile.class).write();
             ChatHelper.INSTANCE.addClientMessage("Added waypoint " + name + ".");

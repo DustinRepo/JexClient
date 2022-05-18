@@ -12,15 +12,15 @@ import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
-import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.item.Items;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import me.dustin.events.core.annotate.EventPointer;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,11 +46,11 @@ public class AutoGapple extends Feature {
 
     public int putBackSlot = -1;
 
-    private Set<MobEffect> gappleEffects = Stream.of(
-            MobEffects.FIRE_RESISTANCE,
-            MobEffects.ABSORPTION,
-            MobEffects.REGENERATION,
-            MobEffects.DAMAGE_RESISTANCE
+    private Set<StatusEffect> gappleEffects = Stream.of(
+            StatusEffects.FIRE_RESISTANCE,
+            StatusEffects.ABSORPTION,
+            StatusEffects.REGENERATION,
+            StatusEffects.RESISTANCE
     ).collect(Collectors.toSet());
 
 
@@ -58,7 +58,7 @@ public class AutoGapple extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() == Items.ENCHANTED_GOLDEN_APPLE;
+        boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.ENCHANTED_GOLDEN_APPLE;
         int gappleCount = InventoryHelper.INSTANCE.countItems(Items.ENCHANTED_GOLDEN_APPLE);
         setSuffix(gappleCount + "");
         if (gappleCount == 0 && putBackSlot == -1)
@@ -68,22 +68,22 @@ public class AutoGapple extends Feature {
                 if (offhand)
                     InventoryHelper.INSTANCE.moveToOffhand(putBackSlot);
                 else
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, putBackSlot, ClickType.SWAP, 8);
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, putBackSlot, SlotActionType.SWAP, 8);
                 putBackSlot = -1;
             }
             isEating = false;
             BaritoneHelper.INSTANCE.resume();
-            NetworkHelper.INSTANCE.sendPacket(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.RELEASE_USE_ITEM, BlockPos.ZERO, Direction.UP));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
             if (pressKey)
-                Wrapper.INSTANCE.getOptions().keyUse.setDown(false);
+                Wrapper.INSTANCE.getOptions().useKey.setPressed(false);
         } else if (isEating) {
             if (pressKey)
-                Wrapper.INSTANCE.getOptions().keyUse.setDown(true);
-            Wrapper.INSTANCE.getMultiPlayerGameMode().useItem(Wrapper.INSTANCE.getLocalPlayer(), offhand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
+                Wrapper.INSTANCE.getOptions().useKey.setPressed(true);
+            Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getLocalPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
         }
 
         if (shouldEatGapple() && !isEating) {
-            if (Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() != Items.ENCHANTED_GOLDEN_APPLE) {
+            if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.ENCHANTED_GOLDEN_APPLE) {
                 int gappleHotbar = InventoryHelper.INSTANCE.getFromHotbar(Items.ENCHANTED_GOLDEN_APPLE);
                 int gappleInv = InventoryHelper.INSTANCE.getFromInv(Items.ENCHANTED_GOLDEN_APPLE);
 
@@ -91,7 +91,7 @@ public class AutoGapple extends Feature {
                     if (gappleInv == -1)
                         return;
                     if (putInto.equalsIgnoreCase("hotbar")) {
-                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, gappleInv < 9 ? gappleInv + 36 : gappleInv, ClickType.SWAP, 8);
+                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, gappleInv < 9 ? gappleInv + 36 : gappleInv, SlotActionType.SWAP, 8);
                         gappleHotbar = 8;
                     } else
                         InventoryHelper.INSTANCE.moveToOffhand(gappleInv);
@@ -113,25 +113,25 @@ public class AutoGapple extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() == Items.ENCHANTED_GOLDEN_APPLE;
+        boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.ENCHANTED_GOLDEN_APPLE;
         if (offhand)
             return;
-        if (event.getPacket() instanceof ServerboundSetCarriedItemPacket && isEating) {
-            if (((ServerboundSetCarriedItemPacket) event.getPacket()).getSlot() != InventoryHelper.INSTANCE.getFromHotbar(Items.ENCHANTED_GOLDEN_APPLE))
+        if (event.getPacket() instanceof UpdateSelectedSlotC2SPacket && isEating) {
+            if (((UpdateSelectedSlotC2SPacket) event.getPacket()).getSelectedSlot() != InventoryHelper.INSTANCE.getFromHotbar(Items.ENCHANTED_GOLDEN_APPLE))
                 event.cancel();
         }
-        if (event.getPacket() instanceof ServerboundPlayerActionPacket playerActionC2SPacket) {
-            if (playerActionC2SPacket.getAction() == ServerboundPlayerActionPacket.Action.RELEASE_USE_ITEM && isEating)
+        if (event.getPacket() instanceof PlayerActionC2SPacket playerActionC2SPacket) {
+            if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.RELEASE_USE_ITEM && isEating)
                 event.cancel();
         }
-    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundSetCarriedItemPacket.class, ServerboundPlayerActionPacket.class));
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, UpdateSelectedSlotC2SPacket.class, PlayerActionC2SPacket.class));
 
     public boolean shouldEatGapple() {
         if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= health)
             return true;
         if (!eatForPotions)
             return false;
-        return !Wrapper.INSTANCE.getLocalPlayer().getActiveEffectsMap().keySet().containsAll(gappleEffects);
+        return !Wrapper.INSTANCE.getLocalPlayer().getActiveStatusEffects().keySet().containsAll(gappleEffects);
     }
 
     public boolean isEating() {

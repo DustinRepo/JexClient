@@ -8,7 +8,7 @@ public enum Scissor {
 
     public void cut(int x, int y, int width, int height) {
         double factor = Render2DHelper.INSTANCE.getScaleFactor();
-        GL11.glScissor((int)(x * factor), (int)((Wrapper.INSTANCE.getWindow().getGuiScaledHeight() - (y + height)) * factor), (int)(width * factor), (int)(height * factor));
+        GL11.glScissor((int)(x * factor), (int)((Wrapper.INSTANCE.getWindow().getScaledHeight() - (y + height)) * factor), (int)(width * factor), (int)(height * factor));
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
     }
 

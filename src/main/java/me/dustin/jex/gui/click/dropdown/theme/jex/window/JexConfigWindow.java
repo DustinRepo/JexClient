@@ -10,7 +10,7 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.ChatFormatting;
+import net.minecraft.util.Formatting;
 
 public class JexConfigWindow extends JexDropdownWindow {
     public JexConfigWindow(DropdownTheme dropdownTheme, float x, float y, float width, float maxHeight) {
@@ -28,9 +28,9 @@ public class JexConfigWindow extends JexDropdownWindow {
             ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }));
         buttonCount++;
-        this.getButtons().add(new DropdownButton(this, "AutoSave: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? ChatFormatting.GREEN + "ON" : ChatFormatting.RED + "OFF"),this.getX() + getTheme().getButtonWidthOffset(), this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
+        this.getButtons().add(new DropdownButton(this, "AutoSave: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"),this.getX() + getTheme().getButtonWidthOffset(), this.getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (buttonCount * (getTheme().getButtonSize() + getTheme().getButtonOffset())), this.getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize(), unused -> {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
-            this.getButtons().get(2).setName("AutoSave: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? ChatFormatting.GREEN + "ON" : ChatFormatting.RED + "OFF"));
+            this.getButtons().get(2).setName("AutoSave: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF"));
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }));
         buttonCount++;

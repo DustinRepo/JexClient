@@ -42,10 +42,10 @@ import me.dustin.events.core.annotate.EventPointer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.network.ConnectionProtocol;
-import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.network.NetworkSide;
+import net.minecraft.network.NetworkState;
+import net.minecraft.sound.SoundEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -148,7 +148,7 @@ public enum JexClient {
     @EventPointer
     private final EventListener<EventGameFinishedLoading> eventGameFinishedLoadingEventListener = new EventListener<>(event -> {
         if (playSoundOnLaunch())
-            Wrapper.INSTANCE.getMinecraft().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.PLAYER_LEVELUP, 1.0F));
+            Wrapper.INSTANCE.getMinecraft().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F));
     });
 
     public ModContainer getModContainer() {
@@ -224,13 +224,13 @@ public enum JexClient {
         JsonArray c2s = new JsonArray();
         JsonArray s2c = new JsonArray();
 
-        protocolObject.addProperty("name", SharedConstants.getCurrentVersion().getName());
+        protocolObject.addProperty("name", SharedConstants.getGameVersion().getName());
         protocolObject.addProperty("protocol_id", SharedConstants.getProtocolVersion());
 
         String[] c2sPackets = new String[150];
         String[] s2cPackets = new String[150];
-        ConnectionProtocol.PLAY.getPacketsByIds(PacketFlow.SERVERBOUND).forEach((integer, aClass) -> c2sPackets[integer] = aClass.getSimpleName().replace("Serverbound", "").replace("Packet", ""));
-        ConnectionProtocol.PLAY.getPacketsByIds(PacketFlow.CLIENTBOUND).forEach((integer, aClass) -> s2cPackets[integer] = aClass.getSimpleName().replace("Clientbound", "").replace("Packet", ""));
+        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.SERVERBOUND).forEach((integer, aClass) -> c2sPackets[integer] = aClass.getSimpleName().replace("Serverbound", "").replace("Packet", ""));
+        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.CLIENTBOUND).forEach((integer, aClass) -> s2cPackets[integer] = aClass.getSimpleName().replace("Clientbound", "").replace("Packet", ""));
         for (String c2sPacket : c2sPackets) {
             if (c2sPacket == null)
                 break;
@@ -246,6 +246,6 @@ public enum JexClient {
         protocolObject.add("packets", packets);
         jsonObject.add("839", protocolObject);
 
-        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getCurrentVersion().getName() + "_packetIds.json"), List.of(JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")));
+        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_packetIds.json"), List.of(JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")));
     }
 }

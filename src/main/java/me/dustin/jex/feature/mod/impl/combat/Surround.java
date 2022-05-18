@@ -12,11 +12,11 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.option.annotate.Op;
 import java.util.ArrayList;
 
@@ -38,18 +38,18 @@ public class Surround extends Feature {
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-		if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld().isOutsideBuildHeight((int) Wrapper.INSTANCE.getLocalPlayer().getY()))
+		if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getWorld().isOutOfHeightLimit((int) Wrapper.INSTANCE.getLocalPlayer().getY()))
 			return;
 		if (placingPos != null) {
 			RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(placingPos));
 			if (rotate)
 				((EventPlayerPackets) event).setRotation(rotationVector);
-			PlayerHelper.INSTANCE.placeBlockInPos(placingPos, InteractionHand.MAIN_HAND, true);
+			PlayerHelper.INSTANCE.placeBlockInPos(placingPos, Hand.MAIN_HAND, true);
 			placingPos = null;
 		}
 		if (!stopWatch.hasPassed(placeDelay))
 			return;
-		int savedSlot = InventoryHelper.INSTANCE.getInventory().selected;
+		int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
 		int obby = InventoryHelper.INSTANCE.getFromHotbar(Items.OBSIDIAN);
 		if (obby == -1) {
 			this.stage = 0;
@@ -60,7 +60,7 @@ public class Surround extends Feature {
 		PlayerHelper.INSTANCE.centerOnBlock();
 		InventoryHelper.INSTANCE.setSlot(obby, true, true);
 		ArrayList<BlockPos> placePos = new ArrayList<>();
-		BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().blockPosition();
+		BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
 		placePos.add(playerPos.north());
 		placePos.add(playerPos.east());
 		placePos.add(playerPos.south());
@@ -84,7 +84,7 @@ public class Surround extends Feature {
 		} else {
 			for (BlockPos pos : placePos) {
 				if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
-					PlayerHelper.INSTANCE.placeBlockInPos(pos, InteractionHand.MAIN_HAND, true);
+					PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, true);
 				}
 			}
 			InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
@@ -98,7 +98,7 @@ public class Surround extends Feature {
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 		ArrayList<BlockPos> placePos = new ArrayList<>();
-		BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().blockPosition();
+		BlockPos playerPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos();
 		placePos.add(playerPos.north());
 		placePos.add(playerPos.east());
 		placePos.add(playerPos.south());
@@ -112,8 +112,8 @@ public class Surround extends Feature {
 		}
 		if (blockPos == null)
 			return;
-		Vec3 renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
-		AABB bb = new AABB(renderPos.x(), renderPos.y(), renderPos.z(), renderPos.x() + 1, renderPos.y() + 1, renderPos.z() + 1);
+		Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
+		Box bb = new Box(renderPos.getX(), renderPos.getY(), renderPos.getZ(), renderPos.getX() + 1, renderPos.getY() + 1, renderPos.getZ() + 1);
 		Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb, placeColor);
 	});
 

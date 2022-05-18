@@ -2,9 +2,9 @@ package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
@@ -27,7 +27,7 @@ public class Radar extends Feature {
     }
 
     public boolean isValid(Entity entity) {
-        if (entity instanceof Player && entity != Wrapper.INSTANCE.getLocalPlayer())
+        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer())
             return players;
         if (entity instanceof ItemEntity)
             return items;

@@ -1,7 +1,6 @@
 package me.dustin.jex.feature.mod.impl.render;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender2D;
@@ -11,11 +10,12 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.option.annotate.Op;
 import java.util.HashMap;
 
@@ -29,18 +29,18 @@ public class SignReader extends Feature {
     @Op(name = "Backgrounds")
     public boolean backgrounds = true;
 
-    private HashMap<SignBlockEntity, Vec3> positions = Maps.newHashMap();
+    private HashMap<SignBlockEntity, Vec3d> positions = Maps.newHashMap();
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         positions.clear();
         if (hoverOnly) {
-            HitResult result = Wrapper.INSTANCE.getLocalPlayer().pick(1024, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
+            HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(1024, 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
             if (result != null && result.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult blockHitResult = (BlockHitResult)result;
                 if (Wrapper.INSTANCE.getWorld().getBlockEntity(blockHitResult.getBlockPos()) instanceof SignBlockEntity signBlockEntity) {
                     if (signBlockEntity != null) {
-                        Vec3 pos = new Vec3(signBlockEntity.getBlockPos().getX(), signBlockEntity.getBlockPos().getY(), signBlockEntity.getBlockPos().getZ());
+                        Vec3d pos = new Vec3d(signBlockEntity.getPos().getX(), signBlockEntity.getPos().getY(), signBlockEntity.getPos().getZ());
                         positions.put(signBlockEntity, Render2DHelper.INSTANCE.to2D(pos.add(0.5f, 1.5, 0.5f), event.getPoseStack()));
                     }
                 }
@@ -48,7 +48,7 @@ public class SignReader extends Feature {
         } else {
             for (BlockEntity blockEntity : WorldHelper.INSTANCE.getBlockEntities()) {
                 if (blockEntity instanceof SignBlockEntity signBlockEntity) {
-                    Vec3 pos = new Vec3(signBlockEntity.getBlockPos().getX(), signBlockEntity.getBlockPos().getY(), signBlockEntity.getBlockPos().getZ());
+                    Vec3d pos = new Vec3d(signBlockEntity.getPos().getX(), signBlockEntity.getPos().getY(), signBlockEntity.getPos().getZ());
                     positions.put(signBlockEntity, Render2DHelper.INSTANCE.to2D(pos.add(0.5f, 1.5, 0.5f), event.getPoseStack()));
                 }
             }
@@ -57,8 +57,8 @@ public class SignReader extends Feature {
 
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
-        PoseStack matrixStack = ((EventRender2D) event).getPoseStack();
-        matrixStack.pushPose();
+        MatrixStack matrixStack = ((EventRender2D) event).getPoseStack();
+        matrixStack.push();
         matrixStack.scale(scale, scale,1);
         positions.forEach((signBlockEntity, vec3d) -> {
             if (Render2DHelper.INSTANCE.isOnScreen(vec3d)) {
@@ -66,7 +66,7 @@ public class SignReader extends Feature {
                 float y = (float)vec3d.y / scale;
                 int count = 0;
                 for (int i = 0; i < 4; i++) {
-                    String text = signBlockEntity.getMessage(3 - i, false).getString().trim();
+                    String text = signBlockEntity.getTextOnRow(3 - i, false).getString().trim();
                     float strWidth = FontHelper.INSTANCE.getStringWidth(FontHelper.INSTANCE.fix(text));
                     if (!text.isEmpty()) {
                         if (backgrounds)
@@ -79,6 +79,6 @@ public class SignReader extends Feature {
             }
         });
         matrixStack.scale(1 / scale, 1 / scale,1);
-        matrixStack.popPose();
+        matrixStack.pop();
     });
 }

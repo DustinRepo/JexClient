@@ -11,7 +11,7 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.command.core.Command;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
@@ -37,7 +37,7 @@ public class CommandArgumentType implements ArgumentType<String> {
         if (command != null) {
             return str;
         } else {
-            throw new SimpleCommandExceptionType(Component.nullToEmpty("Not a command")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Text.of("Not a command")).createWithContext(reader);
         }
     }
 

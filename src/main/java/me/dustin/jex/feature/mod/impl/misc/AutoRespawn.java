@@ -13,6 +13,6 @@ public class AutoRespawn extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (!Wrapper.INSTANCE.getLocalPlayer().isAlive())
-            Wrapper.INSTANCE.getLocalPlayer().respawn();
+            Wrapper.INSTANCE.getLocalPlayer().requestRespawn();
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

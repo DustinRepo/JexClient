@@ -7,25 +7,25 @@ import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
 import me.dustin.jex.gui.account.impl.GuiPasswordField;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import me.dustin.jex.helper.render.Render2DHelper;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.UUID;
 
 public class AddAccountScreen extends Screen {
 
-	EditBox username;
-	EditBox email;
+	TextFieldWidget username;
+	TextFieldWidget email;
 	GuiPasswordField password;
 	private MinecraftAccount.MojangAccount editingAccount;
 	private Screen parent;
 	private boolean isMicrosoft;
 
 	public AddAccountScreen(MinecraftAccount.MojangAccount editingAccount, Screen parent) {
-		super(Component.nullToEmpty("Add Account"));
+		super(Text.of("Add Account"));
 		this.editingAccount = editingAccount;
 		this.parent = parent;
 	}
@@ -40,42 +40,42 @@ public class AddAccountScreen extends Screen {
 
 	@Override
 	public void init() {
-		Wrapper.INSTANCE.getMinecraft().keyboardHandler.setSendRepeatsToGui(true);
-		username = new EditBox(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 12, 200, 20, Component.nullToEmpty("Username"));
-		email = new EditBox(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 47, 200, 20, Component.nullToEmpty("Email"));
-		password = new GuiPasswordField(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 82, 200, 20, Component.nullToEmpty("Password"));
+		Wrapper.INSTANCE.getMinecraft().keyboard.setRepeatEvents(true);
+		username = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 12, 200, 20, Text.of("Username"));
+		email = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 47, 200, 20, Text.of("Email"));
+		password = new GuiPasswordField(Wrapper.INSTANCE.getTextRenderer(), (Render2DHelper.INSTANCE.getScaledWidth() / 2) - 100, 82, 200, 20, Text.of("Password"));
 
-		username.setFocus(true);
+		username.setTextFieldFocused(true);
 		username.setMaxLength(16);
 		this.email.setMaxLength(100);
 		this.password.setMaxLength(250);
 
 		if (editingAccount != null) {
-			username.setValue(editingAccount.getUsername());
-			email.setValue(editingAccount.getEmail());
+			username.setText(editingAccount.getUsername());
+			email.setText(editingAccount.getEmail());
 			password.setText(editingAccount.getPassword());
 		}
 
 		this.children().clear();
-		username.setCanLoseFocus(true);
-		email.setCanLoseFocus(true);
-		this.addWidget(username);
-		this.addWidget(email);
-		this.addWidget(password);
-		this.addRenderableWidget(new Button((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, Component.nullToEmpty("Cancel"), button -> {
+		username.setFocusUnlocked(true);
+		email.setFocusUnlocked(true);
+		this.addSelectableChild(username);
+		this.addSelectableChild(email);
+		this.addSelectableChild(password);
+		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 54, 120, 20, Text.of("Cancel"), button -> {
 			Wrapper.INSTANCE.getMinecraft().setScreen(parent);
 		}));
 
-		this.addRenderableWidget(new Button((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, editingAccount == null ? Component.nullToEmpty("Add") : Component.nullToEmpty("Save"), button -> {
+		this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 75, 120, 20, editingAccount == null ? Text.of("Add") : Text.of("Save"), button -> {
 			if (isMicrosoft) {
-				MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(username.getValue(), email.getValue(), password.getText(), "", "", UUID.randomUUID().toString());
+				MinecraftAccount.MicrosoftAccount microsoftAccount = new MinecraftAccount.MicrosoftAccount(username.getText(), email.getText(), password.getText(), "", "", UUID.randomUUID().toString());
 				MinecraftAccountManager.INSTANCE.getAccounts().add(microsoftAccount);
 			} else {
 				MinecraftAccount.MojangAccount account;
-				if (email.getValue().equalsIgnoreCase("") || password.getText().equalsIgnoreCase("")) {
-					account = new MinecraftAccount.MojangAccount(username.getValue());
+				if (email.getText().equalsIgnoreCase("") || password.getText().equalsIgnoreCase("")) {
+					account = new MinecraftAccount.MojangAccount(username.getText());
 				} else {
-					account = new MinecraftAccount.MojangAccount(username.getValue(), email.getValue(), password.getText());
+					account = new MinecraftAccount.MojangAccount(username.getText(), email.getText(), password.getText());
 				}
 				if (editingAccount != null) {
 					editingAccount.setUsername(account.getUsername());
@@ -89,21 +89,21 @@ public class AddAccountScreen extends Screen {
 		}));
 
 		if (editingAccount == null)
-			this.addRenderableWidget(new Button((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, Component.nullToEmpty("\2476Mojang Account"), button -> {
+			this.addDrawableChild(new ButtonWidget((Render2DHelper.INSTANCE.getScaledWidth() / 2) - 60, Render2DHelper.INSTANCE.getScaledHeight() - 105, 120, 20, Text.of("\2476Mojang Account"), button -> {
 				isMicrosoft = !isMicrosoft;
-				button.setMessage(Component.nullToEmpty(isMicrosoft ? "\247aMicrosoft Account" : "\2476Mojang Account"));
+				button.setMessage(Text.of(isMicrosoft ? "\247aMicrosoft Account" : "\2476Mojang Account"));
 			}));
 		super.init();
 	}
 
 	@Override
-	public void onClose() {
-		Wrapper.INSTANCE.getMinecraft().keyboardHandler.setSendRepeatsToGui(false);
-		super.onClose();
+	public void close() {
+		Wrapper.INSTANCE.getMinecraft().keyboard.setRepeatEvents(false);
+		super.close();
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		renderBackground(matrixStack);
 		username.render(matrixStack, mouseX, mouseY, partialTicks);
 		email.render(matrixStack, mouseX, mouseY, partialTicks);

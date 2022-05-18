@@ -8,9 +8,9 @@ import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.load.impl.IHandledScreen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import me.dustin.jex.feature.mod.core.Feature;
 import org.lwjgl.glfw.GLFW;
 
@@ -24,21 +24,21 @@ public class InventoryAutoClicker extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().screen instanceof AbstractContainerScreen<?> handledScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen<?> handledScreen) {
             IHandledScreen iHandledScreen = (IHandledScreen) handledScreen;
             Slot slot = iHandledScreen.focusedSlot();
-            if (slot != null && slot.hasItem() && getInvSlot(slot) != -1) {
-                if (GLFW.glfwGetKey(Wrapper.INSTANCE.getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT) == 1 && MouseHelper.INSTANCE.isMouseButtonDown(0))
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, getInvSlot(slot), ClickType.QUICK_MOVE);
-                else if (GLFW.glfwGetKey(Wrapper.INSTANCE.getWindow().getWindow(), GLFW.GLFW_KEY_Q) == 1 && GLFW.glfwGetKey(Wrapper.INSTANCE.getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL) == 1)
-                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, getInvSlot(slot), ClickType.THROW, 1);
+            if (slot != null && slot.hasStack() && getInvSlot(slot) != -1) {
+                if (GLFW.glfwGetKey(Wrapper.INSTANCE.getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) == 1 && MouseHelper.INSTANCE.isMouseButtonDown(0))
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getInvSlot(slot), SlotActionType.QUICK_MOVE);
+                else if (GLFW.glfwGetKey(Wrapper.INSTANCE.getWindow().getHandle(), GLFW.GLFW_KEY_Q) == 1 && GLFW.glfwGetKey(Wrapper.INSTANCE.getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_CONTROL) == 1)
+                    InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getInvSlot(slot), SlotActionType.THROW, 1);
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     int getInvSlot(Slot slot) {
-        for (int i = 0; i < Wrapper.INSTANCE.getLocalPlayer().containerMenu.slots.size(); i++) {
-            Slot testSlot = Wrapper.INSTANCE.getLocalPlayer().containerMenu.getSlot(i);
+        for (int i = 0; i < Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size(); i++) {
+            Slot testSlot = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getSlot(i);
             if (slot == testSlot)
                 return i;
         }

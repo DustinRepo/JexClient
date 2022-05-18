@@ -8,11 +8,11 @@ import me.dustin.jex.event.render.EventRenderChest;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Have holiday events like christmas chests show year-round")
 public class HolidayEvents extends Feature {
@@ -33,32 +33,32 @@ public class HolidayEvents extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
-            if (entity instanceof Player || !(entity instanceof LivingEntity livingEntity))
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (entity instanceof PlayerEntity || !(entity instanceof LivingEntity livingEntity))
                 return;
             if (getState() && halloween) {
-                if (livingEntity.hasItemInSlot(EquipmentSlot.HEAD)) {
+                if (livingEntity.hasStackEquipped(EquipmentSlot.HEAD)) {
                     return;
                 }
-                livingEntity.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.JACK_O_LANTERN));
+                livingEntity.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.JACK_O_LANTERN));
             } else {
-                if (livingEntity.getItemBySlot(EquipmentSlot.HEAD).getItem() != Items.JACK_O_LANTERN) {
+                if (livingEntity.getEquippedStack(EquipmentSlot.HEAD).getItem() != Items.JACK_O_LANTERN) {
                     return;
                 }
-                livingEntity.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.AIR));
+                livingEntity.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.AIR));
             }
         });
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override
     public void onDisable() {
-        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
-            if (entity instanceof Player || !(entity instanceof LivingEntity livingEntity))
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (entity instanceof PlayerEntity || !(entity instanceof LivingEntity livingEntity))
                 return;
-            if (livingEntity.getItemBySlot(EquipmentSlot.HEAD).getItem() != Items.JACK_O_LANTERN) {
+            if (livingEntity.getEquippedStack(EquipmentSlot.HEAD).getItem() != Items.JACK_O_LANTERN) {
                 return;
             }
-            livingEntity.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.AIR));
+            livingEntity.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.AIR));
         });
     }
 }

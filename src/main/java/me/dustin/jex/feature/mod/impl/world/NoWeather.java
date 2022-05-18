@@ -7,7 +7,7 @@ import me.dustin.jex.event.filters.TickParticleFilter;
 import me.dustin.jex.event.render.EventRenderRain;
 import me.dustin.jex.event.world.EventTickParticle;
 import me.dustin.jex.feature.mod.core.Feature;
-import net.minecraft.client.particle.WaterDropParticle;
+import net.minecraft.client.particle.RainSplashParticle;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Remove rain and snow")
 public class NoWeather extends Feature {
@@ -15,5 +15,5 @@ public class NoWeather extends Feature {
     private final EventListener<EventRenderRain> eventRenderRainEventListener = new EventListener<>(event -> event.cancel());
 
     @EventPointer
-    private final EventListener<EventTickParticle> eventTickParticleEventListener = new EventListener<>(event -> { event.cancel(); }, new TickParticleFilter(WaterDropParticle.class));
+    private final EventListener<EventTickParticle> eventTickParticleEventListener = new EventListener<>(event -> { event.cancel(); }, new TickParticleFilter(RainSplashParticle.class));
 }

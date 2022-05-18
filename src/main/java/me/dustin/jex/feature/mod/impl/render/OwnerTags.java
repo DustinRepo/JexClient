@@ -10,9 +10,9 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -25,12 +25,12 @@ public class OwnerTags extends Feature {
 
     @Op(name = "Draw Faces")
     public boolean drawFaces = true;
-    private final HashMap<LivingEntity, Vec3> positions = Maps.newHashMap();
+    private final HashMap<LivingEntity, Vec3d> positions = Maps.newHashMap();
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         positions.clear();
-        for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
+        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof LivingEntity tameableEntity) {
                 if (EntityHelper.INSTANCE.getOwnerUUID(tameableEntity) != null) {
                     positions.put(tameableEntity, Render2DHelper.INSTANCE.getHeadPos(entity, event.getPartialTicks(), event.getPoseStack()));
@@ -43,7 +43,7 @@ public class OwnerTags extends Feature {
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
         Nametag nametagModule = Feature.get(Nametag.class);
         positions.keySet().forEach(livingEntity -> {
-            Vec3 pos = positions.get(livingEntity);
+            Vec3d pos = positions.get(livingEntity);
             if (isOnScreen(pos)) {
                 float x = (float) pos.x;
                 float y = (float) pos.y;
@@ -66,7 +66,7 @@ public class OwnerTags extends Feature {
         });
     });
 
-    public boolean isOnScreen(Vec3 pos) {
+    public boolean isOnScreen(Vec3d pos) {
         return pos != null && (pos.z > -1 && pos.z < 1);
     }
 }

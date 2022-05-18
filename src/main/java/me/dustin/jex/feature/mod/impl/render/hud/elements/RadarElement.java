@@ -9,21 +9,21 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.levelgen.Heightmap;
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import net.minecraft.block.Block;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.world.Heightmap;
 import java.awt.*;
 
 public class RadarElement extends HudElement{
@@ -34,18 +34,18 @@ public class RadarElement extends HudElement{
     NativeImage radarImage = null;
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (!isVisible())
             return;
         super.render(matrixStack);
-        if (!(Wrapper.INSTANCE.getMinecraft().screen instanceof ChatScreen))
+        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen))
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xff606060, 0x50000000, 1);
         float midPos = this.getWidth() / 2.0f - 1;
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + midPos, this.getY() + 1, this.getX() + midPos + 1, this.getY() + this.getHeight() - 1, 0xff606060);
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + 1, this.getY() + midPos, this.getX() + this.getWidth() - 1, this.getY() + midPos + 1, 0xff606060);
 
         if (Wrapper.INSTANCE.getWorld() != null)
-            for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
+            for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                 if (!Radar.INSTANCE.isValid(entity))
                     continue;
                 float xPos = (float) (entity.getX() - Wrapper.INSTANCE.getLocalPlayer().getX()) + midPos + this.getX();
@@ -55,7 +55,7 @@ public class RadarElement extends HudElement{
                 }
             }
         if (Radar.INSTANCE.waypoints) {
-            matrixStack.pushPose();
+            matrixStack.push();
             float scale = 0.75f;
             matrixStack.scale(scale, scale, 1);
             Waypoints.waypoints.forEach(waypoint -> {
@@ -68,15 +68,15 @@ public class RadarElement extends HudElement{
                     }
                 }
             });
-            matrixStack.popPose();
+            matrixStack.pop();
         }
         try {
-            matrixStack.pushPose();
+            matrixStack.push();
             matrixStack.translate(this.getX() + midPos + 0.5, this.getY() + midPos + 0.5, 0);
             Render2DHelper.INSTANCE.fill(matrixStack, -0.5f, -0.5f, 0.5f, 0.5f, ColorHelper.INSTANCE.getClientColor());
-            matrixStack.mulPose(new Quaternion(new Vector3f(0.0F, 0.0F, 1.0F), PlayerHelper.INSTANCE.getYaw() + 180, true));
+            matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), PlayerHelper.INSTANCE.getYaw() + 180, true));
             drawPointer(matrixStack);
-            matrixStack.popPose();
+            matrixStack.pop();
 
             /*Identifier id = new Identifier("jex", "radar/map.png");
             if (radarImage == null) {
@@ -89,7 +89,7 @@ public class RadarElement extends HudElement{
                 DrawableHelper.drawTexture(matrixStack, (int) getX(), (int) getY(), 0, 0, (int)getWidth(), (int)getHeight(), (int)getWidth(), (int)getHeight());
 
             }*/
-        }catch (Exception e) { matrixStack.popPose(); }
+        }catch (Exception e) { matrixStack.pop(); }
         FontHelper.INSTANCE.drawCenteredString(matrixStack, "N", this.getX() + midPos + 1, this.getY() + 2, -1);
         FontHelper.INSTANCE.drawCenteredString(matrixStack, "S", this.getX() + midPos + 1, this.getY() + this.getHeight() - 11, -1);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, "W", this.getX() + 3, this.getY() + (this.getWidth() / 2) - 5, -1);
@@ -100,10 +100,10 @@ public class RadarElement extends HudElement{
         NativeImage nativeImage = new NativeImage((int)getWidth(), (int)getHeight(), true);
         for (int x = -nativeImage.getWidth() / 2; x < nativeImage.getWidth() / 2; x++)
             for (int z = -nativeImage.getHeight() / 2; z < nativeImage.getHeight() / 2; z++) {
-                BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().blockPosition().offset(x, 0, z);
-                int y = Wrapper.INSTANCE.getWorld().getChunk(blockPos.getX() / 16, blockPos.getZ() / 16).getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, 0, z);
+                int y = Wrapper.INSTANCE.getWorld().getChunk(blockPos.getX() / 16, blockPos.getZ() / 16).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
                 Block block = WorldHelper.INSTANCE.getBlock(new BlockPos(blockPos.getX(), y, blockPos.getZ()));
-                nativeImage.setPixelRGBA(x, z, block.defaultMaterialColor().col);
+                nativeImage.setColor(x, z, block.getDefaultMapColor().color);
             }
         nativeImage.close();
         return nativeImage;
@@ -114,20 +114,20 @@ public class RadarElement extends HudElement{
         return Radar.INSTANCE.getState();
     }
 
-    private void drawPointer(PoseStack matrixStack) {
-        Matrix4f matrix4f = matrixStack.last().pose();
+    private void drawPointer(MatrixStack matrixStack) {
+        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
         Color color1 = ColorHelper.INSTANCE.getColor(ColorHelper.INSTANCE.getClientColor());
 
         Render2DHelper.INSTANCE.setup2DRender(false);
 
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS/*QUADS*/, DefaultVertexFormat.POSITION_COLOR);
-        bufferBuilder.vertex(matrix4f,0, -4, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
-        bufferBuilder.vertex(matrix4f,-1, 0, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
-        bufferBuilder.vertex(matrix4f,1, 0, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
-        bufferBuilder.vertex(matrix4f,0, -4, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).endVertex();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS/*QUADS*/, VertexFormats.POSITION_COLOR);
+        bufferBuilder.vertex(matrix4f,0, -4, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f,-1, 0, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f,1, 0, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+        bufferBuilder.vertex(matrix4f,0, -4, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.clear();
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        BufferRenderer.drawWithShader(bufferBuilder.end());
 
         Render2DHelper.INSTANCE.end2DRender();
     }

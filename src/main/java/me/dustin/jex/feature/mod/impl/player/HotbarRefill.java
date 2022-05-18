@@ -8,9 +8,9 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 @Feature.Manifest(category = Feature.Category.PLAYER, description = "Attempts to refill your hotbar when you use up an item with the same item")
 public class HotbarRefill extends Feature {
@@ -26,11 +26,11 @@ public class HotbarRefill extends Feature {
 
     @EventPointer
     private final EventListener<EventItemStackDecrement> eventItemStackDecrement = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().screen instanceof AbstractContainerScreen<?> || Wrapper.INSTANCE.getLocalPlayer() == null)
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen<?> || Wrapper.INSTANCE.getLocalPlayer() == null)
             return;
         ItemStack stack = event.getItemStack();
-        int slot = InventoryHelper.INSTANCE.getInventory().findSlotMatchingItem(stack);
-        if (slot != InventoryHelper.INSTANCE.getInventory().selected)
+        int slot = InventoryHelper.INSTANCE.getInventory().getSlotWithStack(stack);
+        if (slot != InventoryHelper.INSTANCE.getInventory().selectedSlot)
             return;
         if (stack.getCount() <= event.getAmount()) {
             swapSlot = getSlotForItemExcluding(stack.getItem(), slot);
@@ -42,7 +42,7 @@ public class HotbarRefill extends Feature {
         for (int i = 0; i < 45; i++) {
             if (i == excludeSlot)
                 continue;
-            if (InventoryHelper.INSTANCE.getInventory().getItem(i) != null && InventoryHelper.INSTANCE.getInventory().getItem(i).getItem() == item)
+            if (InventoryHelper.INSTANCE.getInventory().getStack(i) != null && InventoryHelper.INSTANCE.getInventory().getStack(i).getItem() == item)
                 return i;
         }
         return -1;

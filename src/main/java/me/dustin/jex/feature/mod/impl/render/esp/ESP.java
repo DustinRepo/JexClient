@@ -10,10 +10,10 @@ import me.dustin.jex.feature.mod.impl.render.esp.impl.OutlineBox;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.FriendHelper;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.impl.BoxESP;
 import me.dustin.jex.feature.mod.impl.render.esp.impl.ShaderESP;
@@ -114,9 +114,9 @@ public class ESP extends Feature {
             return false;
         if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
             return false;
-        if (livingEntity instanceof Player && EntityHelper.INSTANCE.isNPC((Player) livingEntity))
+        if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
             return false;
-        if (livingEntity instanceof Player)
+        if (livingEntity instanceof PlayerEntity)
             return player;
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutral;
@@ -134,7 +134,7 @@ public class ESP extends Feature {
             return itemColor;
         if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendColor;
-        if (entity instanceof Player) {
+        if (entity instanceof PlayerEntity) {
             if (colorOnDistance) {
                 return getColor(entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64).getRGB();
             }

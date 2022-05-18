@@ -8,9 +8,9 @@ import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.YamlHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,9 +27,9 @@ public class SearchFile extends ConfigFile {
         Map<String, Object> yamlMap = new HashMap<>();
         Search.getBlocks().keySet().forEach(block -> {
             Map<String, Object> blockData = new HashMap<>();
-            blockData.put("mod", Registry.BLOCK.getKey(block).getNamespace());
+            blockData.put("mod", Registry.BLOCK.getId(block).getNamespace());
             blockData.put("color", Integer.toHexString(Search.getBlocks().get(block)));
-            String blockName = Registry.BLOCK.getKey(block).toString();
+            String blockName = Registry.BLOCK.getId(block).toString();
             if (blockName.contains(":"))
                 blockName = blockName.split(":")[1];
             yamlMap.put(blockName, blockData);
@@ -47,7 +47,7 @@ public class SearchFile extends ConfigFile {
             Map<String, Object> blockData = (Map<String, Object>)o;
             String mod = (String)blockData.get("mod");
             int color = Render2DHelper.INSTANCE.hex2Rgb((String)blockData.get("color")).getRGB();
-            Optional<Block> block = Registry.BLOCK.getOptional(new ResourceLocation(mod, s));
+            Optional<Block> block = Registry.BLOCK.getOrEmpty(new Identifier(mod, s));
             Search.getBlocks().put(block.get(), color);
         });
     }
@@ -66,7 +66,7 @@ public class SearchFile extends ConfigFile {
             for (int i = 0; i < array.size(); i++) {
                 JsonObject object = array.get(i).getAsJsonObject();
                 String blockID = object.get("blockID").getAsString();
-                Optional<Block> block = Registry.BLOCK.getOptional(new ResourceLocation(blockID));
+                Optional<Block> block = Registry.BLOCK.getOrEmpty(new Identifier(blockID));
                 int color = Render2DHelper.INSTANCE.hex2Rgb(object.get("color").getAsString()).getRGB();
                 Search.getBlocks().put(block.get(), color);
             }

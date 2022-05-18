@@ -11,14 +11,14 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.block.Block;
+import net.minecraft.block.CropBlock;
+import net.minecraft.item.Items;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically bonemeal crops around the player")
 public class BonemealAura extends Feature {
@@ -48,22 +48,22 @@ public class BonemealAura extends Feature {
             return;
         }
         if (bonemeal > 8) {
-            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, bonemeal, ClickType.SWAP, 8);
+            InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, bonemeal, SlotActionType.SWAP, 8);
             bonemeal = 8;
         }
         InventoryHelper.INSTANCE.setSlot(bonemeal, true, true);
 
         isBonemealing = true;
-        PlayerHelper.INSTANCE.rightClickBlock(crop, InteractionHand.MAIN_HAND, false);
-        Wrapper.INSTANCE.getLocalPlayer().swing(InteractionHand.MAIN_HAND);
+        PlayerHelper.INSTANCE.rightClickBlock(crop, Hand.MAIN_HAND, false);
+        Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         BlockPos crop = getCrop();
         if (crop != null && InventoryHelper.INSTANCE.getFromHotbar(Items.BONE_MEAL) != -1) {
-            Vec3 renderPos = Render3DHelper.INSTANCE.getRenderPosition(crop);
-            AABB box = new AABB(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
+            Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(crop);
+            Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
             Render3DHelper.INSTANCE.drawBoxOutline(event.getPoseStack(), box, 0xffffff00);
         }
     });
@@ -82,10 +82,10 @@ public class BonemealAura extends Feature {
         for (int x = -4; x < 4; x++) {
             for (int y = -2; y < 2; y++) {
                 for (int z = -4; z < 4; z++) {
-                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().blockPosition().offset(x, y, z);
+                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
                     if (block instanceof CropBlock cropBlock) {
-                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).getValue(cropBlock.getAgeProperty());
+                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
                         if (age < cropBlock.getMaxAge())
                             return blockPos;
                     }

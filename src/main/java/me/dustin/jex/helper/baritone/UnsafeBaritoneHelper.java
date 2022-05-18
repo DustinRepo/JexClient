@@ -10,7 +10,7 @@ import baritone.api.pathing.goals.GoalXZ;
 import baritone.api.utils.input.Input;
 import me.dustin.jex.helper.baritone.process.KillauraTargetProcess;
 import me.dustin.jex.helper.baritone.process.PauseProcess;
-import net.minecraft.core.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 public class UnsafeBaritoneHelper {
 

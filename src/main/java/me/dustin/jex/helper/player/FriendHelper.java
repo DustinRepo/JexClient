@@ -1,6 +1,6 @@
 package me.dustin.jex.helper.player;
 
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.ArrayList;
 
@@ -25,7 +25,7 @@ public enum FriendHelper {
         return getFriendViaName(name) != null;
     }
 
-    public boolean isFriend(Player playerEntity) {
+    public boolean isFriend(PlayerEntity playerEntity) {
         return isFriend(playerEntity.getName().getString());
     }
 

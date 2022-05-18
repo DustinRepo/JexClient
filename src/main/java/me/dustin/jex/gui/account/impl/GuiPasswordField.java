@@ -2,31 +2,31 @@ package me.dustin.jex.gui.account.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager.LogicOp;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Mth;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -35,11 +35,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Environment(EnvType.CLIENT)
-public class GuiPasswordField extends AbstractWidget implements Widget, GuiEventListener {
+public class GuiPasswordField extends ClickableWidget implements Drawable, Element {
     public static final int field_32194 = -1;
     public static final int field_32195 = 1;
     public static final int DEFAULT_EDITABLE_COLOR = 14737632;
-    private final Font textRenderer;
+    private final TextRenderer textRenderer;
     private String text;
     private int maxLength;
     private int focusedTicks;
@@ -57,13 +57,13 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
     @Nullable
     private Consumer<String> changedListener;
     private Predicate<String> textPredicate;
-    private BiFunction<String, Integer, FormattedCharSequence> renderTextProvider;
+    private BiFunction<String, Integer, OrderedText> renderTextProvider;
 
-    public GuiPasswordField(Font textRenderer, int x, int y, int width, int height, Component text) {
-        this(textRenderer, x, y, width, height, (EditBox)null, text);
+    public GuiPasswordField(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
+        this(textRenderer, x, y, width, height, (TextFieldWidget)null, text);
     }
 
-    public GuiPasswordField(Font textRenderer, int x, int y, int width, int height, @Nullable EditBox copyFrom, Component text) {
+    public GuiPasswordField(TextRenderer textRenderer, int x, int y, int width, int height, @Nullable TextFieldWidget copyFrom, Text text) {
         super(x, y, width, height, text);
         this.text = "";
         this.maxLength = 32;
@@ -74,11 +74,11 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
         this.uneditableColor = 7368816;
         this.textPredicate = Objects::nonNull;
         this.renderTextProvider = (string, integer) -> {
-            return FormattedCharSequence.forward(string, Style.EMPTY);
+            return OrderedText.styledForwardsVisitedString(string, Style.EMPTY);
         };
         this.textRenderer = textRenderer;
         if (copyFrom != null) {
-            this.setText(copyFrom.getValue());
+            this.setText(copyFrom.getText());
         }
 
     }
@@ -87,7 +87,7 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
         this.changedListener = changedListener;
     }
 
-    public void setRenderTextProvider(BiFunction<String, Integer, FormattedCharSequence> renderTextProvider) {
+    public void setRenderTextProvider(BiFunction<String, Integer, OrderedText> renderTextProvider) {
         this.renderTextProvider = renderTextProvider;
     }
 
@@ -95,9 +95,9 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
         ++this.focusedTicks;
     }
 
-    protected MutableComponent createNarrationMessage() {
-        Component text = this.getMessage();
-        return Component.translatable("gui.narrate.editBox", text, this.text);
+    protected MutableText getNarrationMessage() {
+        Text text = this.getMessage();
+        return Text.translatable("gui.narrate.editBox", text, this.text);
     }
 
     public void setText(String text) {
@@ -132,7 +132,7 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
         int i = Math.min(this.selectionStart, this.selectionEnd);
         int j = Math.max(this.selectionStart, this.selectionEnd);
         int k = this.maxLength - this.text.length() - (i - j);
-        String string = SharedConstants.filterText(text);
+        String string = SharedConstants.stripInvalidChars(text);
         int l = string.length();
         if (k < l) {
             string = string.substring(0, k);
@@ -236,7 +236,7 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
     }
 
     private int getCursorPosWithOffset(int offset) {
-        return Util.offsetByCodepoints(this.text, this.selectionStart, offset);
+        return Util.moveCursor(this.text, this.selectionStart, offset);
     }
 
     public void setCursor(int cursor) {
@@ -249,7 +249,7 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
     }
 
     public void setSelectionStart(int cursor) {
-        this.selectionStart = Mth.clamp(cursor, 0, this.text.length());
+        this.selectionStart = MathHelper.clamp(cursor, 0, this.text.length());
     }
 
     public void setCursorToStart() {
@@ -261,7 +261,7 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!this.isActive()) {
+        if (!this.isNarratable()) {
             return false;
         } else {
             this.selecting = Screen.hasShiftDown();
@@ -270,16 +270,16 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
                 this.setSelectionEnd(0);
                 return true;
             } else if (Screen.isCopy(keyCode)) {
-                Minecraft.getInstance().keyboardHandler.setClipboard(this.getSelectedText());
+                MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
                 return true;
             } else if (Screen.isPaste(keyCode)) {
                 if (this.editable) {
-                    this.write(Minecraft.getInstance().keyboardHandler.getClipboard());
+                    this.write(MinecraftClient.getInstance().keyboard.getClipboard());
                 }
 
                 return true;
             } else if (Screen.isCut(keyCode)) {
-                Minecraft.getInstance().keyboardHandler.setClipboard(this.getSelectedText());
+                MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
                 if (this.editable) {
                     this.write("");
                 }
@@ -337,14 +337,14 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
         }
     }
 
-    public boolean isActive() {
+    public boolean isNarratable() {
         return this.isVisible() && this.isFocused() && this.isEditable();
     }
 
     public boolean charTyped(char chr, int modifiers) {
-        if (!this.isActive()) {
+        if (!this.isNarratable()) {
             return false;
-        } else if (SharedConstants.isAllowedChatCharacter(chr)) {
+        } else if (SharedConstants.isValidChar(chr)) {
             if (this.editable) {
                 this.write(Character.toString(chr));
             }
@@ -365,13 +365,13 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
             }
 
             if (this.isFocused() && bl && button == 0) {
-                int i = Mth.floor(mouseX) - this.x;
+                int i = MathHelper.floor(mouseX) - this.x;
                 if (this.drawsBackground) {
                     i -= 4;
                 }
 
-                String string = this.textRenderer.plainSubstrByWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
-                this.setCursor(this.textRenderer.plainSubstrByWidth(string, i).length() + this.firstCharacterIndex);
+                String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
+                this.setCursor(this.textRenderer.trimToWidth(string, i).length() + this.firstCharacterIndex);
                 return true;
             } else {
                 return false;
@@ -383,7 +383,7 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
         this.setFocused(focused);
     }
 
-    public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (this.isVisible()) {
             int j;
             if (this.drawsBackground()) {
@@ -411,7 +411,7 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
 
             if (!string.isEmpty()) {
                 String string2 = bl ? string.substring(0, k) : string;
-                o = this.textRenderer.drawShadow(matrices, (FormattedCharSequence)this.renderTextProvider.apply(string2, this.firstCharacterIndex), (float)m, (float)n, j);
+                o = this.textRenderer.drawWithShadow(matrices, (OrderedText)this.renderTextProvider.apply(string2, this.firstCharacterIndex), (float)m, (float)n, j);
             }
 
             boolean bl3 = this.selectionStart < this.text.length() || this.text.length() >= this.getMaxLength();
@@ -424,11 +424,11 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
             }
 
             if (!string.isEmpty() && bl && k < string.length()) {
-                this.textRenderer.drawShadow(matrices, (FormattedCharSequence)this.renderTextProvider.apply(string.substring(k), this.selectionStart), (float)o, (float)n, j);
+                this.textRenderer.drawWithShadow(matrices, (OrderedText)this.renderTextProvider.apply(string.substring(k), this.selectionStart), (float)o, (float)n, j);
             }
 
             if (!bl3 && this.suggestion != null) {
-                this.textRenderer.drawShadow(matrices, this.suggestion, (float)(p - 1), (float)n, -8355712);
+                this.textRenderer.drawWithShadow(matrices, this.suggestion, (float)(p - 1), (float)n, -8355712);
             }
 
             int var10002;
@@ -440,14 +440,14 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
                     var10003 = p + 1;
                     var10004 = n + 1;
                     Objects.requireNonNull(this.textRenderer);
-                    GuiComponent.fill(matrices, p, var10002, var10003, var10004 + 9, -3092272);
+                    DrawableHelper.fill(matrices, p, var10002, var10003, var10004 + 9, -3092272);
                 } else {
-                    this.textRenderer.drawShadow(matrices, "_", (float)p, (float)n, j);
+                    this.textRenderer.drawWithShadow(matrices, "_", (float)p, (float)n, j);
                 }
             }
 
             if (l != k) {
-                int q = m + this.textRenderer.width(string.substring(0, l));
+                int q = m + this.textRenderer.getWidth(string.substring(0, l));
                 var10002 = n - 1;
                 var10003 = q - 1;
                 var10004 = n + 1;
@@ -480,19 +480,19 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
             x1 = this.x + this.width;
         }
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionShader);
         RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(LogicOp.OR_REVERSE);
-        bufferBuilder.begin(Mode.QUADS, DefaultVertexFormat.POSITION);
-        bufferBuilder.vertex((double)x1, (double)y2, 0.0D).endVertex();
-        bufferBuilder.vertex((double)x2, (double)y2, 0.0D).endVertex();
-        bufferBuilder.vertex((double)x2, (double)y1, 0.0D).endVertex();
-        bufferBuilder.vertex((double)x1, (double)y1, 0.0D).endVertex();
-        tessellator.end();
+        bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION);
+        bufferBuilder.vertex((double)x1, (double)y2, 0.0D).next();
+        bufferBuilder.vertex((double)x2, (double)y2, 0.0D).next();
+        bufferBuilder.vertex((double)x2, (double)y1, 0.0D).next();
+        bufferBuilder.vertex((double)x1, (double)y1, 0.0D).next();
+        tessellator.draw();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableColorLogicOp();
         RenderSystem.enableTexture();
@@ -560,17 +560,17 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
 
     public void setSelectionEnd(int index) {
         int i = this.text.length();
-        this.selectionEnd = Mth.clamp(index, 0, i);
+        this.selectionEnd = MathHelper.clamp(index, 0, i);
         if (this.textRenderer != null) {
             if (this.firstCharacterIndex > i) {
                 this.firstCharacterIndex = i;
             }
 
             int j = this.getInnerWidth();
-            String string = this.textRenderer.plainSubstrByWidth(this.text.substring(this.firstCharacterIndex), j);
+            String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), j);
             int k = string.length() + this.firstCharacterIndex;
             if (this.selectionEnd == this.firstCharacterIndex) {
-                this.firstCharacterIndex -= this.textRenderer.plainSubstrByWidth(this.text, j, true).length();
+                this.firstCharacterIndex -= this.textRenderer.trimToWidth(this.text, j, true).length();
             }
 
             if (this.selectionEnd > k) {
@@ -579,7 +579,7 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
                 this.firstCharacterIndex -= this.firstCharacterIndex - this.selectionEnd;
             }
 
-            this.firstCharacterIndex = Mth.clamp(this.firstCharacterIndex, 0, i);
+            this.firstCharacterIndex = MathHelper.clamp(this.firstCharacterIndex, 0, i);
         }
 
     }
@@ -601,14 +601,14 @@ public class GuiPasswordField extends AbstractWidget implements Widget, GuiEvent
     }
 
     public int getCharacterX(int index) {
-        return index > this.text.length() ? this.x : this.x + this.textRenderer.width(this.text.substring(0, index));
+        return index > this.text.length() ? this.x : this.x + this.textRenderer.getWidth(this.text.substring(0, index));
     }
 
     public void setX(int x) {
         this.x = x;
     }
 
-    public void updateNarration(NarrationElementOutput builder) {
-        builder.add(NarratedElementType.TITLE, Component.translatable("narration.edit_box", this.getText()));
+    public void appendNarrations(NarrationMessageBuilder builder) {
+        builder.put(NarrationPart.TITLE, Text.translatable("narration.edit_box", this.getText()));
     }
 }

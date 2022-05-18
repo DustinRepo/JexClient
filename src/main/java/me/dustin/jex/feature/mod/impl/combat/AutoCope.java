@@ -9,7 +9,7 @@ import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.client.gui.screens.DeathScreen;
+import net.minecraft.client.gui.screen.DeathScreen;
 import me.dustin.events.core.annotate.EventPointer;
 import java.io.BufferedReader;
 import java.io.File;

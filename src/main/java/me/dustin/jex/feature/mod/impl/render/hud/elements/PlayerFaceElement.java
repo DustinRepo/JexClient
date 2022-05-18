@@ -1,9 +1,9 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class PlayerFaceElement extends HudElement {
     public PlayerFaceElement(float x, float y, float minWidth, float minHeight) {
@@ -11,14 +11,14 @@ public class PlayerFaceElement extends HudElement {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (!isVisible())
             return;
         super.render(matrixStack);
-        if (Wrapper.INSTANCE.getMinecraft().getConnection() != null && Wrapper.INSTANCE.getMinecraft().getConnection().getPlayerInfo(Wrapper.INSTANCE.getMinecraft().getUser().getGameProfile().getId()) != null) {
-            PlayerInfo playerListEntry = Wrapper.INSTANCE.getMinecraft().getConnection().getPlayerInfo(Wrapper.INSTANCE.getMinecraft().getUser().getGameProfile().getId());
+        if (Wrapper.INSTANCE.getMinecraft().getNetworkHandler() != null && Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()) != null) {
+            PlayerListEntry playerListEntry = Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getPlayerListEntry(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId());
             if (playerListEntry != null)
-                Render2DHelper.INSTANCE.drawFace(matrixStack, getX() + 1, getY() + 1, 4, playerListEntry.getSkinLocation());
+                Render2DHelper.INSTANCE.drawFace(matrixStack, getX() + 1, getY() + 1, 4, playerListEntry.getSkinTexture());
         }
     }
 

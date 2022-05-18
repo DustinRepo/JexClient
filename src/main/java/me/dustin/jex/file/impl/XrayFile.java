@@ -7,9 +7,9 @@ import me.dustin.jex.file.core.ConfigFile;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.YamlHelper;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,8 +26,8 @@ public class XrayFile extends ConfigFile {
         Map<String, Object> yamlMap = new HashMap<>();
         Xray.blockList.forEach(block -> {
             Map<String, Object> blockData = new HashMap<>();
-            blockData.put("mod", Registry.BLOCK.getKey(block).getNamespace());
-            String blockName = Registry.BLOCK.getKey(block).toString();
+            blockData.put("mod", Registry.BLOCK.getId(block).getNamespace());
+            String blockName = Registry.BLOCK.getId(block).toString();
             if (blockName.contains(":"))
                 blockName = blockName.split(":")[1];
             yamlMap.put(blockName, blockData);
@@ -44,7 +44,7 @@ public class XrayFile extends ConfigFile {
         parsedyaml.forEach((s, o) -> {
             Map<String, Object> blockData = (Map<String, Object>)o;
             String mod = (String)blockData.get("mod");
-            Optional<Block> block = Registry.BLOCK.getOptional(new ResourceLocation(mod, s));
+            Optional<Block> block = Registry.BLOCK.getOrEmpty(new Identifier(mod, s));
             Xray.blockList.add(block.get());
         });
     }
@@ -64,7 +64,7 @@ public class XrayFile extends ConfigFile {
             for (int i = 0; i < array.size(); i++) {
                 JsonObject object = array.get(i).getAsJsonObject();
                 String blockName = object.get("block").getAsString();
-                Block block = Registry.BLOCK.get(new ResourceLocation(blockName));
+                Block block = Registry.BLOCK.get(new Identifier(blockName));
                 Xray.blockList.add(block);
             }
             file.delete();

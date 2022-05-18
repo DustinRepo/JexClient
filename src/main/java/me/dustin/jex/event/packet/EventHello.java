@@ -1,19 +1,19 @@
 package me.dustin.jex.event.packet;
 
 import me.dustin.events.core.Event;
-import net.minecraft.network.Connection;
+import net.minecraft.network.ClientConnection;
 
 public class EventHello extends Event {
 
-    private final Connection clientConnection;
+    private final ClientConnection clientConnection;
     private final String serverhash;
 
-    public EventHello(Connection clientConnection, String serverhash) {
+    public EventHello(ClientConnection clientConnection, String serverhash) {
         this.clientConnection = clientConnection;
         this.serverhash = serverhash;
     }
 
-    public Connection getClientConnection() {
+    public ClientConnection getClientConnection() {
         return clientConnection;
     }
 

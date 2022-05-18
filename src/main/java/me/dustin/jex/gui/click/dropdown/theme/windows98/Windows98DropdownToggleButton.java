@@ -1,17 +1,17 @@
 package me.dustin.jex.gui.click.dropdown.theme.windows98;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import me.dustin.jex.gui.click.dropdown.impl.button.DropdownButton;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
 import java.util.function.Consumer;
 
 public class Windows98DropdownToggleButton extends DropdownButton {
@@ -21,15 +21,15 @@ public class Windows98DropdownToggleButton extends DropdownButton {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         drawW98Button(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight());
         FontHelper.INSTANCE.draw(matrixStack, getName(), getX() + 2, getY() + getHeight() / 2.f - 4, !isToggled() ? 0xff83888c : isHovered() ? -1 : 0xff000000);
     }
 
-    private void drawW98Button(PoseStack matrixStack, float x, float y, float endX, float endY) {
+    private void drawW98Button(MatrixStack matrixStack, float x, float y, float endX, float endY) {
         Render2DHelper.INSTANCE.setup2DRender(false);
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Render2DHelper.INSTANCE.fillNoDraw(matrixStack, x, y, endX, endY, !isHovered() ? 0xffbfbfbf : getWindow().getColor());
 
@@ -39,7 +39,7 @@ public class Windows98DropdownToggleButton extends DropdownButton {
         Render2DHelper.INSTANCE.fillNoDraw(matrixStack, x, endY - 1, endX - 1, endY, 0xff000000);
         Render2DHelper.INSTANCE.fillNoDraw(matrixStack, endX - 1, y, endX, endY, 0xff000000);
         bufferBuilder.clear();
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         Render2DHelper.INSTANCE.end2DRender();
     }
 

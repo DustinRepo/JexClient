@@ -1,14 +1,14 @@
 package me.dustin.jex.event.render;
 
 import me.dustin.events.core.Event;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.render.RenderLayer;
 
 public class EventGetRenderType extends Event {
     private final BlockState state;
-    private RenderType renderType;
+    private RenderLayer renderType;
 
-    public EventGetRenderType(BlockState state, RenderType renderType) {
+    public EventGetRenderType(BlockState state, RenderLayer renderType) {
         this.state = state;
         this.renderType = renderType;
     }
@@ -17,11 +17,11 @@ public class EventGetRenderType extends Event {
         return state;
     }
 
-    public RenderType getRenderType() {
+    public RenderLayer getRenderType() {
         return renderType;
     }
 
-    public void setRenderType(RenderType renderType) {
+    public void setRenderType(RenderLayer renderType) {
         this.renderType = renderType;
     }
 }

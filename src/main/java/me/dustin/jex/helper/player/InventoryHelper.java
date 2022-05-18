@@ -8,41 +8,41 @@ import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.world.effect.MobEffectUtil;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.item.AirItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.AirBlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.tag.FluidTags;
 import java.util.HashMap;
 import java.util.Map;
 
 public enum InventoryHelper {
     INSTANCE;
 
-    public Inventory getInventory() {
+    public PlayerInventory getInventory() {
         return Wrapper.INSTANCE.getLocalPlayer().getInventory();
     }
 
-    public Inventory getInventory(Player playerEntity) {
+    public PlayerInventory getInventory(PlayerEntity playerEntity) {
         return playerEntity.getInventory();
     }
 
     public boolean isHotbarFull() {
         for (int i = 0; i < 9; i++) {
-            ItemStack itemStack = getInventory().getItem(i);
-            if (itemStack == null || itemStack.getItem() instanceof AirItem)
+            ItemStack itemStack = getInventory().getStack(i);
+            if (itemStack == null || itemStack.getItem() instanceof AirBlockItem)
                 return false;
         }
         return true;
@@ -50,8 +50,8 @@ public enum InventoryHelper {
 
     public boolean isInventoryFull() {
         for (int i = 0; i < 36; i++) {
-            ItemStack itemStack = getInventory().getItem(i);
-            if (itemStack == null || itemStack.getItem() instanceof AirItem)
+            ItemStack itemStack = getInventory().getStack(i);
+            if (itemStack == null || itemStack.getItem() instanceof AirBlockItem)
                 return false;
         }
         return true;
@@ -59,8 +59,8 @@ public enum InventoryHelper {
 
     public boolean isInventoryFullIgnoreHotbar() {
         for (int i = 9; i < 36; i++) {
-            ItemStack itemStack = getInventory().getItem(i);
-            if (itemStack == null || itemStack.getItem() instanceof AirItem)
+            ItemStack itemStack = getInventory().getStack(i);
+            if (itemStack == null || itemStack.getItem() instanceof AirBlockItem)
                 return false;
         }
         return true;
@@ -68,7 +68,7 @@ public enum InventoryHelper {
 
     public int get(Item item) {
         for (int i = 0; i < 45; i++) {
-            if (getInventory().getItem(i) != null && getInventory().getItem(i).getItem() == item)
+            if (getInventory().getStack(i) != null && getInventory().getStack(i).getItem() == item)
                 return i;
         }
         return -1;
@@ -76,7 +76,7 @@ public enum InventoryHelper {
 
     public int getFromHotbar(Item item) {
         for (int i = 0; i < 9; i++) {
-            if (getInventory().getItem(i) != null && getInventory().getItem(i).getItem() == item)
+            if (getInventory().getStack(i) != null && getInventory().getStack(i).getItem() == item)
                 return i;
         }
         return -1;
@@ -84,7 +84,7 @@ public enum InventoryHelper {
 
     public int getEmptyHotbarSlot() {
         for (int i = 0; i < 9; i++) {
-            if (getInventory().getItem(i) == null || getInventory().getItem(i).getItem() instanceof AirItem)
+            if (getInventory().getStack(i) == null || getInventory().getStack(i).getItem() instanceof AirBlockItem)
                 return i;
         }
         return -1;
@@ -93,7 +93,7 @@ public enum InventoryHelper {
 
     public int getFromInv(Item item) {
         for (int i = 0; i < 36; i++) {
-            if (getInventory().getItem(i) != null && getInventory().getItem(i).getItem() == item)
+            if (getInventory().getStack(i) != null && getInventory().getStack(i).getItem() == item)
                 return i;
         }
         return -1;
@@ -101,71 +101,71 @@ public enum InventoryHelper {
 
     public boolean isInventoryFull(ItemStack stack) {
         for (int i = 0; i < 36; i++) {
-            ItemStack itemStack = getInventory().getItem(i);
-            if (itemStack == null || itemStack.getItem() instanceof AirItem)
+            ItemStack itemStack = getInventory().getStack(i);
+            if (itemStack == null || itemStack.getItem() instanceof AirBlockItem)
                 return false;
         }
-        int slot = getInventory().findSlotMatchingItem(stack);
+        int slot = getInventory().getSlotWithStack(stack);
         if (slot != -1) {
-            if (getInventory().getItem(slot).getCount() < getInventory().getItem(slot).getMaxStackSize()) {
+            if (getInventory().getStack(slot).getCount() < getInventory().getStack(slot).getMaxCount()) {
                 return false;
             }
         }
         return true;
     }
 
-    public void windowClick(AbstractContainerMenu container, int slot, ClickType action) {
+    public void windowClick(ScreenHandler container, int slot, SlotActionType action) {
         windowClick(container, slot, action, 0);
     }
 
-    public void windowClick(AbstractContainerMenu container, int slot, ClickType action, int clickData) {
-        Wrapper.INSTANCE.getMultiPlayerGameMode().handleInventoryMouseClick(container.containerId, slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
+    public void windowClick(ScreenHandler container, int slot, SlotActionType action, int clickData) {
+        Wrapper.INSTANCE.getMultiPlayerGameMode().clickSlot(container.syncId, slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
     }
 
     public void swapToHotbar(int slot, int hotbarSlot) {
-        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, slot, ClickType.SWAP, hotbarSlot);
+        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot, SlotActionType.SWAP, hotbarSlot);
     }
 
     public void moveToOffhand(int slot) {
-        boolean hasOffhand = Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() != Items.AIR;
-        windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, slot < 9 ? slot + 36 : slot, ClickType.PICKUP);
-        windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, 45, ClickType.PICKUP);
+        boolean hasOffhand = Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.AIR;
+        windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);
+        windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 45, SlotActionType.PICKUP);
         if (hasOffhand)
-            windowClick(Wrapper.INSTANCE.getLocalPlayer().containerMenu, slot < 9 ? slot + 36 : slot, ClickType.PICKUP);
+            windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.PICKUP);
     }
 
     public void setSlot(int slot, boolean actual, boolean packet) {
-        if (slot == getInventory().selected)
+        if (slot == getInventory().selectedSlot)
             return;
         if (actual) {
-            getInventory().selected = slot;
+            getInventory().selectedSlot = slot;
         }
         if (packet) {
-            NetworkHelper.INSTANCE.sendPacket(new ServerboundSetCarriedItemPacket(slot));
+            NetworkHelper.INSTANCE.sendPacket(new UpdateSelectedSlotC2SPacket(slot));
             lastSlotSent = slot;
         }
     }
 
     public HashMap<Integer, ItemStack> getStacksFromShulker(ItemStack shulkerBox) {
         HashMap<Integer, ItemStack> stacks = Maps.newHashMap();
-        CompoundTag nbttagcompound = shulkerBox.getTag();
+        NbtCompound nbttagcompound = shulkerBox.getNbt();
         if (nbttagcompound == null) return stacks;
 
 
-        CompoundTag nbttagcompound1 = nbttagcompound.getCompound("BlockEntityTag");
+        NbtCompound nbttagcompound1 = nbttagcompound.getCompound("BlockEntityTag");
         for (int i = 0; i < nbttagcompound1.getList("Items", 10).size(); i++) {
-            CompoundTag compound = nbttagcompound1.getList("Items", 10).getCompound(i);
+            NbtCompound compound = nbttagcompound1.getList("Items", 10).getCompound(i);
             int slot = compound.getInt("Slot");
-            ItemStack itemStack = ItemStack.of(compound);
+            ItemStack itemStack = ItemStack.fromNbt(compound);
             stacks.put(slot, itemStack);
         }
         return stacks;
     }
 
     public int getDepthStriderLevel() {
-        ItemStack boots = getInventory().getArmor(0);
-        if (boots.isEnchanted()) {
-            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.getEnchantments(boots);
+        ItemStack boots = getInventory().getArmorStack(0);
+        if (boots.hasEnchantments()) {
+            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.get(boots);
             if (equippedEnchants.containsKey(Enchantments.DEPTH_STRIDER)) {
                 return equippedEnchants.get(Enchantments.DEPTH_STRIDER);
             }
@@ -173,10 +173,10 @@ public enum InventoryHelper {
         return 0;
     }
 
-    public boolean isContainerEmpty(AbstractContainerMenu container) {
-        int most = Wrapper.INSTANCE.getLocalPlayer().containerMenu.slots.size() - 36;
+    public boolean isContainerEmpty(ScreenHandler container) {
+        int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
         for (int i = 0; i < most; i++) {
-            ItemStack stack = container.getSlot(i).getItem();
+            ItemStack stack = container.getSlot(i).getStack();
             if (stack != null && stack.getItem() != Items.AIR) {
                 return false;
             }
@@ -185,8 +185,8 @@ public enum InventoryHelper {
     }
 
     public boolean hasEnchantment(ItemStack itemStack, Enchantment enchantment) {
-        if (itemStack.isEnchanted()) {
-            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.getEnchantments(itemStack);
+        if (itemStack.hasEnchantments()) {
+            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.get(itemStack);
             if (equippedEnchants.containsKey(enchantment)) {
                 return true;
             }
@@ -197,15 +197,15 @@ public enum InventoryHelper {
     public boolean compareEnchants(ItemStack equippedStack, ItemStack newPiece, Enchantment enchantment) {
         int equippedLevel = 0;
         int newLevel = 0;
-        if (equippedStack.isEnchanted()) {
-            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.getEnchantments(equippedStack);
+        if (equippedStack.hasEnchantments()) {
+            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.get(equippedStack);
             if (!equippedEnchants.isEmpty()) {
                 if (equippedEnchants.containsKey(enchantment))
                     equippedLevel = equippedEnchants.get(enchantment);
             }
         }
-        if (newPiece.isEnchanted()) {
-            Map<Enchantment, Integer> newPieceEnchants = EnchantmentHelper.getEnchantments(newPiece);
+        if (newPiece.hasEnchantments()) {
+            Map<Enchantment, Integer> newPieceEnchants = EnchantmentHelper.get(newPiece);
             if (!newPieceEnchants.isEmpty()) {
                 if (newPieceEnchants.containsKey(enchantment))
                     newLevel = newPieceEnchants.get(enchantment);
@@ -221,7 +221,7 @@ public enum InventoryHelper {
     public int countItems(Item item) {
         int count = 0;
         for (int i = 0; i < 44; i++) {
-            ItemStack itemStack = getInventory().getItem(i);
+            ItemStack itemStack = getInventory().getStack(i);
             if (itemStack != null && itemStack.getItem() == item)
                 count+=itemStack.getCount();
         }
@@ -232,35 +232,35 @@ public enum InventoryHelper {
         HashMap<Integer, ItemStack> stacks = Maps.newHashMap();
         if (hotbar) {
             for (int i = 0; i < 9; i++) {
-                stacks.put(i + 36, getInventory().getItem(i));
+                stacks.put(i + 36, getInventory().getStack(i));
             }
         }
         for (int i = 9; i < 44; i++) {
-            stacks.put(i - 9, getInventory().getItem(i));
+            stacks.put(i - 9, getInventory().getStack(i));
         }
         return stacks;
     }
 
     public float getBlockBreakingSpeed(BlockState block, int slot) {
-        Player player = Wrapper.INSTANCE.getLocalPlayer();
-        ItemStack stack = player.getInventory().getItem(slot);
+        PlayerEntity player = Wrapper.INSTANCE.getLocalPlayer();
+        ItemStack stack = player.getInventory().getStack(slot);
 
-        float f = stack.getDestroySpeed(block);
+        float f = stack.getMiningSpeedMultiplier(block);
         if (f > 1.0F) {
-            int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, stack);
-            ItemStack itemStack = player.getInventory().getItem(slot);
+            int i = EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, stack);
+            ItemStack itemStack = player.getInventory().getStack(slot);
             if (i > 0 && !itemStack.isEmpty()) {
                 f += (float) (i * i + 1);
             }
         }
 
-        if (MobEffectUtil.hasDigSpeed(player)) {
-            f *= 1.0F + (float) (MobEffectUtil.getDigSpeedAmplification(player) + 1) * 0.2F;
+        if (StatusEffectUtil.hasHaste(player)) {
+            f *= 1.0F + (float) (StatusEffectUtil.getHasteAmplifier(player) + 1) * 0.2F;
         }
 
-        if (player.hasEffect(MobEffects.DIG_SLOWDOWN)) {
+        if (player.hasStatusEffect(StatusEffects.MINING_FATIGUE)) {
             float k;
-            switch (player.getEffect(MobEffects.DIG_SLOWDOWN).getAmplifier()) {
+            switch (player.getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) {
                 case 0:
                     k = 0.3F;
                     break;
@@ -278,7 +278,7 @@ public enum InventoryHelper {
             f *= k;
         }
 
-        if (player.isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(player)) {
+        if (player.isSubmergedIn(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(player)) {
             f /= 5.0F;
         }
 
@@ -293,11 +293,11 @@ public enum InventoryHelper {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        ServerboundSetCarriedItemPacket updateSelectedSlotC2SPacket = (ServerboundSetCarriedItemPacket) event.getPacket();
-        if (updateSelectedSlotC2SPacket.getSlot() == lastSlotSent)
+        UpdateSelectedSlotC2SPacket updateSelectedSlotC2SPacket = (UpdateSelectedSlotC2SPacket) event.getPacket();
+        if (updateSelectedSlotC2SPacket.getSelectedSlot() == lastSlotSent)
             event.cancel();
-        lastSlotSent = updateSelectedSlotC2SPacket.getSlot();
-    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundSetCarriedItemPacket.class));
+        lastSlotSent = updateSelectedSlotC2SPacket.getSelectedSlot();
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, UpdateSelectedSlotC2SPacket.class));
 
     @EventPointer
     private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> {

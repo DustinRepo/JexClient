@@ -9,8 +9,8 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import org.lwjgl.glfw.GLFW;
@@ -25,11 +25,11 @@ public class InventoryView extends Feature {
     @Op(name = "Draw Background")
     public boolean drawBackground = true;
 
-    private final ResourceLocation SHULKER_GUI = new ResourceLocation("textures/gui/container/shulker_box.png");
+    private final Identifier SHULKER_GUI = new Identifier("textures/gui/container/shulker_box.png");
 
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
-        if (location.equalsIgnoreCase("Top") && KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_TAB) && Wrapper.INSTANCE.getMinecraft().screen == null)
+        if (location.equalsIgnoreCase("Top") && KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_TAB) && Wrapper.INSTANCE.getMinecraft().currentScreen == null)
             return;
         float y = location.equalsIgnoreCase("Top") ? -10 : Render2DHelper.INSTANCE.getScaledHeight() - 140;
         float x = (Render2DHelper.INSTANCE.getScaledWidth() / 2.f) - 95;
@@ -50,9 +50,9 @@ public class InventoryView extends Feature {
             float yPos = y + 20 + (20 * yCount);
             if (stacks.containsKey(i)) {
                 ItemStack itemStack = stacks.get(i);
-                Wrapper.INSTANCE.getMinecraft().getItemRenderer().blitOffset = 300;
+                Wrapper.INSTANCE.getMinecraft().getItemRenderer().zOffset = 300;
                 Render2DHelper.INSTANCE.drawItem(itemStack, (int) xPos, (int) yPos);
-                Wrapper.INSTANCE.getMinecraft().getItemRenderer().blitOffset = 0;
+                Wrapper.INSTANCE.getMinecraft().getItemRenderer().zOffset = 0;
             }
             xCount++;
             if (xCount > 8) {

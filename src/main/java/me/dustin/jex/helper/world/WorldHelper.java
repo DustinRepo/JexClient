@@ -8,53 +8,53 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ConnectedServerHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.effect.MobEffectUtil;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.block.BaseRailBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ButtonBlock;
-import net.minecraft.world.level.block.CandleBlock;
-import net.minecraft.world.level.block.CarpetBlock;
-import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.ComparatorBlock;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.FlowerPotBlock;
-import net.minecraft.world.level.block.GlassBlock;
-import net.minecraft.world.level.block.LeverBlock;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.RedStoneWireBlock;
-import net.minecraft.world.level.block.RedstoneTorchBlock;
-import net.minecraft.world.level.block.RepeaterBlock;
-import net.minecraft.world.level.block.SkullBlock;
-import net.minecraft.world.level.block.StainedGlassBlock;
-import net.minecraft.world.level.block.TintedGlassBlock;
-import net.minecraft.world.level.block.TripWireHookBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.block.AbstractButtonBlock;
+import net.minecraft.block.AbstractRailBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CandleBlock;
+import net.minecraft.block.CarpetBlock;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.ComparatorBlock;
+import net.minecraft.block.CropBlock;
+import net.minecraft.block.FlowerPotBlock;
+import net.minecraft.block.FluidBlock;
+import net.minecraft.block.GlassBlock;
+import net.minecraft.block.LeverBlock;
+import net.minecraft.block.PressurePlateBlock;
+import net.minecraft.block.RedstoneTorchBlock;
+import net.minecraft.block.RedstoneWireBlock;
+import net.minecraft.block.RepeaterBlock;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.block.SkullBlock;
+import net.minecraft.block.StainedGlassBlock;
+import net.minecraft.block.TintedGlassBlock;
+import net.minecraft.block.TripwireHookBlock;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.StatusEffectUtil;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tag.FluidTags;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 import java.io.File;
 import java.util.concurrent.ConcurrentMap;
 import java.util.*;
@@ -62,7 +62,7 @@ import java.util.*;
 public enum WorldHelper {
     INSTANCE;
     private final ConcurrentMap<BlockPos, BlockEntity> blockEntities = Maps.newConcurrentMap();
-    public static final AABB SINGLE_BOX = new AABB(0, 0, 0, 1, 1, 1);
+    public static final Box SINGLE_BOX = new Box(0, 0, 0, 1, 1, 1);
 
     public Block getBlock(BlockPos pos) {
         if (Wrapper.INSTANCE.getWorld() == null)
@@ -80,28 +80,28 @@ public enum WorldHelper {
         BlockState blockState = getBlockState(pos);
         if (blockState == null)
             return false;
-        return blockState.getFluidState() != Fluids.EMPTY.defaultFluidState();
+        return blockState.getFluidState() != Fluids.EMPTY.getDefaultState();
     }
 
     public boolean canUseOnPos(BlockPos pos) {
-        return WorldHelper.INSTANCE.getBlockState(pos).use(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.ZERO, Direction.UP, BlockPos.ZERO, false)) != InteractionResult.PASS;
+        return WorldHelper.INSTANCE.getBlockState(pos).onUse(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN, false)) != ActionResult.PASS;
     }
 
     public boolean isCrop(BlockPos blockPos, boolean checkAge) {
         Block block = WorldHelper.INSTANCE.getBlock(blockPos);
         if (block instanceof CropBlock cropBlock) {
-            int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).getValue(cropBlock.getAgeProperty());
+            int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
             if (!checkAge || age == cropBlock.getMaxAge()) {
                 return true;
             }
         } else if (block == Blocks.MELON || block == Blocks.PUMPKIN) {
             return true;
         } else if (block == Blocks.SUGAR_CANE) {
-            Block belowBlock = WorldHelper.INSTANCE.getBlock(blockPos.below());
+            Block belowBlock = WorldHelper.INSTANCE.getBlock(blockPos.down());
             if (belowBlock == Blocks.SUGAR_CANE)
                 return true;
         } else if (block == Blocks.BAMBOO) {
-            Block belowBlock = WorldHelper.INSTANCE.getBlock(blockPos.below());
+            Block belowBlock = WorldHelper.INSTANCE.getBlock(blockPos.down());
             if (belowBlock == Blocks.BAMBOO)
                 return true;
         }
@@ -110,9 +110,9 @@ public enum WorldHelper {
 
     //super fucking scuffed
     public Direction chestMergeDirection(ChestBlockEntity chestBlockEntity) {
-        BlockState blockState = getBlockState(chestBlockEntity.getBlockPos());
-        ChestBlock chestBlock = (ChestBlock) getBlock(chestBlockEntity.getBlockPos());
-        AABB chestBox = chestBlock.getShape(blockState, Wrapper.INSTANCE.getWorld(), chestBlockEntity.getBlockPos(), CollisionContext.empty()).bounds();
+        BlockState blockState = getBlockState(chestBlockEntity.getPos());
+        ChestBlock chestBlock = (ChestBlock) getBlock(chestBlockEntity.getPos());
+        Box chestBox = chestBlock.getOutlineShape(blockState, Wrapper.INSTANCE.getWorld(), chestBlockEntity.getPos(), ShapeContext.absent()).getBoundingBox();
         if (chestBox.minZ == 0)
             return Direction.NORTH;
         if (chestBox.maxZ == 1)
@@ -128,15 +128,15 @@ public enum WorldHelper {
         return getBlockState(pos).getFluidState();
     }
 
-    public ResourceLocation getDimensionID() {
-        return Wrapper.INSTANCE.getWorld().dimension().location();
+    public Identifier getDimensionID() {
+        return Wrapper.INSTANCE.getWorld().getRegistryKey().getValue();
     }
 
     public Block getBlockBelowEntity(Entity entity, float offset) {
         if (Wrapper.INSTANCE.getWorld() == null || entity == null)
             return null;
 
-        BlockPos blockPos = new BlockPos(entity.position().x(), entity.position().y() - offset, entity.position().z());
+        BlockPos blockPos = new BlockPos(entity.getPos().getX(), entity.getPos().getY() - offset, entity.getPos().getZ());
         return Wrapper.INSTANCE.getWorld().getBlockState(blockPos).getBlock();
     }
 
@@ -144,11 +144,11 @@ public enum WorldHelper {
         if (Wrapper.INSTANCE.getWorld() == null || entity == null)
             return null;
 
-        BlockPos blockPos = new BlockPos(entity.position().x(), entity.position().y() + entity.getBbHeight() + offset, entity.position().z());
+        BlockPos blockPos = new BlockPos(entity.getPos().getX(), entity.getPos().getY() + entity.getHeight() + offset, entity.getPos().getZ());
         return Wrapper.INSTANCE.getWorld().getBlockState(blockPos).getBlock();
     }
 
-    public ArrayList<BlockPos> getBlocksInBox(AABB box) {
+    public ArrayList<BlockPos> getBlocksInBox(Box box) {
         ArrayList<BlockPos> blocks = new ArrayList<>();
         for (int x = (int)box.minX; x <= box.maxX; x++) {
             for (int y = (int)box.minY; y <= box.maxY; y++) {
@@ -160,16 +160,16 @@ public enum WorldHelper {
         return blocks;
     }
 
-    public Vec3 sideOfBlock(BlockPos pos, Direction direction) {
+    public Vec3d sideOfBlock(BlockPos pos, Direction direction) {
         switch (direction) {
-            case NORTH -> Vec3.atCenterOf(pos).add(0, 0, -0.5);
-            case SOUTH -> Vec3.atCenterOf(pos).add(0, 0, 0.5);
-            case EAST -> Vec3.atCenterOf(pos).add(0.5, 0, 0);
-            case WEST -> Vec3.atCenterOf(pos).add(-0.5, 0, 0);
-            case UP -> Vec3.atCenterOf(pos).add(0, 0.5, 0);
-            case DOWN -> Vec3.atCenterOf(pos).add(0, -0.5, 0);
+            case NORTH -> Vec3d.ofCenter(pos).add(0, 0, -0.5);
+            case SOUTH -> Vec3d.ofCenter(pos).add(0, 0, 0.5);
+            case EAST -> Vec3d.ofCenter(pos).add(0.5, 0, 0);
+            case WEST -> Vec3d.ofCenter(pos).add(-0.5, 0, 0);
+            case UP -> Vec3d.ofCenter(pos).add(0, 0.5, 0);
+            case DOWN -> Vec3d.ofCenter(pos).add(0, -0.5, 0);
         }
-        return Vec3.atCenterOf(pos);
+        return Vec3d.ofCenter(pos);
     }
 
     public Block getBlockAboveEntity(Entity entity) {
@@ -194,8 +194,8 @@ public enum WorldHelper {
             blockEntities.clear();
         else {
             for (BlockEntity blockEntity : blockEntities.values()) {
-                if (Wrapper.INSTANCE.getWorld().getBlockEntity(blockEntity.getBlockPos()) == null)
-                    removeBlockEntity(blockEntity.getBlockPos());
+                if (Wrapper.INSTANCE.getWorld().getBlockEntity(blockEntity.getPos()) == null)
+                    removeBlockEntity(blockEntity.getPos());
             }
         }
     }, new TickFilter(EventTick.Mode.PRE));
@@ -206,15 +206,15 @@ public enum WorldHelper {
 
     public String getCurrentServerName() {
         try {
-            boolean isSinglePlayer = Wrapper.INSTANCE.getMinecraft().isLocalServer();
-            if (isSinglePlayer && Wrapper.INSTANCE.getMinecraft().getSingleplayerServer() != null) {
-                String preString = Wrapper.INSTANCE.getMinecraft().getSingleplayerServer().getWorldScreenshotFile().toString().replace(File.separator + "icon.png", "").replace(File.separator, "/");
+            boolean isSinglePlayer = Wrapper.INSTANCE.getMinecraft().isInSingleplayer();
+            if (isSinglePlayer && Wrapper.INSTANCE.getMinecraft().getServer() != null) {
+                String preString = Wrapper.INSTANCE.getMinecraft().getServer().getIconFile().toString().replace(File.separator + "icon.png", "").replace(File.separator, "/");
                 String[] list = preString.split("/");
                 return list[list.length - 1];
             } else {
                 if (ConnectedServerHelper.INSTANCE.getServerAddress() == null)
                     return "";
-                return ConnectedServerHelper.INSTANCE.getServerAddress().getHost();
+                return ConnectedServerHelper.INSTANCE.getServerAddress().getAddress();
             }
         } catch (Exception e) {
             return e.getMessage();
@@ -225,19 +225,19 @@ public enum WorldHelper {
         if (entity == null) {
             return false;
         }
-        AABB boundingBox = entity.getBoundingBox();
-        boundingBox = boundingBox.inflate(-0.01D, -0.0D, -0.01D).move(0.0D, -0.01D, 0.0D);
+        Box boundingBox = entity.getBoundingBox();
+        boundingBox = boundingBox.expand(-0.01D, -0.0D, -0.01D).offset(0.0D, -0.01D, 0.0D);
         boolean onLiquid = false;
         int y = (int) boundingBox.minY;
-        for (int x = Mth.floor(boundingBox.minX); x < Mth.floor(boundingBox.maxX + 1.0D); x++) {
-            for (int z = Mth.floor(boundingBox.minZ); z < Mth.floor(boundingBox.maxZ + 1.0D); z++) {
+        for (int x = MathHelper.floor(boundingBox.minX); x < MathHelper.floor(boundingBox.maxX + 1.0D); x++) {
+            for (int z = MathHelper.floor(boundingBox.minZ); z < MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
                 BlockPos blockPos = new BlockPos(x, y, z);
                 Block block = getBlock(new BlockPos(x, y, z));
                 if (block != Blocks.AIR) {
                     if (!isWaterlogged(blockPos))
                         return false;
                     FluidState fluidState = getFluidState(blockPos);
-                    AABB blockBB = fluidState.getShape(Wrapper.INSTANCE.getWorld(), blockPos).bounds().move(blockPos);
+                    Box blockBB = fluidState.getShape(Wrapper.INSTANCE.getWorld(), blockPos).getBoundingBox().offset(blockPos);
                     if (boundingBox.minX < blockBB.maxX &&
                             boundingBox.maxX > blockBB.minX &&
                             boundingBox.minY < blockBB.maxY &&
@@ -261,13 +261,13 @@ public enum WorldHelper {
         if (entity == null) {
             return false;
         }
-        AABB boundingBox = entity.getBoundingBox();
-        boundingBox = boundingBox.inflate(-0.01D, -0.0D, -0.01D).move(0.0D, -0.01D, 0.0D);
+        Box boundingBox = entity.getBoundingBox();
+        boundingBox = boundingBox.expand(-0.01D, -0.0D, -0.01D).offset(0.0D, -0.01D, 0.0D);
         boolean onLiquid = false;
         int y = (int) boundingBox.minY;
-        for (int x = Mth.floor(boundingBox.minX); x < Mth.floor(boundingBox.maxX + 1.0D); x++) {
-            for (int z = Mth.floor(boundingBox.minZ); z <
-                    Mth.floor(boundingBox.maxZ + 1.0D); z++) {
+        for (int x = MathHelper.floor(boundingBox.minX); x < MathHelper.floor(boundingBox.maxX + 1.0D); x++) {
+            for (int z = MathHelper.floor(boundingBox.minZ); z <
+                    MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
                 Block block = getBlock(new BlockPos(x, y, z));
                 if (block != Blocks.AIR) {
                     if (!isWaterlogged(new BlockPos(x, y, z))) {
@@ -284,14 +284,14 @@ public enum WorldHelper {
         if (entity == null) {
             return false;
         }
-        AABB boundingBox = entity.getBoundingBox();
-        boundingBox = boundingBox.inflate(-0, -0.081D, -0.081D);
-        int var4 = Mth.floor(boundingBox.minX);
-        int var5 = Mth.floor(boundingBox.maxX + 1.0D);
-        int var6 = Mth.floor(boundingBox.minY);
-        int var7 = Mth.floor(boundingBox.maxY + 0.8D);
-        int var8 = Mth.floor(boundingBox.minZ);
-        int var9 = Mth.floor(boundingBox.maxZ + 1.0D);
+        Box boundingBox = entity.getBoundingBox();
+        boundingBox = boundingBox.expand(-0, -0.081D, -0.081D);
+        int var4 = MathHelper.floor(boundingBox.minX);
+        int var5 = MathHelper.floor(boundingBox.maxX + 1.0D);
+        int var6 = MathHelper.floor(boundingBox.minY);
+        int var7 = MathHelper.floor(boundingBox.maxY + 0.8D);
+        int var8 = MathHelper.floor(boundingBox.minZ);
+        int var9 = MathHelper.floor(boundingBox.maxZ + 1.0D);
         if (Wrapper.INSTANCE.getWorld().getChunk(
                 new BlockPos(entity.getX(), entity.getY(), entity.getZ())) == null) {
             return false;
@@ -301,9 +301,9 @@ public enum WorldHelper {
                 for (int var14 = var8; var14 < var9; var14++) {
                     BlockPos blockPos = new BlockPos(var12, var13, var14);
                     Block var15 = getBlock(blockPos);
-                    if ((var15 instanceof LiquidBlock)) {
+                    if ((var15 instanceof FluidBlock)) {
                         FluidState fluidState = getFluidState(blockPos);
-                        AABB blockBB = fluidState.getShape(Wrapper.INSTANCE.getWorld(), blockPos).bounds().move(blockPos);
+                        Box blockBB = fluidState.getShape(Wrapper.INSTANCE.getWorld(), blockPos).getBoundingBox().offset(blockPos);
                         if (boundingBox.minX < blockBB.maxX &&
                                 boundingBox.maxX > blockBB.minX &&
                                 boundingBox.minY < blockBB.maxY &&
@@ -321,21 +321,21 @@ public enum WorldHelper {
 
     public float getBlockBreakingSpeed(BlockState block, ItemStack stack) {
 
-        float f = stack.getDestroySpeed(block);
+        float f = stack.getMiningSpeedMultiplier(block);
         if (f > 1.0F) {
-            int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, stack);
+            int i = EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, stack);
             if (i > 0 && !stack.isEmpty()) {
                 f += (float) (i * i + 1);
             }
         }
 
-        if (MobEffectUtil.hasDigSpeed(Wrapper.INSTANCE.getLocalPlayer())) {
-            f *= 1.0F + (float) (MobEffectUtil.getDigSpeedAmplification(Wrapper.INSTANCE.getLocalPlayer()) + 1) * 0.2F;
+        if (StatusEffectUtil.hasHaste(Wrapper.INSTANCE.getLocalPlayer())) {
+            f *= 1.0F + (float) (StatusEffectUtil.getHasteAmplifier(Wrapper.INSTANCE.getLocalPlayer()) + 1) * 0.2F;
         }
 
-        if (Wrapper.INSTANCE.getLocalPlayer().hasEffect(MobEffects.DIG_SLOWDOWN)) {
+        if (Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.MINING_FATIGUE)) {
             float k;
-            switch (Wrapper.INSTANCE.getLocalPlayer().getEffect(MobEffects.DIG_SLOWDOWN).getAmplifier()) {
+            switch (Wrapper.INSTANCE.getLocalPlayer().getStatusEffect(StatusEffects.MINING_FATIGUE).getAmplifier()) {
                 case 0:
                     k = 0.3F;
                     break;
@@ -353,7 +353,7 @@ public enum WorldHelper {
             f *= k;
         }
 
-        if (Wrapper.INSTANCE.getLocalPlayer().isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(Wrapper.INSTANCE.getLocalPlayer())) {
+        if (Wrapper.INSTANCE.getLocalPlayer().isSubmergedIn(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(Wrapper.INSTANCE.getLocalPlayer())) {
             f /= 5.0F;
         }
 
@@ -371,7 +371,7 @@ public enum WorldHelper {
     public boolean canMobSpawnOntop(BlockPos blockPos) {
         BlockState blockState = WorldHelper.INSTANCE.getBlockState(blockPos);
         Block block = blockState.getBlock();
-        if (!blockState.isValidSpawn(Wrapper.INSTANCE.getWorld(), blockPos, EntityType.ZOMBIE))
+        if (!blockState.allowsSpawning(Wrapper.INSTANCE.getWorld(), blockPos, EntityType.ZOMBIE))
             return false;
         if (block instanceof GlassBlock || block instanceof StainedGlassBlock || block instanceof TintedGlassBlock)
             return false;
@@ -380,11 +380,11 @@ public enum WorldHelper {
 
     public boolean canMobSpawnInside(BlockState blockState) {
         Block block = blockState.getBlock();
-        if (blockState.getMaterial().blocksMotion() || !block.isPossibleToRespawnInThis())
+        if (blockState.getMaterial().blocksMovement() || !block.canMobSpawnInside())
             return false;
-        if (block instanceof ButtonBlock)
+        if (block instanceof AbstractButtonBlock)
             return false;
-        if (block instanceof RedStoneWireBlock)
+        if (block instanceof RedstoneWireBlock)
             return false;
         if (block instanceof ComparatorBlock)
             return false;
@@ -396,11 +396,11 @@ public enum WorldHelper {
             return false;
         if (block instanceof LeverBlock)
             return false;
-        if (block instanceof TripWireHookBlock)
+        if (block instanceof TripwireHookBlock)
             return false;
         if (block instanceof CarpetBlock)
             return false;
-        if (block instanceof BaseRailBlock)
+        if (block instanceof AbstractRailBlock)
             return false;
         if (block instanceof FlowerPotBlock)
             return false;
@@ -409,7 +409,7 @@ public enum WorldHelper {
         return !(block instanceof CandleBlock);
     }
 
-    public ArrayList<BlockPos> cubeSphere(Vec3 pos, double r, int lats, int longs) {
+    public ArrayList<BlockPos> cubeSphere(Vec3d pos, double r, int lats, int longs) {
         ArrayList<BlockPos> positions = new ArrayList<>();
         int i, j;
         for (i = 0; i <= lats; i++)
@@ -432,17 +432,17 @@ public enum WorldHelper {
         return positions;
     }
 
-    public float calcExplosionDamage(float power, Player playerEntity, BlockPos explosionPos) {
-        Vec3 vec3d = ClientMathHelper.INSTANCE.getVec(explosionPos);
+    public float calcExplosionDamage(float power, PlayerEntity playerEntity, BlockPos explosionPos) {
+        Vec3d vec3d = ClientMathHelper.INSTANCE.getVec(explosionPos);
         float j = power * 2.0F;
-        double h = Math.sqrt(playerEntity.distanceToSqr(vec3d)) / (double) j;
+        double h = Math.sqrt(playerEntity.squaredDistanceTo(vec3d)) / (double) j;
         double v = 1 - h * getExposure(vec3d, playerEntity);
 
         return (float) ((int) ((v * v + v) / 2.0D * 7.0D * (double) j + 1.0D));
     }
 
-    public static float getExposure(Vec3 source, Entity entity) {
-        AABB box = entity.getBoundingBox();
+    public static float getExposure(Vec3d source, Entity entity) {
+        Box box = entity.getBoundingBox();
         double d = 1.0D / ((box.maxX - box.minX) * 2.0D + 1.0D);
         double e = 1.0D / ((box.maxY - box.minY) * 2.0D + 1.0D);
         double f = 1.0D / ((box.maxZ - box.minZ) * 2.0D + 1.0D);
@@ -455,11 +455,11 @@ public enum WorldHelper {
             for(double k = 0.0D; k <= 1.0D; k += d) {
                 for(double l = 0.0D; l <= 1.0D; l += e) {
                     for(double m = 0.0D; m <= 1.0D; m += f) {
-                        double n = Mth.lerp(k, box.minX, box.maxX);
-                        double o = Mth.lerp(l, box.minY, box.maxY);
-                        double p = Mth.lerp(m, box.minZ, box.maxZ);
-                        Vec3 vec3d = new Vec3(n + g, o, p + h);
-                        if (Wrapper.INSTANCE.getWorld().clip(new ClipContext(vec3d, source, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() == HitResult.Type.MISS) {
+                        double n = MathHelper.lerp(k, box.minX, box.maxX);
+                        double o = MathHelper.lerp(l, box.minY, box.maxY);
+                        double p = MathHelper.lerp(m, box.minZ, box.maxZ);
+                        Vec3d vec3d = new Vec3d(n + g, o, p + h);
+                        if (Wrapper.INSTANCE.getWorld().raycast(new RaycastContext(vec3d, source, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS) {
                             ++i;
                         }
 

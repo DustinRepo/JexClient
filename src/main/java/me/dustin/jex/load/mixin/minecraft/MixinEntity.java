@@ -6,15 +6,15 @@ import me.dustin.jex.event.player.EventSlowdown;
 import me.dustin.jex.event.player.EventStep;
 import me.dustin.jex.event.render.EventNametagShouldRender;
 import me.dustin.jex.event.render.EventTeamColor;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.scores.Team;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.MovementType;
+import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,21 +28,21 @@ import java.util.List;
 @Mixin(Entity.class)
 public abstract class MixinEntity {
 
-    @Shadow public abstract AABB getBoundingBox();
+    @Shadow public abstract Box getBoundingBox();
 
     @Shadow protected boolean onGround;
 
-    @Shadow public abstract void move(MoverType type, Vec3 movement);
+    @Shadow public abstract void move(MovementType type, Vec3d movement);
 
-    @Shadow @Nullable public abstract Team getTeam();
+    @Shadow @Nullable public abstract AbstractTeam getScoreboardTeam();
 
-    @Shadow private AABB bb;
+    @Shadow private Box boundingBox;
 
-    @Shadow public Level level;
+    @Shadow public World world;
 
-    @Shadow public float maxUpStep;
+    @Shadow public float stepHeight;
 
-    @Inject(method = "push(Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
     public void push(Entity entity, CallbackInfo ci) {
         EventPushAwayFromEntity eventPushAwayFromEntity = new EventPushAwayFromEntity().run();
         if (eventPushAwayFromEntity.isCancelled())
@@ -50,15 +50,15 @@ public abstract class MixinEntity {
     }
 
     @Inject(method = "getBoundingBox", at = @At("HEAD"), cancellable = true)
-    public void getBoundBox1(CallbackInfoReturnable<AABB> cir) {
-        EventEntityHitbox eventEntityHitbox = new EventEntityHitbox((Entity)(Object)this, this.bb).run();
+    public void getBoundBox1(CallbackInfoReturnable<Box> cir) {
+        EventEntityHitbox eventEntityHitbox = new EventEntityHitbox((Entity)(Object)this, this.boundingBox).run();
         cir.setReturnValue(eventEntityHitbox.getBox());
     }
 
-    @Inject(method = "getTeamColor", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getTeamColorValue", at = @At("HEAD"), cancellable = true)
     public void getTeamColorValue(CallbackInfoReturnable<Integer> cir) {
-        Team abstractTeam = this.getTeam();
-        int o = abstractTeam != null && abstractTeam.getColor().getColor() != null ? abstractTeam.getColor().getColor() : 16777215;
+        AbstractTeam abstractTeam = this.getScoreboardTeam();
+        int o = abstractTeam != null && abstractTeam.getColor().getColorValue() != null ? abstractTeam.getColor().getColorValue() : 16777215;
         EventTeamColor eventTeamColor = new EventTeamColor(o, (Entity) (Object) this).run();
         cir.setReturnValue(eventTeamColor.getColor());
     }
@@ -70,8 +70,8 @@ public abstract class MixinEntity {
             ci.setReturnValue(true);
     }
 
-    @Inject(method = "makeStuckInBlock", at = @At("HEAD"), cancellable = true)
-    public void slowMovement(BlockState blockState, Vec3 multiplier, CallbackInfo ci) {
+    @Inject(method = "slowMovement", at = @At("HEAD"), cancellable = true)
+    public void slowMovement(BlockState blockState, Vec3d multiplier, CallbackInfo ci) {
         EventSlowdown eventSlowdown = null;
         if (blockState.getBlock() == Blocks.COBWEB)
             eventSlowdown = new EventSlowdown(EventSlowdown.State.COBWEB).run();
@@ -84,28 +84,28 @@ public abstract class MixinEntity {
             ci.cancel();
     }
 
-    @Inject(method = "collide", at = @At("HEAD"), cancellable = true)
-    public void move1(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
-        AABB box = this.getBoundingBox();
-        List<VoxelShape> list = this.level.getEntityCollisions((Entity)(Object)this, box.expandTowards(movement));
-        Vec3 vec3d = movement.lengthSqr() == 0.0D ? movement : Entity.collideBoundingBox((Entity)(Object)this, movement, box, this.level, list);
+    @Inject(method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
+    public void move1(Vec3d movement, CallbackInfoReturnable<Vec3d> cir) {
+        Box box = this.getBoundingBox();
+        List<VoxelShape> list = this.world.getEntityCollisions((Entity)(Object)this, box.stretch(movement));
+        Vec3d vec3d = movement.lengthSquared() == 0.0D ? movement : Entity.adjustMovementForCollisions((Entity)(Object)this, movement, box, this.world, list);
         boolean bl = movement.x != vec3d.x;
         boolean bl2 = movement.y != vec3d.y;
         boolean bl3 = movement.z != vec3d.z;
         boolean bl4 = this.onGround || bl2 && movement.y < 0.0D;
-        if (this.maxUpStep > 0.0F && bl4 && (bl || bl3)) {
+        if (this.stepHeight > 0.0F && bl4 && (bl || bl3)) {
             new EventStep((Entity) (Object) this, EventStep.Mode.PRE, 0).run();
-            Vec3 vec3d2 = Entity.collideBoundingBox((Entity)(Object)this, new Vec3(movement.x, (double) this.maxUpStep, movement.z), box, this.level, list);
-            Vec3 vec3d3 = Entity.collideBoundingBox((Entity)(Object)this, new Vec3(0.0D, (double) this.maxUpStep, 0.0D), box.expandTowards(movement.x, 0.0D, movement.z), this.level, list);
-            if (vec3d3.y < (double) this.maxUpStep) {
-                Vec3 vec3d4 = Entity.collideBoundingBox((Entity)(Object)this, new Vec3(movement.x, 0.0D, movement.z), box.move(vec3d3), this.level, list).add(vec3d3);
-                if (vec3d4.horizontalDistanceSqr() > vec3d2.horizontalDistanceSqr()) {
+            Vec3d vec3d2 = Entity.adjustMovementForCollisions((Entity)(Object)this, new Vec3d(movement.x, (double) this.stepHeight, movement.z), box, this.world, list);
+            Vec3d vec3d3 = Entity.adjustMovementForCollisions((Entity)(Object)this, new Vec3d(0.0D, (double) this.stepHeight, 0.0D), box.stretch(movement.x, 0.0D, movement.z), this.world, list);
+            if (vec3d3.y < (double) this.stepHeight) {
+                Vec3d vec3d4 = Entity.adjustMovementForCollisions((Entity)(Object)this, new Vec3d(movement.x, 0.0D, movement.z), box.offset(vec3d3), this.world, list).add(vec3d3);
+                if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
                     vec3d2 = vec3d4;
                 }
             }
 
-            Vec3 savedVec = vec3d2.add(Entity.collideBoundingBox((Entity) (Object) this, new Vec3(0.0D, -vec3d2.y + movement.y, 0.0D), box.move(vec3d2), this.level, list));
-            if (vec3d2.horizontalDistanceSqr() > vec3d.horizontalDistanceSqr()) {
+            Vec3d savedVec = vec3d2.add(Entity.adjustMovementForCollisions((Entity) (Object) this, new Vec3d(0.0D, -vec3d2.y + movement.y, 0.0D), box.offset(vec3d2), this.world, list));
+            if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
                 if (savedVec.y > 0.6f)
                     new EventStep((Entity) (Object) this, EventStep.Mode.MID, savedVec.y).run();
                 cir.setReturnValue(savedVec);

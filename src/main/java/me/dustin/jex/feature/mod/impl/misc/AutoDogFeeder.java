@@ -8,24 +8,24 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.world.item.Items;
+import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Automatically feed your pups to keep them at full health at all times.")
 public class AutoDogFeeder extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        int savedSlot = InventoryHelper.INSTANCE.getInventory().selected;
+        int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
         int slot = getDogFoodSlot();
         if (slot == -1)
             return;
-        Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
-            if (entity instanceof Wolf wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
+        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+            if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
                 if (wolfEntity.getHealth() < wolfEntity.getMaxHealth()) {
                     InventoryHelper.INSTANCE.setSlot(slot, false, true);
-                    Wrapper.INSTANCE.getMultiPlayerGameMode().interact(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, InteractionHand.MAIN_HAND);
+                    Wrapper.INSTANCE.getMultiPlayerGameMode().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
             }

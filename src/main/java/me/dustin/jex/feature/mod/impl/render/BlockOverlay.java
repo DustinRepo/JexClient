@@ -9,10 +9,10 @@ import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.world.level.block.AirBlock;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.block.AirBlock;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -37,10 +37,10 @@ public class BlockOverlay extends Feature {
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (clickedBlock == null || WorldHelper.INSTANCE.getBlock(clickedBlock.getBlockPos()) instanceof AirBlock)
             return;
-        Vec3 renderPos = Render3DHelper.INSTANCE.getRenderPosition(clickedBlock.getBlockPos());
-        if (progressOverlay && Wrapper.INSTANCE.getIMultiPlayerGameMode().getBlockBreakProgress() > 0 && Wrapper.INSTANCE.getMultiPlayerGameMode().isDestroying()) {
+        Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(clickedBlock.getBlockPos());
+        if (progressOverlay && Wrapper.INSTANCE.getIMultiPlayerGameMode().getBlockBreakProgress() > 0 && Wrapper.INSTANCE.getMultiPlayerGameMode().isBreakingBlock()) {
             float breakProgress = Wrapper.INSTANCE.getIMultiPlayerGameMode().getBlockBreakProgress() / 2;
-            AABB box = new AABB(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
+            Box box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
             Render3DHelper.INSTANCE.drawBoxInside(event.getPoseStack(), box, progressColor ? getColor(1 - (breakProgress * 2)).getRGB() : overlayColor);
         }
     });
@@ -53,7 +53,7 @@ public class BlockOverlay extends Feature {
 
     @EventPointer
     private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
-        this.clickedBlock = new BlockHitResult(Vec3.atLowerCornerOf(event.getBlockPos()), event.getFace(), event.getBlockPos(), false);
+        this.clickedBlock = new BlockHitResult(Vec3d.of(event.getBlockPos()), event.getFace(), event.getBlockPos(), false);
     }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
     public Color getColor(double power) {

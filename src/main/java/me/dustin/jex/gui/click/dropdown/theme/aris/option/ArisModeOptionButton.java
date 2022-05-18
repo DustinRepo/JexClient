@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.click.dropdown.theme.aris.option;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -17,6 +16,7 @@ import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class ArisModeOptionButton extends ModeOptionButton {
     public ArisModeOptionButton(DropdownWindow window, StringArrayOption option, float x, float y, float width, float height) {
@@ -24,7 +24,7 @@ public class ArisModeOptionButton extends ModeOptionButton {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         float bottomY = getY() + getHeight();
         if (isOpen()) {
             DropdownButton bottomOption = getVeryBottomOption();
@@ -49,7 +49,7 @@ public class ArisModeOptionButton extends ModeOptionButton {
 
     @EventPointer
     private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {
-        if (!(Wrapper.INSTANCE.getMinecraft().screen instanceof DropDownGui)) {
+        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DropDownGui)) {
             unregister();
             return;
         }
@@ -78,7 +78,7 @@ public class ArisModeOptionButton extends ModeOptionButton {
 
     @EventPointer
     private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
-        PoseStack matrixStack = event.getPoseStack();
+        MatrixStack matrixStack = event.getPoseStack();
         if (isSelecting) {
             int i = 0;
             Render2DHelper.INSTANCE.outlineAndFill(matrixStack, getX() - 1, getY() + getHeight() + 1, getX() + getWidth() + 1, getY() + getHeight() + 5 + (stringArrayOption.getAll().length * getWindow().getTheme().getButtonSize()), 0xff000000, 0xff333333);

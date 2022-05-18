@@ -7,7 +7,7 @@ import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.TPSSync;
-import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,5 +44,5 @@ public enum TPSHelper {
         while (reports.size() > Feature.get(TPSSync.class).sampleSize) {
             reports.remove(0);
         }
-    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ClientboundSetTimePacket.class));
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, WorldTimeUpdateS2CPacket.class));
 }

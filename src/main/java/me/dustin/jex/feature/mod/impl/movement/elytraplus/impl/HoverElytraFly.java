@@ -22,7 +22,7 @@ public class HoverElytraFly extends FeatureExtension {
             if (Wrapper.INSTANCE.getLocalPlayer().isFallFlying()) {
                 PlayerHelper.INSTANCE.setMoveSpeed(eventMove, elytraPlus.flySpeed);
                 if (eventMove.getY() <= 0)
-                    eventMove.setY(Wrapper.INSTANCE.getOptions().keyJump.isDown() ? elytraPlus.flySpeed : (Wrapper.INSTANCE.getLocalPlayer().isCrouching() ? -elytraPlus.flySpeed : (elytraPlus.slowGlide ? -0.0001 : 0)));
+                    eventMove.setY(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? elytraPlus.flySpeed : (Wrapper.INSTANCE.getLocalPlayer().isInSneakingPose() ? -elytraPlus.flySpeed : (elytraPlus.slowGlide ? -0.0001 : 0)));
             }
         }
     }

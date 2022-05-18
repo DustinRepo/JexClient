@@ -2,10 +2,10 @@ package me.dustin.jex.gui.waypoints.impl;
 
 import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.render.ButtonListener;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import me.dustin.jex.helper.render.Render2DHelper;
 
 public class ServerButton extends Button {
@@ -17,7 +17,7 @@ public class ServerButton extends Button {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack) {
+	public void render(MatrixStack matrixStack) {
 		Render2DHelper.INSTANCE.fill(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x50000000);
 		FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getName(), this.getX() + 2, this.getY() + (this.getHeight() / 2) - 4, ColorHelper.INSTANCE.getClientColor());
 		if (isSelected())

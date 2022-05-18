@@ -24,8 +24,8 @@ public class TightFly extends FeatureExtension {
                 eventMove.setX(0);
                 eventMove.setZ(0);
             }
-            boolean jumping = Wrapper.INSTANCE.getOptions().keyJump.isDown();
-            boolean sneaking = Wrapper.INSTANCE.getOptions().keyShift.isDown();
+            boolean jumping = Wrapper.INSTANCE.getOptions().jumpKey.isPressed();
+            boolean sneaking = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
             eventMove.setY(0);
             PlayerHelper.INSTANCE.setMoveSpeed(eventMove, fly.speed);
             if (!jumping || !sneaking) {
@@ -44,7 +44,7 @@ public class TightFly extends FeatureExtension {
     @Override
     public void disable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
-            Wrapper.INSTANCE.getLocalPlayer().setDeltaMovement(0, 0, 0);
+            Wrapper.INSTANCE.getLocalPlayer().setVelocity(0, 0, 0);
         }
         super.disable();
     }

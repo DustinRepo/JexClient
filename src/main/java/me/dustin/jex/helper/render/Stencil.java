@@ -1,10 +1,10 @@
 package me.dustin.jex.helper.render;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IFrameBuffer;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.EXTPackedDepthStencil;
 import org.lwjgl.opengl.GL11;
@@ -34,9 +34,9 @@ public enum Stencil {
 	}
 
 	public void checkSetupFBO() {
-		RenderTarget fbo = Minecraft.getInstance().getMainRenderTarget();
+		Framebuffer fbo = MinecraftClient.getInstance().getFramebuffer();
 		if (fbo != null) {
-			if (fbo.getDepthTextureId() > -1) {
+			if (fbo.getDepthAttachment() > -1) {
 				setupFBO(fbo);
 				IFrameBuffer ifbo = (IFrameBuffer) fbo;
 				ifbo.setDepthAttachment(-1);
@@ -44,11 +44,11 @@ public enum Stencil {
 		}
 	}
 
-	public void setupFBO(RenderTarget fbo) {
-		EXTFramebufferObject.glDeleteRenderbuffersEXT(fbo.getDepthTextureId());
+	public void setupFBO(Framebuffer fbo) {
+		EXTFramebufferObject.glDeleteRenderbuffersEXT(fbo.getDepthAttachment());
 		int stencil_depth_buffer_ID = EXTFramebufferObject.glGenRenderbuffersEXT();
 		EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, stencil_depth_buffer_ID);
-		EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, EXTPackedDepthStencil.GL_DEPTH_STENCIL_EXT, Wrapper.INSTANCE.getWindow().getScreenWidth(), Wrapper.INSTANCE.getWindow().getScreenHeight());
+		EXTFramebufferObject.glRenderbufferStorageEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, EXTPackedDepthStencil.GL_DEPTH_STENCIL_EXT, Wrapper.INSTANCE.getWindow().getWidth(), Wrapper.INSTANCE.getWindow().getHeight());
 		EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_STENCIL_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, stencil_depth_buffer_ID);
 		EXTFramebufferObject.glFramebufferRenderbufferEXT(EXTFramebufferObject.GL_FRAMEBUFFER_EXT, EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT, EXTFramebufferObject.GL_RENDERBUFFER_EXT, stencil_depth_buffer_ID);
 	}

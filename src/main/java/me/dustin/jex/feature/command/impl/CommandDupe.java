@@ -20,15 +20,15 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.ShulkerBoxMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.ShulkerBoxBlock;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
+import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.screen.ShulkerBoxScreenHandler;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 
 @Cmd(name = "dupe", alias = {"d"}, description = "Relog. Put items you want to dupe in a shulker. Stare at shulker and type .dupe. Wait for items to dupe.")
 public class CommandDupe extends Command {
@@ -57,11 +57,11 @@ public class CommandDupe extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        assert Wrapper.INSTANCE.getMinecraft().hitResult != null;
-        if (Wrapper.INSTANCE.getMinecraft().hitResult.getType() == HitResult.Type.BLOCK) {
-            BlockHitResult blockHitResult = (BlockHitResult) Wrapper.INSTANCE.getMinecraft().hitResult;
+        assert Wrapper.INSTANCE.getMinecraft().crosshairTarget != null;
+        if (Wrapper.INSTANCE.getMinecraft().crosshairTarget.getType() == HitResult.Type.BLOCK) {
+            BlockHitResult blockHitResult = (BlockHitResult) Wrapper.INSTANCE.getMinecraft().crosshairTarget;
             if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) instanceof ShulkerBoxBlock) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().useItemOn(Wrapper.INSTANCE.getLocalPlayer(), InteractionHand.MAIN_HAND, blockHitResult);
+                Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
                 ChatHelper.INSTANCE.addClientMessage("Running dupe");
                 this.blockHitResult = blockHitResult;
                 this.speedmine = Feature.getState(SpeedMine.class) && Feature.get(SpeedMine.class).mode.equalsIgnoreCase("Instant");
@@ -79,34 +79,34 @@ public class CommandDupe extends Command {
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Feature.getState(AutoTool.class))
-            new EventClickBlock(blockHitResult.getBlockPos(), blockHitResult.getDirection(), EventClickBlock.Mode.PRE).run();
-        Wrapper.INSTANCE.getMultiPlayerGameMode().continueDestroyBlock(blockHitResult.getBlockPos(), blockHitResult.getDirection());
+            new EventClickBlock(blockHitResult.getBlockPos(), blockHitResult.getSide(), EventClickBlock.Mode.PRE).run();
+        Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
     }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventPacketSent.EventPacketSentDirect> eventPacketSentEventListener = new EventListener<>(event -> {
-        ServerboundPlayerActionPacket playerActionC2SPacket = (ServerboundPlayerActionPacket) event.getPacket();
-        if (playerActionC2SPacket.getAction() == ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK) {
-            if (Wrapper.INSTANCE.getLocalPlayer().containerMenu instanceof ShulkerBoxMenu shulkerBoxScreenHandler) {
+        PlayerActionC2SPacket playerActionC2SPacket = (PlayerActionC2SPacket) event.getPacket();
+        if (playerActionC2SPacket.getAction() == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
+            if (Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler instanceof ShulkerBoxScreenHandler shulkerBoxScreenHandler) {
                 ChatHelper.INSTANCE.addClientMessage("Sending window click and turning off");
                 if (speedmine) {
                     Feature.get(SpeedMine.class).setState(true);
                 }
                 if (all) {
-                    int most = Wrapper.INSTANCE.getLocalPlayer().containerMenu.slots.size() - 36;
+                    int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
                     for (int i = 0; i < most; i++) {
-                        ItemStack stack = Wrapper.INSTANCE.getLocalPlayer().containerMenu.getSlot(i).getItem();
+                        ItemStack stack = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.getSlot(i).getStack();
                         if (stack != null && stack.getItem() != Items.AIR) {
-                            InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, i, throwItems ? ClickType.THROW : ClickType.QUICK_MOVE, throwItems ? 1 : 0);
+                            InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, i, throwItems ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, throwItems ? 1 : 0);
                         }
                     }
                 } else {
-                    InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, 0, throwItems ? ClickType.THROW : ClickType.QUICK_MOVE, throwItems ? 1 : 0);
+                    InventoryHelper.INSTANCE.windowClick(shulkerBoxScreenHandler, 0, throwItems ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, throwItems ? 1 : 0);
                 }
             }
             EventManager.unregister(this);
             this.throwItems = false;
             this.all = false;
         }
-    }, new DirectClientPacketFilter(EventPacketSent.Mode.POST, ServerboundPlayerActionPacket.class));
+    }, new DirectClientPacketFilter(EventPacketSent.Mode.POST, PlayerActionC2SPacket.class));
 }

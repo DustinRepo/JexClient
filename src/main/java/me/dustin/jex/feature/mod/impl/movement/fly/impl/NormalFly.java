@@ -20,12 +20,12 @@ public class NormalFly extends FeatureExtension {
         if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
             if (fly == null)
                 fly = Feature.get(Fly.class);
-            boolean jumping = Wrapper.INSTANCE.getOptions().keyJump.isDown();
-            boolean sneaking = Wrapper.INSTANCE.getOptions().keyShift.isDown();
+            boolean jumping = Wrapper.INSTANCE.getOptions().jumpKey.isPressed();
+            boolean sneaking = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
 
 
             if (fly.mode.equalsIgnoreCase("Normal")) {
-                Wrapper.INSTANCE.getLocalPlayer().flyingSpeed = fly.speed;
+                Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = fly.speed;
                 if (!PathingHelper.INSTANCE.isPathing() || PathingHelper.INSTANCE.isThinking()) {
                     PlayerHelper.INSTANCE.setVelocityX(0);
                     PlayerHelper.INSTANCE.setVelocityZ(0);

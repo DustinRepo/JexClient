@@ -1,13 +1,13 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.gui.tab.TabGui;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class TabGuiElement extends HudElement {
     public TabGuiElement(float x, float y, float minWidth, float minHeight) {
@@ -15,10 +15,10 @@ public class TabGuiElement extends HudElement {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (!isVisible())
             return;
-        if (Wrapper.INSTANCE.getMinecraft().screen instanceof ChatScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen) {
             if (isHovered())
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getName(), getX() + (getWidth() / 2.f), getY() - 10, -1);
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, getX(), getY() - 1, getX() + getWidth(), getY() + getHeight(), isHovered() ? ColorHelper.INSTANCE.getClientColor() : 0xff696969, 0x00000000, 1);

@@ -7,8 +7,8 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.shape.VoxelShapes;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Prevent yourself from walking into hazards like cactus")
 public class AntiHazard extends Feature {
@@ -28,25 +28,25 @@ public class AntiHazard extends Feature {
 
     @EventPointer
     private final EventListener<EventBlockCollisionShape> eventBlockCollisionShapeEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getWorld() == null || Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getLocalPlayer().tickCount < 20)
+        if (Wrapper.INSTANCE.getWorld() == null || Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getLocalPlayer().age < 20)
             return;
        if (event.getBlock() == Blocks.CACTUS && cactus) {
-           event.setVoxelShape(Shapes.create(WorldHelper.SINGLE_BOX));
+           event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
            event.cancel();
        } else if (event.getBlock() == Blocks.FIRE || event.getBlock() == Blocks.SOUL_FIRE) {
-           event.setVoxelShape(Shapes.create(WorldHelper.SINGLE_BOX));
+           event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
            event.cancel();
        } else if (event.getBlock() == Blocks.WITHER_ROSE && witherRose) {
-           event.setVoxelShape(Shapes.create(WorldHelper.SINGLE_BOX));
+           event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
            event.cancel();
        } else if (event.getBlock() == Blocks.SWEET_BERRY_BUSH && berryBush) {
-           event.setVoxelShape(Shapes.create(WorldHelper.SINGLE_BOX));
+           event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
            event.cancel();
        } else if (event.getBlock() == Blocks.LAVA && lava) {
-           event.setVoxelShape(Shapes.create(WorldHelper.SINGLE_BOX));
+           event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
            event.cancel();
        } else if (event.getBlock() == Blocks.POWDER_SNOW && powderedSnow) {
-           event.setVoxelShape(Shapes.create(WorldHelper.SINGLE_BOX));
+           event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
            event.cancel();
        }
     });

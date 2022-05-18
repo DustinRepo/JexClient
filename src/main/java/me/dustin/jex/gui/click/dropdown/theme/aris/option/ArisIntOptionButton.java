@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.click.dropdown.theme.aris.option;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.feature.option.types.FloatOption;
 import me.dustin.jex.feature.option.types.IntOption;
 import me.dustin.jex.gui.click.dropdown.impl.button.DropdownButton;
@@ -11,6 +10,7 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class ArisIntOptionButton extends IntOptionButton {
     public ArisIntOptionButton(DropdownWindow window, IntOption option, float x, float y, float width, float height) {
@@ -18,7 +18,7 @@ public class ArisIntOptionButton extends IntOptionButton {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         float bottomY = getY() + getHeight();
         if (isOpen()) {
             DropdownButton bottomOption = getVeryBottomOption();

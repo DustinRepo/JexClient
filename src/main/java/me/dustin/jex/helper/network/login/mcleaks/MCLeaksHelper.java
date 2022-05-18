@@ -8,8 +8,8 @@ import me.dustin.jex.event.packet.EventHello;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.WebHelper;
-import net.minecraft.client.User;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.util.Session;
+import net.minecraft.text.Text;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +21,7 @@ public enum MCLeaksHelper {
     private static final String JOIN_SERVER_URL = "https://auth.mcleaks.net/v1/joinserver";
 
     public MCLeaksAccount activeAccount;
-    public User storedSession;
+    public Session storedSession;
 
     public MCLeaksAccount getAccount(String token) {
         JsonObject object = new JsonObject();
@@ -42,9 +42,9 @@ public enum MCLeaksHelper {
     public void setActiveAccount(MCLeaksAccount activeAccount) {
         this.activeAccount = activeAccount;
         if (storedSession == null) {
-            storedSession = Wrapper.INSTANCE.getMinecraft().getUser();
+            storedSession = Wrapper.INSTANCE.getMinecraft().getSession();
         }
-        Wrapper.INSTANCE.getIMinecraft().setSession(new User(activeAccount.mcname, "", "", Optional.of(""), Optional.of(""), User.Type.MOJANG));
+        Wrapper.INSTANCE.getIMinecraft().setSession(new Session(activeAccount.mcname, "", "", Optional.of(""), Optional.of(""), Session.AccountType.MOJANG));
     }
 
     private boolean login(String server, int port, String serverHash) {
@@ -68,7 +68,7 @@ public enum MCLeaksHelper {
     @EventPointer
     private final EventListener<EventHello> eventHelloEventListener = new EventListener<>(event -> {
         if (activeAccount != null) {
-            String address = Wrapper.INSTANCE.getMinecraft().getCurrentServer().ip;
+            String address = Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
             int port = 25565;
             if (address.contains(":")) {
                 String address1 = address.split(":")[0];
@@ -77,7 +77,7 @@ public enum MCLeaksHelper {
             }
             boolean success = login(address, port, event.getServerhash());
             if (!success) {
-                event.getClientConnection().disconnect(Component.nullToEmpty("Bad MCLeaks response"));
+                event.getClientConnection().disconnect(Text.of("Bad MCLeaks response"));
                 event.cancel();
             }
             JexClient.INSTANCE.getLogger().info("MCLeaks gave success to server: " + address + ":" + port + " name: " + activeAccount.mcname + " serverhash: " + event.getServerhash());

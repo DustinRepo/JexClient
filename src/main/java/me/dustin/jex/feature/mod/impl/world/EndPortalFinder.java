@@ -7,21 +7,21 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.EyeOfEnder;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EyeOfEnderEntity;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Find end portals with just two eye of ender. Math from https://www.omnicalculator.com/other/end-portal-finder")
 public class EndPortalFinder extends Feature {
 
 	double[] portalPos = null;
-	private Vec3 firstPos;
+	private Vec3d firstPos;
 	private float firstYaw = -999;
-	private Vec3 secondPos;
+	private Vec3d secondPos;
 	private float secondYaw = -999;
 	private int pearl = 0;
-	private EyeOfEnder trackedEye;
+	private EyeOfEnderEntity trackedEye;
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -34,11 +34,11 @@ public class EndPortalFinder extends Feature {
 		if (pearl == 0) {
 			if (findEye() != null) {
 				if (firstPos == null) {
-					firstPos = Wrapper.INSTANCE.getLocalPlayer().position();
+					firstPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
 				}
 				firstYaw = PlayerHelper.INSTANCE.rotateToEntity(trackedEye).getYaw();
 			}
-			if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntity(trackedEye.getId()) == null) {
+			if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
 				if (firstPos != null) {
 					pearl = 1;
 					secondPos = null;
@@ -49,11 +49,11 @@ public class EndPortalFinder extends Feature {
 		} else if (pearl == 1) {
 			if (findEye() != null) {
 				if (secondPos == null) {
-					secondPos = Wrapper.INSTANCE.getLocalPlayer().position();
+					secondPos = Wrapper.INSTANCE.getLocalPlayer().getPos();
 				}
 				secondYaw = PlayerHelper.INSTANCE.rotateToEntity(trackedEye).getYaw();
 			}
-			if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntity(trackedEye.getId()) == null) {
+			if (trackedEye == null || Wrapper.INSTANCE.getWorld().getEntityById(trackedEye.getId()) == null) {
 				if (firstPos != null && secondPos != null) {
 					portalPos = getPortalPosition();
 				}
@@ -93,14 +93,14 @@ public class EndPortalFinder extends Feature {
 		return new double[] { x, z };
 	}
 
-	private EyeOfEnder findEye() {
+	private EyeOfEnderEntity findEye() {
 		if (trackedEye != null) {
 			return trackedEye;
 		}
-		for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
-			if (entity instanceof EyeOfEnder) {
+		for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+			if (entity instanceof EyeOfEnderEntity) {
 				if (entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) < 1)
-					return trackedEye = (EyeOfEnder) entity;
+					return trackedEye = (EyeOfEnderEntity) entity;
 			}
 		}
 		return null;

@@ -9,8 +9,8 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.util.math.ChunkPos;
 
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Prevent yourself from falling to the void")
 public class AntiVoid extends Feature {
@@ -21,18 +21,18 @@ public class AntiVoid extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         setSuffix(mode);
-        ChunkPos chunkPos = Wrapper.INSTANCE.getPlayer().chunkPosition();
-        if (mode.equalsIgnoreCase("AntiCheat") && Wrapper.INSTANCE.getPlayer().getY() <= Wrapper.INSTANCE.getWorld().getChunk(chunkPos.x, chunkPos.z).getMinBuildHeight())
-            NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 2, Wrapper.INSTANCE.getPlayer().getZ(), true));
+        ChunkPos chunkPos = Wrapper.INSTANCE.getPlayer().getChunkPos();
+        if (mode.equalsIgnoreCase("AntiCheat") && Wrapper.INSTANCE.getPlayer().getY() <= Wrapper.INSTANCE.getWorld().getChunk(chunkPos.x, chunkPos.z).getBottomY())
+            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 2, Wrapper.INSTANCE.getPlayer().getZ(), true));
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
-        ChunkPos chunkPos = Wrapper.INSTANCE.getPlayer().chunkPosition();
+        ChunkPos chunkPos = Wrapper.INSTANCE.getPlayer().getChunkPos();
         if (mode.equalsIgnoreCase("Float")) {
-            if (Wrapper.INSTANCE.getPlayer().getY() < Wrapper.INSTANCE.getWorld().getChunk(chunkPos.x, chunkPos.z).getMinBuildHeight())
-                event.setY(Wrapper.INSTANCE.getWorld().getChunk(chunkPos.x, chunkPos.z).getMinBuildHeight() - Wrapper.INSTANCE.getPlayer().getY());
-            else if (Wrapper.INSTANCE.getPlayer().getY() == Wrapper.INSTANCE.getWorld().getChunk(chunkPos.x, chunkPos.z).getMinBuildHeight() && event.getY() < 0)
+            if (Wrapper.INSTANCE.getPlayer().getY() < Wrapper.INSTANCE.getWorld().getChunk(chunkPos.x, chunkPos.z).getBottomY())
+                event.setY(Wrapper.INSTANCE.getWorld().getChunk(chunkPos.x, chunkPos.z).getBottomY() - Wrapper.INSTANCE.getPlayer().getY());
+            else if (Wrapper.INSTANCE.getPlayer().getY() == Wrapper.INSTANCE.getWorld().getChunk(chunkPos.x, chunkPos.z).getBottomY() && event.getY() < 0)
                 event.setY(0);
         }
     });

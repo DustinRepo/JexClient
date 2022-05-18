@@ -6,8 +6,8 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.protocol.game.ServerboundSwingPacket;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.util.Hand;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -59,11 +59,11 @@ public class Derp extends Feature {
             }
         }
         if (swing) {
-            InteractionHand hand = random.nextBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+            Hand hand = random.nextBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
             if (showSwing) {
-                Wrapper.INSTANCE.getLocalPlayer().swing(hand);
+                Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
             } else {
-                NetworkHelper.INSTANCE.sendPacket(new ServerboundSwingPacket(hand));
+                NetworkHelper.INSTANCE.sendPacket(new HandSwingC2SPacket(hand));
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));

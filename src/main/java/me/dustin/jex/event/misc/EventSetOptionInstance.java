@@ -1,18 +1,18 @@
 package me.dustin.jex.event.misc;
 
 import me.dustin.events.core.Event;
-import net.minecraft.client.OptionInstance;
+import net.minecraft.client.option.SimpleOption;
 
 public class EventSetOptionInstance extends Event {
 
-    private final OptionInstance<?> optionInstance;
+    private final SimpleOption<?> optionInstance;
     private boolean shouldIgnoreCheck;
 
-    public EventSetOptionInstance(OptionInstance<?> optionInstance) {
+    public EventSetOptionInstance(SimpleOption<?> optionInstance) {
         this.optionInstance = optionInstance;
     }
 
-    public OptionInstance<?> getOptionInstance() {
+    public SimpleOption<?> getOptionInstance() {
         return optionInstance;
     }
 

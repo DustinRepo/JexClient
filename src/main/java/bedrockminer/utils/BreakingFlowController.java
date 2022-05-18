@@ -1,11 +1,11 @@
 package bedrockminer.utils;
 
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 //import java.util.List;
 
@@ -19,8 +19,8 @@ public class BreakingFlowController {
     private static boolean working = false;
 
     public static void addBlockPosToList(BlockPos pos) {
-        ClientLevel world = Minecraft.getInstance().level;
-        if (world.getBlockState(pos).is(Blocks.BEDROCK)) {
+        ClientWorld world = MinecraftClient.getInstance().world;
+        if (world.getBlockState(pos).isOf(Blocks.BEDROCK)) {
             String haveEnoughItems = InventoryManager.warningMessage();
             if (haveEnoughItems != null) {
                 Messager.actionBar(haveEnoughItems);
@@ -39,11 +39,11 @@ public class BreakingFlowController {
         if (InventoryManager.warningMessage() != null) {
             return;
         }
-        Minecraft minecraftClient = Minecraft.getInstance();
-        Player player = minecraftClient.player;
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        PlayerEntity player = minecraftClient.player;
         if (player == null)
             return;
-        if (!"survival".equals(minecraftClient.gameMode.getPlayerMode().getName())) {
+        if (!"survival".equals(minecraftClient.interactionManager.getCurrentGameMode().getName())) {
             return;
         }
 
@@ -51,12 +51,12 @@ public class BreakingFlowController {
             TargetBlock selectedBlock = cachedTargetBlockList.get(i);
 
             //玩家切换世界，或离目标方块太远时，删除所有缓存的任务
-            if (selectedBlock.getWorld() != Minecraft.getInstance().level ) {
+            if (selectedBlock.getWorld() != MinecraftClient.getInstance().world ) {
                 cachedTargetBlockList = new ArrayList<TargetBlock>();
                 break;
             }
 
-            if (blockInPlayerRange(selectedBlock.getBlockPos(), player, Wrapper.INSTANCE.getMultiPlayerGameMode().getPickRange())) {
+            if (blockInPlayerRange(selectedBlock.getBlockPos(), player, Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance())) {
                 TargetBlock.Status status = cachedTargetBlockList.get(i).tick();
                 if (status == TargetBlock.Status.RETRACTING) {
                     working = true;
@@ -71,8 +71,8 @@ public class BreakingFlowController {
         }
     }
 
-    private static boolean blockInPlayerRange(BlockPos blockPos, Player player, float range) {
-        return (blockPos.distToCenterSqr(player.position()) <= range * range);
+    private static boolean blockInPlayerRange(BlockPos blockPos, PlayerEntity player, float range) {
+        return (blockPos.getSquaredDistance(player.getPos()) <= range * range);
     }
 
     public static WorkingMode getWorkingMode() {
@@ -81,7 +81,7 @@ public class BreakingFlowController {
 
     private static boolean shouldAddNewTargetBlock(BlockPos pos){
         for (int i = 0; i < cachedTargetBlockList.size(); i++) {
-            if (cachedTargetBlockList.get(i).getBlockPos().distToLowCornerSqr(pos.getX(),pos.getY(),pos.getZ()) == 0){
+            if (cachedTargetBlockList.get(i).getBlockPos().getSquaredDistance(pos.getX(),pos.getY(),pos.getZ()) == 0){
                 return false;
             }
         }

@@ -12,7 +12,7 @@ import me.dustin.jex.event.player.EventStep;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.world.Timer;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -37,9 +37,9 @@ public class Step extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         BaritoneHelper.INSTANCE.setAssumeStep(true);
         if (mode.equalsIgnoreCase("Vanilla"))
-            Wrapper.INSTANCE.getPlayer().maxUpStep = stepHeight;
+            Wrapper.INSTANCE.getPlayer().stepHeight = stepHeight;
         else
-            Wrapper.INSTANCE.getPlayer().maxUpStep = 1.75f;
+            Wrapper.INSTANCE.getPlayer().stepHeight = 1.75f;
         this.setSuffix(mode);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
@@ -49,15 +49,15 @@ public class Step extends Feature {
             switch (event.getMode()) {
                 case PRE -> slow = true;
                 case MID -> {
-                    NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 0.42399999499321, Wrapper.INSTANCE.getPlayer().getZ(), false));
-                    NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + (event.getStepHeight() > 1f ? 0.76111999664784 : 0.75), Wrapper.INSTANCE.getPlayer().getZ(), false));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 0.42399999499321, Wrapper.INSTANCE.getPlayer().getZ(), false));
+                    NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + (event.getStepHeight() > 1f ? 0.76111999664784 : 0.75), Wrapper.INSTANCE.getPlayer().getZ(), false));
                     if (event.getStepHeight() > 1f) {
-                        NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.01309760317355, Wrapper.INSTANCE.getPlayer().getZ(), false));
-                        NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.18163566084895, Wrapper.INSTANCE.getPlayer().getZ(), false));
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.01309760317355, Wrapper.INSTANCE.getPlayer().getZ(), false));
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.18163566084895, Wrapper.INSTANCE.getPlayer().getZ(), false));
                     }
                     if (event.getStepHeight() > 1.3f) {
-                        NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.26840295905959, Wrapper.INSTANCE.getPlayer().getZ(), false));
-                        NetworkHelper.INSTANCE.sendPacket(new ServerboundMovePlayerPacket.Pos(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.20313422336366, Wrapper.INSTANCE.getPlayer().getZ(), false));
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.26840295905959, Wrapper.INSTANCE.getPlayer().getZ(), false));
+                        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 1.20313422336366, Wrapper.INSTANCE.getPlayer().getZ(), false));
                     }
                 }
                 case END -> {
@@ -78,7 +78,7 @@ public class Step extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        ServerboundMovePlayerPacket playerMoveC2SPacket = (ServerboundMovePlayerPacket) event.getPacket();
+        PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
         if (cancelPacket && cancelPackets > 0) {
             double yDif = playerMoveC2SPacket.getY(Wrapper.INSTANCE.getPlayer().getY()) - Wrapper.INSTANCE.getPlayer().getY();
             if (!(yDif == 0.42D || yDif == 0.75D || yDif == 1)) {
@@ -86,7 +86,7 @@ public class Step extends Feature {
                 cancelPackets--;
             }
         }
-    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundMovePlayerPacket.class));
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, PlayerMoveC2SPacket.class));
 
     @EventPointer
     private final EventListener<EventRenderTick> eventRenderTickEventListener = new EventListener<>(event -> {
@@ -100,7 +100,7 @@ public class Step extends Feature {
     public void onDisable() {
         BaritoneHelper.INSTANCE.setAssumeStep(false);
         if (Wrapper.INSTANCE.getPlayer() != null)
-            Wrapper.INSTANCE.getPlayer().maxUpStep = 0.6f;
+            Wrapper.INSTANCE.getPlayer().stepHeight = 0.6f;
         super.onDisable();
     }
 }

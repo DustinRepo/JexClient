@@ -1,6 +1,6 @@
 package me.dustin.jex.load.impl;
 
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 
 public interface IItemRenderer {
 

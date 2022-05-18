@@ -26,8 +26,8 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Fly in survival", key = GLFW.GLFW_KEY_F)
@@ -60,16 +60,16 @@ public class Fly extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (walkAnimation) {
             float g;
-            if (!Wrapper.INSTANCE.getLocalPlayer().isDeadOrDying() && !Wrapper.INSTANCE.getLocalPlayer().isSwimming()) {
-                g = Math.min(0.1F, (float) Wrapper.INSTANCE.getLocalPlayer().getDeltaMovement().horizontalDistance());
+            if (!Wrapper.INSTANCE.getLocalPlayer().isDead() && !Wrapper.INSTANCE.getLocalPlayer().isSwimming()) {
+                g = Math.min(0.1F, (float) Wrapper.INSTANCE.getLocalPlayer().getVelocity().horizontalLength());
             } else {
                 g = 0.0F;
             }
 
             float lastStrideDist = strideDistance;
             strideDistance += (g - strideDistance) * 0.4F;
-            Wrapper.INSTANCE.getLocalPlayer().bob = strideDistance;
-            Wrapper.INSTANCE.getLocalPlayer().oBob = lastStrideDist;
+            Wrapper.INSTANCE.getLocalPlayer().strideDistance = strideDistance;
+            Wrapper.INSTANCE.getLocalPlayer().prevStrideDistance = lastStrideDist;
         }
         sendEvent(event);
         this.setSuffix(mode);
@@ -84,14 +84,14 @@ public class Fly extends Feature {
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         if (!flyCheckBypass || Feature.getState(Freecam.class))
             return;
-        ServerboundMovePlayerPacket playerMoveC2SPacket = (ServerboundMovePlayerPacket) event.getPacket();
-        if (Wrapper.INSTANCE.getLocalPlayer().tickCount % 3 == 1) {
+        PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
+        if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {
             if (EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 2) {
-                ServerboundMovePlayerPacket modified = new ServerboundMovePlayerPacket.PosRot(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.1, playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYRot(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getXRot(PlayerHelper.INSTANCE.getPitch()), true);
+                PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.1, playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
                 event.setPacket(modified);
             }
         }
-    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ServerboundMovePlayerPacket.class));
+    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, PlayerMoveC2SPacket.class));
 
     @EventPointer
     private final EventListener<EventIsPlayerTouchingWater> eventIsPlayerTouchingWaterEventListener = new EventListener<>(event -> {
@@ -101,8 +101,8 @@ public class Fly extends Feature {
 
     @EventPointer
     private final EventListener<EventGetPose> eventGetPoseEventListener = new EventListener<>(event -> {
-        if (event.getPose() == Pose.SWIMMING) {
-            event.setPose(Pose.STANDING);
+        if (event.getPose() == EntityPose.SWIMMING) {
+            event.setPose(EntityPose.STANDING);
             event.cancel();
         }
     });

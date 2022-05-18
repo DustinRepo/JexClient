@@ -12,19 +12,19 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 
 public class TheAlteningScreen extends Screen {
     public TheAlteningScreen(Screen parent) {
-        super(Component.nullToEmpty("The Altening"));
+        super(Text.of("The Altening"));
         this.parent = parent;
     }
 
@@ -32,17 +32,17 @@ public class TheAlteningScreen extends Screen {
 
     private ArrayList<TheAlteningAccountButton> favorites = new ArrayList<>();
     private ArrayList<TheAlteningAccountButton> privates = new ArrayList<>();
-    private EditBox apiKeyWidget;
-    private Button loginButton;
-    private Button loginGeneratedButton;
-    private Button loginTokenButton;
-    private Button generateButton;
-    private Button setApiKeyButton;
-    private Button getTokenButton;
-    private Button signUpButton;
-    private Button favoriteGeneratedButton;
-    private Button privateGeneratedButton;
-    private EditBox tokenWidget;
+    private TextFieldWidget apiKeyWidget;
+    private ButtonWidget loginButton;
+    private ButtonWidget loginGeneratedButton;
+    private ButtonWidget loginTokenButton;
+    private ButtonWidget generateButton;
+    private ButtonWidget setApiKeyButton;
+    private ButtonWidget getTokenButton;
+    private ButtonWidget signUpButton;
+    private ButtonWidget favoriteGeneratedButton;
+    private ButtonWidget privateGeneratedButton;
+    private TextFieldWidget tokenWidget;
 
 
     private Scrollbar scrollbar1;
@@ -60,58 +60,58 @@ public class TheAlteningScreen extends Screen {
 
     @Override
     protected void init() {
-        apiKeyWidget = new EditBox(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 150, 12, 200, 20, Component.nullToEmpty(""));
-        tokenWidget = new EditBox(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 150, 365, 200, 20, Component.nullToEmpty(""));
+        apiKeyWidget = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 150, 12, 200, 20, Text.of(""));
+        tokenWidget = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 150, 365, 200, 20, Text.of(""));
         if (!TheAlteningHelper.INSTANCE.getApiKey().isEmpty()) {
-            apiKeyWidget.setValue(TheAlteningHelper.INSTANCE.getApiKey().substring(0, 4) + "****-****-****");
+            apiKeyWidget.setText(TheAlteningHelper.INSTANCE.getApiKey().substring(0, 4) + "****-****-****");
             updateAPIKey();
         }
-        setApiKeyButton = new Button(width / 2 + 52, 12, 98, 20, Component.nullToEmpty("Set API Key"), button -> {
-            TheAlteningHelper.INSTANCE.setApiKey(this.apiKeyWidget.getValue());
-            apiKeyWidget.setValue(TheAlteningHelper.INSTANCE.getApiKey().substring(0, 4) + "****-****-****");
+        setApiKeyButton = new ButtonWidget(width / 2 + 52, 12, 98, 20, Text.of("Set API Key"), button -> {
+            TheAlteningHelper.INSTANCE.setApiKey(this.apiKeyWidget.getText());
+            apiKeyWidget.setText(TheAlteningHelper.INSTANCE.getApiKey().substring(0, 4) + "****-****-****");
             updateAPIKey();
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
-        loginButton = new Button(width / 2 - 152, 330, 150, 20, Component.nullToEmpty("Login to Selected"), button -> {
+        loginButton = new ButtonWidget(width / 2 - 152, 330, 150, 20, Text.of("Login to Selected"), button -> {
             if (getSelected() != null) {
                 TheAlteningHelper.INSTANCE.login(getSelected().getAccount(), session -> {
                     if (session != null) {
-                        JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getName());
+                        JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
                         Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                        logInStatus = "Logged in to TheAltening account named \247b" + session.getName();
+                        logInStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
                     } else {
                         logInStatus = "Unable to login";
                     }
                 });
             }
         });
-        loginGeneratedButton = new Button(width / 2 + 2, 330, 150, 20, Component.nullToEmpty("Login to Generated"), button -> {
+        loginGeneratedButton = new ButtonWidget(width / 2 + 2, 330, 150, 20, Text.of("Login to Generated"), button -> {
             if (generatedAccount != null) {
                 TheAlteningHelper.INSTANCE.login(generatedAccount, session -> {
                     if (session != null) {
-                        JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getName());
+                        JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
                         Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                        logInStatus = "Logged in to TheAltening account named \247b" + session.getName();
+                        logInStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
                     } else {
                         logInStatus = "Unable to login";
                     }
                 });
             }
         });
-        loginTokenButton = new Button(width / 2 + 52, 365, 100, 20, Component.nullToEmpty("Login With Token"), button -> {
-            TheAlteningHelper.INSTANCE.login(this.tokenWidget.getValue(), session -> {
+        loginTokenButton = new ButtonWidget(width / 2 + 52, 365, 100, 20, Text.of("Login With Token"), button -> {
+            TheAlteningHelper.INSTANCE.login(this.tokenWidget.getText(), session -> {
                 if (session != null) {
-                    JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getName());
+                    JexClient.INSTANCE.getLogger().info("Logged in to TheAltening account named " + session.getUsername());
                     Wrapper.INSTANCE.getIMinecraft().setSession(session);
-                    tokenStatus = "Logged in to TheAltening account named \247b" + session.getName();
+                    tokenStatus = "Logged in to TheAltening account named \247b" + session.getUsername();
                 } else {
-                    tokenStatus = ChatFormatting.RED + "Invalid Token";
+                    tokenStatus = Formatting.RED + "Invalid Token";
                 }
-                this.tokenWidget.setValue("");
+                this.tokenWidget.setText("");
             });
         });
-        generateButton = new Button(width / 2 - 152, 305, 150, 20, Component.nullToEmpty("Generate"), button -> generatedAccount = TheAlteningHelper.INSTANCE.generateAccount());
-        favoriteGeneratedButton = new Button(width / 2 + 2, 305, 75, 20, Component.nullToEmpty("Favorite"), button -> {
+        generateButton = new ButtonWidget(width / 2 - 152, 305, 150, 20, Text.of("Generate"), button -> generatedAccount = TheAlteningHelper.INSTANCE.generateAccount());
+        favoriteGeneratedButton = new ButtonWidget(width / 2 + 2, 305, 75, 20, Text.of("Favorite"), button -> {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.favoriteAcc(generatedAccount)) {
                     this.favoriteAccounts.add(generatedAccount);
@@ -123,7 +123,7 @@ public class TheAlteningScreen extends Screen {
             }
         });
 
-        privateGeneratedButton = new Button(width / 2 + 77, 305, 75, 20, Component.nullToEmpty("Private"), button -> {
+        privateGeneratedButton = new ButtonWidget(width / 2 + 77, 305, 75, 20, Text.of("Private"), button -> {
             if (generatedAccount != null) {
                 if (TheAlteningHelper.INSTANCE.privateAcc(generatedAccount)) {
                     this.privateAccounts.add(generatedAccount);
@@ -134,35 +134,35 @@ public class TheAlteningScreen extends Screen {
                 }
             }
         });
-        getTokenButton = new Button(width - 127, 2, 125, 20, Component.nullToEmpty("Get Free Token"), button -> {
+        getTokenButton = new ButtonWidget(width - 127, 2, 125, 20, Text.of("Get Free Token"), button -> {
             WebHelper.INSTANCE.openLink("https://thealtening.com/free/free-minecraft-alts");
         });
-        signUpButton = new Button(width - 127, 25, 125, 20, Component.nullToEmpty("Sign Up For TheAltening"), button -> {
+        signUpButton = new ButtonWidget(width - 127, 25, 125, 20, Text.of("Sign Up For TheAltening"), button -> {
             WebHelper.INSTANCE.openLink("https://thealtening.com/?i=wohc9");
         });
-        Button cancelButton = new Button(width / 2 - 100, height - 22, 200, 20, Component.nullToEmpty("Cancel"), button -> {
+        ButtonWidget cancelButton = new ButtonWidget(width / 2 - 100, height - 22, 200, 20, Text.of("Cancel"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(parent);
         });
         if (TheAlteningHelper.INSTANCE.isConnectedToAltening())
-            logInStatus = "Logged in to TheAltening account named \247b" + Wrapper.INSTANCE.getMinecraft().getUser().getName();
+            logInStatus = "Logged in to TheAltening account named \247b" + Wrapper.INSTANCE.getMinecraft().getSession().getUsername();
 
-        this.addWidget(apiKeyWidget);
-        this.addWidget(tokenWidget);
-        this.addRenderableWidget(setApiKeyButton);
-        this.addRenderableWidget(generateButton);
-        this.addRenderableWidget(loginButton);
-        this.addRenderableWidget(loginGeneratedButton);
-        this.addRenderableWidget(loginTokenButton);
-        this.addRenderableWidget(getTokenButton);
-        this.addRenderableWidget(signUpButton);
-        this.addRenderableWidget(favoriteGeneratedButton);
-        this.addRenderableWidget(privateGeneratedButton);
-        this.addRenderableWidget(cancelButton);
+        this.addSelectableChild(apiKeyWidget);
+        this.addSelectableChild(tokenWidget);
+        this.addDrawableChild(setApiKeyButton);
+        this.addDrawableChild(generateButton);
+        this.addDrawableChild(loginButton);
+        this.addDrawableChild(loginGeneratedButton);
+        this.addDrawableChild(loginTokenButton);
+        this.addDrawableChild(getTokenButton);
+        this.addDrawableChild(signUpButton);
+        this.addDrawableChild(favoriteGeneratedButton);
+        this.addDrawableChild(privateGeneratedButton);
+        this.addDrawableChild(cancelButton);
         super.init();
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
 
         Render2DHelper.INSTANCE.fillAndBorder(matrices, (width / 2.f) - 154, 45, (width / 2.f) + 156, 263, 0xff000000, 0x50cccccc, 1);
@@ -180,8 +180,8 @@ public class TheAlteningScreen extends Screen {
         this.favoriteGeneratedButton.active = generatedAccount != null;
         this.privateGeneratedButton.active = generatedAccount != null;
         this.loginButton.active = getSelected() != null;
-        this.loginTokenButton.active = !this.tokenWidget.getValue().isEmpty();
-        this.setApiKeyButton.active = !this.apiKeyWidget.getValue().isEmpty();
+        this.loginTokenButton.active = !this.tokenWidget.getText().isEmpty();
+        this.setApiKeyButton.active = !this.apiKeyWidget.getText().isEmpty();
         this.generateButton.active = TheAlteningHelper.INSTANCE.getLicense() != null && TheAlteningHelper.INSTANCE.hasValidLicense() && !"starter".equalsIgnoreCase(TheAlteningHelper.INSTANCE.getLicense().licenseType);
 
         if (generatedAccount != null) {
@@ -189,7 +189,7 @@ public class TheAlteningScreen extends Screen {
             FontHelper.INSTANCE.drawCenteredString(matrices, "Generated Account:", width / 2.f, 267, 0xff606060);
             FontHelper.INSTANCE.drawWithShadow(matrices, "Username: \247a" +  generatedAccount.username, width / 2.f - 97, 277, 0xff606060);
             FontHelper.INSTANCE.drawWithShadow(matrices, "Token: \247b" + generatedAccount.token, width / 2.f - 97, 287, 0xff606060);
-            FontHelper.INSTANCE.drawWithShadow(matrices, "Limit: " + (generatedAccount.limit ? ChatFormatting.GREEN + "true" : ChatFormatting.RED + "false"), width / 2.f + 99 - (FontHelper.INSTANCE.getStringWidth("Limit: " + (generatedAccount.limit ? "\247atrue" : "\247cfalse"))), 277, 0xff606060);
+            FontHelper.INSTANCE.drawWithShadow(matrices, "Limit: " + (generatedAccount.limit ? Formatting.GREEN + "true" : Formatting.RED + "false"), width / 2.f + 99 - (FontHelper.INSTANCE.getStringWidth("Limit: " + (generatedAccount.limit ? "\247atrue" : "\247cfalse"))), 277, 0xff606060);
 
             Render2DHelper.INSTANCE.bindTexture(TheAlteningHelper.INSTANCE.getSkin(generatedAccount));
             Render2DHelper.INSTANCE.drawTexture(matrices, width / 2.f + 102, 265, 0, 0, 18, 32, 18, 32);
@@ -202,11 +202,11 @@ public class TheAlteningScreen extends Screen {
 
         if (TheAlteningHelper.INSTANCE.getLicense() != null) {
             TheAlteningHelper.TheAlteningLicense license = TheAlteningHelper.INSTANCE.getLicense();
-            FontHelper.INSTANCE.drawWithShadow(matrices, "Has License: " + (license.hasLicense ? ChatFormatting.GREEN + "true" : ChatFormatting.RED + "false"), 2, 2, -1);
+            FontHelper.INSTANCE.drawWithShadow(matrices, "Has License: " + (license.hasLicense ? Formatting.GREEN + "true" : Formatting.RED + "false"), 2, 2, -1);
             if (TheAlteningHelper.INSTANCE.hasValidLicense()) {
-                FontHelper.INSTANCE.drawWithShadow(matrices, "License Type:" + ChatFormatting.AQUA + StringUtils.capitalize(license.licenseType), 2, 12, -1);
+                FontHelper.INSTANCE.drawWithShadow(matrices, "License Type:" + Formatting.AQUA + StringUtils.capitalize(license.licenseType), 2, 12, -1);
                 if (license.expires != null)
-                    FontHelper.INSTANCE.drawWithShadow(matrices, "Expires:" + ChatFormatting.AQUA + license.expires.split("T")[0], 2, 22, -1);
+                    FontHelper.INSTANCE.drawWithShadow(matrices, "Expires:" + Formatting.AQUA + license.expires.split("T")[0], 2, 22, -1);
             }
         }
         apiKeyWidget.render(matrices, mouseX, mouseY, delta);

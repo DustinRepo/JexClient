@@ -11,8 +11,8 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.TrailsFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.core.Registry;
-import net.minecraft.core.particles.ParticleType;
+import net.minecraft.particle.ParticleType;
+import net.minecraft.util.registry.Registry;
 import java.util.StringJoiner;
 
 @Cmd(name = "trail", description = "Add or remove particles to Trail mod.", syntax = ".trail <add/del> <particle>/.trail list")
@@ -23,7 +23,7 @@ public class CommandTrail extends Command {
         dispatcher.register(literal(this.name).then(literal("add").then(argument("particle", ParticleTypeArgumentType.particleType()).executes(context -> {
 
             ParticleType<?> particleType = ParticleTypeArgumentType.getParticleType(context, "particle");
-            String particleName = Registry.PARTICLE_TYPE.getKey(particleType).toString();
+            String particleName = Registry.PARTICLE_TYPE.getId(particleType).toString();
             if (Trail.getParticles().contains(particleType)) {
                 ChatHelper.INSTANCE.addClientMessage("This trail is already enabled");
                 return 0;
@@ -34,7 +34,7 @@ public class CommandTrail extends Command {
             return 1;
         }))).then(literal("del").then(argument("particle", ParticleTypeArgumentType.particleType()).executes(context -> {
             ParticleType<?> particleType = ParticleTypeArgumentType.getParticleType(context, "particle");
-            String particleName = Registry.PARTICLE_TYPE.getKey(particleType).toString();
+            String particleName = Registry.PARTICLE_TYPE.getId(particleType).toString();
             if (!Trail.getParticles().contains(particleType)) {
                 ChatHelper.INSTANCE.addClientMessage("This trail is already disabled");
                 return 0;
@@ -46,7 +46,7 @@ public class CommandTrail extends Command {
         }))).then(literal("list").executes(context -> {
             StringJoiner stringJoiner = new StringJoiner("\n");
             Trail.getParticles().forEach(particleType -> {
-                String particleName = Registry.PARTICLE_TYPE.getKey(particleType).toString();
+                String particleName = Registry.PARTICLE_TYPE.getId(particleType).toString();
                 stringJoiner.add(particleName);
             });
             ChatHelper.INSTANCE.addClientMessage("Trails: \n" + stringJoiner);

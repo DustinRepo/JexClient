@@ -9,9 +9,9 @@ import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.util.Mth;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.MathHelper;
 import java.util.ArrayList;
 
 public class HudElement {
@@ -37,11 +37,11 @@ public class HudElement {
         this.lastHeight = minHeight;
     }
 
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (!isVisible())
             return;
         handleElement();
-        if (Wrapper.INSTANCE.getMinecraft().screen instanceof ChatScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen) {
             if (isHovered())
                 FontHelper.INSTANCE.drawCenteredString(matrixStack, this.getName() + " | \247bRight-Click to Flip ", getX() + (getWidth() / 2.f), getY() - 10, -1);
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), isHovered() ? ColorHelper.INSTANCE.getClientColor() : 0xff696969, 0x40000000, 1);
@@ -78,8 +78,8 @@ public class HudElement {
                 x = xDif + MouseHelper.INSTANCE.getMouseX();
                 y = yDif + MouseHelper.INSTANCE.getMouseY();
                 checkCollisions();
-                this.setX(Mth.clamp(this.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - this.getWidth()));
-                this.setY(Mth.clamp(this.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - this.getHeight()));
+                this.setX(MathHelper.clamp(this.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - this.getWidth()));
+                this.setY(MathHelper.clamp(this.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - this.getHeight()));
             }
         }
 

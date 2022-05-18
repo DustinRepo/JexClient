@@ -25,10 +25,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.fabricmc.fabric.mixin.command.HelpCommandAccessor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.commands.CommandRuntimeException;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.command.CommandException;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 
 @Environment(EnvType.CLIENT)
 public final class ClientCommandInternals {
@@ -53,10 +53,10 @@ public final class ClientCommandInternals {
             return false; // Incorrect prefix, won't execute anything.
         }
 
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
 
         // noinspection ConstantConditions
-        FabricClientCommandSource commandSource = (FabricClientCommandSource) client.getConnection().getSuggestionsProvider();
+        FabricClientCommandSource commandSource = (FabricClientCommandSource) client.getNetworkHandler().getCommandSource();
 
         client.getProfiler().push(message);
 
@@ -68,13 +68,13 @@ public final class ClientCommandInternals {
 
             commandSource.sendError(getErrorMessage(e));
             return true;
-        } catch (CommandRuntimeException e) {
+        } catch (CommandException e) {
             LOGGER.warn("Error while executing client-sided command '{}'", message, e);
-            commandSource.sendError(e.getComponent());
+            commandSource.sendError(e.getTextMessage());
             return true;
         } catch (RuntimeException e) {
             LOGGER.warn("Error while executing client-sided command '{}'", message, e);
-            commandSource.sendError(Component.nullToEmpty(e.getMessage()));
+            commandSource.sendError(Text.of(e.getMessage()));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,11 +85,11 @@ public final class ClientCommandInternals {
     }
 
     // See CommandSuggestor.method_30505. That cannot be used directly as it returns an OrderedText instead of a Text.
-    private static Component getErrorMessage(CommandSyntaxException e) {
-        Component message = ComponentUtils.fromMessage(e.getRawMessage());
+    private static Text getErrorMessage(CommandSyntaxException e) {
+        Text message = Texts.toText(e.getRawMessage());
         String context = e.getContext();
 
-        return context != null ? Component.translatable("command.context.parse_error", message, context) : message;
+        return context != null ? Text.translatable("command.context.parse_error", message, context) : message;
     }
 
     /**
@@ -133,7 +133,7 @@ public final class ClientCommandInternals {
         Map<CommandNode<FabricClientCommandSource>, String> commands = CommandManagerJex.DISPATCHER.getSmartUsage(startNode, context.getSource());
 
         for (String command : commands.values()) {
-            context.getSource().sendFeedback(Component.nullToEmpty("/" + command));
+            context.getSource().sendFeedback(Text.of("/" + command));
         }
 
         return commands.size();

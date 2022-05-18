@@ -1,7 +1,7 @@
 package me.dustin.jex.event.render;
 
 import me.dustin.events.core.Event;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
 
 public class EventBlockBrightness extends Event {
 

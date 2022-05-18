@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.click.dropdown.theme.jex.option;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.feature.option.types.ColorOption;
 import me.dustin.jex.gui.click.dropdown.impl.option.ColorOptionButton;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
@@ -8,8 +7,9 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.util.Mth;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.MathHelper;
 
 public class JexColorOptionButton extends ColorOptionButton {
     public JexColorOptionButton(DropdownWindow window, ColorOption option, float x, float y, float width, float height) {
@@ -17,7 +17,7 @@ public class JexColorOptionButton extends ColorOptionButton {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x40ffffff);
         float huepos = (((float) colorOption.getH() / 270)) * (80);
@@ -34,7 +34,7 @@ public class JexColorOptionButton extends ColorOptionButton {
 
         //hue slider
         Render2DHelper.INSTANCE.bindTexture(colorSlider);
-        GuiComponent.blit(matrixStack, (int) this.getX() + (int) this.getWidth() - 5, (int) this.getY() + 15, 0, 0, 5, 80, 10, 80);
+        DrawableHelper.drawTexture(matrixStack, (int) this.getX() + (int) this.getWidth() - 5, (int) this.getY() + 15, 0, 0, 5, 80, 10, 80);
         //hue cursor
         Render2DHelper.INSTANCE.fill(matrixStack, this.getX() + this.getWidth() - 5, this.getY() + 15 + huepos - 1, this.getX() + this.getWidth(), this.getY() + 15 + huepos + 1, -1);
 
@@ -46,16 +46,16 @@ public class JexColorOptionButton extends ColorOptionButton {
     protected void handleSliders(ColorOption colorOption) {
         if (MouseHelper.INSTANCE.getMouseX() > this.getX() + this.getWidth() - 6) {
             float position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
-            float percent = Mth.clamp(position / 79, 0, 1);
+            float percent = MathHelper.clamp(position / 79, 0, 1);
             float value = percent * 270;
             colorOption.setH((int) value);
         } else {
             float position = MouseHelper.INSTANCE.getMouseX() - (this.getX() + 5);
-            float percent = Mth.clamp(position / 80, 0, 1);
+            float percent = MathHelper.clamp(position / 80, 0, 1);
             colorOption.setS(percent);
 
             position = MouseHelper.INSTANCE.getMouseY() - (this.getY() + 15);
-            percent = Mth.clamp(position / 79, 0, 1);
+            percent = MathHelper.clamp(position / 79, 0, 1);
             colorOption.setB(1 - percent);
         }
         colorOption.setValue(ColorHelper.INSTANCE.getColorViaHue(colorOption.getH(), colorOption.getS(), colorOption.getB()).getRGB());

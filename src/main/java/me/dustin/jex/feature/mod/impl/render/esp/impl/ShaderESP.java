@@ -27,15 +27,15 @@ public class ShaderESP extends FeatureExtension {
 
     @Override
     public void enable() {
-        if (Wrapper.INSTANCE.getMinecraft().levelRenderer != null)
-            Wrapper.INSTANCE.getMinecraft().levelRenderer.initOutline();
+        if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
+            Wrapper.INSTANCE.getMinecraft().worldRenderer.loadEntityOutlineShader();
         super.enable();
     }
 
     @Override
     public void disable() {
-        if (Wrapper.INSTANCE.getMinecraft().levelRenderer != null)
-            Wrapper.INSTANCE.getMinecraft().levelRenderer.initOutline();
+        if (Wrapper.INSTANCE.getMinecraft().worldRenderer != null)
+            Wrapper.INSTANCE.getMinecraft().worldRenderer.loadEntityOutlineShader();
 
         super.disable();
     }

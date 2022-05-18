@@ -44,8 +44,8 @@ public class EventPlayerPackets extends Event {
         this.yaw = rotation.getYaw();
         this.pitch = rotation.getPitch();
         if (Wrapper.INSTANCE.getPlayer() == Freecam.playerEntity) {
-            Freecam.playerEntity.setYRot(yaw);
-            Freecam.playerEntity.setXRot(pitch);
+            Freecam.playerEntity.setYaw(yaw);
+            Freecam.playerEntity.setPitch(pitch);
         }
     }
 

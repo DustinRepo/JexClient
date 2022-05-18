@@ -1,12 +1,6 @@
 package me.dustin.jex.gui.waypoints;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix4f;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.WaypointFile;
@@ -17,14 +11,20 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Matrix4f;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.option.types.ColorOption;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import java.awt.*;
 import java.util.Random;
 
@@ -33,11 +33,11 @@ public class WaypointEditScreen extends Screen {
     private Waypoints.Waypoint waypoint;
     private String server;
 
-    private EditBox serverName;
-    private EditBox name;
-    private EditBox xPos;
-    private EditBox yPos;
-    private EditBox zPos;
+    private TextFieldWidget serverName;
+    private TextFieldWidget name;
+    private TextFieldWidget xPos;
+    private TextFieldWidget yPos;
+    private TextFieldWidget zPos;
     private Button hiddenButton;
     private Button nametagButton;
     private Button beaconButton;
@@ -47,7 +47,7 @@ public class WaypointEditScreen extends Screen {
 
     private boolean isSliding;
     private ColorOption v = new ColorOption("###waypoint");
-    private ResourceLocation colorSlider = new ResourceLocation("assets/jex", "gui/click/colorslider.png");
+    private Identifier colorSlider = new Identifier("assets/jex", "gui/click/colorslider.png");
     private float colorX;
     private float colorY;
     private float colorWidth;
@@ -59,13 +59,13 @@ public class WaypointEditScreen extends Screen {
     private boolean tempDrawTracer = false;
 
     public WaypointEditScreen(String server, Waypoints.Waypoint waypoint) {
-        super(Component.nullToEmpty("Waypoint Edit"));
+        super(Text.of("Waypoint Edit"));
         this.waypoint = waypoint;
         this.server = server;
     }
 
     @Override
-    public boolean isPauseScreen() {
+    public boolean shouldPause() {
         return false;
     }
 
@@ -85,29 +85,29 @@ public class WaypointEditScreen extends Screen {
         String nametagButtonName = waypoint != null ? "Nametag: " + waypoint.isDrawNametag() : "";
         String beaconButtonName = waypoint != null ? "Beacon: " + waypoint.isDrawBeacon() : "";
         String tracerButtonName = waypoint != null ? "Tracer: " + waypoint.isDrawTracer() : "";
-        serverName = new EditBox(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 95, 200, 20, Component.nullToEmpty(server));
-        name = new EditBox(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 60, 200, 20, Component.nullToEmpty(waypointName));
-        xPos = new EditBox(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 65, 20, Component.nullToEmpty(waypointX));
-        yPos = new EditBox(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 33, height / 2 - 25, 66, 20, Component.nullToEmpty(waypointY));
-        zPos = new EditBox(Wrapper.INSTANCE.getTextRenderer(), width / 2 + 35, height / 2 - 25, 65, 20, Component.nullToEmpty(waypointZ));
+        serverName = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 95, 200, 20, Text.of(server));
+        name = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 60, 200, 20, Text.of(waypointName));
+        xPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 65, 20, Text.of(waypointX));
+        yPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 33, height / 2 - 25, 66, 20, Text.of(waypointY));
+        zPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 + 35, height / 2 - 25, 65, 20, Text.of(waypointZ));
         nametagButton = new Button(nametagButtonName, width / 2.f - 100, height / 2.f + 5, 65, 20, nametagListener);
         beaconButton = new Button(beaconButtonName, width / 2.f - 32.5f, height / 2.f + 5, 65, 20, beaconListener);
         tracerButton = new Button(tracerButtonName, width / 2.f + 35, height / 2.f + 5, 65, 20, tracerListener);
         hiddenButton = new Button(hiddenButtonName, width / 2.f - 100, height / 2.f + 30, 200, 20, hiddenListener);
-        serverName.setValue(server);
-        name.setValue(waypointName);
-        xPos.setValue(waypointX);
-        yPos.setValue(waypointY);
-        zPos.setValue(waypointZ);
+        serverName.setText(server);
+        name.setText(waypointName);
+        xPos.setText(waypointX);
+        yPos.setText(waypointY);
+        zPos.setText(waypointZ);
         this.colorX = width / 2.f - 5;
         this.colorY = height / 2.f + 50;
         this.colorWidth = 110;
         saveButton = new Button("Save", width / 2.f - 100, height / 2.f + 55, 80, 20, saveListener);
         cancelButton = new Button("Cancel", width / 2.f - 100, height / 2.f + 80, 80, 20, cancelListener);
-        this.addWidget(name);
-        this.addWidget(xPos);
-        this.addWidget(yPos);
-        this.addWidget(zPos);
+        this.addSelectableChild(name);
+        this.addSelectableChild(xPos);
+        this.addSelectableChild(yPos);
+        this.addSelectableChild(zPos);
         if (waypoint != null) {
             Color color = Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(waypoint.getColor()));
             float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
@@ -138,7 +138,7 @@ public class WaypointEditScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         Render2DHelper.INSTANCE.fillAndBorder(matrices, width / 2.f - 105, height / 2.f - 112, width / 2.f + 105, height / 2.f + 150, ColorHelper.INSTANCE.getClientColor(), 0x60000000, 1);
         serverName.render(matrices, mouseX, mouseY, delta);
@@ -178,16 +178,16 @@ public class WaypointEditScreen extends Screen {
 
     private boolean areCoordsGood() {
         try {
-            float x = Float.parseFloat(xPos.getValue());
-            float y = Float.parseFloat(yPos.getValue());
-            float z = Float.parseFloat(zPos.getValue());
+            float x = Float.parseFloat(xPos.getText());
+            float y = Float.parseFloat(yPos.getText());
+            float z = Float.parseFloat(zPos.getText());
             return true;
         }catch (Exception e) {
             return false;
         }
     }
 
-    private void drawColorPicker(PoseStack matrixStack) {
+    private void drawColorPicker(MatrixStack matrixStack) {
         if (!MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
             isSliding = false;
         }
@@ -208,7 +208,7 @@ public class WaypointEditScreen extends Screen {
 
         //hue slider
         Render2DHelper.INSTANCE.bindTexture(colorSlider);
-        GuiComponent.blit(matrixStack, (int) this.colorX + (int) this.colorWidth - 10, (int) this.colorY + 15, 0, 0, 5, 80, 10, 80);
+        DrawableHelper.drawTexture(matrixStack, (int) this.colorX + (int) this.colorWidth - 10, (int) this.colorY + 15, 0, 0, 5, 80, 10, 80);
         //hue cursor
         Render2DHelper.INSTANCE.fill(matrixStack, this.colorX + this.colorWidth - 10, this.colorY + 15 + huepos - 1, (this.colorX + this.colorWidth - 5), this.colorY + 15 + huepos + 1, -1);
 
@@ -262,8 +262,8 @@ public class WaypointEditScreen extends Screen {
         }
     }
 
-    protected void drawGradientRect(PoseStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
-        Matrix4f matrix = matrixStack.last().pose();
+    protected void drawGradientRect(MatrixStack matrixStack, float left, float top, float right, float bottom, int startColor, int endColor) {
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float g = (float) (startColor >> 16 & 255) / 255.0F;
         float h = (float) (startColor >> 8 & 255) / 255.0F;
@@ -277,16 +277,16 @@ public class WaypointEditScreen extends Screen {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
-        bufferBuilder.vertex(matrix, (float) right, (float) top, (float) 0).color(g, h, i, f).endVertex();
-        bufferBuilder.vertex(matrix, (float) left, (float) top, (float) 0).color(1, 1, 1, f).endVertex();
-        bufferBuilder.vertex(matrix, (float) left, (float) bottom, (float) 0).color(0, 0, 0, j).endVertex();
-        bufferBuilder.vertex(matrix, (float) right, (float) bottom, (float) 0).color(k, l, m, j).endVertex();
+        bufferBuilder.vertex(matrix, (float) right, (float) top, (float) 0).color(g, h, i, f).next();
+        bufferBuilder.vertex(matrix, (float) left, (float) top, (float) 0).color(1, 1, 1, f).next();
+        bufferBuilder.vertex(matrix, (float) left, (float) bottom, (float) 0).color(0, 0, 0, j).next();
+        bufferBuilder.vertex(matrix, (float) right, (float) bottom, (float) 0).color(k, l, m, j).next();
 
-        tessellator.end();
+        tessellator.draw();
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
     }
@@ -300,20 +300,20 @@ public class WaypointEditScreen extends Screen {
             waypoint.setDrawTracer(tempDrawTracer);
             waypoint.setDrawNametag(tempDrawNametag);
             waypoint.setHidden(tempIsHidden);
-            waypoint.setName(name.getValue());
-            waypoint.setServer(serverName.getValue());
+            waypoint.setName(name.getText());
+            waypoint.setServer(serverName.getText());
             waypoint.setColor(currentColor);
-            waypoint.setX(Float.parseFloat(xPos.getValue()));
-            waypoint.setY(Float.parseFloat(yPos.getValue()));
-            waypoint.setZ(Float.parseFloat(zPos.getValue()));
+            waypoint.setX(Float.parseFloat(xPos.getText()));
+            waypoint.setY(Float.parseFloat(yPos.getText()));
+            waypoint.setZ(Float.parseFloat(zPos.getText()));
             ConfigManager.INSTANCE.get(WaypointFile.class).write();
-            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen(serverName.getValue()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen(serverName.getText()));
         }
     };
     private ButtonListener cancelListener = new ButtonListener() {
         @Override
         public void invoke() {
-            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen(serverName.getValue()));
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen(serverName.getText()));
         }
     };
 

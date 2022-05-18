@@ -1,7 +1,7 @@
 package me.dustin.jex.event.packet;
 
 import me.dustin.events.core.Event;
-import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.Packet;
 
 public class EventPacketSent extends Event {
 

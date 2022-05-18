@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.click.dropdown.impl.option;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.option.types.FloatOption;
 import me.dustin.jex.file.core.ConfigManager;
@@ -8,6 +7,7 @@ import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.file.impl.GuiFile;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.misc.MouseHelper;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class FloatOptionButton extends DropdownOptionButton {
     private boolean isSliding;
@@ -16,7 +16,7 @@ public class FloatOptionButton extends DropdownOptionButton {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         super.render(matrixStack);
     }
 

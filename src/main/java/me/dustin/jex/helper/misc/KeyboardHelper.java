@@ -1,8 +1,8 @@
 package me.dustin.jex.helper.misc;
 
 import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.platform.InputConstants;
 import java.util.Locale;
+import net.minecraft.client.util.InputUtil;
 
 public enum KeyboardHelper {
     INSTANCE;
@@ -14,7 +14,7 @@ public enum KeyboardHelper {
     public boolean isPressed(int key) {
         if (key > 10000)
             return MouseHelper.INSTANCE.isMouseButtonDown(key - 10000);
-        return GLFW.glfwGetKey(Wrapper.INSTANCE.getWindow().getWindow(), key) == 1;
+        return GLFW.glfwGetKey(Wrapper.INSTANCE.getWindow().getHandle(), key) == 1;
     }
 
     public String getKeyName(int key) {
@@ -25,7 +25,7 @@ public enum KeyboardHelper {
             }
             return "MB" + (mousebutton + 1);
         }
-        String s = (GLFW.glfwGetKeyName(key, 0) == null ? InputConstants.getKey(key, 0).getName().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(key, 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_");
+        String s = (GLFW.glfwGetKeyName(key, 0) == null ? InputUtil.fromKeyCode(key, 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(key, 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_");
         return s.equalsIgnoreCase("_") ? "." : s;
     }
 
@@ -46,7 +46,7 @@ public enum KeyboardHelper {
             keyName = "key.keyboard." + keyName.toLowerCase();
 
         try {
-            return InputConstants.getKey(keyName).getValue();
+            return InputUtil.fromTranslationKey(keyName).getCode();
         } catch (Exception e) {}
         return -1;
     }

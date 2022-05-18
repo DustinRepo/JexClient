@@ -8,7 +8,7 @@ import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -25,7 +25,7 @@ public class CustomMainMenu extends Feature {
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().screen instanceof TitleScreen)
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof TitleScreen)
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexTitleScreen());
     }, new TickFilter(EventTick.Mode.PRE));
 

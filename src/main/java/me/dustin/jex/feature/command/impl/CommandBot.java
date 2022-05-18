@@ -38,7 +38,7 @@ public class CommandBot extends Command {
                                 ChatHelper.INSTANCE.addClientMessage("Unable to login");
                                 return;
                             }
-                            UUID uuid = UUID.fromString(Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"));
+                            UUID uuid = UUID.fromString(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"));
                             GameProfile gameProfile = new GameProfile(uuid, username);
                             PlayerBot playerBot = new PlayerBot(gameProfile, session);
                             playerBot.connect(ConnectedServerHelper.INSTANCE.getServerAddress());
@@ -50,7 +50,7 @@ public class CommandBot extends Command {
                                 ChatHelper.INSTANCE.addClientMessage("Unable to login");
                                 return;
                             }
-                            UUID uuid = UUID.fromString(Wrapper.INSTANCE.getMinecraft().getUser().getUuid().replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"));
+                            UUID uuid = UUID.fromString(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"));
                             GameProfile gameProfile = new GameProfile(uuid, username);
                             PlayerBot playerBot = new PlayerBot(gameProfile, session);
                             playerBot.connect(ConnectedServerHelper.INSTANCE.getServerAddress());

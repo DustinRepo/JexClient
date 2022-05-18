@@ -10,7 +10,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventSetPlayerHealth;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.gui.screens.DeathScreen;
+import net.minecraft.client.gui.screen.DeathScreen;
 
 @Feature.Manifest(category = Feature.Category.PLAYER, description = "Never accept death. Relog for godmode. Only works on vanilla/fabric")
 public class Ghost extends Feature {
@@ -39,7 +39,7 @@ public class Ghost extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().screen instanceof DeathScreen)
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DeathScreen)
             Wrapper.INSTANCE.getMinecraft().setScreen(null);
         if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= 0)
             Wrapper.INSTANCE.getLocalPlayer().setHealth(1);
@@ -48,7 +48,7 @@ public class Ghost extends Feature {
     @Override
     public void onDisable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getHealth() == 1)
-            Wrapper.INSTANCE.getLocalPlayer().respawn();
+            Wrapper.INSTANCE.getLocalPlayer().requestRespawn();
         super.onDisable();
     }
 }

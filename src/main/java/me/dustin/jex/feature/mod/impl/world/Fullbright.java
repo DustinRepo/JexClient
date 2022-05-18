@@ -7,7 +7,7 @@ import me.dustin.jex.event.misc.EventSetOptionInstance;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.OptionInstance;
+import net.minecraft.client.option.SimpleOption;
 import me.dustin.jex.feature.mod.core.Feature;
 
 @Feature.Manifest(category = Feature.Category.WORLD, description = "Goodbye, darkness. You were never my friend.")
@@ -22,37 +22,37 @@ public class Fullbright extends Feature {
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getOptions() == null)
             return;
-        OptionInstance<Double> gammaOption = Wrapper.INSTANCE.getOptions().gamma();
-        if (Wrapper.INSTANCE.getLocalPlayer() == null && gammaOption.get() > 1) {
-            gammaOption.set(1.0);
+        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().getGamma();
+        if (Wrapper.INSTANCE.getLocalPlayer() == null && gammaOption.getValue() > 1) {
+            gammaOption.setValue(1.0);
             return;
         }
 
-            double gamma = gammaOption.get();
+            double gamma = gammaOption.getValue();
         if (!getState()) {
             if (gamma > resetGamma)
-                gammaOption.set(gamma - 0.5);
+                gammaOption.setValue(gamma - 0.5);
             else
                 super.onDisable();
         } else {
             if (gamma < brightness)
-                    gammaOption.set(gamma + 0.5);
+                    gammaOption.setValue(gamma + 0.5);
                 else  if (gamma > brightness)
-                    gammaOption.set((double) brightness);
+                    gammaOption.setValue((double) brightness);
         }
     }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventSetOptionInstance> eventSetSimpleOptionEventListener = new EventListener<>(event -> {
-        OptionInstance<Double> gammaOption = Wrapper.INSTANCE.getOptions().gamma();
+        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().getGamma();
         if (event.getOptionInstance() == gammaOption)
             event.setShouldIgnoreCheck(true);
     });
 
     @Override
     public void onDisable() {
-        OptionInstance<Double> gammaOption = Wrapper.INSTANCE.getOptions().gamma();
-        if (gammaOption.get() > 20)
-            gammaOption.set(20.0);
+        SimpleOption<Double> gammaOption = Wrapper.INSTANCE.getOptions().getGamma();
+        if (gammaOption.getValue() > 20)
+            gammaOption.setValue(20.0);
     }
 }

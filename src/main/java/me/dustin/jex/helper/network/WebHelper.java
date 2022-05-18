@@ -92,7 +92,7 @@ public enum WebHelper {
                 String id = data.get("id").getAsString();
                 String imgURL = "http://i.imgur.com/" + id + ".png";
 
-                Wrapper.INSTANCE.getMinecraft().keyboardHandler.setClipboard(imgURL);
+                Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(imgURL);
                 ChatHelper.INSTANCE.addClientMessage("URL: \247b" + imgURL + " \2477Copied to clipboard");
             } catch (Exception e) {
                 ChatHelper.INSTANCE.addClientMessage("Error");

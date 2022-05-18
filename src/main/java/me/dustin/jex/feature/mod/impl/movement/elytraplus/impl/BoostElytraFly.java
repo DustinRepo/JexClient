@@ -7,8 +7,8 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.elytraplus.ElytraPlus;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.util.Mth;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.util.math.MathHelper;
 
 public class BoostElytraFly extends FeatureExtension {
     private ElytraPlus elytraPlus;
@@ -22,14 +22,14 @@ public class BoostElytraFly extends FeatureExtension {
             elytraPlus = Feature.get(ElytraPlus.class);
         if (event instanceof EventMove eventMove) {
             if (Wrapper.INSTANCE.getLocalPlayer().isFallFlying()) {
-                LocalPlayer player = Wrapper.INSTANCE.getLocalPlayer();
-                double currentVel = Math.abs(player.getDeltaMovement().x) + Math.abs(player.getDeltaMovement().y) + Math.abs(player.getDeltaMovement().z);
-                float radianYaw = (float) Math.toRadians(player.getYRot());
+                ClientPlayerEntity player = Wrapper.INSTANCE.getLocalPlayer();
+                double currentVel = Math.abs(player.getVelocity().x) + Math.abs(player.getVelocity().y) + Math.abs(player.getVelocity().z);
+                float radianYaw = (float) Math.toRadians(player.getYaw());
                 if (currentVel <= elytraPlus.maxBoost) {
                     if (KeyboardHelper.INSTANCE.isPressed(elytraPlus.boostKey)) {
-                        player.push(Mth.sin(radianYaw) * -elytraPlus.boost, 0, Mth.cos(radianYaw) * elytraPlus.boost);
+                        player.addVelocity(MathHelper.sin(radianYaw) * -elytraPlus.boost, 0, MathHelper.cos(radianYaw) * elytraPlus.boost);
                     } else if (KeyboardHelper.INSTANCE.isPressed(elytraPlus.slowKey)) {
-                        player.push(Mth.sin(radianYaw) * elytraPlus.boost, 0, Mth.cos(radianYaw) * -elytraPlus.boost);
+                        player.addVelocity(MathHelper.sin(radianYaw) * elytraPlus.boost, 0, MathHelper.cos(radianYaw) * -elytraPlus.boost);
                     }
                 }
             }

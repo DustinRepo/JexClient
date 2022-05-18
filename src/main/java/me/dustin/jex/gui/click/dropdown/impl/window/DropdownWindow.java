@@ -15,7 +15,7 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scrollbar;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 import java.util.ArrayList;
 
 public class DropdownWindow {
@@ -47,7 +47,7 @@ public class DropdownWindow {
 
     public void init() {}
 
-    public void render(PoseStack matrixStack) {}
+    public void render(MatrixStack matrixStack) {}
 
     public void tick() {
         if (!MouseHelper.INSTANCE.isMouseButtonDown(0)) {

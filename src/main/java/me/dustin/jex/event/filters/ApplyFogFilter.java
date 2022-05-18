@@ -1,14 +1,14 @@
 package me.dustin.jex.event.filters;
 
 import me.dustin.jex.event.render.EventSetupFog;
-import net.minecraft.world.level.material.FogType;
+import net.minecraft.client.render.CameraSubmersionType;
 import java.util.function.Predicate;
 
 public class ApplyFogFilter  implements Predicate<EventSetupFog> {
 
-    private FogType[] cameraSubmersionTypes;
+    private CameraSubmersionType[] cameraSubmersionTypes;
 
-    public ApplyFogFilter(FogType... cameraSubmersionTypes) {
+    public ApplyFogFilter(CameraSubmersionType... cameraSubmersionTypes) {
         this.cameraSubmersionTypes = cameraSubmersionTypes;
     }
 
@@ -16,7 +16,7 @@ public class ApplyFogFilter  implements Predicate<EventSetupFog> {
     public boolean test(EventSetupFog eventSetupFog) {
         if (cameraSubmersionTypes == null || cameraSubmersionTypes.length == 0)
             return true;
-        for (FogType cameraSubmersionType : cameraSubmersionTypes) {
+        for (CameraSubmersionType cameraSubmersionType : cameraSubmersionTypes) {
             if (cameraSubmersionType == eventSetupFog.getCameraSubmersionType())
                 return true;
         }

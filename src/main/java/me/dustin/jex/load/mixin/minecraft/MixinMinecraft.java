@@ -5,15 +5,15 @@ import me.dustin.jex.event.misc.*;
 import me.dustin.jex.event.render.EventHasOutline;
 import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.load.impl.IMinecraft;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
-import net.minecraft.client.User;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.main.GameConfig;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.RunArgs;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.util.Session;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,36 +24,36 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Minecraft.class)
+@Mixin(MinecraftClient.class)
 public abstract class MixinMinecraft implements IMinecraft {
     @Mutable
     @Shadow
     @Final
-    private User user;
+    private Session session;
 
-    @Shadow @Final public Options options;
+    @Shadow @Final public GameOptions options;
 
-    @Shadow @Nullable public LocalPlayer player;
+    @Shadow @Nullable public ClientPlayerEntity player;
 
     @Mutable
-    @Shadow @Final private MinecraftSessionService minecraftSessionService;
+    @Shadow @Final private MinecraftSessionService sessionService;
 
     @Shadow public abstract void setScreen(@Nullable Screen screen);
 
-    @Shadow private int rightClickDelay;
+    @Shadow private int itemUseCooldown;
 
     @Override
-    public void setSession(User session) {
-        this.user = session;
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     @Override
     public void setRightClickDelayTimer(int timer) {
-        this.rightClickDelay = timer;
+        this.itemUseCooldown = timer;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void onConstruct(GameConfig args, CallbackInfo info) {
+    private void onConstruct(RunArgs args, CallbackInfo info) {
         ClientCommandInternals.finalizeInit();
     }
 
@@ -66,8 +66,8 @@ public abstract class MixinMinecraft implements IMinecraft {
         new EventTick(EventTick.Mode.POST).run();
     }
 
-    @Inject(method = "setLevel", at = @At("HEAD"))
-    public void joinWorld(ClientLevel clientWorld, CallbackInfo ci) {
+    @Inject(method = "setWorld", at = @At("HEAD"))
+    public void joinWorld(ClientWorld clientWorld, CallbackInfo ci) {
         new EventSetLevel().run();
     }
 
@@ -89,19 +89,19 @@ public abstract class MixinMinecraft implements IMinecraft {
 
     }
 
-    @Inject(method = "shouldEntityAppearGlowing", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "hasOutline", at = @At("HEAD"), cancellable = true)
     public void hasOutline1(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        EventHasOutline eventHasOutline = new EventHasOutline(entity, entity.isCurrentlyGlowing() || this.player != null && this.player.isSpectator() && this.options.keySpectatorOutlines.isDown() && entity.getType() == EntityType.PLAYER).run();
+        EventHasOutline eventHasOutline = new EventHasOutline(entity, entity.isGlowing() || this.player != null && this.player.isSpectator() && this.options.spectatorOutlinesKey.isPressed() && entity.getType() == EntityType.PLAYER).run();
         cir.setReturnValue(eventHasOutline.isOutline());
     }
 
-    @Inject(method = "stop", at = @At("HEAD"))
+    @Inject(method = "scheduleStop", at = @At("HEAD"))
     public void scheduleStop1(CallbackInfo ci) {
         new EventStop().run();
     }
 
     @Override
     public void setSessionService(MinecraftSessionService sessionService) {
-        this.minecraftSessionService = sessionService;
+        this.sessionService = sessionService;
     }
 }

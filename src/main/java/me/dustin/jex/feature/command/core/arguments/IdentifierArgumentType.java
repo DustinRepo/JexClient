@@ -13,21 +13,21 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Identifier;
 
-public class IdentifierArgumentType implements ArgumentType<ResourceLocation> {
+public class IdentifierArgumentType implements ArgumentType<Identifier> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 
     public static IdentifierArgumentType identifier() {
         return new IdentifierArgumentType();
     }
 
-    public static ResourceLocation getIdentifier(CommandContext<FabricClientCommandSource> context, String name) {
-        return context.getArgument(name, ResourceLocation.class);
+    public static Identifier getIdentifier(CommandContext<FabricClientCommandSource> context, String name) {
+        return context.getArgument(name, Identifier.class);
     }
 
-    public ResourceLocation parse(StringReader stringReader) throws CommandSyntaxException {
-        return ResourceLocation.read(stringReader);
+    public Identifier parse(StringReader stringReader) throws CommandSyntaxException {
+        return Identifier.fromCommandInput(stringReader);
     }
 
     public Collection<String> getExamples() {

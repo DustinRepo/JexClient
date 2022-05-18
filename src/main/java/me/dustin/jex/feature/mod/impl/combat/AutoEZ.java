@@ -14,9 +14,9 @@ import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.protocol.game.ClientboundPlayerCombatEndPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerCombatEnterPacket;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
+import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
 import me.dustin.events.core.annotate.EventPointer;
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,18 +33,18 @@ public class AutoEZ extends Feature {
     private ArrayList<String> messages = new ArrayList<>();
 
     private boolean isFighting;
-    private Map<Player, Long> fightingPlayers = new HashMap<>();
+    private Map<PlayerEntity, Long> fightingPlayers = new HashMap<>();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         for (int i = 0; i < fightingPlayers.size(); i++) {
-            Player player = new ArrayList<>(fightingPlayers.keySet()).get(i);
+            PlayerEntity player = new ArrayList<>(fightingPlayers.keySet()).get(i);
             long time = fightingPlayers.get(player);
             if (time <= System.currentTimeMillis()) {
                 fightingPlayers.remove(player);
                 continue;
             }
-            if (player.getHealth() <= 0 || player.isDeadOrDying() && isFighting) {
+            if (player.getHealth() <= 0 || player.isDead() && isFighting) {
                 sendMessage(player);
                 fightingPlayers.remove(player);
             }
@@ -53,7 +53,7 @@ public class AutoEZ extends Feature {
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
-        if (event.getEntity() instanceof Player playerEntity) {
+        if (event.getEntity() instanceof PlayerEntity playerEntity) {
             if (fightingPlayers.containsKey(playerEntity))
                 fightingPlayers.replace(playerEntity, System.currentTimeMillis() + killDetectDelay);
             else
@@ -63,12 +63,12 @@ public class AutoEZ extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        if (event.getPacket() instanceof ClientboundPlayerCombatEnterPacket) {
+        if (event.getPacket() instanceof EnterCombatS2CPacket) {
             isFighting = true;
-        } else if (event.getPacket() instanceof ClientboundPlayerCombatEndPacket) {
+        } else if (event.getPacket() instanceof EndCombatS2CPacket) {
             isFighting = false;
         }
-    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ClientboundPlayerCombatEnterPacket.class, ClientboundPlayerCombatEndPacket.class));
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, EnterCombatS2CPacket.class, EndCombatS2CPacket.class));
 
     @Override
     public void onEnable() {
@@ -76,7 +76,7 @@ public class AutoEZ extends Feature {
         super.onEnable();
     }
 
-    private void sendMessage(Player playerEntity) {
+    private void sendMessage(PlayerEntity playerEntity) {
         String name = playerEntity.getGameProfile().getName();
         Random random = new Random();
         String message = messages.get(random.nextInt(messages.size())).replace("%player", name);

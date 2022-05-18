@@ -11,37 +11,37 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.arguments.blocks.BlockInput;
-import net.minecraft.commands.arguments.blocks.BlockStateParser;
-import net.minecraft.commands.arguments.blocks.BlockStateParser.BlockResult;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.Registry;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.command.CommandRegistryWrapper;
+import net.minecraft.command.argument.BlockArgumentParser;
+import net.minecraft.command.argument.BlockArgumentParser.BlockResult;
+import net.minecraft.command.argument.BlockStateArgument;
+import net.minecraft.util.registry.Registry;
 
-public class BlockStateArgumentType implements ArgumentType<BlockInput> {
+public class BlockStateArgumentType implements ArgumentType<BlockStateArgument> {
    private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "foo{bar=baz}");
-   private final HolderLookup<Block> registryWrapper;
+   private final CommandRegistryWrapper<Block> registryWrapper;
 
-   public BlockStateArgumentType(CommandBuildContext commandRegistryAccess) {
-      this.registryWrapper = commandRegistryAccess.holderLookup(Registry.BLOCK_REGISTRY);
+   public BlockStateArgumentType(CommandRegistryAccess commandRegistryAccess) {
+      this.registryWrapper = commandRegistryAccess.createWrapper(Registry.BLOCK_KEY);
    }
 
-   public static BlockStateArgumentType blockState(CommandBuildContext commandRegistryAccess) {
+   public static BlockStateArgumentType blockState(CommandRegistryAccess commandRegistryAccess) {
       return new BlockStateArgumentType(commandRegistryAccess);
    }
 
-   public BlockInput parse(StringReader stringReader) throws CommandSyntaxException {
-      BlockResult blockResult = BlockStateParser.parseForBlock(this.registryWrapper, stringReader, true);
-      return new BlockInput(blockResult.blockState(), blockResult.properties().keySet(), blockResult.nbt());
+   public BlockStateArgument parse(StringReader stringReader) throws CommandSyntaxException {
+      BlockResult blockResult = BlockArgumentParser.block(this.registryWrapper, stringReader, true);
+      return new BlockStateArgument(blockResult.blockState(), blockResult.properties().keySet(), blockResult.nbt());
    }
 
-   public static BlockInput getBlockState(CommandContext<FabricClientCommandSource> context, String name) {
-      return (BlockInput)context.getArgument(name, BlockInput.class);
+   public static BlockStateArgument getBlockState(CommandContext<FabricClientCommandSource> context, String name) {
+      return (BlockStateArgument)context.getArgument(name, BlockStateArgument.class);
    }
 
    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-      return BlockStateParser.fillSuggestions(this.registryWrapper, builder, false, true);
+      return BlockArgumentParser.getSuggestions(this.registryWrapper, builder, false, true);
    }
 
    public Collection<String> getExamples() {

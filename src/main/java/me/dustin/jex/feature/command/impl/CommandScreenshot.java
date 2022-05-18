@@ -7,7 +7,7 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.client.Screenshot;
+import net.minecraft.client.util.ScreenshotRecorder;
 import java.io.File;
 
 @Cmd(name = "screenshot", description = "Take a screenshot and upload to imgur", alias = "ss")
@@ -20,8 +20,8 @@ public class CommandScreenshot extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        File screenshotFolder = new File(Wrapper.INSTANCE.getMinecraft().gameDirectory, "screenshots");
-        Screenshot.grab(Wrapper.INSTANCE.getMinecraft().gameDirectory, "jex_screenshot.png", Wrapper.INSTANCE.getMinecraft().getMainRenderTarget(), text -> {
+        File screenshotFolder = new File(Wrapper.INSTANCE.getMinecraft().runDirectory, "screenshots");
+        ScreenshotRecorder.saveScreenshot(Wrapper.INSTANCE.getMinecraft().runDirectory, "jex_screenshot.png", Wrapper.INSTANCE.getMinecraft().getFramebuffer(), text -> {
             WebHelper.INSTANCE.uploadToImgur(new File(screenshotFolder, "jex_screenshot.png"));
         });
         return 1;

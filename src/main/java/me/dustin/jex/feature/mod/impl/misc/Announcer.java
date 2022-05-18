@@ -20,8 +20,8 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket.PlayerUpdate;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
 
 @Feature.Manifest(category = Feature.Category.MISC, description = "Fastest way to get muted! Fully customizable with files in the Jex folder")
 public class Announcer extends Feature {
@@ -38,20 +38,20 @@ public class Announcer extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().tickCount < 30 || !stopWatch.hasPassed(messageDelay))
+        if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !stopWatch.hasPassed(messageDelay))
             return;
-        ClientboundPlayerInfoPacket playerListPacket = (ClientboundPlayerInfoPacket) event.getPacket();
+        PlayerListS2CPacket playerListPacket = (PlayerListS2CPacket) event.getPacket();
 
-        if (playerListPacket.getAction() == ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER) {
-            PlayerUpdate entry = playerListPacket.getEntries().get(0);
+        if (playerListPacket.getAction() == PlayerListS2CPacket.Action.REMOVE_PLAYER) {
+            Entry entry = playerListPacket.getEntries().get(0);
             if (entry != null) {
                 String name = entry.getProfile().getName();
                 int rand = ClientMathHelper.INSTANCE.getRandom(leaveMessages.size());
                 ChatHelper.INSTANCE.sendChatMessage(leaveMessages.get(rand).replace("%player", name));
                 stopWatch.reset();
             }
-        } else if (playerListPacket.getAction() == ClientboundPlayerInfoPacket.Action.ADD_PLAYER) {
-            PlayerUpdate entry = playerListPacket.getEntries().get(0);
+        } else if (playerListPacket.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
+            Entry entry = playerListPacket.getEntries().get(0);
             if (entry != null) {
                 String name = entry.getProfile().getName();
                 int rand = ClientMathHelper.INSTANCE.getRandom(joinMessages.size());
@@ -59,7 +59,7 @@ public class Announcer extends Feature {
                 stopWatch.reset();
             }
         }
-    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ClientboundPlayerInfoPacket.class));
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, PlayerListS2CPacket.class));
 
     @Override
     public void onEnable() {

@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.jex;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -21,30 +20,31 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.update.Update;
 import me.dustin.jex.helper.update.UpdateManager;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 
 public class JexOptionsScreen extends Screen {
 
-    private EditBox prefixField;
-    private Button setPrefixButton;
-    private Button clickGuiButton;
-    private Button downloadInstallerButton;
-    private Button xrayButton;
-    private Button searchButton;
-    private Button autoDropButton;
-    private Button waypointScreenButton;
-    private Button reloadAddonsButton;
-    private Button pluginManagerButton;
-    private Button changelogButton;
-    private Button personalSettingsButton;
+    private TextFieldWidget prefixField;
+    private ButtonWidget setPrefixButton;
+    private ButtonWidget clickGuiButton;
+    private ButtonWidget downloadInstallerButton;
+    private ButtonWidget xrayButton;
+    private ButtonWidget searchButton;
+    private ButtonWidget autoDropButton;
+    private ButtonWidget waypointScreenButton;
+    private ButtonWidget reloadAddonsButton;
+    private ButtonWidget pluginManagerButton;
+    private ButtonWidget changelogButton;
+    private ButtonWidget personalSettingsButton;
     private static StopWatch stopWatch = new StopWatch();
     private boolean updating = false;
     public JexOptionsScreen() {
-        super(Component.literal("Jex Client"));
+        super(Text.literal("Jex Client"));
     }
 
     @Override
@@ -52,71 +52,71 @@ public class JexOptionsScreen extends Screen {
         int centerX = Render2DHelper.INSTANCE.getScaledWidth() / 2;
         int centerY = Render2DHelper.INSTANCE.getScaledHeight() / 2;
         int topY = centerY - 100;
-        prefixField = new EditBox(Wrapper.INSTANCE.getTextRenderer(), centerX - 55, topY, 50, 20, Component.literal(CommandManagerJex.INSTANCE.getPrefix()));
+        prefixField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), centerX - 55, topY, 50, 20, Text.literal(CommandManagerJex.INSTANCE.getPrefix()));
         prefixField.setMaxLength(1);
-        prefixField.setValue(CommandManagerJex.INSTANCE.getPrefix());
+        prefixField.setText(CommandManagerJex.INSTANCE.getPrefix());
         prefixField.setVisible(true);
-        setPrefixButton = new Button(centerX + 1, topY, 54, 20, Component.literal("Set Prefix"), button -> {
-            CommandManagerJex.INSTANCE.setPrefix(prefixField.getValue());
+        setPrefixButton = new ButtonWidget(centerX + 1, topY, 54, 20, Text.literal("Set Prefix"), button -> {
+            CommandManagerJex.INSTANCE.setPrefix(prefixField.getText());
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
         //left
-        downloadInstallerButton = new Button(centerX - 230, topY + 25, 150, 20, Component.literal("Update Jex to " + (UpdateManager.INSTANCE.getLatestVersion() != null ? UpdateManager.INSTANCE.getLatestVersion().version() : "null")), button -> {
+        downloadInstallerButton = new ButtonWidget(centerX - 230, topY + 25, 150, 20, Text.literal("Update Jex to " + (UpdateManager.INSTANCE.getLatestVersion() != null ? UpdateManager.INSTANCE.getLatestVersion().version() : "null")), button -> {
             Update.INSTANCE.update();
             updating = true;
         });
-        changelogButton = new Button(centerX - 230, topY + 50, 150, 20, Component.literal("Changelog"), button -> {
+        changelogButton = new ButtonWidget(centerX - 230, topY + 50, 150, 20, Text.literal("Changelog"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new ChangelogScreen());
         });
-        personalSettingsButton = new Button(centerX - 230, topY + 75, 150, 20, Component.literal("Personal Cosmetics"), button -> {
+        personalSettingsButton = new ButtonWidget(centerX - 230, topY + 75, 150, 20, Text.literal("Personal Cosmetics"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexPersonalizationScreen(this));
         });
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 
 
         //middle
-        waypointScreenButton = new Button(centerX - 75, topY + 25, 150, 20, Component.literal("Waypoint Screen"), button -> {
+        waypointScreenButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, Text.literal("Waypoint Screen"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
         });
-        clickGuiButton = new Button(centerX - 75, topY + 50, 150, 20, Component.literal("Open ClickGUI"), button -> {
+        clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, Text.literal("Open ClickGUI"), button -> {
             Feature.get(Gui.class).setState(true);
         });
-        reloadAddonsButton = new Button(centerX - 75, topY + 75, 150, 20, Component.literal("Reload Capes and Hats"), button -> {
+        reloadAddonsButton = new ButtonWidget(centerX - 75, topY + 75, 150, 20, Text.literal("Reload Capes and Hats"), button -> {
             Addon.clearAddons();
             if (Wrapper.INSTANCE.getWorld() != null) {
-                Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
-                    if (entity instanceof Player playerEntity) {
+                Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+                    if (entity instanceof PlayerEntity playerEntity) {
                         Addon.loadAddons(playerEntity);
                     }
                 });
             }
             stopWatch.reset();
         });
-        pluginManagerButton = new Button(centerX - 75, topY + 100, 150, 20, Component.literal("Plugin Manager"), button -> Wrapper.INSTANCE.getMinecraft().setScreen(new JexPluginScreen(this)));
+        pluginManagerButton = new ButtonWidget(centerX - 75, topY + 100, 150, 20, Text.literal("Plugin Manager"), button -> Wrapper.INSTANCE.getMinecraft().setScreen(new JexPluginScreen(this)));
 
         //right
-        xrayButton = new Button(centerX + 80, topY + 25, 150, 20, Component.literal("Xray Block Selection"), button -> {
+        xrayButton = new ButtonWidget(centerX + 80, topY + 25, 150, 20, Text.literal("Xray Block Selection"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new XraySelectScreen());
         });
-        searchButton = new Button(centerX + 80, topY + 50, 150, 20, Component.literal("Search Block Selection"), button -> {
+        searchButton = new ButtonWidget(centerX + 80, topY + 50, 150, 20, Text.literal("Search Block Selection"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new SearchSelectScreen());
         });
-        autoDropButton = new Button(centerX + 80, topY + 75, 150, 20, Component.literal("AutoDrop Selection"), button -> {
+        autoDropButton = new ButtonWidget(centerX + 80, topY + 75, 150, 20, Text.literal("AutoDrop Selection"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new AutoDropSelectScreen());
         });
 
-        this.addRenderableWidget(setPrefixButton);
-        this.addRenderableWidget(clickGuiButton);
-        this.addRenderableWidget(downloadInstallerButton);
-        this.addRenderableWidget(xrayButton);
-        this.addRenderableWidget(searchButton);
-        this.addRenderableWidget(autoDropButton);
-        this.addRenderableWidget(reloadAddonsButton);
-        this.addRenderableWidget(pluginManagerButton);
-        this.addRenderableWidget(waypointScreenButton);
-        this.addRenderableWidget(changelogButton);
-        this.addRenderableWidget(personalSettingsButton);
-        this.addWidget(prefixField);
+        this.addDrawableChild(setPrefixButton);
+        this.addDrawableChild(clickGuiButton);
+        this.addDrawableChild(downloadInstallerButton);
+        this.addDrawableChild(xrayButton);
+        this.addDrawableChild(searchButton);
+        this.addDrawableChild(autoDropButton);
+        this.addDrawableChild(reloadAddonsButton);
+        this.addDrawableChild(pluginManagerButton);
+        this.addDrawableChild(waypointScreenButton);
+        this.addDrawableChild(changelogButton);
+        this.addDrawableChild(personalSettingsButton);
+        this.addSelectableChild(prefixField);
         super.init();
     }
 
@@ -127,15 +127,15 @@ public class JexOptionsScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         prefixField.render(matrices, mouseX, mouseY, delta);
-        setPrefixButton.active = !prefixField.getValue().isEmpty();
+        setPrefixButton.active = !prefixField.getText().isEmpty();
         if (!stopWatch.hasPassed(30 * 1000)) {
-            reloadAddonsButton.setMessage(Component.literal("Reload Capes and Hats (" + ( 30 - ((stopWatch.getCurrentMS() - stopWatch.getLastMS()) / 1000)) + ")"));
+            reloadAddonsButton.setMessage(Text.literal("Reload Capes and Hats (" + ( 30 - ((stopWatch.getCurrentMS() - stopWatch.getLastMS()) / 1000)) + ")"));
             reloadAddonsButton.active = false;
         } else {
-            reloadAddonsButton.setMessage(Component.literal("Reload Capes and Hats"));
+            reloadAddonsButton.setMessage(Text.literal("Reload Capes and Hats"));
             reloadAddonsButton.active = true;
         }
         if (updating) {

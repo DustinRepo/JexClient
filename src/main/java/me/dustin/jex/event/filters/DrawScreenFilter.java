@@ -1,7 +1,7 @@
 package me.dustin.jex.event.filters;
 
 import me.dustin.jex.event.render.EventDrawScreen;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import java.util.function.Predicate;
 
 public class DrawScreenFilter implements Predicate<EventDrawScreen> {

@@ -14,10 +14,10 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
 @Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Change how the Elytra flies.")
@@ -60,8 +60,8 @@ public class ElytraPlus extends Feature {
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
         this.setSuffix(mode);
         if (wearingElytra() && (autoElytra && Wrapper.INSTANCE.getLocalPlayer().fallDistance >= fallDistance && !Wrapper.INSTANCE.getLocalPlayer().isOnGround() && !Wrapper.INSTANCE.getLocalPlayer().isFallFlying())) {
-            if (Wrapper.INSTANCE.getLocalPlayer().tickCount % 5 == 0)
-                NetworkHelper.INSTANCE.sendPacket(new ServerboundPlayerCommandPacket(Wrapper.INSTANCE.getLocalPlayer(), ServerboundPlayerCommandPacket.Action.START_FALL_FLYING));
+            if (Wrapper.INSTANCE.getLocalPlayer().age % 5 == 0)
+                NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.START_FALL_FLYING));
         }
 
         if (elytraFly) {
@@ -91,7 +91,7 @@ public class ElytraPlus extends Feature {
     }
 
     private boolean wearingElytra() {
-        ItemStack equippedStack = Wrapper.INSTANCE.getLocalPlayer().getItemBySlot(EquipmentSlot.CHEST);
+        ItemStack equippedStack = Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(EquipmentSlot.CHEST);
         return equippedStack != null && equippedStack.getItem() == Items.ELYTRA;
     }
 }

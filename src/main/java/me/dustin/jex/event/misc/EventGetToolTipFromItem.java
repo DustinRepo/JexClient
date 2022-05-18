@@ -1,17 +1,17 @@
 package me.dustin.jex.event.misc;
 
 import me.dustin.events.core.Event;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EventGetToolTipFromItem extends Event {
 
     private final ItemStack itemStack;
-    private List<Component> textList;
+    private List<Text> textList;
 
-    public EventGetToolTipFromItem(ItemStack itemStack, List<Component> textList) {
+    public EventGetToolTipFromItem(ItemStack itemStack, List<Text> textList) {
         this.itemStack = itemStack;
         this.textList = textList;
     }
@@ -20,11 +20,11 @@ public class EventGetToolTipFromItem extends Event {
         return itemStack;
     }
 
-    public List<Component> getTextList() {
+    public List<Text> getTextList() {
         return textList;
     }
 
-    public void setTextList(ArrayList<Component> textList) {
+    public void setTextList(ArrayList<Text> textList) {
         this.textList = textList;
     }
 }

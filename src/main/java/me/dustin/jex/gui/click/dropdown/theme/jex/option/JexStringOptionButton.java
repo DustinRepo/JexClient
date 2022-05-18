@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.click.dropdown.theme.jex.option;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -10,6 +9,7 @@ import me.dustin.jex.gui.click.dropdown.impl.option.StringOptionButton;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class JexStringOptionButton extends StringOptionButton {
     public JexStringOptionButton(DropdownWindow window, StringOption option, float x, float y, float width, float height) {
@@ -17,7 +17,7 @@ public class JexStringOptionButton extends StringOptionButton {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x40ffffff);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, this.getOption().getName(), this.getX() + 10, this.getY() + 2, 0xffaaaaaa);

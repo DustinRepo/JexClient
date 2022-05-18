@@ -4,26 +4,26 @@ import com.mojang.authlib.GameProfile;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.Identifier;
 import java.util.UUID;
 
-public class FakePlayerEntity extends AbstractClientPlayer {
+public class FakePlayerEntity extends AbstractClientPlayerEntity {
 
-    public FakePlayerEntity(ClientLevel world, GameProfile profile) {
+    public FakePlayerEntity(ClientWorld world, GameProfile profile) {
         super(world, profile, null);
     }
 
-    public void setUUID(UUID uuid) {
+    public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
 
     @Override
-    public ResourceLocation getSkinTextureLocation() {
-        if (isSkinLoaded())
-            return super.getSkinTextureLocation();
+    public Identifier getSkinTexture() {
+        if (hasSkinTexture())
+            return super.getSkinTexture();
         else
-            return MCAPIHelper.INSTANCE.getPlayerSkin(this == Freecam.playerEntity ? Wrapper.INSTANCE.getMinecraft().getUser().getGameProfile().getId() : this.uuid);
+            return MCAPIHelper.INSTANCE.getPlayerSkin(this == Freecam.playerEntity ? Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId() : this.uuid);
     }
 }

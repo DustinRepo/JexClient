@@ -12,12 +12,12 @@ public class AutoMine extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        Wrapper.INSTANCE.getOptions().keyAttack.setDown(true);
+        Wrapper.INSTANCE.getOptions().attackKey.setPressed(true);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @Override
     public void onDisable() {
-        Wrapper.INSTANCE.getOptions().keyAttack.setDown(false);
+        Wrapper.INSTANCE.getOptions().attackKey.setPressed(false);
         super.onDisable();
     }
 }

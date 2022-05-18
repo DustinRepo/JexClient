@@ -12,19 +12,19 @@ import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -65,25 +65,25 @@ public class CrystalAura extends Feature {
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
 		if (AutoEat.isEating || Feature.get(AutoGapple.class).isEating())
 			return;
-		boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffhandItem().getItem() == Items.END_CRYSTAL;
+		boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.END_CRYSTAL;
 		if (event.getMode() == EventPlayerPackets.Mode.PRE) {
 			this.setSuffix(mode);
 			if (placePos != null) {
-				RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3(placePos.getX(), placePos.getY(), placePos.getZ()).add(new Vec3(0.5, 0.5, 0.5)));
+				RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 				event.setRotation(rotation);
 			}
 
 			if (stopWatch.hasPassed(delay))
-				if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandItem() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandItem().getItem() == Items.END_CRYSTAL) || offhand)) {
-					Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
-						if (entity instanceof Player entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().getString())) {
+				if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.END_CRYSTAL) || offhand)) {
+					Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+						if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().getString())) {
 							BlockPos placingPos = getOpenBlockPos(entityPlayer);
 							if (placingPos != null) {
-								EndCrystal crystal = new EndCrystal(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
+								EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
 								if (entityPlayer.distanceTo(crystal) <= 6 && Wrapper.INSTANCE.getLocalPlayer().distanceTo(crystal) <= 6 && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldAttack(crystal)) {
-									RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3(getOpenBlockPos(entityPlayer).below().getX(), getOpenBlockPos(entityPlayer).below().getY(), getOpenBlockPos(entityPlayer).below().getZ()).add(new Vec3(0.5, 0.5, 0.5)));
+									RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 									event.setRotation(rotation);
-									placePos = placingPos.below();
+									placePos = placingPos.down();
 									stopWatch.reset();
 									return;
 								}
@@ -91,21 +91,21 @@ public class CrystalAura extends Feature {
 						}
 					});
 				}
-			Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
-				if (entity instanceof EndCrystal enderCrystalEntity) {
+			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+				if (entity instanceof EndCrystalEntity enderCrystalEntity) {
 					if (shouldAttack(enderCrystalEntity)) {
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
-						Wrapper.INSTANCE.getMultiPlayerGameMode().attack(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
-						Wrapper.INSTANCE.getLocalPlayer().swing(InteractionHand.MAIN_HAND);
+						Wrapper.INSTANCE.getMultiPlayerGameMode().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
+						Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 					}
 				}
 			});
 		} else {
 			if (placePos != null) {
-				BlockHitResult blockHitResult = new BlockHitResult(new Vec3(placePos.getX(), placePos.getY(), placePos.getZ()), Direction.UP, placePos, false);
-				Wrapper.INSTANCE.getMultiPlayerGameMode().useItemOn(Wrapper.INSTANCE.getLocalPlayer(), offhand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, blockHitResult);
-				Wrapper.INSTANCE.getLocalPlayer().swing(offhand ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
+				BlockHitResult blockHitResult = new BlockHitResult(new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()), Direction.UP, placePos, false);
+				Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND, blockHitResult);
+				Wrapper.INSTANCE.getLocalPlayer().swingHand(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
 				placePos = null;
 			}
 		}
@@ -114,33 +114,33 @@ public class CrystalAura extends Feature {
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 		if (autoPlace && visualize)
-			Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
-				if (entity instanceof Player entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
+			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+				if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
 					BlockPos placingPos = getOpenBlockPos(entityPlayer);
 					if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().getString())) {
-						EndCrystal crystal = new EndCrystal(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
-						Vec3 renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());
-						AABB box = new AABB(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
+						EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
+						Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());
+						Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
 						Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), box, shouldAttack(crystal) ? placingColor : thinkingColor);
 					}
 				}
 			});
 	});
 
-	public BlockPos getOpenBlockPos(Player entityPlayer) {
+	public BlockPos getOpenBlockPos(PlayerEntity entityPlayer) {
 		double d = 0;
 		BlockPos closest = null;
 		for (int x = -4; x < 4; x++) {
 			for (int y = -1; y < 4; y++) {
 				for (int z = -4; z < 4; z++) {
 					BlockPos pos = new BlockPos(entityPlayer.getX() + x, (int) entityPlayer.getY() - y, entityPlayer.getZ() + z);
-					EndCrystal fakeCrystal = new EndCrystal(Wrapper.INSTANCE.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+					EndCrystalEntity fakeCrystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), pos.getX(), pos.getY(), pos.getZ());
 
-					List<Entity> list = Wrapper.INSTANCE.getWorld().getEntities((Entity) null, new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0D, pos.getY() + 2.0D, pos.getZ() + 1.0D));
+					List<Entity> list = Wrapper.INSTANCE.getWorld().getOtherEntities((Entity) null, new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0D, pos.getY() + 2.0D, pos.getZ() + 1.0D));
 					boolean collides = !list.isEmpty();
-					BlockPos above = pos.above();
+					BlockPos above = pos.up();
 					if (WorldHelper.INSTANCE.getBlock(pos) == Blocks.AIR && WorldHelper.INSTANCE.getBlock(above) == Blocks.AIR && !collides) {
-						BlockPos below = pos.below();
+						BlockPos below = pos.down();
 						Block belowBlock = WorldHelper.INSTANCE.getBlock(below);
 						if (belowBlock == Blocks.OBSIDIAN || belowBlock == Blocks.BEDROCK) {
 							if (!shouldAttack(fakeCrystal))
@@ -161,19 +161,19 @@ public class CrystalAura extends Feature {
 		return closest;
 	}
 
-	private boolean isBlocking(BlockPos blockPos, Player EntityPlayer) {
-		AABB box = new AABB(blockPos.above());
+	private boolean isBlocking(BlockPos blockPos, PlayerEntity EntityPlayer) {
+		Box box = new Box(blockPos.up());
 		if (EntityPlayer.getBoundingBox().intersects(box))
 			return true;
 		return false;
 	}
 
-	public boolean shouldAttack(EndCrystal enderCrystalEntity) {
+	public boolean shouldAttack(EndCrystalEntity enderCrystalEntity) {
 		if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(enderCrystalEntity) > attackDistance)
 			return false;
 		boolean hasTarget = mode.equalsIgnoreCase("Any");
 		if (!hasTarget)
-			for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
+			for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
 				if (entity instanceof LivingEntity livingEntity && isTarget(livingEntity, enderCrystalEntity)) {
 					hasTarget = true;
 					break;
@@ -181,14 +181,14 @@ public class CrystalAura extends Feature {
 			}
 		if (!hasTarget)
 			return false;
-		float damage = WorldHelper.INSTANCE.calcExplosionDamage(6, Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity.blockPosition());
+		float damage = WorldHelper.INSTANCE.calcExplosionDamage(6, Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity.getBlockPos());
 		if (mode.equalsIgnoreCase("Risky"))
 			return damage <= 65;
 		return true;
 	}
 
-	public boolean isTarget(LivingEntity livingEntity, EndCrystal enderCrystalEntity) {
-		if (livingEntity instanceof Player && livingEntity != Wrapper.INSTANCE.getLocalPlayer()) {
+	public boolean isTarget(LivingEntity livingEntity, EndCrystalEntity enderCrystalEntity) {
+		if (livingEntity instanceof PlayerEntity && livingEntity != Wrapper.INSTANCE.getLocalPlayer()) {
 			return !FriendHelper.INSTANCE.isFriend(livingEntity.getName().getString()) && livingEntity.distanceTo(enderCrystalEntity) <= 6 && livingEntity.getHealth() > 0;
 		}
 		return false;

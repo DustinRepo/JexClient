@@ -22,12 +22,12 @@ public class NormalXray extends FeatureExtension {
             if (!Xray.INSTANCE.isValid(eventRenderFluid.getBlock()))
                 event.cancel();
         } else if (event instanceof EventRenderBlockEntity eventRenderBlockEntity) {
-            if (!Xray.INSTANCE.isValid(WorldHelper.INSTANCE.getBlock(eventRenderBlockEntity.blockEntity.getBlockPos())))
+            if (!Xray.INSTANCE.isValid(WorldHelper.INSTANCE.getBlock(eventRenderBlockEntity.blockEntity.getPos())))
                 event.cancel();
-        } else if (event instanceof EventShouldRenderFace eventShouldRenderFace) {
-            if (Xray.INSTANCE.isValid(eventShouldRenderFace.getBlock()))
-                eventShouldRenderFace.setShouldDrawSide(Xray.INSTANCE.shouldDrawSide(eventShouldRenderFace.getSide(), eventShouldRenderFace.getBlockPos()));
-            else eventShouldRenderFace.setShouldDrawSide(false);
+        } else if (event instanceof EventShouldDrawSide eventShouldDrawSide) {
+            if (Xray.INSTANCE.isValid(eventShouldDrawSide.getBlock()))
+                eventShouldDrawSide.setShouldDrawSide(Xray.INSTANCE.shouldDrawSide(eventShouldDrawSide.getSide(), eventShouldDrawSide.getBlockPos()));
+            else eventShouldDrawSide.setShouldDrawSide(false);
             event.cancel();
         } else if (event instanceof EventBlockBrightness eventBlockBrightness) {
             if (Xray.INSTANCE.isValid(eventBlockBrightness.getBlock()))
@@ -40,14 +40,14 @@ public class NormalXray extends FeatureExtension {
     @Override
     public void enable() {
         if (Wrapper.INSTANCE.getWorldRenderer() != null)
-            Wrapper.INSTANCE.getWorldRenderer().allChanged();
+            Wrapper.INSTANCE.getWorldRenderer().reload();
         super.enable();
     }
 
     @Override
     public void disable() {
         if (Wrapper.INSTANCE.getWorldRenderer() != null)
-            Wrapper.INSTANCE.getWorldRenderer().allChanged();
+            Wrapper.INSTANCE.getWorldRenderer().reload();
         super.disable();
     }
 }

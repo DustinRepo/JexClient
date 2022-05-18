@@ -1,6 +1,5 @@
 package me.dustin.jex.helper.world.wurstpathfinder;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.*;
 
 import me.dustin.jex.feature.mod.core.Feature;
@@ -13,31 +12,32 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.FenceBlock;
-import net.minecraft.world.level.block.FenceGateBlock;
-import net.minecraft.world.level.block.LadderBlock;
-import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.SignBlock;
-import net.minecraft.world.level.block.SlimeBlock;
-import net.minecraft.world.level.block.SoulSandBlock;
-import net.minecraft.world.level.block.TripWireBlock;
-import net.minecraft.world.level.block.VineBlock;
-import net.minecraft.world.level.block.WallBlock;
-import net.minecraft.world.level.block.WebBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.block.AbstractSignBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CobwebBlock;
+import net.minecraft.block.FenceBlock;
+import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.LadderBlock;
+import net.minecraft.block.Material;
+import net.minecraft.block.PressurePlateBlock;
+import net.minecraft.block.SlimeBlock;
+import net.minecraft.block.SoulSandBlock;
+import net.minecraft.block.TripwireBlock;
+import net.minecraft.block.VineBlock;
+import net.minecraft.block.WallBlock;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShapes;
 
 public class PathFinder
 {
-	private final boolean invulnerable = Wrapper.INSTANCE.getPlayer().getAbilities().instabuild;
+	private final boolean invulnerable = Wrapper.INSTANCE.getPlayer().getAbilities().creativeMode;
 	private final boolean creativeFlying = Wrapper.INSTANCE.getPlayer().getAbilities().flying;
 	protected final boolean flying = creativeFlying || Feature.getState(Fly.class);
 	private final boolean immuneToFallDamage = invulnerable || Feature.getState(NoFall.class);
@@ -69,7 +69,7 @@ public class PathFinder
 		if(Wrapper.INSTANCE.getPlayer().isOnGround())
 			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getPlayer().getX(),Wrapper.INSTANCE.getPlayer().getY() + 0.5, Wrapper.INSTANCE.getPlayer().getZ()));
 		else
-			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getPlayer().position()));
+			start = new PathPos(new BlockPos(Wrapper.INSTANCE.getPlayer().getPos()));
 		this.goal = goal;
 
 		costMap.put(start, 0F);
@@ -145,8 +145,8 @@ public class PathFinder
 		BlockPos southWest = south.west();
 		BlockPos northWest = north.west();
 
-		BlockPos up = pos.above();
-		BlockPos down = pos.below();
+		BlockPos up = pos.up();
+		BlockPos down = pos.down();
 
 		// flying
 		boolean flying = canFlyAt(pos);
@@ -157,7 +157,7 @@ public class PathFinder
 		// or inside of a block that allows sideways movement (ladders, webs,
 		// etc.)
 		if(flying || onGround || pos.isJumping()
-				|| canMoveSidewaysInMidairAt(pos) || canClimbUpAt(pos.below()))
+				|| canMoveSidewaysInMidairAt(pos) || canClimbUpAt(pos.down()))
 		{
 			// north
 			if(checkHorizontalMovement(pos, north))
@@ -193,16 +193,16 @@ public class PathFinder
 		}
 
 		// up
-		if(pos.getY() < Wrapper.INSTANCE.getWorld().getHeight() && canGoThrough(up.above())
+		if(pos.getY() < Wrapper.INSTANCE.getWorld().getHeight() && canGoThrough(up.up())
 				&& (flying || onGround || canClimbUpAt(pos))
 				&& (flying || canClimbUpAt(pos) || goal.equals(up)
 				|| canSafelyStandOn(north) || canSafelyStandOn(east)
 				|| canSafelyStandOn(south) || canSafelyStandOn(west))
-				&& (divingAllowed || WorldHelper.INSTANCE.getBlockState(up.above()).getMaterial() != Material.WATER))
+				&& (divingAllowed || WorldHelper.INSTANCE.getBlockState(up.up()).getMaterial() != Material.WATER))
 			neighbors.add(new PathPos(up, onGround));
 
 		// down
-		if(pos.getY() > Wrapper.INSTANCE.getWorld().getMinBuildHeight() && canGoThrough(down) && canGoAbove(down.below())
+		if(pos.getY() > Wrapper.INSTANCE.getWorld().getBottomY() && canGoThrough(down) && canGoAbove(down.down())
 				&& (flying || canFallBelow(pos)) && (divingAllowed
 				|| WorldHelper.INSTANCE.getBlockState(pos).getMaterial() != Material.WATER))
 			neighbors.add(new PathPos(down));
@@ -211,16 +211,16 @@ public class PathFinder
 	}
 
 	private boolean checkHorizontalMovement(BlockPos current, BlockPos next) {
-		if(isPassable(next) && (canFlyAt(current) || canGoThrough(next.below()) || canSafelyStandOn(next.below())))
+		if(isPassable(next) && (canFlyAt(current) || canGoThrough(next.down()) || canSafelyStandOn(next.down())))
 			return true;
 
 		return false;
 	}
 
 	private boolean checkDiagonalMovement(BlockPos current, Direction direction1, Direction direction2) {
-		BlockPos horizontal1 = current.relative(direction1);
-		BlockPos horizontal2 = current.relative(direction2);
-		BlockPos next = horizontal1.relative(direction2);
+		BlockPos horizontal1 = current.offset(direction1);
+		BlockPos horizontal2 = current.offset(direction2);
+		BlockPos next = horizontal1.offset(direction2);
 
 		if(isPassableWithoutMining(horizontal1)
 				&& isPassableWithoutMining(horizontal2)
@@ -235,11 +235,11 @@ public class PathFinder
 		if(!canGoThrough(pos) && !isMineable(pos))
 			return false;
 
-		BlockPos up = pos.above();
+		BlockPos up = pos.up();
 		if(!canGoThrough(up) && !isMineable(up))
 			return false;
 
-		if(!canGoAbove(pos.below()))
+		if(!canGoAbove(pos.down()))
 			return false;
 
 		if(!divingAllowed && WorldHelper.INSTANCE.getBlockState(up).getMaterial() == Material.WATER)
@@ -253,11 +253,11 @@ public class PathFinder
 		if(!canGoThrough(pos))
 			return false;
 
-		BlockPos up = pos.above();
+		BlockPos up = pos.up();
 		if(!canGoThrough(up))
 			return false;
 
-		if(!canGoAbove(pos.below()))
+		if(!canGoAbove(pos.down()))
 			return false;
 
 		if(!divingAllowed && WorldHelper.INSTANCE.getBlockState(up).getMaterial() == Material.WATER)
@@ -269,7 +269,7 @@ public class PathFinder
 	protected boolean isMineable(BlockPos pos)
 	{
 		BlockState blockState = WorldHelper.INSTANCE.getBlockState(pos);
-		return canMine && blockState.getCollisionShape(Wrapper.INSTANCE.getWorld(), pos) != Shapes.empty() && WorldHelper.INSTANCE.getBlockBreakingSpeed(blockState, Wrapper.INSTANCE.getPlayer().getMainHandItem()) > 0;
+		return canMine && blockState.getCollisionShape(Wrapper.INSTANCE.getWorld(), pos) != VoxelShapes.empty() && WorldHelper.INSTANCE.getBlockBreakingSpeed(blockState, Wrapper.INSTANCE.getPlayer().getMainHandStack()) > 0;
 	}
 
 	protected boolean canBeSolid(BlockPos pos)
@@ -278,8 +278,8 @@ public class PathFinder
 		Material material = state.getMaterial();
 		Block block = state.getBlock();
 
-		return material.blocksMotion()
-				&& !(block instanceof SignBlock)
+		return material.blocksMovement()
+				&& !(block instanceof AbstractSignBlock)
 				|| block instanceof LadderBlock || jesus
 				&& (material == Material.WATER || material == Material.LAVA);
 	}
@@ -290,22 +290,22 @@ public class PathFinder
 		// check if loaded
 		// Can't see why isChunkLoaded() is deprecated. Still seems to be widely
 		// used with no replacement.
-		if(!Wrapper.INSTANCE.getWorld().hasChunkAt(pos))
+		if(!Wrapper.INSTANCE.getWorld().isChunkLoaded(pos))
 			return false;
 
 		// check if solid
 		Material material = WorldHelper.INSTANCE.getBlockState(pos).getMaterial();
 		Block block = WorldHelper.INSTANCE.getBlock(pos);
-		if(material.blocksMotion() && !(block instanceof SignBlock))
+		if(material.blocksMovement() && !(block instanceof AbstractSignBlock))
 			return false;
 
 		// check if trapped
-		if(block instanceof TripWireBlock
+		if(block instanceof TripwireBlock
 				|| block instanceof PressurePlateBlock)
 			return false;
 
 		// check if safe
-		if((!invulnerable && !Wrapper.INSTANCE.getPlayer().hasEffect(MobEffects.FIRE_RESISTANCE)) && (material == Material.LAVA || material == Material.FIRE))
+		if((!invulnerable && !Wrapper.INSTANCE.getPlayer().hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) && (material == Material.LAVA || material == Material.FIRE))
 			return false;
 
 		return true;
@@ -335,7 +335,7 @@ public class PathFinder
 	private boolean canFallBelow(PathPos pos)
 	{
 		// check if player can keep falling
-		BlockPos down2 = pos.below(2);
+		BlockPos down2 = pos.down(2);
 		if(fallingAllowed && canGoThrough(down2))
 			return true;
 
@@ -363,7 +363,7 @@ public class PathFinder
 
 			// check if point is not part of this fall, meaning that the fall is
 			// too short to cause any damage
-			if(!pos.above(i).equals(prevPos))
+			if(!pos.up(i).equals(prevPos))
 				return true;
 
 			// check if block resets fall damage
@@ -372,7 +372,7 @@ public class PathFinder
 			if(prevState.getMaterial() == Material.WATER
 					|| prevBlock instanceof LadderBlock
 					|| prevBlock instanceof VineBlock
-					|| prevBlock instanceof WebBlock)
+					|| prevBlock instanceof CobwebBlock)
 				return true;
 
 			prevPos = prevPosMap.get(prevPos);
@@ -396,7 +396,7 @@ public class PathFinder
 			return false;
 
 		// check if any adjacent block is solid
-		BlockPos up = pos.above();
+		BlockPos up = pos.up();
 		if(!canBeSolid(pos.north()) && !canBeSolid(pos.east())
 				&& !canBeSolid(pos.south()) && !canBeSolid(pos.west())
 				&& !canBeSolid(up.north()) && !canBeSolid(up.east())
@@ -413,13 +413,13 @@ public class PathFinder
 		if(WorldHelper.INSTANCE.getBlockState(pos).getMaterial().isLiquid()
 				|| blockFeet instanceof LadderBlock
 				|| blockFeet instanceof VineBlock
-				|| blockFeet instanceof WebBlock)
+				|| blockFeet instanceof CobwebBlock)
 			return true;
 
 		// check head
-		Block blockHead = WorldHelper.INSTANCE.getBlock(pos.above());
-		if(WorldHelper.INSTANCE.getBlockState(pos.above()).getMaterial().isLiquid()
-				|| blockHead instanceof WebBlock)
+		Block blockHead = WorldHelper.INSTANCE.getBlock(pos.up());
+		if(WorldHelper.INSTANCE.getBlockState(pos.up()).getMaterial().isLiquid()
+				|| blockHead instanceof CobwebBlock)
 			return true;
 
 		return false;
@@ -442,14 +442,14 @@ public class PathFinder
 				costs[i] *= 4.539515393656079F;
 
 			// soul sand
-			if(!canFlyAt(pos) && WorldHelper.INSTANCE.getBlock(pos.below()) instanceof SoulSandBlock)
+			if(!canFlyAt(pos) && WorldHelper.INSTANCE.getBlock(pos.down()) instanceof SoulSandBlock)
 				costs[i] *= 2.5F;
 
 			// mining
 			if(isMineable(pos))
-				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos), Wrapper.INSTANCE.getPlayer().getMainHandItem()));
-			if(isMineable(pos.above()))
-				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos.above()), Wrapper.INSTANCE.getPlayer().getMainHandItem()));
+				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos), Wrapper.INSTANCE.getPlayer().getMainHandStack()));
+			if(isMineable(pos.up()))
+				costs[i] *= Math.min(2, 15 / WorldHelper.INSTANCE.getBlockBreakingSpeed(WorldHelper.INSTANCE.getBlockState(pos.up()), Wrapper.INSTANCE.getPlayer().getMainHandStack()));
 		}
 
 		float cost = costs[0] + costs[1];
@@ -526,7 +526,7 @@ public class PathFinder
 		else {
 			pos = start;
 			for(PathPos next : prevPosMap.keySet())
-				if(getHeuristic(next) < getHeuristic(pos) && (canFlyAt(next) || canBeSolid(next.below())))
+				if(getHeuristic(next) < getHeuristic(pos) && (canFlyAt(next) || canBeSolid(next.down())))
 					pos = next;
 		}
 
@@ -543,27 +543,27 @@ public class PathFinder
 		return path;
 	}
 
-	public void renderPath(PoseStack matrixStack, boolean debugMode, boolean depthTest) {
+	public void renderPath(MatrixStack matrixStack, boolean debugMode, boolean depthTest) {
 		ArrayList<Render3DHelper.BoxStorage> boxes = new ArrayList<>();
 		if (debugMode) {
 			for (PathPos pathPos : queue.toArray()) {
-				Vec3 vec = Render3DHelper.INSTANCE.getRenderPosition(Vec3.atCenterOf(pathPos));
-				AABB box = new AABB(vec.x() - 0.05, vec.y() - 0.05, vec.z() - 0.05, vec.x() + 0.05, vec.y() + 0.05, vec.z() + 0.05);
+				Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(Vec3d.ofCenter(pathPos));
+				Box box = new Box(vec.getX() - 0.05, vec.getY() - 0.05, vec.getZ() - 0.05, vec.getX() + 0.05, vec.getY() + 0.05, vec.getZ() + 0.05);
 				if (boxes.size() < 5000)
 					boxes.add(new Render3DHelper.BoxStorage(box, 0xffffff00));
 			}
 
 			for(Map.Entry<PathPos, PathPos> entry : prevPosMap.entrySet()) {
-				Vec3 vec = Render3DHelper.INSTANCE.getRenderPosition(Vec3.atCenterOf(entry.getKey()));
-				AABB box = new AABB(vec.x() - 0.05, vec.y() - 0.05, vec.z() - 0.05, vec.x() + 0.05, vec.y() + 0.05, vec.z() + 0.05);
+				Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(Vec3d.ofCenter(entry.getKey()));
+				Box box = new Box(vec.getX() - 0.05, vec.getY() - 0.05, vec.getZ() - 0.05, vec.getX() + 0.05, vec.getY() + 0.05, vec.getZ() + 0.05);
 				if (boxes.size() < 5000)
 					boxes.add(new Render3DHelper.BoxStorage(box, 0xffff00ff));
 			}
 		}
 
 		for (PathPos pathPos : path) {
-			Vec3 vec = Render3DHelper.INSTANCE.getRenderPosition(Vec3.atCenterOf(pathPos));
-			AABB box = new AABB(vec.x() - 0.05, vec.y() - 0.05, vec.z() - 0.05, vec.x() + 0.05, vec.y() + 0.05, vec.z() + 0.05);
+			Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(Vec3d.ofCenter(pathPos));
+			Box box = new Box(vec.getX() - 0.05, vec.getY() - 0.05, vec.getZ() - 0.05, vec.getX() + 0.05, vec.getY() + 0.05, vec.getZ() + 0.05);
 			if (boxes.size() < 5000)
 				boxes.add(new Render3DHelper.BoxStorage(box, ColorHelper.INSTANCE.getClientColor()));
 		}
@@ -577,7 +577,7 @@ public class PathFinder
 			throw new IllegalStateException("Path is not formatted!");
 
 		// check player abilities
-		if(invulnerable != Wrapper.INSTANCE.getPlayer().getAbilities().instabuild
+		if(invulnerable != Wrapper.INSTANCE.getPlayer().getAbilities().creativeMode
 				|| flying != (creativeFlying
 				|| Feature.get(Fly.class).getState())
 				|| immuneToFallDamage != (invulnerable
@@ -591,8 +591,8 @@ public class PathFinder
 		if(index == 0)
 		{
 			PathPos pos = path.get(0);
-			if(!isPassable(pos) || !canFlyAt(pos) && !canGoThrough(pos.below())
-					&& !canSafelyStandOn(pos.below()))
+			if(!isPassable(pos) || !canFlyAt(pos) && !canGoThrough(pos.down())
+					&& !canSafelyStandOn(pos.down()))
 				return false;
 		}
 

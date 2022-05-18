@@ -25,7 +25,7 @@ public enum UpdateManager {
                 latestVersion = new JexVersion(updateResponse.get("version").getAsString());
                 latestSnapshotVersion = updateResponse.get("snapVersion").getAsString();*/
 
-                boolean isCurrentlySnapshot = SharedConstants.getCurrentVersion().getName().contains("w");
+                boolean isCurrentlySnapshot = SharedConstants.getGameVersion().getName().contains("w");
                 boolean isVersionSame = JexClient.INSTANCE.getVersion().version().equalsIgnoreCase(latestVersion.version());
                 boolean isMCVersionSame = true;//SharedConstants.getGameVersion().getName().equalsIgnoreCase(isCurrentlySnapshot ? latestSnapshotVersion : latestMCVersion);
                 if (isVersionSame && isMCVersionSame)

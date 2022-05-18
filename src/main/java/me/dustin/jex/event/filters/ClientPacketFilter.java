@@ -1,7 +1,7 @@
 package me.dustin.jex.event.filters;
 
 import me.dustin.jex.event.packet.EventPacketSent;
-import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.Packet;
 import java.util.function.Predicate;
 
 public class ClientPacketFilter implements Predicate<EventPacketSent> {

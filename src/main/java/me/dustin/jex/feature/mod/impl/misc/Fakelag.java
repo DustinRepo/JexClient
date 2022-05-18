@@ -8,7 +8,7 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.Packet;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class Fakelag extends Feature {
             event.cancel();
         } else {
             sending = true;
-            packets.forEach(Wrapper.INSTANCE.getLocalPlayer().connection::send);
+            packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
             sending = false;
             packets.clear();
             stopWatch.reset();
@@ -71,7 +71,7 @@ public class Fakelag extends Feature {
     public void onDisable() {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             try {
-                packets.forEach(Wrapper.INSTANCE.getLocalPlayer().connection::send);
+                packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
             } catch (Exception e) {}
             packets.clear();
         }

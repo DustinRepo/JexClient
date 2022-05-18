@@ -11,10 +11,10 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
-import net.minecraft.world.entity.monster.Slime;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.entity.mob.SlimeEntity;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import java.awt.*;
@@ -43,18 +43,18 @@ public class SlimeSpawnMarker extends Feature {
 
     @EventPointer
     private final EventListener<EventSpawnEntity> eventSpawnEntityEventListener = new EventListener<>(event -> {
-        if (event.getEntity() instanceof Slime) {
+        if (event.getEntity() instanceof SlimeEntity) {
             if (event.getEntity().getY() > 40)
                 return;
             if (notifyPlayer)
-                ChatHelper.INSTANCE.addClientMessage("A Slime has spawned in chunk: \247b" + event.getEntity().chunkPosition().x + " " + event.getEntity().chunkPosition().z);
+                ChatHelper.INSTANCE.addClientMessage("A Slime has spawned in chunk: \247b" + event.getEntity().getChunkPos().x + " " + event.getEntity().getChunkPos().z);
             if (markSlimeChunks)
-                if (!chunkPositions.contains(event.getEntity().chunkPosition())) {
-                    chunkPositions.add(event.getEntity().chunkPosition());
+                if (!chunkPositions.contains(event.getEntity().getChunkPos())) {
+                    chunkPositions.add(event.getEntity().getChunkPos());
                     if (writeToFile) {
                         try {
-                            String server = Wrapper.INSTANCE.getMinecraft().hasSingleplayerServer() ? "SP world" : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServer()).ip;
-                            String s = server + ":" + event.getEntity().chunkPosition().x + ":" + event.getEntity().chunkPosition().z + "\n";
+                            String server = Wrapper.INSTANCE.getMinecraft().isIntegratedServerRunning() ? "SP world" : Objects.requireNonNull(Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry()).address;
+                            String s = server + ":" + event.getEntity().getChunkPos().x + ":" + event.getEntity().getChunkPos().z + "\n";
                             FileWriter fileWritter = new FileWriter(chunksFile, true);
                             BufferedWriter bw = new BufferedWriter(fileWritter);
                             bw.write(s);
@@ -72,9 +72,9 @@ public class SlimeSpawnMarker extends Feature {
         if (!markSlimeChunks)
             return;
         chunkPositions.forEach(chunkPos -> {
-            if (Wrapper.INSTANCE.getWorld().getChunkSource().hasChunk(chunkPos.x, chunkPos.z)) {
-                Vec3 renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, -64, chunkPos.z * 16);
-                AABB box = new AABB(renderVec.x(), renderVec.y(), renderVec.z(), renderVec.x() + 16, renderVec.y() + 64 + 40, renderVec.z() + 16);
+            if (Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunkPos.x, chunkPos.z)) {
+                Vec3d renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, -64, chunkPos.z * 16);
+                Box box = new Box(renderVec.getX(), renderVec.getY(), renderVec.getZ(), renderVec.getX() + 16, renderVec.getY() + 64 + 40, renderVec.getZ() + 16);
                 Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getPoseStack(), box, chunkColor);
             }
         });

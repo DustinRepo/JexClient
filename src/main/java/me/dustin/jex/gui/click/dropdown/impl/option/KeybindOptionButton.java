@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.click.dropdown.impl.option;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -11,6 +10,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.misc.KeyboardHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
 
 public class KeybindOptionButton extends DropdownOptionButton{
@@ -23,7 +23,7 @@ public class KeybindOptionButton extends DropdownOptionButton{
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         super.render(matrixStack);
     }
 

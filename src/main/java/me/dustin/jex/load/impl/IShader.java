@@ -1,9 +1,9 @@
 package me.dustin.jex.load.impl;
 
-import com.mojang.blaze3d.shaders.Uniform;
+import net.minecraft.client.gl.GlUniform;
 
 public interface IShader {
 
-    Uniform getCustomUniform(String name);
+    GlUniform getCustomUniform(String name);
 
 }

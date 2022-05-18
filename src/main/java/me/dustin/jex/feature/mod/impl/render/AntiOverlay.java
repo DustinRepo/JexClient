@@ -8,7 +8,7 @@ import me.dustin.jex.event.render.EventSetupFog;
 import me.dustin.jex.event.render.EventRenderOverlay;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.world.level.material.FogType;
+import net.minecraft.client.render.CameraSubmersionType;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Remove overlays")
 public class AntiOverlay extends Feature {
@@ -96,5 +96,5 @@ public class AntiOverlay extends Feature {
                 }
             }
         }
-    }, new ApplyFogFilter(FogType.WATER, FogType.LAVA, FogType.POWDER_SNOW));
+    }, new ApplyFogFilter(CameraSubmersionType.WATER, CameraSubmersionType.LAVA, CameraSubmersionType.POWDER_SNOW));
 }

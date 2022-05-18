@@ -13,11 +13,11 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.gui.screens.ConnectScreen;
-import net.minecraft.client.gui.screens.DisconnectedScreen;
-import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
-import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.client.gui.screen.ConnectScreen;
+import net.minecraft.client.gui.screen.DisconnectedScreen;
+import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.network.ServerAddress;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
@@ -32,7 +32,7 @@ public class AutoReconnect extends Feature {
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
-        if (stopWatch.hasPassed(delay) && Wrapper.INSTANCE.getMinecraft().screen instanceof DisconnectedScreen) {
+        if (stopWatch.hasPassed(delay) && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen) {
             connect();
             stopWatch.reset();
         }
@@ -53,11 +53,11 @@ public class AutoReconnect extends Feature {
         float timeLeft = (stopWatch.getLastMS() + delay) - stopWatch.getCurrentMS();
         timeLeft /= 1000;
         String messageString = String.format("Reconnecting in %.1fs", timeLeft);
-        FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), messageString, Wrapper.INSTANCE.getWindow().getGuiScaledWidth() / 2.f, 2, ColorHelper.INSTANCE.getClientColor());
+        FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), messageString, Wrapper.INSTANCE.getWindow().getScaledWidth() / 2.f, 2, ColorHelper.INSTANCE.getClientColor());
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, DisconnectedScreen.class));
 
     public void connect() {
-        ConnectScreen.startConnecting(new JoinMultiplayerScreen(new TitleScreen()), Wrapper.INSTANCE.getMinecraft(), serverAddress, null);
+        ConnectScreen.connect(new MultiplayerScreen(new TitleScreen()), Wrapper.INSTANCE.getMinecraft(), serverAddress, null);
     }
 
     public ServerAddress getServerAddress() {

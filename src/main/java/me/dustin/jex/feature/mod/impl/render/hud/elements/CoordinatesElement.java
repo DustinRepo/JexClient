@@ -1,11 +1,11 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Vec3d;
 
 public class CoordinatesElement extends HudElement{
     
@@ -14,14 +14,14 @@ public class CoordinatesElement extends HudElement{
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (!isVisible())
             return;
         super.render(matrixStack);
         float longest = 0;
 
-        Vec3 pos = Wrapper.INSTANCE.getLocalPlayer().position();
-        String coordString = String.format("XYZ\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.x(), pos.y(), pos.z());
+        Vec3d pos = Wrapper.INSTANCE.getLocalPlayer().getPos();
+        String coordString = String.format("XYZ\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.getX(), pos.getY(), pos.getZ());
         float strLength = FontHelper.INSTANCE.getStringWidth(coordString);
         float strX = isLeftSide() ? getX() + 3 : getX() + getWidth() - strLength;
         float strY = getY() + (isTopSide() ? 2.5f : 12.5f);
@@ -30,11 +30,11 @@ public class CoordinatesElement extends HudElement{
         FontHelper.INSTANCE.drawWithShadow(matrixStack, coordString, strX, strY, ColorHelper.INSTANCE.getClientColor());
 
         if (getHud().netherCoords) {
-            double coordScale = Wrapper.INSTANCE.getLocalPlayer().clientLevel.dimensionType().coordinateScale();
+            double coordScale = Wrapper.INSTANCE.getLocalPlayer().clientWorld.getDimension().coordinateScale();
             if (coordScale != 1.0D) {
-                coordString = String.format("Overworld\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.x() * coordScale, pos.y() * coordScale, pos.z() * coordScale);
+                coordString = String.format("Overworld\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.getX() * coordScale, pos.getY() * coordScale, pos.getZ() * coordScale);
             } else {
-                coordString = String.format("Nether\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.x() / 8, pos.y(), pos.z() / 8);
+                coordString = String.format("Nether\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.getX() / 8, pos.getY(), pos.getZ() / 8);
             }
             strLength = FontHelper.INSTANCE.getStringWidth(coordString);
             strX = isLeftSide() ? getX() + 3 : getX() + getWidth() - strLength;

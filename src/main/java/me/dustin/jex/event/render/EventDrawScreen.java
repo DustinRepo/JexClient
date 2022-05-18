@@ -1,16 +1,16 @@
 package me.dustin.jex.event.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.Event;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class EventDrawScreen extends Event {
 
 	private final Screen screen;
-	private final PoseStack poseStack;
+	private final MatrixStack poseStack;
 	private final Mode mode;
 
-	public EventDrawScreen(Screen screen, PoseStack poseStack, Mode mode) {
+	public EventDrawScreen(Screen screen, MatrixStack poseStack, Mode mode) {
 		this.screen = screen;
 		this.poseStack = poseStack;
 		this.mode = mode;
@@ -20,7 +20,7 @@ public class EventDrawScreen extends Event {
 		return screen;
 	}
 
-	public PoseStack getPoseStack() {
+	public MatrixStack getPoseStack() {
 		return poseStack;
 	}
 

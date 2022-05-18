@@ -11,8 +11,8 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.feature.command.core.Command;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.network.protocol.game.ClientboundCommandSuggestionsPacket;
-import net.minecraft.network.protocol.game.ServerboundCommandSuggestionPacket;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import org.apache.commons.lang3.StringUtils;
 
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -28,7 +28,7 @@ public class CommandPlugins extends Command {
 
 	@EventPointer
 	private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-		ClientboundCommandSuggestionsPacket commandSuggestionsS2CPacket = (ClientboundCommandSuggestionsPacket)event.getPacket();
+		CommandSuggestionsS2CPacket commandSuggestionsS2CPacket = (CommandSuggestionsS2CPacket)event.getPacket();
 		Suggestions suggestions = commandSuggestionsS2CPacket.getSuggestions();
 		List<String> commandsList = new ArrayList<>();
 		suggestions.getList().forEach(suggestion -> {
@@ -42,7 +42,7 @@ public class CommandPlugins extends Command {
 		String message = "Plugins" + " (\247b" + commandsList.size() + "\2477)\247f: \247b" + StringUtils.join(commandsList, "\2477, \247b");
 		ChatHelper.INSTANCE.addClientMessage(message);
 		EventManager.unregister(this);
-	}, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ClientboundCommandSuggestionsPacket.class));
+	}, new ServerPacketFilter(EventPacketReceive.Mode.PRE, CommandSuggestionsS2CPacket.class));
 
 
 	@Override
@@ -54,7 +54,7 @@ public class CommandPlugins extends Command {
 	public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
 		ChatHelper.INSTANCE.addClientMessage("Grabbing server plugins");
 		EventManager.register(this);
-		NetworkHelper.INSTANCE.sendPacket(new ServerboundCommandSuggestionPacket(0, "/"));
+		NetworkHelper.INSTANCE.sendPacket(new RequestCommandCompletionsC2SPacket(0, "/"));
 		return 1;
 	}
 }

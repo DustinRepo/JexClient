@@ -27,7 +27,7 @@ public class Zoom extends Feature {
     @Override
     public void onEnable() {
         if (Wrapper.INSTANCE.getOptions() != null)
-            savedFOV = Wrapper.INSTANCE.getOptions().fov().get();
+            savedFOV = Wrapper.INSTANCE.getOptions().getFov().getValue();
         super.onEnable();
     }
 
@@ -39,32 +39,32 @@ public class Zoom extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if(KeyboardHelper.INSTANCE.isPressed(zoomKey) && Wrapper.INSTANCE.getMinecraft().screen == null) {
+        if(KeyboardHelper.INSTANCE.isPressed(zoomKey) && Wrapper.INSTANCE.getMinecraft().currentScreen == null) {
             if(resetFOV) {
                 this.resetFOV = false;
-                this.savedFOV = Wrapper.INSTANCE.getOptions().fov().get();
+                this.savedFOV = Wrapper.INSTANCE.getOptions().getFov().getValue();
             }
             int zoomFov = (int)(30 - (6 * zoomLevel));
             if (zoomFov == 0)
                 zoomFov = 1;
-            if(Wrapper.INSTANCE.getOptions().fov().get() > zoomFov) {
-                Wrapper.INSTANCE.getOptions().fov().set(zoomFov);
+            if(Wrapper.INSTANCE.getOptions().getFov().getValue() > zoomFov) {
+                Wrapper.INSTANCE.getOptions().getFov().setValue(zoomFov);
                 if (mouseSmooth)
-                    Wrapper.INSTANCE.getOptions().smoothCamera = true;
+                    Wrapper.INSTANCE.getOptions().smoothCameraEnabled = true;
             }
         }
         else
         {
             if(!resetFOV || !getState()) {
-                if (Wrapper.INSTANCE.getOptions().fov().get() < savedFOV) {
-                    Wrapper.INSTANCE.getOptions().fov().set(savedFOV);
+                if (Wrapper.INSTANCE.getOptions().getFov().getValue() < savedFOV) {
+                    Wrapper.INSTANCE.getOptions().getFov().setValue(savedFOV);
                     if (mouseSmooth)
-                        Wrapper.INSTANCE.getOptions().smoothCamera = false;
+                        Wrapper.INSTANCE.getOptions().smoothCameraEnabled = false;
                 }
                 if (!getState()) {
                     super.onDisable();
                     if (mouseSmooth)
-                        Wrapper.INSTANCE.getOptions().smoothCamera = false;
+                        Wrapper.INSTANCE.getOptions().smoothCameraEnabled = false;
                 }
             } else
                 this.resetFOV = true;
@@ -73,7 +73,7 @@ public class Zoom extends Feature {
 
     @EventPointer
     private final EventListener<EventSetOptionInstance> eventSetSimpleOptionEventListener = new EventListener<>(event -> {
-        if (event.getOptionInstance() == Wrapper.INSTANCE.getOptions().fov())
+        if (event.getOptionInstance() == Wrapper.INSTANCE.getOptions().getFov())
             event.setShouldIgnoreCheck(true);
     });
 }

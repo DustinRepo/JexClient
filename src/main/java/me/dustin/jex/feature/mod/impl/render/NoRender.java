@@ -8,17 +8,17 @@ import me.dustin.jex.event.world.EventTickParticle;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
+import net.minecraft.block.entity.BannerBlockEntity;
+import net.minecraft.block.entity.CampfireBlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.entity.EnchantingTableBlockEntity;
+import net.minecraft.block.entity.EnderChestBlockEntity;
+import net.minecraft.block.entity.HopperBlockEntity;
+import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.particle.*;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.entity.item.FallingBlockEntity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
-import net.minecraft.world.level.block.entity.CampfireBlockEntity;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraft.world.level.block.entity.EnchantmentTableBlockEntity;
-import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
-import net.minecraft.world.level.block.entity.HopperBlockEntity;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.boss.WitherEntity;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Don't render specific entities/blocks to improve fps")
 public class NoRender extends Feature {
@@ -58,7 +58,7 @@ public class NoRender extends Feature {
     private final EventListener<EventRenderEntity> eventRenderEntityEventListener = new EventListener<>(event -> {
         if (event.getEntity() instanceof ItemEntity && item)
             event.cancel();
-        if (event.getEntity() instanceof WitherBoss && withers)
+        if (event.getEntity() instanceof WitherEntity && withers)
             event.cancel();
         if (event.getEntity() instanceof FallingBlockEntity && fallingBlocks)
             event.cancel();
@@ -73,7 +73,7 @@ public class NoRender extends Feature {
             event.cancel();
         if (event.blockEntity instanceof EnderChestBlockEntity && endchests)
             event.cancel();
-        if (event.blockEntity instanceof EnchantmentTableBlockEntity && enchantbooks)
+        if (event.blockEntity instanceof EnchantingTableBlockEntity && enchantbooks)
             event.cancel();
         if (event.blockEntity instanceof BannerBlockEntity && banners)
             event.cancel();
@@ -87,16 +87,16 @@ public class NoRender extends Feature {
     private final EventListener<EventTickParticle> eventTickParticleEventListener = new EventListener<>(event -> {
         if (!particles)
             return;
-        if (event.getParticle() instanceof ExplodeParticle || event.getParticle() instanceof SmokeParticle || event.getParticle() instanceof CampfireSmokeParticle && smoke) {
+        if (event.getParticle() instanceof ExplosionSmokeParticle || event.getParticle() instanceof FireSmokeParticle || event.getParticle() instanceof CampfireSmokeParticle && smoke) {
             event.cancel();
         }
-        if (event.getParticle() instanceof HugeExplosionParticle || event.getParticle() instanceof HugeExplosionSeedParticle && explosions) {
+        if (event.getParticle() instanceof ExplosionLargeParticle || event.getParticle() instanceof ExplosionEmitterParticle && explosions) {
             event.cancel();
         }
-        if (event.getParticle() instanceof FireworkParticles.Starter || event.getParticle() instanceof FireworkParticles.Starter && fireworks) {
+        if (event.getParticle() instanceof FireworksSparkParticle.FireworkParticle || event.getParticle() instanceof FireworksSparkParticle.FireworkParticle && fireworks) {
             event.cancel();
         }
-        if (event.getParticle() instanceof TerrainParticle && blockBreak) {
+        if (event.getParticle() instanceof BlockDustParticle && blockBreak) {
             event.cancel();
         }
     });

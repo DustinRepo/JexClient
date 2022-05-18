@@ -13,10 +13,8 @@ import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.network.*;
-import net.minecraft.network.protocol.PacketFlow;
-
 import java.net.InetSocketAddress;
 
 public enum ProxyHelper {
@@ -52,9 +50,9 @@ public enum ProxyHelper {
             String string = "Current Proxy: " + proxy.host() + ":" + proxy.port();
             FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), string, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(string) - 2, 22, ColorHelper.INSTANCE.getClientColor());
         }
-    }, new DrawScreenFilter(EventDrawScreen.Mode.POST, JoinMultiplayerScreen.class));
+    }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
 
-    public Connection clientConnection;
+    public ClientConnection clientConnection;
     public final ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {
         protected void initChannel(Channel channel) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
@@ -68,10 +66,10 @@ public enum ProxyHelper {
             channel.config().setOption(ChannelOption.TCP_NODELAY, true);
 
             channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
-            channel.pipeline().addLast("splitter", new Varint21FrameDecoder());
-            channel.pipeline().addLast("decoder", new PacketDecoder(PacketFlow.CLIENTBOUND));
-            channel.pipeline().addLast("prepender", new Varint21LengthFieldPrepender());
-            channel.pipeline().addLast("encoder", new PacketEncoder(PacketFlow.SERVERBOUND));
+            channel.pipeline().addLast("splitter", new SplitterHandler());
+            channel.pipeline().addLast("decoder", new DecoderHandler(NetworkSide.CLIENTBOUND));
+            channel.pipeline().addLast("prepender", new SizePrepender());
+            channel.pipeline().addLast("encoder", new PacketEncoder(NetworkSide.SERVERBOUND));
             channel.pipeline().addLast("packet_handler", clientConnection);
         }
     };

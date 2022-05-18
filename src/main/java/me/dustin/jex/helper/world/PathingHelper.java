@@ -10,9 +10,9 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
 import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShapes;
 
 public enum PathingHelper {
     INSTANCE;
@@ -126,7 +126,7 @@ public enum PathingHelper {
 
         @Override
         protected boolean checkDone() {
-            return done = WorldHelper.INSTANCE.getBlockState(current.below()).getCollisionShape(Wrapper.INSTANCE.getWorld(), current.below()) != Shapes.empty() && ClientMathHelper.INSTANCE.getDistance(Vec3.atLowerCornerOf(getGoal()), Vec3.atLowerCornerOf(current)) <= this.range;
+            return done = WorldHelper.INSTANCE.getBlockState(current.down()).getCollisionShape(Wrapper.INSTANCE.getWorld(), current.down()) != VoxelShapes.empty() && ClientMathHelper.INSTANCE.getDistance(Vec3d.of(getGoal()), Vec3d.of(current)) <= this.range;
         }
     }
 

@@ -6,7 +6,7 @@ import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.network.WebHelper;
-import net.minecraft.client.User;
+import net.minecraft.client.util.Session;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -38,13 +38,13 @@ public class MSLoginHelper {
         this.updateAccount = updateAccount;
     }
 
-    public void loginThread(Consumer<User> sessionConsumer, Consumer<String> statusConsumer) {
+    public void loginThread(Consumer<Session> sessionConsumer, Consumer<String> statusConsumer) {
         new Thread(() -> {
             sessionConsumer.accept(login(statusConsumer));
         }).start();
     }
 
-    public User login(Consumer<String> statusConsumer) {
+    public Session login(Consumer<String> statusConsumer) {
         try {
             if (getAccount().getRefreshToken() != null && !getAccount().getRefreshToken().isEmpty()) {
                 statusConsumer.accept("Attemping to get new Bearer Token");
@@ -68,7 +68,7 @@ public class MSLoginHelper {
                         if (updateAccount) {
                             updateAccount(name, uuid, getAccount().getAccessToken(), getAccount().getRefreshToken());
                         }
-                        return new User(name, uuid, getAccount().getAccessToken(), Optional.of(""), Optional.of(""), User.Type.MSA);
+                        return new Session(name, uuid, getAccount().getAccessToken(), Optional.of(""), Optional.of(""), Session.AccountType.MSA);
                     }
                 } else {
                     statusConsumer.accept("Could not authenicate MS Store");
@@ -134,7 +134,7 @@ public class MSLoginHelper {
                 updateAccount(name, uuid, bearerToken, refreshToken);
             }
 
-            return new User(name, uuid, bearerToken, Optional.of(""), Optional.of(""), User.Type.MSA);
+            return new Session(name, uuid, bearerToken, Optional.of(""), Optional.of(""), Session.AccountType.MSA);
         } catch (Exception e) {
             e.printStackTrace();
             statusConsumer.accept(e.getMessage());

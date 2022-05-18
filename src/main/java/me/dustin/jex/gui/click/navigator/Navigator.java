@@ -15,13 +15,13 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import java.util.ArrayList;
 
 public class Navigator extends Screen {
@@ -30,12 +30,12 @@ public class Navigator extends Screen {
     private String lastSearch;
 
     private ArrayList<NavigatorFeatureButton> featureButtons = new ArrayList<>();
-    private EditBox searchBar;
+    private TextFieldWidget searchBar;
     private Scrollbar scrollbar;
     private boolean movingScrollbar;
 
     public Navigator() {
-        super(Component.nullToEmpty("Navigator"));
+        super(Text.of("Navigator"));
     }
 
     @Override
@@ -46,17 +46,17 @@ public class Navigator extends Screen {
         navigatorY = height / 2.f - (navigatorHeight / 2.f);
         loadFeatureButtons("");
         searchBar.active = true;
-        searchBar.setFocus(true);
+        searchBar.setTextFieldFocused(true);
 
-        this.addRenderableWidget(new Button(2, height - 22, 100, 20, Component.nullToEmpty("Load"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, Text.of("Load"), button -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }));
-        this.addRenderableWidget(new Button(2, height - 44, 100, 20, Component.nullToEmpty("Save"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 44, 100, 20, Text.of("Save"), button -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).saveButton();
         }));
-        this.addRenderableWidget(new Button(2, height - 66, 100, 20, Component.nullToEmpty("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? ChatFormatting.GREEN + "ON" : ChatFormatting.RED + "OFF")), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 66, 100, 20, Text.of("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")), button -> {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
-            button.setMessage(Component.nullToEmpty("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? ChatFormatting.GREEN + "ON" : ChatFormatting.RED + "OFF")));
+            button.setMessage(Text.of("Auto-Save: " + (JexClient.INSTANCE.isAutoSaveEnabled() ? Formatting.GREEN + "ON" : Formatting.RED + "OFF")));
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }));
 
@@ -76,7 +76,7 @@ public class Navigator extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (Wrapper.INSTANCE.getLocalPlayer() == null)
             renderBackground(matrices);
         Scissor.INSTANCE.cut((int)navigatorX, (int)navigatorY, (int)navigatorWidth, (int)navigatorHeight);
@@ -87,7 +87,7 @@ public class Navigator extends Screen {
         Scissor.INSTANCE.seal();
 
         searchBar.active = true;
-        searchBar.setFocus(true);
+        searchBar.setTextFieldFocused(true);
         searchBar.render(matrices, mouseX, mouseY, delta);
         if (this.scrollbar != null)
             this.scrollbar.render(matrices);
@@ -122,11 +122,11 @@ public class Navigator extends Screen {
     @Override
     public void tick() {
         searchBar.tick();
-        if (searchBar.isFocused() && lastSearch != null && !lastSearch.equalsIgnoreCase(searchBar.getValue())) {
-            String search = searchBar.getValue().toLowerCase();
+        if (searchBar.isFocused() && lastSearch != null && !lastSearch.equalsIgnoreCase(searchBar.getText())) {
+            String search = searchBar.getText().toLowerCase();
             loadFeatureButtons(search);
         }
-        lastSearch = searchBar.getValue();
+        lastSearch = searchBar.getText();
         if (movingScrollbar) {
             if (MouseHelper.INSTANCE.isMouseButtonDown(0))
                 moveScrollbar();
@@ -217,16 +217,16 @@ public class Navigator extends Screen {
             this.scrollbar = new Scrollbar(navigatorX + navigatorWidth + 2, navigatorY, 6, navigatorHeight, navigatorHeight, contentHeight, ColorHelper.INSTANCE.getClientColor());
         }
         if (this.searchBar == null) {
-            this.searchBar = new EditBox(Wrapper.INSTANCE.getTextRenderer(), (int) leftX + (int)FontHelper.INSTANCE.getStringWidth("Search: "), (int) navigatorY - 22, buttonsAmountHorizontal * (int) (buttonWidth + 5) - 5 - (int)FontHelper.INSTANCE.getStringWidth("Search: "), 20, Component.nullToEmpty(""));
-            searchBar.setBordered(false);
-            searchBar.setCanLoseFocus(false);
-            searchBar.setFocus(true);
+            this.searchBar = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) leftX + (int)FontHelper.INSTANCE.getStringWidth("Search: "), (int) navigatorY - 22, buttonsAmountHorizontal * (int) (buttonWidth + 5) - 5 - (int)FontHelper.INSTANCE.getStringWidth("Search: "), 20, Text.of(""));
+            searchBar.setDrawsBackground(false);
+            searchBar.setFocusUnlocked(false);
+            searchBar.setTextFieldFocused(true);
             //this.addSelectableChild(searchBar);
         }
     }
 
     @Override
-    public void resize(Minecraft client, int width, int height) {
+    public void resize(MinecraftClient client, int width, int height) {
         super.resize(client, width, height);
         searchBar = null;
         loadFeatureButtons("");

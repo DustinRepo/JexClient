@@ -4,7 +4,7 @@ import me.dustin.jex.gui.click.dropdown.impl.button.DropdownButton;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.util.math.MatrixStack;
 import java.util.function.Consumer;
 
 public class FlareDropdownToggleButton extends DropdownButton {
@@ -14,7 +14,7 @@ public class FlareDropdownToggleButton extends DropdownButton {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (isHovered())
             Render2DHelper.INSTANCE.fill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x40ffffff);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, getName(), getX() + 2, getY()  + (getHeight() / 2 - 4), -1);

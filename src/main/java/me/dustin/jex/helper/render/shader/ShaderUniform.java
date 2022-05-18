@@ -2,16 +2,15 @@ package me.dustin.jex.helper.render.shader;
 
 import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.math.vector.Vector2D;
-import net.minecraft.world.phys.Vec2;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
-
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector4f;
 
 public class ShaderUniform {
 
@@ -39,12 +38,12 @@ public class ShaderUniform {
         glUniform2f(location, (float)value.getX(), (float)value.getY());
     }
 
-    public final void setVec(Vec2 value) {
+    public final void setVec(Vec2f value) {
         glUniform2f(location, value.x, value.y);
     }
 
     public final void setVec(Vector4f value) {
-        glUniform4f(location, value.x(), value.y(), value.z(), value.w());
+        glUniform4f(location, value.getX(), value.getY(), value.getZ(), value.getW());
     }
 
     public void setMatrix(FloatBuffer matrix) {
@@ -58,13 +57,13 @@ public class ShaderUniform {
     public void setMatrix(Matrix4f matrix) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
-            matrix.store(floatBuffer, true);
+            matrix.write(floatBuffer, true);
             glUniformMatrix4fv(location, false, floatBuffer);
         }
     }
 
-    public final void setVec(Vec3 value) {
-        glUniform3f(location, (float) value.x(), (float) value.y(), (float) value.z());
+    public final void setVec(Vec3d value) {
+        glUniform3f(location, (float) value.getX(), (float) value.getY(), (float) value.getZ());
     }
 
     public final String getName() {

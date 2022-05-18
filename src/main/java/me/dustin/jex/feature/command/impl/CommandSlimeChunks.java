@@ -15,9 +15,9 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.SeedHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 
 @Cmd(name = "slimechunks", description = "Show slime chunks with a given seed", syntax = ".slimechunk <seed>")
@@ -39,14 +39,14 @@ public class CommandSlimeChunks extends Command {
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         ArrayList<Render3DHelper.BoxStorage> slimeChunks = new ArrayList<>();
-       int renderDistance = Wrapper.INSTANCE.getOptions().renderDistance().get();
+       int renderDistance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
        int divBy2 = renderDistance / 2 + 1;
         for (int x = -divBy2; x < divBy2; x++) {
             for (int z = -divBy2; z < divBy2; z++) {
-                ChunkPos chunkPos = new ChunkPos(Wrapper.INSTANCE.getLocalPlayer().chunkPosition().x + x, Wrapper.INSTANCE.getLocalPlayer().chunkPosition().z + z);
+                ChunkPos chunkPos = new ChunkPos(Wrapper.INSTANCE.getLocalPlayer().getChunkPos().x + x, Wrapper.INSTANCE.getLocalPlayer().getChunkPos().z + z);
                 if (WorldHelper.INSTANCE.isSlimeChunk(seed, chunkPos.x, chunkPos.z)) {
-                    Vec3 renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, 0, chunkPos.z * 16);
-                    AABB box = new AABB(0, -64, 0, 16, 40, 16).move(renderVec);
+                    Vec3d renderVec = Render3DHelper.INSTANCE.getRenderPosition(chunkPos.x * 16, 0, chunkPos.z * 16);
+                    Box box = new Box(0, -64, 0, 16, 40, 16).offset(renderVec);
                     slimeChunks.add(new Render3DHelper.BoxStorage(box, 0xff00ff00));
                 }
             }

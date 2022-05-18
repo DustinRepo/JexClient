@@ -7,11 +7,12 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.option.annotate.Op;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.*;
+
 import java.util.Map;
 
 @Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically swap to the best weapon when attacking.")
@@ -32,7 +33,7 @@ public class AutoWeapon extends Feature {
         float str = 1;
         ItemStack stack = null;
         for (int i = 0; i < 9; i++) {
-            ItemStack stackInSlot = InventoryHelper.INSTANCE.getInventory().getItem(i);
+            ItemStack stackInSlot = InventoryHelper.INSTANCE.getInventory().getStack(i);
             if (stackInSlot != null) {
                 if (!isGoodItem(stackInSlot.getItem()))
                     continue;
@@ -53,7 +54,7 @@ public class AutoWeapon extends Feature {
             }
 
         }
-        if (slot != -1 && slot != InventoryHelper.INSTANCE.getInventory().selected) {
+        if (slot != -1 && slot != InventoryHelper.INSTANCE.getInventory().selectedSlot) {
             InventoryHelper.INSTANCE.setSlot(slot, true, true);
         }
     });
@@ -62,7 +63,7 @@ public class AutoWeapon extends Feature {
         return switch (mode.toLowerCase()) {
             case "sword" -> item instanceof SwordItem;
             case "sword&axe" -> item instanceof SwordItem || item instanceof AxeItem;
-            case "all tools" -> item instanceof TieredItem;
+            case "all tools" -> item instanceof ToolItem;
             default -> false;
         };
     }
@@ -70,16 +71,16 @@ public class AutoWeapon extends Feature {
     private float getAdjustedDamage(ItemStack itemStack) {
         float damage = 1;
         if (itemStack.getItem() instanceof SwordItem itemSword) {
-            damage = itemSword.getDamage();
-        } else if (itemStack.getItem() instanceof DiggerItem miningToolItem) {
+            damage = itemSword.getAttackDamage();
+        } else if (itemStack.getItem() instanceof MiningToolItem miningToolItem) {
             damage = miningToolItem.getAttackDamage();
         }
         return damage + getSharpnessModifier(itemStack);
     }
 
     public float getSharpnessModifier(ItemStack itemStack) {
-        if (itemStack.isEnchanted()) {
-            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.getEnchantments(itemStack);
+        if (itemStack.hasEnchantments()) {
+            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.get(itemStack);
             if (equippedEnchants.containsKey(Enchantments.SHARPNESS)) {
                 int level = equippedEnchants.get(Enchantments.SHARPNESS);
                 return 0.5f * level + 0.5f;

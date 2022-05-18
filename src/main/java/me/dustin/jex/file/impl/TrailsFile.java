@@ -6,8 +6,8 @@ import me.dustin.jex.file.core.ConfigFile;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.file.YamlHelper;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +26,7 @@ public class TrailsFile extends ConfigFile {
             return;
         parsedyaml.forEach((s, o) -> {
             Map<String, Object> particleData = (Map<String, Object>) o;
-            ResourceLocation id = new ResourceLocation((String)particleData.get("mod"), s);
+            Identifier id = new Identifier((String)particleData.get("mod"), s);
             Trail.getParticles().add(Registry.PARTICLE_TYPE.get(id));
         });
     }
@@ -36,7 +36,7 @@ public class TrailsFile extends ConfigFile {
         Map<String, Object> yamlMap = new HashMap<>();
         Trail.getParticles().forEach(particleType -> {
             Map<String, Object> particleData = new HashMap<>();
-            ResourceLocation id = Registry.PARTICLE_TYPE.getKey(particleType);
+            Identifier id = Registry.PARTICLE_TYPE.getId(particleType);
             particleData.put("mod", id.getNamespace() == null ? "minecraft" : id.getNamespace());
             yamlMap.put(id.getPath(), particleData);
         });
@@ -58,7 +58,7 @@ public class TrailsFile extends ConfigFile {
             JsonArray array = JsonHelper.INSTANCE.prettyGson.fromJson(stringBuffer.toString(), JsonArray.class);
             for (int i = 0; i < array.size(); i++) {
                 String particle = array.get(i).getAsString();
-                Trail.getParticles().add(Registry.PARTICLE_TYPE.get(new ResourceLocation(particle)));
+                Trail.getParticles().add(Registry.PARTICLE_TYPE.get(new Identifier(particle)));
             }
             in.close();
             file.delete();

@@ -1,18 +1,18 @@
 package bedrockminer.utils;
 
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 
 public class Messager {
     public static void actionBar(String message){
-        Minecraft minecraftClient = Minecraft.getInstance();
-        minecraftClient.gui.setOverlayMessage(Component.nullToEmpty(message),false);
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        minecraftClient.inGameHud.setOverlayMessage(Text.of(message),false);
     }
 
     public static void chat(String message){
-        Minecraft minecraftClient = Minecraft.getInstance();
-        minecraftClient.gui.getChat().addMessage(Component.nullToEmpty(message));
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        minecraftClient.inGameHud.getChatHud().addMessage(Text.of(message));
     }
 }
 

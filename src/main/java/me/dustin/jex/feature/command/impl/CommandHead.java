@@ -8,9 +8,9 @@ import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 
 @Cmd(name = "head", syntax = ".head <player>", description = "Get the head of a chosen player.")
 public class CommandHead extends Command {
@@ -28,10 +28,10 @@ public class CommandHead extends Command {
         }
         String playerName = PlayerNameArgumentType.getPlayerName(context, "player");
         ItemStack itemStack = new ItemStack(Items.PLAYER_HEAD);
-        CompoundTag tag = new CompoundTag();
+        NbtCompound tag = new NbtCompound();
         tag.putString("SkullOwner", playerName);
-        itemStack.setTag(tag);
-        Wrapper.INSTANCE.getMultiPlayerGameMode().handleCreativeModeItemAdd(itemStack, 36);
+        itemStack.setNbt(tag);
+        Wrapper.INSTANCE.getMultiPlayerGameMode().clickCreativeStack(itemStack, 36);
         ChatHelper.INSTANCE.addClientMessage("Done! You now have " + playerName + "'s head.");
         return 1;
     }

@@ -1,32 +1,32 @@
 package me.dustin.jex.helper.render.shader;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.renderer.PostChain;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceProvider;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.client.render.Shader;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.resource.ResourceFactory;
+import net.minecraft.util.Identifier;
 
 public enum ShaderHelper {
     INSTANCE;
-    public RenderTarget storageFBO;
-    public PostChain storageShader;
-    public RenderTarget boxOutlineFBO;
-    public PostChain boxOutlineShader;
-    public final ResourceLocation identifier_1 = new ResourceLocation("jex", "shaders/entity_outline.json");
+    public Framebuffer storageFBO;
+    public ShaderEffect storageShader;
+    public Framebuffer boxOutlineFBO;
+    public ShaderEffect boxOutlineShader;
+    public final Identifier identifier_1 = new Identifier("jex", "shaders/entity_outline.json");
 
-    private static ShaderInstance rainbowEnchantShader;
-    private static ShaderInstance translucentShader;
-    private static ShaderInstance testShader;
+    private static Shader rainbowEnchantShader;
+    private static Shader translucentShader;
+    private static Shader testShader;
 
     public void drawStorageFBO() {
         if (canDrawFBO()) {
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-            storageFBO.blitToScreen(Wrapper.INSTANCE.getWindow().getWidth(), Wrapper.INSTANCE.getWindow().getHeight(), false);
+            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
+            storageFBO.draw(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
             RenderSystem.disableBlend();
         }
     }
@@ -34,18 +34,18 @@ public enum ShaderHelper {
     public void drawBoxOutlineFBO() {
         if (canDrawFBO()) {
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-            boxOutlineFBO.blitToScreen(Wrapper.INSTANCE.getWindow().getWidth(), Wrapper.INSTANCE.getWindow().getHeight(), false);
+            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
+            boxOutlineFBO.draw(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
             RenderSystem.disableBlend();
         }
     }
 
     public void onResized(int int_1, int int_2) {
         if (storageShader != null) {
-            storageShader.resize(int_1, int_2);
+            storageShader.setupDimensions(int_1, int_2);
         }
         if (boxOutlineShader != null) {
-            boxOutlineShader.resize(int_1, int_2);
+            boxOutlineShader.setupDimensions(int_1, int_2);
         }
     }
     public boolean canDrawFBO() {
@@ -61,12 +61,12 @@ public enum ShaderHelper {
             boxOutlineShader.close();
         }
         try {
-            storageShader = new PostChain(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getMainRenderTarget(), identifier_1);
-            storageShader.resize(Wrapper.INSTANCE.getWindow().getWidth(), Wrapper.INSTANCE.getWindow().getHeight());
-            storageFBO = storageShader.getTempTarget("final");
-            boxOutlineShader = new PostChain(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getMainRenderTarget(), identifier_1);
-            boxOutlineShader.resize(Wrapper.INSTANCE.getWindow().getWidth(), Wrapper.INSTANCE.getWindow().getHeight());
-            boxOutlineFBO = boxOutlineShader.getTempTarget("final");
+            storageShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
+            storageShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
+            storageFBO = storageShader.getSecondaryTarget("final");
+            boxOutlineShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
+            boxOutlineShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
+            boxOutlineFBO = boxOutlineShader.getSecondaryTarget("final");
         } catch (Exception var3) {
             storageShader = null;
             storageFBO = null;
@@ -74,11 +74,11 @@ public enum ShaderHelper {
 
     }
 
-    public static void loadCustomMCShaders(ResourceProvider factory) {
+    public static void loadCustomMCShaders(ResourceFactory factory) {
         try {
-            rainbowEnchantShader = new ShaderInstance(factory, "jex:rainbow_enchant", DefaultVertexFormat.POSITION_TEX);
-            translucentShader = new ShaderInstance(factory, "jex:translucent", DefaultVertexFormat.BLOCK);
-            testShader = new ShaderInstance(factory, "jex:test", DefaultVertexFormat.POSITION_COLOR);
+            rainbowEnchantShader = new Shader(factory, "jex:rainbow_enchant", VertexFormats.POSITION_TEXTURE);
+            translucentShader = new Shader(factory, "jex:translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+            testShader = new Shader(factory, "jex:test", VertexFormats.POSITION_COLOR);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -93,15 +93,15 @@ public enum ShaderHelper {
         }
     }
 
-    public static ShaderInstance getRainbowEnchantShader() {
+    public static Shader getRainbowEnchantShader() {
         return rainbowEnchantShader;
     }
 
-    public static ShaderInstance getTranslucentShader() {
+    public static Shader getTranslucentShader() {
         return translucentShader;
     }
 
-    public static ShaderInstance getTestShader() {
+    public static Shader getTestShader() {
         return testShader;
     }
 

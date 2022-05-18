@@ -9,14 +9,14 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 import me.dustin.jex.feature.option.annotate.Op;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -49,12 +49,12 @@ public class SuperheroFX extends Feature{
             Random random = new Random();
             for (int j = 0; j < (1 +random.nextInt(particleCount)); j++) {
                 FXType type = FXType.values()[random.nextInt(FXType.values().length)];
-                float sideOffset = livingEntity.getBbWidth() / 1.5f;
-                float heightOffset = livingEntity.getBbHeight() / 2;
+                float sideOffset = livingEntity.getWidth() / 1.5f;
+                float heightOffset = livingEntity.getHeight() / 2;
                 double x = livingEntity.getX() - sideOffset + (random.nextDouble() * (sideOffset * 2));
-                double y = livingEntity.getY() + (double) (livingEntity.getBbHeight() / 2) - heightOffset + (random.nextFloat() * (heightOffset * 2));
+                double y = livingEntity.getY() + (double) (livingEntity.getHeight() / 2) - heightOffset + (random.nextFloat() * (heightOffset * 2));
                 double z = livingEntity.getZ() - sideOffset + (random.nextDouble() * (sideOffset * 2));
-                Vec3 vec3d = new Vec3(x, y, z);
+                Vec3d vec3d = new Vec3d(x, y, z);
                 KapowParticle kapowParticle = new KapowParticle(vec3d, type);
                 kapowParticle.setTwoDPosition(Render2DHelper.INSTANCE.to2D(kapowParticle.getPosition(), event.getPoseStack()));
                 particles.add(kapowParticle);
@@ -77,45 +77,45 @@ public class SuperheroFX extends Feature{
     });
 
     public class KapowParticle {
-        private final ResourceLocation identifier;
-        private Vec3 position;
-        private Vec3 twoDPosition;
+        private final Identifier identifier;
+        private Vec3d position;
+        private Vec3d twoDPosition;
         private FXType fxType;
         private int age = 200;
         private final StopWatch stopWatch;
 
-        public KapowParticle(Vec3 position, FXType fxType) {
+        public KapowParticle(Vec3d position, FXType fxType) {
             this.position = position;
             this.fxType = fxType;
-            this.identifier = new ResourceLocation("jex", "comic/" + fxType.name().toLowerCase() + ".png");
+            this.identifier = new Identifier("jex", "comic/" + fxType.name().toLowerCase() + ".png");
             stopWatch = new StopWatch();
             stopWatch.reset();
         }
 
-        public void render(PoseStack matrixStack) {
+        public void render(MatrixStack matrixStack) {
             if (stopWatch.hasPassed(maxAge))
                 this.age = 0;
             if (visibleOnly) {
-                Vec3 vec3d = new Vec3(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getEyeY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
-                Vec3 vec3d2 = new Vec3(position.x(), position.y(), position.z());
-                if (vec3d2.distanceTo(vec3d) > 128.0D || Wrapper.INSTANCE.getWorld().clip(new ClipContext(vec3d, vec3d2, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, Wrapper.INSTANCE.getLocalPlayer())).getType() != HitResult.Type.MISS)
+                Vec3d vec3d = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getEyeY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
+                Vec3d vec3d2 = new Vec3d(position.getX(), position.getY(), position.getZ());
+                if (vec3d2.distanceTo(vec3d) > 128.0D || Wrapper.INSTANCE.getWorld().raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, Wrapper.INSTANCE.getLocalPlayer())).getType() != HitResult.Type.MISS)
                     return;
             }
             if (Render2DHelper.INSTANCE.isOnScreen(twoDPosition)) {
                 Render2DHelper.INSTANCE.bindTexture(identifier);
-                GuiComponent.blit(matrixStack, (int)twoDPosition.x - (size / 2), (int)twoDPosition.y - (size / 2), 0, 0, size, size, size, size);
+                DrawableHelper.drawTexture(matrixStack, (int)twoDPosition.x - (size / 2), (int)twoDPosition.y - (size / 2), 0, 0, size, size, size, size);
             }
         }
 
-        public Vec3 getPosition() {
+        public Vec3d getPosition() {
             return position;
         }
 
-        public void setPosition(Vec3 position) {
+        public void setPosition(Vec3d position) {
             this.position = position;
         }
 
-        public ResourceLocation getIdentifier() {
+        public Identifier getIdentifier() {
             return identifier;
         }
 
@@ -131,11 +131,11 @@ public class SuperheroFX extends Feature{
             return age;
         }
 
-        public Vec3 getTwoDPosition() {
+        public Vec3d getTwoDPosition() {
             return twoDPosition;
         }
 
-        public void setTwoDPosition(Vec3 twoDPosition) {
+        public void setTwoDPosition(Vec3d twoDPosition) {
             this.twoDPosition = twoDPosition;
         }
     }

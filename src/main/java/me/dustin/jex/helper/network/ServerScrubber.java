@@ -10,9 +10,9 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
-import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
-import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.NetworkState;
+import net.minecraft.util.Formatting;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -77,7 +77,7 @@ public enum ServerScrubber {
                             JsonObject playerObj = jsonArray.get(i).getAsJsonObject();
                             String playerName = playerObj.get("name").getAsString();
                             if (playerName.equalsIgnoreCase(name)) {//we found him
-                                ChatHelper.INSTANCE.addClientMessage(ChatFormatting.GOLD + playerName + ChatFormatting.GRAY + " found on server: " + ChatFormatting.AQUA + minecraftServerAddress.getIp() + ":" + minecraftServerAddress.getPort());
+                                ChatHelper.INSTANCE.addClientMessage(Formatting.GOLD + playerName + Formatting.GRAY + " found on server: " + Formatting.AQUA + minecraftServerAddress.getIp() + ":" + minecraftServerAddress.getPort());
                                 found = true;
                                 socket.close();
                             }
@@ -126,7 +126,7 @@ public enum ServerScrubber {
             writeVarInt(handshakePacket, serverAddress.getIp().length());//length of address
             handshakePacket.writeBytes(serverAddress.getIp());//address
             handshakePacket.writeShort(serverAddress.getPort());//port
-            writeVarInt(handshakePacket, ConnectionProtocol.STATUS.getId());//status id
+            writeVarInt(handshakePacket, NetworkState.STATUS.getId());//status id
 
             writeVarInt(dataOutputStream, handshakeBytes.size());//size of data
             dataOutputStream.write(handshakeBytes.toByteArray());//data

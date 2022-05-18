@@ -5,105 +5,105 @@ import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.load.impl.IChatComponent;
-import me.dustin.jex.load.impl.IClientPacketListener;
-import net.minecraft.ChatFormatting;
+import me.dustin.jex.load.impl.IChatHud;
+import me.dustin.jex.load.impl.IClientPlayNetworkHandler;
 import net.minecraft.client.ClientBrandRetriever;
-import net.minecraft.client.ClientTelemetryManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.RemotePlayer;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.PacketUtils;
-import net.minecraft.network.protocol.game.ClientboundAddPlayerPacket;
-import net.minecraft.network.protocol.game.ClientboundBlockChangedAckPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetDataPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.network.protocol.game.ClientboundCooldownPacket;
-import net.minecraft.network.protocol.game.ClientboundDisconnectPacket;
-import net.minecraft.network.protocol.game.ClientboundHorseScreenOpenPacket;
-import net.minecraft.network.protocol.game.ClientboundLightUpdatePacket;
-import net.minecraft.network.protocol.game.ClientboundLoginPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
-import net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket;
-import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
-import net.minecraft.network.protocol.game.ClientboundRotateHeadPacket;
-import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
-import net.minecraft.network.protocol.game.ClientboundSetDefaultSpawnPositionPacket;
-import net.minecraft.network.protocol.game.ClientboundSetExperiencePacket;
-import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
-import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
-import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket;
-import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
-import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
-import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.client.render.entity.PlayerModelPart;
+import net.minecraft.client.util.telemetry.TelemetrySender;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
+import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.PlayerModelPart;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import java.util.*;
 
-public class BotClientPlayNetworkHandler extends ClientPacketListener {
+public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
     private int entityId;
     private final PlayerBot playerBot;
-    public BotClientPlayNetworkHandler(Minecraft client, Screen screen, Connection connection, GameProfile profile, ClientTelemetryManager telemetrySender, PlayerBot playerBot) {
+    public BotClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile, TelemetrySender telemetrySender, PlayerBot playerBot) {
         super(client, screen, connection, profile, telemetrySender);
         this.playerBot = playerBot;
     }
 
     @Override
-    public void handleLogin(ClientboundLoginPacket packet) {
-        entityId = packet.playerId();
+    public void onGameJoin(GameJoinS2CPacket packet) {
+        entityId = packet.playerEntityId();
 
-        ClientLevel.ClientLevelData properties;
-        PacketUtils.ensureRunningOnSameThread(packet, this, Wrapper.INSTANCE.getMinecraft());
+        ClientWorld.Properties properties;
+        NetworkThreadUtils.forceMainThread(packet, this, Wrapper.INSTANCE.getMinecraft());
         //this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
         //this.registryManager = packet.registryManager();
-        if (!this.playerBot.getClientConnection().isMemoryConnection()) {
+        if (!this.playerBot.getClientConnection().isLocal()) {
             //this.registryManager.streamAllRegistries().forEach(entry -> entry.value().clearTags());
         }
-        ArrayList<ResourceKey<Level>> list = Lists.newArrayList(packet.levels());
+        ArrayList<RegistryKey<World>> list = Lists.newArrayList(packet.dimensionIds());
         Collections.shuffle(list);
-        ResourceKey<Level> registryKey = packet.dimension();
-        Holder<DimensionType> registryEntry = this.registryAccess().registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY).getHolderOrThrow(packet.dimensionType());
-        int chunkLoadDistance = packet.chunkRadius();
+        RegistryKey<World> registryKey = packet.dimensionId();
+        RegistryEntry<DimensionType> registryEntry = this.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).entryOf(packet.dimensionType());
+        int chunkLoadDistance = packet.viewDistance();
         int simulationDistance = packet.simulationDistance();
-        boolean bl = packet.isDebug();
-        boolean bl2 = packet.isFlat();
-        properties = new ClientLevel.ClientLevelData(Difficulty.NORMAL, packet.hardcore(), bl2);
-        playerBot.setWorld(new ClientLevel(this, properties, registryKey, registryEntry, chunkLoadDistance, simulationDistance, Wrapper.INSTANCE.getMinecraft()::getProfiler, Wrapper.INSTANCE.getWorldRenderer(), bl, packet.seed()));
+        boolean bl = packet.debugWorld();
+        boolean bl2 = packet.flatWorld();
+        properties = new ClientWorld.Properties(Difficulty.NORMAL, packet.hardcore(), bl2);
+        playerBot.setWorld(new ClientWorld(this, properties, registryKey, registryEntry, chunkLoadDistance, simulationDistance, Wrapper.INSTANCE.getMinecraft()::getProfiler, Wrapper.INSTANCE.getWorldRenderer(), bl, packet.sha256Seed()));
 
-        IClientPacketListener iClientPacketListener = (IClientPacketListener)this;
-        iClientPacketListener.setWorld(playerBot.getWorld());
+        IClientPlayNetworkHandler iClientPlayNetworkHandler = (IClientPlayNetworkHandler)this;
+        iClientPlayNetworkHandler.setWorld(playerBot.getWorld());
 
-        playerBot.setPlayer(new RemotePlayer(this.getLevel(), playerBot.getGameProfile(), playerBot.getKeyPair().publicKey()));
+        playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile(), playerBot.getKeyPair().publicKey()));
         if (playerBot.getPlayerInventory() == null)
-            playerBot.setPlayerInventory(new Inventory(playerBot.getPlayer()));
-        playerBot.getPlayer().level = playerBot.getWorld();
+            playerBot.setPlayerInventory(new PlayerInventory(playerBot.getPlayer()));
+        playerBot.getPlayer().world = playerBot.getWorld();
 
-        int i = packet.playerId();
+        int i = packet.playerEntityId();
         this.playerBot.getPlayer().setId(i);
-        this.playerBot.getWorld().addPlayer(i, (AbstractClientPlayer) this.playerBot.getPlayer());
-        this.playerBot.getClientConnection().send(new ServerboundCustomPayloadPacket(ServerboundCustomPayloadPacket.BRAND, new FriendlyByteBuf(Unpooled.buffer()).writeUtf(ClientBrandRetriever.getClientModName())));
+        this.playerBot.getWorld().addPlayer(i, (AbstractClientPlayerEntity) this.playerBot.getPlayer());
+        this.playerBot.getClientConnection().send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
         sendClientSettings();
     }
 
@@ -111,16 +111,16 @@ public class BotClientPlayNetworkHandler extends ClientPacketListener {
         if (this.playerBot.getPlayer() != null) {
             int i = 0;
             for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
-                if (Wrapper.INSTANCE.getOptions().isModelPartEnabled(playerModelPart))
-                    i |= playerModelPart.getMask();
+                if (Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(playerModelPart))
+                    i |= playerModelPart.getBitFlag();
             }
-            this.playerBot.getClientConnection().send(new ServerboundClientInformationPacket(Wrapper.INSTANCE.getOptions().languageCode, Wrapper.INSTANCE.getOptions().renderDistance().get(), Wrapper.INSTANCE.getOptions().chatVisibility().get(), Wrapper.INSTANCE.getOptions().chatColors().get(), i, Wrapper.INSTANCE.getOptions().mainHand().get(), Wrapper.INSTANCE.getMinecraft().isTextFilteringEnabled(), Wrapper.INSTANCE.getOptions().allowServerListing().get()));
+            this.playerBot.getClientConnection().send(new ClientSettingsC2SPacket(Wrapper.INSTANCE.getOptions().language, Wrapper.INSTANCE.getOptions().getViewDistance().getValue(), Wrapper.INSTANCE.getOptions().getChatVisibility().getValue(), Wrapper.INSTANCE.getOptions().getChatColors().getValue(), i, Wrapper.INSTANCE.getOptions().getMainArm().getValue(), Wrapper.INSTANCE.getMinecraft().shouldFilterText(), Wrapper.INSTANCE.getOptions().getAllowServerListing().getValue()));
         }
     }
 
     @Override
-    public void handleMovePlayer(ClientboundPlayerPositionPacket packet) {
-        this.getConnection().send(new ServerboundAcceptTeleportationPacket(packet.getId()));
+    public void onPlayerPositionLook(PlayerPositionLookS2CPacket packet) {
+        this.getConnection().send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
         if (playerBot.getPlayer() != null) {
             double i;
             double h;
@@ -128,171 +128,171 @@ public class BotClientPlayNetworkHandler extends ClientPacketListener {
             double f;
             double e;
             double d;
-            PacketUtils.ensureRunningOnSameThread(packet, this, Wrapper.INSTANCE.getMinecraft());
-            Player playerEntity = playerBot.getPlayer();
-            if (packet.requestDismountVehicle()) {
-                ((Player)playerEntity).removeVehicle();
+            NetworkThreadUtils.forceMainThread(packet, this, Wrapper.INSTANCE.getMinecraft());
+            PlayerEntity playerEntity = playerBot.getPlayer();
+            if (packet.shouldDismount()) {
+                ((PlayerEntity)playerEntity).dismountVehicle();
             }
-            Vec3 vec3d = playerEntity.getDeltaMovement();
-            boolean bl = packet.getRelativeArguments().contains((Object)ClientboundPlayerPositionPacket.RelativeArgument.X);
-            boolean bl2 = packet.getRelativeArguments().contains((Object)ClientboundPlayerPositionPacket.RelativeArgument.Y);
-            boolean bl3 = packet.getRelativeArguments().contains((Object)ClientboundPlayerPositionPacket.RelativeArgument.Z);
+            Vec3d vec3d = playerEntity.getVelocity();
+            boolean bl = packet.getFlags().contains((Object)PlayerPositionLookS2CPacket.Flag.X);
+            boolean bl2 = packet.getFlags().contains((Object)PlayerPositionLookS2CPacket.Flag.Y);
+            boolean bl3 = packet.getFlags().contains((Object)PlayerPositionLookS2CPacket.Flag.Z);
             if (bl) {
-                d = vec3d.x();
+                d = vec3d.getX();
                 e = playerEntity.getX() + packet.getX();
-                playerEntity.xOld += packet.getX();
+                playerEntity.lastRenderX += packet.getX();
             } else {
                 d = 0.0;
-                playerEntity.xOld = e = packet.getX();
+                playerEntity.lastRenderX = e = packet.getX();
             }
             if (bl2) {
-                f = vec3d.y();
+                f = vec3d.getY();
                 g = playerEntity.getY() + packet.getY();
-                playerEntity.yOld += packet.getY();
+                playerEntity.lastRenderY += packet.getY();
             } else {
                 f = 0.0;
-                playerEntity.yOld = g = packet.getY();
+                playerEntity.lastRenderY = g = packet.getY();
             }
             if (bl3) {
-                h = vec3d.z();
+                h = vec3d.getZ();
                 i = playerEntity.getZ() + packet.getZ();
-                playerEntity.zOld += packet.getZ();
+                playerEntity.lastRenderZ += packet.getZ();
             } else {
                 h = 0.0;
-                playerEntity.zOld = i = packet.getZ();
+                playerEntity.lastRenderZ = i = packet.getZ();
             }
-            playerEntity.setPosRaw(e, g, i);
-            playerEntity.xo = e;
-            playerEntity.yo = g;
-            playerEntity.zo = i;
-            playerEntity.setDeltaMovement(d, f, h);
-            float j = packet.getYRot();
-            float k = packet.getXRot();
-            if (packet.getRelativeArguments().contains((Object)ClientboundPlayerPositionPacket.RelativeArgument.X_ROT)) {
-                k += playerEntity.getXRot();
+            playerEntity.setPos(e, g, i);
+            playerEntity.prevX = e;
+            playerEntity.prevY = g;
+            playerEntity.prevZ = i;
+            playerEntity.setVelocity(d, f, h);
+            float j = packet.getYaw();
+            float k = packet.getPitch();
+            if (packet.getFlags().contains((Object)PlayerPositionLookS2CPacket.Flag.X_ROT)) {
+                k += playerEntity.getPitch();
             }
-            if (packet.getRelativeArguments().contains((Object)ClientboundPlayerPositionPacket.RelativeArgument.Y_ROT)) {
-                j += playerEntity.getYRot();
+            if (packet.getFlags().contains((Object)PlayerPositionLookS2CPacket.Flag.Y_ROT)) {
+                j += playerEntity.getYaw();
             }
-            playerEntity.absMoveTo(e, g, i, j, k);
-            getConnection().send(new ServerboundMovePlayerPacket.PosRot(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYRot(), playerEntity.getXRot(), false));
-            playerBot.setRotation(new Vec3(packet.getYRot(), packet.getXRot(), 0));
-            playerBot.getPlayer().setPosRaw(packet.getX(), packet.getY(), packet.getZ());
+            playerEntity.updatePositionAndAngles(e, g, i, j, k);
+            getConnection().send(new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), false));
+            playerBot.setRotation(new Vec3d(packet.getYaw(), packet.getPitch(), 0));
+            playerBot.getPlayer().setPos(packet.getX(), packet.getY(), packet.getZ());
         }
     }
 
     @Override
-    public void handlePlayerCombatKill(ClientboundPlayerCombatKillPacket packet) {
-        PacketUtils.ensureRunningOnSameThread(packet, this, Wrapper.INSTANCE.getMinecraft());
-        if (packet.getPlayerId() == entityId) {
-            send(new ServerboundClientCommandPacket(ServerboundClientCommandPacket.Action.PERFORM_RESPAWN));
-            playerBot.setPlayer(new RemotePlayer(this.getLevel(), playerBot.getGameProfile(), playerBot.getKeyPair().publicKey()));
-            playerBot.setPlayerInventory(new Inventory(playerBot.getPlayer()));
+    public void onDeathMessage(DeathMessageS2CPacket packet) {
+        NetworkThreadUtils.forceMainThread(packet, this, Wrapper.INSTANCE.getMinecraft());
+        if (packet.getEntityId() == entityId) {
+            sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
+            playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile(), playerBot.getKeyPair().publicKey()));
+            playerBot.setPlayerInventory(new PlayerInventory(playerBot.getPlayer()));
         }
     }
 
     @Override
-    public void handleDisconnect(ClientboundDisconnectPacket packet) {
-        ChatHelper.INSTANCE.addClientMessage(playerBot.getGameProfile().getName() + " disconnected for reason: " + ChatFormatting.RED + packet.getReason().getString());
+    public void onDisconnect(DisconnectS2CPacket packet) {
+        ChatHelper.INSTANCE.addClientMessage(playerBot.getGameProfile().getName() + " disconnected for reason: " + Formatting.RED + packet.getReason().getString());
         playerBot.setPlayer(null);
         playerBot.setPlayerInventory(null);
         playerBot.setConnected(false);
         PlayerBot.getPlayerBots().remove(playerBot);
-        super.handleDisconnect(packet);
+        super.onDisconnect(packet);
     }
 
     @Override
-    public void handlePlayerChat(ClientboundPlayerChatPacket packet) {
-        IChatComponent iChatComponent = (IChatComponent) Wrapper.INSTANCE.getMinecraft().gui.getChat();
+    public void onChatMessage(ChatMessageS2CPacket packet) {
+        IChatHud iChatHud = (IChatHud) Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud();
         try {
-            if (!iChatComponent.containsMessage(packet.getMessage().signedContent().getString()))
-                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", ChatFormatting.DARK_GRAY, ChatFormatting.GREEN, playerBot.getGameProfile().getName(), ChatFormatting.DARK_GRAY, ChatFormatting.WHITE, ChatFormatting.GRAY, packet.getMessage().signedContent().getString()));
+            if (!iChatHud.containsMessage(packet.getSignedMessage().signedContent().getString()))
+                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", Formatting.DARK_GRAY, Formatting.GREEN, playerBot.getGameProfile().getName(), Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY, packet.getSignedMessage().signedContent().getString()));
         } catch (Exception e){}
     }
 
     @Override
-    public void handleContainerContent(ClientboundContainerSetContentPacket packet) {
+    public void onInventory(InventoryS2CPacket packet) {
         if (playerBot.getPlayerInventory() == null)
-            playerBot.setPlayerInventory(new Inventory(playerBot.getPlayer()));
-        for (int i = 0; i < packet.getItems().size(); i++) {
-            ItemStack stack = packet.getItems().get(i);
-            playerBot.getPlayerInventory().setItem(i, stack);
+            playerBot.setPlayerInventory(new PlayerInventory(playerBot.getPlayer()));
+        for (int i = 0; i < packet.getContents().size(); i++) {
+            ItemStack stack = packet.getContents().get(i);
+            playerBot.getPlayerInventory().setStack(i, stack);
         }
     }
 
     @Override
-    public void handleItemCooldown(ClientboundCooldownPacket packet) {
+    public void onCooldownUpdate(CooldownUpdateS2CPacket packet) {
     }
 
     @Override
-    public void handleSetCarriedItem(ClientboundSetCarriedItemPacket packet) {
+    public void onUpdateSelectedSlot(UpdateSelectedSlotS2CPacket packet) {
     }
 
     @Override
-    public void handleBlockChangedAck(ClientboundBlockChangedAckPacket packet) {
+    public void onPlayerActionResponse(PlayerActionResponseS2CPacket packet) {
     }
 
     @Override
-    public void handlePlayerAbilities(ClientboundPlayerAbilitiesPacket packet) {
+    public void onPlayerAbilities(PlayerAbilitiesS2CPacket packet) {
     }
 
     @Override
-    public void handleLightUpdatePacket(ClientboundLightUpdatePacket packet) {
+    public void onLightUpdate(LightUpdateS2CPacket packet) {
     }
 
     @Override
-    public void handleSetExperience(ClientboundSetExperiencePacket packet) {
+    public void onExperienceBarUpdate(ExperienceBarUpdateS2CPacket packet) {
     }
 
     @Override
-    public void handleHorseScreenOpen(ClientboundHorseScreenOpenPacket packet) {
+    public void onOpenHorseScreen(OpenHorseScreenS2CPacket packet) {
     }
 
     @Override
-    public void handleOpenScreen(ClientboundOpenScreenPacket packet) {
+    public void onOpenScreen(OpenScreenS2CPacket packet) {
     }
 
     @Override
-    public void handleOpenBook(ClientboundOpenBookPacket packet) {
+    public void onOpenWrittenBook(OpenWrittenBookS2CPacket packet) {
     }
 
     @Override
-    public void handleOpenSignEditor(ClientboundOpenSignEditorPacket packet) {
+    public void onSignEditorOpen(SignEditorOpenS2CPacket packet) {
     }
 
     @Override
-    public void handleContainerSetSlot(ClientboundContainerSetSlotPacket packet) {
+    public void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket packet) {
     }
 
     @Override
-    public void handleContainerSetData(ClientboundContainerSetDataPacket packet) {
+    public void onScreenHandlerPropertyUpdate(ScreenHandlerPropertyUpdateS2CPacket packet) {
     }
 
     @Override
-    public void handleAddPlayer(ClientboundAddPlayerPacket packet) {
+    public void onPlayerSpawn(PlayerSpawnS2CPacket packet) {
     }
 
     @Override
-    public void handleSetSpawn(ClientboundSetDefaultSpawnPositionPacket packet) {
+    public void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet) {
     }
 
     @Override
-    public void handleTakeItemEntity(ClientboundTakeItemEntityPacket packet) {
+    public void onItemPickupAnimation(ItemPickupAnimationS2CPacket packet) {
     }
 
     @Override
-    public void handleSetTime(ClientboundSetTimePacket packet) {
+    public void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet) {
     }
 
     @Override
-    public void handleRespawn(ClientboundRespawnPacket packet) {
+    public void onPlayerRespawn(PlayerRespawnS2CPacket packet) {
     }
 
     @Override
-    public void handleSetHealth(ClientboundSetHealthPacket packet) {
+    public void onHealthUpdate(HealthUpdateS2CPacket packet) {
     }
 
     @Override
-    public void handleRotateMob(ClientboundRotateHeadPacket packet) {
+    public void onEntitySetHeadYaw(EntitySetHeadYawS2CPacket packet) {
     }
 }

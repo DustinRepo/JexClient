@@ -13,30 +13,30 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
+import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 
 public class AutoDropSelectScreen extends Screen {
 
     private ArrayList<ItemButton> allowedBlocks = new ArrayList<>();
     private ArrayList<ItemButton> notAllowedBlocks = new ArrayList<>();
-    private EditBox searchField;
-    private Button searchButton;
-    private Button addAutoDropButton;
-    private Button removeAutoDropButton;
-    private Button doneButton;
+    private TextFieldWidget searchField;
+    private ButtonWidget searchButton;
+    private ButtonWidget addAutoDropButton;
+    private ButtonWidget removeAutoDropButton;
+    private ButtonWidget doneButton;
     private Scrollbar leftScrollbar;
     private Scrollbar rightScrollbar;
     public AutoDropSelectScreen() {
-        super(Component.nullToEmpty("AutoDrop Selection"));
+        super(Text.of("AutoDrop Selection"));
     }
 
     @Override
@@ -46,50 +46,50 @@ public class AutoDropSelectScreen extends Screen {
         float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
         float buttonWidth = 198;
         loadItems();
-        searchField = new EditBox(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, Component.nullToEmpty(""));
+        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, Text.of(""));
         searchField.setVisible(true);
         searchField.setEditable(true);
-        searchButton = new Button(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, Component.nullToEmpty("Search"), button -> {
-            if (searchField.getValue().isEmpty())
+        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, Text.of("Search"), button -> {
+            if (searchField.getText().isEmpty())
                 loadItems();
             else
-                loadItems(searchField.getValue());
+                loadItems(searchField.getText());
         });
 
-        removeAutoDropButton = new Button((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Component.nullToEmpty("Remove From AutoDrop"), button -> {
+        removeAutoDropButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Remove From AutoDrop"), button -> {
             getSelectedAllowed().forEach(blockButton -> {
                 AutoDrop.INSTANCE.getItems().remove(blockButton.getItem());
                 allowedBlocks.remove(blockButton);
                 notAllowedBlocks.add(blockButton);
             });
-            if (searchField.getValue().isEmpty())
+            if (searchField.getText().isEmpty())
                 loadItems();
             else
-                loadItems(searchField.getValue());
+                loadItems(searchField.getText());
             ConfigManager.INSTANCE.get(AutoDropFile.class).write();
         });
-        addAutoDropButton = new Button((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Component.nullToEmpty("Add To AutoDrop"), button -> {
+        addAutoDropButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.of("Add To AutoDrop"), button -> {
             getSelectedNotAllowed().forEach(blockButton -> {
                 AutoDrop.INSTANCE.getItems().add(blockButton.getItem());
                 allowedBlocks.add(blockButton);
                 notAllowedBlocks.remove(blockButton);
             });
-            if (searchField.getValue().isEmpty())
+            if (searchField.getText().isEmpty())
                 loadItems();
             else
-                loadItems(searchField.getValue());
+                loadItems(searchField.getText());
             ConfigManager.INSTANCE.get(AutoDropFile.class).write();
         });
 
-        doneButton = new Button((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, Component.nullToEmpty("Done"), button -> {
+        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, Text.of("Done"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexOptionsScreen());
         });
 
-        this.addWidget(searchField);
-        this.addRenderableWidget(searchButton);
-        this.addRenderableWidget(addAutoDropButton);
-        this.addRenderableWidget(removeAutoDropButton);
-        this.addRenderableWidget(doneButton);
+        this.addSelectableChild(searchField);
+        this.addDrawableChild(searchButton);
+        this.addDrawableChild(addAutoDropButton);
+        this.addDrawableChild(removeAutoDropButton);
+        this.addDrawableChild(doneButton);
         super.init();
     }
 
@@ -100,7 +100,7 @@ public class AutoDropSelectScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
 
         this.addAutoDropButton.active = !getSelectedNotAllowed().isEmpty();
@@ -155,10 +155,10 @@ public class AutoDropSelectScreen extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.searchField.isFocused() && keyCode == GLFW.GLFW_KEY_ENTER) {
-            if (searchField.getValue().isEmpty())
+            if (searchField.getText().isEmpty())
                 loadItems();
             else
-                loadItems(searchField.getValue());
+                loadItems(searchField.getText());
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
@@ -282,11 +282,11 @@ public class AutoDropSelectScreen extends Screen {
                 continue;
             if (AutoDrop.INSTANCE.getItems().contains(item)) {
                 float y = startY + (buttonHeight * allowedCount);
-                allowedBlocks.add(new ItemButton(item, item.getDescriptionId(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
+                allowedBlocks.add(new ItemButton(item, item.getTranslationKey(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 allowedCount++;
             } else {
                 float y = startY + (buttonHeight * notAllowedCount);
-                notAllowedBlocks.add(new ItemButton(item, item.getDescriptionId(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
+                notAllowedBlocks.add(new ItemButton(item, item.getTranslationKey(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 notAllowedCount++;
             }
         }
@@ -317,18 +317,18 @@ public class AutoDropSelectScreen extends Screen {
         for (Item item : Registry.ITEM) {
             if (item == Items.AIR || item == Hat.cowboyHat.asItem() || item == Hat.topHat.asItem() || item == Hat.propeller.asItem() || item == Hat.crown.asItem() || item == Hat.halo.asItem())
                 continue;
-            String itemName = Registry.ITEM.getKey(item).toString();
+            String itemName = Registry.ITEM.getId(item).toString();
             if (itemName.contains(":"))
                 itemName = itemName.split(":")[1];
-            if (!itemName.replace("_", " ").toLowerCase().contains(searchField.getValue().toLowerCase()))
+            if (!itemName.replace("_", " ").toLowerCase().contains(searchField.getText().toLowerCase()))
                 continue;
             if (AutoDrop.INSTANCE.getItems().contains(item)) {
                 float y = startY + (buttonHeight * allowedCount);
-                allowedBlocks.add(new ItemButton(item, item.getDescriptionId(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
+                allowedBlocks.add(new ItemButton(item, item.getTranslationKey(), allowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 allowedCount++;
             } else {
                 float y = startY + (buttonHeight * notAllowedCount);
-                notAllowedBlocks.add(new ItemButton(item, item.getDescriptionId(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
+                notAllowedBlocks.add(new ItemButton(item, item.getTranslationKey(), notAllowedLeftX, y + 1, buttonWidth, buttonHeight, null));
                 notAllowedCount++;
             }
         }

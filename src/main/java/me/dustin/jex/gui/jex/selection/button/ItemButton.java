@@ -2,13 +2,13 @@ package me.dustin.jex.gui.jex.selection.button;
 
 import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.render.ButtonListener;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 
 public class ItemButton extends Button {
 
@@ -21,11 +21,11 @@ public class ItemButton extends Button {
     }
 
     @Override
-    public void render(PoseStack matrixStack) {
+    public void render(MatrixStack matrixStack) {
         if (isSelected()) {
             Render2DHelper.INSTANCE.fillAndBorder(matrixStack, this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), ColorHelper.INSTANCE.getClientColor(), 0x25ffffff, 1);
         }
-        FontHelper.INSTANCE.drawCenteredString(matrixStack, Component.translatable(item.getDescriptionId()), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 4, isEnabled() ? 0xffaaaaaa : 0xff676767);
+        FontHelper.INSTANCE.drawCenteredString(matrixStack, Text.translatable(item.getTranslationKey()), this.getX() + (this.getWidth() / 2), this.getY() + (this.getHeight() / 2) - 4, isEnabled() ? 0xffaaaaaa : 0xff676767);
 
         Render2DHelper.INSTANCE.drawItem(new ItemStack(item), (int) (getX() + 2), (int) (getY() + 2));
         if (isHovered() && isEnabled())

@@ -10,7 +10,7 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.load.impl.IShader;
-import com.mojang.blaze3d.shaders.Uniform;
+import net.minecraft.client.gl.GlUniform;
 import java.awt.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the color of the enchanment glint (or make it rainbow!)")
@@ -33,11 +33,11 @@ public class EnchantColor extends Feature{
 
     private int col;
     private final StopWatch stopWatch = new StopWatch();
-    private Uniform glintColorU;
-    private Uniform crazyRainbowU;
-    private Uniform saturationU;
-    private Uniform alphaU;
-    private Uniform mathModeU;
+    private GlUniform glintColorU;
+    private GlUniform crazyRainbowU;
+    private GlUniform saturationU;
+    private GlUniform alphaU;
+    private GlUniform mathModeU;
 
     @EventPointer
     private final EventListener<EventGetGlintShaders> eventGetGlintShadersEventListener = new EventListener<>(event -> {
@@ -53,7 +53,7 @@ public class EnchantColor extends Feature{
         }
         if (glintColorU != null) {
             Color setColor = rainbow ? ColorHelper.INSTANCE.getColorViaHue(col) : ColorHelper.INSTANCE.getColor(color);
-            glintColorU.setMat2x2(setColor.getRed() / 255.f, setColor.getGreen() / 255.f, setColor.getBlue() / 255.f, 1);
+            glintColorU.set(setColor.getRed() / 255.f, setColor.getGreen() / 255.f, setColor.getBlue() / 255.f, 1);
         }
         if (crazyRainbowU != null) {
             crazyRainbowU.set("Shader Rainbow".equalsIgnoreCase(mode) ? 1 : 0);

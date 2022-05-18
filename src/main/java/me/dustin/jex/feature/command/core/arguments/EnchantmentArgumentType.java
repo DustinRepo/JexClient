@@ -12,14 +12,14 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class EnchantmentArgumentType implements ArgumentType<Enchantment> {
    private static final Collection<String> EXAMPLES = Arrays.asList("unbreaking", "silk_touch");
-   public static final DynamicCommandExceptionType UNKNOWN_ENCHANTMENT_EXCEPTION = new DynamicCommandExceptionType((object) -> Component.translatable("enchantment.unknown", new Object[]{object}));
+   public static final DynamicCommandExceptionType UNKNOWN_ENCHANTMENT_EXCEPTION = new DynamicCommandExceptionType((object) -> Text.translatable("enchantment.unknown", new Object[]{object}));
 
    public static EnchantmentArgumentType enchantment() {
       return new EnchantmentArgumentType();
@@ -30,14 +30,14 @@ public class EnchantmentArgumentType implements ArgumentType<Enchantment> {
    }
 
    public Enchantment parse(StringReader stringReader) throws CommandSyntaxException {
-      ResourceLocation identifier = ResourceLocation.read(stringReader);
-      return (Enchantment)Registry.ENCHANTMENT.getOptional(identifier).orElseThrow(() -> {
+      Identifier identifier = Identifier.fromCommandInput(stringReader);
+      return (Enchantment)Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> {
          return UNKNOWN_ENCHANTMENT_EXCEPTION.create(identifier);
       });
    }
 
    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-      Registry.ENCHANTMENT.keySet().forEach(identifier -> {
+      Registry.ENCHANTMENT.getIds().forEach(identifier -> {
          builder.suggest(identifier.toString());
       });
       return builder.buildFuture();

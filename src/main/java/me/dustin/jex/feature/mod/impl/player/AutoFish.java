@@ -14,16 +14,16 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ClientboundSoundPacket;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.FishingHook;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -58,20 +58,20 @@ public class AutoFish extends Feature {
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
         if (hasReeled)
             return;
-        ClientboundSoundPacket soundPacket = (ClientboundSoundPacket) event.getPacket();
-        if (soundPacket.getSound().getLocation().toString().equalsIgnoreCase("minecraft:entity.fishing_bobber.splash")) {
-            if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().fishing == null)
-                Wrapper.INSTANCE.getLocalPlayer().fishing = getClosest();
-            if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getLocalPlayer().fishing == null)
+        PlaySoundS2CPacket soundPacket = (PlaySoundS2CPacket) event.getPacket();
+        if (soundPacket.getSound().getId().toString().equalsIgnoreCase("minecraft:entity.fishing_bobber.splash")) {
+            if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().fishHook == null)
+                Wrapper.INSTANCE.getLocalPlayer().fishHook = getClosest();
+            if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getLocalPlayer().fishHook == null)
                 return;
-            Vec3 vec3d = new Vec3(soundPacket.getX(), soundPacket.getY(), soundPacket.getZ());
-            if (distanceTo(Wrapper.INSTANCE.getLocalPlayer().fishing, vec3d) < 3 || !distanceCheck) {
+            Vec3d vec3d = new Vec3d(soundPacket.getX(), soundPacket.getY(), soundPacket.getZ());
+            if (distanceTo(Wrapper.INSTANCE.getLocalPlayer().fishHook, vec3d) < 3 || !distanceCheck) {
                 reel();
                 hasReeled = true;
                 stopWatch.reset();
             }
         }
-    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ClientboundSoundPacket.class));
+    }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, PlaySoundS2CPacket.class));
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -89,9 +89,9 @@ public class AutoFish extends Feature {
         }
 
 
-        FishingHook hook = getHook();
+        FishingBobberEntity hook = getHook();
 
-        if (hook != null && hook.tickCount > 100 && !sound) {
+        if (hook != null && hook.age > 100 && !sound) {
             if (lastY == -1)
                 lastY = hook.getY();
             double difference = Math.abs(hook.getY() - lastY);
@@ -122,51 +122,51 @@ public class AutoFish extends Feature {
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (!showIfOpenWater)
             return;
-            FishingHook hook = getHook();
-        if (hook != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandItem() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandItem().getItem() == Items.FISHING_ROD) {
-            Vec3 renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(hook, event.getPartialTicks());
-            AABB box = new AABB(renderPos.x - 0.2f, renderPos.y - 0.2f, renderPos.z - 0.2f, renderPos.x + 0.2f, renderPos.y + 0.2f, renderPos.z + 0.2f);
-            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), box, isOpenOrWaterAround(hook.blockPosition()) ? 0xff0000ff : 0xffff0000);
+            FishingBobberEntity hook = getHook();
+        if (hook != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.FISHING_ROD) {
+            Vec3d renderPos = Render3DHelper.INSTANCE.getEntityRenderPosition(hook, event.getPartialTicks());
+            Box box = new Box(renderPos.x - 0.2f, renderPos.y - 0.2f, renderPos.z - 0.2f, renderPos.x + 0.2f, renderPos.y + 0.2f, renderPos.z + 0.2f);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), box, isOpenOrWaterAround(hook.getBlockPos()) ? 0xff0000ff : 0xffff0000);
         }
     });
 
     void reel() {
         if (dontReel) return;
         if (PlayerHelper.INSTANCE.mainHandStack() != null && PlayerHelper.INSTANCE.mainHandStack().getItem() == Items.FISHING_ROD) {
-            PlayerHelper.INSTANCE.useItem(InteractionHand.MAIN_HAND);
-            PlayerHelper.INSTANCE.swing(InteractionHand.MAIN_HAND);
+            PlayerHelper.INSTANCE.useItem(Hand.MAIN_HAND);
+            PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
         } else if (PlayerHelper.INSTANCE.offHandStack() != null && PlayerHelper.INSTANCE.offHandStack().getItem() == Items.FISHING_ROD) {
-            PlayerHelper.INSTANCE.useItem(InteractionHand.OFF_HAND);
-            PlayerHelper.INSTANCE.swing(InteractionHand.OFF_HAND);
+            PlayerHelper.INSTANCE.useItem(Hand.OFF_HAND);
+            PlayerHelper.INSTANCE.swing(Hand.OFF_HAND);
         }
     }
 
-    public float distanceTo(Entity entity, Vec3 vec3d) {
+    public float distanceTo(Entity entity, Vec3d vec3d) {
         float float_1 = (float) (entity.getX() - vec3d.x);
         float float_2 = (float) (entity.getY() - vec3d.y);
         float float_3 = (float) (entity.getZ() - vec3d.z);
-        return Mth.sqrt(float_1 * float_1 + float_2 * float_2 + float_3 * float_3);
+        return MathHelper.sqrt(float_1 * float_1 + float_2 * float_2 + float_3 * float_3);
     }
 
-    public FishingHook getHook() {
-        FishingHook hook = Wrapper.INSTANCE.getLocalPlayer().fishing;
+    public FishingBobberEntity getHook() {
+        FishingBobberEntity hook = Wrapper.INSTANCE.getLocalPlayer().fishHook;
         if (hook == null) {
-            if (InventoryHelper.INSTANCE.getInventory().getItem(InventoryHelper.INSTANCE.getInventory().selected) != null && InventoryHelper.INSTANCE.getInventory().getItem(InventoryHelper.INSTANCE.getInventory().selected).getItem() == Items.FISHING_ROD) {
+            if (InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot) != null && InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot).getItem() == Items.FISHING_ROD) {
                 hook = getClosest();
             }
         }
         return hook;
     }
 
-    public FishingHook getClosest() {
-        FishingHook hook = null;
+    public FishingBobberEntity getClosest() {
+        FishingBobberEntity hook = null;
         if (Wrapper.INSTANCE.getWorld() == null || Wrapper.INSTANCE.getLocalPlayer() == null)
             return null;
         try {
-            for (Entity entity : Wrapper.INSTANCE.getWorld().entitiesForRendering()) {
-                if (entity instanceof FishingHook) {
-                    if (((FishingHook) entity).getOwner() == Wrapper.INSTANCE.getLocalPlayer()) {
-                        hook = (FishingHook) entity;
+            for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+                if (entity instanceof FishingBobberEntity) {
+                    if (((FishingBobberEntity) entity).getOwner() == Wrapper.INSTANCE.getLocalPlayer()) {
+                        hook = (FishingBobberEntity) entity;
                     }
                 }
             }
@@ -180,7 +180,7 @@ public class AutoFish extends Feature {
         for (int x = -2; x < 2; x++)
             for (int y = -2; y < 2; y++)
                 for (int z = -2; z < 2; z++) {
-                    BlockPos blockPos = pos.offset(x, y, z);
+                    BlockPos blockPos = pos.add(x, y, z);
                     if (WorldHelper.INSTANCE.getBlock(blockPos) != Blocks.AIR && WorldHelper.INSTANCE.getBlock(blockPos) != Blocks.WATER)
                         return false;
                 }

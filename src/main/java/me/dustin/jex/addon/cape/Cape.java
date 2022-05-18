@@ -1,9 +1,9 @@
 package me.dustin.jex.addon.cape;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.NativeImage;
 import me.dustin.jex.helper.file.FileHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.util.Identifier;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class Cape {
 
-    public static HashMap<String, ResourceLocation> capes = Maps.newHashMap();
+    public static HashMap<String, Identifier> capes = Maps.newHashMap();
 
     public static void setPersonalCape(File file) {
         if (!file.exists())
@@ -35,12 +35,12 @@ public class Cape {
             NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
             for (int x = 0; x < capeImage.getWidth(); x++) {
                 for (int y = 0; y < capeImage.getHeight(); y++) {
-                    imgNew.setPixelRGBA(x, y, capeImage.getPixelRGBA(x, y));
+                    imgNew.setColor(x, y, capeImage.getColor(x, y));
                 }
             }
 
             capeImage.close();
-            ResourceLocation id = new ResourceLocation("jex", "capes/self.png");
+            Identifier id = new Identifier("jex", "capes/self.png");
             FileHelper.INSTANCE.applyTexture(id, imgNew);
             if (capes.containsKey("self"))
                 capes.replace("self", id);
@@ -64,12 +64,12 @@ public class Cape {
         NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
         for (int x = 0; x < capeImage.getWidth(); x++) {
             for (int y = 0; y < capeImage.getHeight(); y++) {
-                imgNew.setPixelRGBA(x, y, capeImage.getPixelRGBA(x, y));
+                imgNew.setColor(x, y, capeImage.getColor(x, y));
             }
         }
 
         capeImage.close();
-        ResourceLocation id = new ResourceLocation("jex", "capes/" + uuid);
+        Identifier id = new Identifier("jex", "capes/" + uuid);
         FileHelper.INSTANCE.applyTexture(id, imgNew);
         capes.put(uuid, id);
     }

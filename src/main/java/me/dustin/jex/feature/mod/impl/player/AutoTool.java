@@ -12,12 +12,12 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.world.item.HoeItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CropBlock;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.item.HoeItem;
+import net.minecraft.item.ItemStack;
 
 @Feature.Manifest(category = Feature.Category.PLAYER, description = "Switch to the best tool for your needs.")
 public class AutoTool extends Feature {
@@ -33,15 +33,15 @@ public class AutoTool extends Feature {
         if (AutoEat.isEating || BreakingFlowController.isWorking() || !WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
             return;
         if (!Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
-            int slot = InventoryHelper.INSTANCE.getInventory().selected;
+            int slot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
             BlockState blockState = Wrapper.INSTANCE.getWorld().getBlockState(event.getBlockPos());
 
             float best = 1;
             boolean found = false;
             for (int index = 0; index < 9; index++) {
-                ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getItem(index);
+                ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(index);
                 if (blockState.getBlock() != Blocks.AIR) {
-                    float miningSpeedMultiplier = itemStack.getDestroySpeed(blockState);
+                    float miningSpeedMultiplier = itemStack.getMiningSpeedMultiplier(blockState);
                     boolean isHoeOnCrop = blockState.getBlock() instanceof CropBlock && itemStack.getItem() instanceof HoeItem;
                     //apparently axes are considerably faster than hoes for crops, but if you have a hoe odds are it's being used for those crops
                     if (isHoeOnCrop) {
@@ -54,26 +54,26 @@ public class AutoTool extends Feature {
                         found = true;
                     } else if (miningSpeedMultiplier == best && best > 1) {
                         if (isHoeOnCrop) {
-                            if (InventoryHelper.INSTANCE.compareEnchants(InventoryHelper.INSTANCE.getInventory().getItem(slot), itemStack, Enchantments.BLOCK_FORTUNE)) {
+                            if (InventoryHelper.INSTANCE.compareEnchants(InventoryHelper.INSTANCE.getInventory().getStack(slot), itemStack, Enchantments.FORTUNE)) {
                                 best = miningSpeedMultiplier;
                                 slot = index;
                             }
-                        } else if (InventoryHelper.INSTANCE.compareEnchants(InventoryHelper.INSTANCE.getInventory().getItem(slot), itemStack, Enchantments.BLOCK_EFFICIENCY)) {
+                        } else if (InventoryHelper.INSTANCE.compareEnchants(InventoryHelper.INSTANCE.getInventory().getStack(slot), itemStack, Enchantments.EFFICIENCY)) {
                             best = miningSpeedMultiplier;
                             slot = index;
                         }
                     }
                 }
             }
-            if (slot == InventoryHelper.INSTANCE.getInventory().selected && !found) {
-                if (InventoryHelper.INSTANCE.getInventory().getItem(InventoryHelper.INSTANCE.getInventory().selected).isDamageableItem() && !InventoryHelper.INSTANCE.hasEnchantment(InventoryHelper.INSTANCE.getInventory().getItem(InventoryHelper.INSTANCE.getInventory().selected), Enchantments.SILK_TOUCH)) {
+            if (slot == InventoryHelper.INSTANCE.getInventory().selectedSlot && !found) {
+                if (InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot).isDamageable() && !InventoryHelper.INSTANCE.hasEnchantment(InventoryHelper.INSTANCE.getInventory().getStack(InventoryHelper.INSTANCE.getInventory().selectedSlot), Enchantments.SILK_TOUCH)) {
                     slot = getNonDamageSlot();
                 }
             }
             if (!attackingBlock && slot != -1) {
-                savedSlot = InventoryHelper.INSTANCE.getInventory().selected;
+                savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
             }
-            if (slot != -1 && slot != InventoryHelper.INSTANCE.getInventory().selected) {
+            if (slot != -1 && slot != InventoryHelper.INSTANCE.getInventory().selectedSlot) {
                 InventoryHelper.INSTANCE.setSlot(slot, true, true);
             }
             attackingBlock = true;
@@ -82,7 +82,7 @@ public class AutoTool extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!Wrapper.INSTANCE.getMultiPlayerGameMode().isDestroying() && attackingBlock) {
+        if (!Wrapper.INSTANCE.getMultiPlayerGameMode().isBreakingBlock() && attackingBlock) {
             if (returnToSlot) {
                 InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
             }
@@ -92,8 +92,8 @@ public class AutoTool extends Feature {
 
     private int getNonDamageSlot() {
         for (int i = 0; i < 9; i++) {
-            ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getItem(i);
-            if (!itemStack.isDamageableItem())
+            ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
+            if (!itemStack.isDamageable())
                 return i;
         }
         return -1;

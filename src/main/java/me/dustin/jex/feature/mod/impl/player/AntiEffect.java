@@ -5,7 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.entity.effect.StatusEffects;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
@@ -28,16 +28,16 @@ public class AntiEffect extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (blindness)
-            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.BLINDNESS);
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.BLINDNESS);
         if (nausea)
-            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.CONFUSION);
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.NAUSEA);
         if (miningFatigue)
-            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.DIG_SLOWDOWN);
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.MINING_FATIGUE);
         if (levitation)
-            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.LEVITATION);
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.LEVITATION);
         if (slowFalling)
-            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.SLOW_FALLING);
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.SLOW_FALLING);
         if (darkness)
-            Wrapper.INSTANCE.getLocalPlayer().removeEffect(MobEffects.DARKNESS);
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.DARKNESS);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

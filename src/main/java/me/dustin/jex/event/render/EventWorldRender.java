@@ -1,14 +1,14 @@
 package me.dustin.jex.event.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.Event;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class EventWorldRender extends Event {
 
     private final float partialTicks;
-    private final PoseStack poseStack;
+    private final MatrixStack poseStack;
 
-    public EventWorldRender(PoseStack poseStack, float partialTicks2) {
+    public EventWorldRender(MatrixStack poseStack, float partialTicks2) {
         this.partialTicks = partialTicks2;
         this.poseStack = poseStack;
     }
@@ -17,7 +17,7 @@ public class EventWorldRender extends Event {
         return partialTicks;
     }
 
-    public PoseStack getPoseStack() {
+    public MatrixStack getPoseStack() {
         return poseStack;
     }
 }

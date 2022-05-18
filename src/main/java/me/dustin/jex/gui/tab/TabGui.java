@@ -1,6 +1,5 @@
 package me.dustin.jex.gui.tab;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.TickFilter;
@@ -12,6 +11,7 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import me.dustin.jex.helper.render.Render2DHelper;
 import org.lwjgl.glfw.GLFW;
 
@@ -27,13 +27,13 @@ public enum TabGui {
 
     private float modHoverY, modSpotHoverY;
 
-    public void draw(PoseStack matrixStack, float x, float y, float width, float buttonHeight) {
+    public void draw(MatrixStack matrixStack, float x, float y, float width, float buttonHeight) {
         int categoryCount = 0;
         spotHoverY = y + (categorySelect * buttonHeight);
         modSpotHoverY = y + (modSelect * buttonHeight);
 
-        float hoverY = lastHoverY + ((this.hoverY - lastHoverY) * Wrapper.INSTANCE.getMinecraft().getFrameTime());
-        float modHoverY = lastModHoverY + ((this.modHoverY - lastModHoverY) * Wrapper.INSTANCE.getMinecraft().getFrameTime());
+        float hoverY = lastHoverY + ((this.hoverY - lastHoverY) * Wrapper.INSTANCE.getMinecraft().getTickDelta());
+        float modHoverY = lastModHoverY + ((this.modHoverY - lastModHoverY) * Wrapper.INSTANCE.getMinecraft().getTickDelta());
 
         Render2DHelper.INSTANCE.fillAndBorder(matrixStack, x, y - 1, x + width, y + (Feature.Category.values().length * buttonHeight), 0x50ffffff, 0x00ffffff, 1);
         for (Feature.Category category : Feature.Category.values()) {

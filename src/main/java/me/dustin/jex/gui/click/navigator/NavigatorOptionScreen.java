@@ -19,13 +19,13 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
 import me.dustin.jex.helper.render.font.FontHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 
 public class NavigatorOptionScreen extends Screen {
@@ -41,7 +41,7 @@ public class NavigatorOptionScreen extends Screen {
     public static ArrayList<Button> options = new ArrayList<>();
 
     protected NavigatorOptionScreen(Navigator navigator, Feature feature) {
-        super(Component.nullToEmpty("Navigator"));
+        super(Text.of("Navigator"));
         this.navigator = navigator;
         this.feature = feature;
         fade = true;
@@ -75,10 +75,10 @@ public class NavigatorOptionScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (Wrapper.INSTANCE.getLocalPlayer() == null)
             renderBackground(matrices);
-        float sizeModifier = lastFadeAmount + ((fadeAmount - lastFadeAmount) * Wrapper.INSTANCE.getMinecraft().getFrameTime());
+        float sizeModifier = lastFadeAmount + ((fadeAmount - lastFadeAmount) * Wrapper.INSTANCE.getMinecraft().getTickDelta());
         Render2DHelper.INSTANCE.outlineAndFill(matrices, width / 2.f - ((navigator.navigatorWidth / 2.f) * sizeModifier), height / 2.f - ((navigator.navigatorHeight / 2.f) * sizeModifier), width / 2.f + ((navigator.navigatorWidth / 2.f) * sizeModifier), height / 2.f + ((navigator.navigatorHeight / 2.f) * sizeModifier), 0x90656565, 0x70000000);
 
         if (sizeModifier == 1) {//finished the fade in effect
@@ -178,7 +178,7 @@ public class NavigatorOptionScreen extends Screen {
     public void tick() {
         if (fade) {
             fadeAmount += 0.1f;
-            fadeAmount = Mth.clamp(fadeAmount, 0, 1);
+            fadeAmount = MathHelper.clamp(fadeAmount, 0, 1);
             if (fadeAmount == 1)
                 fade = false;
         }
@@ -228,7 +228,7 @@ public class NavigatorOptionScreen extends Screen {
     }
 
     @Override
-    public void resize(Minecraft client, int width, int height) {
+    public void resize(MinecraftClient client, int width, int height) {
         navigator.resize(client, width, height);
         super.resize(client, width, height);
     }

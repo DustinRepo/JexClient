@@ -3,7 +3,7 @@ package me.dustin.jex.feature.mod.impl.player;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPushAwayFromEntity;
-import me.dustin.jex.event.world.EventWaterFlow;
+import me.dustin.jex.event.world.EventWaterVelocity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
@@ -16,7 +16,7 @@ public class NoPush extends Feature {
     public boolean water = true;
 
     @EventPointer
-    private final EventListener<EventWaterFlow> eventWaterVelocityEventListener = new EventListener<>(event -> {
+    private final EventListener<EventWaterVelocity> eventWaterVelocityEventListener = new EventListener<>(event -> {
        if (water) event.cancel();
     });
 

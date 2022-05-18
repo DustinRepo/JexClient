@@ -1,7 +1,7 @@
 package me.dustin.jex.event.packet;
 
 import me.dustin.events.core.Event;
-import net.minecraft.client.multiplayer.resolver.ServerAddress;
+import net.minecraft.client.network.ServerAddress;
 
 public class EventConnect extends Event {
 

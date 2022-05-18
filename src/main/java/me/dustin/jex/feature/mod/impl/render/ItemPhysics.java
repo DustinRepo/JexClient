@@ -8,13 +8,13 @@ import me.dustin.jex.event.render.EventRotateItemEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.item.ItemEntity;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
@@ -46,38 +46,38 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
     @EventPointer
     private final EventListener<EventRotateItemEntity> eventRotateItemEntityEventListener = new EventListener<>(event -> {
         ItemEntity itemEntity = event.getItemEntity();
-        PoseStack matrixStack = event.getPoseStack();
+        MatrixStack matrixStack = event.getPoseStack();
         float g = event.getG();
-        float n = itemEntity.getSpin(g);
+        float n = itemEntity.getRotation(g);
 
         if (!prevItemRotationsRoll.containsKey(itemEntity))
             return;
-        matrixStack.translate(0, itemEntity.getBbHeight() / 1.5f, 0);
+        matrixStack.translate(0, itemEntity.getHeight() / 1.5f, 0);
 
-        BakedModel bakedModel = Wrapper.INSTANCE.getMinecraft().getItemRenderer().getModel(itemEntity.getItem(), itemEntity.level, null, itemEntity.getId());
-        float roll = Mth.lerp(Wrapper.INSTANCE.getMinecraft().getFrameTime(), prevItemRotationsRoll.get(itemEntity), itemRotationsRoll.get(itemEntity));
-        float pitch = Mth.lerp(Wrapper.INSTANCE.getMinecraft().getFrameTime(), prevItemRotationsPitch.get(itemEntity), itemRotationsPitch.get(itemEntity));
-        float yaw = Mth.lerp(Wrapper.INSTANCE.getMinecraft().getFrameTime(), prevItemRotationsYaw.get(itemEntity), itemRotationsYaw.get(itemEntity));
+        BakedModel bakedModel = Wrapper.INSTANCE.getMinecraft().getItemRenderer().getModel(itemEntity.getStack(), itemEntity.world, null, itemEntity.getId());
+        float roll = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsRoll.get(itemEntity), itemRotationsRoll.get(itemEntity));
+        float pitch = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsPitch.get(itemEntity), itemRotationsPitch.get(itemEntity));
+        float yaw = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsYaw.get(itemEntity), itemRotationsYaw.get(itemEntity));
 
         if (itemEntity.isOnGround())
-            matrixStack.translate(0, bakedModel.isGui3d() ? -0.04 : -0.151f, 0);
+            matrixStack.translate(0, bakedModel.hasDepth() ? -0.04 : -0.151f, 0);
 
-        matrixStack.mulPose(new Quaternion(new Vector3f(itemPitchNeg.get(itemEntity) ? -1 : 1, 0, 0), pitch, true));
-        matrixStack.mulPose(new Quaternion(new Vector3f(0, 0, itemRollNeg.get(itemEntity) ? -1 : 1), roll, true));
-        matrixStack.mulPose(new Quaternion(new Vector3f(0, itemYawNeg.get(itemEntity) ? -1 : 1, 0), yaw, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(itemPitchNeg.get(itemEntity) ? -1 : 1, 0, 0), pitch, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 0, itemRollNeg.get(itemEntity) ? -1 : 1), roll, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(0, itemYawNeg.get(itemEntity) ? -1 : 1, 0), yaw, true));
 
-        matrixStack.translate(0, -(itemEntity.getBbHeight() / 1.5f), 0);
+        matrixStack.translate(0, -(itemEntity.getHeight() / 1.5f), 0);
 
-        matrixStack.mulPose(Vector3f.YN.rotation(n));
-        float l = Mth.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.bobOffs) * 0.1F + 0.1F;
-        float m = bakedModel.getTransforms().getTransform(ItemTransforms.TransformType.GROUND).scale.y();
+        matrixStack.multiply(Vec3f.NEGATIVE_Y.getRadialQuaternion(n));
+        float l = MathHelper.sin(((float)itemEntity.getItemAge() + g) / 10.0F + itemEntity.uniqueOffset) * 0.1F + 0.1F;
+        float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.getY();
         matrixStack.translate(0.0D, -(l + 0.25F * m), 0.0D);
     });
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getWorld() != null)
-            Wrapper.INSTANCE.getWorld().entitiesForRendering().forEach(entity -> {
+            Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                 if (entity instanceof ItemEntity itemEntity) {
                     if (!itemRotationsRoll.containsKey(itemEntity)) {
                         Random r = new Random();

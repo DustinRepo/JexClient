@@ -17,9 +17,8 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IChatScreen;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.client.gui.components.CommandSuggestions;
-import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,7 @@ public enum CommandManagerJex {
     private static final ArrayList<Command> commands = new ArrayList<>();
     public static final CommandDispatcher<FabricClientCommandSource> DISPATCHER = new CommandDispatcher<>();
 
-    public void registerCommands(ClientPacketListener networkHandler) {
+    public void registerCommands(ClientPlayNetworkHandler networkHandler) {
         EventManager.unregister(this);
         this.getCommands().clear();
         List<Class<?>> classList = ClassHelper.INSTANCE.getClasses("me.dustin.jex.feature.command.impl", Command.class);
@@ -72,7 +71,7 @@ public enum CommandManagerJex {
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
-        if (!(Wrapper.INSTANCE.getMinecraft().screen instanceof ChatScreen)) {
+        if (!(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen)) {
             overlayOn = false;
             overlayAlpha = 0;
         }

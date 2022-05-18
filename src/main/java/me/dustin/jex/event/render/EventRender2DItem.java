@@ -1,17 +1,17 @@
 package me.dustin.jex.event.render;
 
 import me.dustin.events.core.Event;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.item.ItemStack;
 
 public class EventRender2DItem extends Event {
     private final ItemRenderer itemRenderer;
-    private final Font fontRenderer;
+    private final TextRenderer fontRenderer;
     private final ItemStack stack;
     private final int x, y;
 
-    public EventRender2DItem(ItemRenderer itemRenderer, Font fontRenderer, ItemStack stack, int x, int y) {
+    public EventRender2DItem(ItemRenderer itemRenderer, TextRenderer fontRenderer, ItemStack stack, int x, int y) {
         this.itemRenderer = itemRenderer;
         this.fontRenderer = fontRenderer;
         this.stack = stack;
@@ -23,7 +23,7 @@ public class EventRender2DItem extends Event {
         return this.itemRenderer;
     }
 
-    public final Font getFontRenderer() {
+    public final TextRenderer getFontRenderer() {
         return this.fontRenderer;
     }
 

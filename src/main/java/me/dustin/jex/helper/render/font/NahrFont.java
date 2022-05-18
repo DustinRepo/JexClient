@@ -1,22 +1,22 @@
 package me.dustin.jex.helper.render.font;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix4f;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Matrix4f;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.imageio.ImageIO;
@@ -43,7 +43,7 @@ public class NahrFont {
     private int startChar, endChar;
     private float[] xPos, yPos;
     private BufferedImage bufferedImage;
-    private ResourceLocation resourceLocation;
+    private Identifier resourceLocation;
     private final Pattern patternControlCode = Pattern.compile("(?i)\\u00A7[0-9A-FK-OG]"), patternUnsupported = Pattern.compile("(?i)\\u00A7[L-O]");
 
     public NahrFont(Object font, float size) {
@@ -136,12 +136,12 @@ public class NahrFont {
         NativeImage imgNew = new NativeImage(imageWidth, imageHeight, true);
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-                imgNew.setPixelRGBA(x, y, image.getPixelRGBA(x, y));
+                imgNew.setColor(x, y, image.getColor(x, y));
             }
         }
 
         image.close();
-        this.resourceLocation = new ResourceLocation("jex", "font" + getFont().getFontName().toLowerCase().replace(" ", "-") + size);
+        this.resourceLocation = new Identifier("jex", "font" + getFont().getFontName().toLowerCase().replace(" ", "-") + size);
         applyTexture(resourceLocation, imgNew);
     }
 
@@ -157,11 +157,11 @@ public class NahrFont {
         }
     }
 
-    private void applyTexture(ResourceLocation identifier, NativeImage nativeImage) {
-        Minecraft.getInstance().execute(() -> Minecraft.getInstance().getTextureManager().register(identifier, new DynamicTexture(nativeImage)));
+    private void applyTexture(Identifier identifier, NativeImage nativeImage) {
+        MinecraftClient.getInstance().execute(() -> MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new NativeImageBackedTexture(nativeImage)));
     }
 
-    public final void drawString(PoseStack matrixStack, String text, float x, float y, FontType fontType, int color, int color2) {
+    public final void drawString(MatrixStack matrixStack, String text, float x, float y, FontType fontType, int color, int color2) {
         text = stripUnsupported(text);
 
         Render2DHelper.INSTANCE.setup2DRender(false);
@@ -193,17 +193,17 @@ public class NahrFont {
         Render2DHelper.INSTANCE.end2DRender();
     }
 
-    public void drawCenteredString(PoseStack matrixStack, String text, float x, float y, int color) {
+    public void drawCenteredString(MatrixStack matrixStack, String text, float x, float y, int color) {
         drawString(matrixStack, text, (x - getStringWidth(text) / 2), y, FontType.SHADOW_THIN, color);
     }
 
-    public final void drawString(PoseStack matrixStack, String text, float x, float y, FontType fontType, int color) {
+    public final void drawString(MatrixStack matrixStack, String text, float x, float y, FontType fontType, int color) {
         matrixStack.scale(0.5f, 0.5f, 1);
         drawString(matrixStack, text, x, y, fontType, color, 0xBB000000);
         matrixStack.scale(2f, 2f, 1);
     }
 
-    private final void drawer(PoseStack matrixStack, String text, float x, float y, int color) {
+    private final void drawer(MatrixStack matrixStack, String text, float x, float y, int color) {
         x *= 2.0F;
         y *= 2.0F;
         Render2DHelper.INSTANCE.setup2DRender(false);
@@ -217,10 +217,10 @@ public class NahrFont {
         int newColor = color;
         float startX = x;
         boolean scramble = false;
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
         for (int i = 0; i < text.length(); i++)
             if ((text.charAt(i) == '\247') && (i + 1 < text.length())) {
                 char oneMore = Character.toLowerCase(text.charAt(i + 1));
@@ -245,7 +245,7 @@ public class NahrFont {
                 }
             }
         bufferBuilder.clear();
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         Render2DHelper.INSTANCE.shaderColor(0xffffffff);
     }
 
@@ -261,7 +261,7 @@ public class NahrFont {
         return this.theMetrics.getStringBounds(text, this.theGraphics);
     }
 
-    private final void drawChar(PoseStack matrixStack, char character, float x, float y, int color) throws ArrayIndexOutOfBoundsException {
+    private final void drawChar(MatrixStack matrixStack, char character, float x, float y, int color) throws ArrayIndexOutOfBoundsException {
         Rectangle2D bounds = this.theMetrics.getStringBounds(Character.toString(character), this.theGraphics);
         drawTexturedModalRect(matrixStack, x, y, this.xPos[(character - this.startChar)], this.yPos[(character - this.startChar)], (float) bounds.getWidth(), (float) bounds.getHeight() + this.theMetrics.getMaxDescent() + 1.0F, color);
     }
@@ -369,24 +369,24 @@ public class NahrFont {
         return ((par0 >= 'k') && (par0 <= 'o')) || ((par0 >= 'K') && (par0 <= 'O')) || (par0 == 'r') || (par0 == 'R');
     }
 
-    private final void drawTexturedModalRect(PoseStack matrixStack, float x, float y, float u, float v, float width, float height, int color) {
-        Matrix4f matrix4f = matrixStack.last().pose();
+    private final void drawTexturedModalRect(MatrixStack matrixStack, float x, float y, float u, float v, float width, float height, int color) {
+        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
         float scale = 0.0039063F;
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         float f = (color >> 24 & 0xFF) / 255.0F;
         float f1 = (color >> 16 & 0xFF) / 255.0F;
         float f2 = (color >> 8 & 0xFF) / 255.0F;
         float f3 = (color & 0xFF) / 255.0F;
-        bufferBuilder.vertex(matrix4f, x + 0.0F, y + height, 0.0f).uv((u + 0.0F) * scale, (v + height) * scale).color(f1, f2, f3, f).endVertex();
-        bufferBuilder.vertex(matrix4f, x + width, y + height, 0.0f).uv((u + width) * scale, (v + height) * scale).color(f1, f2, f3, f).endVertex();
-        bufferBuilder.vertex(matrix4f, x + width, y + 0.0F, 0.0f).uv((u + width) * scale, (v + 0.0F) * scale).color(f1, f2, f3, f).endVertex();
-        bufferBuilder.vertex(matrix4f, x + 0.0F, y + 0.0F, 0.0f).uv((u + 0.0F) * scale, (v + 0.0F) * scale).color(f1, f2, f3, f).endVertex();
+        bufferBuilder.vertex(matrix4f, x + 0.0F, y + height, 0.0f).texture((u + 0.0F) * scale, (v + height) * scale).color(f1, f2, f3, f).next();
+        bufferBuilder.vertex(matrix4f, x + width, y + height, 0.0f).texture((u + width) * scale, (v + height) * scale).color(f1, f2, f3, f).next();
+        bufferBuilder.vertex(matrix4f, x + width, y + 0.0F, 0.0f).texture((u + width) * scale, (v + 0.0F) * scale).color(f1, f2, f3, f).next();
+        bufferBuilder.vertex(matrix4f, x + 0.0F, y + 0.0F, 0.0f).texture((u + 0.0F) * scale, (v + 0.0F) * scale).color(f1, f2, f3, f).next();
     }
 
     public final String stripControlCodes(String s) {
-        for (ChatFormatting value : ChatFormatting.values()) {
-            s = s.replace("\247" + value.getChar(), "");
+        for (Formatting value : Formatting.values()) {
+            s = s.replace("\247" + value.getCode(), "");
         }
         return s;
     }

@@ -11,11 +11,11 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.core.Registry;
-import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
+import net.minecraft.util.registry.Registry;
 
 @Cmd(name = "ench", syntax = { ".ench <enchantment> <level (optional)>", ".ench all <level (optional)>" }, description = "Enchant the item in your hand at any level.", alias = "cench")
 public class CommandEnchant extends Command {
@@ -23,51 +23,51 @@ public class CommandEnchant extends Command {
 	@Override
 	public void registerCommand() {
 		CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(literal("all").executes(context -> {
-			ItemStack stack = context.getSource().getPlayer().getMainHandItem();
+			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
 			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
 				ChatHelper.INSTANCE.addClientMessage("You must be in creative holding an item to enchant");
 				return 0;
 			}
 			Registry.ENCHANTMENT.forEach(enchantment -> {
-				stack.enchant(enchantment, (short) enchantment.getMaxLevel());
+				stack.addEnchantment(enchantment, (short) enchantment.getMaxLevel());
 			});
-			NetworkHelper.INSTANCE.sendPacket(new ServerboundSetCreativeModeSlotPacket(InventoryHelper.INSTANCE.getInventory().selected + 36, stack));
+			NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
 			ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
 			return 1;
 		}).then(argument("level", IntegerArgumentType.integer()).executes(context -> {
 			int level = IntegerArgumentType.getInteger(context, "level");
-			ItemStack stack = context.getSource().getPlayer().getMainHandItem();
+			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
 			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
 				ChatHelper.INSTANCE.addClientMessage("You must be in creative holding an item to enchant");
 				return 0;
 			}
 			Registry.ENCHANTMENT.forEach(enchantment -> {
-				stack.enchant(enchantment, (short) level);
+				stack.addEnchantment(enchantment, (short) level);
 			});
-			NetworkHelper.INSTANCE.sendPacket(new ServerboundSetCreativeModeSlotPacket(InventoryHelper.INSTANCE.getInventory().selected + 36, stack));
+			NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
 			ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
 			return 1;
 		}))).then(argument("enchantment", EnchantmentArgumentType.enchantment()).executes(context -> {
 			Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
-			ItemStack stack = context.getSource().getPlayer().getMainHandItem();
+			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
 			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
 				ChatHelper.INSTANCE.addClientMessage("You must be in creative holding an item to enchant");
 				return 0;
 			}
-			stack.enchant(enchantment, (short) enchantment.getMaxLevel());
-			NetworkHelper.INSTANCE.sendPacket(new ServerboundSetCreativeModeSlotPacket(InventoryHelper.INSTANCE.getInventory().selected + 36, stack));
+			stack.addEnchantment(enchantment, (short) enchantment.getMaxLevel());
+			NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
 			ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
 			return 1;
 		}).then(argument("level", IntegerArgumentType.integer()).executes(context -> {
 			Enchantment enchantment = EnchantmentArgumentType.getEnchantment(context, "enchantment");
 			int level = IntegerArgumentType.getInteger(context, "level");
-			ItemStack stack = context.getSource().getPlayer().getMainHandItem();
+			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
 			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {
 				ChatHelper.INSTANCE.addClientMessage("You must be in creative holding an item to enchant");
 				return 0;
 			}
-			stack.enchant(enchantment, (short) level);
-			NetworkHelper.INSTANCE.sendPacket(new ServerboundSetCreativeModeSlotPacket(InventoryHelper.INSTANCE.getInventory().selected + 36, stack));
+			stack.addEnchantment(enchantment, (short) level);
+			NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(InventoryHelper.INSTANCE.getInventory().selectedSlot + 36, stack));
 			ChatHelper.INSTANCE.addClientMessage("Your item is now enchanted.");
 			return 1;
 		}))));

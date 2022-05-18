@@ -10,8 +10,8 @@ import java.util.Collection;
 import java.util.List;
 
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.commands.arguments.selector.EntitySelector;
-import net.minecraft.network.chat.Component;
+import net.minecraft.command.EntitySelector;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public class MessageArgumentType implements ArgumentType<MessageArgumentType.MessageFormat> {
@@ -21,8 +21,8 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
       return new MessageArgumentType();
    }
 
-   public static Component getMessage(CommandContext<FabricClientCommandSource> command, String name) throws CommandSyntaxException {
-      return ((MessageFormat)command.getArgument(name, MessageFormat.class)).format((FabricClientCommandSource)command.getSource(), ((FabricClientCommandSource)command.getSource()).hasPermission(2));
+   public static Text getMessage(CommandContext<FabricClientCommandSource> command, String name) throws CommandSyntaxException {
+      return ((MessageFormat)command.getArgument(name, MessageFormat.class)).format((FabricClientCommandSource)command.getSource(), ((FabricClientCommandSource)command.getSource()).hasPermissionLevel(2));
    }
 
    public MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
@@ -46,8 +46,8 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
          return this.contents;
       }
 
-      public Component format(FabricClientCommandSource source, boolean bl) throws CommandSyntaxException {
-         return Component.nullToEmpty(this.contents);
+      public Text format(FabricClientCommandSource source, boolean bl) throws CommandSyntaxException {
+         return Text.of(this.contents);
       }
 
       public static MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
@@ -98,8 +98,8 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
       }
 
       @Nullable
-      public Component format(FabricClientCommandSource source) throws CommandSyntaxException {
-         return Component.nullToEmpty("");//EntitySelector.getNames(this.selector.getEntities(source));
+      public Text format(FabricClientCommandSource source) throws CommandSyntaxException {
+         return Text.of("");//EntitySelector.getNames(this.selector.getEntities(source));
       }
    }
 }

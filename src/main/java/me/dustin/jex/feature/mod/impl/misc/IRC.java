@@ -16,10 +16,10 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.load.impl.IChatScreen;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
@@ -31,7 +31,7 @@ public class IRC extends Feature {
 
     public boolean ircChatOverride;
     public boolean renderAboveChat = true;
-    public static ChatComponent ircChatHud = new ChatComponent(Wrapper.INSTANCE.getMinecraft());
+    public static ChatHud ircChatHud = new ChatHud(Wrapper.INSTANCE.getMinecraft());
 
     public IRCClient ircClient;
 
@@ -45,7 +45,7 @@ public class IRC extends Feature {
 
     @Override
     public void onEnable() {
-        ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getUser().getName());
+        ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
         ircClient.setMessageConsumer(messageListener);
         ircClient.setDisconnectConsumer(disconnectListener);
         ircClient.connect("132.145.154.217", 6969);
@@ -138,7 +138,7 @@ public class IRC extends Feature {
 
     @EventPointer
     private final EventListener<EventRenderChatHud> eventRenderChatHudEventListener = new EventListener<>(event -> {
-        if (event.getChatHud() == Wrapper.INSTANCE.getMinecraft().gui.getChat()) {
+        if (event.getChatHud() == Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud()) {
             if (ircChatOverride) {
                 event.cancel();
                 ircChatHud.render(event.getPoseStack(), event.getTickDelta());
@@ -197,13 +197,13 @@ public class IRC extends Feature {
     public static void addIRCMessage(String message) {
         if (message.isEmpty())
             return;
-        for (ChatFormatting value : ChatFormatting.values()) {
-            message = message.replace("&" + value.getChar(), "\247" + value.getChar());
+        for (Formatting value : Formatting.values()) {
+            message = message.replace("&" + value.getCode(), "\247" + value.getCode());
         }
         String ircString = "\2478[\247cIRC\2478] \2477" + message;
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             ChatHelper.INSTANCE.addRawMessage(ircString);
         }
-        ircChatHud.addMessage(Component.nullToEmpty(ircString));
+        ircChatHud.addMessage(Text.of(ircString));
     }
 }

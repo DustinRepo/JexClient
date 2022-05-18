@@ -1,7 +1,7 @@
 package me.dustin.jex.event.misc;
 
 import me.dustin.events.core.Event;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 
 public class EventItemStackDecrement extends Event {
     private final ItemStack itemStack;
