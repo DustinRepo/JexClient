@@ -24,8 +24,8 @@ public enum JexPluginManager {
     private final Logger LOGGER = LogManager.getFormatterLogger("JexPlugins");
     private final ArrayList<JexPlugin> plugins = new ArrayList<>();
 
-    public JexPlugin add(String name, String version, Class<?> clazz, String description, String[] authors, boolean allowDisable) {
-        JexPlugin jexPlugin = new JexPlugin(name, version, clazz, description, authors, allowDisable);
+    public JexPlugin add(String name, String version, Class<?> clazz, String mixins, String description, String icon, String[] authors, boolean allowDisable) {
+        JexPlugin jexPlugin = new JexPlugin(clazz, new JexPlugin.PluginInfo(name, version, mixins, description, icon, authors, allowDisable));
         JexPluginManager.INSTANCE.getPlugins().add(jexPlugin);
         return jexPlugin;
     }
@@ -67,7 +67,7 @@ public enum JexPluginManager {
         //just to make sure there's not some weird order-dependant loads
         Collections.shuffle(getPlugins());
         LOGGER.info("Loaded Plugins: %d".formatted(getPlugins().size()));
-        getPlugins().forEach(jexPlugin -> LOGGER.info("%s v%s".formatted(jexPlugin.getName(), jexPlugin.getVersion())));
+        getPlugins().forEach(jexPlugin -> LOGGER.info("%s v%s".formatted(jexPlugin.getInfo().getName(), jexPlugin.getInfo().getVersion())));
     }
 
     private String read(InputStream inputStream) throws IOException {
@@ -87,6 +87,8 @@ public enum JexPluginManager {
         String version = jsonObject.get("version").getAsString();
         String mainClass = jsonObject.get("mainClass").getAsString();
         String description = jsonObject.get("description").getAsString();
+        String mixins = jsonObject.has("mixins") ? jsonObject.get("mixins").getAsString() : "";
+        String icon = jsonObject.has("icon") ? jsonObject.get("icon").getAsString() : null;
         ArrayList<String> list = new ArrayList<>();
         JsonArray jsonArray = jsonObject.getAsJsonArray("authors");
         jsonArray.forEach(jsonElement -> list.add(jsonElement.getAsString()));
@@ -100,14 +102,10 @@ public enum JexPluginManager {
                 }
             }
         }
-        sanityCheckFiles(mainClass, jsonObject.get("mixins").getAsString(), jarFile);
+        sanityCheckFiles(mainClass, mixins, jarFile);
         if (fileOfJar != null)
             FabricLauncherBase.getLauncher().addToClassPath(fileOfJar.toPath());
-        JexPlugin jexPlugin = add(name, version, Class.forName(mainClass), description, toArray(list), allowDisable);
-        if (jsonObject.has("mixins")) {
-            String mixinsFile = jsonObject.get("mixins").getAsString();
-            jexPlugin.setMixins(mixinsFile);
-        }
+        add(name, version, Class.forName(mainClass), mixins, description, icon, toArray(list), allowDisable);
     }
 
     private void sanityCheckFiles(String mainClass, String mixinsLocation, JarFile jarFile) {
@@ -124,7 +122,7 @@ public enum JexPluginManager {
             }
             return;
         }
-        JarEntry mainClassEntry = jarFile.getJarEntry(mainClass);
+        JarEntry mainClassEntry = jarFile.getJarEntry(mainClass.replace(".", "/") + ".class");
         if (mainClassEntry == null)
             throw new RuntimeException("Main class %s not found! Plugin will not be loaded!".formatted(mainClass));
         if (mixinsLocation != null && !mixinsLocation.isEmpty()) {
@@ -153,7 +151,7 @@ public enum JexPluginManager {
 
     public JexPlugin get(String name) {
         for (JexPlugin plugin : plugins) {
-            if (plugin.getName().equals(name))
+            if (plugin.getInfo().getName().equals(name))
                 return plugin;
         }
         return null;
