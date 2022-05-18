@@ -58,7 +58,7 @@ public enum JexClient {
     private boolean soundOnLaunch = true;
     private final Logger logger = LogManager.getFormatterLogger("Jex");
     private JexVersion version;
-    private final String baseUrl = "https://google.com/";
+    private final String baseUrl = "http://129.213.167.11/";
 
     private static boolean loadedOnce = false;
 
