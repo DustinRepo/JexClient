@@ -77,6 +77,12 @@ public enum JexClient {
         OptionManager.INSTANCE.initializeOptionManager();
         getLogger().info("Initializing Commands");
         CommandManagerJex.INSTANCE.registerCommands();
+
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            getLogger().info("Creating mods.json for website.");
+            createJson();
+        }
+
         getLogger().info("Reading Config Files");
         ModFileHelper.INSTANCE.gameBootLoad();
 
@@ -97,11 +103,6 @@ public enum JexClient {
         JexChangelog.loadChangelogList();
         JexPlugin.clientLoad();
         getLogger().info("Jex load finished.");
-
-        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            getLogger().info("Creating mods.json for website.");
-            createJson();
-        }
         loadedOnce = true;
     }
 
