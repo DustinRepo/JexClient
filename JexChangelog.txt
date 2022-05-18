@@ -1,3 +1,8 @@
+0.7.3
+Added Plugin Manager Screen (Options -> Jex Options -> Plugin Manager)
+Added icon support to plugins
+Fixed anything dependant on the website (linked accounts, capes, hats, etc)
+
 0.7.2
 Added Boss options to ESP, KillAura, and Tracers
 Added checks for plugins to ensure main class and mixins exist
