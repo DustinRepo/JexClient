@@ -14,9 +14,9 @@ public class PreLaunch implements PreLaunchEntrypoint {
         LOGGER.info("Adding Jex plugins to class path");
         JexPluginManager.INSTANCE.loadPlugins();
         JexPluginManager.INSTANCE.getPlugins().forEach(jexPlugin -> {
-            if (!jexPlugin.getMixins().isEmpty()) {
-                LOGGER.info("Adding mixin config %s from plugin %s".formatted(jexPlugin.getMixins(), jexPlugin.getName()));
-                Mixins.addConfiguration(jexPlugin.getMixins());
+            if (!jexPlugin.getInfo().getMixinFile().isEmpty()) {
+                LOGGER.info("Adding mixin config %s from plugin %s".formatted(jexPlugin.getInfo().getMixinFile(), jexPlugin.getInfo().getName()));
+                Mixins.addConfiguration(jexPlugin.getInfo().getMixinFile());
             }
         });
     }

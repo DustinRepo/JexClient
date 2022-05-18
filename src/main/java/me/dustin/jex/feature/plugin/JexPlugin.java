@@ -6,29 +6,23 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class JexPlugin {
-    private final String name;
-    private final String version;
-    private final Class<?> clazz;
-    private final String description;
-    private final String[] authors;
-    private final boolean allowDisable;
-    private Object instance;
-    private String mixinFile = "";
-    public JexPlugin(String name, String version, Class<?> clazz, String description, String[] authors, boolean allowDisable) {
-        this.name = name;
-        this.version = version;
-        this.clazz = clazz;
-        this.description = description;
-        this.authors = authors;
-        this.allowDisable = allowDisable;
+    private final Class<?> mainClass;
+
+    private Object mainClassInstance;
+    private boolean isEnabled;
+
+    private final PluginInfo info;
+    public JexPlugin(Class<?> mainClass, PluginInfo pluginInfo) {
+        this.mainClass = mainClass;
+        this.info = pluginInfo;
     }
     public static void clientLoad() {
         JexPluginManager.INSTANCE.getPlugins().forEach(jexPlugin -> {
-            Class<?> mainClass = jexPlugin.getInstance().getClass();
+            Class<?> mainClass = jexPlugin.getMainClassInstance().getClass();
             for (Method declaredMethod : mainClass.getDeclaredMethods()) {
                 if (declaredMethod.isAnnotationPresent(ClientLoad.class)) {
                     try {
-                        declaredMethod.invoke(jexPlugin.getInstance());
+                        declaredMethod.invoke(jexPlugin.getMainClassInstance());
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
@@ -39,11 +33,11 @@ public class JexPlugin {
 
     public static void fabricLoad() {
         JexPluginManager.INSTANCE.getPlugins().forEach(jexPlugin -> {
-            Class<?> mainClass = jexPlugin.getInstance().getClass();
+            Class<?> mainClass = jexPlugin.getMainClassInstance().getClass();
             for (Method declaredMethod : mainClass.getDeclaredMethods()) {
                 if (declaredMethod.isAnnotationPresent(FabricLoad.class)) {
                     try {
-                        declaredMethod.invoke(jexPlugin.getInstance());
+                        declaredMethod.invoke(jexPlugin.getMainClassInstance());
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
@@ -54,11 +48,11 @@ public class JexPlugin {
 
     public static void featuresLoad() {
         JexPluginManager.INSTANCE.getPlugins().forEach(jexPlugin -> {
-            Class<?> mainClass = jexPlugin.getInstance().getClass();
+            Class<?> mainClass = jexPlugin.getMainClassInstance().getClass();
             for (Method declaredMethod : mainClass.getDeclaredMethods()) {
                 if (declaredMethod.isAnnotationPresent(FeaturesLoad.class)) {
                     try {
-                        declaredMethod.invoke(jexPlugin.getInstance());
+                        declaredMethod.invoke(jexPlugin.getMainClassInstance());
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
@@ -69,11 +63,11 @@ public class JexPlugin {
 
     public static void commandsLoad() {
         JexPluginManager.INSTANCE.getPlugins().forEach(jexPlugin -> {
-            Class<?> mainClass = jexPlugin.getInstance().getClass();
+            Class<?> mainClass = jexPlugin.getMainClassInstance().getClass();
             for (Method declaredMethod : mainClass.getDeclaredMethods()) {
                 if (declaredMethod.isAnnotationPresent(CommandsLoad.class)) {
                     try {
-                        declaredMethod.invoke(jexPlugin.getInstance());
+                        declaredMethod.invoke(jexPlugin.getMainClassInstance());
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
@@ -83,11 +77,11 @@ public class JexPlugin {
     }
 
     public static void disable(JexPlugin jexPlugin) {
-        Class<?> mainClass = jexPlugin.getInstance().getClass();
+        Class<?> mainClass = jexPlugin.getMainClassInstance().getClass();
         for (Method declaredMethod : mainClass.getDeclaredMethods()) {
             if (declaredMethod.isAnnotationPresent(DisablePlugin.class)) {
                 try {
-                    declaredMethod.invoke(jexPlugin.getInstance());
+                    declaredMethod.invoke(jexPlugin.getMainClassInstance());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -96,11 +90,11 @@ public class JexPlugin {
     }
 
     public static void enable(JexPlugin jexPlugin) {
-        Class<?> mainClass = jexPlugin.getInstance().getClass();
+        Class<?> mainClass = jexPlugin.getMainClassInstance().getClass();
         for (Method declaredMethod : mainClass.getDeclaredMethods()) {
             if (declaredMethod.isAnnotationPresent(EnablePlugin.class)) {
                 try {
-                    declaredMethod.invoke(jexPlugin.getInstance());
+                    declaredMethod.invoke(jexPlugin.getMainClassInstance());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -108,47 +102,23 @@ public class JexPlugin {
         }
     }
 
-    public String getName() {
-        return name;
+    public Class<?> getMainClass() {
+        return mainClass;
     }
 
-    public Class<?> getClazz() {
-        return clazz;
+    public PluginInfo getInfo() {
+        return info;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String[] getAuthors() {
-        return authors;
-    }
-
-    public boolean isAllowDisable() {
-        return allowDisable;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public String getMixins() {
-        return mixinFile;
-    }
-
-    public void setMixins(String mixinFile) {
-        this.mixinFile = mixinFile;
-    }
-
-    public Object getInstance() {
-        if (instance == null) {
+    public Object getMainClassInstance() {
+        if (mainClassInstance == null) {
             try {
-                instance = getClazz().newInstance();
+                mainClassInstance = getMainClass().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-        return instance;
+        return mainClassInstance;
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -168,5 +138,54 @@ public class JexPlugin {
     }
     @Retention(RetentionPolicy.RUNTIME)
     public @interface EnablePlugin {
+    }
+
+    public static class PluginInfo {
+        private final String name;
+        private final String version;
+        private final String description;
+        private final String iconFile;
+        private final String[] authors;
+        private final boolean allowDisable;
+
+        private final String mixinFile;
+
+        public PluginInfo(String name, String version, String mixinFile, String description, String iconFile, String[] authors, boolean allowDisable) {
+            this.name = name;
+            this.version = version;
+            this.mixinFile = mixinFile;
+            this.description = description;
+            this.iconFile = iconFile;
+            this.authors = authors;
+            this.allowDisable = allowDisable;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getIconFile() {
+            return iconFile;
+        }
+
+        public String[] getAuthors() {
+            return authors;
+        }
+
+        public boolean isAllowDisable() {
+            return allowDisable;
+        }
+
+        public String getMixinFile() {
+            return mixinFile;
+        }
     }
 }
