@@ -9,7 +9,7 @@ public class JexPlugin {
     private final Class<?> mainClass;
 
     private Object mainClassInstance;
-    private boolean isEnabled;
+    private boolean isEnabled = true;
 
     private final PluginInfo info;
     public JexPlugin(Class<?> mainClass, PluginInfo pluginInfo) {
@@ -82,6 +82,7 @@ public class JexPlugin {
             if (declaredMethod.isAnnotationPresent(DisablePlugin.class)) {
                 try {
                     declaredMethod.invoke(jexPlugin.getMainClassInstance());
+                    jexPlugin.setEnabled(false);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -95,6 +96,7 @@ public class JexPlugin {
             if (declaredMethod.isAnnotationPresent(EnablePlugin.class)) {
                 try {
                     declaredMethod.invoke(jexPlugin.getMainClassInstance());
+                    jexPlugin.setEnabled(true);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -119,6 +121,14 @@ public class JexPlugin {
             }
         }
         return mainClassInstance;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     @Retention(RetentionPolicy.RUNTIME)

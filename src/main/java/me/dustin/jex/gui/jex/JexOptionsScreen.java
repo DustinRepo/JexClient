@@ -10,6 +10,7 @@ import me.dustin.jex.gui.changelog.ChangelogScreen;
 import me.dustin.jex.gui.jex.selection.SearchSelectScreen;
 import me.dustin.jex.gui.jex.selection.XraySelectScreen;
 import me.dustin.jex.gui.jex.selection.AutoDropSelectScreen;
+import me.dustin.jex.gui.plugin.JexPluginScreen;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -37,6 +38,7 @@ public class JexOptionsScreen extends Screen {
     private ButtonWidget autoDropButton;
     private ButtonWidget waypointScreenButton;
     private ButtonWidget reloadAddonsButton;
+    private ButtonWidget pluginManagerButton;
     private ButtonWidget changelogButton;
     private ButtonWidget personalSettingsButton;
     private static StopWatch stopWatch = new StopWatch();
@@ -90,6 +92,7 @@ public class JexOptionsScreen extends Screen {
             }
             stopWatch.reset();
         });
+        pluginManagerButton = new ButtonWidget(centerX - 75, topY + 100, 150, 20, new LiteralText("Plugin Manager"), button -> Wrapper.INSTANCE.getMinecraft().setScreen(new JexPluginScreen(this)));
 
         //right
         xrayButton = new ButtonWidget(centerX + 80, topY + 25, 150, 20, new LiteralText("Xray Block Selection"), button -> {
@@ -109,6 +112,7 @@ public class JexOptionsScreen extends Screen {
         this.addDrawableChild(searchButton);
         this.addDrawableChild(autoDropButton);
         this.addDrawableChild(reloadAddonsButton);
+        this.addDrawableChild(pluginManagerButton);
         this.addDrawableChild(waypointScreenButton);
         this.addDrawableChild(changelogButton);
         this.addDrawableChild(personalSettingsButton);
