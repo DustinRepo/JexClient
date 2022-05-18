@@ -76,6 +76,22 @@ public enum JexClient {
         FeatureManager.INSTANCE.initializeFeatureManager();
         getLogger().info("Initializing Options");
         OptionManager.INSTANCE.initializeOptionManager();
+
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            getLogger().info("Creating mods.json for website.");
+            createJson();
+
+            //for the entity id lists made for ChatBot
+            /*int i = 0;
+            ArrayList<String> l = new ArrayList<>();
+            for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
+                l.add(i + "=" + ((TranslatableText)entityType.getName()).getKey());
+                i++;
+            }
+            FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_entity_ids.txt"), l);*/
+            createVersionsJson();
+        }
+
         getLogger().info("Reading Config Files");
         ModFileHelper.INSTANCE.gameBootLoad();
 
@@ -96,20 +112,6 @@ public enum JexClient {
         JexChangelog.loadChangelogList();
         JexPlugin.clientLoad();
         getLogger().info("Jex load finished.");
-        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-            getLogger().info("Creating mods.json for website.");
-            createJson();
-
-            //for the entity id lists made for ChatBot
-            /*int i = 0;
-            ArrayList<String> l = new ArrayList<>();
-            for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-                l.add(i + "=" + ((TranslatableText)entityType.getName()).getKey());
-                i++;
-            }
-            FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_entity_ids.txt"), l);*/
-            createVersionsJson();
-        }
         loadedOnce = true;
     }
 
