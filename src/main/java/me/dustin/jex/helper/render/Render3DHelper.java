@@ -88,16 +88,16 @@ public enum Render3DHelper {
         return new Vec3d(minX, minY, minZ);
     }
 
-    public void fixCameraRots(MatrixStack poseStack) {
+    public void fixCameraRots(MatrixStack matrixStack) {
         Camera camera = Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera;
-        poseStack.multiply(Vec3f.NEGATIVE_Y.getRadialQuaternion(camera.getYaw() + 180.0F));
-        poseStack.multiply(Vec3f.NEGATIVE_X.getRadialQuaternion(camera.getPitch()));
+        matrixStack.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
+        matrixStack.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(camera.getPitch()));
     }
 
-    public void applyCameraRots(MatrixStack poseStack) {
+    public void applyCameraRots(MatrixStack matrixStack) {
         Camera camera = Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera;
-        poseStack.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(camera.getPitch()));
-        poseStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(camera.getYaw() + 180.0F));
+        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
     }
 
     public void setup3DRender(boolean disableDepth) {
@@ -193,7 +193,7 @@ public enum Render3DHelper {
         matrixstack.multiply(new Quaternion(new Vec3f(0, -1, 0), yaw, true));
         matrixstack.translate(-x, -y, -z);
 
-        Box bb = new Box(x - entity.getWidth() + 0.25, y, z - entity.getWidth() + 0.25, x + entity.getWidth() - 0.25, y + entity.getWidth() + 0.1, z + entity.getWidth() - 0.25);
+        Box bb = new Box(x - entity.getWidth() + 0.25, y, z - entity.getWidth() + 0.25, x + entity.getWidth() - 0.25, y + entity.getHeight() + 0.1, z + entity.getWidth() - 0.25);
         if (entity instanceof ItemEntity)
             bb = new Box(x - 0.15, y + 0.1f, z - 0.15, x + 0.15, y + 0.5, z + 0.15);
 

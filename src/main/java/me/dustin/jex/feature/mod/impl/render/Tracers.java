@@ -4,26 +4,22 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
+import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
-import me.dustin.jex.helper.render.Render3DHelper;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
+
 import java.awt.*;
 
 @Feature.Manifest(category = Feature.Category.VISUAL, description = "Draw a line to entities in range.")
@@ -44,12 +40,11 @@ public class Tracers extends Feature {
     @Op(name = "Neutrals")
     public boolean neutrals = true;
 
-
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (entity instanceof LivingEntity living && isValid(living)) {
+            if (entity instanceof LivingEntity living && isValid((LivingEntity) entity)) {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
                 Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, event.getPartialTicks());
@@ -68,8 +63,8 @@ public class Tracers extends Feature {
                     bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                     bufferBuilder.vertex(vec.x, vec.y + entity.getEyeHeight(entity.getPose()), vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 }
-                bufferBuilder.clear();
                 BufferRenderer.drawWithShader(bufferBuilder.end());
+                bufferBuilder.clear();
 
                 Render3DHelper.INSTANCE.end3DRender();
             }
@@ -77,8 +72,8 @@ public class Tracers extends Feature {
     });
 
     private int getColor(Entity ent) {
-        if (colorOnDistance && ent instanceof PlayerEntity playerEntity) {
-            if (!FriendHelper.INSTANCE.isFriend(playerEntity)) {
+        if (ent instanceof PlayerEntity playerEntity && colorOnDistance) {
+            if (!FriendHelper.INSTANCE.isFriend(playerEntity.getName().getString())) {
                 return getColor(ent.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64).getRGB();
             }
         }

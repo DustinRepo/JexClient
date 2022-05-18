@@ -47,7 +47,7 @@ public class WaypointEditScreen extends Screen {
 
     private boolean isSliding;
     private ColorOption v = new ColorOption("###waypoint");
-    private Identifier colorSlider = new Identifier("assets/jex", "gui/click/colorslider.png");
+    private Identifier colorSlider = new Identifier("jex", "gui/click/colorslider.png");
     private float colorX;
     private float colorY;
     private float colorWidth;

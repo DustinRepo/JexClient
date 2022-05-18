@@ -229,8 +229,8 @@ public enum JexClient {
 
         String[] c2sPackets = new String[150];
         String[] s2cPackets = new String[150];
-        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.SERVERBOUND).forEach((integer, aClass) -> c2sPackets[integer] = aClass.getSimpleName().replace("Serverbound", "").replace("Packet", ""));
-        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.CLIENTBOUND).forEach((integer, aClass) -> s2cPackets[integer] = aClass.getSimpleName().replace("Clientbound", "").replace("Packet", ""));
+        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.SERVERBOUND).forEach((integer, aClass) -> c2sPackets[integer] = aClass.getSimpleName().split("C2S")[0]);
+        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.CLIENTBOUND).forEach((integer, aClass) -> s2cPackets[integer] = aClass.getSimpleName().split("S2C")[0]);
         for (String c2sPacket : c2sPackets) {
             if (c2sPacket == null)
                 break;
@@ -244,7 +244,7 @@ public enum JexClient {
         packets.add("c2s", c2s);
         packets.add("s2c", s2c);
         protocolObject.add("packets", packets);
-        jsonObject.add("839", protocolObject);
+        jsonObject.add("841", protocolObject);
 
         FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_packetIds.json"), List.of(JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")));
     }
