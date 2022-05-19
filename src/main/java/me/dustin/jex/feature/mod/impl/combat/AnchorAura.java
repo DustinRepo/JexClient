@@ -78,7 +78,7 @@ public class AnchorAura extends Feature {
             if (attackStopWatch.hasPassed(attackDelay)) {
                 BlockPos chargedAnchor = getChargedAnchor(Wrapper.INSTANCE.getLocalPlayer());
                 if (chargedAnchor != null && shouldExplode(chargedAnchor)) {
-                    Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(chargedAnchor.getX(), chargedAnchor.getY(), chargedAnchor.getZ()), Direction.UP, chargedAnchor, false));
+                    Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(chargedAnchor.getX(), chargedAnchor.getY(), chargedAnchor.getZ()), Direction.UP, chargedAnchor, false));
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                     attackStopWatch.reset();
                     return;
@@ -89,7 +89,7 @@ public class AnchorAura extends Feature {
                     if (glowstone != -1) {
                         int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         InventoryHelper.INSTANCE.setSlot(glowstone, true, true);
-                        Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(anchor.getX(), anchor.getY(), anchor.getZ()), Direction.UP, anchor, false));
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(anchor.getX(), anchor.getY(), anchor.getZ()), Direction.UP, anchor, false));
                         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                         InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                         attackStopWatch.reset();

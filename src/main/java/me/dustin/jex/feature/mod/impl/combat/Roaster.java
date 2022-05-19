@@ -80,7 +80,7 @@ public class Roaster extends Feature {
             if (blockPos != null) {
                 Vec3d pos = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                 BlockHitResult hitResult = new BlockHitResult(pos, Direction.UP, blockPos, false);
-                Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), hand, hitResult);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), hand, hitResult);
                 if (swing)
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
             }

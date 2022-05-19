@@ -58,7 +58,7 @@ public class AutoSoup extends Feature {
             if (throwing && stopWatch.hasPassed(throwdelay)) {
                 if (getFirstSoup() != -1) {
                     if (getFirstSoup() < 9) {
-                        Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
                         InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                         throwing = false;
                         stopWatch.reset();

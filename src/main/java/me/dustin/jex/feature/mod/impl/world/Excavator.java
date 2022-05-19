@@ -86,7 +86,7 @@ public class Excavator extends Feature {
         BlockPos closestBlock = miningArea.getClosest();
         if (closestBlock != null) {
             double distanceTo = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(closestBlock));
-            if (distanceTo <= (WorldHelper.INSTANCE.getBlock(closestBlock) == Blocks.BEDROCK ? 3 : Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance() - 1)) {
+            if (distanceTo <= (WorldHelper.INSTANCE.getBlock(closestBlock) == Blocks.BEDROCK ? 3 : Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance() - 1)) {
                 if (!KillAura.INSTANCE.hasTarget() && !BreakingFlowController.isWorking()) {
                     BlockHitResult blockHitResult = rayCast(Wrapper.INSTANCE.getPlayer(), closestBlock);
                     RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), Vec3d.ofCenter(closestBlock));
@@ -94,7 +94,7 @@ public class Excavator extends Feature {
                     Wrapper.INSTANCE.getPlayer().setHeadYaw(rotationVector.getYaw());
                     Wrapper.INSTANCE.getPlayer().setBodyYaw(rotationVector.getYaw());
 
-                    Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(closestBlock, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
+                    Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(closestBlock, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
                     PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
                 }
                 if (distanceTo <= 1.5f && WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getPlayer()) != Blocks.AIR) {
@@ -288,7 +288,7 @@ public class Excavator extends Feature {
         RotationVector saved = new RotationVector(player);
         Wrapper.INSTANCE.getPlayer().setYaw(rotationVector.getYaw());
         Wrapper.INSTANCE.getPlayer().setPitch(rotationVector.getPitch());
-        HitResult result = player.raycast(Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
+        HitResult result = player.raycast(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
         Wrapper.INSTANCE.getPlayer().setYaw(saved.getYaw());
         Wrapper.INSTANCE.getPlayer().setPitch(saved.getPitch());
         if (result instanceof BlockHitResult blockHitResult)

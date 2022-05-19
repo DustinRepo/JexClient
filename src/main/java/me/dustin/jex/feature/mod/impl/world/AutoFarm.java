@@ -317,7 +317,7 @@ public class AutoFarm extends Feature {
         Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
         Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
 
-        Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(blockPos, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
+        Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockPos, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
     }
 
@@ -355,7 +355,7 @@ public class AutoFarm extends Feature {
         RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.of(blockPos).add(0.5, 0, 0.5));
         RotationVector saved = new RotationVector(Wrapper.INSTANCE.getLocalPlayer());
         PlayerHelper.INSTANCE.setRotation(rotationVector);
-        HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
+        HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
         PlayerHelper.INSTANCE.setRotation(saved);
         if (result instanceof BlockHitResult blockHitResult)
             return blockHitResult;

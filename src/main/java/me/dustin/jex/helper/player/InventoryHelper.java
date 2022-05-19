@@ -119,7 +119,7 @@ public enum InventoryHelper {
     }
 
     public void windowClick(ScreenHandler container, int slot, SlotActionType action, int clickData) {
-        Wrapper.INSTANCE.getMultiPlayerGameMode().clickSlot(container.syncId, slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
+        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickSlot(container.syncId, slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
     }
 
     public void swapToHotbar(int slot, int hotbarSlot) {

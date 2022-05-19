@@ -31,7 +31,7 @@ public class CommandHead extends Command {
         NbtCompound tag = new NbtCompound();
         tag.putString("SkullOwner", playerName);
         itemStack.setNbt(tag);
-        Wrapper.INSTANCE.getMultiPlayerGameMode().clickCreativeStack(itemStack, 36);
+        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickCreativeStack(itemStack, 36);
         ChatHelper.INSTANCE.addClientMessage("Done! You now have " + playerName + "'s head.");
         return 1;
     }

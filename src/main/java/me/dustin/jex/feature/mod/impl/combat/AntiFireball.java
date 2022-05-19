@@ -37,7 +37,7 @@ public class AntiFireball extends Feature {
                 if (swing) {
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 }
-                Wrapper.INSTANCE.getMultiPlayerGameMode().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), fireballEntity);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), fireballEntity);
             }
         }
     }), new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));

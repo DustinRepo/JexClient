@@ -47,7 +47,7 @@ public class XPBottleSpammer extends Feature {
                 return;
             InventoryHelper.INSTANCE.setSlot(xpBottleHotbar, false, true);
             for (int i = 0; i < speed; i++)
-                Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
             InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
         }
     });

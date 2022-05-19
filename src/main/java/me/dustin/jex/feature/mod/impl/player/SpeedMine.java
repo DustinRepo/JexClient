@@ -43,12 +43,12 @@ public class SpeedMine extends Feature {
                 if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
                     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
                 float bProgress = mode.equalsIgnoreCase("Progress") ? progress : 0;
-                if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(Wrapper.INSTANCE.getIMultiPlayerGameMode().currentBreakingPos()))) {
+                if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(Wrapper.INSTANCE.getIClientPlayerInteractionManager().currentBreakingPos()))) {
                     givenHaste = false;
                     break;
                 }
-                if (Wrapper.INSTANCE.getIMultiPlayerGameMode().getBlockBreakProgress() >= bProgress) {
-                    Wrapper.INSTANCE.getIMultiPlayerGameMode().setBlockBreakProgress(1);
+                if (Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() >= bProgress) {
+                    Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);
                 }
                 givenHaste = false;
             }
@@ -60,8 +60,8 @@ public class SpeedMine extends Feature {
                     Wrapper.INSTANCE.getLocalPlayer().addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 5200, haste - 1));
             }
         }
-        if (Wrapper.INSTANCE.getIMultiPlayerGameMode().getBlockBreakingCooldown() > breakCooldown)
-            Wrapper.INSTANCE.getIMultiPlayerGameMode().setBlockBreakingCooldown(breakCooldown);
+        if (Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakingCooldown() > breakCooldown)
+            Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakingCooldown(breakCooldown);
         this.setSuffix(mode);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
@@ -77,7 +77,7 @@ public class SpeedMine extends Feature {
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
         }
-        Wrapper.INSTANCE.getIMultiPlayerGameMode().setBlockBreakProgress(1);
+        Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);
     }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
     @Override

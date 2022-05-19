@@ -9,6 +9,7 @@ import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.client.gui.screen.DeathScreen;
 import me.dustin.events.core.annotate.EventPointer;
@@ -43,7 +44,10 @@ public class AutoCope extends Feature {
     private void sendMessage() {
         Random random = new Random();
         String message = messages.get(random.nextInt(messages.size()));
-        ChatHelper.INSTANCE.sendChatMessage(message);
+        if (message.startsWith("/"))
+            Wrapper.INSTANCE.getLocalPlayer().sendCommand(message.substring(1));
+        else
+            ChatHelper.INSTANCE.sendChatMessage(message);
     }
 
     private void loadMessages() {

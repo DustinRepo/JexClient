@@ -14,6 +14,7 @@ import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
@@ -83,7 +84,10 @@ public class AutoEZ extends Feature {
         String name = playerEntity.getGameProfile().getName();
         Random random = new Random();
         String message = messages.get(random.nextInt(messages.size())).replace("%player", name);
-        ChatHelper.INSTANCE.sendChatMessage(message);
+        if (message.startsWith("/"))
+            Wrapper.INSTANCE.getLocalPlayer().sendCommand(message.substring(1));
+        else
+            ChatHelper.INSTANCE.sendChatMessage(message);
     }
 
     private void loadMessages() {

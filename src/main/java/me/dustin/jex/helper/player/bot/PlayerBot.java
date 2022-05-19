@@ -268,25 +268,25 @@ public class PlayerBot {
     }
 
     public void use() {
-        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance());
+        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance());
         if (crosshair != null) {
             clientConnection.send(PlayerInteractEntityC2SPacket.interact(crosshair, player.isSneaking(), Hand.MAIN_HAND));
             clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
-        } else if (raycast(Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && WorldHelper.INSTANCE.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
-            Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
+        } else if (raycast(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && WorldHelper.INSTANCE.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
+            Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
             if (WorldHelper.INSTANCE.canUseOnPos(blockHitResult.getBlockPos()))
                 clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
         } else
-            Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
+            Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
     }
 
     public void attack() {
-        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance());
+        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance());
         if (crosshair != null) {
             player.resetLastAttackedTicks();
             clientConnection.send(PlayerInteractEntityC2SPacket.attack(crosshair, player.isSneaking()));
             clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
-        } else if (raycast(Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && world.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
+        } else if (raycast(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && world.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
             clientConnection.send(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getSide()));
             clientConnection.send(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getSide()));
             clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));

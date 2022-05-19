@@ -63,7 +63,7 @@ public class LawnBot extends Feature {
             Block block = WorldHelper.INSTANCE.getBlock(pos);
             float distance = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos));
             if (block == Blocks.MYCELIUM && distance <= 5) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(pos, Direction.UP);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(pos, Direction.UP);
                 return;
             }
         }

@@ -64,7 +64,7 @@ public class BucketCatch extends Feature {
                 }
             }
         } else if (click) {
-            Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
+            Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
             click = false;
         }
     });

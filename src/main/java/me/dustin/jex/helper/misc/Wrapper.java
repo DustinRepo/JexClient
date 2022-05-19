@@ -40,11 +40,11 @@ public enum Wrapper {
         return getMinecraft().options;
     }
 
-    public ClientPlayerInteractionManager getMultiPlayerGameMode() {
+    public ClientPlayerInteractionManager getClientPlayerInteractionManager() {
         return getMinecraft().interactionManager;
     }
 
-    public IClientPlayerInteractionManager getIMultiPlayerGameMode() { return (IClientPlayerInteractionManager)getMinecraft().interactionManager; }
+    public IClientPlayerInteractionManager getIClientPlayerInteractionManager() { return (IClientPlayerInteractionManager)getMinecraft().interactionManager; }
 
     public Window getWindow() {
         return getMinecraft().getWindow();

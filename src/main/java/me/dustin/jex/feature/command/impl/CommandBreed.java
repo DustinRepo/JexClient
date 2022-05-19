@@ -25,7 +25,7 @@ public class CommandBreed extends Command {
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof AnimalEntity && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= 6) {
                 if (EntityHelper.INSTANCE.canBreed((AnimalEntity)entity)) {
-                    Wrapper.INSTANCE.getMultiPlayerGameMode().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), entity, Hand.MAIN_HAND);
+                    Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), entity, Hand.MAIN_HAND);
                     entCount++;
                 }
             }

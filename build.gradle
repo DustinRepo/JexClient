@@ -23,13 +23,11 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	dependency group: 'org.yaml', name: 'snakeyaml', version: '1.30'
 	dependency files('lib/IRCClient.jar')
-	implementation group: 'io.netty', name: 'netty-handler-proxy', version: '4.1.76.Final'
+	implementation group: 'io.netty', name: 'netty-handler-proxy', version: '4.1.77.Final'
 
 	implementation files('lib/baritone-1.6.3-dev.jar')
 	implementation files('lib/sodium.jar')

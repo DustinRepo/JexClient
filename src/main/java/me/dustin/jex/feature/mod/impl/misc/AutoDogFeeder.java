@@ -29,7 +29,7 @@ public class AutoDogFeeder extends Feature {
             if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
                 if (wolfEntity.getHealth() < wolfEntity.getMaxHealth()) {
                     InventoryHelper.INSTANCE.setSlot(slot, false, true);
-                    Wrapper.INSTANCE.getMultiPlayerGameMode().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
+                    Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
             }

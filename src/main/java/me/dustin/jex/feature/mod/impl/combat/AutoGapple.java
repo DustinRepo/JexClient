@@ -82,7 +82,7 @@ public class AutoGapple extends Feature {
         } else if (isEating) {
             if (pressKey)
                 Wrapper.INSTANCE.getOptions().useKey.setPressed(true);
-            Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getLocalPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
+            Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
         }
 
         if (shouldEatGapple() && !isEating) {

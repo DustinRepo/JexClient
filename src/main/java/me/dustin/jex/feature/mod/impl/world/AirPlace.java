@@ -39,7 +39,7 @@ public class AirPlace extends Feature {
 			HitResult hitResult = Wrapper.INSTANCE.getLocalPlayer().raycast(reach, Wrapper.INSTANCE.getMinecraft().getTickDelta(), false);
 			if (hitResult instanceof BlockHitResult blockHitResult) {
 				if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos())) && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() instanceof BlockItem) {
-					Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
+					Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
 					Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 					event.cancel();
 				}

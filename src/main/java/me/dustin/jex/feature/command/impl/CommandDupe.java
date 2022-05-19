@@ -61,7 +61,7 @@ public class CommandDupe extends Command {
         if (Wrapper.INSTANCE.getMinecraft().crosshairTarget.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult) Wrapper.INSTANCE.getMinecraft().crosshairTarget;
             if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) instanceof ShulkerBoxBlock) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
                 ChatHelper.INSTANCE.addClientMessage("Running dupe");
                 this.blockHitResult = blockHitResult;
                 this.speedmine = Feature.getState(SpeedMine.class) && Feature.get(SpeedMine.class).mode.equalsIgnoreCase("Instant");
@@ -80,7 +80,7 @@ public class CommandDupe extends Command {
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Feature.getState(AutoTool.class))
             new EventClickBlock(blockHitResult.getBlockPos(), blockHitResult.getSide(), EventClickBlock.Mode.PRE).run();
-        Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
+        Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
     }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer

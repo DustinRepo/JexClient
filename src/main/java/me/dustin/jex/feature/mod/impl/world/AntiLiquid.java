@@ -73,14 +73,14 @@ public class AntiLiquid extends Feature {
             list.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(value))));
 
             for (BlockPos blockPos : list) {
-                if (blockPos != Wrapper.INSTANCE.getPlayer().getBlockPos() && blockPos != Wrapper.INSTANCE.getPlayer().getBlockPos().up() && canPlaceHere(blockPos) && isReplaceable(blockPos) && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, Wrapper.INSTANCE.getPlayer().getEyeHeight(Wrapper.INSTANCE.getPlayer().getPose()), 0), Vec3d.ofCenter(blockPos)) <= Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance()) {
+                if (blockPos != Wrapper.INSTANCE.getPlayer().getBlockPos() && blockPos != Wrapper.INSTANCE.getPlayer().getBlockPos().up() && canPlaceHere(blockPos) && isReplaceable(blockPos) && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, Wrapper.INSTANCE.getPlayer().getEyeHeight(Wrapper.INSTANCE.getPlayer().getPose()), 0), Vec3d.ofCenter(blockPos)) <= Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance()) {
                     List<Entity> list = Wrapper.INSTANCE.getWorld().getOtherEntities(null, new Box(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1));
                     boolean collides = !list.isEmpty();
                     if (collides)
                         continue;
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
                     if (!(block instanceof FluidBlock)) {
-                        Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(blockPos, Direction.UP);
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
                         return;
                     }
                     if (getBlockFromHotbar() == -1) {
@@ -126,7 +126,7 @@ public class AntiLiquid extends Feature {
         boolean foundPlacing = false;
         ArrayList<Render3DHelper.BoxStorage> renderList = new ArrayList<>();
         for (BlockPos pos : list) {
-            if (pos != Wrapper.INSTANCE.getPlayer().getBlockPos() && pos != Wrapper.INSTANCE.getPlayer().getBlockPos().up() && isReplaceable(pos) && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, Wrapper.INSTANCE.getPlayer().getEyeHeight(Wrapper.INSTANCE.getPlayer().getPose()), 0), Vec3d.ofCenter(pos)) <= Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance()) {
+            if (pos != Wrapper.INSTANCE.getPlayer().getBlockPos() && pos != Wrapper.INSTANCE.getPlayer().getBlockPos().up() && isReplaceable(pos) && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, Wrapper.INSTANCE.getPlayer().getEyeHeight(Wrapper.INSTANCE.getPlayer().getPose()), 0), Vec3d.ofCenter(pos)) <= Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance()) {
                 Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(pos);
                 Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
                 renderList.add(new Render3DHelper.BoxStorage(box, canPlaceHere(pos) && !foundPlacing ? 0xff00ff00 : 0xffff0000));

@@ -50,9 +50,9 @@ public class ArmorDerp extends Feature {
                 int slot = armorInfo.slot();
                 if (Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(equipmentSlot).getItem() != Items.AIR) {
                     if (InventoryHelper.INSTANCE.isInventoryFull())
-                        Wrapper.INSTANCE.getMultiPlayerGameMode().clickSlot(0, armorSlot, 0, SlotActionType.THROW, Wrapper.INSTANCE.getLocalPlayer());
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickSlot(0, armorSlot, 0, SlotActionType.THROW, Wrapper.INSTANCE.getLocalPlayer());
                     else
-                        Wrapper.INSTANCE.getMultiPlayerGameMode().clickSlot(0, armorSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickSlot(0, armorSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
                 }
                 InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.QUICK_MOVE);
                 stopWatch.reset();

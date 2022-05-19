@@ -1,11 +1,16 @@
 package me.dustin.jex.helper.misc;
 
+import com.mojang.brigadier.ParseResults;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.load.impl.IClientPlayerEntity;
 import net.minecraft.class_7501;
+import net.minecraft.command.CommandSource;
+import net.minecraft.network.encryption.ArgumentSignatureDataMap;
 import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.ChatMessageSigner;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -16,6 +21,14 @@ public enum ChatHelper {
         ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(Wrapper.INSTANCE.getLocalPlayer().getUuid());
         ChatMessageSignature chatSigData = signChatMessage(chatMessageSigner, Text.literal(chat));
         NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(chat, chatSigData, false));
+    }
+
+    public void sendCommand(String command) {
+        ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(Wrapper.INSTANCE.getLocalPlayer().getUuid());
+        ParseResults<CommandSource> parseResults = Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getCommandDispatcher().parse(command, Wrapper.INSTANCE.getMinecraft().getNetworkHandler().getCommandSource());
+        IClientPlayerEntity iClientPlayerEntity = (IClientPlayerEntity)Wrapper.INSTANCE.getLocalPlayer();
+        ArgumentSignatureDataMap argumentSignatureDataMap = iClientPlayerEntity.callSignArguments(chatMessageSigner, parseResults, null);
+        NetworkHelper.INSTANCE.sendPacket(new CommandExecutionC2SPacket(command, chatMessageSigner.timeStamp(), argumentSignatureDataMap, false));
     }
 
     private ChatMessageSignature signChatMessage(ChatMessageSigner signer, Text message) {

@@ -81,7 +81,7 @@ public class AutoBreak extends Feature {
 				((EventPlayerPackets) event).setRotation(rot);
 				rot.normalize();
 				Direction facing = Direction.fromRotation(-rot.getYaw());
-				Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(pos, facing);
+				Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(pos, facing);
 				Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 			}
 		}

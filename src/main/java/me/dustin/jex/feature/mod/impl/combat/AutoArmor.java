@@ -77,9 +77,9 @@ public class AutoArmor extends Feature {
             if (stackToMove != -1) {
                 if (equipped != null) {
                     if (InventoryHelper.INSTANCE.isInventoryFull())
-                        Wrapper.INSTANCE.getMultiPlayerGameMode().clickSlot(0, 8 - armorSlot, 0, SlotActionType.THROW, Wrapper.INSTANCE.getLocalPlayer());
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickSlot(0, 8 - armorSlot, 0, SlotActionType.THROW, Wrapper.INSTANCE.getLocalPlayer());
                     else
-                        Wrapper.INSTANCE.getMultiPlayerGameMode().clickSlot(0, 8 - armorSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickSlot(0, 8 - armorSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
                 }
 
                 InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, stackToMove < 9 ? stackToMove + 36 : stackToMove, SlotActionType.QUICK_MOVE);

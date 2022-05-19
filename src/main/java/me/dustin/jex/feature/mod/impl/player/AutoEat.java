@@ -93,7 +93,7 @@ public class AutoEat extends Feature {
                 if (isEating) {
                     if (pressKey)
                         Wrapper.INSTANCE.getOptions().useKey.setPressed(true);
-                    Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
+                    Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
                 }
             } else if (isEating) {
                 isEating = false;

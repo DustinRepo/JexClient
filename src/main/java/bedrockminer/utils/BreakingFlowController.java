@@ -56,7 +56,7 @@ public class BreakingFlowController {
                 break;
             }
 
-            if (blockInPlayerRange(selectedBlock.getBlockPos(), player, Wrapper.INSTANCE.getMultiPlayerGameMode().getReachDistance())) {
+            if (blockInPlayerRange(selectedBlock.getBlockPos(), player, Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance())) {
                 TargetBlock.Status status = cachedTargetBlockList.get(i).tick();
                 if (status == TargetBlock.Status.RETRACTING) {
                     working = true;

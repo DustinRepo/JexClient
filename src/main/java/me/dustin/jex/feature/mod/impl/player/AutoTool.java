@@ -86,7 +86,7 @@ public class AutoTool extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!Wrapper.INSTANCE.getMultiPlayerGameMode().isBreakingBlock() && attackingBlock) {
+        if (!Wrapper.INSTANCE.getClientPlayerInteractionManager().isBreakingBlock() && attackingBlock) {
             if (returnToSlot) {
                 InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
             }

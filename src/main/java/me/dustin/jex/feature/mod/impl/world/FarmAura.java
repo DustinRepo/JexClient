@@ -52,7 +52,7 @@ public class FarmAura extends Feature {
                 rot.normalize();
                 event.setRotation(rot);
                 Direction facing = Direction.fromRotation(-rot.getYaw());
-                Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(crop, facing);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(crop, facing);
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             }
         }

@@ -43,7 +43,7 @@ public class MassTPA extends Feature {
             return;
         int size = playerList.size();
         PlayerListEntry playerListEntry = playerList.get(new Random().nextInt(size));
-        ChatHelper.INSTANCE.sendChatMessage("/tpa " + playerListEntry.getProfile().getName());
+        ChatHelper.INSTANCE.sendCommand("tpa " + playerListEntry.getProfile().getName());
         stopWatch.reset();
     },new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 

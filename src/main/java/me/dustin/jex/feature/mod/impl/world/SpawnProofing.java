@@ -68,7 +68,7 @@ public class SpawnProofing extends Feature {
                         }
                         InventoryHelper.INSTANCE.setSlot(spawnproofItem, true, true);
                         BlockHitResult blockHitResult = new BlockHitResult(Vec3d.ofBottomCenter(pos), Direction.UP, pos.down(), false);
-                        Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
                         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 
                         ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(spawnproofItem);

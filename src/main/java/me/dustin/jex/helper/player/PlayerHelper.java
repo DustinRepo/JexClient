@@ -77,12 +77,12 @@ public enum PlayerHelper {
     public void block(boolean ignoreNewCombat) {
         if (ignoreNewCombat) {
             if (Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() instanceof SwordItem) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
-                Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.OFF_HAND);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.OFF_HAND);
             }
         } else {
             if (Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.OFF_HAND);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.OFF_HAND);
             }
         }
     }
@@ -182,13 +182,13 @@ public enum PlayerHelper {
         }
         if (placePos == null) {
             if (illegallPlace) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), hand, new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.UP, blockPos, false));
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), hand, new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.UP, blockPos, false));
                 swing(hand);
             }
         } else {
             Vec3d placeVec = WorldHelper.INSTANCE.sideOfBlock(placePos, placeDir);
             BlockHitResult blockHitResult = new BlockHitResult(placeVec, placeDir, placePos, false);
-            Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), hand, blockHitResult);
+            Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), hand, blockHitResult);
             swing(hand);
         }
     }
@@ -490,7 +490,7 @@ public enum PlayerHelper {
 
     public void rightClickBlock(BlockPos blockPos, Hand hand, boolean insideBlock) {
         BlockHitResult blockHitResult = new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.DOWN, blockPos, insideBlock);
-        Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), hand, blockHitResult);
+        Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), hand, blockHitResult);
     }
 
     public ItemStack mainHandStack() {
@@ -502,7 +502,7 @@ public enum PlayerHelper {
     }
 
     public void useItem(Hand hand) {
-        Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getLocalPlayer(), hand);
+        Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), hand);
     }
 
     public void stopUsingItem() {

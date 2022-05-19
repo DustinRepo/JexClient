@@ -146,7 +146,7 @@ public class AutoLibrarianRoll extends Feature {
             if (lecternPos == null || tradeFound) {
                 checkedTrades = false;
             } else if (WorldHelper.INSTANCE.getBlock(lecternPos) == Blocks.LECTERN) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(lecternPos, Direction.UP);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(lecternPos, Direction.UP);
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             } else if (WorldHelper.INSTANCE.getBlock(lecternPos) == Blocks.AIR) {
                 checkedTrades = false;

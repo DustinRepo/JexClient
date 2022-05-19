@@ -37,7 +37,7 @@ public class ThrowPearl extends Feature {
                 if (slot != -1) {
                     InventoryHelper.INSTANCE.setSlot(slot, true, true);
                 }
-                Wrapper.INSTANCE.getMultiPlayerGameMode().interactItem(Wrapper.INSTANCE.getPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
                 NetworkHelper.INSTANCE.sendPacket(new HandSwingC2SPacket(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND));
                 if (slot != -1) {
                     InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);

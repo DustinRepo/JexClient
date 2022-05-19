@@ -76,11 +76,11 @@ public class WalkPathProcessor extends PathProcessor
 		float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
 
 		if (WorldHelper.INSTANCE.getBlockState(nextPos).getMaterial().blocksMovement()) {
-			Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(nextPos, Direction.UP);
+			Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(nextPos, Direction.UP);
 			Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
 			return;
 		} else if (WorldHelper.INSTANCE.getBlockState(nextPos.up()).getMaterial().blocksMovement()) {
-			Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(nextPos.up(), Direction.UP);
+			Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(nextPos.up(), Direction.UP);
 			Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
 			return;
 		}

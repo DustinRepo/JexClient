@@ -64,7 +64,7 @@ public class Tunneller extends Feature {
                         return;
                     }
                 } else if (WorldHelper.INSTANCE.isWaterlogged(liquidCheckSpot)){
-                    Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(liquidCheckSpot, Direction.UP);
+                    Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(liquidCheckSpot, Direction.UP);
                     Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                     return;
                 }
@@ -72,7 +72,7 @@ public class Tunneller extends Feature {
         //break-a da blocks
         for (BlockPos blockPos : getBlocksInTunnel()) {
             if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().updateBlockBreakingProgress(blockPos, Direction.UP);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
                 Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                 return;
             }

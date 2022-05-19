@@ -46,7 +46,10 @@ public class Spammer extends Feature {
         while (containsSyntax(sentence)) {
             sentence = parseSyntax(sentence);
         }
-        ChatHelper.INSTANCE.sendChatMessage(sentence);
+        if (sentence.startsWith("/"))
+            ChatHelper.INSTANCE.sendCommand(sentence.substring(1));
+        else
+            ChatHelper.INSTANCE.sendChatMessage(sentence);
         stopWatch.reset();
         currentSpot++;
         if (currentSpot > spamString.split("\n").length - 1)

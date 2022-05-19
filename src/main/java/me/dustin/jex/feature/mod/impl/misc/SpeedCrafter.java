@@ -51,7 +51,7 @@ public class SpeedCrafter extends Feature {
             for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList) {
                 for (Recipe<?> recipe : recipeResultCollection.getRecipes(true)) {
                     if (recipe.getOutput().getItem() == craftingItem) {
-                        Wrapper.INSTANCE.getMultiPlayerGameMode().clickRecipe(craftingScreenHandler.syncId, recipe, true);
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickRecipe(craftingScreenHandler.syncId, recipe, true);
                         InventoryHelper.INSTANCE.windowClick(craftingScreenHandler, 0, SlotActionType.QUICK_MOVE, 1);
                         stopWatch.reset();
                         if (delay > 0)

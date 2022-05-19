@@ -36,7 +36,7 @@ public class Triggerbot extends Feature {
         if (Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof EntityHitResult entityHitResult) {
             Entity entity = entityHitResult.getEntity();
             if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
-                Wrapper.INSTANCE.getMultiPlayerGameMode().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             }
         }

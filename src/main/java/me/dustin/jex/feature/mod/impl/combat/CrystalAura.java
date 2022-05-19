@@ -100,7 +100,7 @@ public class CrystalAura extends Feature {
 					if (shouldAttack(enderCrystalEntity)) {
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
-						Wrapper.INSTANCE.getMultiPlayerGameMode().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
+						Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
 						Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 					}
 				}
@@ -108,7 +108,7 @@ public class CrystalAura extends Feature {
 		} else {
 			if (placePos != null) {
 				BlockHitResult blockHitResult = new BlockHitResult(new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()), Direction.UP, placePos, false);
-				Wrapper.INSTANCE.getMultiPlayerGameMode().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND, blockHitResult);
+				Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND, blockHitResult);
 				Wrapper.INSTANCE.getLocalPlayer().swingHand(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
 				placePos = null;
 			}
