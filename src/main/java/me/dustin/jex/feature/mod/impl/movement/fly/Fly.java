@@ -12,6 +12,7 @@ import me.dustin.jex.event.player.EventIsPlayerTouchingWater;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.CreativeFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.NormalFly;
@@ -30,7 +31,6 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Fly in survival", key = GLFW.GLFW_KEY_F)
 public class Fly extends Feature {
 
     @Op(name = "Mode", all = {"Normal", "Creative", "Tight", "3D"})
@@ -50,6 +50,7 @@ public class Fly extends Feature {
     private String lastMode;
 
     public Fly() {
+        super(Category.MOVEMENT,  "Fly in survival", GLFW.GLFW_KEY_F);
         new NormalFly();
         new TightFly();
         new ThreeDFly();

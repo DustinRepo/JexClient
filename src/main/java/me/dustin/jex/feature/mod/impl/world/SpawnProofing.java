@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
@@ -29,7 +30,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically place carpets/slabs to spawn proof around you")
 public class SpawnProofing extends Feature {
 
     @Op(name = "Delay", max = 1000, inc = 10)
@@ -40,6 +40,10 @@ public class SpawnProofing extends Feature {
     public boolean useGlass = true;
 
     private final StopWatch stopWatch = new StopWatch();
+
+    public SpawnProofing() {
+        super(Category.WORLD, "Automatically place carpets/slabs to spawn proof around you");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

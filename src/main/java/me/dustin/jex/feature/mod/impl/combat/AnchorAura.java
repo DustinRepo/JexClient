@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -32,7 +33,6 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.events.core.annotate.EventPointer;
 import java.awt.*;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically place/charge/explode respawn anchors near players")
 public class AnchorAura extends Feature {
 
     @Op(name = "Mode", all = {"Suicidal", "Risky", "Safe"})
@@ -61,9 +61,13 @@ public class AnchorAura extends Feature {
     @OpChild(name = "Place Distance", min = 1, max = 6, inc = 0.1f, parent = "Auto Place")
     public float placeDistance = 3.5f;
 
-    private StopWatch placeStopWatch = new StopWatch();
-    private StopWatch attackStopWatch = new StopWatch();
+    private final StopWatch placeStopWatch = new StopWatch();
+    private final StopWatch attackStopWatch = new StopWatch();
     private BlockPos placePos;
+
+    public AnchorAura() {
+        super(Category.COMBAT, "Automatically place/charge/explode respawn anchors near players");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

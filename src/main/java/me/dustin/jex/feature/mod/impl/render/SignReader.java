@@ -5,6 +5,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -19,7 +20,6 @@ import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.option.annotate.Op;
 import java.util.HashMap;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Display the text of a hovered sign on screen.")
 public class SignReader extends Feature {
 
     @Op(name = "Scale", min = 0.1f, max = 2, inc = 0.05f)
@@ -29,7 +29,11 @@ public class SignReader extends Feature {
     @Op(name = "Backgrounds")
     public boolean backgrounds = true;
 
-    private HashMap<SignBlockEntity, Vec3d> positions = Maps.newHashMap();
+    private final HashMap<SignBlockEntity, Vec3d> positions = Maps.newHashMap();
+
+    public SignReader() {
+        super(Category.VISUAL, "Display the text of a hovered sign on screen.");
+    }
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {

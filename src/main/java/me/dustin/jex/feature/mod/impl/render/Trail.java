@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.file.core.ConfigManager;
@@ -18,7 +19,6 @@ import net.minecraft.particle.ParticleTypes;
 import java.util.ArrayList;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Render a configurable list of particles as a trail behind you. Use command .trail to configure")
 public class Trail extends Feature {
 
     @Op(name = "Show on Friends")
@@ -26,6 +26,10 @@ public class Trail extends Feature {
 
     private static final ArrayList<ParticleType<?>> particles = new ArrayList<>();
     private final Random r = new Random();
+
+    public Trail() {
+        super(Category.VISUAL, "Render a configurable list of particles as a trail behind you. Use command .trail to configure");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

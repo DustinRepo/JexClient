@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -13,13 +14,16 @@ import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.Formatting;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically disconnect when your health gets below a certain value")
 public class AutoDisconnect extends Feature {
 
     @Op(name = "Mode", all = {"Disconnect", "Chars", "Invalid Pos"})
     public String mode = "Disconnect";
     @Op(name = "Health", min = 1, max = 10)
     public int health = 5;
+
+    public AutoDisconnect() {
+        super(Category.MISC, "Automatically disconnect when your health gets below a certain value");
+    }
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {

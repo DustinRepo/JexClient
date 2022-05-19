@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Block;
@@ -20,13 +21,16 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.")
 public class BedrockObf extends Feature {
 
     private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Chunk> obfuscatedChunks = new ConcurrentLinkedQueue<>();
     private final Random random = new Random();
     private Thread thread;
+
+    public BedrockObf() {
+        super(Category.WORLD, "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.");
+    }
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {

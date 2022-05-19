@@ -4,11 +4,15 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically mine any block you hover over.")
 public class AutoMine extends Feature {
+
+    public AutoMine() {
+        super(Category.WORLD, "Automatically mine any block you hover over.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

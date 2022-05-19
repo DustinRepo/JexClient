@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -20,13 +21,16 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.events.core.annotate.EventPointer;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Puts on the best armor in your inventory automatically.")
 public class AutoArmor extends Feature {
 
     @Op(name = "Delay (MS)", max = 1000)
     public int delay = 65;
 
-    private StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
+
+    public AutoArmor() {
+        super(Category.COMBAT, "Puts on the best armor in your inventory automatically.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

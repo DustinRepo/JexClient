@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderCrosshair;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -14,7 +15,6 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Draw a custom crosshair on-screen.")
 public class Crosshair extends Feature {
 
 	@Op(name = "Color", isColor = true)
@@ -37,6 +37,10 @@ public class Crosshair extends Feature {
 
 	private int spinAmount;
 	private final StopWatch stopWatch = new StopWatch();
+
+	public Crosshair() {
+		super(Category.VISUAL, "Draw a custom crosshair on-screen.");
+	}
 
 	@EventPointer
 	private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {

@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -15,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically attack entities you hover over")
 public class Triggerbot extends Feature {
 
     @Op(name = "Player")
@@ -26,6 +26,10 @@ public class Triggerbot extends Feature {
     public boolean hostiles = true;
     @Op(name = "Neutral")
     public boolean neutrals = true;
+
+    public Triggerbot() {
+        super(Category.COMBAT, "Automatically attack entities you hover over");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

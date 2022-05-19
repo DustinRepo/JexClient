@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -12,11 +13,14 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.ChunkPos;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Prevent yourself from falling to the void")
 public class AntiVoid extends Feature {
 
     @Op(name = "Mode", all = {"AntiCheat", "Float"})
     public String mode = "AntiCheat";
+
+    public AntiVoid() {
+        super(Category.MOVEMENT, "Prevent yourself from falling to the void");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

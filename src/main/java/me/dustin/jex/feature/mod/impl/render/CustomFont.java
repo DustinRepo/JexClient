@@ -1,11 +1,10 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import com.google.common.collect.Maps;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.render.font.NahrFont;
-import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -15,9 +14,7 @@ import me.dustin.jex.feature.option.types.StringArrayOption;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the font in aspects of the game. Disable then re-enable to reload fonts from folder (.minecraft/JexClient/fonts)")
 public class CustomFont extends Feature {
     public static CustomFont INSTANCE;
 
@@ -32,6 +29,7 @@ public class CustomFont extends Feature {
     public String font = "Verdana";
 
     public CustomFont() {
+        super(Category.VISUAL, "Change the font in aspects of the game. Disable then re-enable to reload fonts from folder (.minecraft/JexClient/fonts)");
         INSTANCE = this;
     }
 

@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.AutoArmor;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -18,7 +19,6 @@ import net.minecraft.screen.slot.SlotActionType;
 import java.util.ArrayList;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Spam switch between armor in your inventory")
 public class ArmorDerp extends Feature {
 
     @Op(name = "Delay (MS)", max = 1000, inc = 10)
@@ -27,6 +27,10 @@ public class ArmorDerp extends Feature {
     private boolean autoArmor;
     private final Random random = new Random();
     private final StopWatch stopWatch = new StopWatch();
+
+    public ArmorDerp() {
+        super(Category.MISC, "Spam switch between armor in your inventory");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

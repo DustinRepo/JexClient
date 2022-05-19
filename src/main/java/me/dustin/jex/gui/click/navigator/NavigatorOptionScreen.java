@@ -84,7 +84,7 @@ public class NavigatorOptionScreen extends Screen {
         if (sizeModifier == 1) {//finished the fade in effect
             FontHelper.INSTANCE.drawCenteredString(matrices, feature.getName(), navigator.navigatorX + (navigator.navigatorWidth / 2.f), navigator.navigatorY - 12, -1);
 
-            FontHelper.INSTANCE.drawWithShadow(matrices, "Category: " + StringUtils.capitalize(feature.getFeatureCategory().name().toLowerCase()), navigator.navigatorX + 2, navigator.navigatorY + 2, -1);
+            FontHelper.INSTANCE.drawWithShadow(matrices, "Category: " + StringUtils.capitalize(feature.getCategory().name().toLowerCase()), navigator.navigatorX + 2, navigator.navigatorY + 2, -1);
             FontHelper.INSTANCE.drawWithShadow(matrices, "Description:", navigator.navigatorX + 2, navigator.navigatorY + 18, -1);
             FontHelper.INSTANCE.drawWithShadow(matrices, feature.getDescription(), navigator.navigatorX + 2, navigator.navigatorY + 30, -1);
             FontHelper.INSTANCE.drawWithShadow(matrices, "Settings:", navigator.navigatorX + 2, navigator.navigatorY + 50, -1);

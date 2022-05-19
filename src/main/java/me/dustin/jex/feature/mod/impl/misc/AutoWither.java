@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -16,12 +17,15 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically create withers by just placing soul sand")
 public class AutoWither extends Feature {
 
-    int stage = 0;
-    boolean creatingWither = false;
-    PlayerInteractBlockC2SPacket packet = null;
+    private int stage = 0;
+    private boolean creatingWither = false;
+    private PlayerInteractBlockC2SPacket packet = null;
+
+    public AutoWither() {
+        super(Category.MISC, "Automatically create withers by just placing soul sand");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

@@ -6,6 +6,7 @@ import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventWalkOffBlock;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Scaffold;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Place blocks under yourself automatically when walking on liquids.")
 public class AntiLiquid extends Feature {
 
     @Op(name = "Place Mode", all = {"Post", "Pre"})
@@ -55,6 +55,10 @@ public class AntiLiquid extends Feature {
     private BlockPos pos;
 
     private ArrayList<BlockPos> list;
+
+    public AntiLiquid() {
+        super(Category.WORLD, "Place blocks under yourself automatically when walking on liquids.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

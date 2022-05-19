@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -23,7 +24,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.events.core.annotate.EventPointer;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically trap people in boxes of obsidian")
 public class AutoTrap extends Feature {
 
     @Op(name = "Rotate")
@@ -36,8 +36,12 @@ public class AutoTrap extends Feature {
     public int placeColor = 0xffff0000;
 
     private int stage = 0;
-    private StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
     private BlockPos placingPos;
+
+    public AutoTrap() {
+        super(Category.COMBAT, "Automatically trap people in boxes of obsidian");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

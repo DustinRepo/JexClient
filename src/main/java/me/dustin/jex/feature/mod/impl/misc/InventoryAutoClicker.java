@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -14,12 +15,10 @@ import net.minecraft.screen.slot.SlotActionType;
 import me.dustin.jex.feature.mod.core.Feature;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Hold shift+click or ctrl+q to automatically do them.")
 public class InventoryAutoClicker extends Feature {
 
     public InventoryAutoClicker() {
-        this.setName("InvAutoClicker");
-        this.setDisplayName("InvAutoClicker");
+        super("InvAutoClicker", Category.MISC, "Hold shift+click or ctrl+q to automatically do them.");
     }
 
     @EventPointer

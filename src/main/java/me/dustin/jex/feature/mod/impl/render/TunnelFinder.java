@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -24,17 +25,19 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Find tunnels in the nether that might lead to bases.")
 public class TunnelFinder extends Feature {
 
     @Op(name = "Color", isColor = true)
     public int color = new Color(175, 250, 0).getRGB();
 
-
     private final ConcurrentLinkedQueue<BlockPos> positions = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
 
     private Thread thread;
+
+    public TunnelFinder() {
+        super(Category.VISUAL, "Find tunnels in the nether that might lead to bases.");
+    }
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {

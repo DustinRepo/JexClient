@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.misc;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventMouseButton;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FriendFile;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -14,8 +15,11 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Middle click people to add them as friends.")
 public class MiddleClickFriend extends Feature {
+
+    public MiddleClickFriend() {
+        super(Category.MISC, "Middle click people to add them as friends.");
+    }
 
     @EventPointer
     private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {

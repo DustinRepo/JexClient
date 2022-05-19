@@ -1,6 +1,6 @@
 package me.dustin.jex.feature.mod.impl.player;
 
-import me.dustin.jex.JexClient;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -13,8 +13,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically swap your Elytra and your Chestplate on toggle")
 public class ElytraSwap extends Feature {
+
+    public ElytraSwap() {
+        super(Category.PLAYER, "Automatically swap your Elytra and your Chestplate on toggle");
+    }
 
     @Override
     public void onEnable() {

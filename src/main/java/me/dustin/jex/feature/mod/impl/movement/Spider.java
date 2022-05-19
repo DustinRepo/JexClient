@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -12,11 +13,14 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Climb up walls like a spider.")
 public class Spider extends Feature {
 
 	@Op(name = "Mode", all = { "Vanilla", "NCP" })
 	public String mode = "Vanilla";
+
+	public Spider() {
+		super(Category.MOVEMENT, "Climb up walls like a spider.");
+	}
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

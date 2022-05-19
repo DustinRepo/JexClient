@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -13,11 +14,14 @@ import net.minecraft.block.LadderBlock;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Move faster on ladders")
 public class FastLadder extends Feature {
 
     @Op(name = "SkipLadder")
     public boolean skipLadder = true;
+
+    public FastLadder() {
+        super(Category.MOVEMENT, "Move faster on ladders");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

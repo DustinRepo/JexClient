@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.world;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -20,7 +21,6 @@ import net.minecraft.util.math.Vec3d;
 import java.awt.*;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Show a 128 block radius sphere around an area to see all spots mobs could spawn in that radius.")
 public class SpawnSphere extends Feature {
 
     @Op(name = "Density", min = 25, max = 100, inc = 5)
@@ -35,6 +35,10 @@ public class SpawnSphere extends Feature {
     public Vec3d pos;
     private final ArrayList<BlockPos> innerSphere = new ArrayList<>();
     private final ArrayList<BlockPos> outerSphere = new ArrayList<>();
+
+    public SpawnSphere() {
+        super(Category.WORLD, "Show a 128 block radius sphere around an area to see all spots mobs could spawn in that radius.");
+    }
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {

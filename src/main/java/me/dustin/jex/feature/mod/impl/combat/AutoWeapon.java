@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventAttackEntity;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -15,13 +16,16 @@ import net.minecraft.item.*;
 
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically swap to the best weapon when attacking.")
 public class AutoWeapon extends Feature {
 
     @Op(name = "Living Only")
     public boolean livingOnly = true;
     @Op(name = "Mode", all = {"Sword", "Sword&Axe", "All Tools"})
     public String mode = "Sword";
+
+    public AutoWeapon() {
+        super(Category.COMBAT, "Automatically swap to the best weapon when attacking.");
+    }
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {

@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.world;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -13,7 +14,6 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Spam XP Bottles on a button press")
 public class XPBottleSpammer extends Feature {
 
     @Op(name = "Speed", min = 1, max = 5)
@@ -21,6 +21,10 @@ public class XPBottleSpammer extends Feature {
 
     @Op(name = "Throw Key", isKeybind = true)
     public int throwKey = KeyboardHelper.INSTANCE.MIDDLE_CLICK;
+
+    public XPBottleSpammer() {
+        super(Category.WORLD, "Spam XP Bottles on a button press");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

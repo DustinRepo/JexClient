@@ -6,6 +6,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClickBlockFilter;
 import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.event.world.EventPlayerInteractionTick;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -14,8 +15,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Break bedrock in survival mode using a well-known bug. Code from https://github.com/aria1th/Fabric-Bedrock-Miner")
 public class BedrockBreaker extends Feature {
+
+    public BedrockBreaker() {
+        super(Category.WORLD, "Break bedrock in survival mode using a well-known bug. Code from https://github.com/aria1th/Fabric-Bedrock-Miner");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerInteractionTick> eventPlayerInteractionTickEventListener = new EventListener<>(event -> {

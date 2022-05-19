@@ -7,6 +7,7 @@ import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventLoadChunk;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -22,13 +23,16 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Attempts to determine which chunks are newly generated.")
 public class NewChunks extends Feature {
 
     @Op(name = "New Chunk Color", isColor = true)
     public int newChunkColor = 0xffff0000;
     private final ArrayList<Chunk> newChunks = new ArrayList<>();
     private final ArrayList<Chunk> oldChunks = new ArrayList<>();
+
+    public NewChunks() {
+        super(Category.WORLD, "Attempts to determine which chunks are newly generated.");
+    }
 
     @EventPointer
     private final EventListener<EventLoadChunk> eventLoadChunkEventListener = new EventListener<>(event -> {

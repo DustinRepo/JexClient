@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -20,7 +21,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Prevent yourself from being detected as AFK and potentially kicked")
 public class AntiAFK extends Feature {
 
     @Op(name = "Mode", all = {"Wander", "Swing", "Jump", "Chat"})
@@ -33,6 +33,10 @@ public class AntiAFK extends Feature {
 
     private BlockPos afkSpot;
     private BlockPos[] lastSpots;
+
+    public AntiAFK() {
+        super(Category.MISC, "Prevent yourself from being detected as AFK and potentially kicked");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventSpawnEntity;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -24,7 +25,6 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk. Good for finding Slime Chunks on servers without the seed.")
 public class SlimeSpawnMarker extends Feature {
 
     @Op(name = "Notify player")
@@ -40,6 +40,10 @@ public class SlimeSpawnMarker extends Feature {
 
     private final ArrayList<ChunkPos> chunkPositions = new ArrayList<>();
     private final File chunksFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "slimes.txt");
+
+    public SlimeSpawnMarker() {
+        super(Category.WORLD, "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk. Good for finding Slime Chunks on servers without the seed.");
+    }
 
     @EventPointer
     private final EventListener<EventSpawnEntity> eventSpawnEntityEventListener = new EventListener<>(event -> {

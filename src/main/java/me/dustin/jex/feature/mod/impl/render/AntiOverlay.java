@@ -6,11 +6,11 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ApplyFogFilter;
 import me.dustin.jex.event.render.EventSetupFog;
 import me.dustin.jex.event.render.EventRenderOverlay;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.client.render.CameraSubmersionType;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Remove overlays")
 public class AntiOverlay extends Feature {
 
     @Op(name = "Water")
@@ -31,6 +31,10 @@ public class AntiOverlay extends Feature {
     public boolean portal = true;
     @Op(name = "Vignette")
     public boolean vignette = true;
+
+    public AntiOverlay() {
+        super(Category.VISUAL, "Remove overlays");
+    }
 
     @EventPointer
     private final EventListener<EventRenderOverlay> eventRenderOverlayEventListener = new EventListener<>(event -> {

@@ -5,6 +5,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.MultiAura;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.SingleAura;
@@ -28,7 +29,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Attack entities around you.", key = GLFW.GLFW_KEY_R)
 public class KillAura extends Feature {
     public static KillAura INSTANCE;
 
@@ -117,6 +117,7 @@ public class KillAura extends Feature {
     public ArrayList<PlayerEntity> swung = new ArrayList<>();
 
     public KillAura() {
+        super(Category.COMBAT, "Attack entities around you.", GLFW.GLFW_KEY_R);
         INSTANCE = this;
         new SingleAura();
         new MultiAura();

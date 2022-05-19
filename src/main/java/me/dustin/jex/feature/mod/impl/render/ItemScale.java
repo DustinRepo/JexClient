@@ -3,12 +3,12 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderItem;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.client.util.math.MatrixStack;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the scale and positioning of items in your hands")
 public class ItemScale extends Feature {
 
     @Op(name = "Right Hand")
@@ -32,6 +32,10 @@ public class ItemScale extends Feature {
     public float leftHandY;
     @OpChild(name = "LH Z", min = -2, max = 2, inc = 0.05f, parent = "Left Hand")
     public float leftHandZ;
+
+    public ItemScale() {
+        super(Category.VISUAL, "Change the scale and positioning of items in your hands");
+    }
 
     @EventPointer
     private final EventListener<EventRenderItem> eventRenderItemEventListener = new EventListener<>(event -> {

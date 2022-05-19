@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
@@ -13,7 +14,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Randomly look around for other players")
 public class Derp extends Feature {
 
     @Op(name = "Mode", all = {"Random", "Pitch Roll", "Yaw Roll", "Both Roll"})
@@ -26,6 +26,10 @@ public class Derp extends Feature {
     public boolean showSwing = true;
 
     private int yaw, pitch;
+
+    public Derp() {
+        super(Category.MISC, "Randomly look around for other players");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

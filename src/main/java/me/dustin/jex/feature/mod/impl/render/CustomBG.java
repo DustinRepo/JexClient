@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderBackground;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -20,7 +21,6 @@ import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.Matrix4f;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Draws a custom background rather than the simple dark one")
 public class CustomBG extends Feature {
 
     @Op(name = "InGame Only")
@@ -29,7 +29,11 @@ public class CustomBG extends Feature {
     float offset = 0;
     float a = 0.49f;
     boolean up = false;
-    private StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
+
+    public CustomBG() {
+        super(Category.VISUAL, "Draws a custom background rather than the simple dark one");
+    }
 
     @EventPointer
     private final EventListener<EventRenderBackground> eventRenderBackgroundEventListener = new EventListener<>(event -> {

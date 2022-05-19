@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.SetScreenFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -13,7 +14,6 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "The custom main menu for Jex", enabled = true, visible = false)
 public class CustomMainMenu extends Feature {
 
     @Op(name = "Background")
@@ -22,6 +22,10 @@ public class CustomMainMenu extends Feature {
     public boolean scroll;
     @OpChild(name = "Delay (Seconds)", min = 1, max = 60, parent = "Scroll")
     public int scrollDelay = 5;
+
+    public CustomMainMenu() {
+        super("CustomMainMenu", Category.VISUAL, "The custom main menu for Jex", true, false, 0);
+    }
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {

@@ -7,6 +7,7 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.world.xray.impl.NormalXray;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -22,7 +23,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Have 200 iq while mining. Not cheating I promise.", key = GLFW.GLFW_KEY_X)
 public class Xray extends Feature {
     public static Xray INSTANCE;
 
@@ -36,6 +36,7 @@ public class Xray extends Feature {
     public String lastMode;
 
     public Xray() {
+        super(Category.WORLD, "Have 200 iq while mining. Not cheating I promise.", GLFW.GLFW_KEY_X);
         //new OpacityXray();
         new NormalXray();
         INSTANCE = this;

@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRenderWidget;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -22,7 +23,6 @@ import net.minecraft.util.math.MathHelper;
 import java.util.HashMap;
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the visuals on widgets like buttons from Minecraft", enabled = true, visible = false)
 public class CustomWidgets extends Feature {
 
     @Op(name = "Shrink Speed", min = 1, max = 10, inc = 0.1f)
@@ -32,6 +32,10 @@ public class CustomWidgets extends Feature {
 
     private final Map<ClickableWidget, Integer> hoverChecks = new HashMap<>();
     private final Map<ClickableWidget, Float> offsets = new HashMap<>();
+
+    public CustomWidgets() {
+        super("CustomWidgets", Category.VISUAL, "Change the visuals on widgets like buttons from Minecraft", true, false, 0);
+    }
 
     @EventPointer
     private final EventListener<EventRenderWidget> eventRenderWidgetEventListener = new EventListener<>(event -> {

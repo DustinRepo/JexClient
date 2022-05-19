@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventAttackEntity;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -12,7 +13,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically deal critical strikes when attacking.")
 public class Criticals extends Feature {
 
     @Op(name = "Living Only")
@@ -21,6 +21,10 @@ public class Criticals extends Feature {
     public boolean extraParticles;
     @OpChild(name = "Amount", min = 1, max = 20, inc = 1, parent = "Extra Particles")
     public int amount = 5;
+
+    public Criticals() {
+        super(Category.COMBAT, "Automatically deal critical strikes when attacking.");
+    }
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {

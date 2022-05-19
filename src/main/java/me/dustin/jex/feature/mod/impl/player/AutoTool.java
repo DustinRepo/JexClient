@@ -7,6 +7,7 @@ import me.dustin.jex.event.filters.ClickBlockFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventClickBlock;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -19,7 +20,6 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.HoeItem;
 import net.minecraft.item.ItemStack;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Switch to the best tool for your needs.")
 public class AutoTool extends Feature {
 
     @Op(name = "Return to Original Slot")
@@ -27,6 +27,10 @@ public class AutoTool extends Feature {
 
     private boolean attackingBlock;
     private int savedSlot;
+
+    public AutoTool() {
+        super(Category.PLAYER, "Switch to the best tool for your needs.");
+    }
 
     @EventPointer
     private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {

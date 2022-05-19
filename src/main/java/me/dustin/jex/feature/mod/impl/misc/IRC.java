@@ -8,6 +8,7 @@ import me.dustin.jex.event.filters.DrawScreenFilter;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRenderChatHud;
 import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -23,7 +24,6 @@ import net.minecraft.util.Formatting;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Connect to an IRC server to chat with other Jex users", enabled = true)
 public class IRC extends Feature {
 
     @Op(name = "Send Prefix", maxStringLength = 2)
@@ -41,6 +41,10 @@ public class IRC extends Feature {
         ircChatOverride = false;
         ircClient = null;
     };
+
+    public IRC() {
+        super("IRC", Category.MISC, "Connect to an IRC server to chat with other Jex users", true, true, 0);
+    }
 
 
     @Override

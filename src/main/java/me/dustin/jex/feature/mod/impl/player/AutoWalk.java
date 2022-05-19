@@ -4,12 +4,16 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.option.KeyBinding;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically hold W")
 public class AutoWalk extends Feature {
+
+    public AutoWalk() {
+        super(Category.PLAYER, "Automatically hold W");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

@@ -1,16 +1,14 @@
 package me.dustin.jex.feature.mod.impl.player;
 
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.filters.ClickBlockFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventGetReachDistance;
 import me.dustin.jex.event.player.EventHasExtendedReach;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.event.world.EventBreakBlock;
 import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.event.world.EventInteractBlock;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -20,12 +18,15 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Stretch Armstrong, but nerfed.")
 public class Reach extends Feature {
     @Op(name = "Distance", min = 5, max = 24, inc = 0.05f)
     public float distance = 5.5f;
 
     private Vec3d storedPos;
+
+    public Reach() {
+        super(Category.PLAYER, "Stretch Armstrong, but nerfed.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

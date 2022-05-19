@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -19,15 +20,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Spam the chat")
 public class Spammer extends Feature {
     @Op(name = "Source", all = {"Spam.txt", "Jex AdBot", "Toxic"})
     public String source = "Spam.txt";
     @Op(name = "Delay (MS)", max = 30000, inc = 10)
     public int delay = 500;
     private String spamString;
-    private StopWatch stopWatch = new StopWatch();
     private int currentSpot = 0;
+    private final StopWatch stopWatch = new StopWatch();
+
+    public Spammer() {
+        super(Category.MISC, "Spam the chat");
+    }
 
     public static void createSpamFile() {
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(baseFileStr.split("\n")));

@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerUpdates;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
@@ -24,7 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Eat food when hunger is low.")
 public class AutoEat extends Feature {
 
     public static boolean isEating;
@@ -41,6 +41,10 @@ public class AutoEat extends Feature {
     private int lastFood;
 
     private final StopWatch baritoneStopWatch = new StopWatch();
+
+    public AutoEat() {
+        super(Category.PLAYER, "Eat food when hunger is low.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerUpdates> eventPlayerUpdatesEventListener = new EventListener<>(event -> {

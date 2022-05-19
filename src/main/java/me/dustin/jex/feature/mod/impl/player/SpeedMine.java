@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.ClickBlockFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventClickBlock;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -16,7 +17,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Break blocks faster")
 public class SpeedMine extends Feature {
 
     @Op(name = "Mode", all = {"Progress", "Instant", "Haste"})
@@ -29,6 +29,10 @@ public class SpeedMine extends Feature {
     public float progress = 0.65f;
 
     private boolean givenHaste;
+
+    public SpeedMine() {
+        super(Category.PLAYER, "Break blocks faster");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

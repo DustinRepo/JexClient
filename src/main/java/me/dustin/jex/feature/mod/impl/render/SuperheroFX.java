@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -20,7 +21,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import java.util.ArrayList;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Add comic \"Pow!\" and others to the game")
 public class SuperheroFX extends Feature{
 
     @Op(name = "Visible Only")
@@ -34,6 +34,10 @@ public class SuperheroFX extends Feature{
 
     private final ArrayList<LivingEntity> attacked = new ArrayList<>();
     private final ArrayList<KapowParticle> particles = new ArrayList<>();
+
+    public SuperheroFX() {
+        super(Category.VISUAL, "Add comic \"Pow!\" and others to the game");
+    }
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {

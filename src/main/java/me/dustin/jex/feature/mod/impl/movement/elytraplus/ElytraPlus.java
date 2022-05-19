@@ -5,6 +5,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.elytraplus.impl.AlwaysBoostElytraFly;
 import me.dustin.jex.feature.mod.impl.movement.elytraplus.impl.BoostElytraFly;
@@ -20,7 +21,6 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Change how the Elytra flies.")
 public class ElytraPlus extends Feature {
 
     @Op(name = "Auto Elytra")
@@ -50,6 +50,7 @@ public class ElytraPlus extends Feature {
     private String lastMode;
 
     public ElytraPlus() {
+        super(Category.MOVEMENT, "Change how the Elytra flies.");
         new AlwaysBoostElytraFly();
         new BoostElytraFly();
         new ECMEElytraFly();

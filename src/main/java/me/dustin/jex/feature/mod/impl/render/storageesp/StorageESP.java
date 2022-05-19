@@ -6,6 +6,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.render.storageesp.impl.OutlineStorageESP;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.entity.BarrelBlockEntity;
@@ -31,7 +32,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import java.awt.*;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show storage blocks through walls")
 public class StorageESP extends Feature {
 
     @Op(name = "Mode", all = {"Box", "Shader"})
@@ -90,6 +90,7 @@ public class StorageESP extends Feature {
 
     private String lastMode;
     public StorageESP() {
+        super(Category.VISUAL, "Show storage blocks through walls");
         new OutlineStorageESP();
         new BoxStorageESP();
     }

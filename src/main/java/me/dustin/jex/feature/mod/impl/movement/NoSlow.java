@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventSlowdown;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Block;
@@ -12,7 +13,6 @@ import net.minecraft.block.Blocks;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Prevent actions from slowing you down")
 public class NoSlow extends Feature {
 
 	@Op(name = "Use Item")
@@ -25,6 +25,10 @@ public class NoSlow extends Feature {
 	public boolean berryBush = true;
 	@Op(name = "Powder Snow")
 	public boolean powderSnow = true;
+
+	public NoSlow() {
+		super(Category.MOVEMENT, "Prevent actions from slowing you down");
+	}
 
 	@EventPointer
 	private final EventListener<EventSlowdown> eventSlowdownEventListener = new EventListener<>(event -> {

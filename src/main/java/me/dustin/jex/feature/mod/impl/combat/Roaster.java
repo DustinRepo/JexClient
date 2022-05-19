@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -24,7 +25,6 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Roast your friends.")
 public class Roaster extends Feature {
 
     @Op(name = "Player")
@@ -43,9 +43,12 @@ public class Roaster extends Feature {
     @Op(name = "Swing")
     public boolean swing = true;
 
+    private Hand hand = null;
+    private BlockPos blockPos = null;
 
-    Hand hand = null;
-    BlockPos blockPos = null;
+    public Roaster() {
+        super(Category.COMBAT, "Roast your friends.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

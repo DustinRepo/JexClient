@@ -8,6 +8,7 @@ import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -29,7 +30,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.ConcurrentModificationException;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically detect a fish on the hook")
 public class AutoFish extends Feature {
 
     @Op(name = "Sound")
@@ -47,12 +47,15 @@ public class AutoFish extends Feature {
     @Op(name = "Show If OpenWater")
     public boolean showIfOpenWater = true;
 
+    private double lastY = -1;
+    private boolean hasReeled = false;
+    private StopWatch stopWatch = new StopWatch();
+    private StopWatch stopWatch1 = new StopWatch();
+    private boolean hasReconnected;
 
-    double lastY = -1;
-    boolean hasReeled = false;
-    StopWatch stopWatch = new StopWatch();
-    StopWatch stopWatch1 = new StopWatch();
-    boolean hasReconnected;
+    public AutoFish() {
+        super(Category.PLAYER, "Automatically detect a fish on the hook");
+    }
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {

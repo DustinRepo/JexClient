@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -20,7 +21,6 @@ import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.option.annotate.Op;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically place obsidian around your feet to defend from crystals")
 public class Surround extends Feature {
 
 	@Op(name = "Auto Turn Off")
@@ -33,8 +33,12 @@ public class Surround extends Feature {
 	public int placeColor = 0xffff0000;
 
 	private int stage = 0;
-	private StopWatch stopWatch = new StopWatch();
+	private final StopWatch stopWatch = new StopWatch();
 	private BlockPos placingPos;
+
+	public Surround() {
+		super(Category.COMBAT, "Automatically place obsidian around your feet to defend from crystals");
+	}
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

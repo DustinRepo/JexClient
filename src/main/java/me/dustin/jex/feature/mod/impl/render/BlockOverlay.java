@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.ClickBlockFilter;
 import me.dustin.jex.event.render.EventBlockOutlineColor;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventClickBlock;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -18,7 +19,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import java.awt.*;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the block outline and have an overlay show your break progress")
 public class BlockOverlay extends Feature {
 
     @Op(name = "Outline Color", isColor = true)
@@ -32,6 +32,10 @@ public class BlockOverlay extends Feature {
     public boolean progressColor = false;
 
     public BlockHitResult clickedBlock;
+
+    public BlockOverlay() {
+        super(Category.VISUAL, "Change the block outline and have an overlay show your break progress");
+    }
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {

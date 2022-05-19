@@ -8,6 +8,7 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -33,12 +34,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Display Waypoints to mark areas.")
 public class Waypoints extends Feature {
 
-	public static ArrayList<String> servers = new ArrayList<>();
-	public static ArrayList<Waypoint> waypoints = new ArrayList<>();
-	private static final Map<Waypoint, Vec3d> waypointPositions = Maps.newHashMap();
 	@Op(name = "FOV based Tag")
 	public boolean fovBasedTag = true;
 	@Op(name = "Distance", min = 20, max = 150)
@@ -47,7 +44,14 @@ public class Waypoints extends Feature {
 	public boolean distance = true;
 	@Op(name = "Last Death")
 	public boolean lastDeath = true;
-	int spin = 0;
+	public static ArrayList<String> servers = new ArrayList<>();
+	public static ArrayList<Waypoint> waypoints = new ArrayList<>();
+	private static final Map<Waypoint, Vec3d> waypointPositions = Maps.newHashMap();
+	private int spin = 0;
+
+	public Waypoints() {
+		super(Category.WORLD, "Display Waypoints to mark areas.");
+	}
 
 	public static Waypoint get(String name, String server) {
 		for (Waypoint waypoint : waypoints) {

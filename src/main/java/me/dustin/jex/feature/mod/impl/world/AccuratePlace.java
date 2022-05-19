@@ -7,6 +7,7 @@ import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -29,7 +30,6 @@ import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "")
 public class AccuratePlace extends Feature {
 
     @Op(name = "Next Key", isKeybind = true)
@@ -37,9 +37,12 @@ public class AccuratePlace extends Feature {
     @Op(name = "Last Key", isKeybind = true)
     public int lastKey = GLFW.GLFW_KEY_DOWN;
 
-    private RotationVector saved;
     private Direction facing = Direction.DOWN;
     private int index = 0;
+
+    public AccuratePlace() {
+        super(Category.WORLD, "Change the direction that you place blocks");
+    }
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {

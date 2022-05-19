@@ -1,13 +1,13 @@
 package me.dustin.jex.feature.mod.impl.player;
 
 import com.mojang.authlib.GameProfile;
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.*;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
@@ -18,7 +18,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.MovementType;
@@ -30,7 +29,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import java.util.UUID;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Take a look around like a ghost.")
 public class Freecam extends Feature {
 
     @Op(name = "Stealth")
@@ -43,6 +41,10 @@ public class Freecam extends Feature {
     private Vec3d savedCoords = Vec3d.ZERO;
     private RotationVector lookVec = new RotationVector(0, 0);
     public static PlayerEntity playerEntity;
+
+    public Freecam() {
+        super(Category.PLAYER, "Take a look around like a ghost.");
+    }
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {

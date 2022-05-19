@@ -10,6 +10,7 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender2DItem;
 import me.dustin.jex.event.render.EventRenderEffects;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.hud.elements.*;
 import me.dustin.jex.file.core.ConfigManager;
@@ -35,7 +36,6 @@ import org.lwjgl.glfw.GLFW;
 import java.awt.*;
 import java.util.*;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
 public class Hud extends Feature {
     public static Hud INSTANCE;
     @Op(name = "Client Color", isColor = true)
@@ -58,18 +58,6 @@ public class Hud extends Feature {
     public boolean suffixes = true;
     @OpChild(name = "Color", parent = "Array List", all = {"Client Color", "Rainbow", "Category"})
     public String colorMode = "Client Color";
-    @OpChild(name = "Combat", parent = "Color", dependency = "Category", isColor = true)
-    public int combatColor = new Color(255, 61, 56).getRGB();
-    @OpChild(name = "Player", parent = "Color", dependency = "Category", isColor = true)
-    public int playerColor = new Color(64, 255, 83).getRGB();
-    @OpChild(name = "Movement", parent = "Color", dependency = "Category", isColor = true)
-    public int movementColor = new Color(141, 95, 255).getRGB();
-    @OpChild(name = "Visual", parent = "Color", dependency = "Category", isColor = true)
-    public int visualColor = new Color(255, 92, 252).getRGB();
-    @OpChild(name = "World", parent = "Color", dependency = "Category", isColor = true)
-    public int worldColor = new Color(74, 84, 255).getRGB();
-    @OpChild(name = "Misc", parent = "Color", dependency = "Category", isColor = true)
-    public int miscColor = new Color(247, 255, 65).getRGB();
     @OpChild(name = "Rainbow Speed", parent = "Color", min = 1, max = 20, dependency = "Rainbow")
     public int rainbowSpeed = 3;
     @OpChild(name = "Rainbow Saturation", parent = "Color", dependency = "Rainbow", inc = 0.1f)
@@ -136,6 +124,7 @@ public class Hud extends Feature {
     private boolean gaveEditorMessage;
 
     public Hud() {
+        super("Hud", Category.VISUAL, "Mark entities/players through walls", true, false, 0);
         INSTANCE = this;
     }
 
@@ -261,16 +250,8 @@ public class Hud extends Feature {
         }
     }
 
-    public int getCategoryColor(Feature.Category category) {
-        switch (category) {
-            case MOVEMENT -> { return movementColor; }
-            case VISUAL -> { return visualColor; }
-            case PLAYER -> { return playerColor; }
-            case MISC -> { return miscColor; }
-            case WORLD -> { return worldColor; }
-            case COMBAT -> { return combatColor; }
-        }
-        return 0xffffffff;
+    public int getCategoryColor(Category category) {
+        return category.color();
     }
 
     public HudElement getElement(String name) {

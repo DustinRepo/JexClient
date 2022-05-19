@@ -5,18 +5,22 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventSetOptionInstance;
 import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.option.SimpleOption;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Goodbye, darkness. You were never my friend.")
 public class Fullbright extends Feature {
 
     @Op(name = "Brightness", max = 50, min = 10)
     public int brightness = 50;
     @Op(name = "Reset Gamma", max = 1, inc = 0.05f)
     public float resetGamma = 1;
+
+    public Fullbright() {
+        super(Category.WORLD, "Goodbye, darkness. You were never my friend.");
+    }
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {

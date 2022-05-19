@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -15,11 +16,14 @@ import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically throw ender pearl from hotbar on button press.")
 public class ThrowPearl extends Feature {
 
     @Op(name = "Throw Key", isKeybind = true)
     public int throwKey = GLFW.GLFW_KEY_Y;
+
+    public ThrowPearl() {
+        super(Category.PLAYER, "Automatically throw ender pearl from hotbar on button press.");
+    }
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {

@@ -7,6 +7,7 @@ import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.*;
 import me.dustin.jex.feature.keybind.Keybind;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
@@ -194,7 +195,7 @@ public enum JexClient {
 
     private void createJson() {
         JsonObject jsonObject = new JsonObject();
-        for (Feature.Category featureCategory : Feature.Category.values()) {
+        for (Category featureCategory : Category.values()) {
             JsonArray categoryArray = new JsonArray();
             for (Feature feature : Feature.getModules(featureCategory)) {
                 JsonObject object = new JsonObject();

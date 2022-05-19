@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -18,7 +19,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Spam webs at players feet to slow them down")
 public class WebSpam extends Feature {
 
     @Op(name = "Delay (MS)", max = 1000, inc = 10)
@@ -29,6 +29,10 @@ public class WebSpam extends Feature {
     public boolean friends;
 
     private final StopWatch stopWatch = new StopWatch();
+
+    public WebSpam() {
+        super(Category.COMBAT, "Spam webs at players feet to slow them down");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

@@ -7,13 +7,14 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.speed.impl.StrafeSpeed;
 import me.dustin.jex.feature.mod.impl.movement.speed.impl.VanillaSpeed;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
+import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Sanic gotta go fast.")
 public class Speed extends Feature {
     public static Speed INSTANCE;
     @Op(name = "Mode", all = {"Vanilla", "Strafe"})
@@ -29,6 +30,7 @@ public class Speed extends Feature {
     private String lastMode;
 
     public Speed() {
+        super(Category.MOVEMENT, "Sanic gotta go fast.", GLFW.GLFW_KEY_C);
         new StrafeSpeed();
         new VanillaSpeed();
         INSTANCE = this;

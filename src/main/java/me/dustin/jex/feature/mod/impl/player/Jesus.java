@@ -10,6 +10,7 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventBlockCollisionShape;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -26,7 +27,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Walk on water like Jesus.", key = GLFW.GLFW_KEY_J)
 public class Jesus extends Feature {
 
     @Op(name = "Mode", all = {"Solid", "Dolphin"})
@@ -34,6 +34,10 @@ public class Jesus extends Feature {
     @OpChild(name = "Jump", parent = "Mode", dependency = "Dolphin")
     public boolean allowJump = true;
     private int ticks;
+
+    public Jesus() {
+        super(Category.PLAYER, "Walk on water like Jesus.", GLFW.GLFW_KEY_J);
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

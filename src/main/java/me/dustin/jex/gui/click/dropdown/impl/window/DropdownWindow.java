@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.click.dropdown.impl.window;
 
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
@@ -240,8 +241,8 @@ public class DropdownWindow {
         return b;
     }
 
-    public static Feature.Category getCategory(DropdownWindow window) {
-        for (Feature.Category category : Feature.Category.values()) {
+    public static Category getCategory(DropdownWindow window) {
+        for (Category category : Category.values()) {
             if (category.toString().equalsIgnoreCase(window.getName()))
                 return category;
         }

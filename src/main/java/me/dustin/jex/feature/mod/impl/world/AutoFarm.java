@@ -10,6 +10,7 @@ import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
@@ -49,7 +50,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Mine out a selected area")
 public class AutoFarm extends Feature {
 
     @Op(name = "Render Area Box")
@@ -63,6 +63,10 @@ public class AutoFarm extends Feature {
     private BlockPos tempPos1;
     private BlockPos tempPos2;
     private final StopWatch sortStopWatch = new StopWatch();
+
+    public AutoFarm() {
+        super(Category.WORLD, "Farm a selected area");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventGetGlintShaders;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -13,7 +14,6 @@ import me.dustin.jex.load.impl.IShader;
 import net.minecraft.client.gl.GlUniform;
 import java.awt.*;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the color of the enchanment glint (or make it rainbow!)")
 public class EnchantColor extends Feature{
 
     @Op(name = "Mode", all = {"Shader Rainbow", "Customize"})
@@ -38,6 +38,10 @@ public class EnchantColor extends Feature{
     private GlUniform saturationU;
     private GlUniform alphaU;
     private GlUniform mathModeU;
+
+    public EnchantColor() {
+        super(Category.VISUAL, "Change the color of the enchanment glint (or make it rainbow!)");
+    }
 
     @EventPointer
     private final EventListener<EventGetGlintShaders> eventGetGlintShadersEventListener = new EventListener<>(event -> {

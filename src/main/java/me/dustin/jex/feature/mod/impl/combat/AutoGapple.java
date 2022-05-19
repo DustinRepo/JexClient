@@ -5,6 +5,7 @@ import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -26,7 +27,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically eat God Apples as needed")
 public class AutoGapple extends Feature {
 
     @Op(name = "Eat for Potions")
@@ -46,15 +46,18 @@ public class AutoGapple extends Feature {
 
     public int putBackSlot = -1;
 
-    private Set<StatusEffect> gappleEffects = Stream.of(
+    private final Set<StatusEffect> gappleEffects = Stream.of(
             StatusEffects.FIRE_RESISTANCE,
             StatusEffects.ABSORPTION,
             StatusEffects.REGENERATION,
             StatusEffects.RESISTANCE
     ).collect(Collectors.toSet());
 
-
     private boolean isEating;
+
+    public AutoGapple() {
+        super(Category.COMBAT, "Automatically eat God Apples as needed");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

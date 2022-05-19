@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.misc.EventControlLlama;
 import me.dustin.jex.event.misc.EventHorseIsSaddled;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IAbstractHorseEntity;
@@ -23,7 +24,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Change how ridable entities work.")
 public class EntityRider extends Feature {
 
     @Op(name = "Horse")
@@ -58,6 +58,10 @@ public class EntityRider extends Feature {
     public float boatSpeed = 1;
     @OpChild(name = "Boat Jump", min = 0.1f, max = 2, inc = 0.05f, parent = "Boat")
     public float boatJump = 1;
+
+    public EntityRider() {
+        super(Category.WORLD, "Change how ridable entities work.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

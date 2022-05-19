@@ -8,6 +8,7 @@ import me.dustin.jex.event.filters.ToolTipFilter;
 import me.dustin.jex.event.misc.EventGetToolTipFromItem;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRenderToolTip;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -34,7 +35,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show extra tooltip info including seeing inside of shulkers and viewing maps and other NBT data")
 public class ToolTips extends Feature {
 
     @Op(name = "Repair Cost")
@@ -58,6 +58,10 @@ public class ToolTips extends Feature {
     private final Identifier SHULKER_GUI = new Identifier("jex", "gui/mc/shulker_background.png");
     private float inspectX = -99999, inspectY = -99999;
     private ItemStack inspectStack;
+
+    public ToolTips() {
+        super(Category.VISUAL, "Show extra tooltip info including seeing inside of shulkers and viewing maps and other NBT data");
+    }
 
     //ShulkerToolTip, also with the ability to hover over and inspect the items inside
     @EventPointer

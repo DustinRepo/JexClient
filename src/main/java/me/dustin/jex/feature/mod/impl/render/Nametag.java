@@ -8,6 +8,7 @@ import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.render.EventRenderNametags;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -46,7 +47,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Render names above players with more info.")
 public class Nametag extends Feature {
 
     @Op(name = "Custom Font")
@@ -88,6 +88,10 @@ public class Nametag extends Feature {
     public String healthMode = "Bar";
     int count = 0;
     private final HashMap<Entity, Vec3d> positions = Maps.newHashMap();
+
+    public Nametag() {
+        super(Category.VISUAL, "Render names above players with more info.");
+    }
 
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {

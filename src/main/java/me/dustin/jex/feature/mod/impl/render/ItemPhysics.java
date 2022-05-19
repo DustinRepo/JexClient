@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRotateItemEntity;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -14,12 +15,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
+
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Items will rotate around in the air and flop down")
 public class ItemPhysics extends Feature {//fancier version that's not just flat items on the ground like the fabric mod
 
     @Op(name = "Roll Spin Speed", max = 50)
@@ -29,19 +31,13 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
     @Op(name = "Yaw Spin Speed", max = 50)
     public int yawSpeed = 25;
 
-    //TODO: find a better way to track this stuff
-    private final HashMap<ItemEntity, Float> itemRotationsRoll = new HashMap<>();
-    private final HashMap<ItemEntity, Float> prevItemRotationsRoll = new HashMap<>();
+    private final HashMap<ItemEntity, Vec3d> itemRotations = new HashMap<>();
+    private final HashMap<ItemEntity, Vec3d> prevItemRotations = new HashMap<>();
+    private final HashMap<ItemEntity, Vec3d> negValues = new HashMap<>();
 
-    private final HashMap<ItemEntity, Float> itemRotationsPitch = new HashMap<>();
-    private final HashMap<ItemEntity, Float> prevItemRotationsPitch = new HashMap<>();
-
-    private final HashMap<ItemEntity, Float> itemRotationsYaw = new HashMap<>();
-    private final HashMap<ItemEntity, Float> prevItemRotationsYaw = new HashMap<>();
-
-    private final HashMap<ItemEntity, Boolean> itemPitchNeg = new HashMap<>();
-    private final HashMap<ItemEntity, Boolean> itemRollNeg = new HashMap<>();
-    private final HashMap<ItemEntity, Boolean> itemYawNeg = new HashMap<>();
+    public ItemPhysics() {
+        super(Category.VISUAL, "Items will rotate around in the air and flop down");
+    }
 
     @EventPointer
     private final EventListener<EventRotateItemEntity> eventRotateItemEntityEventListener = new EventListener<>(event -> {
@@ -50,21 +46,22 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
         float g = event.getG();
         float n = itemEntity.getRotation(g);
 
-        if (!prevItemRotationsRoll.containsKey(itemEntity))
+        if (!prevItemRotations.containsKey(itemEntity))
             return;
+        Vec3d prev = prevItemRotations.get(itemEntity);
+        Vec3d current = itemRotations.get(itemEntity);
         matrixStack.translate(0, itemEntity.getHeight() / 1.5f, 0);
-
         BakedModel bakedModel = Wrapper.INSTANCE.getMinecraft().getItemRenderer().getModel(itemEntity.getStack(), itemEntity.world, null, itemEntity.getId());
-        float roll = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsRoll.get(itemEntity), itemRotationsRoll.get(itemEntity));
-        float pitch = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsPitch.get(itemEntity), itemRotationsPitch.get(itemEntity));
-        float yaw = MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prevItemRotationsYaw.get(itemEntity), itemRotationsYaw.get(itemEntity));
+        float roll = (float)MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prev.z, current.z);
+        float pitch = (float)MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prev.x, current.x);
+        float yaw = (float)MathHelper.lerp(Wrapper.INSTANCE.getMinecraft().getTickDelta(), prev.y, current.y);
 
         if (itemEntity.isOnGround())
             matrixStack.translate(0, bakedModel.hasDepth() ? -0.04 : -0.151f, 0);
 
-        matrixStack.multiply(new Quaternion(new Vec3f(itemPitchNeg.get(itemEntity) ? -1 : 1, 0, 0), pitch, true));
-        matrixStack.multiply(new Quaternion(new Vec3f(0, 0, itemRollNeg.get(itemEntity) ? -1 : 1), roll, true));
-        matrixStack.multiply(new Quaternion(new Vec3f(0, itemYawNeg.get(itemEntity) ? -1 : 1, 0), yaw, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(negValues.get(itemEntity).x == 1 ? -1 : 1, 0, 0), pitch, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 0, negValues.get(itemEntity).z == 1 ? -1 : 1), roll, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(0, negValues.get(itemEntity).y == 1 ? -1 : 1, 0), yaw, true));
 
         matrixStack.translate(0, -(itemEntity.getHeight() / 1.5f), 0);
 
@@ -79,45 +76,30 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
         if (Wrapper.INSTANCE.getWorld() != null)
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                 if (entity instanceof ItemEntity itemEntity) {
-                    if (!itemRotationsRoll.containsKey(itemEntity)) {
+                    if (!itemRotations.containsKey(itemEntity)) {
                         Random r = new Random();
                         float roll = r.nextFloat() * 360;
                         float yaw = r.nextFloat() * 360;
                         float pitch = r.nextFloat() * 360;
-                        itemRotationsRoll.put(itemEntity, roll);
-                        prevItemRotationsRoll.put(itemEntity, roll);
-                        itemRotationsPitch.put(itemEntity, yaw);
-                        prevItemRotationsPitch.put(itemEntity, yaw);
-                        itemRotationsYaw.put(itemEntity, pitch);
-                        prevItemRotationsYaw.put(itemEntity, pitch);
-                        itemPitchNeg.put(itemEntity, r.nextBoolean());
-                        itemRollNeg.put(itemEntity, r.nextBoolean());
-                        itemYawNeg.put(itemEntity, r.nextBoolean());
+                        itemRotations.put(itemEntity, new Vec3d(pitch, yaw, roll));
+                        prevItemRotations.put(itemEntity, new Vec3d(pitch, yaw, roll));
+                        negValues.put(itemEntity, new Vec3d(booleanToBinary(r.nextBoolean()), booleanToBinary(r.nextBoolean()), booleanToBinary(r.nextBoolean())));
                     }
-                    prevItemRotationsRoll.replace(itemEntity, itemRotationsRoll.get(itemEntity));
+                    prevItemRotations.replace(itemEntity, itemRotations.get(itemEntity));
+                    Vec3d vec = itemRotations.get(itemEntity);
                     if (!itemEntity.isOnGround()) {
-                        itemRotationsRoll.replace(itemEntity, itemRotationsRoll.get(itemEntity) + rollSpeed);
-                    }
-                    prevItemRotationsPitch.replace(itemEntity, itemRotationsPitch.get(itemEntity));
-                    if (!itemEntity.isOnGround()) {
-                        itemRotationsPitch.replace(itemEntity, itemRotationsPitch.get(itemEntity) + pitchSpeed);
+                        vec = new Vec3d(vec.x + pitchSpeed, vec.y + yawSpeed, vec.z + rollSpeed);
                     } else
-                        itemRotationsPitch.replace(itemEntity, 90.f);
-                    prevItemRotationsYaw.replace(itemEntity, itemRotationsYaw.get(itemEntity));
-                    if (!itemEntity.isOnGround()) {
-                        itemRotationsYaw.replace(itemEntity, itemRotationsYaw.get(itemEntity) + yawSpeed);
-                    } else
-                        itemRotationsYaw.replace(itemEntity, 0.f);
+                        vec = new Vec3d(90, 0, vec.z);
+                    itemRotations.replace(itemEntity, vec);
                 }
             });
-        itemRotationsRoll.keySet().removeIf(Objects::isNull);
-        prevItemRotationsRoll.keySet().removeIf(Objects::isNull);
-        itemRotationsPitch.keySet().removeIf(Objects::isNull);
-        prevItemRotationsPitch.keySet().removeIf(Objects::isNull);
-        itemRotationsYaw.keySet().removeIf(Objects::isNull);
-        prevItemRotationsYaw.keySet().removeIf(Objects::isNull);
-        itemPitchNeg.keySet().removeIf(Objects::isNull);
-        itemRollNeg.keySet().removeIf(Objects::isNull);
-        itemYawNeg.keySet().removeIf(Objects::isNull);
+        itemRotations.keySet().removeIf(Objects::isNull);
+        prevItemRotations.keySet().removeIf(Objects::isNull);
+        negValues.keySet().removeIf(Objects::isNull);
     }, new TickFilter(EventTick.Mode.PRE));
+
+    private int booleanToBinary(boolean bl) {
+        return bl ? 1 : 0;
+    }
 }

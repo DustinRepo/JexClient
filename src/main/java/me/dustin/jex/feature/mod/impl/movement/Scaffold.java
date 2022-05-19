@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventWalkOffBlock;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -25,7 +26,6 @@ import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.option.annotate.Op;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Place blocks under yourself automatically.")
 public class Scaffold extends Feature {
 
     @Op(name = "Place Mode", all = {"Post", "Pre"})
@@ -39,6 +39,10 @@ public class Scaffold extends Feature {
     BlockHitResult blockHitResult;
     private final StopWatch stopWatch = new StopWatch();
     private final ConcurrentLinkedQueue<BlockInfo> emptyNearBlocks = new ConcurrentLinkedQueue<>();
+
+    public Scaffold() {
+        super(Category.MOVEMENT, "Place blocks under yourself automatically.");
+    }
 
     @EventPointer
     private final EventListener<EventWalkOffBlock> eventWalkOffBlockEventListener = new EventListener<>(event -> event.cancel());

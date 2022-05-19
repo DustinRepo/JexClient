@@ -4,9 +4,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
-import me.dustin.jex.gui.click.dropdown.theme.aris.feature.ArisDropdownFeatureButton;
 import me.dustin.jex.gui.click.dropdown.theme.windows98.feature.Windows98DropdownFeatureButton;
-import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
@@ -23,7 +21,7 @@ public class Windows98DropdownWindow extends DropdownWindow {
     public void init() {
         int i = 0;
         for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
-            if (feature.getFeatureCategory().name().equalsIgnoreCase(getName())) {
+            if (feature.getCategory().name().equalsIgnoreCase(getName())) {
                 Windows98DropdownFeatureButton dropdownFeatureButton = new Windows98DropdownFeatureButton(this, feature, getX() + getTheme().getButtonWidthOffset(), getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (i * (getTheme().getButtonSize() + getTheme().getButtonOffset())), getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize());
                 getButtons().add(dropdownFeatureButton);
                 this.setHeight(this.getHeight() + getTheme().getButtonSize() + getTheme().getBottomOffset());

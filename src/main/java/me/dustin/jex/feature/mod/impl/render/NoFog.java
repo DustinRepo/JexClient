@@ -4,10 +4,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventSetupFog;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Removes all fog from the game.")
 public class NoFog extends Feature {
+
+    public NoFog() {
+        super(Category.VISUAL, "Removes all fog from the game.");
+    }
 
     @EventPointer
     private final EventListener<EventSetupFog> eventApplyFogEventListener = new EventListener<>(event -> {

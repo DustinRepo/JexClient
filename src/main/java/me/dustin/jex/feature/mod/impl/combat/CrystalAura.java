@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -31,7 +32,6 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import java.awt.*;
 import java.util.List;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Auto place/destroy End Crystals")
 public class CrystalAura extends Feature {
 
 	@Op(name = "Mode", all = { "Suicidal", "Risky" })
@@ -60,6 +60,10 @@ public class CrystalAura extends Feature {
 
 	private final StopWatch stopWatch = new StopWatch();
 	private BlockPos placePos;
+
+	public CrystalAura() {
+		super(Category.COMBAT, "Auto place/destroy End Crystals");
+	}
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

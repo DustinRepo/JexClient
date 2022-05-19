@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.gui.tab.TabGui;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -27,7 +28,7 @@ public class TabGuiElement extends HudElement {
         TabGui.INSTANCE.setHoverBar(getHud().hoverBar);
         TabGui.INSTANCE.draw(matrixStack, this.getX(), this.getY(), getHud().tabGuiWidth, getHud().buttonHeight);
         this.setWidth(getHud().tabGuiWidth);
-        this.setHeight(Feature.Category.values().length * getHud().buttonHeight);
+        this.setHeight(Category.values().size() * getHud().buttonHeight);
     }
 
     @Override

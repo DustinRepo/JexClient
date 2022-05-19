@@ -7,6 +7,7 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketReceive;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -17,10 +18,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically write to signs.")
 public class AutoSign extends Feature {
 
     public Text[] signText = {Text.of("     "), Text.of(""), Text.of(""), Text.of("")};
+
+    public AutoSign() {
+        super(Category.WORLD, "Automatically write to signs.");
+    }
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {

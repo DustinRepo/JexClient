@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.misc;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventKeyPressed;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -18,13 +19,16 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Sort your inventory with a middle click while it's open.")
 public class InventorySort extends Feature {
 
     @Op(name = "Sort Key", isKeybind = true)
     public int sortKey = KeyboardHelper.INSTANCE.MIDDLE_CLICK;
 
-    private StopWatch timeOutStopWatch = new StopWatch();
+    private final StopWatch timeOutStopWatch = new StopWatch();
+
+    public InventorySort() {
+        super(Category.MISC, "Sort your inventory with a middle click while it's open.");
+    }
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {

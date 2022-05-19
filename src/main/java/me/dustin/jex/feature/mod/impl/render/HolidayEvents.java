@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRenderChest;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -14,13 +15,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Have holiday events like christmas chests show year-round")
 public class HolidayEvents extends Feature {
 
     @Op(name = "Christmas Chest")
     public boolean christmas = true;
     @Op(name = "Halloween Mobs")
     public boolean halloween = true;
+
+    public HolidayEvents() {
+        super(Category.VISUAL, "Have holiday events like christmas chests show year-round");
+    }
 
     @EventPointer
     private final EventListener<EventRenderChest> eventRenderChestEventListener = new EventListener<>(event -> {

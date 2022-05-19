@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -22,7 +23,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Drop all items from your inventory in creative.")
 public class CreativeDrop extends Feature {
 
     @Op(name = "Drop Delay (MS)", max = 1000, inc = 10)
@@ -42,6 +42,10 @@ public class CreativeDrop extends Feature {
 
     private int slot = 1;
     private final StopWatch stopWatch = new StopWatch();
+
+    public CreativeDrop() {
+        super(Category.MISC, "Drop all items from your inventory in creative.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

@@ -21,7 +21,7 @@ public class FlareDropdownWindow extends DropdownWindow {
     public void init() {
         int i = 0;
         for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
-            if (feature.getFeatureCategory().name().equalsIgnoreCase(getName())) {
+            if (feature.getCategory().name().equalsIgnoreCase(getName())) {
                 FlareDropdownFeatureButton dropdownFeatureButton = new FlareDropdownFeatureButton(this, feature, getX() + getTheme().getButtonWidthOffset(), getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (i * (getTheme().getButtonSize() + getTheme().getButtonOffset())), getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize());
                 getButtons().add(dropdownFeatureButton);
                 this.setHeight(this.getHeight() + getTheme().getButtonSize() + getTheme().getBottomOffset());

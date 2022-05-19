@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -28,11 +29,14 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import java.awt.*;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Draw player skeletons")
 public class Skeletons extends Feature {//it looks cool as fuck but seriously fuck this was a massive pain in the ass
 
     @Op(name = "Color", isColor = true)
     public int skeletonColor = 0xffffffff;
+
+    public Skeletons() {
+        super(Category.VISUAL, "Draw player skeletons");
+    }
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {

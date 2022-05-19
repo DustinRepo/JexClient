@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.world.SpawnSphere;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -28,7 +29,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show all blocks near you that mobs can spawn on.")
 public class SpawnHighlighter extends Feature {
 
 	@Op(name = "Check Delay", max = 1000, inc = 10)
@@ -56,6 +56,10 @@ public class SpawnHighlighter extends Feature {
 
 	private final ArrayList<BlockPos> posList = new ArrayList<>();
 	private final StopWatch stopWatch = new StopWatch();
+
+	public SpawnHighlighter() {
+		super(Category.VISUAL, "Show all blocks near you that mobs can spawn on.");
+	}
 
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {

@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.render.EventRender2D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -17,7 +18,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show your inventory on your HUD")
 public class InventoryView extends Feature {
 
     @Op(name = "Location", all = {"Top", "Bottom"})
@@ -26,6 +26,10 @@ public class InventoryView extends Feature {
     public boolean drawBackground = true;
 
     private final Identifier SHULKER_GUI = new Identifier("textures/gui/container/shulker_box.png");
+
+    public InventoryView() {
+        super(Category.VISUAL, "Show your inventory on your HUD");
+    }
 
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {

@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
@@ -28,7 +29,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically dig tunnels")
 public class Tunneller extends Feature {
 
     @Op(name = "Handle Liquids")
@@ -39,6 +39,10 @@ public class Tunneller extends Feature {
     public int height = 3;
 
     private Direction direction;
+
+    public Tunneller() {
+        super(Category.WORLD, "Automatically dig tunnels");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

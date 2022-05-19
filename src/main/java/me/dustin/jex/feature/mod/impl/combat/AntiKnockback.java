@@ -6,14 +6,18 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventExplosionVelocity;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventPlayerVelocity;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Remove all knockback from the player.")
 public class AntiKnockback extends Feature {
 
     @Op(name = "Percent", min = -300, max = 300, inc = 10)
     public int percent = 0;
+
+    public AntiKnockback() {
+        super(Category.COMBAT, "Remove all knockback from the player.");
+    }
 
     @EventPointer
     private final EventListener<EventExplosionVelocity> eventExplosionVelocityEventListener = new EventListener<>(event -> {

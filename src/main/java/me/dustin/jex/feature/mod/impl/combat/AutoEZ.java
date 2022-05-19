@@ -7,6 +7,7 @@ import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.file.FileHelper;
@@ -24,16 +25,18 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically send messages when you kill players. Configurable messages in .minecraft/JexClient/KillMessages.json")
 public class AutoEZ extends Feature {
 
     @Op(name = "Max Kill Detect Delay(MS)", min = 100, max = 500, inc = 10)
     public int killDetectDelay = 200;
 
-    private ArrayList<String> messages = new ArrayList<>();
-
+    private final Map<PlayerEntity, Long> fightingPlayers = new HashMap<>();
+    private final ArrayList<String> messages = new ArrayList<>();
     private boolean isFighting;
-    private Map<PlayerEntity, Long> fightingPlayers = new HashMap<>();
+
+    public AutoEZ() {
+        super(Category.COMBAT, "Automatically send messages when you kill players. Configurable messages in .minecraft/JexClient/KillMessages.json");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

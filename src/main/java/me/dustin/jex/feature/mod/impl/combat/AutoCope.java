@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 import com.google.gson.JsonArray;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.misc.EventSetScreen;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
@@ -19,10 +20,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically send messages when you die to a player. Configurable messages in .minecraft/JexClient/CopeMessages.json")
 public class AutoCope extends Feature {
 
-    private ArrayList<String> messages = new ArrayList<>();
+    private final ArrayList<String> messages = new ArrayList<>();
+
+    public AutoCope() {
+        super(Category.COMBAT, "Automatically send messages when you die to a player. Configurable messages in .minecraft/JexClient/CopeMessages.json");
+    }
 
     @EventPointer
     private final EventListener<EventSetScreen> eventSetScreenEventListener = new EventListener<>(event -> {

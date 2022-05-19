@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -23,7 +24,6 @@ import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Destroy any fully grown crops nearby")
 public class FarmAura extends Feature {
 
     @Op(name = "Check Age")
@@ -35,6 +35,10 @@ public class FarmAura extends Feature {
 
     private final StopWatch breakStopWatch = new StopWatch();
     private final StopWatch plantStopWatch = new StopWatch();
+
+    public FarmAura() {
+        super(Category.WORLD, "Destroy any fully grown crops nearby");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

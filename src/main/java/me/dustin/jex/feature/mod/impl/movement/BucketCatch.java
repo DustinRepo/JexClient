@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.movement;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -15,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time")
 public class BucketCatch extends Feature {
 
     @Op(name = "Fall Distance", min = 3, max = 10)
@@ -25,6 +25,10 @@ public class BucketCatch extends Feature {
 
     private boolean placedBucket;
     private boolean click;
+
+    public BucketCatch() {
+        super(Category.MOVEMENT, "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

@@ -4,12 +4,12 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.entity.effect.StatusEffects;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Remove certain negative effects from yourself.")
 public class AntiEffect extends Feature {
 
     @Op(name = "Blindness")
@@ -24,6 +24,10 @@ public class AntiEffect extends Feature {
     public boolean slowFalling = true;
     @Op(name = "Darkness")
     public boolean darkness = true;
+
+    public AntiEffect() {
+        super(Category.PLAYER, "Remove certain negative effects from yourself.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

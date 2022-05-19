@@ -8,6 +8,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Nametag;
 import me.dustin.jex.feature.option.annotate.Op;
@@ -47,7 +48,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically break lecterns matched to a villager until it has the trade you want")
 public class AutoLibrarianRoll extends Feature {
 
     @Op(name = "Price Mode", all = {"Normal", "Adjusted"})
@@ -69,6 +69,10 @@ public class AutoLibrarianRoll extends Feature {
     public static Map<Enchantment, ArrayList<Integer>> enchantments = new HashMap<>();
 
     private static final Map<VillagerEntity, BlockPos> doneVillagers = new HashMap<>();
+
+    public AutoLibrarianRoll() {
+        super(Category.MISC, "Automatically break lecterns matched to a villager until it has the trade you want");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

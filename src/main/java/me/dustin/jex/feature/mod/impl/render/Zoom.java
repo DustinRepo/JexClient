@@ -5,13 +5,13 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.misc.EventSetOptionInstance;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Zoom in like Optifine")
 public class Zoom extends Feature {
 
     @Op(name = "Mouse Smooth")
@@ -23,6 +23,10 @@ public class Zoom extends Feature {
 
     private int savedFOV;
     boolean resetFOV = true;
+
+    public Zoom() {
+        super(Category.VISUAL, "Zoom in like Optifine");
+    }
 
     @Override
     public void onEnable() {

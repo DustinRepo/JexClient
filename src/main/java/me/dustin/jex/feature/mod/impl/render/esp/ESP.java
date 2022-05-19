@@ -6,6 +6,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.render.esp.impl.OutlineBox;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -22,7 +23,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import java.awt.*;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Mark entities/players through walls")
 public class ESP extends Feature {
     public static ESP INSTANCE;
     @Op(name = "Mode", all = {"Shader", "2D", "Box Outline", "Box"})
@@ -63,6 +63,7 @@ public class ESP extends Feature {
     String lastMode;
 
     public ESP() {
+        super(Category.VISUAL, "Mark entities/players through walls");
         new ShaderESP();
         new BoxESP();
         new OutlineBox();

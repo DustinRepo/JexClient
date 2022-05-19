@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.click.dropdown.theme.aris;
 
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
 import me.dustin.jex.gui.click.dropdown.theme.aris.window.ArisConfigWindow;
@@ -27,7 +28,7 @@ public class ArisTheme extends DropdownTheme {
     public void init() {
         if (windows.isEmpty()) {
             int i = 0;
-            for (Feature.Category value : Feature.Category.values()) {
+            for (Category value : Category.values()) {
                 ArisDropdownWindow dropdownWindow = new ArisDropdownWindow(this, StringUtils.capitalize(value.name().toLowerCase()), 2 + (i * 95), 8, 90, 250);
                 dropdownWindow.init();
                 windows.add(dropdownWindow);

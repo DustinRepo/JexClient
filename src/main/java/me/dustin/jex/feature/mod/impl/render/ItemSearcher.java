@@ -9,6 +9,7 @@ import me.dustin.jex.event.filters.MousePressFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.render.EventDrawScreen;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
@@ -31,11 +32,14 @@ import org.lwjgl.glfw.GLFW;
 import java.util.HashMap;
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Search for items while in a chest or your inventory")
 public class ItemSearcher extends Feature {
 
     private boolean typing;
     private String searchField = "";
+
+    public ItemSearcher() {
+        super(Category.VISUAL, "Search for items while in a chest or your inventory");
+    }
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {

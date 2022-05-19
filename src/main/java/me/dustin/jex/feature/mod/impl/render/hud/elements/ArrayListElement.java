@@ -6,7 +6,6 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class ArrayListElement extends HudElement {
     private final ArrayList<ArrayListItem> list = new ArrayList<>();
@@ -51,7 +50,7 @@ public class ArrayListElement extends HudElement {
 
             int color = ColorHelper.INSTANCE.getClientColor();
             if (getHud().colorMode.equalsIgnoreCase("Category"))
-                color = getHud().getCategoryColor(feature.getFeatureCategory());
+                color = getHud().getCategoryColor(feature.getCategory());
             else if (getHud().colorMode.equalsIgnoreCase("Rainbow"))
                 color = getRainbowColor(count, num);
             if (feature.isVisible() && feature.getState()) {

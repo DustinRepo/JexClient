@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -20,12 +21,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically bonemeal crops around the player")
 public class BonemealAura extends Feature {
     public static BonemealAura INSTANCE;
     private boolean isBonemealing;
 
     public BonemealAura() {
+        super(Category.WORLD, "Automatically bonemeal crops around the player");
         INSTANCE = this;
     }
 

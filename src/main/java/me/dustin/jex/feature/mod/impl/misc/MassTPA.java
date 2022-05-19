@@ -7,6 +7,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -17,13 +18,16 @@ import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import java.util.ArrayList;
 import java.util.Random;
 
-@Feature.Manifest(description = "Send a TPA to everyone until one is accepted", category = Feature.Category.MISC)
 public class MassTPA extends Feature {
 
     @Op(name = "Delay (MS)", max = 5000, inc = 10)
     public int delay = 1000;
 
-    private StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
+
+    public MassTPA() {
+        super(Category.MISC, "Send a TPA to everyone until one is accepted");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

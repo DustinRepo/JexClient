@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.core.Feature.Category;
-import me.dustin.jex.feature.mod.core.Feature.Manifest;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -25,7 +24,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
-@Manifest(category = Category.VISUAL, description = "See barriers as if you are in creative")
 public class BarrierView extends Feature {
 	
 	@Op(name = "Color", isColor = true)
@@ -33,6 +31,10 @@ public class BarrierView extends Feature {
 	
 	private final ArrayList<BlockPos> renderPositions = new ArrayList<>();
 	private final StopWatch stopWatch = new StopWatch();
+
+	public BarrierView() {
+		super(Category.VISUAL, "See barriers as if you are in creative");
+	}
 
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {

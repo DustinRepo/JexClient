@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -16,7 +17,6 @@ import net.minecraft.screen.slot.SlotActionType;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically drop junk items from your inventory. Configurable in the Jex Options screen.")
 public class AutoDrop extends Feature {
     public static AutoDrop INSTANCE;
 
@@ -27,6 +27,7 @@ public class AutoDrop extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public AutoDrop() {
+        super(Category.PLAYER, "Automatically drop junk items from your inventory. Configurable in the Jex Options screen.");
         INSTANCE = this;
         items.add(Items.DIORITE);
         items.add(Items.ANDESITE);

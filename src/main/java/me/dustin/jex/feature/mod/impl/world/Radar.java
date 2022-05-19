@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.mod.impl.world;
 
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.entity.Entity;
@@ -8,7 +9,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Draws a Radar on your HUD telling you where entities are")
 public class Radar extends Feature {
     public static Radar INSTANCE;
     @Op(name = "Waypoints")
@@ -23,6 +23,7 @@ public class Radar extends Feature {
     public boolean items = true;
 
     public Radar() {
+        super(Category.WORLD, "Draws a Radar on your HUD telling you where entities are");
         INSTANCE = this;
     }
 

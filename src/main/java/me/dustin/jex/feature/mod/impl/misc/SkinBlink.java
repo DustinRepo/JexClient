@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -13,7 +14,6 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.ArrayList;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Make your skin flash your layers on and off")
 public class SkinBlink extends Feature {
 
     @Op(name = "Mode", all = {"Random", "Full Flash", "Custom"})
@@ -41,6 +41,10 @@ public class SkinBlink extends Feature {
     private final ArrayList<PlayerModelPart> savedEnabled = new ArrayList<>();
     private final StopWatch stopWatch = new StopWatch();
     private boolean toggleCustom;
+
+    public SkinBlink() {
+        super(Category.MISC, "Make your skin flash your layers on and off");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

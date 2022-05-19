@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -21,12 +22,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Replaces mycelium with grass blocks")
 public class LawnBot extends Feature {
 
     private final StopWatch stopWatch = new StopWatch();
-
     private final ArrayList<BlockPos> myceliumSpots = new ArrayList<>();
+
+    public LawnBot() {
+        super(Category.WORLD, "Replaces mycelium with grass blocks");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

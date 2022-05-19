@@ -9,6 +9,7 @@ import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventConnect;
 import me.dustin.jex.event.render.EventDrawScreen;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -21,7 +22,6 @@ import net.minecraft.client.network.ServerAddress;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Reconnect automatically.")
 public class AutoReconnect extends Feature {
 
     @Op(name = "Delay", min = 1000, max = 20000, inc = 500)
@@ -29,6 +29,10 @@ public class AutoReconnect extends Feature {
 
     public StopWatch stopWatch = new StopWatch();
     private ServerAddress serverAddress;
+
+    public AutoReconnect() {
+        super(Category.MISC, "Reconnect automatically.");
+    }
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {

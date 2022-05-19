@@ -10,6 +10,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.file.FileHelper;
@@ -23,7 +24,6 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Fastest way to get muted! Fully customizable with files in the Jex folder")
 public class Announcer extends Feature {
 
     @Op(name = "Message Delay", min = 50, max = 5000, inc = 10)
@@ -35,6 +35,10 @@ public class Announcer extends Feature {
     private final ArrayList<String> leaveMessages = new ArrayList<>();
 
     private final StopWatch stopWatch = new StopWatch();
+
+    public Announcer() {
+        super(Category.MISC, "Fastest way to get muted! Fully customizable with files in the Jex folder");
+    }
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {

@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.MousePressFilter;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -22,13 +23,16 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.BlockOverlay;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Gives you the ability to place blocks in the air. (Anticheats usually block this)")
 public class AirPlace extends Feature {
 
 	@Op(name = "Liquids")
 	public boolean liquids = true;
 	@Op(name = "Reach", min = 3, max = 6, inc = 0.1f)
 	public float reach = 4.5f;
+
+	public AirPlace() {
+		super(Category.WORLD, "Gives you the ability to place blocks in the air. (Anticheats usually block this)");
+	}
 
 	@EventPointer
 	private final EventListener<EventMouseButton> eventMouseButtonEventListener = new EventListener<>(event -> {

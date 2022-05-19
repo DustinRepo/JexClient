@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.click.dropdown.theme.flare;
 
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.gui.click.dropdown.theme.flare.window.FlareThemeWindow;
 import me.dustin.jex.gui.click.dropdown.theme.jex.window.JexThemeWindow;
@@ -26,7 +27,7 @@ public class FlareTheme extends DropdownTheme {
     public void init() {
         if (windows.isEmpty()) {
             int i = 0;
-            for (Feature.Category value : Feature.Category.values()) {
+            for (Category value : Category.values()) {
                 FlareDropdownWindow dropdownWindow = new FlareDropdownWindow(this, StringUtils.capitalize(value.name().toLowerCase()), 2 + (i * 95), 8, 90, 250);
                 dropdownWindow.init();
                 windows.add(dropdownWindow);

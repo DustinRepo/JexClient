@@ -1,6 +1,5 @@
 package me.dustin.jex.feature.mod.impl.movement;
 
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
@@ -9,6 +8,7 @@ import me.dustin.jex.event.misc.EventRenderTick;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventStep;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -19,7 +19,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Step up blocks")
 public class Step extends Feature {
 
     @Op(name = "Mode", all = {"Vanilla", "Packet"})
@@ -32,6 +31,10 @@ public class Step extends Feature {
     private int cancelPackets;
     private int stepsTillCancel = 2;
     private boolean slow;
+
+    public Step() {
+        super(Category.MOVEMENT, "Step up blocks");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

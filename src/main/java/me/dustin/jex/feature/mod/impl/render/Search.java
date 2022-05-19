@@ -8,6 +8,7 @@ import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -39,11 +40,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Search for a specific block. use \".help search\"")
 public class Search extends Feature {
 
-    private static ConcurrentMap<Block, Integer> blocks = Maps.newConcurrentMap();
-    private static ConcurrentMap<BlockPos, Block> worldBlocks = Maps.newConcurrentMap();
+    private static final ConcurrentMap<Block, Integer> blocks = Maps.newConcurrentMap();
+    private static final ConcurrentMap<BlockPos, Block> worldBlocks = Maps.newConcurrentMap();
     @Op(name = "Tracers")
     public boolean tracers;
     @Op(name = "Limit Range")
@@ -53,6 +53,10 @@ public class Search extends Feature {
 
     private Thread thread;
     private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
+
+    public Search() {
+        super(Category.VISUAL, "Search for a specific block. use \".help search\"");
+    }
 
     public static void firstLoad() {
         blocks.put(Blocks.DIAMOND_ORE, new Color(0, 150, 255).getRGB());

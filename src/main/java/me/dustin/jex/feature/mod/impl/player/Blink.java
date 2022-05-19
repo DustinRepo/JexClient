@@ -5,6 +5,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -20,7 +21,6 @@ import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.ArrayList;
 import java.util.UUID;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Delay your movements to the server, making it seem like you teleported.")
 public class Blink extends Feature {
 
 	@Op(name = "Buffer Packets")
@@ -31,6 +31,10 @@ public class Blink extends Feature {
 	private final ArrayList<PlayerMoveC2SPacket> packets = new ArrayList<>();
 	public static PlayerEntity playerEntity;
 	private boolean stopCatching;
+
+	public Blink() {
+		super(Category.PLAYER, "Delay your movements to the server, making it seem like you teleported.");
+	}
 
 	@EventPointer
 	private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {

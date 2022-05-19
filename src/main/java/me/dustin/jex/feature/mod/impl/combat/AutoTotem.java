@@ -5,6 +5,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -16,7 +17,6 @@ import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import me.dustin.events.core.annotate.EventPointer;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Keep a Totem in your offhand at all times.")
 public class AutoTotem extends Feature {
 
     @Op(name = "When", all = {"Always", "Low Health"})
@@ -29,6 +29,10 @@ public class AutoTotem extends Feature {
     public boolean openInventory;
 
     private int swappedSlot;
+
+    public AutoTotem() {
+        super(Category.COMBAT, "Keep a Totem in your offhand at all times.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

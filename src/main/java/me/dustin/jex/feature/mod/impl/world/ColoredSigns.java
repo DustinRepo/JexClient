@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.DrawScreenFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.render.EventDrawScreen;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -13,8 +14,12 @@ import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.util.Formatting;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Color coded signs. Use & for the color code")
 public class ColoredSigns extends Feature {
+
+    public ColoredSigns() {
+        super(Category.WORLD, "Color coded signs. Use & for the color code");
+    }
+
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         UpdateSignC2SPacket updateSignC2SPacket = (UpdateSignC2SPacket) event.getPacket();

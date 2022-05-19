@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -51,7 +52,6 @@ import me.dustin.jex.feature.option.annotate.Op;
 import java.awt.*;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show a trajectory line for things like bows and snowballs")
 public class Trajectories extends Feature {
 
     @Op(name = "Z-Clip")
@@ -61,17 +61,12 @@ public class Trajectories extends Feature {
     @Op(name = "Hit Color", isColor = true)
     public int hitColor = new Color(255, 0, 0).getRGB();
 
-    private static float getSpeed(ItemStack stack) {
-        return stack.getItem() == Items.CROSSBOW && CrossbowItem.hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
-    }
-
-    public static boolean isCharged(ItemStack stack) {
-        NbtCompound compoundTag = stack.getNbt();
-        return compoundTag != null && compoundTag.getBoolean("Charged");
-    }
-
     private Entity hitEntity = null;
     private final ArrayList<Vec3d> positions = new ArrayList<>();
+
+    public Trajectories() {
+        super(Category.VISUAL, "Show a trajectory line for things like bows and snowballs");
+    }
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
@@ -260,4 +255,12 @@ public class Trajectories extends Feature {
             return itemStack.getItem() == Items.BOW || itemStack.getItem() == Items.CROSSBOW || itemStack.getItem() == Items.SNOWBALL || itemStack.getItem() == Items.ENDER_PEARL || itemStack.getItem() == Items.TRIDENT || itemStack.getItem() instanceof ThrowablePotionItem;
     }
 
+    private float getSpeed(ItemStack stack) {
+        return stack.getItem() == Items.CROSSBOW && CrossbowItem.hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
+    }
+
+    private boolean isCharged(ItemStack stack) {
+        NbtCompound compoundTag = stack.getNbt();
+        return compoundTag != null && compoundTag.getBoolean("Charged");
+    }
 }

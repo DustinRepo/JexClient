@@ -2,7 +2,6 @@ package me.dustin.jex.gui.click.dropdown.theme.jex.window;
 
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
-import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
 import me.dustin.jex.gui.click.dropdown.theme.DropdownTheme;
 import me.dustin.jex.gui.click.dropdown.theme.jex.feature.JexDropdownFeatureButton;
@@ -24,7 +23,7 @@ public class JexDropdownWindow extends DropdownWindow {
     public void init() {
         int i = 0;
         for (Feature feature : FeatureManager.INSTANCE.getFeatures()) {
-            if (feature.getFeatureCategory().name().equalsIgnoreCase(getName())) {
+            if (feature.getCategory().name().equalsIgnoreCase(getName())) {
                 JexDropdownFeatureButton dropdownFeatureButton = new JexDropdownFeatureButton(this, feature, getX() + getTheme().getButtonWidthOffset(), getY() + getTheme().getTopBarSize() + getTheme().getTopBarOffset() + (i * (getTheme().getButtonSize() + getTheme().getButtonOffset())), getWidth() - getTheme().getButtonWidthOffset() * 2, getTheme().getButtonSize());
                 getButtons().add(dropdownFeatureButton);
                 this.setHeight(this.getHeight() + getTheme().getButtonSize() + getTheme().getBottomOffset());

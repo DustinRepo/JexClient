@@ -4,12 +4,16 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.misc.EventServerTurn;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Ignore the server telling you to look somewhere.")
 public class NoTurn extends Feature {
 
-    boolean reconnected;
+    private boolean reconnected;
+
+    public NoTurn() {
+        super(Category.PLAYER, "Ignore the server telling you to look somewhere.");
+    }
 
     @EventPointer
     private final EventListener<EventServerTurn> eventServerTurnEventListener = new EventListener<>(event -> {

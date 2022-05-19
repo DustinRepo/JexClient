@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -20,7 +21,6 @@ import net.minecraft.screen.slot.SlotActionType;
 import me.dustin.jex.feature.option.annotate.Op;
 import java.util.List;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically turn ingots into blocks by opening a crafting table.")
 public class SpeedCrafter extends Feature {
 
     @Op(name = "Delay", max = 500)
@@ -28,7 +28,11 @@ public class SpeedCrafter extends Feature {
 
     public Item craftingItem;
     private boolean alerted;
-    private StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
+
+    public SpeedCrafter() {
+        super(Category.MISC, "Automatically craft by opening a crafting table.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

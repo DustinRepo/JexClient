@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketSent;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.network.Packet;
@@ -13,7 +14,6 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Pretend to lag")
 public class Fakelag extends Feature {
 
     @Op(name = "Catch when", all = {"Both", "OnGround", "In Air"})
@@ -24,6 +24,10 @@ public class Fakelag extends Feature {
     private final ArrayList<Packet<?>> packets = new ArrayList<>();
     private final StopWatch stopWatch = new StopWatch();
     private boolean sending = false;
+
+    public Fakelag() {
+        super(Category.MISC, "Pretend to lag");
+    }
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {

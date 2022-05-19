@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -22,7 +23,6 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.*;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Draw a line to entities in range.")
 public class Tracers extends Feature {
 
     @Op(name = "Spine")
@@ -39,6 +39,10 @@ public class Tracers extends Feature {
     public boolean passives = true;
     @Op(name = "Neutrals")
     public boolean neutrals = true;
+
+    public Tracers() {
+        super(Category.VISUAL, "Draw a line to entities in range.");
+    }
 
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {

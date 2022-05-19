@@ -5,6 +5,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
@@ -20,12 +21,15 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show the names of the owners of tamed mobs")
 public class OwnerTags extends Feature {
 
     @Op(name = "Draw Faces")
     public boolean drawFaces = true;
     private final HashMap<LivingEntity, Vec3d> positions = Maps.newHashMap();
+
+    public OwnerTags() {
+        super(Category.VISUAL, "Show the names of the owners of tamed mobs");
+    }
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {

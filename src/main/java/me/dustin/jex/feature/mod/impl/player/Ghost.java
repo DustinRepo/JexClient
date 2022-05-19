@@ -8,12 +8,16 @@ import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventSetPlayerHealth;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gui.screen.DeathScreen;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Never accept death. Relog for godmode. Only works on vanilla/fabric")
 public class Ghost extends Feature {
+
+    public Ghost() {
+        super(Category.PLAYER, "Never accept death. Relog for godmode. Only works on vanilla/fabric");
+    }
 
     @EventPointer
     private final EventListener<EventSetPlayerHealth> eventSetPlayerHealthEventListener = new EventListener<>(event -> {

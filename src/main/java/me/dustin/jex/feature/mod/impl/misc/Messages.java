@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -12,11 +13,14 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import java.time.Instant;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Modify messages you send in chat")
 public class Messages extends Feature {
 
     @Op(name = "Mode", all = {"Fancy", "Upside-Down", "Backwards", "Random Capital"})
     public String mode = "Fancy";
+
+    public Messages() {
+        super(Category.MISC, "Modify messages you send in chat");
+    }
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {

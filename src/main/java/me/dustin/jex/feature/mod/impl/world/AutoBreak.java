@@ -8,6 +8,7 @@ import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventClickBlock;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -25,7 +26,6 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Set a block to auto re-break when a new block is there.")
 public class AutoBreak extends Feature {
 
 	@Op(name = "Show Position")
@@ -40,6 +40,10 @@ public class AutoBreak extends Feature {
 	public int miningColor = 0xffff0000;
 
 	private BlockPos pos;
+
+	public AutoBreak() {
+		super(Category.WORLD, "Set a block to auto re-break when a new block is there.");
+	}
 
 	@EventPointer
 	private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {

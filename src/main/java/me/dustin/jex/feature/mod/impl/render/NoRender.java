@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderBlockEntity;
 import me.dustin.jex.event.render.EventRenderEntity;
 import me.dustin.jex.event.world.EventTickParticle;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.feature.option.annotate.OpChild;
@@ -20,7 +21,6 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.boss.WitherEntity;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Don't render specific entities/blocks to improve fps")
 public class NoRender extends Feature {
 
     @Op(name = "Items")
@@ -53,6 +53,10 @@ public class NoRender extends Feature {
     public boolean hoppers = true;
     @Op(name = "Campfires")
     public boolean campfires = true;
+
+    public NoRender() {
+        super(Category.VISUAL, "Don't render specific entities/blocks to improve fps");
+    }
 
     @EventPointer
     private final EventListener<EventRenderEntity> eventRenderEntityEventListener = new EventListener<>(event -> {

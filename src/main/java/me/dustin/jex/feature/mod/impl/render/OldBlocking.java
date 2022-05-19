@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.render.EventRenderHeldItem;
 import me.dustin.jex.event.render.EventRenderItem;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.entity.EntityHelper;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,11 +19,14 @@ import net.minecraft.util.math.Vec3f;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.option.annotate.Op;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Get the pre-1.9 block animation when blocking with a shield.")
 public class OldBlocking extends Feature {
 
     @Op(name = "Mode", all = {"Swords", "Tools", "All Items"})
     public String mode = "Swords";
+
+    public OldBlocking() {
+        super(Category.VISUAL, "Get the pre-1.9 block animation when blocking with a shield.");
+    }
 
     @EventPointer
     private final EventListener<EventRenderItem> eventRenderItemEventListener = new EventListener<>(event -> {
