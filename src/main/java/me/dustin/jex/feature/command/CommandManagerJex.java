@@ -5,6 +5,7 @@ import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.chat.EventSendMessage;
+import me.dustin.jex.event.chat.EventShouldPreviewChat;
 import me.dustin.jex.event.filters.DrawScreenFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum CommandManagerJex {
-
     INSTANCE;
     private String prefix = ".";
     private int overlayAlpha = 0;
@@ -94,6 +94,17 @@ public enum CommandManagerJex {
     private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {
         if (event.getMessage().startsWith(prefix) && ClientCommandInternals.executeCommand(event.getMessage())) {
             event.cancel();
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventShouldPreviewChat> eventShouldPreviewChatEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen chatScreen) {
+            IChatScreen iChatScreen = (IChatScreen)chatScreen;
+            if (iChatScreen.getText().startsWith(prefix)) {
+                event.cancel();
+                event.setEnabled(false);
+            }
         }
     });
 

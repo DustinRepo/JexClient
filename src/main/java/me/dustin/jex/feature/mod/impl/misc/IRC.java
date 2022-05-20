@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.irc.IRCClient;
 import me.dustin.jex.event.chat.EventSendMessage;
+import me.dustin.jex.event.chat.EventShouldPreviewChat;
 import me.dustin.jex.event.filters.DrawScreenFilter;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRenderChatHud;
@@ -137,6 +138,17 @@ public class IRC extends Feature {
             }
             //don't bother adding IRC message since the server will send us a message packet back
             ircClient.sendMessage(message);
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventShouldPreviewChat> eventShouldPreviewChatEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen chatScreen) {
+            IChatScreen iChatScreen = (IChatScreen) chatScreen;
+            if (ircChatOverride || iChatScreen.getText().startsWith(sendPrefix)) {
+                event.cancel();
+                event.setEnabled(false);
+            }
         }
     });
 
