@@ -371,7 +371,7 @@ public enum WorldHelper {
     }
 
     public boolean isBreakable(Block block) {
-        return block != Blocks.BEDROCK && block != Blocks.BARRIER && block != Blocks.COMMAND_BLOCK && block != Blocks.NETHER_PORTAL && block != Blocks.END_PORTAL && block != Blocks.END_GATEWAY;
+        return block != Blocks.BEDROCK && block != Blocks.BARRIER && block != Blocks.COMMAND_BLOCK && block != Blocks.NETHER_PORTAL && block != Blocks.END_PORTAL && block != Blocks.END_PORTAL_FRAME && block != Blocks.END_GATEWAY;
     }
 
     public boolean canMobSpawnOntop(BlockPos blockPos) {
