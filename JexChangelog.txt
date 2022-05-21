@@ -1,7 +1,15 @@
+0.7.4
+Added ability for plugins to easily create new feature categories (1.19 and onward only)
+Added end portal frames to unbreakable block list
+Fixed Announcer, AutoCope, AutoEZ, and Spammer not actually sending a command packet if the message starts with "/" on snapshots
+Fixed MassTPA sending as a chat message rather than a command on snapshots
+Fixed server previews conflicting with Jex commands and the IRC on snapshots
+Modified how features are set up to allow for plugins to more easily use custom categories (1.19 and onward only)
+
 0.7.3
 Added Plugin Manager Screen (Options -> Jex Options -> Plugin Manager)
 Added icon support to plugins
-Fixed anything dependant on the website (linked accounts, capes, hats, etc)
+Fixed anything dependent on the website (linked accounts, capes, hats, etc)
 
 0.7.2
 Added Boss options to ESP, KillAura, and Tracers
