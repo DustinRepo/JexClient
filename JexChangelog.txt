@@ -1,3 +1,8 @@
+0.7.5
+Fixed IRC throwing an error for messages that are too long
+Reworking value system (1.19 onward)
+Removed Dropdown menu which will soon be replaced by a new gui that combines functionality of Navigator and Dropdown into a single gui
+
 0.7.4
 Added ability for plugins to easily create new feature categories (1.19 and onward only)
 Added end portal frames to unbreakable block list
