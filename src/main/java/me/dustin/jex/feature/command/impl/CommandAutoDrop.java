@@ -8,7 +8,7 @@ import me.dustin.jex.feature.mod.impl.player.AutoDrop;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.AutoDropFile;
 import me.dustin.jex.helper.misc.ChatHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;

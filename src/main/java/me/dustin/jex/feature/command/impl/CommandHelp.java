@@ -8,7 +8,7 @@ import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.CommandArgumentType;
 import me.dustin.jex.helper.misc.ChatHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 @Cmd(name = "helpcmd", syntax = {".helpcmd", ".helpcmd <command>"}, description = "Get info on commands or a list of commands.")
 public class CommandHelp extends Command {

@@ -8,7 +8,7 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.feature.mod.core.Feature;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 @Cmd(name = "panic", description = "Disables all mods that are not visual incase an admin is nearby.")
 public class CommandPanic extends Command {

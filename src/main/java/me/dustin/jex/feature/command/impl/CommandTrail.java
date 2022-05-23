@@ -10,7 +10,7 @@ import me.dustin.jex.feature.mod.impl.render.Trail;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.TrailsFile;
 import me.dustin.jex.helper.misc.ChatHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.util.registry.Registry;
 import java.util.StringJoiner;

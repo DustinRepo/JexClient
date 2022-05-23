@@ -7,7 +7,7 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.world.Excavator;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.util.math.BlockPos;
 
 @Cmd(name = "excavator", description = "Set the positions for Excavator mod", syntax = ".excavator <pos1> <pos2>")

@@ -11,7 +11,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.Block;
 
 @Cmd(name = "xray", description = "Add or remove blocks from Xray", syntax = {".xray add <blockname>", ".xray del <blockname>", ".xray list"})

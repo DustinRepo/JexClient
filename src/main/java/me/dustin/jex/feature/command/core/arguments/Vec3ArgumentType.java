@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import me.dustin.jex.feature.command.core.arguments.impl.DefaultPosArgument;
 import me.dustin.jex.feature.command.core.arguments.impl.LookingPosArgument;
 import me.dustin.jex.feature.command.core.arguments.impl.PosArgument;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;

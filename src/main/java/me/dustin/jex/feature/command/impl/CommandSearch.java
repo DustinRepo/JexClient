@@ -11,7 +11,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.SearchFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.registry.Registry;

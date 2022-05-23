@@ -11,7 +11,7 @@ import me.dustin.jex.file.impl.ServerListFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.ServerPinger;
 import me.dustin.jex.helper.network.ServerScrubber;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.util.Formatting;
 
 @Cmd(name = "serverscrub", description = "Search for players by name in a customizable list of servers", syntax = ".serverscrub <add/del> <ip>/.serverscrub search <name>")

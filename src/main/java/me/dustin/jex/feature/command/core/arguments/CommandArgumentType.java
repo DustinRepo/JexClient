@@ -10,7 +10,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.command.core.Command;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;

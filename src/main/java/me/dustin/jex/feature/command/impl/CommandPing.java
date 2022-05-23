@@ -7,7 +7,7 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.MessageArgumentType;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.ServerPinger;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 @Cmd(name = "ping", description = "Ping a server given an IP", syntax = ".ping <ip>:<port>")
 public class CommandPing extends Command {

@@ -12,13 +12,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ServerInfo.class)
 public class MixinServerInfo {
 
-    @Shadow private boolean field_39436;
-
     @Shadow @Nullable private ServerInfo.@Nullable ChatPreview chatPreview;
+
+    @Shadow private boolean temporaryChatPreviewState;
 
     @Inject(method = "shouldPreviewChat", at = @At("HEAD"), cancellable = true)
     public void shouldPreviewChat(CallbackInfoReturnable<Boolean> cir) {
-        EventShouldPreviewChat eventShouldPreviewChat = new EventShouldPreviewChat(this.field_39436 && this.chatPreview != null).run();
+        EventShouldPreviewChat eventShouldPreviewChat = new EventShouldPreviewChat(this.temporaryChatPreviewState && this.chatPreview != null).run();
         if (eventShouldPreviewChat.isCancelled())
             cir.setReturnValue(eventShouldPreviewChat.isEnabled());
     }

@@ -4,11 +4,11 @@ import com.mojang.brigadier.ParseResults;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.load.impl.IClientPlayerEntity;
-import net.minecraft.class_7501;
 import net.minecraft.command.CommandSource;
 import net.minecraft.network.encryption.ArgumentSignatureDataMap;
 import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.ChatMessageSigner;
+import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.text.Text;
@@ -33,7 +33,7 @@ public enum ChatHelper {
 
     private ChatMessageSignature signChatMessage(ChatMessageSigner signer, Text message) {
         try {
-            class_7501 lv = Wrapper.INSTANCE.getMinecraft().getProfileKeys().method_44287();
+            Signer lv = Wrapper.INSTANCE.getMinecraft().getProfileKeys().getSigner();
             if (lv != null) {
                 return signer.sign(lv, message);
             }

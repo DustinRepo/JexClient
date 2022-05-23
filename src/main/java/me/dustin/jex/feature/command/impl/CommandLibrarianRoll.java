@@ -9,7 +9,7 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.EnchantmentArgumentType;
 import me.dustin.jex.feature.mod.impl.misc.AutoLibrarianRoll;
 import me.dustin.jex.helper.misc.ChatHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.text.Text;
 import java.util.ArrayList;

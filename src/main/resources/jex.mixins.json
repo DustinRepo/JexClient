@@ -61,6 +61,7 @@
     "minecraft.MixinPlayerEntity",
     "minecraft.MixinPlayerEntityRenderer",
     "minecraft.MixinPowderSnowBlock",
+
     "minecraft.MixinProjectileEntity",
     "minecraft.MixinRenderLayers",
     "minecraft.MixinRenderTickCounter",

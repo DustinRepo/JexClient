@@ -12,7 +12,7 @@ import me.dustin.jex.helper.network.ConnectedServerHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.player.bot.BotClientPlayNetworkHandler;
 import me.dustin.jex.load.impl.IClientPlayNetworkHandler;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.network.ClientPlayNetworkHandler;

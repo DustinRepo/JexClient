@@ -17,7 +17,7 @@ import me.dustin.jex.helper.network.login.minecraft.MSLoginHelper;
 import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
 import me.dustin.jex.helper.network.login.minecraft.MojangLoginHelper;
 import me.dustin.jex.helper.player.bot.PlayerBot;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import java.util.UUID;
 
 @Cmd(name = "bot", syntax = ".bot <connect/disconnect> <name>", description = "Have bots join your server")
