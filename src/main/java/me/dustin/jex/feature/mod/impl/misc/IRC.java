@@ -11,7 +11,7 @@ import me.dustin.jex.event.render.EventRenderChatHud;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -27,8 +27,11 @@ import java.util.function.Consumer;
 
 public class IRC extends Feature {
 
-    @Op(name = "Send Prefix", maxStringLength = 2)
-    public String sendPrefix = "@";
+    public final Property<String> sendPrefixProperty = new Property.PropertyBuilder<String>(this.getClass())
+            .name("Send Prefix")
+            .value("@")
+            .max(2)
+            .build();
 
     public boolean ircChatOverride;
     public boolean renderAboveChat = true;
@@ -68,9 +71,9 @@ public class IRC extends Feature {
     private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {
         if (event.getMessage().startsWith(CommandManagerJex.INSTANCE.getPrefix()))
             return;
-        if ((event.getMessage().startsWith(sendPrefix) || ircChatOverride) && ircClient != null) {
+        if ((event.getMessage().startsWith(sendPrefixProperty.value()) || ircChatOverride) && ircClient != null) {
             event.cancel();
-            String message = event.getMessage().startsWith(sendPrefix) ? event.getMessage().substring(sendPrefix.length()) : event.getMessage();
+            String message = event.getMessage().startsWith(sendPrefixProperty.value()) ? event.getMessage().substring(sendPrefixProperty.value().length()) : event.getMessage();
             if (message.isEmpty()) {
                 addIRCMessage("Your message was empty.");
                 return;
@@ -145,7 +148,7 @@ public class IRC extends Feature {
     private final EventListener<EventShouldPreviewChat> eventShouldPreviewChatEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen chatScreen) {
             IChatScreen iChatScreen = (IChatScreen) chatScreen;
-            if (ircChatOverride || iChatScreen.getText().startsWith(sendPrefix)) {
+            if (ircChatOverride || iChatScreen.getText().startsWith(sendPrefixProperty.value())) {
                 event.cancel();
                 event.setEnabled(false);
             }
@@ -169,7 +172,7 @@ public class IRC extends Feature {
         if (ircClient != null && ircClient.isConnected() && renderAboveChat) {
             FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"), iChatScreen.getWidget().x + 84, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
         }
-        if ((chatString.startsWith(sendPrefix) || ircChatOverride) && ircClient != null && ircClient.isConnected()) {
+        if ((chatString.startsWith(sendPrefixProperty.value()) || ircChatOverride) && ircClient != null && ircClient.isConnected()) {
             int color = 0xffFF5555;
             int users = ircClient.getUsers().length;
             String usersString = "IRC Users: \247f" + users;

@@ -29,7 +29,7 @@ public class CoordinatesElement extends HudElement{
             longest = strLength;
         FontHelper.INSTANCE.drawWithShadow(matrixStack, coordString, strX, strY, ColorHelper.INSTANCE.getClientColor());
 
-        if (getHud().netherCoords) {
+        if (getHud().netherCoordsProperty.value()) {
             double coordScale = Wrapper.INSTANCE.getLocalPlayer().clientWorld.getDimension().coordinateScale();
             if (coordScale != 1.0D) {
                 coordString = String.format("Overworld\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.getX() * coordScale, pos.getY() * coordScale, pos.getZ() * coordScale);
@@ -44,12 +44,12 @@ public class CoordinatesElement extends HudElement{
             FontHelper.INSTANCE.drawWithShadow(matrixStack, coordString, strX, strY, ColorHelper.INSTANCE.getClientColor());
         }
 
-        this.setHeight(getHud().netherCoords ? 22.5f : 12.5f);
+        this.setHeight(getHud().netherCoordsProperty.value() ? 22.5f : 12.5f);
         this.setWidth(longest + 4);
     }
 
     @Override
     public boolean isVisible() {
-        return getHud().coords;
+        return getHud().coordsProperty.value();
     }
 }

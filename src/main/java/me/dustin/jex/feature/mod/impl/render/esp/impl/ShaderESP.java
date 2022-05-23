@@ -12,7 +12,7 @@ public class ShaderESP extends FeatureExtension {
     public static boolean isOutlining;
 
     public ShaderESP() {
-        super("Shader", ESP.class);
+        super(ESP.Mode.SHADER, ESP.class);
     }
 
     @Override

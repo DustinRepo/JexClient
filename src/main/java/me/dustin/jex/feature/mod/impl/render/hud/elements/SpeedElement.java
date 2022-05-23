@@ -25,43 +25,43 @@ public class SpeedElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().speed;
+        return getHud().infoProperty.value() && getHud().speedProperty.value();
     }
 
     private String generateSpeedText() {
         Vec3d move = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX, 0, Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ).multiply(20);
-        switch (getHud().distanceMode) {
-            case "Blocks":
+        switch (getHud().distanceModeProperty.value()) {
+            case BLOCKS:
                 break;
-            case "Feet":
+            case FEET:
                 move = move.multiply(3.281);
                 break;
-            case "Miles":
+            case MILES:
                 move = move.multiply(0.000621371);
                 break;
-            case "KM":
+            case KM:
                 move = move.multiply(0.001);
                 break;
 
         }
         float time = 1;
-        switch (getHud().timeMode) {
-            case "Tick":
+        switch (getHud().timeModeProperty.value()) {
+            case TICK:
                 time /= 20;
                 break;
-            case "Second":
+            case SECOND:
                 break;
-            case "Minute":
+            case MINUTE:
                 time *= 60;
                 break;
-            case "Hour":
+            case HOUR:
                 time *= 3600;
                 break;
-            case "Day":
+            case DAY:
                 time *= 86400;
                 break;
         }
-        return String.format("%.2f %s/%s", (float) (Math.abs(length2D(move)) * time), getHud().distanceMode, getHud().timeMode);
+        return String.format("%.2f %s/%s", (float) (Math.abs(length2D(move)) * time), getHud().distanceModeProperty.value(), getHud().timeModeProperty.value());
     }
 
     public double length2D(Vec3d vec3d) {

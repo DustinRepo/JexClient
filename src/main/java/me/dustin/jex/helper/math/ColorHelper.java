@@ -39,7 +39,7 @@ public enum ColorHelper {
 
     public int getClientColor() {
         Hud hud = Feature.get(Hud.class);
-        return hud.rainbowClientColor ? getRainbowColor() : hud.clientColor;
+        return hud.rainbowClientColorProperty.value() ? getRainbowColor() : hud.clientColorProperty.value().getRGB();
     }
 
     public int setAlpha(int color, int alpha) {

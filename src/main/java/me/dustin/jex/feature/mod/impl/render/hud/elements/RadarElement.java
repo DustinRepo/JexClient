@@ -54,7 +54,7 @@ public class RadarElement extends HudElement{
                     Render2DHelper.INSTANCE.fill(matrixStack, xPos, yPos, xPos + 1, yPos + 1, ESP.INSTANCE.getColor(entity));
                 }
             }
-        if (Radar.INSTANCE.waypoints) {
+        if (Radar.INSTANCE.waypointsProperty.value()) {
             matrixStack.push();
             float scale = 0.75f;
             matrixStack.scale(scale, scale, 1);

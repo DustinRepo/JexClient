@@ -2,8 +2,6 @@ package me.dustin.jex.feature.mod.core;
 
 import me.dustin.jex.feature.keybind.Keybind;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
-import me.dustin.jex.feature.option.Option;
-import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.events.EventManager;
 
 import java.util.ArrayList;
@@ -72,15 +70,6 @@ public class Feature {
         return features;
     }
 
-    public ArrayList<Option> getOptions() {
-        ArrayList<Option> options = new ArrayList<Option>();
-        OptionManager.get().getOptions().forEach(option ->
-        {
-            if (option.getFeature() == this)
-                options.add(option);
-        });
-        return options;
-    }
     public void toggleState() {
         this.setState(!this.getState());
     }
@@ -131,7 +120,7 @@ public class Feature {
     }
 
     public void setSuffix(String suffix) {
-        if (!Hud.INSTANCE.suffixes) {
+        if (!Hud.INSTANCE.suffixesProperty.value()) {
             this.setDisplayName(this.getName());
             return;
         }
@@ -140,6 +129,10 @@ public class Feature {
             return;
         }
         this.setDisplayName(this.getName() + "\2477: \2478" + suffix);
+    }
+
+    public void setSuffix(Enum<?> suffix) {
+        setSuffix(suffix.name().substring(0, 1).toUpperCase() + suffix.name().substring(1).toLowerCase());
     }
 
     public boolean isVisible() {

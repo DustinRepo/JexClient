@@ -24,6 +24,6 @@ public class PlayerFaceElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().drawFace;
+        return getHud().drawFaceProperty.value();
     }
 }

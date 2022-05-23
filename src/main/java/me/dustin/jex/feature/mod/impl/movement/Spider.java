@@ -5,18 +5,20 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Vec3d;
-import me.dustin.jex.feature.option.annotate.Op;
 
 public class Spider extends Feature {
 
-	@Op(name = "Mode", all = { "Vanilla", "NCP" })
-	public String mode = "Vanilla";
+	public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+			.name("Mode")
+			.value(Mode.VANILLA)
+			.build();
 
 	public Spider() {
 		super(Category.MOVEMENT, "Climb up walls like a spider.");
@@ -26,7 +28,7 @@ public class Spider extends Feature {
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
 		if (Wrapper.INSTANCE.getLocalPlayer().horizontalCollision) {
 			Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
-			if (mode.equalsIgnoreCase("Vanilla")) {
+			if (modeProperty.value() == Mode.VANILLA) {
 				Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), 0.3, orig.getZ());
 			} else {
 				Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), 0, orig.getZ());
@@ -35,4 +37,8 @@ public class Spider extends Feature {
 			}
 		}
 	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+	public enum Mode {
+		VANILLA, NCP
+	}
 }

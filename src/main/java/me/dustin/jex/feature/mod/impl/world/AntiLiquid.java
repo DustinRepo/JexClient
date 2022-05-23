@@ -10,7 +10,7 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Scaffold;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -42,16 +42,29 @@ import java.util.List;
 
 public class AntiLiquid extends Feature {
 
-    @Op(name = "Place Mode", all = {"Post", "Pre"})
-    public String placeMode = "Post";
-    @Op(name = "Source Only")
-    public boolean sourceOnly = false;
-    @Op(name = "Sneak on Place")
-    public boolean sneak = false;
-    @Op(name = "Distance", min = 1, max = 5)
-    public int distance = 3;
-    @Op(name = "Allow Illegal Place")
-    public boolean illegalPlace = true;
+    public final Property<PlaceMode> placeModeProperty = new Property.PropertyBuilder<PlaceMode>(this.getClass())
+            .name("Place Mode")
+            .value(PlaceMode.POST)
+            .build();
+    public final Property<Boolean> sourceOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Source Only")
+            .value(true)
+            .build();
+    public final Property<Boolean> sneakProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sneak on Place")
+            .value(false)
+            .build();
+    public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Distance")
+            .value(3)
+            .min(1)
+            .max(5)
+            .build();
+    public final Property<Boolean> illegalPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Allow Illegal Place")
+            .value(true)
+            .build();
+
     private BlockPos pos;
 
     private ArrayList<BlockPos> list;
@@ -68,7 +81,7 @@ public class AntiLiquid extends Feature {
             pos = null;
             list = null;
 
-            Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - distance, Wrapper.INSTANCE.getPlayer().getBlockY() - distance, Wrapper.INSTANCE.getPlayer().getBlockZ() - distance, Wrapper.INSTANCE.getPlayer().getBlockX() + distance, Wrapper.INSTANCE.getPlayer().getBlockY() + distance, Wrapper.INSTANCE.getPlayer().getBlockZ() + distance);
+            Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockY() - distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockZ() - distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockX() + distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockY() + distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockZ() + distanceProperty.value());
             list = WorldHelper.INSTANCE.getBlocksInBox(box);
             list.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(value))));
 
@@ -92,22 +105,22 @@ public class AntiLiquid extends Feature {
                     }
                     if (getBlockFromHotbar() != -1) {
                         pos = blockPos;
-                        if (sneak) {
+                        if (sneakProperty.value()) {
                             NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
                         }
                         event.setRotation(PlayerHelper.INSTANCE.rotateFromVec(PlayerHelper.INSTANCE.getPlacingLookPos(pos), Wrapper.INSTANCE.getPlayer()));
                         InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
-                        if (placeMode.equalsIgnoreCase("Pre")) {
-                            PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlace);
+                        if (placeModeProperty.value() == PlaceMode.PRE) {
+                            PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlaceProperty.value());
                         }
                     }
                     return;
                 }
             }
         } else if (pos != null) {
-            if (placeMode.equalsIgnoreCase("Post"))
-                PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlace);
-            if (sneak) {
+            if (placeModeProperty.value() == PlaceMode.POST)
+                PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlaceProperty.value());
+            if (sneakProperty.value()) {
                 NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
             }
         }
@@ -154,7 +167,7 @@ public class AntiLiquid extends Feature {
     }
 
     private boolean canPlaceHere(BlockPos pos) {
-        return illegalPlace || getBlockInfo(pos) != null;
+        return illegalPlaceProperty.value() || getBlockInfo(pos) != null;
     }
 
     public Scaffold.BlockInfo getBlockInfo(BlockPos pos) {
@@ -178,7 +191,7 @@ public class AntiLiquid extends Feature {
     }
 
     private boolean isReplaceable(BlockPos blockPos) {
-        return (WorldHelper.INSTANCE.getBlock(blockPos) instanceof FluidBlock fluidBlock && (!sourceOnly || fluidBlock.getFluidState(WorldHelper.INSTANCE.getBlockState(blockPos)).isStill())) || (WorldHelper.INSTANCE.isWaterlogged(blockPos) && !(WorldHelper.INSTANCE.getBlock(blockPos) instanceof FluidBlock));
+        return (WorldHelper.INSTANCE.getBlock(blockPos) instanceof FluidBlock fluidBlock && (!sourceOnlyProperty.value() || fluidBlock.getFluidState(WorldHelper.INSTANCE.getBlockState(blockPos)).isStill())) || (WorldHelper.INSTANCE.isWaterlogged(blockPos) && !(WorldHelper.INSTANCE.getBlock(blockPos) instanceof FluidBlock));
     }
 
     public int getBlockFromInv() {
@@ -205,5 +218,9 @@ public class AntiLiquid extends Feature {
 
     public BlockPos getPos() {
         return pos;
+    }
+
+    public enum PlaceMode {
+        PRE, POST
     }
 }

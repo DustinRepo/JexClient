@@ -11,23 +11,44 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.speed.impl.StrafeSpeed;
 import me.dustin.jex.feature.mod.impl.movement.speed.impl.VanillaSpeed;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.feature.property.Property;
 import org.lwjgl.glfw.GLFW;
 
 public class Speed extends Feature {
     public static Speed INSTANCE;
-    @Op(name = "Mode", all = {"Vanilla", "Strafe"})
-    public String mode = "Vanilla";
 
-    @OpChild(name = "Vanilla Speed", min = 0.3f, max = 3, inc = 0.01f, parent = "Mode", dependency = "Vanilla")
-    public float vanillaSpeed = 0.6f;
-    @OpChild(name = "Strafe Speed", min = 0.3f, max = 3, inc = 0.01f, parent = "Mode", dependency = "Strafe")
-    public float strafeSpeed = 0.6f;
-    @OpChild(name = "Hop Amount", min = 0.05f, max = 1, inc = 0.01f, parent = "Mode", dependency = "Strafe")
-    public float hopAmount = 0.42f;
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.VANILLA)
+            .build();
+    public final Property<Float> vanillaSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Vanilla Speed")
+            .value(0.6f)
+            .min(0.3f)
+            .max(3)
+            .inc(0.01f)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.VANILLA)
+            .build();
+    public final Property<Float> strafeSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Strafe Speed")
+            .value(0.6f)
+            .min(0.3f)
+            .max(3)
+            .inc(0.01f)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.STRAFE)
+            .build();
+    public final Property<Float> hopAmountProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Hop Amount")
+            .value(0.42f)
+            .min(0.05f)
+            .inc(0.01f)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.STRAFE)
+            .build();
 
-    private String lastMode;
+    private Mode lastMode;
 
     public Speed() {
         super(Category.MOVEMENT, "Sanic gotta go fast.", GLFW.GLFW_KEY_C);
@@ -41,7 +62,7 @@ public class Speed extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        this.setSuffix(mode);
+        this.setSuffix(modeProperty.value());
         sendEvent(event);
     });
 
@@ -49,23 +70,27 @@ public class Speed extends Feature {
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> sendEvent(event));
 
     private void sendEvent(Event event) {
-        if (!mode.equalsIgnoreCase(lastMode) && lastMode != null) {
+        if (modeProperty.value() != lastMode && lastMode != null) {
             FeatureExtension.get(lastMode, this).disable();
-            FeatureExtension.get(mode, this).enable();
+            FeatureExtension.get(modeProperty.value(), this).enable();
         }
-        FeatureExtension.get(mode, this).pass(event);
-        lastMode = mode;
+        FeatureExtension.get(modeProperty.value(), this).pass(event);
+        lastMode = modeProperty.value();
     }
 
     @Override
     public void onEnable() {
-        FeatureExtension.get(mode, this).enable();
+        FeatureExtension.get(modeProperty.value(), this).enable();
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        FeatureExtension.get(mode, this).disable();
+        FeatureExtension.get(modeProperty.value(), this).disable();
         super.onDisable();
+    }
+
+    public enum Mode {
+        VANILLA, STRAFE
     }
 }

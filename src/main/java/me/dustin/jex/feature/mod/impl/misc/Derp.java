@@ -5,25 +5,34 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.util.Hand;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.Random;
 
 public class Derp extends Feature {
 
-    @Op(name = "Mode", all = {"Random", "Pitch Roll", "Yaw Roll", "Both Roll"})
-    public String mode = "Random";
-    @Op(name = "Normalize Angles")
-    public boolean normalize = false;
-    @Op(name = "Swing")
-    public boolean swing = true;
-    @OpChild(name = "Show Swing", parent = "Swing")
-    public boolean showSwing = true;
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.RANDOM)
+            .build();
+    public final Property<Boolean> normalizeAnglesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Normalize Angles")
+            .value(true)
+            .build();
+    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
+            .build();
+    public final Property<Boolean> showSwingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Show Swing")
+            .value(true)
+            .parent(swingProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
     private int yaw, pitch;
 
@@ -34,8 +43,8 @@ public class Derp extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         Random random = new Random();
-        switch (mode) {
-            case "Random" -> {
+        switch (modeProperty.value()) {
+            case RANDOM -> {
                 event.setYaw(random.nextFloat() * 180);
                 if (random.nextBoolean())
                     event.setYaw(-event.getYaw());
@@ -43,17 +52,17 @@ public class Derp extends Feature {
                 if (random.nextBoolean())
                     event.setPitch(-event.getPitch());
             }
-            case "Pitch Roll" -> {
+            case PITCH_ROLL -> {
                 pitch++;
                 event.setPitch(pitch);
                 if (pitch > 90)
                     pitch = -90;
             }
-            case "Yaw Roll" -> {
+            case YAW_ROLL -> {
                 yaw++;
                 event.setYaw(yaw);
             }
-            case "Both Roll" -> {
+            case BOTH_ROLL -> {
                 pitch++;
                 yaw++;
                 event.setYaw(yaw);
@@ -62,13 +71,17 @@ public class Derp extends Feature {
                     pitch = -90;
             }
         }
-        if (swing) {
+        if (swingProperty.value()) {
             Hand hand = random.nextBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
-            if (showSwing) {
+            if (showSwingProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
             } else {
                 NetworkHelper.INSTANCE.sendPacket(new HandSwingC2SPacket(hand));
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+
+    public enum Mode {
+        RANDOM, PITCH_ROLL, YAW_ROLL, BOTH_ROLL
+    }
 }

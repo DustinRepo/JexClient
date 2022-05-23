@@ -8,6 +8,7 @@ import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.render.storageesp.impl.OutlineStorageESP;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlastFurnaceBlockEntity;
@@ -28,67 +29,146 @@ import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.world.chunk.Chunk;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.storageesp.impl.BoxStorageESP;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import java.awt.*;
 
 public class StorageESP extends Feature {
 
-    @Op(name = "Mode", all = {"Box", "Shader"})
-    public String mode = "Shader";
-    @OpChild(name = "Fade When Close", parent = "Mode", dependency = "Box")
-    public boolean fadeBoxesWhenClose = true;
-    @OpChild(name = "Fade Distance", min = 1, max = 50, parent = "Mode", dependency = "Box")
-    public int fadeDistance = 10;
-    @Op(name = "Chest")
-    public boolean chest = true;
-    @Op(name = "Ender Chest")
-    public boolean echest = true;
-    @Op(name = "Shulker")
-    public boolean shulker = true;
-    @Op(name = "Barrel")
-    public boolean barrel = true;
-    @Op(name = "Hopper")
-    public boolean hopper = true;
-    @Op(name = "Furnace")
-    public boolean furnace = true;
-    @Op(name = "Dispenser/Dropper")
-    public boolean dispensers = true;
-    @Op(name = "Hopper Minecart")
-    public boolean hopperMinecart = true;
-    @Op(name = "Chest Minecart")
-    public boolean chestMinecart = true;
-    @Op(name = "Furnace Minecart")
-    public boolean furnaceMinecart = true;
-    @Op(name = "Spawner")
-    public boolean spawner = true;
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.SHADER)
+            .build();
+    public final Property<Boolean> fadeBoxesWhenCloseProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Fade When Close")
+            .value(true)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.SHADER)
+            .build();
+    public final Property<Integer> fadeDistanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Fade Distance")
+            .value(10)
+            .min(1)
+            .max(50)
+            .parent(fadeBoxesWhenCloseProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> chestProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Chest")
+            .value(true)
+            .build();
+    public final Property<Boolean> echestProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Ender Chest")
+            .value(true)
+            .build();
+    public final Property<Boolean> shulkerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Shulker")
+            .value(true)
+            .build();
+    public final Property<Boolean> barrelProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Barrel")
+            .value(true)
+            .build();
+    public final Property<Boolean> hopperProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hopper")
+            .value(true)
+            .build();
+    public final Property<Boolean> furnaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Furnace")
+            .value(true)
+            .build();
+    public final Property<Boolean> dispensersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Dispenser/Dropper")
+            .value(true)
+            .build();
+    public final Property<Boolean> hopperMinecartProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hopper Minecart")
+            .value(true)
+            .build();
+    public final Property<Boolean> chestMinecartProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Chest Minecart")
+            .value(true)
+            .build();
+    public final Property<Boolean> furnaceMinecartProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Furnace Minecart")
+            .value(true)
+            .build();
+    public final Property<Boolean> spawnerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Spawner")
+            .value(true)
+            .build();
+    public final Property<Color> chestColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Chest Color")
+            .value(Color.YELLOW)
+            .parent(chestProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> enderchestColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Ender Chest Color")
+            .value(new Color(147, 0, 255))
+            .parent(echestProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> shulkerColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Shulker Color")
+            .value(new Color(255, 0, 239))
+            .parent(shulkerProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> spawnerColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Spawner Color")
+            .value(new Color(161, 255, 0))
+            .parent(spawnerProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> barrelColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Barrel Color")
+            .value(new Color(215, 82, 0))
+            .parent(barrelProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> hopperColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Hopper Color")
+            .value(new Color(42, 42, 42))
+            .parent(hopperProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> furnaceColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Furnace Color")
+            .value(new Color(201, 201, 201))
+            .parent(furnaceProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> dispenserColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Dispenser Color")
+            .value(new Color(0, 208, 255))
+            .parent(dispensersProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> dropperColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Dropper Color")
+            .value(new Color(59, 147, 0))
+            .parent(dispensersProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> hopperMinecartColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Hopper Minecart Color")
+            .value(new Color(0, 128, 255))
+            .parent(hopperMinecartProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> chestMinecartColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Chest Minecart Color")
+            .value(new Color(255, 0, 0))
+            .parent(chestMinecartProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> furnaceMinecartColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Furnace Minecart Color")
+            .value(new Color(73, 50, 103))
+            .parent(furnaceMinecartProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
-    @OpChild(name = "Chest Color", isColor = true, parent = "Chest")
-    public int chestColor = new Color(255, 255, 0).getRGB();
-    @OpChild(name = "Ender Chest Color", isColor = true, parent = "Ender Chest")
-    public int enderchestColor = new Color(147, 0, 255).getRGB();
-    @OpChild(name = "Shulker Color", isColor = true, parent = "Shulker")
-    public int shulkerColor = new Color(255, 0, 239).getRGB();
-    @OpChild(name = "Spawner Color", isColor = true, parent = "Spawner")
-    public int spawnerColor = new Color(161, 255, 0).getRGB();
-    @OpChild(name = "Barrel Color", isColor = true, parent = "Barrel")
-    public int barrelColor = new Color(215, 82, 0).getRGB();
-    @OpChild(name = "Hopper Color", isColor = true, parent = "Hopper")
-    public int hopperColor = new Color(42, 42, 42).getRGB();
-    @OpChild(name = "Furnace Color", isColor = true, parent = "Furnace")
-    public int furnaceColor = new Color(201, 201, 201).getRGB();
-    @OpChild(name = "Dispenser Color", isColor = true, parent = "Dispenser/Dropper")
-    public int dispenserColor = new Color(0, 208, 255).getRGB();
-    @OpChild(name = "Dropper Color", isColor = true, parent = "Dispenser/Dropper")
-    public int dropperColor = new Color(59, 147, 0).getRGB();
-    @OpChild(name = "Hopper Minecart Color", isColor = true, parent = "Hopper Minecart")
-    public int hopperMinecartColor = new Color(0, 128, 255).getRGB();
-    @OpChild(name = "Chest Minecart Color", isColor = true, parent = "Chest Minecart")
-    public int chestMinecartColor = new Color(255, 0, 0).getRGB();
-    @OpChild(name = "Furnace Minecart Color", isColor = true, parent = "Furnace Minecart")
-    public int furnaceMinecartColor = new Color(73, 50, 103).getRGB();
-
-    private String lastMode;
+    private Mode lastMode;
     public StorageESP() {
         super(Category.VISUAL, "Show storage blocks through walls");
         new OutlineStorageESP();
@@ -108,24 +188,24 @@ public class StorageESP extends Feature {
 
 
     private void sendEvent(Event event) {
-        if (lastMode != null && !mode.equalsIgnoreCase(lastMode)) {
+        if (lastMode != null && modeProperty.value() != lastMode) {
             FeatureExtension.get(lastMode, this).disable();
-            FeatureExtension.get(mode, this).enable();
+            FeatureExtension.get(modeProperty.value(), this).enable();
         }
-        FeatureExtension.get(mode, this).pass(event);
-        this.setSuffix(mode);
-        lastMode = mode;
+        FeatureExtension.get(modeProperty.value(), this).pass(event);
+        this.setSuffix(modeProperty.value());
+        lastMode = modeProperty.value();
     }
 
     @Override
     public void onEnable() {
-        FeatureExtension.get(mode, this).enable();
+        FeatureExtension.get(modeProperty.value(), this).enable();
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        FeatureExtension.get(mode, this).disable();
+        FeatureExtension.get(modeProperty.value(), this).disable();
         super.onDisable();
     }
 
@@ -134,63 +214,67 @@ public class StorageESP extends Feature {
         if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
             return false;
         if (blockEntity instanceof ChestBlockEntity)
-            return chest;
+            return chestProperty.value();
         if (blockEntity instanceof EnderChestBlockEntity)
-            return echest;
+            return echestProperty.value();
         if (blockEntity instanceof ShulkerBoxBlockEntity)
-            return shulker;
+            return shulkerProperty.value();
         if (blockEntity instanceof BarrelBlockEntity)
-            return barrel;
+            return barrelProperty.value();
         if (blockEntity instanceof MobSpawnerBlockEntity)
-            return spawner;
+            return spawnerProperty.value();
         if (blockEntity instanceof HopperBlockEntity)
-            return hopper;
+            return hopperProperty.value();
         if (blockEntity instanceof FurnaceBlockEntity || blockEntity instanceof SmokerBlockEntity || blockEntity instanceof BlastFurnaceBlockEntity)
-            return furnace;
+            return furnaceProperty.value();
         if (blockEntity instanceof DispenserBlockEntity)
-            return dispensers;
+            return dispensersProperty.value();
         return false;
     }
 
     public boolean isValid(Entity entity) {
         if (entity instanceof HopperMinecartEntity)
-            return hopperMinecart;
+            return hopperMinecartProperty.value();
         if (entity instanceof ChestMinecartEntity)
-            return chestMinecart;
+            return chestMinecartProperty.value();
         if (entity instanceof FurnaceMinecartEntity)
-            return furnaceMinecart;
+            return furnaceMinecartProperty.value();
         return false;
     }
 
     public int getColor(Entity entity) {
         if (entity instanceof HopperMinecartEntity)
-            return hopperMinecartColor;
+            return hopperMinecartColorProperty.value().getRGB();
         if (entity instanceof ChestMinecartEntity)
-            return chestMinecartColor;
+            return chestMinecartColorProperty.value().getRGB();
         if (entity instanceof FurnaceMinecartEntity)
-            return furnaceMinecartColor;
+            return furnaceMinecartColorProperty.value().getRGB();
         return -1;
     }
 
     public int getColor(BlockEntity blockEntity) {
         if (blockEntity instanceof ChestBlockEntity)
-            return chestColor;
+            return chestColorProperty.value().getRGB();
         if (blockEntity instanceof EnderChestBlockEntity)
-            return enderchestColor;
+            return enderchestColorProperty.value().getRGB();
         if (blockEntity instanceof MobSpawnerBlockEntity)
-            return spawnerColor;
+            return spawnerColorProperty.value().getRGB();
         if (blockEntity instanceof ShulkerBoxBlockEntity)
-            return shulkerColor;
+            return shulkerColorProperty.value().getRGB();
         if (blockEntity instanceof BarrelBlockEntity)
-            return barrelColor;
+            return barrelColorProperty.value().getRGB();
         if (blockEntity instanceof HopperBlockEntity)
-            return hopperColor;
+            return hopperColorProperty.value().getRGB();
         if (blockEntity instanceof FurnaceBlockEntity || blockEntity instanceof SmokerBlockEntity || blockEntity instanceof BlastFurnaceBlockEntity)
-            return furnaceColor;
+            return furnaceColorProperty.value().getRGB();
         if (blockEntity instanceof DropperBlockEntity)
-            return dropperColor;
+            return dropperColorProperty.value().getRGB();
         if (blockEntity instanceof DispenserBlockEntity)
-            return dispenserColor;
+            return dispenserColorProperty.value().getRGB();
         return 0xffffffff;
+    }
+
+    public enum Mode {
+        BOX, SHADER
     }
 }

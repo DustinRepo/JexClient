@@ -28,7 +28,7 @@ public class SingleAura extends FeatureExtension {
     private LivingEntity target;
 
     public SingleAura() {
-        super("Single", KillAura.class);
+        super(KillAura.TargetMode.SINGLE, KillAura.class);
     }
 
     @Override
@@ -44,15 +44,15 @@ public class SingleAura extends FeatureExtension {
                 }
                 KillAura.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
-                    if (KillAura.INSTANCE.rotate) {
+                    if (KillAura.INSTANCE.rotateProperty.value()) {
                         RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToEntity(target);
-                        if (KillAura.INSTANCE.randomize) {
-                            rotationVector = PlayerHelper.INSTANCE.randomRotateTo(target, KillAura.INSTANCE.randomWidth, KillAura.INSTANCE.randomHeight);
+                        if (KillAura.INSTANCE.randomizeProperty.value()) {
+                            rotationVector = PlayerHelper.INSTANCE.randomRotateTo(target, KillAura.INSTANCE.randomWidthProperty.value(), KillAura.INSTANCE.randomHeightProperty.value());
                         }
                         event.setRotation(rotationVector);
                         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
                         Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
-                        if (KillAura.INSTANCE.lockview) {
+                        if (KillAura.INSTANCE.lockviewProperty.value()) {
                             PlayerHelper.INSTANCE.setRotation(event.getRotation());
                         }
                     }
@@ -60,14 +60,14 @@ public class SingleAura extends FeatureExtension {
                 if ((EntityHelper.INSTANCE.isAuraBlocking()) && PlayerHelper.INSTANCE.isMoving())
                     PlayerHelper.INSTANCE.unblock();
             }
-            if (KillAura.INSTANCE.attackMode.equalsIgnoreCase(event.getMode().toString()))
+            if (KillAura.INSTANCE.attackTimingProperty.value().name().equalsIgnoreCase(event.getMode().toString()))
                 doAttack();
         }
         if (event1 instanceof EventRender3D) {
-            if (target != null && KillAura.INSTANCE.showTarget) {
-                Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getPoseStack(), target, ((EventRender3D) event1).getPartialTicks(), KillAura.INSTANCE.targetColor);
+            if (target != null && KillAura.INSTANCE.showTargetProperty.value()) {
+                Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getPoseStack(), target, ((EventRender3D) event1).getPartialTicks(), KillAura.INSTANCE.targetColorProperty.value().getRGB());
             }
-            if (KillAura.INSTANCE.reachCircle) {
+            if (KillAura.INSTANCE.reachCircleProperty.value()) {
                 MatrixStack matrixStack = ((EventRender3D) event1).getPoseStack();
                 matrixStack.push();
                 Render3DHelper.INSTANCE.setup3DRender(false);
@@ -75,7 +75,7 @@ public class SingleAura extends FeatureExtension {
                 double x = Wrapper.INSTANCE.getLocalPlayer().prevX + ((Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX) * ((EventRender3D) event1).getPartialTicks());
                 double y = Wrapper.INSTANCE.getLocalPlayer().prevY + ((Wrapper.INSTANCE.getLocalPlayer().getY() - Wrapper.INSTANCE.getLocalPlayer().prevY) * ((EventRender3D) event1).getPartialTicks());
                 double z = Wrapper.INSTANCE.getLocalPlayer().prevZ + ((Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ) * ((EventRender3D) event1).getPartialTicks());
-                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getPoseStack(), KillAura.INSTANCE.reach, 25, KillAura.INSTANCE.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
+                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getPoseStack(), KillAura.INSTANCE.reachProperty.value(), 25, KillAura.INSTANCE.reachCircleColorProperty.value().getRGB(), true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
                 Render3DHelper.INSTANCE.end3DRender();
                 matrixStack.pop();
             }
@@ -85,18 +85,18 @@ public class SingleAura extends FeatureExtension {
     public void doAttack() {
         boolean reblock = false;
         LivingEntity savedTarget = null;
-        if (KillAura.INSTANCE.rayTrace && target != null) {
+        if (KillAura.INSTANCE.rayTraceProperty.value() && target != null) {
             savedTarget = target;
-            Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reach);
+            Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reachProperty.value());
             if (possible != null && possible instanceof LivingEntity) {
                 target = (LivingEntity) possible;
             }
         }
         boolean alreadyBlocking = false;
-        if (KillAura.INSTANCE.autoBlock && KillAura.INSTANCE.autoblockDistance > KillAura.INSTANCE.reach) {
+        if (KillAura.INSTANCE.autoBlockProperty.value() && KillAura.INSTANCE.autoBlockDistanceProperty.value() > KillAura.INSTANCE.reachProperty.value()) {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                if (KillAura.INSTANCE.isValid(entity, false) && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= KillAura.INSTANCE.autoblockDistance) {
-                    PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
+                if (KillAura.INSTANCE.isValid(entity, false) && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= KillAura.INSTANCE.autoBlockDistanceProperty.value()) {
+                    PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
                     alreadyBlocking = true;
                     break;
                 }
@@ -104,12 +104,12 @@ public class SingleAura extends FeatureExtension {
         }
         if (target != null && Wrapper.INSTANCE.getWorld().getEntityById(target.getId()) != null) {
             if (BaritoneHelper.INSTANCE.baritoneExists()) {
-                if (KillAura.INSTANCE.baritoneOverride)
+                if (KillAura.INSTANCE.baritoneOverrideProperty.value())
                     if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
                         BaritoneHelper.INSTANCE.followUntilDead(target, KillAura.INSTANCE);
             }
-            if (KillAura.INSTANCE.autoBlock && !alreadyBlocking)
-                PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
+            if (KillAura.INSTANCE.autoBlockProperty.value() && !alreadyBlocking)
+                PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
 
             if (KillAura.INSTANCE.canSwing()) {
                 if (EntityHelper.INSTANCE.isAuraBlocking()) {
@@ -118,8 +118,8 @@ public class SingleAura extends FeatureExtension {
                 }
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), target);
                 PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
-                if (KillAura.INSTANCE.autoBlock && reblock) {
-                    PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
+                if (KillAura.INSTANCE.autoBlockProperty.value() && reblock) {
+                    PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
                 }
                 if (savedTarget != null)
                     target = savedTarget;
@@ -127,7 +127,7 @@ public class SingleAura extends FeatureExtension {
         } else {
             target = null;
             if (BaritoneHelper.INSTANCE.baritoneExists()) {
-                if (!KillAura.INSTANCE.bFollowUntilDead)
+                if (!KillAura.INSTANCE.followUntilDeadProperty.value())
                     BaritoneHelper.INSTANCE.disableKillauraTargetProcess();
             }
         }
@@ -135,7 +135,7 @@ public class SingleAura extends FeatureExtension {
 
     public LivingEntity getClosest() {
         LivingEntity livingEntity = null;
-        float distance = KillAura.INSTANCE.reach;
+        float distance = KillAura.INSTANCE.reachProperty.value();
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof LivingEntity livingEntity1) {
                 if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) <= distance) {

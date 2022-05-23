@@ -24,6 +24,6 @@ public class FPSElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().fps;
+        return getHud().infoProperty.value() && getHud().fpsProperty.value();
     }
 }

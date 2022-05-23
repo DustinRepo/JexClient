@@ -7,7 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRenderChest;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -17,10 +17,14 @@ import net.minecraft.item.Items;
 
 public class HolidayEvents extends Feature {
 
-    @Op(name = "Christmas Chest")
-    public boolean christmas = true;
-    @Op(name = "Halloween Mobs")
-    public boolean halloween = true;
+    public final Property<Boolean> christmasProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Christmas Chest")
+            .value(true)
+            .build();
+    public final Property<Boolean> halloweenProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Halloween Mobs")
+            .value(true)
+            .build();
 
     public HolidayEvents() {
         super(Category.VISUAL, "Have holiday events like christmas chests show year-round");
@@ -29,7 +33,7 @@ public class HolidayEvents extends Feature {
     @EventPointer
     private final EventListener<EventRenderChest> eventRenderChestEventListener = new EventListener<>(event -> {
         if (event.getMode() == EventRenderChest.Mode.PRE) {
-            event.setChristmas(this.getState() && this.christmas);
+            event.setChristmas(this.getState() && this.christmasProperty.value());
             if (!this.getState())
                 super.onDisable();
         }
@@ -40,7 +44,7 @@ public class HolidayEvents extends Feature {
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof PlayerEntity || !(entity instanceof LivingEntity livingEntity))
                 return;
-            if (getState() && halloween) {
+            if (getState() && halloweenProperty.value()) {
                 if (livingEntity.hasStackEquipped(EquipmentSlot.HEAD)) {
                     return;
                 }

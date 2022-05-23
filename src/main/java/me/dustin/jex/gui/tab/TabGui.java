@@ -86,7 +86,7 @@ public enum TabGui {
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
-        if (!Feature.get(Hud.class).tabGui || event.getType() != EventKeyPressed.PressType.IN_GAME)
+        if (!Feature.get(Hud.class).tabGuiProperty.value() || event.getType() != EventKeyPressed.PressType.IN_GAME)
             return;
         switch (event.getKey()) {
             case GLFW.GLFW_KEY_UP:

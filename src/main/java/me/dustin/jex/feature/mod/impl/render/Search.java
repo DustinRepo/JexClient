@@ -9,7 +9,7 @@ import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
-import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -34,7 +34,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -42,14 +41,23 @@ import java.util.concurrent.ConcurrentMap;
 
 public class Search extends Feature {
 
+    public final Property<Boolean> tracersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Tracers")
+            .value(false)
+            .build();
+    public final Property<Boolean> limitRangeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Limit Range")
+            .value(false)
+            .build();
+    public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Range")
+            .value(25)
+            .min(10)
+            .max(100)
+            .build();
+
     private static final ConcurrentMap<Block, Integer> blocks = Maps.newConcurrentMap();
     private static final ConcurrentMap<BlockPos, Block> worldBlocks = Maps.newConcurrentMap();
-    @Op(name = "Tracers")
-    public boolean tracers;
-    @Op(name = "Limit Range")
-    public boolean limitRange = false;
-    @OpChild(name = "Range", min = 10, max = 100, parent = "Limit Range")
-    public int range = 25;
 
     private Thread thread;
     private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
@@ -110,7 +118,7 @@ public class Search extends Feature {
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
             assert cameraEntity != null;
-            if (limitRange && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos)) > range)
+            if (limitRangeProperty.value() && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos)) > rangeProperty.value())
                 continue;
             Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
             Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 1, entityPos.z + 1 - 0.5f);
@@ -122,7 +130,7 @@ public class Search extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
-        if (!tracers)
+        if (!tracersProperty.value())
             return;
         for (BlockPos pos : worldBlocks.keySet()) {
             Block block = worldBlocks.get(pos);

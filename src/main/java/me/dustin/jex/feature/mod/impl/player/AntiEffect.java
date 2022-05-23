@@ -5,25 +5,37 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.entity.effect.StatusEffects;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 
 public class AntiEffect extends Feature {
 
-    @Op(name = "Blindness")
-    public boolean blindness = true;
-    @Op(name = "Nausea")
-    public boolean nausea = true;
-    @Op(name = "Mining Fatigue")
-    public boolean miningFatigue = false;
-    @Op(name = "Levitation")
-    public boolean levitation = false;
-    @Op(name = "Slow Falling")
-    public boolean slowFalling = true;
-    @Op(name = "Darkness")
-    public boolean darkness = true;
+    public final Property<Boolean> blindnessProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Blindness")
+            .value(true)
+            .build();
+    public final Property<Boolean> nauseaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Nausea")
+            .value(true)
+            .build();
+    public final Property<Boolean> miningFatigueProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Mining Fatigue")
+            .value(true)
+            .build();
+    public final Property<Boolean> levitationProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Levitation")
+            .value(true)
+            .build();
+    public final Property<Boolean> slowFallingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Slow Falling")
+            .value(true)
+            .build();
+    public final Property<Boolean> darknessProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Darkness")
+            .value(true)
+            .build();
 
     public AntiEffect() {
         super(Category.PLAYER, "Remove certain negative effects from yourself.");
@@ -31,17 +43,17 @@ public class AntiEffect extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (blindness)
+        if (blindnessProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.BLINDNESS);
-        if (nausea)
+        if (nauseaProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.NAUSEA);
-        if (miningFatigue)
+        if (miningFatigueProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.MINING_FATIGUE);
-        if (levitation)
+        if (levitationProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.LEVITATION);
-        if (slowFalling)
+        if (slowFallingProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.SLOW_FALLING);
-        if (darkness)
+        if (darknessProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.DARKNESS);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

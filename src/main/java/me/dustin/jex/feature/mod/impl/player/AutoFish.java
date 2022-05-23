@@ -9,6 +9,7 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -26,31 +27,49 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.ConcurrentModificationException;
 
 public class AutoFish extends Feature {
 
-    @Op(name = "Sound")
-    public boolean sound = true;
-    @OpChild(name = "Distance Check", parent = "Sound")
-    public boolean distanceCheck = false;
-    @Op(name = "Don't Reel")
-    public boolean dontReel = false;
-    @Op(name = "Re-Reel")
-    public boolean recast = true;
-    @OpChild(name = "Delay", max = 2000, parent = "Re-Reel")
-    public int delay = 750;
-    @Op(name = "Reel on Reconnect")
-    public boolean reelOnReconnect = false;
-    @Op(name = "Show If OpenWater")
-    public boolean showIfOpenWater = true;
+    public final Property<Boolean> soundProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sound")
+            .value(true)
+            .build();
+    public final Property<Boolean> distanceCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Distance Check")
+            .value(false)
+            .parent(soundProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> dontReelProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Don't Reel")
+            .value(false)
+            .build();
+    public final Property<Boolean> recastProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Re-Reel")
+            .value(true)
+            .build();
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay")
+            .description("Delay between re-casting the rod.")
+            .value(750L)
+            .max(2000)
+            .parent(recastProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> reelOnReconnectProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Reel on Reconnect")
+            .value(true)
+            .build();
+    public final Property<Boolean> showIfOpenWaterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Show If OpenWater")
+            .value(true)
+            .build();
 
     private double lastY = -1;
     private boolean hasReeled = false;
-    private StopWatch stopWatch = new StopWatch();
-    private StopWatch stopWatch1 = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch1 = new StopWatch();
     private boolean hasReconnected;
 
     public AutoFish() {
@@ -68,7 +87,7 @@ public class AutoFish extends Feature {
             if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getLocalPlayer().fishHook == null)
                 return;
             Vec3d vec3d = new Vec3d(soundPacket.getX(), soundPacket.getY(), soundPacket.getZ());
-            if (distanceTo(Wrapper.INSTANCE.getLocalPlayer().fishHook, vec3d) < 3 || !distanceCheck) {
+            if (distanceTo(Wrapper.INSTANCE.getLocalPlayer().fishHook, vec3d) < 3 || !distanceCheckProperty.value()) {
                 reel();
                 hasReeled = true;
                 stopWatch.reset();
@@ -78,7 +97,7 @@ public class AutoFish extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (AutoEat.isEating && recast) {
+        if (AutoEat.isEating && recastProperty.value()) {
             this.hasReeled = true;
             stopWatch.reset();
             return;
@@ -91,10 +110,9 @@ public class AutoFish extends Feature {
             }
         }
 
-
         FishingBobberEntity hook = getHook();
 
-        if (hook != null && hook.age > 100 && !sound) {
+        if (hook != null && hook.age > 100 && !soundProperty.value()) {
             if (lastY == -1)
                 lastY = hook.getY();
             double difference = Math.abs(hook.getY() - lastY);
@@ -106,8 +124,8 @@ public class AutoFish extends Feature {
             lastY = hook.getY();
         }
 
-        if (hasReeled && recast) {
-            if (stopWatch.hasPassed(delay)) {
+        if (hasReeled && recastProperty.value()) {
+            if (stopWatch.hasPassed(delayProperty.value())) {
                 reel();
                 hasReeled = false;
                 stopWatch.reset();
@@ -117,13 +135,13 @@ public class AutoFish extends Feature {
 
     @EventPointer
     private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> {
-        if (reelOnReconnect)
+        if (reelOnReconnectProperty.value())
             hasReconnected = true;
     });
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        if (!showIfOpenWater)
+        if (!showIfOpenWaterProperty.value())
             return;
             FishingBobberEntity hook = getHook();
         if (hook != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.FISHING_ROD) {
@@ -134,7 +152,7 @@ public class AutoFish extends Feature {
     });
 
     void reel() {
-        if (dontReel) return;
+        if (dontReelProperty.value()) return;
         if (PlayerHelper.INSTANCE.mainHandStack() != null && PlayerHelper.INSTANCE.mainHandStack().getItem() == Items.FISHING_ROD) {
             PlayerHelper.INSTANCE.useItem(Hand.MAIN_HAND);
             PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
@@ -174,7 +192,6 @@ public class AutoFish extends Feature {
                 }
             }
         } catch (ConcurrentModificationException ignored) {
-
         }
         return hook;
     }

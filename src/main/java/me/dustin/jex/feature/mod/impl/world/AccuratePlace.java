@@ -9,7 +9,7 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -32,10 +32,14 @@ import org.lwjgl.glfw.GLFW;
 
 public class AccuratePlace extends Feature {
 
-    @Op(name = "Next Key", isKeybind = true)
-    public int nextKey = GLFW.GLFW_KEY_UP;
-    @Op(name = "Last Key", isKeybind = true)
-    public int lastKey = GLFW.GLFW_KEY_DOWN;
+    public final Property<Integer> nextKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Next Key")
+            .value(GLFW.GLFW_KEY_UP)
+            .build();
+    public final Property<Integer> lastKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Last Key")
+            .value(GLFW.GLFW_KEY_DOWN)
+            .build();
 
     private Direction facing = Direction.DOWN;
     private int index = 0;
@@ -93,12 +97,12 @@ public class AccuratePlace extends Feature {
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
-        if (event.getKey() == nextKey) {
+        if (event.getKey() == nextKeyProperty.value()) {
             index++;
             if (index > Direction.values().length - 1)
                 index = 0;
             facing = Direction.values()[index];
-        } else if (event.getKey() == lastKey) {
+        } else if (event.getKey() == lastKeyProperty.value()) {
             index--;
             if (index < 0)
                 index = Direction.values().length - 1;

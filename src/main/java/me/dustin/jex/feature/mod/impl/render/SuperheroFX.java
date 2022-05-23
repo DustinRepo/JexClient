@@ -7,6 +7,7 @@ import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -17,20 +18,34 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
-import me.dustin.jex.feature.option.annotate.Op;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class SuperheroFX extends Feature{
 
-    @Op(name = "Visible Only")
-    public boolean visibleOnly = true;
-    @Op(name = "Max Age (MS)", min = 250, max = 2000)
-    public int maxAge = 500;
-    @Op(name = "Size", min = 8, max = 64, inc = 4)
-    public int size = 32;
-    @Op(name = "Particle Count", min = 1, max = 20)
-    public int particleCount = 5;
+    public final Property<Boolean> visibleOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Visible Only")
+            .value(true)
+            .build();
+    public final Property<Long> maxAgeProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Max Age (MS)")
+            .value(500L)
+            .min(250)
+            .max(2000)
+            .build();
+    public final Property<Integer> sizeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Size")
+            .value(32)
+            .min(8)
+            .max(64)
+            .inc(4)
+            .build();
+    public final Property<Integer> particleCountProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Particle Count")
+            .value(5)
+            .min(1)
+            .max(20)
+            .build();
 
     private final ArrayList<LivingEntity> attacked = new ArrayList<>();
     private final ArrayList<KapowParticle> particles = new ArrayList<>();
@@ -51,7 +66,7 @@ public class SuperheroFX extends Feature{
         for (int i = 0; i < attacked.size(); i++) {
             LivingEntity livingEntity = attacked.get(i);
             Random random = new Random();
-            for (int j = 0; j < (1 +random.nextInt(particleCount)); j++) {
+            for (int j = 0; j < (1 +random.nextInt(particleCountProperty.value())); j++) {
                 FXType type = FXType.values()[random.nextInt(FXType.values().length)];
                 float sideOffset = livingEntity.getWidth() / 1.5f;
                 float heightOffset = livingEntity.getHeight() / 2;
@@ -97,9 +112,9 @@ public class SuperheroFX extends Feature{
         }
 
         public void render(MatrixStack matrixStack) {
-            if (stopWatch.hasPassed(maxAge))
+            if (stopWatch.hasPassed(maxAgeProperty.value()))
                 this.age = 0;
-            if (visibleOnly) {
+            if (visibleOnlyProperty.value()) {
                 Vec3d vec3d = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getEyeY(), Wrapper.INSTANCE.getLocalPlayer().getZ());
                 Vec3d vec3d2 = new Vec3d(position.getX(), position.getY(), position.getZ());
                 if (vec3d2.distanceTo(vec3d) > 128.0D || Wrapper.INSTANCE.getWorld().raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, Wrapper.INSTANCE.getLocalPlayer())).getType() != HitResult.Type.MISS)
@@ -107,7 +122,7 @@ public class SuperheroFX extends Feature{
             }
             if (Render2DHelper.INSTANCE.isOnScreen(twoDPosition)) {
                 Render2DHelper.INSTANCE.bindTexture(identifier);
-                DrawableHelper.drawTexture(matrixStack, (int)twoDPosition.x - (size / 2), (int)twoDPosition.y - (size / 2), 0, 0, size, size, size, size);
+                DrawableHelper.drawTexture(matrixStack, (int)twoDPosition.x - (sizeProperty.value() / 2), (int)twoDPosition.y - (sizeProperty.value() / 2), 0, 0, sizeProperty.value(), sizeProperty.value(), sizeProperty.value(), sizeProperty.value());
             }
         }
 

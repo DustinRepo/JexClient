@@ -61,8 +61,8 @@ public enum EntityHelper {
         KillAura killaura = Feature.get(KillAura.class);
         if (killaura.getState()) {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                if (killaura.isValid(entity, false) && (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.autoblockDistance || Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.reach)) {
-                    return killaura.autoBlock && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem;
+                if (killaura.isValid(entity, false) && (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.autoBlockDistanceProperty.value() || Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.reachProperty.value())) {
+                    return killaura.autoBlockProperty.value() && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem;
                 }
             }
         }

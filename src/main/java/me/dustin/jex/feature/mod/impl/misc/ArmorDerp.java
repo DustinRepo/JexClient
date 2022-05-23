@@ -7,7 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.AutoArmor;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -21,8 +21,12 @@ import java.util.Random;
 
 public class ArmorDerp extends Feature {
 
-    @Op(name = "Delay (MS)", max = 1000, inc = 10)
-    public int delay = 50;
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay (MS)")
+            .value(50L)
+            .max(1000)
+            .inc(10)
+            .build();
 
     private boolean autoArmor;
     private final Random random = new Random();
@@ -42,7 +46,7 @@ public class ArmorDerp extends Feature {
         }
 
         if (!armorInfos.isEmpty()) {
-            if (stopWatch.hasPassed(delay)) {
+            if (stopWatch.hasPassed(delayProperty.value())) {
                 int r = random.nextInt(armorInfos.size());
                 ArmorInfo armorInfo = armorInfos.get(r);
                 EquipmentSlot equipmentSlot = armorInfo.armorItem().getSlotType();

@@ -9,13 +9,12 @@ import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
@@ -28,8 +27,13 @@ import java.util.*;
 
 public class AutoEZ extends Feature {
 
-    @Op(name = "Max Kill Detect Delay(MS)", min = 100, max = 500, inc = 10)
-    public int killDetectDelay = 200;
+    public final Property<Long> killDetectDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Max Kill Detect Delay(MS)")
+            .value(200L)
+            .min(100)
+            .max(500)
+            .inc(10)
+            .build();
 
     private final Map<PlayerEntity, Long> fightingPlayers = new HashMap<>();
     private final ArrayList<String> messages = new ArrayList<>();
@@ -59,9 +63,9 @@ public class AutoEZ extends Feature {
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
         if (event.getEntity() instanceof PlayerEntity playerEntity) {
             if (fightingPlayers.containsKey(playerEntity))
-                fightingPlayers.replace(playerEntity, System.currentTimeMillis() + killDetectDelay);
+                fightingPlayers.replace(playerEntity, System.currentTimeMillis() + killDetectDelayProperty.value());
             else
-                fightingPlayers.put(playerEntity, System.currentTimeMillis() + killDetectDelay);
+                fightingPlayers.put(playerEntity, System.currentTimeMillis() + killDetectDelayProperty.value());
         }
     });
 

@@ -2,31 +2,39 @@ package me.dustin.jex.feature.mod.impl.render;
 
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.render.font.NahrFont;
-import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import me.dustin.jex.feature.option.OptionManager;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.types.StringArrayOption;
 
-import java.io.File;
-import java.util.ArrayList;
 
 public class CustomFont extends Feature {
     public static CustomFont INSTANCE;
 
-    @Op(name = "Text Shadows")
-    public boolean textShadows = true;
-    @Op(name = "X Offset", min = -5, max = 5, inc = 0.5f)
-    public float xOffset = -1;
-    @Op(name = "Y Offset", min = -5, max = 5, inc = 0.5f)
-    public float yOffset = -4.5f;
-
-    @Op(name = "Font", all = {"Verdana", "Lucida Console"})
-    public String font = "Verdana";
+    public final Property<Boolean> textShadowsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Text Shadows")
+            .value(true)
+            .build();
+    public final Property<Float> xOffsetProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("X Offset")
+            .value(-1f)
+            .min(-5)
+            .max(5)
+            .inc(0.5f)
+            .build();
+    public final Property<Float> yOffsetProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Y Offset")
+            .value(-1f)
+            .min(-5)
+            .max(5)
+            .inc(0.5f)
+            .build();
+    public final Property<String> fontProperty = new Property.PropertyBuilder<String>(this.getClass())
+            .name("Font")
+            .value("Verdana")
+            .build();
 
     public CustomFont() {
         super(Category.VISUAL, "Change the font in aspects of the game. Disable then re-enable to reload fonts from folder (.minecraft/JexClient/fonts)");
@@ -35,7 +43,6 @@ public class CustomFont extends Feature {
 
     @Override
     public void onEnable() {
-        loadFontFiles();
         loadFont();
         super.onEnable();
     }
@@ -43,36 +50,14 @@ public class CustomFont extends Feature {
     public void loadFont() {
         if (FontHelper.INSTANCE.getClientFont() != null) {
             NahrFont origFont = FontHelper.INSTANCE.getClientFont();
-            if (!origFont.getFont().getFontName().equalsIgnoreCase(font))
-                if (!FontHelper.INSTANCE.setClientFont(new NahrFont(font, 18, 1.2f))) {
+            if (!origFont.getFont().getFontName().equalsIgnoreCase(fontProperty.value()))
+                if (!FontHelper.INSTANCE.setClientFont(new NahrFont(fontProperty.value(), 18, 1.2f))) {
                     ChatHelper.INSTANCE.addClientMessage("Font not found. Reverting to last found");
-                    font = origFont.getFont().getFontName();
+                    fontProperty.setValue(origFont.getFont().getFontName());
                 }
             ConfigManager.INSTANCE.get(FeatureFile.class).write();
         } else {
-            FontHelper.INSTANCE.setClientFont(new NahrFont(font, 18, 1.2f));
+            FontHelper.INSTANCE.setClientFont(new NahrFont(fontProperty.value(), 18, 1.2f));
         }
-    }
-
-    private void loadFontFiles() {
-        File fontsDir = new File(ModFileHelper.INSTANCE.getJexDirectory(), "fonts");
-        if (!fontsDir.exists())
-            fontsDir.mkdir();
-        ArrayList<String> all = new ArrayList<>();
-        StringArrayOption fontOption = (StringArrayOption) OptionManager.INSTANCE.getOption("Font", this);
-        all.add("Verdana");
-        all.add("Lucida Console");
-        for (File file : fontsDir.listFiles()) {
-            if (file.getName().toLowerCase().endsWith("ttf") || file.getName().toLowerCase().endsWith("otf")) {
-                all.add(file.getName());
-            }
-        }
-        String[] finalArray = new String[all.size()];
-        Object[] obj = all.toArray();
-        for (int i = 0; i < obj.length; i++) {
-            finalArray[i] = obj[i].toString();
-        }
-        assert fontOption != null;
-        fontOption.setAll(finalArray);
     }
 }

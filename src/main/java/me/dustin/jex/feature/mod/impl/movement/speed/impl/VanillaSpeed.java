@@ -14,7 +14,7 @@ import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 public class VanillaSpeed extends FeatureExtension {
 
     public VanillaSpeed() {
-        super("Vanilla", Speed.class);
+        super(Speed.Mode.VANILLA, Speed.class);
     }
 
     @Override
@@ -24,10 +24,10 @@ public class VanillaSpeed extends FeatureExtension {
             if ((BaritoneHelper.INSTANCE.isBaritoneRunning() || PathingHelper.INSTANCE.isPathing()) && !Wrapper.INSTANCE.getLocalPlayer().isOnGround())
                 return;
             if (PathingHelper.INSTANCE.isPathing()) {
-                eventMove.setX(eventMove.getX() * speed.vanillaSpeed);
-                eventMove.setZ(eventMove.getZ() * speed.vanillaSpeed);
+                eventMove.setX(eventMove.getX() * speed.vanillaSpeedProperty.value());
+                eventMove.setZ(eventMove.getZ() * speed.vanillaSpeedProperty.value());
             } else
-                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.vanillaSpeed);
+                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.vanillaSpeedProperty.value());
         }
     }
 

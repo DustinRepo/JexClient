@@ -7,8 +7,7 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -29,20 +28,38 @@ import java.util.stream.Stream;
 
 public class AutoGapple extends Feature {
 
-    @Op(name = "Eat for Potions")
-    public boolean eatForPotions = true;
-
-    @Op(name = "Health", min = 5, max = 19)
-    public int health = 10;
-    @Op(name = "Press Key")
-    public boolean pressKey = true;
-
-    @Op(name = "Take From Inv")
-    public boolean takeFromInv = true;
-    @OpChild(name = "Put Into", all = {"Hotbar", "Offhand"}, parent = "Take From Inv")
-    public String putInto = "Hotbar";
-    @OpChild(name = "Put Back", parent = "Take From Inv")
-    public boolean putBack = true;
+    public final Property<Boolean> eatForPotionsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Eat for Potions")
+            .description("Eat Gapples for the potion effects")
+            .value(true)
+            .build();
+    public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Health")
+            .value(10)
+            .min(5)
+            .max(19)
+            .build();
+    public final Property<Boolean> pressKeyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Press Key")
+            .description("Press the right-click key while eating to give animation")
+            .value(true)
+            .build();
+    public final Property<Boolean> takeFromInvProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Take From Inv")
+            .value(true)
+            .build();
+    public final Property<PutInto> putIntoProperty = new Property.PropertyBuilder<PutInto>(this.getClass())
+            .name("Put Into")
+            .value(PutInto.HOTBAR)
+            .parent(takeFromInvProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> putBackProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Put Back")
+            .value(true)
+            .parent(takeFromInvProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
     public int putBackSlot = -1;
 
@@ -77,10 +94,10 @@ public class AutoGapple extends Feature {
             isEating = false;
             BaritoneHelper.INSTANCE.resume();
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
-            if (pressKey)
+            if (pressKeyProperty.value())
                 Wrapper.INSTANCE.getOptions().useKey.setPressed(false);
         } else if (isEating) {
-            if (pressKey)
+            if (pressKeyProperty.value())
                 Wrapper.INSTANCE.getOptions().useKey.setPressed(true);
             Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
         }
@@ -90,20 +107,20 @@ public class AutoGapple extends Feature {
                 int gappleHotbar = InventoryHelper.INSTANCE.getFromHotbar(Items.ENCHANTED_GOLDEN_APPLE);
                 int gappleInv = InventoryHelper.INSTANCE.getFromInv(Items.ENCHANTED_GOLDEN_APPLE);
 
-                if (gappleHotbar == -1 && takeFromInv) {
+                if (gappleHotbar == -1 && takeFromInvProperty.value()) {
                     if (gappleInv == -1)
                         return;
-                    if (putInto.equalsIgnoreCase("hotbar")) {
+                    if (putIntoProperty.value() == PutInto.HOTBAR) {
                         InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, gappleInv < 9 ? gappleInv + 36 : gappleInv, SlotActionType.SWAP, 8);
                         gappleHotbar = 8;
                     } else
                         InventoryHelper.INSTANCE.moveToOffhand(gappleInv);
-                    if (putBack)
+                    if (putBackProperty.value())
                         putBackSlot = gappleInv;
                 }
                 if (gappleHotbar != -1)
                     InventoryHelper.INSTANCE.setSlot(gappleHotbar, true, true);
-                if (gappleHotbar != -1 || (putInto.equalsIgnoreCase("hotbar") && takeFromInv)) {
+                if (gappleHotbar != -1 || (putIntoProperty.value() == PutInto.HOTBAR && takeFromInvProperty.value())) {
                     isEating = true;
                     BaritoneHelper.INSTANCE.pause();
                 }
@@ -130,14 +147,18 @@ public class AutoGapple extends Feature {
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, UpdateSelectedSlotC2SPacket.class, PlayerActionC2SPacket.class));
 
     public boolean shouldEatGapple() {
-        if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= health)
+        if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= healthProperty.value())
             return true;
-        if (!eatForPotions)
+        if (!eatForPotionsProperty.value())
             return false;
         return !Wrapper.INSTANCE.getLocalPlayer().getActiveStatusEffects().keySet().containsAll(gappleEffects);
     }
 
     public boolean isEating() {
         return isEating;
+    }
+
+    public enum PutInto {
+        HOTBAR, OFFHAND
     }
 }

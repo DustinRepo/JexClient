@@ -31,7 +31,7 @@ public class MultiAura extends FeatureExtension {
     private final ArrayList<LivingEntity> targets = new ArrayList<>();
 
     public MultiAura() {
-        super("Multi", KillAura.class);
+        super(KillAura.TargetMode.MULTI, KillAura.class);
     }
 
     @Override
@@ -45,8 +45,7 @@ public class MultiAura extends FeatureExtension {
             return;
         if (AutoEat.isEating || BaritoneHelper.INSTANCE.isTakingControl())
             return;
-        if (event1 instanceof EventPlayerPackets) {
-            EventPlayerPackets event = (EventPlayerPackets) event1;
+        if (event1 instanceof EventPlayerPackets event) {
             if (event.getMode() == EventPlayerPackets.Mode.PRE) {
                 getTargets();
                 KillAura.INSTANCE.setHasTarget(!targets.isEmpty());
@@ -55,28 +54,28 @@ public class MultiAura extends FeatureExtension {
                         if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
                             BaritoneHelper.INSTANCE.followUntilDead(targets.get(0), KillAura.INSTANCE);
                     }
-                    if (KillAura.INSTANCE.rotate) {
+                    if (KillAura.INSTANCE.rotateProperty.value()) {
                         RotationVector rotationVector = new RotationVector(PlayerHelper.INSTANCE.getYaw(), 90);
                         event.setRotation(rotationVector);
                     }
                 } else {
                     if (BaritoneHelper.INSTANCE.baritoneExists())
-                        if (KillAura.INSTANCE.baritoneOverride && BaritoneHelper.INSTANCE.isBaritoneRunning())
+                        if (KillAura.INSTANCE.baritoneOverrideProperty.value() && BaritoneHelper.INSTANCE.isBaritoneRunning())
                             BaritoneHelper.INSTANCE.disableKillauraTargetProcess();
                 }
                 if ((EntityHelper.INSTANCE.isAuraBlocking()) && PlayerHelper.INSTANCE.isMoving())
                     PlayerHelper.INSTANCE.unblock();
             }
-            if (KillAura.INSTANCE.attackMode.equalsIgnoreCase(event.getMode().toString()))
+            if (KillAura.INSTANCE.attackTimingProperty.value().name().equalsIgnoreCase(event.getMode().toString()))
                 doAttack();
         }
         if (event1 instanceof EventRender3D) {
             getTargets();
             for (LivingEntity target : targets)
-                if (target != null && KillAura.INSTANCE.showTarget) {
-                    Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getPoseStack(), target, ((EventRender3D) event1).getPartialTicks(), KillAura.INSTANCE.targetColor);
+                if (target != null && KillAura.INSTANCE.showTargetProperty.value()) {
+                    Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getPoseStack(), target, ((EventRender3D) event1).getPartialTicks(), KillAura.INSTANCE.targetColorProperty.value().getRGB());
                 }
-            if (KillAura.INSTANCE.reachCircle) {
+            if (KillAura.INSTANCE.reachCircleProperty.value()) {
                 MatrixStack matrixStack = ((EventRender3D) event1).getPoseStack();
                 matrixStack.push();
                 Render3DHelper.INSTANCE.setup3DRender(false);
@@ -84,7 +83,7 @@ public class MultiAura extends FeatureExtension {
                 double x = Wrapper.INSTANCE.getLocalPlayer().prevX + ((Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX) * ((EventRender3D) event1).getPartialTicks());
                 double y = Wrapper.INSTANCE.getLocalPlayer().prevY + ((Wrapper.INSTANCE.getLocalPlayer().getY() - Wrapper.INSTANCE.getLocalPlayer().prevY) * ((EventRender3D) event1).getPartialTicks());
                 double z = Wrapper.INSTANCE.getLocalPlayer().prevZ + ((Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ) * ((EventRender3D) event1).getPartialTicks());
-                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getPoseStack(), KillAura.INSTANCE.reach, 25, KillAura.INSTANCE.reachCircleColor, true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
+                Render3DHelper.INSTANCE.drawSphere(((EventRender3D) event1).getPoseStack(), KillAura.INSTANCE.reachProperty.value(), 25, KillAura.INSTANCE.reachCircleColorProperty.value().getRGB(), true, new Vec3d(x, y, z).subtract(0, Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(Wrapper.INSTANCE.getLocalPlayer().getPose()), 0));
                 Render3DHelper.INSTANCE.end3DRender();
                 matrixStack.pop();
             }
@@ -95,17 +94,17 @@ public class MultiAura extends FeatureExtension {
         boolean reblock = false;
 
         if (targets.isEmpty()) {
-            if (KillAura.INSTANCE.autoBlock && KillAura.INSTANCE.autoblockDistance > KillAura.INSTANCE.reach) {
+            if (KillAura.INSTANCE.autoBlockProperty.value() && KillAura.INSTANCE.autoBlockDistanceProperty.value() > KillAura.INSTANCE.reachProperty.value()) {
                 for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                    if (KillAura.INSTANCE.isValid(entity, false) && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= KillAura.INSTANCE.autoblockDistance) {
-                        PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
+                    if (KillAura.INSTANCE.isValid(entity, false) && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= KillAura.INSTANCE.autoBlockDistanceProperty.value()) {
+                        PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
                         break;
                     }
                 }
             }
         }else {
-            if (KillAura.INSTANCE.autoBlock)
-                PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
+            if (KillAura.INSTANCE.autoBlockProperty.value())
+                PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
 
             boolean canSwing = KillAura.INSTANCE.canSwing();
             if (canSwing)
@@ -115,8 +114,8 @@ public class MultiAura extends FeatureExtension {
                 }
 
             for (LivingEntity target : targets) {
-                if (KillAura.INSTANCE.rayTrace && target != null) {
-                    Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reach);
+                if (KillAura.INSTANCE.rayTraceProperty.value() && target != null) {
+                    Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reachProperty.value());
                     if (possible instanceof LivingEntity && !targets.contains(possible)) {
                         target = (LivingEntity) possible;
                     }
@@ -135,8 +134,8 @@ public class MultiAura extends FeatureExtension {
                 Wrapper.INSTANCE.getLocalPlayer().resetLastAttackedTicks();
             }
 
-            if (KillAura.INSTANCE.autoBlock && reblock) {
-                PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombat);
+            if (KillAura.INSTANCE.autoBlockProperty.value() && reblock) {
+                PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
             }
         }
     }

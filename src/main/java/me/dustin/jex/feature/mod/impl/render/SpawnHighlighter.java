@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.world.SpawnSphere;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -25,34 +26,68 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
+
+import java.awt.*;
 import java.util.ArrayList;
 
 public class SpawnHighlighter extends Feature {
 
-	@Op(name = "Check Delay", max = 1000, inc = 10)
-	public int checkDelay = 250;
-	@Op(name = "Radius", min = 10, max = 50, inc = 1)
-	public int radius = 25;
-	@OpChild(name = "Y Radius", min = 10, max = 50, inc = 1, parent = "Radius")
-	public int yradius = 15;
-	@Op(name = "Z Clipping")
-	public boolean disableDepth = false;
-	@Op(name = "Check Height")
-	public boolean checkHeight = true;
-	@Op(name = "Check Light")
-	public boolean checkLight = true;
-	@OpChild(name = "Light Value", min = 0, max = 15, inc = 1, parent = "Check Light")
-	public int lightValue = 0;
-	@Op(name = "Check Water")
-	public boolean checkWater = true;
-	@Op(name = "Check IsSpawnable")
-	public boolean checkIsSpawnable = true;
-	@Op(name = "Color", isColor = true)
-	public int color = 0xffff0000;
-	@Op(name = "SpawnSphere Color", isColor = true)
-	public int spawnSphereColor = 0xff00a1ff;
+	public final Property<Long> checkDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+			.name("Check Delay")
+			.value(250L)
+			.max(1000)
+			.inc(10)
+			.build();
+	public final Property<Integer> radiusProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+			.name("Radius")
+			.value(25)
+			.min(10)
+			.max(50)
+			.inc(1)
+			.build();
+	public final Property<Integer> yradiusProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+			.name("Y Radius")
+			.value(15)
+			.min(10)
+			.max(50)
+			.inc(1)
+			.parent(radiusProperty)
+			.build();
+	public final Property<Boolean> disableDepthProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Z Clipping")
+			.value(false)
+			.build();
+	public final Property<Boolean> checkHeightProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Check Height")
+			.value(true)
+			.build();
+	public final Property<Boolean> checkLightProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Check Light")
+			.value(true)
+			.build();
+	public final Property<Integer> lightValueProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+			.name("Light Value")
+			.value(0)
+			.min(0)
+			.max(15)
+			.parent(radiusProperty)
+			.build();
+	public final Property<Boolean> checkWaterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Check Water")
+			.value(true)
+			.build();
+	public final Property<Boolean> checkIsSpawnableProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Check IsSpawnable")
+			.value(true)
+			.build();
+	public final Property<Color> colorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+			.name("Color")
+			.value(Color.RED)
+			.build();
+	public final Property<Color> spawnSphereColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+			.name("SpawnSphere Color")
+			.value(new Color(0, 161, 255))
+			.build();
 
 	private final ArrayList<BlockPos> posList = new ArrayList<>();
 	private final StopWatch stopWatch = new StopWatch();
@@ -65,17 +100,17 @@ public class SpawnHighlighter extends Feature {
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 		ArrayList<Render3DHelper.BoxStorage> boxes = new ArrayList<>();
 		posList.forEach(blockPos -> {
-			int color = this.color;
+			int color = this.colorProperty.value().getRGB();
 			if (Feature.getState(SpawnSphere.class)) {
 				Vec3d pos = Feature.get(SpawnSphere.class).pos;
 				if (ClientMathHelper.INSTANCE.getDistance(pos, Vec3d.of(blockPos)) <= 128)
-					color = spawnSphereColor;
+					color = spawnSphereColorProperty.value().getRGB();
 			}
 			Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
 			Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 0.05f, renderPos.z + 1);
 			boxes.add(new Render3DHelper.BoxStorage(box, color));
 		});
-		Render3DHelper.INSTANCE.setup3DRender(disableDepth);
+		Render3DHelper.INSTANCE.setup3DRender(disableDepthProperty.value());
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		boxes.forEach(blockStorage -> {
@@ -90,11 +125,11 @@ public class SpawnHighlighter extends Feature {
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-		if (stopWatch.hasPassed(checkDelay)) {
+		if (stopWatch.hasPassed(checkDelayProperty.value())) {
 			posList.clear();
-			for (int x = -radius; x < radius; x++) {
-				for (int y = -yradius; y < 5; y++) {
-					for (int z = -radius; z < radius; z++) {
+			for (int x = -radiusProperty.value(); x < radiusProperty.value(); x++) {
+				for (int y = -yradiusProperty.value(); y < 5; y++) {
+					for (int z = -radiusProperty.value(); z < radiusProperty.value(); z++) {
 						BlockPos blockPos = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z));
 						if (isValidBlock(blockPos)) {
 							BlockPos abovePos = blockPos.add(0, 1, 0);
@@ -116,18 +151,18 @@ public class SpawnHighlighter extends Feature {
 		Block aboveBlock = aboveState.getBlock();
 		if (thisBlock == Blocks.AIR)
 			return false;
-		if (checkIsSpawnable)
+		if (checkIsSpawnableProperty.value())
 			if (!WorldHelper.INSTANCE.canMobSpawnOntop(blockPos))
 				return false;
-		if (checkWater)
+		if (checkWaterProperty.value())
 			if (WorldHelper.INSTANCE.isWaterlogged(above))
 				return false;
 		assert aboveBlock != null;
-		if (!WorldHelper.INSTANCE.canMobSpawnInside(aboveState) || (checkHeight && !WorldHelper.INSTANCE.canMobSpawnInside(twoAboveState)))
+		if (!WorldHelper.INSTANCE.canMobSpawnInside(aboveState) || (checkHeightProperty.value() && !WorldHelper.INSTANCE.canMobSpawnInside(twoAboveState)))
 			return false;
-		if (checkLight) {
+		if (checkLightProperty.value()) {
 			int light = Wrapper.INSTANCE.getWorld().getLightLevel(LightType.BLOCK, above);
-			return light <= lightValue;
+			return light <= lightValueProperty.value();
 		}
 		return true;
 	}

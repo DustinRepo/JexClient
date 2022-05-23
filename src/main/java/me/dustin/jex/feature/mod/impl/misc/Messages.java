@@ -6,17 +6,18 @@ import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-import java.time.Instant;
 import java.util.Random;
 
 public class Messages extends Feature {
 
-    @Op(name = "Mode", all = {"Fancy", "Upside-Down", "Backwards", "Random Capital"})
-    public String mode = "Fancy";
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.FANCY)
+            .build();
 
     public Messages() {
         super(Category.MISC, "Modify messages you send in chat");
@@ -29,8 +30,8 @@ public class Messages extends Feature {
         String message = chatMessageC2SPacket.getChatMessage();
         if (message.startsWith("/"))
             return;
-        switch (mode) {
-            case "Fancy" -> {
+        switch (modeProperty.value()) {
+            case FANCY -> {
                 String fancyChars = "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ１２３４５６７８９０－＝｀～！＠＃＄％＾＆＊＼，＜．＞／？：；＇＂";
                 String replaceChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=`~!@#$%^&*\\,<.>/?:;'\"";
                 String s = message;
@@ -41,9 +42,9 @@ public class Messages extends Feature {
                 }
                 event.setPacket(new ChatMessageC2SPacket(s, sigData, chatMessageC2SPacket.isPreviewed()));
             }
-            case "Upside-Down" -> event.setPacket(new ChatMessageC2SPacket(upsideDown(message), sigData, chatMessageC2SPacket.isPreviewed()));
-            case "Backwards" -> event.setPacket(new ChatMessageC2SPacket(new StringBuilder(message).reverse().toString(), sigData, chatMessageC2SPacket.isPreviewed()));
-            case "Random Capital" -> event.setPacket(new ChatMessageC2SPacket(randomCapitalize(message), sigData, chatMessageC2SPacket.isPreviewed()));
+            case UPSIDE_DOWN -> event.setPacket(new ChatMessageC2SPacket(upsideDown(message), sigData, chatMessageC2SPacket.isPreviewed()));
+            case BACKWARDS -> event.setPacket(new ChatMessageC2SPacket(new StringBuilder(message).reverse().toString(), sigData, chatMessageC2SPacket.isPreviewed()));
+            case RANDOM_CAPITAL -> event.setPacket(new ChatMessageC2SPacket(randomCapitalize(message), sigData, chatMessageC2SPacket.isPreviewed()));
         }
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ChatMessageC2SPacket.class));
 
@@ -58,10 +59,10 @@ public class Messages extends Feature {
     public String upsideDown(String str) {
         String normal = "abcdefghijklmnopqrstuvwxyz_,;.?!/\\'";
         String split = "ɐqɔpǝɟbɥıظʞןɯuodbɹsʇnʌʍxʎz‾'؛˙¿¡/\\,";
-//maj
+
         normal += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         split += "∀qϽᗡƎℲƃHIſʞ˥WNOԀὉᴚS⊥∩ΛMXʎZ";
-//number
+
         normal += "0123456789";
         split += "0ƖᄅƐㄣϛ9ㄥ86";
 
@@ -74,5 +75,9 @@ public class Messages extends Feature {
             newstr += (a != -1) ? split.charAt(a) : letter;
         }
         return new StringBuilder(newstr).reverse().toString();
+    }
+
+    public enum Mode {
+        FANCY, UPSIDE_DOWN, BACKWARDS, RANDOM_CAPITAL
     }
 }

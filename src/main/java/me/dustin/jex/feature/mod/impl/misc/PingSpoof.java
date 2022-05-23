@@ -8,7 +8,7 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -16,8 +16,13 @@ import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 
 public class PingSpoof extends Feature {
 
-    @Op(name = "Ping", min = 1000, max = 14500, inc = 100)
-    public int ping = 5000;
+    public final Property<Long> pingProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Ping")
+            .value(5000L)
+            .min(1000)
+            .max(14500)
+            .inc(100)
+            .build();
 
     private final StopWatch packetStopWatch = new StopWatch();
     private long keepAliveId = -1;
@@ -31,7 +36,7 @@ public class PingSpoof extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
             packetStopWatch.reset();
             keepAliveId = -1;
-        } else if (keepAliveId != -1 && packetStopWatch.hasPassed(ping)) {
+        } else if (keepAliveId != -1 && packetStopWatch.hasPassed(pingProperty.value())) {
             NetworkHelper.INSTANCE.sendPacketDirect(new KeepAliveC2SPacket(keepAliveId));
             keepAliveId = -1;
             packetStopWatch.reset();

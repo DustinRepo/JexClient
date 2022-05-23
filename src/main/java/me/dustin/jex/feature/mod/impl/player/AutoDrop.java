@@ -6,7 +6,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -20,8 +20,12 @@ import java.util.Map;
 public class AutoDrop extends Feature {
     public static AutoDrop INSTANCE;
 
-    @Op(name = "Drop Delay(MS)", max = 1000, inc = 5)
-    public int dropDelay = 50;
+    public final Property<Long> dropDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Drop Delay(MS)")
+            .value(50L)
+            .max(1000)
+            .inc(5)
+            .build();
 
     private final ArrayList<Item> items = new ArrayList<>();
     private final StopWatch stopWatch = new StopWatch();
@@ -50,10 +54,10 @@ public class AutoDrop extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!stopWatch.hasPassed(dropDelay))
+        if (!stopWatch.hasPassed(dropDelayProperty.value()))
             return;
         Map<Integer, ItemStack> inventory = InventoryHelper.INSTANCE.getStacksFromInventory(true);
-        if (dropDelay == 0) {
+        if (dropDelayProperty.value() == 0) {
             inventory.forEach((slot, itemStack) -> {
                 if (items.contains(itemStack.getItem())) {
                     InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot <= 27 ? slot + 9 : slot, SlotActionType.THROW, 1);

@@ -41,7 +41,7 @@ public class PathFinder
 	private final boolean creativeFlying = Wrapper.INSTANCE.getPlayer().getAbilities().flying;
 	protected final boolean flying = creativeFlying || Feature.getState(Fly.class);
 	private final boolean immuneToFallDamage = invulnerable || Feature.getState(NoFall.class);
-	private final boolean noWaterSlowdown = Feature.getState(NoPush.class) && Feature.get(NoPush.class).water;
+	private final boolean noWaterSlowdown = Feature.getState(NoPush.class) && Feature.get(NoPush.class).waterProperty.value();
 	private final boolean jesus = Feature.getState(Jesus.class);
 	private final boolean spider = Feature.getState(Spider.class);
 	protected boolean fallingAllowed = true;
@@ -582,7 +582,7 @@ public class PathFinder
 				|| Feature.get(Fly.class).getState())
 				|| immuneToFallDamage != (invulnerable
 				|| Feature.get(NoFall.class).getState())
-				|| noWaterSlowdown != Feature.get(NoPush.class).getState() && ((NoPush)Feature.get(NoPush.class)).water
+				|| noWaterSlowdown != Feature.get(NoPush.class).getState() && ((NoPush)Feature.get(NoPush.class)).waterProperty.value()
 				|| jesus != Feature.get(Jesus.class).getState()
 				|| spider != Feature.get(Spider.class).getState())
 			return false;

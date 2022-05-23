@@ -36,7 +36,6 @@ import me.dustin.jex.helper.render.EntityPositionHelper;
 import me.dustin.jex.helper.update.JexVersion;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.helper.update.UpdateManager;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.annotate.EventPointer;
@@ -75,8 +74,6 @@ public enum JexClient {
 
         getLogger().info("Initializing Features");
         FeatureManager.INSTANCE.initializeFeatureManager();
-        getLogger().info("Initializing Options");
-        OptionManager.INSTANCE.initializeOptionManager();
 
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             getLogger().info("Creating mods.json for website.");

@@ -6,7 +6,7 @@ import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.BlockStateArgumentType;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.world.xray.Xray;
+import me.dustin.jex.feature.mod.impl.world.Xray;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.helper.misc.ChatHelper;

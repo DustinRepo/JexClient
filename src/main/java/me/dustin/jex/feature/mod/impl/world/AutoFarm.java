@@ -14,7 +14,7 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -52,10 +52,16 @@ import java.util.Comparator;
 
 public class AutoFarm extends Feature {
 
-    @Op(name = "Render Area Box")
-    public boolean renderAreaBox = true;
-    @Op(name = "Sort Delay", max = 1000, inc = 10)
-    public int sortDelay = 350;
+    public final Property<Boolean> renderAreaBoxProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Render Area Box")
+            .value(true)
+            .build();
+    public final Property<Integer> sortDelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Sort Delay")
+            .value(250)
+            .max(1000)
+            .inc(10)
+            .build();
 
     public static FarmingArea farmArea;
     private Stage stage = Stage.SET_POS1;
@@ -168,7 +174,7 @@ public class AutoFarm extends Feature {
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 
-        if (farmArea != null && renderAreaBox) {
+        if (farmArea != null && renderAreaBoxProperty.value()) {
             Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(farmArea.getAreaBB().minX, farmArea.getAreaBB().minY, farmArea.getAreaBB().minZ));
             Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(farmArea.getAreaBB().maxX, farmArea.getAreaBB().maxY, farmArea.getAreaBB().maxZ));
             Box miningAreaBox = new Box(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
@@ -385,7 +391,7 @@ public class AutoFarm extends Feature {
         }
 
         public BlockPos getClosestCrop() {
-            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelay)) {
+            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelayProperty.value())) {
                 sortList();
                 autoFarm.sortStopWatch.reset();
             }
@@ -398,7 +404,7 @@ public class AutoFarm extends Feature {
         }
 
         public BlockPos getClosestFarmland() {
-            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelay)) {
+            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelayProperty.value())) {
                 sortList();
                 autoFarm.sortStopWatch.reset();
             }

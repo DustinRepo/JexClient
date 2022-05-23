@@ -4,11 +4,11 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.render.Render3DHelper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.option.Perspective;
@@ -31,8 +31,10 @@ import java.awt.*;
 
 public class Skeletons extends Feature {//it looks cool as fuck but seriously fuck this was a massive pain in the ass
 
-    @Op(name = "Color", isColor = true)
-    public int skeletonColor = 0xffffffff;
+    public final Property<Color> skeletonColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Color")
+            .value(Color.WHITE)
+            .build();
 
     public Skeletons() {
         super(Category.VISUAL, "Draw player skeletons");
@@ -45,7 +47,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
         Render3DHelper.INSTANCE.setup3DRender(true);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof PlayerEntity playerEntity && (entity != Wrapper.INSTANCE.getLocalPlayer() || Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON)) {
-                Color color = ColorHelper.INSTANCE.getColor(skeletonColor);
+                Color color = skeletonColorProperty.value();
                 Vec3d footPos = Render3DHelper.INSTANCE.getEntityRenderPosition(playerEntity, g);
                 PlayerEntityRenderer livingEntityRenderer = (PlayerEntityRenderer)(LivingEntityRenderer<?, ?>) Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().getRenderer(playerEntity);
                 PlayerEntityModel<PlayerEntity> playerEntityModel = (PlayerEntityModel)livingEntityRenderer.getModel();

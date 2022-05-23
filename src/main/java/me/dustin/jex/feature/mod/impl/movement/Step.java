@@ -9,24 +9,36 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventStep;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.world.Timer;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import java.util.Random;
 
 public class Step extends Feature {
 
-    @Op(name = "Mode", all = {"Vanilla", "Packet"})
-    public String mode = "Vanilla";
-    @OpChild(name = "Step Height", min = 0.6f, max = 10f, inc = 0.1f, parent = "Mode", dependency = "Vanilla")
-    public float stepHeight = 1;
-    @OpChild(name = "Cancel Packet", parent = "Mode", dependency = "Packet")
-    public boolean cancelPacket = true;
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.VANILLA)
+            .build();
+    public final Property<Float> stepHeightProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Step Height")
+            .value(1f)
+            .min(0.6f)
+            .max(10)
+            .inc(0.1f)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.VANILLA)
+            .build();
+    public final Property<Boolean> cancelPacketProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Cancel Packet")
+            .value(true)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.PACKET)
+            .build();
 
     private int cancelPackets;
     private int stepsTillCancel = 2;
@@ -39,16 +51,16 @@ public class Step extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         BaritoneHelper.INSTANCE.setAssumeStep(true);
-        if (mode.equalsIgnoreCase("Vanilla"))
-            Wrapper.INSTANCE.getPlayer().stepHeight = stepHeight;
+        if (modeProperty.value() == Mode.VANILLA)
+            Wrapper.INSTANCE.getPlayer().stepHeight = stepHeightProperty.value();
         else
             Wrapper.INSTANCE.getPlayer().stepHeight = 1.75f;
-        this.setSuffix(mode);
+        this.setSuffix(modeProperty.value());
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventStep> eventStepEventListener = new EventListener<>(event -> {
-        if (mode.equalsIgnoreCase("Packet")) {
+        if (modeProperty.value() == Mode.PACKET) {
             switch (event.getMode()) {
                 case PRE -> slow = true;
                 case MID -> {
@@ -82,7 +94,7 @@ public class Step extends Feature {
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
-        if (cancelPacket && cancelPackets > 0) {
+        if (cancelPacketProperty.value() && cancelPackets > 0) {
             double yDif = playerMoveC2SPacket.getY(Wrapper.INSTANCE.getPlayer().getY()) - Wrapper.INSTANCE.getPlayer().getY();
             if (!(yDif == 0.42D || yDif == 0.75D || yDif == 1)) {
                 event.cancel();
@@ -105,5 +117,9 @@ public class Step extends Feature {
         if (Wrapper.INSTANCE.getPlayer() != null)
             Wrapper.INSTANCE.getPlayer().stepHeight = 0.6f;
         super.onDisable();
+    }
+
+    public enum Mode {
+        VANILLA, PACKET
     }
 }

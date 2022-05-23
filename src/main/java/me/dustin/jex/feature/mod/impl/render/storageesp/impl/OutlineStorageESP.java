@@ -30,7 +30,7 @@ import java.awt.*;
 public class OutlineStorageESP extends FeatureExtension {
     private StorageESP storageESP;
     public OutlineStorageESP() {
-        super("Shader", StorageESP.class);
+        super(StorageESP.Mode.SHADER, StorageESP.class);
     }
 
     @Override

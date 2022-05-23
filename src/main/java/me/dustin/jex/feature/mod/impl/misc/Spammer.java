@@ -5,26 +5,33 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.client.network.PlayerListEntry;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
 public class Spammer extends Feature {
-    @Op(name = "Source", all = {"Spam.txt", "Jex AdBot", "Toxic"})
-    public String source = "Spam.txt";
-    @Op(name = "Delay (MS)", max = 30000, inc = 10)
-    public int delay = 500;
+
+    public final Property<SpamSource> sourceProperty = new Property.PropertyBuilder<SpamSource>(this.getClass())
+            .name("Source")
+            .value(SpamSource.SPAM_FILE)
+            .build();
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay (MS)")
+            .value(500L)
+            .max(30000)
+            .inc(10)
+            .build();
+
     private String spamString;
     private int currentSpot = 0;
     private final StopWatch stopWatch = new StopWatch();
@@ -40,7 +47,7 @@ public class Spammer extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!stopWatch.hasPassed(delay))
+        if (!stopWatch.hasPassed(delayProperty.value()))
             return;
         String sentence = spamString.split("\n")[currentSpot];
         while (containsSyntax(sentence)) {
@@ -61,10 +68,10 @@ public class Spammer extends Feature {
         File spamFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "Spam.txt");
         if (!spamFile.exists())
             createSpamFile();
-        switch (source) {
-            case "Spam.txt" -> spamString = readFile();
-            case "Jex AdBot" -> spamString = jexAdString;
-            case "Toxic" -> spamString = toxicString;
+        switch (sourceProperty.value()) {
+            case SPAM_FILE -> spamString = readFile();
+            case JEX_ADBOT -> spamString = jexAdString;
+            case TOXIC -> spamString = toxicString;
         }
         currentSpot = 0;
         super.onEnable();
@@ -143,4 +150,8 @@ public class Spammer extends Feature {
                     "{$rplayer} has been killed by {$me} with a wooden stick\n" +
                     "{$rplayer}'s coords are x{$ri} z{$ri}\n" +
                     "{$me} is your new god";
+
+    public enum SpamSource {
+        SPAM_FILE, JEX_ADBOT, TOXIC
+    }
 }

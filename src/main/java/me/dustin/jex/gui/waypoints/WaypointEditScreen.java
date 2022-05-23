@@ -2,6 +2,7 @@ package me.dustin.jex.gui.waypoints;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.WaypointFile;
 import me.dustin.jex.helper.render.Button;
@@ -24,7 +25,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.option.types.ColorOption;
 import java.awt.*;
 import java.util.Random;
 
@@ -46,7 +46,10 @@ public class WaypointEditScreen extends Screen {
     private Button cancelButton;
 
     private boolean isSliding;
-    private ColorOption v = new ColorOption("###waypoint");
+    private Property<Color> v = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("###waypoints")
+            .value(Color.WHITE)
+            .build();
     private Identifier colorSlider = new Identifier("jex", "gui/click/colorslider.png");
     private float colorX;
     private float colorY;
@@ -110,18 +113,11 @@ public class WaypointEditScreen extends Screen {
         this.addSelectableChild(zPos);
         if (waypoint != null) {
             Color color = Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(waypoint.getColor()));
-            float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-
-            v.setH((int) (hsb[0] * 270));
-            v.setS(hsb[1]);
-            v.setB(hsb[2]);
-
+            v.setValue(color);
             currentColor = color.getRGB();
         } else {
             float h = new Random().nextFloat() * 270.f;
-            v.setH((int) (h));
-            v.setS(1);
-            v.setB(1);
+            v.setValue(ColorHelper.INSTANCE.getColorViaHue(h));
 
             this.currentColor = ColorHelper.INSTANCE.getColorViaHue(h).getRGB();
         }
@@ -193,15 +189,16 @@ public class WaypointEditScreen extends Screen {
         }
 
 
-        float huepos = (((float) v.getH() / 270)) * (80);
+        float[] hsb = Color.RGBtoHSB(v.value().getRed(), v.value().getGreen(), v.value().getBlue(), null);
+        float huepos = hsb[0] * 80;
 
-        float satpos = ((float) (v.getS())) * (80);
-        float brightpos = ((float) ((1 - v.getB())) * 79);
+        float satpos = hsb[1] * 80;
+        float brightpos = ((1 - hsb[2])) * 79;
 
 
         handleSliders(v);
         Render2DHelper.INSTANCE.drawGradientRect(this.colorX + 5, this.colorY + 15, this.colorX + 85, this.colorY + 95, -1, 0xff000000);
-        drawGradientRect(matrixStack, this.colorX + 5, this.colorY + 15, this.colorX + 85, this.colorY + 95, ColorHelper.INSTANCE.getColorViaHue(v.getH()).getRGB(), 0xff000000);
+        drawGradientRect(matrixStack, this.colorX + 5, this.colorY + 15, this.colorX + 85, this.colorY + 95, ColorHelper.INSTANCE.getColorViaHue(hsb[0] * 270).getRGB(), 0xff000000);
         Render2DHelper.INSTANCE.drawGradientRect(this.colorX + 5, this.colorY + 15, this.colorX + 85, this.colorY + 95, 0x20000000, 0xff000000);
         //color cursor
         Render2DHelper.INSTANCE.fill(matrixStack, this.colorX + 5 + satpos - 1, this.colorY + 15 + brightpos - 1, this.colorX + 5 + satpos + 1, this.colorY + 15 + brightpos + 1, -1);
@@ -215,8 +212,9 @@ public class WaypointEditScreen extends Screen {
         FontHelper.INSTANCE.drawWithShadow(matrixStack, "Color", this.colorX + 3, this.colorY + 3, currentColor);
     }
 
-    void handleSliders(ColorOption v) {
+    void handleSliders(Property<Color> colorProperty) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
+            float[] hsb = Color.RGBtoHSB(colorProperty.value().getRed(), colorProperty.value().getGreen(), colorProperty.value().getBlue(), null);
             if (MouseHelper.INSTANCE.getMouseX() > this.colorX + 100) {
                 float position = MouseHelper.INSTANCE.getMouseY() - (this.colorY + 15);
                 float percent = position / 79 * 100;
@@ -234,20 +232,21 @@ public class WaypointEditScreen extends Screen {
                 if (value < 0) {
                     value = 0;
                 }
-                v.setH((int) value);
+                hsb[0] = value;
             } else {
+                hsb[0] *= 270;
                 float position = MouseHelper.INSTANCE.getMouseX() - (this.colorX + 5);
-                float percent = position / 80 * 100;
+                float percent = position / 80.f;
                 if (percent > 100) {
                     percent = 100;
                 }
                 if (percent < 0) {
                     percent = 0;
                 }
-                v.setS(percent / 100);
+                hsb[1] = percent;
 
                 position = MouseHelper.INSTANCE.getMouseY() - (this.colorY + 15);
-                percent = position / 79 * 100;
+                percent = position / 79.f;
                 percent = 100 - percent;
                 if (percent > 100) {
                     percent = 100;
@@ -255,10 +254,9 @@ public class WaypointEditScreen extends Screen {
                 if (percent < 0) {
                     percent = 0;
                 }
-
-                v.setB(percent / 100);
+                hsb[2] = percent;
             }
-            currentColor = ColorHelper.INSTANCE.getColorViaHue(v.getH(), v.getS(), v.getB()).getRGB();
+            currentColor = ColorHelper.INSTANCE.getColorViaHue(hsb[0], hsb[1], hsb[2]).getRGB();
         }
     }
 

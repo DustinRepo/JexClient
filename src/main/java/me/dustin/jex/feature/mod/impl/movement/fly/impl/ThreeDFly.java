@@ -11,7 +11,7 @@ import me.dustin.jex.helper.player.PlayerHelper;
 public class ThreeDFly extends FeatureExtension {
     private Fly fly;
     public ThreeDFly() {
-        super("3D", Fly.class);
+        super(Fly.Mode.THREE_D, Fly.class);
     }
 
     @Override
@@ -23,10 +23,10 @@ public class ThreeDFly extends FeatureExtension {
                 eventMove.setX(0);
                 eventMove.setZ(0);
             }
-            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, fly.speed);
+            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, fly.speedProperty.value());
             eventMove.setY(0);
             if (PlayerHelper.INSTANCE.isMoving()) {
-                eventMove.setY((fly.speed / 50) * -PlayerHelper.INSTANCE.getPitch());
+                eventMove.setY((fly.speedProperty.value() / 50) * -PlayerHelper.INSTANCE.getPitch());
             }
         }
     }

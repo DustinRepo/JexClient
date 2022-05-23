@@ -15,7 +15,7 @@ public class ECMEElytraFly extends FeatureExtension {
     private ElytraPlus elytraPlus;
     private boolean wasFlying;
     public ECMEElytraFly() {
-        super("ECME", ElytraPlus.class);
+        super(ElytraPlus.Mode.ECME, ElytraPlus.class);
     }
 
     @Override

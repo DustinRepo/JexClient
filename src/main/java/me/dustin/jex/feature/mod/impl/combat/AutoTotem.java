@@ -7,8 +7,7 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -19,14 +18,29 @@ import me.dustin.events.core.annotate.EventPointer;
 
 public class AutoTotem extends Feature {
 
-    @Op(name = "When", all = {"Always", "Low Health"})
-    public String activateWhen = "Always";
-    @OpChild(name = "Replace Current Item", parent = "When", dependency = "Always")
-    public boolean replaceOffhand = false;
-    @OpChild(name = "Health", min = 5, max = 17, parent = "When", dependency = "Low Health")
-    public int health = 10;
-    @Op(name = "Open Inventory")
-    public boolean openInventory;
+    public final Property<ActivateTime> activateWhenProperty = new Property.PropertyBuilder<ActivateTime>(this.getClass())
+            .name("When")
+            .description("When the totem should go into your offhand")
+            .value(ActivateTime.ALWAYS)
+            .build();
+    public final Property<Boolean> replaceOffhandProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Replace Current Item")
+            .value(false)
+            .parent(activateWhenProperty)
+            .depends(parent -> parent.value() == ActivateTime.ALWAYS)
+            .build();
+    public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Health")
+            .value(10)
+            .min(5)
+            .max(17)
+            .parent(activateWhenProperty)
+            .depends(parent -> parent.value() == ActivateTime.LOW_HEALTH)
+            .build();
+    public final Property<Boolean> openInventoryProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Open Inventory")
+            .value(false)
+            .build();
 
     private int swappedSlot;
 
@@ -62,18 +76,22 @@ public class AutoTotem extends Feature {
     }, new TickFilter(EventTick.Mode.PRE));
 
     public boolean needsOffhandTotem() {
-        if (activateWhen.equalsIgnoreCase("Always"))
-            return (replaceOffhand && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING) || Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.AIR;
-        return health >= Wrapper.INSTANCE.getLocalPlayer().getHealth();
+        if (activateWhenProperty.value() == ActivateTime.ALWAYS)
+            return (replaceOffhandProperty.value() && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() != Items.TOTEM_OF_UNDYING) || Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.AIR;
+        return healthProperty.value() >= Wrapper.INSTANCE.getLocalPlayer().getHealth();
     }
 
     public void moveTotem(int slot) {
-        if (openInventory)
+        if (openInventoryProperty.value())
             Wrapper.INSTANCE.getMinecraft().setScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));
         InventoryHelper.INSTANCE.moveToOffhand(slot);
-        if (openInventory) {
+        if (openInventoryProperty.value()) {
             NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.syncId));
             Wrapper.INSTANCE.getMinecraft().setScreen(null);
         }
+    }
+
+    public enum ActivateTime {
+        ALWAYS, LOW_HEALTH
     }
 }

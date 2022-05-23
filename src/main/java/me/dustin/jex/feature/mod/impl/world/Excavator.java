@@ -15,7 +15,7 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -49,18 +49,32 @@ import java.util.Comparator;
 
 public class Excavator extends Feature {
 
-    @Op(name = "Use Baritone If Available")
-    public boolean useBaritone = true;
-    @Op(name = "Mine Path")
-    public boolean allowMining = true;
-    @Op(name = "Render Area Box")
-    public boolean renderAreaBox = true;
-    @Op(name = "Layer Depth", min = 1, max = 5)
-    public int layerDepth = 2;
+    public final Property<Boolean> useBaritoneProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Use Baritone If Available")
+            .value(true)
+            .build();
+    public final Property<Boolean> allowMiningProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Mine Path")
+            .value(false)
+            .build();
+    public final Property<Boolean> renderAreaBoxProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Render Area Box")
+            .value(false)
+            .build();
+    public final Property<Integer> layerDepthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Layer Depth")
+            .value(2)
+            .min(1)
+            .max(5)
+            .build();
+    public final Property<Long> sortDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Sort Delay")
+            .value(350L)
+            .max(1000)
+            .inc(10)
+            .build();
     //@Op(name = "LogOut when Done")
     public boolean logoutWhenDone = false;
-    @Op(name = "Sort Delay", max = 1000, inc = 10)
-    public int sortDelay = 350;
 
     public static MiningArea miningArea;
     private Stage stage = Stage.SET_POS1;
@@ -99,19 +113,19 @@ public class Excavator extends Feature {
                 }
                 if (distanceTo <= 1.5f && WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getPlayer()) != Blocks.AIR) {
                     PathingHelper.INSTANCE.cancelPathing();
-                    if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritone)
+                    if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritoneProperty.value())
                         BaritoneHelper.INSTANCE.pathTo(null);
                 }
             } else
             if (miningArea != null && distanceTo > 2.5f) {
-                if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritone) {
+                if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritoneProperty.value()) {
                     if (!BaritoneHelper.INSTANCE.isBaritoneRunning()) {
-                        BaritoneHelper.INSTANCE.pathNear(closestBlock, layerDepth);
+                        BaritoneHelper.INSTANCE.pathNear(closestBlock, layerDepthProperty.value());
                     }
                 } else {
                     if (!PathingHelper.INSTANCE.isPathing()) {
-                        PathingHelper.INSTANCE.setAllowMining(allowMining);
-                        PathingHelper.INSTANCE.pathNear(closestBlock, layerDepth);
+                        PathingHelper.INSTANCE.setAllowMining(allowMiningProperty.value());
+                        PathingHelper.INSTANCE.pathNear(closestBlock, layerDepthProperty.value());
                     }
                 }
             }
@@ -131,7 +145,7 @@ public class Excavator extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        if (renderAreaBox && (tempPos1 != null && tempPos2 != null) || miningArea != null) {
+        if (renderAreaBoxProperty.value() && (tempPos1 != null && tempPos2 != null) || miningArea != null) {
             MiningArea copy = miningArea != null ? miningArea : new MiningArea(tempPos1, tempPos2);
             Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(copy.getAreaBB().minX, copy.getAreaBB().minY, copy.getAreaBB().minZ));
             Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(copy.getAreaBB().maxX, copy.getAreaBB().maxY, copy.getAreaBB().maxZ));
@@ -223,7 +237,7 @@ public class Excavator extends Feature {
                 case EXCAVATING -> {
                     stage = Stage.PAUSED;
                     PathProcessor.releaseControls();
-                    if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritone)
+                    if (BaritoneHelper.INSTANCE.baritoneExists() && useBaritoneProperty.value())
                         BaritoneHelper.INSTANCE.pathTo(null);
                 }
                 case PAUSED -> stage = Stage.EXCAVATING;
@@ -340,7 +354,7 @@ public class Excavator extends Feature {
         }
 
         public BlockPos getClosest() {
-            if (excavator.sortStopWatch.hasPassed(excavator.sortDelay)) {
+            if (excavator.sortStopWatch.hasPassed(excavator.sortDelayProperty.value())) {
                 sortList();
                 int y = -64;
                 for (BlockPos blockPos : blockPosList) {
@@ -357,7 +371,7 @@ public class Excavator extends Feature {
                 //able to be clicked
                 if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
                     //cheeky little workaround for being able to dig layers
-                    if (Math.abs(blockPos.getY() - getHighestBlockY()) <= excavator.layerDepth - 1) {
+                    if (Math.abs(blockPos.getY() - getHighestBlockY()) <= excavator.layerDepthProperty.value() - 1) {
                         return blockPos;
                     }
                 }

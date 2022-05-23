@@ -8,12 +8,17 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 
 public class AntiKnockback extends Feature {
 
-    @Op(name = "Percent", min = -300, max = 300, inc = 10)
-    public int percent = 0;
+    public final Property<Integer> percentProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Percent")
+            .value(0)
+            .min(-300)
+            .max(300)
+            .inc(10)
+            .build();
 
     public AntiKnockback() {
         super(Category.COMBAT, "Remove all knockback from the player.");
@@ -21,8 +26,8 @@ public class AntiKnockback extends Feature {
 
     @EventPointer
     private final EventListener<EventExplosionVelocity> eventExplosionVelocityEventListener = new EventListener<>(event -> {
-        float perc = percent / 100.0f;
-        if (percent == 0)
+        float perc = percentProperty.value() / 100.0f;
+        if (percentProperty.value() == 0)
             event.cancel();
         else {
             event.setMultX(perc);
@@ -33,8 +38,8 @@ public class AntiKnockback extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerVelocity> eventPlayerVelocityEventListener = new EventListener<>(event -> {
-        float perc = percent / 100.0f;
-        if (percent == 0)
+        float perc = percentProperty.value() / 100.0f;
+        if (percentProperty.value() == 0)
             event.cancel();
         else {
             event.setVelocityX((int)(event.getVelocityX() * perc));
@@ -45,6 +50,6 @@ public class AntiKnockback extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        this.setSuffix(percent + "%");
+        this.setSuffix(percentProperty.value() + "%");
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

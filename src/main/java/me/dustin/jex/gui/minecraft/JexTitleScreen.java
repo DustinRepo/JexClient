@@ -114,7 +114,7 @@ public class JexTitleScreen extends Screen {
 
         this.initWidgetsNormal(j);
 
-        if (customMainMenu.customBackground) {
+        if (customMainMenu.customBackgroundProperty.value()) {
             if (!backgrounds.isEmpty()) {
                 this.addDrawableChild(new ButtonWidget(this.width - 22, this.height - 22, 20, 20, Text.of(">"), button -> {
                     JexTitleScreen.background += 1;
@@ -176,7 +176,7 @@ public class JexTitleScreen extends Screen {
         if (this.backgroundFadeStart == 0L && this.doBackgroundFade) {
             this.backgroundFadeStart = Util.getMeasuringTimeMs();
         }
-        if (customMainMenu.scroll && stopWatch.hasPassed(customMainMenu.scrollDelay * 1000L)) {
+        if (customMainMenu.scrollProperty.value() && stopWatch.hasPassed(customMainMenu.scrollDelayProperty.value() * 1000L)) {
             background++;
             if (background < 0) {
                 background = backgrounds.size() - 1;
@@ -198,7 +198,7 @@ public class JexTitleScreen extends Screen {
         float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
         int l = MathHelper.ceil(g * 255.0F) << 24;
 
-        if (!JexTitleScreen.backgrounds.isEmpty() && customMainMenu.customBackground) {
+        if (!JexTitleScreen.backgrounds.isEmpty() && customMainMenu.customBackgroundProperty.value()) {
             Background currentBackground = backgrounds.get(background);
             Render2DHelper.INSTANCE.bindTexture(currentBackground.identifier);
             DrawableHelper.drawTexture(matrices, (int) 0, (int) 0, 0, 0, width, height, width, height);
@@ -225,7 +225,7 @@ public class JexTitleScreen extends Screen {
                 FontHelper.INSTANCE.drawCenteredString(matrices, updateString, midX, 2, ColorHelper.INSTANCE.getClientColor());
             }
 
-            if (customMainMenu.customBackground) {
+            if (customMainMenu.customBackgroundProperty.value()) {
                 if (backgrounds.isEmpty()) {
                     String backgroundString = "You don't have any backgrounds yet.";
                     FontHelper.INSTANCE.drawWithShadow(matrices, backgroundString, width - FontHelper.INSTANCE.getStringWidth(backgroundString) - 2, height - 30, -1);

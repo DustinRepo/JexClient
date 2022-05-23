@@ -28,6 +28,6 @@ public class BiomeElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().biome;
+        return getHud().infoProperty.value() && getHud().biomeProperty.value();
     }
 }

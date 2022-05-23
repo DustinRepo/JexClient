@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -11,17 +12,27 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
-import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.events.core.annotate.EventPointer;
 
 public class AutoSoup extends Feature {
 
-    @Op(name = "Health", min = 1, max = 20)
-    public int health = 17;
-    @Op(name = "Delay (MS)", max = 1000, inc = 10)
-    public int delay = 160;
-    @Op(name = "Throw Delay (MS)", max = 1000, inc = 1)
-    public int throwdelay = 20;
+    public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Health")
+            .value(17)
+            .min(1)
+            .max(20)
+            .build();
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay (MS)")
+            .value(160L)
+            .max(1000)
+            .inc(10)
+            .build();
+    public final Property<Long> usedelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Use Delay (MS)")
+            .value(20L)
+            .max(1000)
+            .build();
     public boolean throwing = false;
     int savedSlot;
     private final StopWatch stopWatch = new StopWatch();
@@ -35,9 +46,9 @@ public class AutoSoup extends Feature {
 
         this.setSuffix(getSoups() + "");
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (!stopWatch.hasPassed(delay) || throwing)
+            if (!stopWatch.hasPassed(delayProperty.value()) || throwing)
                 return;
-            if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= health && getSoups() > 0) {
+            if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= healthProperty.value() && getSoups() > 0) {
                 if (getFirstSoup() < 9) {
                     throwing = true;
 
@@ -55,7 +66,7 @@ public class AutoSoup extends Feature {
                 throwing = false;
             }
         } else {
-            if (throwing && stopWatch.hasPassed(throwdelay)) {
+            if (throwing && stopWatch.hasPassed(usedelayProperty.value())) {
                 if (getFirstSoup() != -1) {
                     if (getFirstSoup() < 9) {
                         Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);

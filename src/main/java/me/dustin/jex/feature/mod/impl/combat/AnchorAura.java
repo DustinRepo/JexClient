@@ -5,6 +5,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
@@ -28,38 +29,74 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.events.core.annotate.EventPointer;
 import java.awt.*;
 
 public class AnchorAura extends Feature {
 
-    @Op(name = "Mode", all = {"Suicidal", "Risky", "Safe"})
-    public String mode = "Suicidal";
-    @Op(name = "Explode", all = {"Any", "Near Target"})
-    public String attackMode = "Any";
-    @Op(name = "Attack Delay", min = 0, max = 2000)
-    public int attackDelay = 200;
-    @Op(name = "Auto Place")
-    public boolean autoPlace = false;
-    @Op(name = "Explode Distance", min = 2, max = 6)
-    public int explodeDistance = 5;
-
-    @OpChild(name = "Visualize", parent = "Auto Place")
-    public boolean visualize = true;
-    @OpChild(name = "Only show placements", parent = "Visualize")
-    public boolean onlyShowPlacements;
-    @OpChild(name = "Thinking Color", isColor = true, parent = "Visualize")
-    public int thinkingColor = new Color(0, 150, 255).getRGB();
-    @OpChild(name = "Placing Color", isColor = true, parent = "Visualize")
-    public int placingColor = new Color(255, 0, 0).getRGB();
-
-    @OpChild(name = "Place Delay", min = 0, max = 2000, parent = "Auto Place")
-    public int delay = 200;
-
-    @OpChild(name = "Place Distance", min = 1, max = 6, inc = 0.1f, parent = "Auto Place")
-    public float placeDistance = 3.5f;
+    public final Property<TargetMode> modeProperty = new Property.PropertyBuilder<TargetMode>(this.getClass())
+            .name("Mode")
+            .value(TargetMode.SUICIDAL)
+            .build();
+    public final Property<AttackMode> attackModeProperty = new Property.PropertyBuilder<AttackMode>(this.getClass())
+            .name("Explode")
+            .value(AttackMode.ANY)
+            .build();
+    public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Attack Delay (MS)")
+            .value(200L)
+            .max(2000)
+            .build();
+    public final Property<Boolean> autoPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Auto Place")
+            .value(false)
+            .build();
+    public final Property<Boolean> visualizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Visualize")
+            .value(true)
+            .parent(autoPlaceProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> onlyShowPlacementsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Only show placements")
+            .value(false)
+            .parent(visualizeProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> thinkingColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Thinking Color")
+            .value(new Color(0, 150, 255))
+            .parent(visualizeProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Color> placingColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Placing Color")
+            .value(new Color(255, 0, 0))
+            .parent(visualizeProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Long> placeDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Place Delay")
+            .value(200L)
+            .max(2000)
+            .parent(autoPlaceProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> placeDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Place Distance")
+            .value(3.5f)
+            .min(1)
+            .max(6)
+            .inc(0.1f)
+            .parent(autoPlaceProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Integer> explodeDistanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Explode Distance")
+            .value(5)
+            .min(2)
+            .max(6)
+            .build();
 
     private final StopWatch placeStopWatch = new StopWatch();
     private final StopWatch attackStopWatch = new StopWatch();
@@ -71,11 +108,11 @@ public class AnchorAura extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        this.setSuffix(mode);
+        this.setSuffix(modeProperty.value());
         if (WorldHelper.INSTANCE.getDimensionID().toString().equalsIgnoreCase("the_nether"))
             return;
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (attackStopWatch.hasPassed(attackDelay)) {
+            if (attackStopWatch.hasPassed(attackDelayProperty.value())) {
                 BlockPos chargedAnchor = getChargedAnchor(Wrapper.INSTANCE.getLocalPlayer());
                 if (chargedAnchor != null && shouldExplode(chargedAnchor)) {
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(chargedAnchor.getX(), chargedAnchor.getY(), chargedAnchor.getZ()), Direction.UP, chargedAnchor, false));
@@ -97,8 +134,8 @@ public class AnchorAura extends Feature {
                     }
                 }
             }
-            if (placeStopWatch.hasPassed(delay))
-                if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.RESPAWN_ANCHOR))) {
+            if (placeStopWatch.hasPassed(placeDelayProperty.value()))
+                if (autoPlaceProperty.value() && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.RESPAWN_ANCHOR))) {
                     for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                         if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().getString())) {
                             BlockPos placingPos = getOpenBlockPos(entityPlayer);
@@ -126,14 +163,14 @@ public class AnchorAura extends Feature {
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (WorldHelper.INSTANCE.getDimensionID().toString().equalsIgnoreCase("the_nether"))
             return;
-        if (autoPlace && visualize)
+        if (autoPlaceProperty.value() && visualizeProperty.value())
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                 if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
                     BlockPos placingPos = getOpenBlockPos(entityPlayer);
                     if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().getString())) {
                         Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());
                         Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-                        Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), box, shouldExplode(placingPos) ? placingColor : thinkingColor);
+                        Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), box, shouldExplode(placingPos) ? placingColorProperty.value().getRGB() : thinkingColorProperty.value().getRGB());
                     }
                 }
             });
@@ -152,11 +189,11 @@ public class AnchorAura extends Feature {
                         BlockPos below = pos.down();
                         if (!Wrapper.INSTANCE.getWorld().getBlockState(below).getMaterial().isReplaceable()) {
                             if (!isBlocking(pos, entityPlayer)) {
-                                if (onlyShowPlacements && !shouldExplode(pos))
+                                if (onlyShowPlacementsProperty.value() && !shouldExplode(pos))
                                     continue;
                                 double playerdist = entityPlayer.distanceTo(fakeCrystal);
                                 double distToMe = Wrapper.INSTANCE.getLocalPlayer().distanceTo(fakeCrystal);
-                                if (playerdist < distance && distToMe < placeDistance) {
+                                if (playerdist < distance && distToMe < placeDistanceProperty.value()) {
                                     closest = pos;
                                     distance = playerdist;
                                 }
@@ -172,17 +209,17 @@ public class AnchorAura extends Feature {
     private BlockPos getChargedAnchor(PlayerEntity entityPlayer) {
         double distance = 6;
         BlockPos closest = null;
-        for (int x = -explodeDistance; x < explodeDistance; x++) {
-            for (int y = -explodeDistance; y < explodeDistance; y++) {
-                for (int z = -explodeDistance; z < explodeDistance; z++) {
+        for (int x = -explodeDistanceProperty.value(); x < explodeDistanceProperty.value(); x++) {
+            for (int y = -explodeDistanceProperty.value(); y < explodeDistanceProperty.value(); y++) {
+                for (int z = -explodeDistanceProperty.value(); z < explodeDistanceProperty.value(); z++) {
                     BlockPos pos = new BlockPos(entityPlayer.getX() + x, (int) entityPlayer.getY() - y, entityPlayer.getZ() + z);
 
                     if (isAnchor(pos) && isChargedAnchor(pos)) {
-                        if (onlyShowPlacements && !shouldExplode(pos))
+                        if (onlyShowPlacementsProperty.value() && !shouldExplode(pos))
                             continue;
                         double playerdist = ClientMathHelper.INSTANCE.getDistance(entityPlayer.getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
                         double distToMe = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
-                        if (playerdist < distance && distToMe < explodeDistance) {
+                        if (playerdist < distance && distToMe < explodeDistanceProperty.value()) {
                             closest = pos;
                             distance = playerdist;
                         }
@@ -196,17 +233,17 @@ public class AnchorAura extends Feature {
     private BlockPos getAnchor(PlayerEntity entityPlayer) {
         double distance = 6;
         BlockPos closest = null;
-        for (int x = -explodeDistance; x < explodeDistance; x++) {
-            for (int y = -explodeDistance; y < explodeDistance; y++) {
-                for (int z = -explodeDistance; z < explodeDistance; z++) {
+        for (int x = -explodeDistanceProperty.value(); x < explodeDistanceProperty.value(); x++) {
+            for (int y = -explodeDistanceProperty.value(); y < explodeDistanceProperty.value(); y++) {
+                for (int z = -explodeDistanceProperty.value(); z < explodeDistanceProperty.value(); z++) {
                     BlockPos pos = new BlockPos(entityPlayer.getX() + x, (int) entityPlayer.getY() - y, entityPlayer.getZ() + z);
 
                     if (isAnchor(pos) && !isChargedAnchor(pos)) {
-                        if (onlyShowPlacements && !shouldExplode(pos))
+                        if (onlyShowPlacementsProperty.value() && !shouldExplode(pos))
                             continue;
                         double playerdist = ClientMathHelper.INSTANCE.getDistance(entityPlayer.getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
                         double distToMe = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
-                        if (playerdist < distance && distToMe < explodeDistance) {
+                        if (playerdist < distance && distToMe < explodeDistanceProperty.value()) {
                             closest = pos;
                             distance = playerdist;
                         }
@@ -224,12 +261,12 @@ public class AnchorAura extends Feature {
 
     public boolean shouldExplode(BlockPos blockPos) {
         float minDistance = 0;
-        float range = explodeDistance;
-        switch (mode) {
-            case "Risky":
+        float range = explodeDistanceProperty.value();
+        switch (modeProperty.value()) {
+            case RISKY:
                 minDistance = 4.5f;
                 break;
-            case "Safe":
+            case SAFE:
                 minDistance = 8;
                 break;
         }
@@ -242,7 +279,7 @@ public class AnchorAura extends Feature {
             minDistance = 0;
         }
 
-        if (attackMode.equalsIgnoreCase("Any"))
+        if (attackModeProperty.value() == AttackMode.ANY)
             return ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ())) >= minDistance && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ())) <= range;
         else {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities())
@@ -272,5 +309,13 @@ public class AnchorAura extends Feature {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public enum TargetMode {
+        SUICIDAL, RISKY, SAFE
+    }
+
+    public enum AttackMode {
+        ANY, NEAR_TARGET
     }
 }

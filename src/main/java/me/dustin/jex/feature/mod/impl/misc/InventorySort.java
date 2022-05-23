@@ -5,7 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -21,8 +21,11 @@ import net.minecraft.screen.slot.SlotActionType;
 
 public class InventorySort extends Feature {
 
-    @Op(name = "Sort Key", isKeybind = true)
-    public int sortKey = KeyboardHelper.INSTANCE.MIDDLE_CLICK;
+    public final Property<Integer> sortKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Sort Key")
+            .value(KeyboardHelper.INSTANCE.MIDDLE_CLICK)
+            .isKey()
+            .build();
 
     private final StopWatch timeOutStopWatch = new StopWatch();
 
@@ -32,7 +35,7 @@ public class InventorySort extends Feature {
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
-        if (event.getKey() != sortKey)
+        if (event.getKey() != sortKeyProperty.value())
             return;
         if (Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen<?> handledScreen) {
             ScreenHandler screenHandler = handledScreen.getScreenHandler();

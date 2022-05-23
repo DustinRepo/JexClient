@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -18,19 +19,31 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import me.dustin.jex.feature.option.annotate.Op;
+
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Surround extends Feature {
 
-	@Op(name = "Auto Turn Off")
-	public boolean autoTurnOff = true;
-	@Op(name = "Place Delay (MS)", min = 0, max = 250)
-	public int placeDelay = 0;
-	@Op(name = "Rotate")
-	public boolean rotate = true;
-	@Op(name = "Place Color", isColor = true)
-	public int placeColor = 0xffff0000;
+	public Property<Boolean> autoTurnOffProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Auto Turn Off")
+			.description("Turn off after surrounding yourself")
+			.value(true)
+			.build();
+	public Property<Integer> placeDelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+			.name("Place Delay (MS)")
+			.value(0)
+			.min(0)
+			.max(250)
+			.build();
+	public Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Rotate")
+			.value(true)
+			.build();
+	public Property<Color> placeColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+			.name("Place Color")
+			.value(Color.RED)
+			.build();
 
 	private int stage = 0;
 	private final StopWatch stopWatch = new StopWatch();
@@ -46,18 +59,18 @@ public class Surround extends Feature {
 			return;
 		if (placingPos != null) {
 			RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(placingPos));
-			if (rotate)
+			if (rotateProperty.value())
 				((EventPlayerPackets) event).setRotation(rotationVector);
 			PlayerHelper.INSTANCE.placeBlockInPos(placingPos, Hand.MAIN_HAND, true);
 			placingPos = null;
 		}
-		if (!stopWatch.hasPassed(placeDelay))
+		if (!stopWatch.hasPassed(placeDelayProperty.value()))
 			return;
 		int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
 		int obby = InventoryHelper.INSTANCE.getFromHotbar(Items.OBSIDIAN);
 		if (obby == -1) {
 			this.stage = 0;
-			if (autoTurnOff)
+			if (autoTurnOffProperty.value())
 				this.setState(false);
 			return;
 		}
@@ -69,18 +82,18 @@ public class Surround extends Feature {
 		placePos.add(playerPos.east());
 		placePos.add(playerPos.south());
 		placePos.add(playerPos.west());
-		if (placeDelay != 0) {
+		if (placeDelayProperty.value() != 0) {
 			if (stage == placePos.size()) {
 				InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
-				if (autoTurnOff)
+				if (autoTurnOffProperty.value())
 					this.setState(false);
 				return;
 			}
 			BlockPos pos = placePos.get(stage);
 			if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
 				RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(pos));
-				if (rotate)
-					((EventPlayerPackets) event).setRotation(rotationVector);
+				if (rotateProperty.value())
+					event.setRotation(rotationVector);
 				placingPos = pos;
 				stopWatch.reset();
 			}
@@ -92,7 +105,7 @@ public class Surround extends Feature {
 				}
 			}
 			InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
-			if (autoTurnOff)
+			if (autoTurnOffProperty.value())
 				this.setState(false);
 			stopWatch.reset();
 			this.stage = 0;
@@ -118,7 +131,7 @@ public class Surround extends Feature {
 			return;
 		Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
 		Box bb = new Box(renderPos.getX(), renderPos.getY(), renderPos.getZ(), renderPos.getX() + 1, renderPos.getY() + 1, renderPos.getZ() + 1);
-		Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb, placeColor);
+		Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb, placeColorProperty.value().getRGB());
 	});
 
 	@Override

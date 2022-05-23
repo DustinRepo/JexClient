@@ -8,7 +8,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderBackground;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -23,8 +23,10 @@ import net.minecraft.util.math.Matrix4f;
 
 public class CustomBG extends Feature {
 
-    @Op(name = "InGame Only")
-    public boolean inGameOnly = true;
+    public final Property<Boolean> inGameOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("InGame Only")
+            .value(true)
+            .build();
 
     float offset = 0;
     float a = 0.49f;
@@ -37,7 +39,7 @@ public class CustomBG extends Feature {
 
     @EventPointer
     private final EventListener<EventRenderBackground> eventRenderBackgroundEventListener = new EventListener<>(event -> {
-        if (inGameOnly && Wrapper.INSTANCE.getLocalPlayer() == null)
+        if (inGameOnlyProperty.value() && Wrapper.INSTANCE.getLocalPlayer() == null)
             return;
         event.cancel();
         Matrix4f matrix4f = event.getPoseStack().peek().getPositionMatrix();

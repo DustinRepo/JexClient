@@ -10,7 +10,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 public class CreativeFly extends FeatureExtension {
 
     public CreativeFly() {
-        super("Creative", Fly.class);
+        super(Fly.Mode.CREATIVE, Fly.class);
     }
 
     @Override

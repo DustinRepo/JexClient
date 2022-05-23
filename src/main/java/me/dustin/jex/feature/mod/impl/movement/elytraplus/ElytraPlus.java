@@ -11,8 +11,7 @@ import me.dustin.jex.feature.mod.impl.movement.elytraplus.impl.AlwaysBoostElytra
 import me.dustin.jex.feature.mod.impl.movement.elytraplus.impl.BoostElytraFly;
 import me.dustin.jex.feature.mod.impl.movement.elytraplus.impl.ECMEElytraFly;
 import me.dustin.jex.feature.mod.impl.movement.elytraplus.impl.HoverElytraFly;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -23,31 +22,75 @@ import org.lwjgl.glfw.GLFW;
 
 public class ElytraPlus extends Feature {
 
-    @Op(name = "Auto Elytra")
-    public boolean autoElytra = true;
-    @OpChild(name = "Fall Distance", max = 10, inc = 0.5f, parent = "Auto Elytra")
-    public float fallDistance = 3;
+    public final Property<Boolean> autoElytraProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Auto Elytra")
+            .value(true)
+            .build();
+    public final Property<Float> fallDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Fall Distance")
+            .value(3f)
+            .max(10)
+            .inc(0.5f)
+            .parent(autoElytraProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public Property<Boolean> elytraFlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Fly")
+            .value(true)
+            .build();
+    public Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.BOOST)
+            .parent(elytraFlyProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public Property<Float> flySpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Fly Speed")
+            .value(0.5f)
+            .min(0.1f)
+            .max(2)
+            .inc(0.1f)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.HOVER)
+            .build();
+    public Property<Boolean> slowGlideProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Slow Glide")
+            .value(false)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.HOVER)
+            .build();
+    public Property<Float> boostProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Boost")
+            .value(0.05f)
+            .max(0.15f)
+            .inc(0.01f)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.BOOST)
+            .build();
+    public Property<Float> maxBoostProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Max Boost")
+            .value(2.5f)
+            .max(5)
+            .inc(0.1f)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.BOOST)
+            .build();
+    public Property<Integer> boostKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Boost Key")
+            .value(GLFW.GLFW_KEY_W)
+            .isKey()
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.BOOST)
+            .build();
+    public Property<Integer> slowKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Slowdown Key")
+            .value(GLFW.GLFW_KEY_S)
+            .isKey()
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.BOOST)
+            .build();
 
-    @Op(name = "Fly")
-    public boolean elytraFly = true;
-    @OpChild(name = "Mode", all = {"Vanilla", "Boost", "AlwaysBoost", "Hover", "ECME"}, parent = "Fly")
-    public String mode = "Vanilla";
-
-    @OpChild(name = "Fly Speed", min = 0.1f, max = 2, inc = 0.1f, parent = "Mode", dependency = "Hover")
-    public float flySpeed = 0.5f;
-    @OpChild(name = "Slow Glide", parent = "Mode", dependency = "Hover")
-    public boolean slowGlide = false;
-
-    @OpChild(name = "Boost", max=0.15f, inc = 0.01f, parent = "Mode", dependency = "Boost")
-    public float boost = 0.05f;
-    @OpChild(name = "Max Boost", max=5, inc = 0.1f, parent = "Mode", dependency = "Boost")
-    public float maxBoost = 2.5f;
-    @OpChild(name = "Boost Key", isKeybind = true, parent = "Mode", dependency = "Boost")
-    public int boostKey = GLFW.GLFW_KEY_W;
-    @OpChild(name = "Slowdown Key", isKeybind = true, parent = "Mode", dependency = "Boost")
-    public int slowKey = GLFW.GLFW_KEY_S;
-
-    private String lastMode;
+    private Mode lastMode;
 
     public ElytraPlus() {
         super(Category.MOVEMENT, "Change how the Elytra flies.");
@@ -59,40 +102,44 @@ public class ElytraPlus extends Feature {
 
     @EventPointer
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
-        this.setSuffix(mode);
-        if (wearingElytra() && (autoElytra && Wrapper.INSTANCE.getLocalPlayer().fallDistance >= fallDistance && !Wrapper.INSTANCE.getLocalPlayer().isOnGround() && !Wrapper.INSTANCE.getLocalPlayer().isFallFlying())) {
+        this.setSuffix(modeProperty.value());
+        if (wearingElytra() && (autoElytraProperty.value() && Wrapper.INSTANCE.getLocalPlayer().fallDistance >= fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround() && !Wrapper.INSTANCE.getLocalPlayer().isFallFlying())) {
             if (Wrapper.INSTANCE.getLocalPlayer().age % 5 == 0)
                 NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.START_FALL_FLYING));
         }
 
-        if (elytraFly) {
+        if (elytraFlyProperty.value()) {
             sendEvent(event);
         }
     });
 
     private void sendEvent(Event event) {
-        if (!mode.equalsIgnoreCase(lastMode) && lastMode != null) {
+        if (modeProperty.value() != lastMode && lastMode != null) {
             FeatureExtension.get(lastMode, this).disable();
-            FeatureExtension.get(mode, this).enable();
+            FeatureExtension.get(modeProperty.value(), this).enable();
         }
-        FeatureExtension.get(mode, this).pass(event);
-        lastMode = mode;
+        FeatureExtension.get(modeProperty.value(), this).pass(event);
+        lastMode = modeProperty.value();
     }
 
     @Override
     public void onEnable() {
-        FeatureExtension.get(mode, this).enable();
+        FeatureExtension.get(modeProperty.value(), this).enable();
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        FeatureExtension.get(mode, this).disable();
+        FeatureExtension.get(modeProperty.value(), this).disable();
         super.onDisable();
     }
 
     private boolean wearingElytra() {
         ItemStack equippedStack = Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(EquipmentSlot.CHEST);
         return equippedStack != null && equippedStack.getItem() == Items.ELYTRA;
+    }
+
+    public enum Mode {
+        BOOST, ALWAYS_BOOST, HOVER, ECME
     }
 }

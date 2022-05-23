@@ -7,7 +7,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -25,10 +25,12 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 
 public class BarrierView extends Feature {
-	
-	@Op(name = "Color", isColor = true)
-	public int color = 0xffff0000;
-	
+
+	public final Property<Color> colorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+			.name("Color")
+			.value(Color.RED)
+			.build();
+
 	private final ArrayList<BlockPos> renderPositions = new ArrayList<>();
 	private final StopWatch stopWatch = new StopWatch();
 
@@ -56,7 +58,7 @@ public class BarrierView extends Feature {
 		renderPositions.forEach(blockPos -> {
 			Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
 			Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-			list.add(new Render3DHelper.BoxStorage(box, color));
+			list.add(new Render3DHelper.BoxStorage(box, colorProperty.value().getRGB()));
 		});
 		//Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), list);
 		Render3DHelper.INSTANCE.setup3DRender(true);

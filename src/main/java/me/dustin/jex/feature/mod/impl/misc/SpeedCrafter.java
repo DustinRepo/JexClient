@@ -7,6 +7,7 @@ import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -18,13 +19,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
-import me.dustin.jex.feature.option.annotate.Op;
 import java.util.List;
 
 public class SpeedCrafter extends Feature {
 
-    @Op(name = "Delay", max = 500)
-    public int delay = 0;
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay")
+            .value(0L)
+            .max(500)
+            .build();
 
     public Item craftingItem;
     private boolean alerted;
@@ -45,7 +48,7 @@ public class SpeedCrafter extends Feature {
                 return;
             }
             alerted = false;
-            if (!stopWatch.hasPassed(delay))
+            if (!stopWatch.hasPassed(delayProperty.value()))
                 return;
             List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_BUILDING_BLOCKS);
             for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList) {
@@ -54,7 +57,7 @@ public class SpeedCrafter extends Feature {
                         Wrapper.INSTANCE.getClientPlayerInteractionManager().clickRecipe(craftingScreenHandler.syncId, recipe, true);
                         InventoryHelper.INSTANCE.windowClick(craftingScreenHandler, 0, SlotActionType.QUICK_MOVE, 1);
                         stopWatch.reset();
-                        if (delay > 0)
+                        if (delayProperty.value() > 0)
                             return;
                     }
                 }

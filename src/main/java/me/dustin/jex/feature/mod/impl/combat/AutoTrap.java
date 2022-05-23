@@ -6,6 +6,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -20,20 +21,33 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.events.core.annotate.EventPointer;
+
+import java.awt.*;
 import java.util.ArrayList;
 
 public class AutoTrap extends Feature {
 
-    @Op(name = "Rotate")
-    public boolean rotate = true;
-    @Op(name = "Target Distance", min = 2, max = 6, inc = 0.1f)
-    public float targetDistance = 6;
-    @Op(name = "Place Delay (MS)", min = 0, max = 250)
-    public int placeDelay = 0;
-    @Op(name = "Place Color", isColor = true)
-    public int placeColor = 0xffff0000;
+    public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Rotate")
+            .value(true)
+            .build();
+    public final Property<Float> targetDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Target Distance")
+            .value(6f)
+            .min(2)
+            .max(6)
+            .inc(0.1f)
+            .build();
+    public final Property<Long> placeDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Place Delay (MS)")
+            .value(0L)
+            .max(250)
+            .build();
+    public final Property<Color> placeColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Place Color")
+            .value(Color.RED)
+            .build();
 
     private int stage = 0;
     private final StopWatch stopWatch = new StopWatch();
@@ -47,12 +61,12 @@ public class AutoTrap extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (placingPos != null) {
             RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(placingPos));
-            if (rotate)
+            if (rotateProperty.value())
                 ((EventPlayerPackets) event).setRotation(rotationVector);
             PlayerHelper.INSTANCE.placeBlockInPos(placingPos, Hand.MAIN_HAND, true);
             placingPos = null;
         }
-        if (!stopWatch.hasPassed(placeDelay))
+        if (!stopWatch.hasPassed(placeDelayProperty.value()))
             return;
         int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
         int obby = InventoryHelper.INSTANCE.getFromHotbar(Items.OBSIDIAN);
@@ -75,7 +89,7 @@ public class AutoTrap extends Feature {
             placePos.add(player.getBlockPos().south().up());
             placePos.add(player.getBlockPos().west().up());
             placePos.add(player.getBlockPos().up().up());
-            if (placeDelay != 0) {
+            if (placeDelayProperty.value() != 0) {
                 if (stage == placePos.size()) {
                     InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                     this.setState(false);
@@ -84,7 +98,7 @@ public class AutoTrap extends Feature {
                 BlockPos pos = placePos.get(stage);
                 if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable()) {
                     RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPlacingLookPos(pos));
-                    if (rotate)
+                    if (rotateProperty.value())
                         ((EventPlayerPackets) event).setRotation(rotationVector);
                     placingPos = pos;
                     stopWatch.reset();
@@ -130,12 +144,12 @@ public class AutoTrap extends Feature {
             return;
         Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
         Box bb = new Box(renderPos.getX(), renderPos.getY(), renderPos.getZ(), renderPos.getX() + 1, renderPos.getY() + 1, renderPos.getZ() + 1);
-        Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getPoseStack(), bb, placeColor);
+        Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getPoseStack(), bb, placeColorProperty.value().getRGB());
     });
 
     private PlayerEntity getPlayerToTrap() {
         PlayerEntity playerEntity = null;
-        float distance = targetDistance;
+        float distance = targetDistanceProperty.value();
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
             if (entity instanceof PlayerEntity && !FriendHelper.INSTANCE.isFriend(entity.getName().getString()) && entity != Wrapper.INSTANCE.getLocalPlayer()) {
                 if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) < distance && Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > 2 && !Wrapper.INSTANCE.getWorld().isOutOfHeightLimit((int)entity.getY())) {

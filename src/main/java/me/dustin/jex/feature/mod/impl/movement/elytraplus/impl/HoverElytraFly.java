@@ -11,7 +11,7 @@ import me.dustin.jex.helper.player.PlayerHelper;
 public class HoverElytraFly extends FeatureExtension {
     private ElytraPlus elytraPlus;
     public HoverElytraFly() {
-        super("Hover", ElytraPlus.class);
+        super(ElytraPlus.Mode.HOVER, ElytraPlus.class);
     }
 
     @Override
@@ -20,9 +20,9 @@ public class HoverElytraFly extends FeatureExtension {
             elytraPlus = Feature.get(ElytraPlus.class);
         if (event instanceof EventMove eventMove) {
             if (Wrapper.INSTANCE.getLocalPlayer().isFallFlying()) {
-                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, elytraPlus.flySpeed);
+                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, elytraPlus.flySpeedProperty.value());
                 if (eventMove.getY() <= 0)
-                    eventMove.setY(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? elytraPlus.flySpeed : (Wrapper.INSTANCE.getLocalPlayer().isInSneakingPose() ? -elytraPlus.flySpeed : (elytraPlus.slowGlide ? -0.0001 : 0)));
+                    eventMove.setY(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? elytraPlus.flySpeedProperty.value() : (Wrapper.INSTANCE.getLocalPlayer().isInSneakingPose() ? -elytraPlus.flySpeedProperty.value() : (elytraPlus.slowGlideProperty.value() ? -0.0001 : 0)));
             }
         }
     }

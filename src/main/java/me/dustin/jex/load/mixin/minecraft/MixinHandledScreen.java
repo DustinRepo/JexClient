@@ -48,7 +48,7 @@ public class MixinHandledScreen extends Screen implements IHandledScreen {
             ci.cancel();
             if (eventRenderToolTip.getOther() != null) {
                 toolTipRender(matrixStack, eventRenderToolTip.getOther().itemStack(), eventRenderToolTip.getOther().x(), eventRenderToolTip.getOther().y());
-                if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(ToolTips.class) && Feature.get(ToolTips.class).mapToolTip) {
+                if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(ToolTips.class) && Feature.get(ToolTips.class).mapToolTipProperty.value()) {
                     Render2DHelper.INSTANCE.drawMap(eventRenderToolTip.getPoseStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
                 }
             }
@@ -70,7 +70,7 @@ public class MixinHandledScreen extends Screen implements IHandledScreen {
             other = eventRenderToolTip.getOther();
         if (other != null) {
             toolTipRender(matrixStack, other.itemStack(), other.x(), other.y());
-            if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(ToolTips.class) && Feature.get(ToolTips.class).mapToolTip) {
+            if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(ToolTips.class) && Feature.get(ToolTips.class).mapToolTipProperty.value()) {
                 Render2DHelper.INSTANCE.drawMap(eventRenderToolTip.getPoseStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
             }
         }

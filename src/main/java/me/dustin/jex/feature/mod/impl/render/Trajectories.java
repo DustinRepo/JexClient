@@ -7,6 +7,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -48,18 +49,23 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import me.dustin.jex.feature.option.annotate.Op;
 import java.awt.*;
 import java.util.ArrayList;
 
 public class Trajectories extends Feature {
 
-    @Op(name = "Z-Clip")
-    public boolean disableDepth = true;
-    @Op(name = "Miss Color", isColor = true)
-    public int missColor = new Color(0, 255, 0).getRGB();
-    @Op(name = "Hit Color", isColor = true)
-    public int hitColor = new Color(255, 0, 0).getRGB();
+    public final Property<Boolean> disableDepthProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Z-Clip")
+            .value(true)
+            .build();
+    public final Property<Color> missColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Miss Color")
+            .value(Color.GREEN)
+            .build();
+    public final Property<Color> hitColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Hit Color")
+            .value(Color.RED)
+            .build();
 
     private Entity hitEntity = null;
     private final ArrayList<Vec3d> positions = new ArrayList<>();
@@ -76,8 +82,7 @@ public class Trajectories extends Feature {
             for (int i = 0; i < positions.size(); i++) {
                 if (i != positions.size() - 1) {
 
-                    int color = hitEntity == null ? missColor : hitColor;
-                    Color color1 = ColorHelper.INSTANCE.getColor(color);
+                    Color color = hitEntity == null ? missColorProperty.value() : hitColorProperty.value();
 
                     Vec3d vec = positions.get(i);
                     Vec3d vec1 = positions.get(i + 1);
@@ -89,11 +94,11 @@ public class Trajectories extends Feature {
                     double y1 = vec1.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
                     double z1 = vec1.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
 
-                    Render3DHelper.INSTANCE.setup3DRender(disableDepth);
+                    Render3DHelper.INSTANCE.setup3DRender(disableDepthProperty.value());
                     BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                     bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-                    bufferBuilder.vertex(matrix4f, (float) x, (float) y, (float) z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                    bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, (float) z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
+                    bufferBuilder.vertex(matrix4f, (float) x, (float) y, (float) z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
+                    bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, (float) z1).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
                     bufferBuilder.clear();
                     BufferRenderer.drawWithShader(bufferBuilder.end());
                     Render3DHelper.INSTANCE.end3DRender();
@@ -101,10 +106,10 @@ public class Trajectories extends Feature {
                     Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z);
                     if (hitEntity != null) {
                         Vec3d vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, event.getPartialTicks());
-                        Render3DHelper.INSTANCE.drawEntityBox(event.getPoseStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColor);
+                        Render3DHelper.INSTANCE.drawEntityBox(event.getPoseStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColorProperty.value().getRGB());
                     } else {
                         Box bb1 = new Box(vec.x - 0.2f, vec.y - 0.2f, vec.z - 0.2f, vec.x + 0.2f, vec.y + 0.2f, vec.z + 0.2f);
-                        Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb1, missColor);
+                        Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb1, missColorProperty.value().getRGB());
                     }
                 }
             }

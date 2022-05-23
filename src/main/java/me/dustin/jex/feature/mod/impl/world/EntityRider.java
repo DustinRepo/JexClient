@@ -7,6 +7,7 @@ import me.dustin.jex.event.misc.EventControlLlama;
 import me.dustin.jex.event.misc.EventHorseIsSaddled;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IAbstractHorseEntity;
@@ -20,44 +21,114 @@ import net.minecraft.entity.passive.MuleEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import org.lwjgl.glfw.GLFW;
 
 public class EntityRider extends Feature {
 
-    @Op(name = "Horse")
-    public boolean horse = true;
-    @OpChild(name = "Always Saddle", parent = "Horse")
-    public boolean alwaysSaddleHorse = true;
-    @OpChild(name = "Horse Instant Jump", parent = "Horse")
-    public boolean horseInstantJump = true;
-    @OpChild(name = "Horse Speed", min = 0.1f, max = 2, inc = 0.05f, parent = "Horse")
-    public float horseSpeed = 1;
-    @OpChild(name = "Horse Jump", min = 0.1f, max = 2, inc = 0.05f, parent = "Horse")
-    public float horseJump = 1;
+    public final Property<Boolean> horseProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Horse")
+            .value(true)
+            .build();
+    public final Property<Boolean> alwaysSaddleHorseProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Horse Saddle")
+            .value(true)
+            .parent(horseProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> horseInstantJumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Horse Instant Jump")
+            .value(true)
+            .parent(horseProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> horseSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Horse Speed")
+            .value(1f)
+            .min(0.1f)
+            .max(2)
+            .inc(0.05f)
+            .parent(horseProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> horseJumpProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Horse Jump")
+            .value(1f)
+            .min(0.1f)
+            .max(2)
+            .inc(0.05f)
+            .parent(horseProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
-    @Op(name = "Llama")
-    public boolean llama = true;
-    @OpChild(name = "Always Saddle", parent = "Llama")
-    public boolean alwaysSaddleLlama = true;
-    @OpChild(name = "Llama Control", parent = "Llama")
-    public boolean llamaControl = true;
-    @OpChild(name = "Llama Instant Jump", parent = "Llama")
-    public boolean llamaInstantJump = true;
-    @OpChild(name = "Llama Speed", min = 0.1f, max = 2, inc = 0.05f, parent = "Llama")
-    public float llamaSpeed = 1;
-    @OpChild(name = "Llama Jump", min = 0.1f, max = 2, inc = 0.05f, parent = "Llama")
-    public float llamaJump = 1;
+    public final Property<Boolean> llamaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Llama")
+            .value(true)
+            .build();
+    public final Property<Boolean> alwaysSaddleLlamaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Llama Saddle")
+            .value(true)
+            .parent(llamaProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> llamaControlProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Llama Control")
+            .value(true)
+            .parent(llamaProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> llamaInstantJumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Llama Instant Jump")
+            .value(true)
+            .parent(llamaProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> llamaSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Llama Speed")
+            .value(1f)
+            .min(0.1f)
+            .max(2)
+            .inc(0.05f)
+            .parent(llamaProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> llamaJumpProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Llama Jump")
+            .value(1f)
+            .min(0.1f)
+            .max(2)
+            .inc(0.05f)
+            .parent(llamaProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
-    @Op(name = "Boat")
-    public boolean boat = true;
-    @OpChild(name = "Allow Jump/Fly", parent = "Boat")
-    public boolean allowBoatFly = true;
-    @OpChild(name = "Boat Speed", min = 0.1f, max = 2, inc = 0.05f, parent = "Boat")
-    public float boatSpeed = 1;
-    @OpChild(name = "Boat Jump", min = 0.1f, max = 2, inc = 0.05f, parent = "Boat")
-    public float boatJump = 1;
+    public final Property<Boolean> boatProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Boat")
+            .value(true)
+            .build();
+    public final Property<Boolean> allowBoatFlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Boat")
+            .value(true)
+            .parent(boatProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> boatSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Boat Speed")
+            .value(1f)
+            .min(0.1f)
+            .max(2)
+            .inc(0.05f)
+            .parent(boatProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> boatJumpProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Boat Jump")
+            .value(1f)
+            .min(0.1f)
+            .max(2)
+            .inc(0.05f)
+            .parent(boatProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
     public EntityRider() {
         super(Category.WORLD, "Change how ridable entities work.");
@@ -68,40 +139,40 @@ public class EntityRider extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() == null)
             return;
         Entity vehicle = Wrapper.INSTANCE.getLocalPlayer().getVehicle();
-        if (horse && isHorse(vehicle)) {
+        if (horseProperty.value() && isHorse(vehicle)) {
             AbstractHorseEntity horseBaseEntity = (AbstractHorseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
             IAbstractHorseEntity iAbstractHorseEntity = (IAbstractHorseEntity) horseBaseEntity;
-            iAbstractHorseEntity.setJumpStrength(horseJump);
-            iAbstractHorseEntity.setSpeed(horseSpeed);
-            if (horseInstantJump)
+            iAbstractHorseEntity.setJumpStrength(horseJumpProperty.value());
+            iAbstractHorseEntity.setSpeed(horseSpeedProperty.value());
+            if (horseInstantJumpProperty.value())
                 iAbstractHorseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
         }
-        if (llama && isLlama(vehicle)) {
+        if (llamaProperty.value() && isLlama(vehicle)) {
             AbstractHorseEntity horseBaseEntity = (AbstractHorseEntity) Wrapper.INSTANCE.getLocalPlayer().getVehicle();
             IAbstractHorseEntity iAbstractHorseEntity = (IAbstractHorseEntity) horseBaseEntity;
-            iAbstractHorseEntity.setJumpStrength(llamaJump);
-            iAbstractHorseEntity.setSpeed(llamaSpeed);
-            if (llamaInstantJump)
+            iAbstractHorseEntity.setJumpStrength(llamaJumpProperty.value());
+            iAbstractHorseEntity.setSpeed(llamaSpeedProperty.value());
+            if (llamaInstantJumpProperty.value())
                 iAbstractHorseEntity.setJumpPower(Wrapper.INSTANCE.getOptions().jumpKey.isPressed() ? 1 : 0);
         }
-        if (boat && vehicle instanceof BoatEntity boatEntity) {
-            boatEntity.updateVelocity(boatSpeed / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));
-            if (allowBoatFly)
+        if (boatProperty.value() && vehicle instanceof BoatEntity boatEntity) {
+            boatEntity.updateVelocity(boatSpeedProperty.value() / 10.0f, new Vec3d(Wrapper.INSTANCE.getLocalPlayer().input.movementSideways, 0, Wrapper.INSTANCE.getLocalPlayer().input.movementForward));
+            if (allowBoatFlyProperty.value())
                 if (Wrapper.INSTANCE.getOptions().jumpKey.isPressed()) {
-                    boatEntity.addVelocity(0, boatJump / 10.0f, 0);
+                    boatEntity.addVelocity(0, boatJumpProperty.value() / 10.0f, 0);
                 } else if (KeyboardHelper.INSTANCE.isPressed(GLFW.GLFW_KEY_INSERT)) {
-                    boatEntity.addVelocity(0, -boatJump / 10.0f, 0);
+                    boatEntity.addVelocity(0, -boatJumpProperty.value() / 10.0f, 0);
                 }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventHorseIsSaddled> eventHorseIsSaddledEventListener = new EventListener<>(event -> {
-        if (horse && alwaysSaddleHorse && isHorse(event.getEntity())) {
+        if (horseProperty.value() && alwaysSaddleHorseProperty.value() && isHorse(event.getEntity())) {
             ((EventHorseIsSaddled) event).setSaddled(true);
             event.cancel();
         }
-        if (llama && alwaysSaddleLlama && isLlama(event.getEntity())) {
+        if (llamaProperty.value() && alwaysSaddleLlamaProperty.value() && isLlama(event.getEntity())) {
             ((EventHorseIsSaddled) event).setSaddled(true);
             event.cancel();
         }
@@ -109,7 +180,7 @@ public class EntityRider extends Feature {
 
     @EventPointer
     private final EventListener<EventControlLlama> eventControlLlamaEventListener = new EventListener<>(event -> {
-        event.setControl(llamaControl);
+        event.setControl(llamaControlProperty.value());
         event.cancel();
     });
 

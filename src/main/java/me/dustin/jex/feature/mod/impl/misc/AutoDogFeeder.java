@@ -21,10 +21,10 @@ public class AutoDogFeeder extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
         int slot = getDogFoodSlot();
         if (slot == -1)
             return;
+        int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
                 if (wolfEntity.getHealth() < wolfEntity.getMaxHealth()) {

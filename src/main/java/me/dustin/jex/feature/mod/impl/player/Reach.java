@@ -10,7 +10,7 @@ import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.event.world.EventInteractBlock;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -19,8 +19,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class Reach extends Feature {
-    @Op(name = "Distance", min = 5, max = 24, inc = 0.05f)
-    public float distance = 5.5f;
+
+    public final Property<Float> distanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Distance")
+            .value(5.5f)
+            .min(5)
+            .max(10)
+            .inc(0.05f)
+            .build();
 
     private Vec3d storedPos;
 
@@ -30,12 +36,12 @@ public class Reach extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        this.setSuffix(String.format("%.1f", distance));
+        this.setSuffix(String.format("%.1f", distanceProperty.value()));
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
     private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
-        if (distance <= 6)
+        if (distanceProperty.value() <= 6)
             return;
         if (event.getMode() == EventClickBlock.Mode.PRE) {
             storedPos = Wrapper.INSTANCE.getPlayer().getPos();
@@ -54,7 +60,7 @@ public class Reach extends Feature {
 
     @EventPointer
     private final EventListener<EventInteractBlock> eventInteractBlockEventListener = new EventListener<>(event -> {
-        if (distance <= 6)
+        if (distanceProperty.value() <= 6)
             return;
         if (event.getMode() == EventInteractBlock.Mode.PRE) {
             storedPos = Wrapper.INSTANCE.getPlayer().getPos();
@@ -74,7 +80,7 @@ public class Reach extends Feature {
 
     @EventPointer
     private final EventListener<EventGetReachDistance> eventGetReachDistanceEventListener = new EventListener<>(event -> {
-        event.setReachDistance(distance);
+        event.setReachDistance(distanceProperty.value());
     });
 
     @EventPointer

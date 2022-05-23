@@ -209,9 +209,9 @@ public class WalkPathProcessor extends PathProcessor
 	}
 
 	public double getSpeedModSpeed() {
-		return switch (Speed.INSTANCE.mode.toLowerCase()) {
-			case "vanilla" -> Speed.INSTANCE.vanillaSpeed;
-			case "strafe" -> Speed.INSTANCE.strafeSpeed;
+		return switch (Speed.INSTANCE.modeProperty.value()) {
+			case VANILLA -> Speed.INSTANCE.vanillaSpeedProperty.value();
+			case STRAFE -> Speed.INSTANCE.strafeSpeedProperty.value();
 			default -> PlayerHelper.INSTANCE.getBaseMoveSpeed();
 		};
 	}

@@ -8,7 +8,7 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRenderWidget;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
@@ -25,10 +25,20 @@ import java.util.Map;
 
 public class CustomWidgets extends Feature {
 
-    @Op(name = "Shrink Speed", min = 1, max = 10, inc = 0.1f)
-    public float shrinkSpeed = 4;
-    @Op(name = "Grow Speed", min = 1, max = 10, inc = 0.1f)
-    public float growSpeed = 1.2f;
+    public Property<Float> shrinkSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Shrink Speed")
+            .value(4f)
+            .min(1)
+            .max(10)
+            .inc(0.1f)
+            .build();
+    public Property<Float> growSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Grow Speed")
+            .value(1.2f)
+            .min(1)
+            .max(10)
+            .inc(0.1f)
+            .build();
 
     private final Map<ClickableWidget, Integer> hoverChecks = new HashMap<>();
     private final Map<ClickableWidget, Float> offsets = new HashMap<>();
@@ -83,9 +93,9 @@ public class CustomWidgets extends Feature {
             int hovered = hoverChecks.get(widget);
             if (widget.isHovered() && widget.active) {
                 if (hovered < 10)
-                    hovered+=shrinkSpeed;
+                    hovered+=shrinkSpeedProperty.value();
             } else if (hovered > 0) {
-                hovered-=growSpeed;
+                hovered-=growSpeedProperty.value();
             }
             hovered = MathHelper.clamp(hovered, 0, 10);
             hoverChecks.replace(widget, hovered);

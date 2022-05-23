@@ -26,7 +26,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class TwoDeeESP extends FeatureExtension {
     public TwoDeeESP() {
-        super("2D", ESP.class);
+        super(ESP.Mode.TWO_DEE, ESP.class);
     }
 
 

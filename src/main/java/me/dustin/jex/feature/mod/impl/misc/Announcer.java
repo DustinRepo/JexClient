@@ -12,7 +12,7 @@ import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -20,14 +20,18 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
 
 public class Announcer extends Feature {
 
-    @Op(name = "Message Delay", min = 50, max = 5000, inc = 10)
-    public int messageDelay = 1000;
+    public final Property<Long> messageDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Message Delay")
+            .value(1000L)
+            .min(50)
+            .max(5000)
+            .inc(10)
+            .build();
 
     private final File announcerFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "announcer.json");
 
@@ -42,7 +46,7 @@ public class Announcer extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !stopWatch.hasPassed(messageDelay))
+        if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !stopWatch.hasPassed(messageDelayProperty.value()))
             return;
         PlayerListS2CPacket playerListPacket = (PlayerListS2CPacket) event.getPacket();
 

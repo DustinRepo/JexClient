@@ -11,7 +11,7 @@ import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Nametag;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -50,12 +50,20 @@ import java.util.Map;
 
 public class AutoLibrarianRoll extends Feature {
 
-    @Op(name = "Price Mode", all = {"Normal", "Adjusted"})
-    public String priceMode = "Normal";
-    @Op(name = "Max Price", min = 1, max = 75)
-    public int price = 20;
-    @Op(name = "Auto Trade")
-    public boolean autoTrade = true;
+    public final Property<PriceMode> priceModeProperty = new Property.PropertyBuilder<PriceMode>(this.getClass())
+            .name("Price Mode")
+            .value(PriceMode.NORMAL)
+            .build();
+    public final Property<Integer> priceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Max Price")
+            .value(20)
+            .min(1)
+            .max(75)
+            .build();
+    public final Property<Boolean> autoTradeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Auto Trade")
+            .value(true)
+            .build();
 
     private VillagerEntity villager;
     private VillagerProfession lastProfession;
@@ -98,14 +106,14 @@ public class AutoLibrarianRoll extends Feature {
                             Enchantment enchantment = entry.getKey();
                             String enchantName = Text.translatable(enchantment.getTranslationKey()).getString();
                             if (enchants.containsKey(enchantment) && entry.getValue().contains(enchants.get(enchantment))) {
-                                int count = priceMode.equalsIgnoreCase("Normal") ? tradeOffer.getOriginalFirstBuyItem().getCount() : tradeOffer.getAdjustedFirstBuyItem().getCount();
-                                if (count <= price) {
+                                int count = priceModeProperty.value() == PriceMode.NORMAL ? tradeOffer.getOriginalFirstBuyItem().getCount() : tradeOffer.getAdjustedFirstBuyItem().getCount();
+                                if (count <= priceProperty.value()) {
                                     ChatHelper.INSTANCE.addClientMessage(enchantName + " " + enchants.get(enchantment) + " found at price " + count + " emeralds");
                                     tradeFound = true;
                                     doneVillagers.put(villager, lecternPos);
                                     this.setState(false);
 
-                                    if (autoTrade) {
+                                    if (autoTradeProperty.value()) {
                                         int book = getItem(Items.BOOK) - 6;
                                         if (book != -1) {
                                             int emerald = getItem(Items.EMERALD) - 6;
@@ -202,7 +210,7 @@ public class AutoLibrarianRoll extends Feature {
         if (villager != null && Render2DHelper.INSTANCE.isOnScreen(villagerPos)) {
             Nametag nametag = Feature.get(Nametag.class);
             float x = (float) villagerPos.x;
-            float y = (float) villagerPos.y - (nametag.getState() && nametag.passives ? 15 : 0);
+            float y = (float) villagerPos.y - (nametag.getState() && nametag.passivesProperty.value() ? 15 : 0);
             String string1 = "Searching:";
             StringBuilder sb = new StringBuilder();
             for (Enchantment enchantment : enchantments.keySet()) {
@@ -216,7 +224,7 @@ public class AutoLibrarianRoll extends Feature {
             sb.setLength(sb.length() - 3);
             String string2 = sb.toString();
 
-            String string3 = price + " Emeralds";
+            String string3 = priceProperty.value() + " Emeralds";
             float length1 = FontHelper.INSTANCE.getStringWidth(string1);
             float length2 = FontHelper.INSTANCE.getStringWidth(string2);
             float length3 = FontHelper.INSTANCE.getStringWidth(string3);
@@ -234,7 +242,7 @@ public class AutoLibrarianRoll extends Feature {
 
     @Override
     public void onEnable() {
-        if ((enchantments.isEmpty()) && Wrapper.INSTANCE.getLocalPlayer() != null) {
+        if (enchantments.isEmpty() && Wrapper.INSTANCE.getLocalPlayer() != null) {
             ChatHelper.INSTANCE.addClientMessage("Enchantment not set! Set enchantment with " + CommandManagerJex.INSTANCE.getPrefix() + "librarianroll add <enchant> <level>");
         }
         super.onEnable();
@@ -274,4 +282,7 @@ public class AutoLibrarianRoll extends Feature {
         return lectern;
     }
 
+    public enum PriceMode {
+        NORMAL, ADJUSTED
+    }
 }

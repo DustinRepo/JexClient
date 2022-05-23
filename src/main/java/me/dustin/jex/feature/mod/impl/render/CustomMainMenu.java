@@ -7,21 +7,32 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gui.screen.TitleScreen;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 
 public class CustomMainMenu extends Feature {
 
-    @Op(name = "Background")
-    public boolean customBackground = true;
-    @OpChild(name = "Scroll", parent = "Background")
-    public boolean scroll;
-    @OpChild(name = "Delay (Seconds)", min = 1, max = 60, parent = "Scroll")
-    public int scrollDelay = 5;
+    public Property<Boolean> customBackgroundProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Background")
+            .value(true)
+            .build();
+    public Property<Boolean> scrollProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Scroll")
+            .value(false)
+            .parent(customBackgroundProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public Property<Integer> scrollDelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Delay (Seconds)")
+            .value(5)
+            .min(1)
+            .max(60)
+            .parent(scrollProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
     public CustomMainMenu() {
         super("CustomMainMenu", Category.VISUAL, "The custom main menu for Jex", true, false, 0);

@@ -9,6 +9,7 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -23,21 +24,40 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
+
+import java.awt.*;
 
 public class AutoBreak extends Feature {
 
-	@Op(name = "Show Position")
-	public boolean showPosition = true;
-	@Op(name = "Mining Distance", min = 2, max = 6, inc = 0.1f)
-	public float mineDistance = 3;
-	@OpChild(name = "Empty Color", isColor = true, parent = "Show Position")
-	public int emptyColor = 0xffff00ff;
-	@OpChild(name = "Has Block Color", isColor = true, parent = "Show Position")
-	public int blockinspotColor = 0xff0000ff;
-	@OpChild(name = "Mining Color", isColor = true, parent = "Show Position")
-	public int miningColor = 0xffff0000;
+	public final Property<Boolean> showPositionProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Show Position")
+			.value(true)
+			.build();
+	public final Property<Color> emptyColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+			.name("Empty Color")
+			.value(new Color(255, 0, 255))
+			.parent(showPositionProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
+	public final Property<Color> blockinspotColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+			.name("Has Block Color")
+			.value(Color.BLUE)
+			.parent(showPositionProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
+	public final Property<Color> miningColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+			.name("Mining Color")
+			.value(Color.RED)
+			.parent(showPositionProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
+	public final Property<Float> mineDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
+			.name("Mining Distance")
+			.value(3f)
+			.min(2)
+			.max(6)
+			.inc(0.1f)
+			.build();
 
 	private BlockPos pos;
 
@@ -57,16 +77,16 @@ public class AutoBreak extends Feature {
 
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-		if (pos != null && showPosition) {
+		if (pos != null && showPositionProperty.value()) {
 			Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(pos.getX(), pos.getY(), pos.getZ());
 			Block block = WorldHelper.INSTANCE.getBlock(pos);
 
-			int color = emptyColor;
+			int color = emptyColorProperty.value().getRGB();
 
 			if (block != Blocks.AIR)
-				color = blockinspotColor;
-			if (block != Blocks.AIR && getDistance(pos, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ()) <= mineDistance)
-				color = miningColor;
+				color = blockinspotColorProperty.value().getRGB();
+			if (block != Blocks.AIR && getDistance(pos, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ()) <= mineDistanceProperty.value())
+				color = miningColorProperty.value().getRGB();
 			Box bb = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
 			Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getPoseStack(), bb, color);
 		}
@@ -76,7 +96,7 @@ public class AutoBreak extends Feature {
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
 		if (pos != null) {
 			Block block = WorldHelper.INSTANCE.getBlock(pos);
-			if (block != Blocks.AIR && getDistance(pos, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ()) <= mineDistance) {
+			if (block != Blocks.AIR && getDistance(pos, Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ()) <= mineDistanceProperty.value()) {
 				RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
 				((EventPlayerPackets) event).setRotation(rot);
 				rot.normalize();

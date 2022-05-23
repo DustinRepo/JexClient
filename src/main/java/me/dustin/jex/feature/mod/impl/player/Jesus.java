@@ -3,7 +3,6 @@ package me.dustin.jex.feature.mod.impl.player;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
@@ -12,10 +11,10 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventBlockCollisionShape;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.fluid.FluidState;
@@ -23,16 +22,20 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import org.lwjgl.glfw.GLFW;
 
 public class Jesus extends Feature {
 
-    @Op(name = "Mode", all = {"Solid", "Dolphin"})
-    public String mode = "Solid";
-    @OpChild(name = "Jump", parent = "Mode", dependency = "Dolphin")
-    public boolean allowJump = true;
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.SOLID)
+            .build();
+    public final Property<Boolean> allowJumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Jump")
+            .value(true)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.DOLPHIN)
+            .build();
     private int ticks;
 
     public Jesus() {
@@ -43,7 +46,7 @@ public class Jesus extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getPlayer() == null || Wrapper.INSTANCE.getWorld() == null)
             return;
-        if (mode.equalsIgnoreCase("Solid") && (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
+        if (modeProperty.value() == Mode.SOLID && (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
             Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
             Wrapper.INSTANCE.getPlayer().setVelocity(orig.getX(), 0.11, orig.getZ());
         }
@@ -57,7 +60,7 @@ public class Jesus extends Feature {
         }
         if (WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getPlayer())) {
             if (!Wrapper.INSTANCE.getPlayer().isSneaking()) {
-                if (Wrapper.INSTANCE.getOptions().jumpKey.isPressed() && allowJump && mode.equalsIgnoreCase("Dolphin")) {
+                if (Wrapper.INSTANCE.getOptions().jumpKey.isPressed() && allowJumpProperty.value() && modeProperty.value() == Mode.DOLPHIN) {
                     if (ticks != 4) {
                         Wrapper.INSTANCE.getPlayer().jump();
                         Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
@@ -65,7 +68,7 @@ public class Jesus extends Feature {
                     } else {
                         KeyBinding.setKeyPressed(Wrapper.INSTANCE.getOptions().jumpKey.getDefaultKey(), false);
                     }
-                } else if (mode.equalsIgnoreCase("Dolphin") && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer()) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
+                } else if (modeProperty.value() == Mode.DOLPHIN && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer()) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
                     Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
                     Wrapper.INSTANCE.getPlayer().setVelocity(orig.getX(), 0.1, orig.getZ());
                 }
@@ -75,7 +78,7 @@ public class Jesus extends Feature {
 
     @EventPointer
     private final EventListener<EventBlockCollisionShape> eventBlockCollisionShapeEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getPlayer() == null || Wrapper.INSTANCE.getWorld() == null || mode.equalsIgnoreCase("Dolphin") || event.getBlockPos() == null)
+        if (Wrapper.INSTANCE.getPlayer() == null || Wrapper.INSTANCE.getWorld() == null || modeProperty.value() == Mode.DOLPHIN || event.getBlockPos() == null)
             return;
         if (Wrapper.INSTANCE.getPlayer().isSubmergedInWater() || Wrapper.INSTANCE.getPlayer().isInLava() || (event.getBlockPos().getY() < Wrapper.INSTANCE.getPlayer().getY() + 0.5f && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) || Wrapper.INSTANCE.getPlayer().isSneaking() || Wrapper.INSTANCE.getPlayer().fallDistance > 3)
             return;
@@ -93,13 +96,13 @@ public class Jesus extends Feature {
     @EventPointer
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
         BaritoneHelper.INSTANCE.setAssumeJesus(true);
-        if ((WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getPlayer()) || WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) && mode.equalsIgnoreCase("Dolphin")) {
+        if ((WorldHelper.INSTANCE.isOnLiquid(Wrapper.INSTANCE.getPlayer()) || WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) && modeProperty.value() == Mode.DOLPHIN) {
             if (PlayerHelper.INSTANCE.isMoving())
                 PlayerHelper.INSTANCE.setMoveSpeed((EventMove) event, 2.5 / 20);
             else
                 PlayerHelper.INSTANCE.setMoveSpeed((EventMove) event, 0);
         }
-        this.setSuffix(mode);
+        this.setSuffix(modeProperty.value());
     });
 
     @EventPointer
@@ -121,5 +124,9 @@ public class Jesus extends Feature {
     public void onDisable() {
         BaritoneHelper.INSTANCE.setAssumeJesus(false);
         super.onDisable();
+    }
+
+    public enum Mode {
+        SOLID, DOLPHIN
     }
 }

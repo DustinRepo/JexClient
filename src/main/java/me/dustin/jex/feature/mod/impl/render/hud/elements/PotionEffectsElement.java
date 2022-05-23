@@ -34,9 +34,9 @@ public class PotionEffectsElement extends HudElement {
             if (FontHelper.INSTANCE.getStringWidth(effectString) > longestString)
                 longestString = FontHelper.INSTANCE.getStringWidth(effectString);
             float strY = isTopSide() ? this.getY() + 2 + (strCount * 10) : this.getY() + this.getHeight() - 10 - (strCount * 10);
-            float strX = isLeftSide() ? this.getX() + 3 : this.getX() + this.getWidth() - FontHelper.INSTANCE.getStringWidth(effectString) - (getHud().icons ? 11 : 2);
+            float strX = isLeftSide() ? this.getX() + 3 : this.getX() + this.getWidth() - FontHelper.INSTANCE.getStringWidth(effectString) - (getHud().iconsProperty.value() ? 11 : 2);
             FontHelper.INSTANCE.drawWithShadow(matrixStack, effectString, strX, strY, effect.getEffectType().getColor());
-            if (getHud().icons) {
+            if (getHud().iconsProperty.value()) {
                 Sprite sprite_1 = Wrapper.INSTANCE.getMinecraft().getStatusEffectSpriteManager().getSprite(effect.getEffectType());
                 list_1.add(() -> {
                     float spriteY = isTopSide() ? this.getY() + 2 + (spriteCount.get() * 10) : this.getY() + this.getHeight() - 11 - (spriteCount.get() * 10);
@@ -58,7 +58,7 @@ public class PotionEffectsElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().potionEffects;
+        return getHud().potionEffectsProperty.value();
     }
 
     private String getAmpString(StatusEffectInstance effectInstance) {

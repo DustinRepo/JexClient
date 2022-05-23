@@ -26,6 +26,6 @@ public class LookElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().yawAndPitch;
+        return getHud().infoProperty.value() && getHud().yawAndPitchProperty.value();
     }
 }

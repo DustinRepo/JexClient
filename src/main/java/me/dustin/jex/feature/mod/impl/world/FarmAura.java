@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -22,16 +23,25 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 
 public class FarmAura extends Feature {
 
-    @Op(name = "Check Age")
-    public boolean checkAge = true;
-    @Op(name = "Break Delay (MS)", max = 1000, inc = 10)
-    public int breakDelay = 100;
-    @Op(name = "Plant Delay (MS)", max = 1000, inc = 10)
-    public int plantDelay = 100;
+    public final Property<Boolean> checkAgeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Check Age")
+            .value(true)
+            .build();
+    public final Property<Long> breakDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Break Delay (MS)")
+            .value(100L)
+            .max(1000)
+            .inc(10)
+            .build();
+    public final Property<Long> plantDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Plant Delay (MS)")
+            .value(100L)
+            .max(1000)
+            .inc(10)
+            .build();
 
     private final StopWatch breakStopWatch = new StopWatch();
     private final StopWatch plantStopWatch = new StopWatch();
@@ -44,7 +54,7 @@ public class FarmAura extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (BonemealAura.INSTANCE.isBonemealing())
             return;
-        if (breakStopWatch.hasPassed(breakDelay)) {
+        if (breakStopWatch.hasPassed(breakDelayProperty.value())) {
             breakStopWatch.reset();
             BlockPos crop = getCrop();
             if (crop != null) {
@@ -56,7 +66,7 @@ public class FarmAura extends Feature {
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             }
         }
-        if (plantStopWatch.hasPassed(plantDelay)) {
+        if (plantStopWatch.hasPassed(plantDelayProperty.value())) {
             plantStopWatch.reset();
             BlockPos farmland = getFarmland();
             if (farmland != null) {
@@ -83,7 +93,7 @@ public class FarmAura extends Feature {
             for (int y = -2; y < 2; y++) {
                 for (int z = -4; z < 4; z++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
-                    if (WorldHelper.INSTANCE.isCrop(blockPos, checkAge)) {
+                    if (WorldHelper.INSTANCE.isCrop(blockPos, checkAgeProperty.value())) {
                         Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
                         Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
                         Render3DHelper.INSTANCE.drawBoxOutline(event.getPoseStack(), box, 0xffff0000);
@@ -129,7 +139,7 @@ public class FarmAura extends Feature {
             for (int y = -2; y < 2; y++) {
                 for (int z = -4; z < 4; z++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
-                    if (WorldHelper.INSTANCE.isCrop(blockPos, checkAge))
+                    if (WorldHelper.INSTANCE.isCrop(blockPos, checkAgeProperty.value()))
                         return blockPos;
                 }
             }

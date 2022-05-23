@@ -9,7 +9,7 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventLoadChunk;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
@@ -21,12 +21,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
+
+import java.awt.*;
 import java.util.ArrayList;
 
 public class NewChunks extends Feature {
 
-    @Op(name = "New Chunk Color", isColor = true)
-    public int newChunkColor = 0xffff0000;
+    public final Property<Color> newChunkColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("New Chunk Color")
+            .value(Color.RED)
+            .build();
     private final ArrayList<Chunk> newChunks = new ArrayList<>();
     private final ArrayList<Chunk> oldChunks = new ArrayList<>();
 
@@ -83,7 +87,7 @@ public class NewChunks extends Feature {
                 return;
             Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(chunk.getPos().getStartX(), chunk.getBottomY(), chunk.getPos().getStartZ());
             Box bb = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 16, renderPos.y + 0.1f, renderPos.z + 16);
-            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb, newChunkColor);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb, newChunkColorProperty.value().getRGB());
         });
     });
 

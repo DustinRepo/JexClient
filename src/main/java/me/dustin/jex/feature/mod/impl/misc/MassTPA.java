@@ -9,7 +9,7 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -20,8 +20,12 @@ import java.util.Random;
 
 public class MassTPA extends Feature {
 
-    @Op(name = "Delay (MS)", max = 5000, inc = 10)
-    public int delay = 1000;
+    public Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay (MS)")
+            .value(1000L)
+            .max(5000)
+            .inc(10)
+            .build();
 
     private final StopWatch stopWatch = new StopWatch();
 
@@ -31,7 +35,7 @@ public class MassTPA extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!stopWatch.hasPassed(delay))
+        if (!stopWatch.hasPassed(delayProperty.value()))
             return;
         ArrayList<PlayerListEntry> playerList = Lists.newArrayList(Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerList());
         for (int i = 0; i < playerList.size(); i++) {

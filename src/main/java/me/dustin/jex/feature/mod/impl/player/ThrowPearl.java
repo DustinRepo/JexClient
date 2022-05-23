@@ -6,7 +6,7 @@ import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -18,8 +18,11 @@ import org.lwjgl.glfw.GLFW;
 
 public class ThrowPearl extends Feature {
 
-    @Op(name = "Throw Key", isKeybind = true)
-    public int throwKey = GLFW.GLFW_KEY_Y;
+    public final Property<Integer> throwKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Throw Key")
+            .value(GLFW.GLFW_KEY_Y)
+            .isKey()
+            .build();
 
     public ThrowPearl() {
         super(Category.PLAYER, "Automatically throw ender pearl from hotbar on button press.");
@@ -27,7 +30,7 @@ public class ThrowPearl extends Feature {
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
-        if (event.getKey() == throwKey) {
+        if (event.getKey() == throwKeyProperty.value()) {
             int slot = InventoryHelper.INSTANCE.getFromHotbar(Items.ENDER_PEARL);
             boolean offhand = InventoryHelper.INSTANCE.getInventory().getStack(45).getItem() == Items.ENDER_PEARL;
             if (slot == -1 && !offhand) {

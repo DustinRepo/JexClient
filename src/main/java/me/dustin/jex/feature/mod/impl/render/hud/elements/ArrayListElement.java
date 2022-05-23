@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
+import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,7 +35,7 @@ public class ArrayListElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().showArrayList;
+        return getHud().showArrayListProperty.value();
     }
 
     @Override
@@ -49,9 +50,9 @@ public class ArrayListElement extends HudElement {
                 longest = strWidth;
 
             int color = ColorHelper.INSTANCE.getClientColor();
-            if (getHud().colorMode.equalsIgnoreCase("Category"))
+            if (getHud().colorModeProperty.value() == Hud.ArrayListColor.CATEGORY)
                 color = getHud().getCategoryColor(feature.getCategory());
-            else if (getHud().colorMode.equalsIgnoreCase("Rainbow"))
+            else if (getHud().colorModeProperty.value() == Hud.ArrayListColor.RAINBOW)
                 color = getRainbowColor(count, num);
             if (feature.isVisible() && feature.getState()) {
                 list.add(new ArrayListItem(feature.getDisplayName(), color));
@@ -62,7 +63,7 @@ public class ArrayListElement extends HudElement {
         this.setWidth(longest + 7);
 
         reorderArrayList(list);
-        rainbowScroll += getHud().rainbowSpeed;
+        rainbowScroll += getHud().rainbowSpeedProperty.value();
         super.tick();
     }
 
@@ -71,7 +72,7 @@ public class ArrayListElement extends HudElement {
             max = 1;
         int inc = 270 / max;
         int hue = rainbowScroll + count * inc;
-        return ColorHelper.INSTANCE.getColorViaHue(hue % 270, getHud().rainbowSaturation).getRGB();
+        return ColorHelper.INSTANCE.getColorViaHue(hue % 270, getHud().rainbowSaturationProperty.value()).getRGB();
     }
 
 

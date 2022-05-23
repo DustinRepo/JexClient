@@ -4,13 +4,11 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.filters.TickFilter;
-import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -36,18 +34,30 @@ import java.util.Map;
 
 public class Waypoints extends Feature {
 
-	@Op(name = "FOV based Tag")
-	public boolean fovBasedTag = true;
-	@Op(name = "Distance", min = 20, max = 150)
-	public int fovDistance = 35;
-	@Op(name = "Distance on Tag")
-	public boolean distance = true;
-	@Op(name = "Last Death")
-	public boolean lastDeath = true;
+	public final Property<Boolean> fovBasedTagProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("FOV Based Tag")
+			.value(true)
+			.build();
+	public final Property<Integer> fovDistanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+			.name("Distance")
+			.value(35)
+			.min(20)
+			.max(150)
+			.parent(fovBasedTagProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
+	public final Property<Boolean> distanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Show Distance")
+			.value(true)
+			.build();
+	public final Property<Boolean> lastDeathProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Last Death")
+			.value(true)
+			.build();
+
 	public static ArrayList<String> servers = new ArrayList<>();
 	public static ArrayList<Waypoint> waypoints = new ArrayList<>();
 	private static final Map<Waypoint, Vec3d> waypointPositions = Maps.newHashMap();
-	private int spin = 0;
 
 	public Waypoints() {
 		super(Category.WORLD, "Display Waypoints to mark areas.");
@@ -78,7 +88,7 @@ public class Waypoints extends Feature {
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 
 		String server = WorldHelper.INSTANCE.getCurrentServerName();
-		if (!Wrapper.INSTANCE.getLocalPlayer().isAlive() && lastDeath) {
+		if (!Wrapper.INSTANCE.getLocalPlayer().isAlive() && lastDeathProperty.value()) {
 			Waypoint oldWaypoint = get("Last Death", server);
 			if (oldWaypoint != null) {
 				waypoints.remove(oldWaypoint);
@@ -157,13 +167,13 @@ public class Waypoints extends Feature {
 			Vec3d renderPos = waypointPositions.get(waypoint);
 			if (shouldRender(renderPos)) {
 				String name = waypoint.getName();
-				if (this.distance) {
+				if (this.distanceProperty.value()) {
 					name = String.format("%s [%.1f]", waypoint.getName(), ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(waypoint.getX(), waypoint.getY(), waypoint.getZ())));
 				}
 				float x = (float) renderPos.x;
 				float y = (float) renderPos.y;
 				float crosshairFOV = ClientMathHelper.INSTANCE.getDistance2D(new Vec2f(x, y), new Vec2f(Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f));
-				if (fovBasedTag && crosshairFOV > fovDistance)
+				if (fovBasedTagProperty.value() && crosshairFOV > fovDistanceProperty.value())
 					name = "[]";
 				float width = FontHelper.INSTANCE.getStringWidth(name);
 				Render2DHelper.INSTANCE.fill(((EventRender2D) event).getPoseStack(), x - (width / 2) - 2, y - 11, x + (width / 2.f) + 2, y, 0x50000000);
@@ -171,11 +181,6 @@ public class Waypoints extends Feature {
 			}
 		});
 	});
-
-	@EventPointer
-	private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
-		spin++;
-	}, new TickFilter(EventTick.Mode.PRE));
 
 	public boolean shouldRender(Vec3d pos) {
 		return pos != null && (pos.getZ() > -1 && pos.getZ() < 1);

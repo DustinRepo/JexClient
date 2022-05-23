@@ -29,7 +29,7 @@ import java.awt.*;
 public class OutlineBox extends FeatureExtension {
 
 	public OutlineBox() {
-		super("Box Outline", ESP.class);
+		super(ESP.Mode.BOX_OUTLINE, ESP.class);
 	}
 
 	@Override

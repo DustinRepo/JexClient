@@ -7,6 +7,7 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventPlayerUpdates;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -23,22 +24,31 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import me.dustin.jex.feature.option.annotate.Op;
 
 public class AutoEat extends Feature {
 
-    public static boolean isEating;
-    @Op(name = "Mode", all = {"Saturation", "Hunger"})
-    public String mode = "Saturation";
-    @Op(name = "Press Key")
-    public boolean pressKey;
-    @Op(name = "Eat Negative Foods")
-    public boolean negativeFoods;
-    @Op(name = "Eat To Regen")
-    public boolean eatToRegen;
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.SATURATION)
+            .build();
+    public final Property<Boolean> pressKeyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Press Key")
+            .description("Press the right-click key to give animations")
+            .value(false)
+            .build();
+    public final Property<Boolean> negativeFoodsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Eat Negative Foods")
+            .value(false)
+            .build();
+    public final Property<Boolean> eatToRegenProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Eat To Regen")
+            .value(false)
+            .build();
+
     private boolean wasEating;
     private int savedSlot = 0;
     private int lastFood;
+    public static boolean isEating;
 
     private final StopWatch baritoneStopWatch = new StopWatch();
 
@@ -58,7 +68,7 @@ public class AutoEat extends Feature {
                 if (BaritoneHelper.INSTANCE.baritoneExists())
                     BaritoneHelper.INSTANCE.resume();
             }
-            if (Wrapper.INSTANCE.getLocalPlayer() == null || (Feature.getState(Freecam.class) && Feature.get(Freecam.class).stealth) || Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
+            if (Wrapper.INSTANCE.getLocalPlayer() == null || (Feature.getState(Freecam.class) && Feature.get(Freecam.class).stealthProperty.value()) || Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
                 isEating = false;
                 if (BaritoneHelper.INSTANCE.baritoneExists()) {
                     BaritoneHelper.INSTANCE.resume();
@@ -80,7 +90,7 @@ public class AutoEat extends Feature {
                 if (lastFood != Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
                     if (lastFood < Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel()) {
                         isEating = false;
-                        if (pressKey)
+                        if (pressKeyProperty.value())
                             Wrapper.INSTANCE.getOptions().useKey.setPressed(false);
                         NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, Direction.UP));
                         InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
@@ -91,7 +101,7 @@ public class AutoEat extends Feature {
                     }
                 }
                 if (isEating) {
-                    if (pressKey)
+                    if (pressKeyProperty.value())
                         Wrapper.INSTANCE.getOptions().useKey.setPressed(true);
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
                 }
@@ -119,7 +129,7 @@ public class AutoEat extends Feature {
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, UpdateSelectedSlotC2SPacket.class, PlayerActionC2SPacket.class));
 
     private boolean needsToEat(FoodInfo foodInfo) {
-        if (!eatToRegen) {
+        if (!eatToRegenProperty.value()) {
             return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger();
         } else {
             return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger() || (Wrapper.INSTANCE.getLocalPlayer().getHealth() < 20 && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() < 18);
@@ -145,15 +155,15 @@ public class AutoEat extends Feature {
             ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
             if (itemStack != null && itemStack.getItem().isFood()) {
                 Item item = itemStack.getItem();
-                switch (mode) {
-                    case "Saturation":
+                switch (modeProperty.value()) {
+                    case SATURATION:
                         if (isValidFood(item.getFoodComponent()) && item.getFoodComponent().getSaturationModifier() > points) {
                             points = item.getFoodComponent().getSaturationModifier();
                             slot = i;
                             stack = itemStack;
                         }
                         break;
-                    case "Hunger":
+                    case HUNGER:
                         if (isValidFood(item.getFoodComponent()) && item.getFoodComponent().getHunger() > points) {
                             points = item.getFoodComponent().getHunger();
                             slot = i;
@@ -168,7 +178,7 @@ public class AutoEat extends Feature {
 
     public boolean isValidFood(FoodComponent foodComponent) {
         if (foodComponent == FoodComponents.PUFFERFISH || foodComponent == FoodComponents.SPIDER_EYE || foodComponent == FoodComponents.ROTTEN_FLESH || foodComponent == FoodComponents.POISONOUS_POTATO)
-            return negativeFoods;
+            return negativeFoodsProperty.value();
         else return true;
     }
 
@@ -185,7 +195,9 @@ public class AutoEat extends Feature {
             if (itemStack != null)
                 item = itemStack.getItem();
         }
-
     }
 
+    public enum Mode {
+        HUNGER, SATURATION
+    }
 }

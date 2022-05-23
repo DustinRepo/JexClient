@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -14,14 +15,19 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 
 public class ChestStealer extends Feature {
 
-    @Op(name = "Delay", max = 1000, inc = 10)
-    public int delay = 50;
-    @Op(name = "Dump")
-    public boolean dump;
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay")
+            .value(50L)
+            .max(1000)
+            .inc(10)
+            .build();
+    public final Property<Boolean> dumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Dump")
+            .value(false)
+            .build();
 
     private final StopWatch stopWatch = new StopWatch();
 
@@ -31,10 +37,10 @@ public class ChestStealer extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!stopWatch.hasPassed(delay))
+        if (!stopWatch.hasPassed(delayProperty.value()))
             return;
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen) {
-            if (InventoryHelper.INSTANCE.isInventoryFull() && !dump) {
+            if (InventoryHelper.INSTANCE.isInventoryFull() && !dumpProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
                 return;
             }
@@ -46,9 +52,9 @@ public class ChestStealer extends Feature {
                     Slot slot = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.get(i);
                     ItemStack stack = slot.getStack();
                     if (stack != null && stack.getItem() != Items.AIR) {
-                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot.id, dump ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, dump ? 1 : 0);
+                        InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot.id, dumpProperty.value() ? SlotActionType.THROW : SlotActionType.QUICK_MOVE, dumpProperty.value() ? 1 : 0);
                         stopWatch.reset();
-                        if (delay > 0)
+                        if (delayProperty.value() > 0)
                             return;
                     }
                 }

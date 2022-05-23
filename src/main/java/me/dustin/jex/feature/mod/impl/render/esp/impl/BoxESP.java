@@ -11,7 +11,7 @@ import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 public class BoxESP extends FeatureExtension {
 
     public BoxESP() {
-        super("Box", ESP.class);
+        super(ESP.Mode.BOX, ESP.class);
     }
 
     @Override

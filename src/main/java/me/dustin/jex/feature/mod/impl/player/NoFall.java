@@ -22,7 +22,7 @@ public class NoFall extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Feature.getState(Fly.class) && !Feature.get(Fly.class).mode.equalsIgnoreCase("Creative") && Wrapper.INSTANCE.getLocalPlayer().isSneaking() && Wrapper.INSTANCE.getLocalPlayer().age % 10 == 0) return;
+        if (Feature.getState(Fly.class) && Feature.get(Fly.class).modeProperty.value() != Fly.Mode.CREATIVE && Wrapper.INSTANCE.getLocalPlayer().isSneaking() && Wrapper.INSTANCE.getLocalPlayer().age % 10 == 0) return;
         if (Wrapper.INSTANCE.getLocalPlayer().isFallFlying() && !isFallSpeedDangerous()) return;
         if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > 2.5f) {
             NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(true));

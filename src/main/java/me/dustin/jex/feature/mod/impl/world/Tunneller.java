@@ -9,7 +9,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -31,12 +31,22 @@ import java.util.Comparator;
 
 public class Tunneller extends Feature {
 
-    @Op(name = "Handle Liquids")
-    public boolean handleLiquids = true;
-    @Op(name = "Width", min = 1, max = 5)
-    public int width = 3;
-    @Op(name = "Height", min = 1, max = 5)
-    public int height = 3;
+    public final Property<Boolean> handleLiquidsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Handle Liquids")
+            .value(true)
+            .build();
+    public final Property<Integer> widthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Width")
+            .value(3)
+            .min(1)
+            .max(5)
+            .build();
+    public final Property<Integer> heightProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Height")
+            .value(3)
+            .min(1)
+            .max(5)
+            .build();
 
     private Direction direction;
 
@@ -52,7 +62,7 @@ public class Tunneller extends Feature {
             direction = Wrapper.INSTANCE.getPlayer().getHorizontalFacing();
         setSuffix(getDirectionString());
         //do liquid replacing
-        if (handleLiquids)
+        if (handleLiquidsProperty.value())
             for (BlockPos liquidCheckSpot : getLiquidCheckSpots()) {
                 if (WorldHelper.INSTANCE.getBlock(liquidCheckSpot) instanceof FluidBlock) {
                     if (moveToBlocks()) {
@@ -163,12 +173,12 @@ public class Tunneller extends Feature {
     }
 
     private Box getTunnelBox() {
-        Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockX() + width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY() + height - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + width / 2.f);
+        Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - widthProperty.value() / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - widthProperty.value() / 2.f, Wrapper.INSTANCE.getPlayer().getBlockX() + widthProperty.value() / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY() + heightProperty.value() - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + widthProperty.value() / 2.f);
         switch (direction) {
-            case NORTH -> box = box.offset(0, 0, -width / 2.f);
-            case SOUTH -> box = box.offset(0, 0, width / 2.f);
-            case EAST -> box = box.offset(width / 2.f, 0, 0);
-            case WEST -> box = box.offset(-width / 2.f, 0, 0);
+            case NORTH -> box = box.offset(0, 0, -widthProperty.value() / 2.f);
+            case SOUTH -> box = box.offset(0, 0, widthProperty.value() / 2.f);
+            case EAST -> box = box.offset(widthProperty.value() / 2.f, 0, 0);
+            case WEST -> box = box.offset(-widthProperty.value() / 2.f, 0, 0);
         }
         return box;
     }
@@ -181,9 +191,9 @@ public class Tunneller extends Feature {
     }
 
     public double getSpeedModSpeed() {
-        return switch (Speed.INSTANCE.mode.toLowerCase()) {
-            case "vanilla" -> Speed.INSTANCE.vanillaSpeed;
-            case "strafe" -> Speed.INSTANCE.strafeSpeed;
+        return switch (Speed.INSTANCE.modeProperty.value()) {
+            case VANILLA -> Speed.INSTANCE.vanillaSpeedProperty.value();
+            case STRAFE -> Speed.INSTANCE.strafeSpeedProperty.value();
             default -> PlayerHelper.INSTANCE.getBaseMoveSpeed();
         };
     }

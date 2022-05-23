@@ -7,8 +7,7 @@ import me.dustin.jex.event.render.EventRenderEntity;
 import me.dustin.jex.event.world.EventTickParticle;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.feature.property.Property;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -23,36 +22,74 @@ import net.minecraft.entity.boss.WitherEntity;
 
 public class NoRender extends Feature {
 
-    @Op(name = "Items")
-    public boolean item = true;
-    @Op(name = "Particles")
-    public boolean particles = true;
-    @OpChild(name = "Fireworks", parent = "Particles")
-    public boolean fireworks = true;
-    @OpChild(name = "Explosions", parent = "Particles")
-    public boolean explosions = true;
-    @OpChild(name = "Smoke", parent = "Particles")
-    public boolean smoke = true;
-    @OpChild(name = "Block Breaking", parent = "Particles")
-    public boolean blockBreak = true;
-    @Op(name = "Withers")
-    public boolean withers = true;
-    @Op(name = "Falling Blocks")
-    public boolean fallingBlocks = true;
-    @Op(name = "Signs")
-    public boolean signs = true;
-    @Op(name = "Chests")
-    public boolean chests = true;
-    @Op(name = "End Chests")
-    public boolean endchests = true;
-    @Op(name = "EnchantTable Books")
-    public boolean enchantbooks = true;
-    @Op(name = "Banners")
-    public boolean banners = true;
-    @Op(name = "Hoppers")
-    public boolean hoppers = true;
-    @Op(name = "Campfires")
-    public boolean campfires = true;
+    public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Items")
+            .value(true)
+            .build();
+    public final Property<Boolean> particlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Particles")
+            .value(true)
+            .build();
+    public final Property<Boolean> fireworksProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Fireworks")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> explosionsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Explosions")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> smokeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Smoke")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> blockBreakProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Block Breaking")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> withersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Withers")
+            .value(true)
+            .build();
+    public final Property<Boolean> fallingBlocksProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Falling Blocks")
+            .value(true)
+            .build();
+    public final Property<Boolean> signsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Signs")
+            .value(true)
+            .build();
+    public final Property<Boolean> chestsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Chests")
+            .value(true)
+            .build();
+    public final Property<Boolean> endchestsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("End Chests")
+            .value(true)
+            .build();
+    public final Property<Boolean> enchantbooksProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("EnchantTable Books")
+            .value(true)
+            .build();
+    public final Property<Boolean> bannersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Banners")
+            .value(true)
+            .build();
+    public final Property<Boolean> hoppersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hoppers")
+            .value(true)
+            .build();
+    public final Property<Boolean> campfiresProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Campfires")
+            .value(true)
+            .build();
 
     public NoRender() {
         super(Category.VISUAL, "Don't render specific entities/blocks to improve fps");
@@ -60,47 +97,47 @@ public class NoRender extends Feature {
 
     @EventPointer
     private final EventListener<EventRenderEntity> eventRenderEntityEventListener = new EventListener<>(event -> {
-        if (event.getEntity() instanceof ItemEntity && item)
+        if (event.getEntity() instanceof ItemEntity && itemProperty.value())
             event.cancel();
-        if (event.getEntity() instanceof WitherEntity && withers)
+        if (event.getEntity() instanceof WitherEntity && withersProperty.value())
             event.cancel();
-        if (event.getEntity() instanceof FallingBlockEntity && fallingBlocks)
+        if (event.getEntity() instanceof FallingBlockEntity && fallingBlocksProperty.value())
             event.cancel();
     });
 
 
     @EventPointer
     private final EventListener<EventRenderBlockEntity> eventRenderBlockEntityEventListener = new EventListener<>(event -> {
-        if (event.blockEntity instanceof SignBlockEntity && signs)
+        if (event.blockEntity instanceof SignBlockEntity && signsProperty.value())
             event.cancel();
-        if (event.blockEntity instanceof ChestBlockEntity && chests)
+        if (event.blockEntity instanceof ChestBlockEntity && chestsProperty.value())
             event.cancel();
-        if (event.blockEntity instanceof EnderChestBlockEntity && endchests)
+        if (event.blockEntity instanceof EnderChestBlockEntity && endchestsProperty.value())
             event.cancel();
-        if (event.blockEntity instanceof EnchantingTableBlockEntity && enchantbooks)
+        if (event.blockEntity instanceof EnchantingTableBlockEntity && enchantbooksProperty.value())
             event.cancel();
-        if (event.blockEntity instanceof BannerBlockEntity && banners)
+        if (event.blockEntity instanceof BannerBlockEntity && bannersProperty.value())
             event.cancel();
-        if (event.blockEntity instanceof HopperBlockEntity && hoppers)
+        if (event.blockEntity instanceof HopperBlockEntity && hoppersProperty.value())
             event.cancel();
-        if (event.blockEntity instanceof CampfireBlockEntity && campfires)
+        if (event.blockEntity instanceof CampfireBlockEntity && campfiresProperty.value())
             event.cancel();
     });
 
     @EventPointer
     private final EventListener<EventTickParticle> eventTickParticleEventListener = new EventListener<>(event -> {
-        if (!particles)
+        if (!particlesProperty.value())
             return;
-        if (event.getParticle() instanceof ExplosionSmokeParticle || event.getParticle() instanceof FireSmokeParticle || event.getParticle() instanceof CampfireSmokeParticle && smoke) {
+        if (event.getParticle() instanceof ExplosionSmokeParticle || event.getParticle() instanceof FireSmokeParticle || event.getParticle() instanceof CampfireSmokeParticle && smokeProperty.value()) {
             event.cancel();
         }
-        if (event.getParticle() instanceof ExplosionLargeParticle || event.getParticle() instanceof ExplosionEmitterParticle && explosions) {
+        if (event.getParticle() instanceof ExplosionLargeParticle || event.getParticle() instanceof ExplosionEmitterParticle && explosionsProperty.value()) {
             event.cancel();
         }
-        if (event.getParticle() instanceof FireworksSparkParticle.FireworkParticle || event.getParticle() instanceof FireworksSparkParticle.FireworkParticle && fireworks) {
+        if (event.getParticle() instanceof FireworksSparkParticle.FireworkParticle || event.getParticle() instanceof FireworksSparkParticle.FireworkParticle && fireworksProperty.value()) {
             event.cancel();
         }
-        if (event.getParticle() instanceof BlockDustParticle && blockBreak) {
+        if (event.getParticle() instanceof BlockDustParticle && blockBreakProperty.value()) {
             event.cancel();
         }
     });
