@@ -87,13 +87,13 @@ public class ESP extends Feature {
             .build();
     public final Property<Color> passiveColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Passive Color")
-            .value(Color.ORANGE)
+            .value(Color.GREEN)
             .parent(passiveProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Color> petColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Pets Color")
-            .value(Color.ORANGE)
+            .value(Color.BLUE)
             .parent(passiveColorProperty)
             .build();
     public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
