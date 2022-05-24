@@ -26,7 +26,6 @@ public class AltFile extends ConfigFile {
     @Override
     public void write() {
         Map<String, Object> yamlMap = new HashMap<>();
-
         MinecraftAccountManager.INSTANCE.getAccounts().forEach(minecraftAccount -> {
             Map<String, Object> accountMap = new HashMap<>();
             accountMap.put("email", minecraftAccount.getEmail());

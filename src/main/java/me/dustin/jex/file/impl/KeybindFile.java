@@ -9,18 +9,6 @@ import java.util.Map;
 
 @ConfigFile.CFG(fileName = "Keybinds.yml", folder = "config")
 public class KeybindFile extends ConfigFile {
-    @Override
-    public void read() {
-        if (!getFile().exists()) return;
-        Keybind.getKeybinds().clear();
-        Map<String, Object> binds = YamlHelper.INSTANCE.readFile(getFile());
-        binds.forEach((command, map) -> {
-            Map<String, Object> bind = (Map<String, Object>)map;
-            int key = (int) bind.get("key");
-            boolean isJexCommand = (boolean) bind.get("isJexCommand");
-            Keybind.add(key, command, isJexCommand);
-        });
-    }
 
     @Override
     public void write() {
@@ -32,5 +20,20 @@ public class KeybindFile extends ConfigFile {
             yamlMap.put(keybind.command(), bindMap);
         });
         YamlHelper.INSTANCE.writeFile(yamlMap, getFile());
+    }
+
+    @Override
+    public void read() {
+        if (!getFile().exists()) return;
+        Keybind.getKeybinds().clear();
+        Map<String, Object> binds = YamlHelper.INSTANCE.readFile(getFile());
+        if (binds == null || binds.isEmpty())
+            return;
+        binds.forEach((command, map) -> {
+            Map<String, Object> bind = (Map<String, Object>)map;
+            int key = (int) bind.get("key");
+            boolean isJexCommand = (boolean) bind.get("isJexCommand");
+            Keybind.add(key, command, isJexCommand);
+        });
     }
 }
