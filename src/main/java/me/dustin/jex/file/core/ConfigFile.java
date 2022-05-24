@@ -1,5 +1,6 @@
 package me.dustin.jex.file.core;
 
+import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 
 import java.io.File;
@@ -19,6 +20,8 @@ public abstract class ConfigFile {
             parentFolder.mkdirs();
         this.file = new File(parentFolder, fileName);
         this.bootRead = this.getClass().getAnnotation(CFG.class).bootRead();
+        if (!file.exists())
+            FileHelper.INSTANCE.createFile(parentFolder, fileName);
     }
 
     public abstract void read();
