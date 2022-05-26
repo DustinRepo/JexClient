@@ -130,8 +130,6 @@ public enum JexClient {
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
         if (event.getKey() == GLFW.GLFW_KEY_INSERT)
             Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
-        if (event.getKey() == GLFW.GLFW_KEY_P)
-            Wrapper.INSTANCE.getMinecraft().setScreen(new JexKeybindListScreen(Wrapper.INSTANCE.getMinecraft().currentScreen));
         Keybind.get(event.getKey()).forEach(Keybind::execute);
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_GAME));
 
