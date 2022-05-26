@@ -18,6 +18,7 @@ public class AutoDisconnect extends Feature {
 
     public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
             .name("Mode")
+            .description("The mode used to disconnect you.")
             .value(Mode.DISCONNECT)
             .build();
     public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())

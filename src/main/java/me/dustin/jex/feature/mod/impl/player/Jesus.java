@@ -32,6 +32,7 @@ public class Jesus extends Feature {
             .build();
     public final Property<Boolean> allowJumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Jump")
+            .description("Allow jumping while on the water.")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.DOLPHIN)

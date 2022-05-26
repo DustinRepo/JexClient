@@ -40,6 +40,7 @@ public class AnchorAura extends Feature {
             .build();
     public final Property<AttackMode> attackModeProperty = new Property.PropertyBuilder<AttackMode>(this.getClass())
             .name("Explode")
+            .description("The targeting mode for anchors.")
             .value(AttackMode.ANY)
             .build();
     public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())

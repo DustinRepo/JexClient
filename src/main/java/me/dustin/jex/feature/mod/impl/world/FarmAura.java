@@ -28,6 +28,7 @@ public class FarmAura extends Feature {
 
     public final Property<Boolean> checkAgeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Check Age")
+            .description("Check to make sure the crops are fully aged.")
             .value(true)
             .build();
     public final Property<Long> breakDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())

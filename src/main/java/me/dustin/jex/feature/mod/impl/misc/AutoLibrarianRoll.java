@@ -52,6 +52,7 @@ public class AutoLibrarianRoll extends Feature {
 
     public final Property<PriceMode> priceModeProperty = new Property.PropertyBuilder<PriceMode>(this.getClass())
             .name("Price Mode")
+            .description("The type of pricing to consider.")
             .value(PriceMode.NORMAL)
             .build();
     public final Property<Integer> priceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -62,6 +63,7 @@ public class AutoLibrarianRoll extends Feature {
             .build();
     public final Property<Boolean> autoTradeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Auto Trade")
+            .description("Whether or not to automatically trade when it is found.")
             .value(true)
             .build();
 

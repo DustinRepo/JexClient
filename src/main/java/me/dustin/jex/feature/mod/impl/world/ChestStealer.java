@@ -26,6 +26,7 @@ public class ChestStealer extends Feature {
             .build();
     public final Property<Boolean> dumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Dump")
+            .description("Throw the items on the ground.")
             .value(false)
             .build();
 

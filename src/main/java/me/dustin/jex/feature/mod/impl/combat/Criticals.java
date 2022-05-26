@@ -16,10 +16,12 @@ public class Criticals extends Feature {
 
     public final Property<Boolean> livingOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Living Only")
+            .description("Only use Criticals on living entities.")
             .value(true)
             .build();
     public final Property<Boolean> extraParticlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Extra Particles")
+            .description("Whether or not to add extra (fake) critical particles.")
             .value(true)
             .build();
     public final Property<Integer> amountProperty = new Property.PropertyBuilder<Integer>(this.getClass())

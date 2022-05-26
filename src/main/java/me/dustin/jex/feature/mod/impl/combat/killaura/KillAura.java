@@ -150,10 +150,12 @@ public class KillAura extends Feature {
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
+            .description("Whether or not to rotate your head on the server.")
             .value(true)
             .build();
     public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Lockview")
+            .description("Sets the rotations client-side.")
             .value(false)
             .parent(rotateProperty)
             .depends(parent -> (boolean) parent.value())
@@ -193,20 +195,24 @@ public class KillAura extends Feature {
             .build();
     public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Check Armor")
+            .description("Check if you're wearing the same color armor for teams.")
             .value(true)
             .parent(teamCheckProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> nametaggedProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Nametagged")
+            .description("Whether or not to attack nametagged entities.")
             .value(true)
             .build();
     public final Property<Boolean> invisiblesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Invisibles")
+            .description("Whether or not to attack invisible entities.")
             .value(true)
             .build();
     public final Property<Boolean> ignoreWallsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Ignore Walls")
+            .description("Whether or not to attack entities through wall.")
             .value(true)
             .build();
     public final Property<Boolean> showTargetProperty = new Property.PropertyBuilder<Boolean>(this.getClass())

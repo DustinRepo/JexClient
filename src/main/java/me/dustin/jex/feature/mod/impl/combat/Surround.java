@@ -38,6 +38,7 @@ public class Surround extends Feature {
 			.build();
 	public Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Rotate")
+			.description("Whether or not to rotate your head on the server.")
 			.value(true)
 			.build();
 	public Property<Color> placeColorProperty = new Property.PropertyBuilder<Color>(this.getClass())

@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.property.Property;
+import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
@@ -21,6 +22,7 @@ public class Derp extends Feature {
             .build();
     public final Property<Boolean> normalizeAnglesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Normalize Angles")
+            .description("Keeps your angles vanilla.")
             .value(true)
             .build();
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -29,6 +31,7 @@ public class Derp extends Feature {
             .build();
     public final Property<Boolean> showSwingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Show Swing")
+            .description("Show your arm swinging client-side.")
             .value(true)
             .parent(swingProperty)
             .depends(parent -> (boolean) parent.value())
@@ -70,6 +73,11 @@ public class Derp extends Feature {
                 if (pitch > 90)
                     pitch = -90;
             }
+        }
+        if (normalizeAnglesProperty.value()) {
+            RotationVector rotation = event.getRotation();
+            rotation.normalize();
+            event.setRotation(rotation);
         }
         if (swingProperty.value()) {
             Hand hand = random.nextBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;

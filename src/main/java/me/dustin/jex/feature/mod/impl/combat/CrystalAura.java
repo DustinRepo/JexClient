@@ -38,6 +38,7 @@ public class CrystalAura extends Feature {
 			.build();
 	public final Property<AttackMode> attackModeProperty = new Property.PropertyBuilder<AttackMode>(this.getClass())
 			.name("Explode")
+			.description("The targeting mode for crystals.")
 			.value(AttackMode.ANY)
 			.build();
 	public final Property<Float> attackDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())

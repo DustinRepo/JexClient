@@ -33,6 +33,7 @@ public class AutoFish extends Feature {
 
     public final Property<Boolean> soundProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Sound")
+            .description("Whether or not to use sound to determine when to reel the rod in.")
             .value(true)
             .build();
     public final Property<Boolean> distanceCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())

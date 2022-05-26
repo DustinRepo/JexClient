@@ -27,6 +27,7 @@ public class AirPlace extends Feature {
 
 	public final Property<Boolean> liquidsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Liquids")
+			.description("Allow placing inside of liquids.")
 			.value(true)
 			.build();
 	public final Property<Float> reachProperty = new Property.PropertyBuilder<Float>(this.getClass())

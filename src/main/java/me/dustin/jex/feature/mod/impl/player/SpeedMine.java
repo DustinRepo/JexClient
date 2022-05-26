@@ -32,6 +32,7 @@ public class SpeedMine extends Feature {
             .build();
     public Property<Float> breakProgressProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Break Progress")
+            .description("How far into breaking a block before automatically finishing.")
             .value(0.65f)
             .max(0.95f)
             .inc(0.05f)

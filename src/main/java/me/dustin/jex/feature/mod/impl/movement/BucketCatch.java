@@ -27,6 +27,7 @@ public class BucketCatch extends Feature {
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
+            .description("Whether or not to rotate your head on the server.")
             .value(false)
             .build();
 

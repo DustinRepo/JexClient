@@ -30,6 +30,7 @@ public class AutoTrap extends Feature {
 
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
+            .description("Whether or not to rotate your head for the server when placing blocks.")
             .value(true)
             .build();
     public final Property<Float> targetDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())

@@ -16,6 +16,7 @@ public class BowBomb extends Feature {
 
     public final Property<Integer> amountProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Amount")
+            .description("The amount of \"hops\" to make before shooting the arrow")
             .value(100)
             .max(1000)
             .inc(10)

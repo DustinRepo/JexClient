@@ -51,6 +51,7 @@ public class Nametag extends Feature {
 
     public final Property<Boolean> customFontProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Custom Font")
+            .description("Use TTF font on the nametags.")
             .value(false)
             .build();
     public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())

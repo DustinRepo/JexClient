@@ -38,10 +38,12 @@ public class ToolTips extends Feature {
 
     public final Property<Boolean> repairCostProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Repair Cost")
+            .description("Show the repair cost of items in the tooltip.")
             .value(true)
             .build();
     public final Property<Boolean> shulkerToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("ShulkerToolTip")
+            .description("Show the contents of a shulker above the tooltip")
             .value(true)
             .build();
     public final Property<Integer> inspectKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -54,22 +56,27 @@ public class ToolTips extends Feature {
             .build();
     public final Property<Boolean> mapToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("MapToolTip")
+            .description("Display the map texture above the tooltip.")
             .value(true)
             .build();
     public final Property<Boolean> stewToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("StewToolTip")
+            .description("Display the Stew's potion effect in the tooltip.")
             .value(true)
             .build();
     public final Property<Boolean> hiveToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("HiveToolTip")
+            .description("Show hive data in the tooltip.")
             .value(true)
             .build();
     public final Property<Boolean> nbtToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NBTToolTip")
+            .description("Show NBT data in the tooltip.")
             .value(true)
             .build();
     public final Property<Integer> nbtKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Show NBT Key")
+            .description("The key to press to display the NBT data.")
             .value(GLFW.GLFW_KEY_LEFT_SHIFT)
             .isKey()
             .parent(nbtToolTipProperty)

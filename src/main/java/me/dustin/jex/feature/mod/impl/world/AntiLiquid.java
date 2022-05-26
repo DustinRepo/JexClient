@@ -44,6 +44,7 @@ public class AntiLiquid extends Feature {
 
     public final Property<PlaceMode> placeModeProperty = new Property.PropertyBuilder<PlaceMode>(this.getClass())
             .name("Place Mode")
+            .description("Timing to place the blocks.")
             .value(PlaceMode.POST)
             .build();
     public final Property<Boolean> sourceOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -62,6 +63,7 @@ public class AntiLiquid extends Feature {
             .build();
     public final Property<Boolean> illegalPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Allow Illegal Place")
+            .description("Allow placements without having a side of a block to use.")
             .value(true)
             .build();
 

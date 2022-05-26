@@ -57,6 +57,7 @@ public class Roaster extends Feature {
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
+            .description("Whether or not to rotate your head on the server.")
             .value(true)
             .build();
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())

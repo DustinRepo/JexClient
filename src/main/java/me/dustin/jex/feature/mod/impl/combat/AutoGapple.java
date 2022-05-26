@@ -56,6 +56,7 @@ public class AutoGapple extends Feature {
             .build();
     public final Property<Boolean> putBackProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Put Back")
+            .description("Whether or not to put the gapples back in the slot they came from.")
             .value(true)
             .parent(takeFromInvProperty)
             .depends(parent -> (boolean) parent.value())

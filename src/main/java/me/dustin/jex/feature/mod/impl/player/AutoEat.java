@@ -42,6 +42,7 @@ public class AutoEat extends Feature {
             .build();
     public final Property<Boolean> eatToRegenProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Eat To Regen")
+            .description("Eat when your food is too low to regen if you don't have full health.")
             .value(false)
             .build();
 

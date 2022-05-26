@@ -20,6 +20,7 @@ public class AutoWeapon extends Feature {
 
     public final Property<Boolean> livingOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Living Only")
+            .description("Only pull your weapon out for living entities.")
             .value(true)
             .build();
     public final Property<AttackMode> mode = new Property.PropertyBuilder<AttackMode>(this.getClass())

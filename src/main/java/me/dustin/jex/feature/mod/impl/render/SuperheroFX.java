@@ -25,6 +25,7 @@ public class SuperheroFX extends Feature{
 
     public final Property<Boolean> visibleOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Visible Only")
+            .description("Only show particles when they would be visible.")
             .value(true)
             .build();
     public final Property<Long> maxAgeProperty = new Property.PropertyBuilder<Long>(this.getClass())

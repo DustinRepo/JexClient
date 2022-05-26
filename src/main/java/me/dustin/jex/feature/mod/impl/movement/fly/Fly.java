@@ -42,10 +42,12 @@ public class Fly extends Feature {
             .build();
     public final Property<Boolean> walkAnimationProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Walk Animation")
+            .description("Show the hand-moving walk animation while flying.")
             .value(true)
             .build();
     public final Property<Boolean> flyCheckBypassProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Fly Check Bypass")
+            .description("Attempt to bypass the server's fly check.")
             .value(true)
             .build();
     public final Property<Boolean> glideProperty = new Property.PropertyBuilder<Boolean>(this.getClass())

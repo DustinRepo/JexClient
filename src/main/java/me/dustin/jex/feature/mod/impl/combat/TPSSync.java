@@ -12,6 +12,7 @@ public class TPSSync extends Feature {
 
     public Property<Integer> sampleSizeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Sample Size")
+            .description("The amount of ticks to store for the average.")
             .value(15)
             .min(2)
             .max(100)

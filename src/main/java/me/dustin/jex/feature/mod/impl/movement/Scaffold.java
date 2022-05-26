@@ -40,6 +40,7 @@ public class Scaffold extends Feature {
             .build();
     public final Property<Boolean> sneakProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Sneak on Place")
+            .description("Sneak when you place a block.")
             .value(false)
             .build();
     public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())

@@ -18,6 +18,7 @@ public class FastLadder extends Feature {
 
     public final Property<Boolean> skipLadderProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("SkipLadder")
+            .description("Allow spaces between ladders.")
             .value(false)
             .build();
 

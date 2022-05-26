@@ -31,6 +31,7 @@ public class SignReader extends Feature {
             .build();
     public final Property<Boolean> hoverOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Hover Only")
+            .description("Only show sign text when hovering over the sign.")
             .value(true)
             .build();
     public final Property<Boolean> backgroundsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())

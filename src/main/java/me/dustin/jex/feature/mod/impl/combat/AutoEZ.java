@@ -29,6 +29,7 @@ public class AutoEZ extends Feature {
 
     public final Property<Long> killDetectDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Max Kill Detect Delay(MS)")
+            .description("The amount of time between attacking someone and them dying to consider it a kill.")
             .value(200L)
             .min(100)
             .max(500)

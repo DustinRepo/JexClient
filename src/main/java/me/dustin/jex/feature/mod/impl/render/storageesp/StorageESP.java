@@ -39,6 +39,7 @@ public class StorageESP extends Feature {
             .build();
     public final Property<Boolean> fadeBoxesWhenCloseProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Fade When Close")
+            .description("Fade the boxes to make the storage block easier to see.")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.SHADER)

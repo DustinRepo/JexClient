@@ -28,6 +28,7 @@ public class AntiFireball extends Feature {
             .build();
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Swing")
+            .description("Whether or not to swing your arm.")
             .value(true)
             .build();
 

@@ -15,6 +15,7 @@ public class DepthStrider extends Feature {
 
     public final Property<Integer> levelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Level")
+            .description("The level of Depth-Strider enchantment to emulate.")
             .value(3)
             .min(1)
             .max(3)

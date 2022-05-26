@@ -35,6 +35,7 @@ public class WebSpam extends Feature {
             .build();
     public final Property<Boolean> friendsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Friends")
+            .description("Whether or not to web your friends.")
             .value(false)
             .build();
 

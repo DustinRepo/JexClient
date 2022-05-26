@@ -24,6 +24,7 @@ public class Blink extends Feature {
 
 	public final Property<Boolean> bufferPacketsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Buffer Packets")
+			.description("Whether or not to send the queued packets over a few ticks.")
 			.value(true)
 			.build();
 	public final Property<Integer> amountPTProperty = new Property.PropertyBuilder<Integer>(this.getClass())

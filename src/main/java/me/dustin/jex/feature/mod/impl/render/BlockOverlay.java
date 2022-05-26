@@ -28,6 +28,7 @@ public class BlockOverlay extends Feature {
             .build();
     public final Property<Boolean> progressOverlayProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Progress Overlay")
+            .description("Show block breaking progress.")
             .value(true)
             .build();
     public final Property<Color> overlayColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
@@ -38,6 +39,7 @@ public class BlockOverlay extends Feature {
             .build();
     public final Property<Boolean> progressColorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Progress Based Color")
+            .description("Sets the color from green to red based on break progress")
             .value(true)
             .parent(overlayColorProperty)
             .build();

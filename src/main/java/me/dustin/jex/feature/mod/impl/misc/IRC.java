@@ -29,6 +29,7 @@ public class IRC extends Feature {
 
     public final Property<String> sendPrefixProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("Send Prefix")
+            .description("The prefix used to activate the IRC chat mode.")
             .value("@")
             .max(2)
             .build();

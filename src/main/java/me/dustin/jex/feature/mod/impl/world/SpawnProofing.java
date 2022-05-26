@@ -46,6 +46,7 @@ public class SpawnProofing extends Feature {
             .build();
     public final Property<Boolean> useGlassProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Use Glass")
+            .description("Allow glass to be used for spawn proofing.")
             .value(true)
             .build();
 

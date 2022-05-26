@@ -33,6 +33,7 @@ public class Freecam extends Feature {
 
     public final Property<Boolean> stealthProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Stealth")
+            .description("Cancels all packets.")
             .value(true)
             .build();
     public final Property<Boolean> resetPosProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
