@@ -18,6 +18,7 @@ import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.feature.mod.impl.render.CustomFont;
 import me.dustin.jex.feature.plugin.JexPlugin;
 import me.dustin.jex.gui.changelog.changelog.JexChangelog;
+import me.dustin.jex.gui.keybind.JexKeybindListScreen;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
@@ -43,9 +44,11 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.entity.EntityType;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -59,7 +62,7 @@ public enum JexClient {
     private boolean soundOnLaunch = true;
     private final Logger logger = LogManager.getFormatterLogger("Jex");
     private JexVersion version;
-    private final String baseUrl = "http://129.213.167.11/";
+    private final String baseUrl = "http://jexclient.tk/";
 
     private static boolean loadedOnce = false;
 
@@ -78,15 +81,7 @@ public enum JexClient {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             getLogger().info("Creating mods.json for website.");
             createJson();
-
-            //for the entity id lists made for ChatBot
-            /*int i = 0;
-            ArrayList<String> l = new ArrayList<>();
-            for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-                l.add(i + "=" + ((TranslatableText)entityType.getName()).getKey());
-                i++;
-            }
-            FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_entity_ids.txt"), l);*/
+            createEntityIdList();
             createVersionsJson();
         }
 
@@ -135,6 +130,8 @@ public enum JexClient {
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
         if (event.getKey() == GLFW.GLFW_KEY_INSERT)
             Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
+        if (event.getKey() == GLFW.GLFW_KEY_P)
+            Wrapper.INSTANCE.getMinecraft().setScreen(new JexKeybindListScreen(Wrapper.INSTANCE.getMinecraft().currentScreen));
         Keybind.get(event.getKey()).forEach(Keybind::execute);
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_GAME));
 
@@ -213,6 +210,17 @@ public enum JexClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void createEntityIdList() {
+        //for the entity id lists made for ChatBot
+        int i = 0;
+        ArrayList<String> l = new ArrayList<>();
+        for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
+            l.add(i + "=" + entityType.getTranslationKey());
+            i++;
+        }
+        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_entity_ids.txt"), l);
     }
 
     public void createVersionsJson() {

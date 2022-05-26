@@ -271,6 +271,50 @@ public enum Render2DHelper {
         RenderSystem.disableBlend();
     }
 
+    //credits to 0x150 for this
+    public void fillRound(MatrixStack matrixStack, float x, float y, float x2, float y2, int color, double rad, double samples) {
+        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+        float j;
+        if (x < x2) {
+            j = x;
+            x = x2;
+            x2 = j;
+        }
+        if (y < y2) {
+            j = y;
+            y = y2;
+            y2 = j;
+        }
+        float f = (float)(color >> 24 & 255) / 255.0F;
+        float g = (float)(color >> 16 & 255) / 255.0F;
+        float h = (float)(color >> 8 & 255) / 255.0F;
+        float k = (float)(color & 255) / 255.0F;
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferBuilder.begin(DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
+        double toX1 = x2 - rad;
+        double toY1 = y2 - rad;
+        double fromX1 = x + rad;
+        double fromY1 = y + rad;
+        double[][] map = new double[][]{new double[]{toX1, toY1}, new double[]{toX1, fromY1}, new double[]{fromX1, fromY1}, new double[]{fromX1, toY1}};
+        for (int i = 0; i < 4; i++) {
+            double[] current = map[i];
+            for (double r = i * 90d; r < (360 / 4d + i * 90d); r += (90 / samples)) {
+                float rad1 = (float) Math.toRadians(r);
+                float sin = (float) (Math.sin(rad1) * rad);
+                float cos = (float) (Math.cos(rad1) * rad);
+                bufferBuilder.vertex(matrix, (float) current[0] + sin, (float) current[1] + cos, 0.0F).color(f, g, h, k).next();
+            }
+        }
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
+    }
+
     public void outlineAndFill(MatrixStack poseStack, float x, float y, float x2, float y2, int bcolor, int icolor) {
         Matrix4f matrix = poseStack.peek().getPositionMatrix();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -537,18 +581,6 @@ public enum Render2DHelper {
         buffer.vertex((double) (x + width), (double) (y + height), 0.0D).color(red, green, blue, alpha).next();
         buffer.vertex((double) (x + width), (double) (y + 0), 0.0D).color(red, green, blue, alpha).next();
         Tessellator.getInstance().draw();
-    }
-
-    public int getPercentColor(float percent) {
-        if (percent <= 15)
-            return new Color(255, 0, 0).getRGB();
-        else if (percent <= 25)
-            return new Color(255, 75, 92).getRGB();
-        else if (percent <= 50)
-            return new Color(255, 123, 17).getRGB();
-        else if (percent <= 75)
-            return new Color(255, 234, 0).getRGB();
-        return new Color(0, 255, 0).getRGB();
     }
 
     public Formatting getPercentFormatting(float percent) {

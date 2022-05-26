@@ -22,6 +22,7 @@ public class HoleESP extends Feature {
 
     public final Property<Boolean> fadeBoxProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Fade Box")
+            .description("Make the box fade from bottom to top.")
             .value(true)
             .build();
     public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())

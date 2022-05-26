@@ -10,6 +10,7 @@ import me.dustin.jex.gui.changelog.ChangelogScreen;
 import me.dustin.jex.gui.jex.selection.SearchSelectScreen;
 import me.dustin.jex.gui.jex.selection.XraySelectScreen;
 import me.dustin.jex.gui.jex.selection.AutoDropSelectScreen;
+import me.dustin.jex.gui.keybind.JexKeybindListScreen;
 import me.dustin.jex.gui.plugin.JexPluginScreen;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -32,6 +33,7 @@ public class JexOptionsScreen extends Screen {
     private TextFieldWidget prefixField;
     private ButtonWidget setPrefixButton;
     private ButtonWidget clickGuiButton;
+    private ButtonWidget editKeybindsButton;
     private ButtonWidget downloadInstallerButton;
     private ButtonWidget xrayButton;
     private ButtonWidget searchButton;
@@ -73,15 +75,7 @@ public class JexOptionsScreen extends Screen {
         });
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 
-
-        //middle
-        waypointScreenButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, Text.literal("Waypoint Screen"), button -> {
-            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
-        });
-        clickGuiButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, Text.literal("Open ClickGUI"), button -> {
-            Feature.get(Gui.class).setState(true);
-        });
-        reloadAddonsButton = new ButtonWidget(centerX - 75, topY + 75, 150, 20, Text.literal("Reload Capes and Hats"), button -> {
+        reloadAddonsButton = new ButtonWidget(centerX - 230, topY + 100, 150, 20, Text.literal("Reload Capes and Hats"), button -> {
             Addon.clearAddons();
             if (Wrapper.INSTANCE.getWorld() != null) {
                 Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
@@ -91,6 +85,17 @@ public class JexOptionsScreen extends Screen {
                 });
             }
             stopWatch.reset();
+        });
+
+        //middle
+        waypointScreenButton = new ButtonWidget(centerX - 75, topY + 25, 150, 20, Text.literal("Waypoint Screen"), button -> {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new WaypointScreen());
+        });
+        editKeybindsButton = new ButtonWidget(centerX - 75, topY + 50, 150, 20, Text.literal("Open ClickGUI"), button -> {
+            Feature.get(Gui.class).setState(true);
+        });
+        clickGuiButton = new ButtonWidget(centerX - 75, topY + 75, 150, 20, Text.literal("Edit Keybinds"), button -> {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new JexKeybindListScreen(this));
         });
         pluginManagerButton = new ButtonWidget(centerX - 75, topY + 100, 150, 20, Text.literal("Plugin Manager"), button -> Wrapper.INSTANCE.getMinecraft().setScreen(new JexPluginScreen(this)));
 
@@ -107,6 +112,7 @@ public class JexOptionsScreen extends Screen {
 
         this.addDrawableChild(setPrefixButton);
         this.addDrawableChild(clickGuiButton);
+        this.addDrawableChild(editKeybindsButton);
         this.addDrawableChild(downloadInstallerButton);
         this.addDrawableChild(xrayButton);
         this.addDrawableChild(searchButton);

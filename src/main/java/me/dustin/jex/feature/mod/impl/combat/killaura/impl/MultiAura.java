@@ -70,7 +70,6 @@ public class MultiAura extends FeatureExtension {
                 doAttack();
         }
         if (event1 instanceof EventRender3D) {
-            getTargets();
             for (LivingEntity target : targets)
                 if (target != null && KillAura.INSTANCE.showTargetProperty.value()) {
                     Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getPoseStack(), target, ((EventRender3D) event1).getPartialTicks(), KillAura.INSTANCE.targetColorProperty.value().getRGB());

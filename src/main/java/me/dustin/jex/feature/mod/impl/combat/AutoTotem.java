@@ -39,6 +39,7 @@ public class AutoTotem extends Feature {
             .build();
     public final Property<Boolean> openInventoryProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Open Inventory")
+            .description("Tells the server you opened your inventory before moving the totem.")
             .value(false)
             .build();
 

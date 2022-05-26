@@ -8,7 +8,9 @@ import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.world.EventClickBlock;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.property.Property;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.AirBlock;
@@ -54,7 +56,7 @@ public class BlockOverlay extends Feature {
         if (progressOverlayProperty.value() && Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() > 0 && Wrapper.INSTANCE.getClientPlayerInteractionManager().isBreakingBlock()) {
             float breakProgress = Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() / 2;
             Box box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
-            Render3DHelper.INSTANCE.drawBoxInside(event.getPoseStack(), box, progressColorProperty.value() ? getColor(1 - (breakProgress * 2)).getRGB() : overlayColorProperty.value().getRGB());
+            Render3DHelper.INSTANCE.drawBoxInside(event.getPoseStack(), box, progressColorProperty.value() ? ColorHelper.INSTANCE.redGreenShift(1 - (breakProgress * 2)) : overlayColorProperty.value().getRGB());
         }
     });
 
@@ -69,11 +71,4 @@ public class BlockOverlay extends Feature {
         this.clickedBlock = new BlockHitResult(Vec3d.of(event.getBlockPos()), event.getFace(), event.getBlockPos(), false);
     }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
-    public Color getColor(double power) {
-        double H = power * 0.35; // Hue (note 0.4 = Green, see huge chart below)
-        double S = 0.9; // Saturation
-        double B = 0.9; // Brightness
-
-        return Color.getHSBColor((float) H, (float) S, (float) B);
-    }
 }

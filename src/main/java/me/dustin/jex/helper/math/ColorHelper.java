@@ -6,6 +6,7 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
+import net.minecraft.util.math.MathHelper;
 
 import java.awt.*;
 
@@ -53,6 +54,11 @@ public enum ColorHelper {
         float green = (color >> 8 & 0xFF) / 255.0F;
         float blue = (color & 0xFF) / 255.0F;
         return new Color(red, green, blue, alpha);
+    }
+
+    public int redGreenShift(float value) {
+        value = MathHelper.clamp(value, 0, 1);
+        return new Color(1 - value, value, 0).getRGB();
     }
 
     public int getRainbowColor() {

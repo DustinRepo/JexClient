@@ -10,6 +10,7 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.render.esp.impl.OutlineBox;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.FriendHelper;
 import net.minecraft.entity.Entity;
@@ -35,6 +36,7 @@ public class ESP extends Feature {
             .build();
     public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Color on Distance")
+            .description("Change the color from green (far away) to red (close).")
             .value(false)
             .parent(playerProperty)
             .depends(parent -> (boolean) parent.value())
@@ -47,7 +49,7 @@ public class ESP extends Feature {
             .build();
     public final Property<Color> friendColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Friend Color")
-            .value(Color.RED)
+            .value(Color.BLUE)
             .parent(playerProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
@@ -184,7 +186,7 @@ public class ESP extends Feature {
             return friendColorProperty.value().getRGB();
         if (entity instanceof PlayerEntity) {
             if (colorOnDistanceProperty.value()) {
-                return getColor(entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64).getRGB();
+                return ColorHelper.INSTANCE.redGreenShift(entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64);
             }
             return playerColorProperty.value().getRGB();
         }
@@ -201,16 +203,6 @@ public class ESP extends Feature {
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralColorProperty.value().getRGB();
         return -1;
-    }
-
-    public Color getColor(double power) {
-        if (power > 1)
-            power = 1;
-        double H = power * 0.35; // Hue (note 0.35 = Green, see huge chart below)
-        double S = 0.9; // Saturation
-        double B = 0.9; // Brightness
-
-        return Color.getHSBColor((float) H, (float) S, (float) B);
     }
 
     public enum Mode {

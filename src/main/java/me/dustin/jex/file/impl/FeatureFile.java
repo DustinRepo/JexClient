@@ -29,10 +29,10 @@ public class FeatureFile extends ConfigFile {
             if (PropertyManager.INSTANCE.hasProperties(feature.getClass())) {
                 Map<String, Object> optionsMap = new HashMap<>();
                 for (Property<?> property : PropertyManager.INSTANCE.get(feature.getClass())) {
-                    if (property.value() instanceof Enum<?>) {
+                    if (property.getDefaultValue() instanceof Enum<?>) {
                         Property<Enum<?>> enumProperty = (Property<Enum<?>>) property;
                         optionsMap.put(property.getName(), enumProperty.value().name());
-                    } else if (property.value() instanceof Color color) {
+                    } else if (property.getDefaultValue() instanceof Color color) {
                         optionsMap.put(property.getName(), Integer.toHexString(color.getRGB()));
                     } else
                         optionsMap.put(property.getName(), property.value());
@@ -53,10 +53,10 @@ public class FeatureFile extends ConfigFile {
             if (PropertyManager.INSTANCE.hasProperties(feature.getClass())) {
                 Map<String, Object> optionsMap = new HashMap<>();
                 for (Property<?> property : PropertyManager.INSTANCE.get(feature.getClass())) {
-                    if (property.value() instanceof Enum<?>) {
+                    if (property.getDefaultValue() instanceof Enum<?>) {
                         Property<Enum<?>> enumProperty = (Property<Enum<?>>) property;
                         optionsMap.put(property.getName(), enumProperty.value().name());
-                    } else if (property.value() instanceof Color color) {
+                    } else if (property.getDefaultValue() instanceof Color color) {
                         optionsMap.put(property.getName(), Integer.toHexString(color.getRGB()));
                     } else
                      optionsMap.put(property.getName(), property.value());
@@ -93,15 +93,15 @@ public class FeatureFile extends ConfigFile {
                             return;
                         }
                         try {
-                            if (property.value() instanceof Enum<?>) {
+                            if (property.getDefaultValue() instanceof Enum<?>) {
                                 property.setEnumValue((String) o1);
-                            } else if (property.value() instanceof Color) {
+                            } else if (property.getDefaultValue() instanceof Color) {
                                 Property<Color> colorProperty = (Property<Color>) property;
                                 colorProperty.setValue(Render2DHelper.INSTANCE.hex2Rgb(String.valueOf(o1)));
-                            } else if (property.value() instanceof Float) {
+                            } else if (property.getDefaultValue() instanceof Float) {
                                 Property<Float> floatProperty = (Property<Float>) property;
                                 floatProperty.setValue((float) (double) o1);
-                            } else if (property.value() instanceof Long) {
+                            } else if (property.getDefaultValue() instanceof Long) {
                                 Property<Long> longProperty = (Property<Long>) property;
                                 longProperty.setValue((long)(int) o1);
                             } else

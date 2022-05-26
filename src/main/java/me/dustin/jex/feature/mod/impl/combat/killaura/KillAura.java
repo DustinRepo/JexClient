@@ -267,7 +267,7 @@ public class KillAura extends Feature {
                 touchedGround.remove(i);
             }
         }
-        setSuffix(targetModeProperty.value() + " : " + attackTimingProperty.value());
+        setSuffix(targetModeProperty.value(), attackTimingProperty.value());
         sendEvent(event);
     }, Priority.LAST);
 
@@ -308,14 +308,6 @@ public class KillAura extends Feature {
         }
         if (livingEntity.isSleeping())
             return false;
-        if (rangecheck) {
-            if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > reachProperty.value())
-                return false;
-            if (!(livingEntity.canSee(Wrapper.INSTANCE.getPlayer()))) {
-                if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > 3)
-                    return false;
-            }
-        }
         if (entity.age < ticksExistedProperty.value())
             return false;
         if (entity.hasCustomName() && !nametaggedProperty.value())
@@ -324,12 +316,20 @@ public class KillAura extends Feature {
             return false;
         if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
             return false;
-        if (!Wrapper.INSTANCE.getLocalPlayer().canSee(entity) && !ignoreWallsProperty.value())
+        boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
+        if (!canSee && !ignoreWallsProperty.value())
             return false;
         //TODO: fix this with 180/-180 having some issues
         /*if (PlayerHelper.INSTANCE.getDistanceFromMouse(entity) * 2 > KillAura.INSTANCE.fov) {
             return false;
         }*/
+        if (rangecheck) {
+            float distance = reachProperty.value();
+            if (!canSee)
+                distance = 3;
+            if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
+                return false;
+        }
         if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
                 return false;

@@ -3,6 +3,8 @@ package me.dustin.jex.feature.mod.core;
 import me.dustin.jex.feature.keybind.Keybind;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.events.EventManager;
+import me.dustin.jex.feature.property.Property;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 
@@ -12,16 +14,17 @@ public class Feature {
     private String displayName;
     private String description;
     private boolean state;
-    private boolean visible;
     private final Category category;
     private final boolean defaultState;
+
+    private final Property<Boolean> visibleProperty;
 
     public Feature(Category category, String description) {
         this("", category, description, false, true, 0);
     }
 
     public Feature(Category category, String description, int key) {
-        this("", category, description, false, true, 0);
+        this("", category, description, false, true, key);
     }
 
     public Feature(String name, Category category, String description) {
@@ -37,7 +40,11 @@ public class Feature {
         this.category = category;
         if (key != 0)
             Keybind.add(key, "t " + this.getName(), true);
-        this.visible = visible;
+        this.visibleProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+                .name("Is Visible")
+                .description("Whether or not this mod is visible on the HUD.")
+                .value(visible)
+                .build();
         this.defaultState = state;
     }
 
@@ -132,15 +139,19 @@ public class Feature {
     }
 
     public void setSuffix(Enum<?> suffix) {
-        setSuffix(suffix.name().substring(0, 1).toUpperCase() + suffix.name().substring(1).toLowerCase());
+        setSuffix(WordUtils.capitalize(suffix.name().toLowerCase().replace("_", " ")));
+    }
+
+    public void setSuffix(Enum<?> one, Enum<?> two) {
+        setSuffix(WordUtils.capitalize(one.name().toLowerCase().replace("_", " ")) + " : " + WordUtils.capitalize(two.name().toLowerCase().replace("_", " ")));
     }
 
     public boolean isVisible() {
-        return visible;
+        return visibleProperty.value();
     }
 
     public void setVisible(boolean visible) {
-        this.visible = visible;
+        this.visibleProperty.setValue(visible);
     }
 
     public Category getCategory() {

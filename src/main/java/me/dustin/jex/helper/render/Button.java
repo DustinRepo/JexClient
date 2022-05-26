@@ -159,6 +159,10 @@ public class Button {
         this.backgroundColor = color;
     }
 
+    public int getBackgroundColor() {
+        return backgroundColor;
+    }
+
     public void move(float x, float y) {
         this.setX(this.getX() + x);
         this.setY(this.getY() + y);

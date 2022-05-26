@@ -14,6 +14,7 @@ import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -484,8 +485,8 @@ public class Nametag extends Feature {
     }
 
     private int getHealthColor(LivingEntity player) {
-        float percent = (player.getHealth() / player.getMaxHealth()) * 100;
-        return Render2DHelper.INSTANCE.getPercentColor(percent);
+        float percent = (player.getHealth() / player.getMaxHealth());
+        return ColorHelper.INSTANCE.redGreenShift(percent);
     }
 
     private boolean isValid(Entity entity) {

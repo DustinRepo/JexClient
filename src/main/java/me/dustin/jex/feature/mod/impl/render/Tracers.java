@@ -93,20 +93,10 @@ public class Tracers extends Feature {
     private int getColor(Entity ent) {
         if (ent instanceof PlayerEntity playerEntity && colorOnDistanceProperty.value()) {
             if (!FriendHelper.INSTANCE.isFriend(playerEntity.getName().getString())) {
-                return getColor(ent.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64).getRGB();
+                return ColorHelper.INSTANCE.redGreenShift(ent.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64);
             }
         }
         return ESP.INSTANCE.getColor(ent);
-    }
-
-    public Color getColor(double power) {
-        if (power > 1)
-            power = 1;
-        double H = power * 0.35; // Hue (note 0.35 = Green, see huge chart below)
-        double S = 0.9; // Saturation
-        double B = 0.9; // Brightness
-
-        return Color.getHSBColor((float) H, (float) S, (float) B);
     }
 
     private boolean isValid(LivingEntity e) {

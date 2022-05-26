@@ -23,6 +23,8 @@ public enum PropertyManager {
     }
 
     public ArrayList<Property<?>> get(Class<?> clazz) {
+        if (!propertyMap.containsKey(clazz))
+            propertyMap.put(clazz, new ArrayList<>());
         return propertyMap.get(clazz);
     }
 

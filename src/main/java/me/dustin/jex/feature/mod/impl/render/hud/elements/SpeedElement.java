@@ -6,6 +6,7 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.apache.commons.lang3.text.WordUtils;
 
 public class SpeedElement extends HudElement {
     public SpeedElement(float x, float y, float minWidth, float minHeight) {
@@ -61,7 +62,7 @@ public class SpeedElement extends HudElement {
                 time *= 86400;
                 break;
         }
-        return String.format("%.2f %s/%s", (float) (Math.abs(length2D(move)) * time), getHud().distanceModeProperty.value(), getHud().timeModeProperty.value());
+        return String.format("%.2f %s/%s", (float) (Math.abs(length2D(move)) * time), WordUtils.capitalize(getHud().distanceModeProperty.value().name().toLowerCase().replace("_", " ")), WordUtils.capitalize(getHud().timeModeProperty.value().name().toLowerCase().replace("_", " ")));
     }
 
     public double length2D(Vec3d vec3d) {

@@ -34,6 +34,8 @@ public class Property<T> {
     }
 
     public void setValue(T value) {
+        if (this.value.getClass() != value.getClass())
+            throw new RuntimeException("Type Change Error! Property name: %s. Original type: %s. New type %s".formatted(this.getName(), this.value.getClass().getSimpleName(), value.getClass().getSimpleName()));
         this.value = value;
     }
 
@@ -69,6 +71,10 @@ public class Property<T> {
         if (dependsPredicate == null)
             return true;
         return dependsPredicate.test(this.parent);
+    }
+
+    public T getDefaultValue() {
+        return defaultValue;
     }
 
     public void incrementEnumValue() {
