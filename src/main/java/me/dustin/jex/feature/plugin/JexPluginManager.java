@@ -67,7 +67,7 @@ public enum JexPluginManager {
         //just to make sure there's not some weird order-dependant loads
         Collections.shuffle(getPlugins());
         LOGGER.info("Loaded Plugins: %d".formatted(getPlugins().size()));
-        getPlugins().forEach(jexPlugin -> LOGGER.info("%s v%s".formatted(jexPlugin.getInfo().getName(), jexPlugin.getInfo().getVersion())));
+        getPlugins().forEach(jexPlugin -> LOGGER.info("- %s v%s".formatted(jexPlugin.getInfo().getName(), jexPlugin.getInfo().getVersion())));
     }
 
     private String read(InputStream inputStream) throws IOException {
