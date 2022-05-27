@@ -3,17 +3,15 @@ package me.dustin.jex.event.misc;
 import me.dustin.events.core.Event;
 import net.minecraft.item.ItemStack;
 
-public class EventItemStackDecrement extends Event {
+public class EventItemStackSetCount extends Event {
     private final Mode mode;
     private final ItemStack itemStack;
-    private final int amount;
-    private final int stackCount;
+    private final int count;
 
-    public EventItemStackDecrement(Mode mode, ItemStack itemStack, int amount, int stackCount) {
+    public EventItemStackSetCount(Mode mode, ItemStack itemStack, int count) {
         this.mode = mode;
         this.itemStack = itemStack;
-        this.amount = amount;
-        this.stackCount = stackCount;
+        this.count = count;
     }
 
     public Mode getMode() {
@@ -24,12 +22,8 @@ public class EventItemStackDecrement extends Event {
         return itemStack;
     }
 
-    public int getAmount() {
-        return amount;
-    }
-
-    public int getStackCount() {
-        return stackCount;
+    public int getCount() {
+        return count;
     }
 
     public enum Mode {
