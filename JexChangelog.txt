@@ -1,3 +1,10 @@
+0.7.6
+Added new Jex Gui (1.19 onward)
+Added Keybind list and edit screens (1.19 onward)
+Added descriptions to options inside of mods
+Fixed HotbarRefill sometimes swapping armor into your hotbar instead of your original item
+Fixed some config files not being created properly
+
 0.7.5
 Fixed IRC throwing an error for messages that are too long
 Reworking value system (1.19 onward)
