@@ -16,7 +16,6 @@ import me.dustin.jex.feature.mod.impl.render.hud.elements.*;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.HudElementsFile;
-import me.dustin.jex.gui.navigator.Navigator;
 import me.dustin.jex.gui.tab.TabGui;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
