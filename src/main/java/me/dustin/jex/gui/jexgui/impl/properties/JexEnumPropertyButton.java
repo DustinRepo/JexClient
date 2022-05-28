@@ -8,10 +8,8 @@ import me.dustin.jex.gui.jexgui.impl.JexPropertyButton;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class JexEnumPropertyButton extends JexPropertyButton {
