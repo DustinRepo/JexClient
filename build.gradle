@@ -61,7 +61,7 @@ jar {
 
 remapJar {
 	input.set(shadowJar.archiveFile)
-	archiveName("JexClient-Snap.jar")
+	archiveName("JexClient.jar")
 }
 
 shadowJar {
