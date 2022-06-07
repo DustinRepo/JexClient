@@ -19,6 +19,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.checkerframework.checker.units.qual.K;
 import org.lwjgl.glfw.GLFW;
 
 public class JexEditKeybindScreen extends Screen {
@@ -42,13 +43,12 @@ public class JexEditKeybindScreen extends Screen {
             setKeyButton.setMessage(Text.translatable("jex.button.presskey"));
         }));
         addDrawableChild(saveButton = new ButtonWidget(width / 2 - 125, height - 50, 250, 20, Text.translatable("jex.button.save"), button -> {
-            if (keybind != null) {
+            if (keybind != null)
                 Keybind.getKeybinds().remove(keybind);
-                boolean isJexCommand = commandField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix());
-                Keybind.add(key, isJexCommand ? commandField.getText().substring(1) : commandField.getText(), isJexCommand);
-                Wrapper.INSTANCE.getMinecraft().setScreen(parent);
-                ConfigManager.INSTANCE.get(KeybindFile.class).write();
-            }
+            boolean isJexCommand = commandField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix());
+            Keybind.add(key, isJexCommand ? commandField.getText().substring(1) : commandField.getText(), isJexCommand);
+            Wrapper.INSTANCE.getMinecraft().setScreen(parent);
+            ConfigManager.INSTANCE.get(KeybindFile.class).write();
         }));
         addDrawableChild(new ButtonWidget(width / 2 - 125, height - 25, 250, 20, Text.translatable("jex.button.cancel"), button -> {
                 Wrapper.INSTANCE.getMinecraft().setScreen(parent);
