@@ -5,17 +5,22 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.load.impl.IPersistentProjectileEntity;
-import me.dustin.jex.load.impl.IProjectileEntity;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.load.impl.IProjectile;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -26,47 +31,58 @@ import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.ArrowItem;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.EnderPearlItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.SnowballItem;
+import net.minecraft.item.ThrowablePotionItem;
+import net.minecraft.item.TridentItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
-
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import java.awt.*;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Show a trajectory line for things like bows and snowballs")
 public class Trajectories extends Feature {
 
-    @Op(name = "Z-Clip")
-    public boolean disableDepth = true;
-    @Op(name = "Miss Color", isColor = true)
-    public int missColor = new Color(0, 255, 0).getRGB();
-    @Op(name = "Hit Color", isColor = true)
-    public int hitColor = new Color(255, 0, 0).getRGB();
-
-    private static float getSpeed(ItemStack stack) {
-        return stack.getItem() == Items.CROSSBOW && CrossbowItem.hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
-    }
-
-    public static boolean isCharged(ItemStack stack) {
-        NbtCompound compoundTag = stack.getNbt();
-        return compoundTag != null && compoundTag.getBoolean("Charged");
-    }
+    public final Property<Boolean> disableDepthProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Z-Clip")
+            .value(true)
+            .build();
+    public final Property<Color> missColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Miss Color")
+            .value(Color.GREEN)
+            .build();
+    public final Property<Color> hitColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Hit Color")
+            .value(Color.RED)
+            .build();
 
     private Entity hitEntity = null;
     private final ArrayList<Vec3d> positions = new ArrayList<>();
 
+    public Trajectories() {
+        super(Category.VISUAL, "Show a trajectory line for things like bows and snowballs");
+    }
+
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (!positions.isEmpty()) {
-            MatrixStack matrixStack = event.getMatrixStack();
+            MatrixStack matrixStack = event.getPoseStack();
             Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
             for (int i = 0; i < positions.size(); i++) {
                 if (i != positions.size() - 1) {
 
-                    int color = hitEntity == null ? missColor : hitColor;
-                    Color color1 = ColorHelper.INSTANCE.getColor(color);
+                    Color color = hitEntity == null ? missColorProperty.value() : hitColorProperty.value();
 
                     Vec3d vec = positions.get(i);
                     Vec3d vec1 = positions.get(i + 1);
@@ -78,22 +94,22 @@ public class Trajectories extends Feature {
                     double y1 = vec1.y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
                     double z1 = vec1.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
 
-                    Render3DHelper.INSTANCE.setup3DRender(disableDepth);
+                    Render3DHelper.INSTANCE.setup3DRender(disableDepthProperty.value());
                     BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
                     bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-                    bufferBuilder.vertex(matrix4f, (float) x, (float) y, (float) z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                    bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, (float) z1).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-                    bufferBuilder.end();
-                    BufferRenderer.draw(bufferBuilder);
+                    bufferBuilder.vertex(matrix4f, (float) x, (float) y, (float) z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
+                    bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, (float) z1).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
+                    bufferBuilder.clear();
+                    BufferRenderer.drawWithShader(bufferBuilder.end());
                     Render3DHelper.INSTANCE.end3DRender();
                 } else {
                     Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z);
                     if (hitEntity != null) {
                         Vec3d vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, event.getPartialTicks());
-                        Render3DHelper.INSTANCE.drawEntityBox(event.getMatrixStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColor);
+                        Render3DHelper.INSTANCE.drawEntityBox(event.getPoseStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColorProperty.value().getRGB());
                     } else {
                         Box bb1 = new Box(vec.x - 0.2f, vec.y - 0.2f, vec.z - 0.2f, vec.x + 0.2f, vec.y + 0.2f, vec.z + 0.2f);
-                        Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), bb1, missColor);
+                        Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb1, missColorProperty.value().getRGB());
                     }
                 }
             }
@@ -149,11 +165,11 @@ public class Trajectories extends Feature {
                 SnowballEntity snowballEntity = new SnowballEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 snowballEntity.setItem(mainStack);
                 snowballEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
-                IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) snowballEntity;
+                IProjectile iProjectile = (IProjectile) (ProjectileEntity) snowballEntity;
                 for (int j = 0; j < 200; j++) {
                     snowballEntity.tick();
                     positions.add(snowballEntity.getPos());
-                    HitResult hitResult = ProjectileUtil.getCollision(snowballEntity, iProjectileEntity::callCanHit);
+                    HitResult hitResult = ProjectileUtil.getCollision(snowballEntity, iProjectile::callCanHit);
                     if (hitResult != null) {
                         if (hitResult.getType() == HitResult.Type.ENTITY) {
                             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
@@ -169,14 +185,14 @@ public class Trajectories extends Feature {
                 EnderPearlEntity enderPearlEntity = new EnderPearlEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 enderPearlEntity.setItem(mainStack);
                 enderPearlEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), 0.0F, 1.5F, 0);
-                IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) enderPearlEntity;
+                IProjectile iProjectile = (IProjectile) (ProjectileEntity) enderPearlEntity;
                 for (int j = 0; j < 200; j++) {
                     enderPearlEntity.tick();
                     if (WorldHelper.INSTANCE.getBlock(new BlockPos(enderPearlEntity.getPos())) == Blocks.END_GATEWAY) {
                         hitEntity = Wrapper.INSTANCE.getLocalPlayer();
                     } else {
                         positions.add(enderPearlEntity.getPos());
-                        HitResult hitResult = ProjectileUtil.getCollision(enderPearlEntity, iProjectileEntity::callCanHit);
+                        HitResult hitResult = ProjectileUtil.getCollision(enderPearlEntity, iProjectile::callCanHit);
                         if (hitResult != null) {
                             if (hitResult.getType() == HitResult.Type.ENTITY) {
                                 EntityHitResult entityHitResult = (EntityHitResult) hitResult;
@@ -193,11 +209,11 @@ public class Trajectories extends Feature {
                 PotionEntity potionEntity = new PotionEntity(Wrapper.INSTANCE.getWorld(), Wrapper.INSTANCE.getLocalPlayer());
                 potionEntity.setItem(mainStack);
                 potionEntity.setVelocity(Wrapper.INSTANCE.getLocalPlayer(), PlayerHelper.INSTANCE.getPitch(), PlayerHelper.INSTANCE.getYaw(), -20.0F, 0.5F, 0);
-                IProjectileEntity iProjectileEntity = (IProjectileEntity) (ProjectileEntity) potionEntity;
+                IProjectile iProjectile = (IProjectile) (ProjectileEntity) potionEntity;
                 for (int j = 0; j < 200; j++) {
                     potionEntity.tick();
                     positions.add(potionEntity.getPos());
-                    HitResult hitResult = ProjectileUtil.getCollision(potionEntity, iProjectileEntity::callCanHit);
+                    HitResult hitResult = ProjectileUtil.getCollision(potionEntity, iProjectile::callCanHit);
                     if (hitResult != null) {
                         if (hitResult.getType() == HitResult.Type.ENTITY) {
                             EntityHitResult entityHitResult = (EntityHitResult) hitResult;
@@ -244,4 +260,12 @@ public class Trajectories extends Feature {
             return itemStack.getItem() == Items.BOW || itemStack.getItem() == Items.CROSSBOW || itemStack.getItem() == Items.SNOWBALL || itemStack.getItem() == Items.ENDER_PEARL || itemStack.getItem() == Items.TRIDENT || itemStack.getItem() instanceof ThrowablePotionItem;
     }
 
+    private float getSpeed(ItemStack stack) {
+        return stack.getItem() == Items.CROSSBOW && CrossbowItem.hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
+    }
+
+    private boolean isCharged(ItemStack stack) {
+        NbtCompound compoundTag = stack.getNbt();
+        return compoundTag != null && compoundTag.getBoolean("Charged");
+    }
 }

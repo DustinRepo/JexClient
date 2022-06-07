@@ -32,14 +32,14 @@ public class KillauraTargetProcess implements IBaritoneProcess {
     public PathingCommand onTick(boolean b, boolean b1) {
         Goal goal;
 
-        float dist = killaura.bMinDist;
+        float dist = killaura.bMinDistProperty.value();
         //had to comment out the original ones because the official baritone jar either builds with already yarn mapped code or running the "jar" gradle command builds with forge mappings even using the baritone.fabric_build property
         //since I'm not doing any fancy stuff with multiple baritones I don't really have to worry too much though
         if (!/*BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player()*/Wrapper.INSTANCE.getLocalPlayer().canSee(target))
             dist = 1;
 
         if (/*BaritoneAPI.getProvider().getPrimaryBaritone().getPlayerContext().player()*/Wrapper.INSTANCE.getLocalPlayer().distanceTo(target) > dist)
-            goal = new GoalNear(target.getBlockPos(), (int) killaura.reach);
+            goal = new GoalNear(target.getBlockPos(), (int) (float)killaura.reachProperty.value());
         else
             goal = new GoalRunAway(dist, target.getBlockPos());
         return new PathingCommand(goal, PathingCommandType.REVALIDATE_GOAL_AND_PATH);

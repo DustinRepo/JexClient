@@ -1,20 +1,15 @@
 package me.dustin.jex.load.mixin.minecraft;
 
-import me.dustin.jex.feature.command.CommandManagerJex;
-import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.misc.IRC;
-import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.load.impl.IChatScreen;
 import me.dustin.jex.load.impl.ICommandSuggestor;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,9 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinChatScreen implements IChatScreen {
 
     @Shadow protected TextFieldWidget chatField;
-
     @Shadow private CommandSuggestor commandSuggestor;
-
     private ButtonWidget normalChatButton;
     private ButtonWidget ircChatButton;
     private IRC ircMod;
@@ -36,18 +29,17 @@ public class MixinChatScreen implements IChatScreen {
     @Inject(method = "init", at = @At("RETURN"))
     public void init(CallbackInfo ci) {
         ircMod = Feature.get(IRC.class);
-        normalChatButton = new ButtonWidget(chatField.x - 2, chatField.y - 22, 40, 18, new LiteralText(ircMod.ircChatOverride ? "\2477Chat": "\247bChat"), button -> {
-            ircChatButton.setMessage(new LiteralText("\2477IRC"));
-            normalChatButton.setMessage(new LiteralText("\247bChat"));
+        normalChatButton = new ButtonWidget(chatField.x - 2, chatField.y - 22, 40, 18, Text.of(ircMod.ircChatOverride ? "\2477Chat": "\247bChat"), button -> {
+            ircChatButton.setMessage(Text.of("\2477IRC"));
+            normalChatButton.setMessage(Text.of("\247bChat"));
             ircMod.ircChatOverride = false;
         });
-        ircChatButton = new ButtonWidget(chatField.x - 2 + 42, chatField.y - 22, 40, 18, new LiteralText(ircMod.ircChatOverride ? "\247cIRC" : "\2477IRC"), button -> {
-            normalChatButton.setMessage(new LiteralText("\2477Chat"));
-            ircChatButton.setMessage(new LiteralText("\247cIRC"));
+        ircChatButton = new ButtonWidget(chatField.x - 2 + 42, chatField.y - 22, 40, 18, Text.of(ircMod.ircChatOverride ? "\247cIRC" : "\2477IRC"), button -> {
+            normalChatButton.setMessage(Text.of("\2477Chat"));
+            ircChatButton.setMessage(Text.of("\247cIRC"));
             ircMod.ircChatOverride = true;
         });
     }
-
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/CommandSuggestor.render(Lnet/minecraft/client/util/math/MatrixStack;II)V"))
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
@@ -59,7 +51,6 @@ public class MixinChatScreen implements IChatScreen {
             ircChatButton.render(matrices, mouseX, mouseY, delta);
         }
     }
-
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void mouseClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {

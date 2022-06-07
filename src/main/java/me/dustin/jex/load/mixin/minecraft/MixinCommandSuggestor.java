@@ -16,26 +16,22 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Mixin(CommandSuggestor.class)
 public abstract class MixinCommandSuggestor implements ICommandSuggestor {
 
+    @Shadow @Final private static Pattern WHITESPACE_PATTERN;
+
     @Shadow @Final private TextFieldWidget textField;
 
     @Shadow @Nullable private CommandSuggestor.SuggestionWindow window;
-
-    @Shadow @Final private static Pattern WHITESPACE_PATTERN;
 
     @Redirect(method = "refresh", at = @At(value = "INVOKE", target = "com/mojang/brigadier/StringReader.peek()C"))
     public char refresh(StringReader stringReader) {
@@ -61,7 +57,7 @@ public abstract class MixinCommandSuggestor implements ICommandSuggestor {
                 if (!CommandManagerJex.INSTANCE.isJexCommand(suggestion.getText()) && !this.textField.getText().contains(" "))
                     continue;
             } else if (CommandManagerJex.INSTANCE.isJexCommand(suggestion.getText()))
-                    continue;
+                continue;
             if (suggestion.getText().startsWith(string2) || (!bl && suggestion.getText().startsWith("minecraft:" + string2))) {
                 list.add(suggestion);
                 continue;

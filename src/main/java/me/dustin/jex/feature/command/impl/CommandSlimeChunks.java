@@ -14,11 +14,10 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.SeedHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
-
 import java.util.ArrayList;
 
 @Cmd(name = "slimechunks", description = "Show slime chunks with a given seed", syntax = ".slimechunk <seed>")
@@ -32,7 +31,7 @@ public class CommandSlimeChunks extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        seed = SeedHelper.INSTANCE.getSeed(MessageArgumentType.getMessage(context, "seed").asString()).getAsLong();
+        seed = SeedHelper.INSTANCE.getSeed(MessageArgumentType.getMessage(context, "seed").getString()).getAsLong();
         EventManager.register(this);
         return 1;
     }
@@ -40,7 +39,7 @@ public class CommandSlimeChunks extends Command {
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         ArrayList<Render3DHelper.BoxStorage> slimeChunks = new ArrayList<>();
-       int renderDistance = Wrapper.INSTANCE.getOptions().viewDistance;
+       int renderDistance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
        int divBy2 = renderDistance / 2 + 1;
         for (int x = -divBy2; x < divBy2; x++) {
             for (int z = -divBy2; z < divBy2; z++) {
@@ -52,7 +51,7 @@ public class CommandSlimeChunks extends Command {
                 }
             }
         }
-        Render3DHelper.INSTANCE.drawList(event.getMatrixStack(), slimeChunks, true);
+        Render3DHelper.INSTANCE.drawList(event.getPoseStack(), slimeChunks, true);
     });
 
     @EventPointer

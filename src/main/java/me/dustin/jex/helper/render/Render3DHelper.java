@@ -5,21 +5,11 @@ import java.util.ArrayList;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
-import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.VertexFormat.DrawMode;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -30,8 +20,8 @@ import net.minecraft.util.shape.VoxelShapes;
 public enum Render3DHelper {
     INSTANCE;
 
-    public Vec3d getEntityRenderPosition(Entity entity, double partial, MatrixStack matrixStack) {
-        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+    public Vec3d getEntityRenderPosition(Entity entity, double partial, MatrixStack poseStack) {
+        Matrix4f matrix = poseStack.peek().getPositionMatrix();
         double x = entity.prevX + ((entity.getX() - entity.prevX) * partial) - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
         double y = entity.prevY + ((entity.getY() - entity.prevY) * partial) - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
         double z = entity.prevZ + ((entity.getZ() - entity.prevZ) * partial) - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
@@ -40,8 +30,8 @@ public enum Render3DHelper {
         return new Vec3d(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
-    public Vec3d getRenderPosition(double x, double y, double z, MatrixStack matrixStack) {
-        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+    public Vec3d getRenderPosition(double x, double y, double z, MatrixStack poseStack) {
+        Matrix4f matrix = poseStack.peek().getPositionMatrix();
         double minX = x - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
         double minY = y - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
         double minZ = z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
@@ -50,8 +40,8 @@ public enum Render3DHelper {
         return new Vec3d(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
-    public Vec3d getRenderPosition(Vec3d vec3d, MatrixStack matrixStack) {
-        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+    public Vec3d getRenderPosition(Vec3d vec3d, MatrixStack poseStack) {
+        Matrix4f matrix = poseStack.peek().getPositionMatrix();
         double minX = vec3d.getX() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
         double minY = vec3d.getY() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
         double minZ = vec3d.getZ() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
@@ -60,8 +50,8 @@ public enum Render3DHelper {
         return new Vec3d(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
-    public Vec3d getRenderPosition(BlockPos blockPos, MatrixStack matrixStack) {
-        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
+    public Vec3d getRenderPosition(BlockPos blockPos, MatrixStack poseStack) {
+        Matrix4f matrix = poseStack.peek().getPositionMatrix();
         double minX = blockPos.getX() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().x;
         double minY = blockPos.getY() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().y;
         double minZ = blockPos.getZ() - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
@@ -119,7 +109,7 @@ public enum Render3DHelper {
             RenderSystem.disableDepthTest();
         else
             RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
+        RenderSystem.depthMask(MinecraftClient.isFancyGraphicsOrBetter());
         RenderSystem.enableCull();
     }
 
@@ -132,8 +122,8 @@ public enum Render3DHelper {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
     }
 
-    public void drawSphere(MatrixStack matrixStack, float radius, int gradation, int color, boolean testDepth, Vec3d pos) {
-        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+    public void drawSphere(MatrixStack poseStack, float radius, int gradation, int color, boolean testDepth, Vec3d pos) {
+        Matrix4f matrix4f = poseStack.peek().getPositionMatrix();
         Color color1 = ColorHelper.INSTANCE.getColor(color);
         final float PI = 3.141592f;
         float x, y, z, alpha, beta;
@@ -155,8 +145,8 @@ public enum Render3DHelper {
                 renderPos = Render3DHelper.INSTANCE.getRenderPosition(x, y, z);
                 bufferBuilder.vertex(matrix4f, (float)renderPos.x, (float)renderPos.y, (float)renderPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             }
-            bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            bufferBuilder.clear();
+            BufferRenderer.drawWithShader(bufferBuilder.end());
         }
         RenderSystem.enableDepthTest();
         RenderSystem.disableTexture();
@@ -222,60 +212,60 @@ public enum Render3DHelper {
         return (then + (now - then) * percent);
     }
 
-    public void drawList(MatrixStack matrixStack, ArrayList<BoxStorage> list, boolean disableDepth) {
+    public void drawList(MatrixStack poseStack, ArrayList<BoxStorage> list, boolean disableDepth) {
 		setup3DRender(disableDepth);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
     	list.forEach(blockStorage -> {
             Box box = blockStorage.box();
             int color = blockStorage.color();
-            drawOutlineBox(matrixStack, box, color, false);
+            drawOutlineBox(poseStack, box, color, false);
     	});
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
 
-        bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         list.forEach(blockStorage -> {
             Box box = blockStorage.box();
             int color = blockStorage.color();
-            drawFilledBox(matrixStack, box, color & 0x70ffffff, false);
+            drawFilledBox(poseStack, box, color & 0x70ffffff, false);
     	});
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         end3DRender();
     }
     
-    public void drawFilledBox(MatrixStack matrixStack, Box bb, int color) {
-    	drawFilledBox(matrixStack, bb, color, true);
+    public void drawFilledBox(MatrixStack poseStack, Box bb, int color) {
+    	drawFilledBox(poseStack, bb, color, true);
     }
 
-    public void directionTranslate(MatrixStack matrixStack, Direction direction) {
+    public void directionTranslate(MatrixStack poseStack, Direction direction) {
         switch (direction) {
-            case UP -> matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 180, true));
+            case UP -> poseStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 180, true));
             case NORTH -> {
-                matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90, true));
+                poseStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90, true));
             }
             case SOUTH -> {
-                matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), -90, true));
+                poseStack.multiply(new Quaternion(new Vec3f(1, 0, 0), -90, true));
             }
             case WEST -> {
-                matrixStack.multiply(new Quaternion(new Vec3f(0, 1, 0), 90, true));
-                matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90, true));
+                poseStack.multiply(new Quaternion(new Vec3f(0, 1, 0), 90, true));
+                poseStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90, true));
             }
             case EAST -> {
-                matrixStack.multiply(new Quaternion(new Vec3f(0, 1, 0), 90, true));
-                matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), -90, true));
+                poseStack.multiply(new Quaternion(new Vec3f(0, 1, 0), 90, true));
+                poseStack.multiply(new Quaternion(new Vec3f(1, 0, 0), -90, true));
             }
         }
     }
 
-    public void drawFilledBox(MatrixStack matrixStack, Box bb, int color, boolean draw) {
-        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+    public void drawFilledBox(MatrixStack poseStack, Box bb, int color, boolean draw) {
+        Matrix4f matrix4f = poseStack.peek().getPositionMatrix();
         Color color1 = ColorHelper.INSTANCE.getColor(color);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         if (draw)
-        	bufferBuilder.begin(VertexFormat.DrawMode.QUADS/*QUADS*/, VertexFormats.POSITION_COLOR);
+        	bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         float minX = (float)bb.minX;
         float minY = (float)bb.minY;
         float minZ = (float)bb.minZ;
@@ -313,17 +303,17 @@ public enum Render3DHelper {
         bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         if (draw) {
-	        bufferBuilder.end();
-	        BufferRenderer.draw(bufferBuilder);
+	        BufferRenderer.drawWithShader(bufferBuilder.end());
+            bufferBuilder.clear();
         }
     }
 
-    public void drawFadeBox(MatrixStack matrixStack, Box bb, int color) {
-        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+    public void drawFadeBox(MatrixStack poseStack, Box bb, int color) {
+        Matrix4f matrix4f = poseStack.peek().getPositionMatrix();
         Color color1 = ColorHelper.INSTANCE.getColor(color);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS/*QUADS*/, VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         float minX = (float)bb.minX;
         float minY = (float)bb.minY;
         float minZ = (float)bb.minZ;
@@ -360,12 +350,12 @@ public enum Render3DHelper {
         bufferBuilder.vertex(matrix4f, minX, minY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0).next();
         bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0).next();
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.drawWithShader(bufferBuilder.end());
+        bufferBuilder.clear();
     }
 
-    public void doFadeBoxNoDraw(MatrixStack matrixStack, Box bb, int color) {
-        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+    public void doFadeBoxNoDraw(MatrixStack poseStack, Box bb, int color) {
+        Matrix4f matrix4f = poseStack.peek().getPositionMatrix();
         Color color1 = ColorHelper.INSTANCE.getColor(color);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -407,17 +397,17 @@ public enum Render3DHelper {
         bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), 0).next();
     }
 
-    public void drawOutlineBox(MatrixStack matrixStack, Box bb, int color) {
-    	drawOutlineBox(matrixStack, bb, color, true);
+    public void drawOutlineBox(MatrixStack poseStack, Box bb, int color) {
+    	drawOutlineBox(poseStack, bb, color, true);
     }
 
-    public void drawOutlineBox(MatrixStack matrixStack, Box bb, int color, boolean draw) {
+    public void drawOutlineBox(MatrixStack poseStack, Box bb, int color, boolean draw) {
         Color color1 = ColorHelper.INSTANCE.getColor(color);
-        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+        Matrix4f matrix4f = poseStack.peek().getPositionMatrix();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         if (draw)
-        	bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES/*LINES*/, VertexFormats.POSITION_COLOR);
+        	bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 
         VoxelShape shape = VoxelShapes.cuboid(bb);
         shape.forEachEdge((x1, y1, z1, x2, y2, z2) -> {
@@ -425,8 +415,8 @@ public enum Render3DHelper {
             bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z2).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         });
         if (draw) {
-	        bufferBuilder.end();
-	        BufferRenderer.draw(bufferBuilder);
+	        BufferRenderer.drawWithShader(bufferBuilder.end());
+            bufferBuilder.clear();
         }
     }
 

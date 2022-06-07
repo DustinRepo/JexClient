@@ -4,9 +4,9 @@ import me.dustin.events.core.Event;
 
 public class EventKeyPressed extends Event {
 
-    private int key;
-    private int scancode;
-    private PressType type;
+    private final int key;
+    private final int scancode;
+    private final PressType type;
 
     public EventKeyPressed(int key, int scancode, PressType type) {
         super();

@@ -5,14 +5,17 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-
 import java.nio.charset.StandardCharsets;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Tell the server you are a vanilla player")
 public class VanillaSpoof extends Feature {
+
+    public VanillaSpoof() {
+        super(Category.MISC, "Tell the server you are a vanilla player");
+    }
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {

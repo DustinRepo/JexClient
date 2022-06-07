@@ -8,85 +8,155 @@ import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.event.render.EventRenderNametags;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
-import me.dustin.jex.helper.network.MCAPIHelper;
-import me.dustin.jex.helper.player.FriendHelper;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.Perspective;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.AirBlockItem;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.FishingRodItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.TridentItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-
+import me.dustin.jex.helper.render.Render2DHelper;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Render names above players with more info.")
 public class Nametag extends Feature {
 
-    @Op(name = "Custom Font")
-    public boolean customFont = false;
-    @Op(name = "Players")
-    public boolean players = true;
-    @OpChild(name = "Show Face", parent = "Players")
-    public boolean showPlayerFace = true;
-    @Op(name = "Mobs")
-    public boolean mobs = false;
-    @OpChild(name = "Special Mobs Only", parent = "Mobs")
-    public boolean specialMobsOnly = false;
-    @OpChild(name = "Hostiles", parent = "Mobs")
-    public boolean hostiles = true;
-    @OpChild(name = "Neutrals", parent = "Mobs")
-    public boolean neutrals = true;
-    @OpChild(name = "Passives", parent = "Mobs")
-    public boolean passives = true;
-    @Op(name = "Items")
-    public boolean items = false;
-    @OpChild(name = "Group Range", max = 10, parent = "Items")
-    public int groupRange = 5;
-    @Op(name = "Ping")
-    public boolean ping = true;
-    @Op(name = "Distance")
-    public boolean distance = true;
-    @Op(name = "Show Inv")
-    public boolean showInv = true;
-    @OpChild(name = "Backgrounds", parent = "Show Inv")
-    public boolean itemBackgrounds = true;
-    @OpChild(name = "Enchant Text Color", isColor = true, parent = "Show Inv")
-    public int enchantColor = new Color(0, 181, 255).getRGB();
-    @Op(name = "Health")
-    public boolean health = true;
-    @Op(name = "Show on Self")
-    public boolean showself = true;
+    public final Property<Boolean> customFontProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Custom Font")
+            .description("Use TTF font on the nametags.")
+            .value(false)
+            .build();
+    public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Players")
+            .value(true)
+            .build();
+    public final Property<Boolean> showPlayerFaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Show Face")
+            .value(true)
+            .parent(playersProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> mobsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Mobs")
+            .value(false)
+            .build();
+    public final Property<Boolean> specialMobsOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Special Mobs Only")
+            .value(true)
+            .parent(mobsProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> bossesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bosses")
+            .value(true)
+            .parent(mobsProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> hostilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hostiles")
+            .value(true)
+            .parent(mobsProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> passivesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Passives")
+            .value(true)
+            .parent(mobsProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> neutralsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Neutrals")
+            .value(true)
+            .parent(mobsProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> itemsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Items")
+            .value(false)
+            .build();
+    public final Property<Integer> groupRangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Group Range")
+            .value(5)
+            .max(10)
+            .parent(itemsProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> pingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Ping")
+            .value(true)
+            .build();
+    public final Property<Boolean> distanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Distance")
+            .value(true)
+            .build();
+    public final Property<Boolean> showInvProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Show Inv")
+            .value(true)
+            .build();
+    public final Property<Boolean> itemBackgroundsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Backgrounds")
+            .value(true)
+            .parent(showInvProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> enchantColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Enchant Text Color")
+            .value(new Color(0, 181, 255))
+            .parent(showInvProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> healthProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Health")
+            .value(true)
+            .build();
+    public final Property<HealthMode> healthModeProperty = new Property.PropertyBuilder<HealthMode>(this.getClass())
+            .name("Health Mode")
+            .value(HealthMode.BAR)
+            .build();
+    public final Property<Boolean> showselfProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Show on Self")
+            .value(true)
+            .build();
 
-    @OpChild(name = "Health Mode", all = {"Bar", "Hearts", "HP", "Percent"}, parent = "Health")
-    public String healthMode = "Bar";
     int count = 0;
     private final HashMap<Entity, Vec3d> positions = Maps.newHashMap();
 
+    public Nametag() {
+        super(Category.VISUAL, "Render names above players with more info.");
+    }
+
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> {
-        drawNametags(event.getMatrixStack());
-        drawPlayerFaces(event.getMatrixStack());
+        drawNametags(event.getPoseStack());
+        drawPlayerFaces(event.getPoseStack());
     });
 
     @EventPointer
@@ -110,10 +180,10 @@ public class Nametag extends Feature {
                             offset = entity.getHeight() + 0.4f;
                     }
                 }
-                Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, event.getPartialTicks(), event.getMatrixStack());
+                Vec3d vec = Render2DHelper.INSTANCE.getPos(entity, offset, event.getPartialTicks(), event.getPoseStack());
                 if (entity instanceof ItemEntity itemEntity) {
                     Wrapper.INSTANCE.getWorld().getEntities().forEach(entity1 -> {
-                        if (entity1 instanceof ItemEntity itemEntity1 && entity.distanceTo(entity1) <= groupRange && entity.getBlockY() == entity1.getBlockY()) {
+                        if (entity1 instanceof ItemEntity itemEntity1 && entity.distanceTo(entity1) <= groupRangeProperty.value() && entity.getBlockY() == entity1.getBlockY()) {
                             if (itemEntity1.getStack().getItem() == itemEntity.getStack().getItem())
                                 this.positions.put(entity1, vec);
                         }
@@ -137,7 +207,7 @@ public class Nametag extends Feature {
                 Vec3d vec = positions.get(entity);
                 if (isOnScreen(vec)) {
                     float x = (float) vec.x;
-                    float y = (float) vec.y - (showPlayerFace && entity instanceof PlayerEntity ? 18 : 0);
+                    float y = (float) vec.y - (showPlayerFaceProperty.value() && entity instanceof PlayerEntity ? 18 : 0);
                     String nameString = getNameString(entity);
                     if (entity instanceof ItemEntity itemEntity) {
                         AtomicInteger stackCount = new AtomicInteger(itemEntity.getStack().getCount());
@@ -154,23 +224,23 @@ public class Nametag extends Feature {
                         if (stackCount.get() > 1)
                             nameString += " \247fx" + stackCount.get();
                     }
-                    float length = FontHelper.INSTANCE.getStringWidth(nameString, customFont || CustomFont.INSTANCE.getState());
+                    float length = FontHelper.INSTANCE.getStringWidth(nameString, customFontProperty.value() || CustomFont.INSTANCE.getState());
                     //health bar
-                    if (health && healthMode.equalsIgnoreCase("Bar") && entity instanceof LivingEntity) {
+                    if (healthProperty.value() && healthModeProperty.value() == HealthMode.BAR && entity instanceof LivingEntity) {
                         float percent = ((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth();
                         float barLength = (int) ((length + 4) * percent);
                         Render2DHelper.INSTANCE.fillNoDraw(matrixStack, x - (length / 2) - 2, y - 1, (x - (length / 2) - 2) + barLength, y, getHealthColor(((LivingEntity) entity)));
                     }
                     //name background
                     Render2DHelper.INSTANCE.fillNoDraw(matrixStack, x - (length / 2) - 2, y - 12, x + (length / 2) + 2, y - 1, 0x35000000);
-                    if (showInv && itemBackgrounds && entity instanceof LivingEntity livingEntity) {
+                    if (showInvProperty.value() && itemBackgroundsProperty.value() && entity instanceof LivingEntity livingEntity) {
                         drawInventoryBackgrounds(matrixStack, vec, livingEntity);
                     }
                 }
             }
         });
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         //draw all text since we can't also do that while rendering the boxes
@@ -179,7 +249,7 @@ public class Nametag extends Feature {
                 Vec3d vec = positions.get(entity);
                 if (isOnScreen(vec)) {
                     float x = (float) vec.x;
-                    float y = (float) vec.y - (showPlayerFace && entity instanceof PlayerEntity ? 18 : 0);
+                    float y = (float) vec.y - (showPlayerFaceProperty.value() && entity instanceof PlayerEntity ? 18 : 0);
                     String nameString = getNameString(entity);
 
                     if (entity instanceof ItemEntity itemEntity) {
@@ -197,9 +267,9 @@ public class Nametag extends Feature {
                             nameString += " \247fx" + stackCount;
                     }
                     
-                    FontHelper.INSTANCE.drawCenteredString(matrixStack, nameString, x, y - 10, getColor(entity), customFont);
+                    FontHelper.INSTANCE.drawCenteredString(matrixStack, nameString, x, y - 10, getColor(entity), customFontProperty.value());
 
-                    if (showInv && entity instanceof LivingEntity livingEntity) {
+                    if (showInvProperty.value() && entity instanceof LivingEntity livingEntity) {
                         drawInventoryItems(matrixStack, vec, livingEntity);
                     }
                 }
@@ -209,7 +279,7 @@ public class Nametag extends Feature {
 
     public void drawInventoryItems(MatrixStack matrixStack, Vec3d vec, LivingEntity livingEntity) {
         float x = (float) vec.x;
-        float y = (float) vec.y - (showPlayerFace && livingEntity instanceof PlayerEntity ? 18 : 0);
+        float y = (float) vec.y - (showPlayerFaceProperty.value() && livingEntity instanceof PlayerEntity ? 18 : 0);
         int itemWidth = 16;
         int totalCount = getItems(livingEntity).size();
         float startX = (x - ((totalCount * itemWidth) / 2.f));
@@ -232,7 +302,7 @@ public class Nametag extends Feature {
                             String name = getEnchantName(compoundTag);
                             if (compoundTag.getString("id").equalsIgnoreCase("minecraft:binding_curse") || compoundTag.getString("id").equalsIgnoreCase("minecraft:vanishing_curse"))
                                 name = "\247c" + name;
-                            FontHelper.INSTANCE.draw(matrixStack, name, newerX + 1.5f, newY, enchantColor, customFont);
+                            FontHelper.INSTANCE.draw(matrixStack, name, newerX + 1.5f, newY, enchantColorProperty.value().getRGB(), customFontProperty.value());
                             enchCount++;
                         } catch (Exception ignored) {}
                     }
@@ -245,7 +315,7 @@ public class Nametag extends Feature {
 
     public void drawInventoryBackgrounds(MatrixStack matrixStack, Vec3d vec, LivingEntity livingEntity) {
         float x = (float) vec.x;
-        float y = (float) vec.y - (showPlayerFace && livingEntity instanceof PlayerEntity ? 18 : 0);
+        float y = (float) vec.y - (showPlayerFaceProperty.value() && livingEntity instanceof PlayerEntity ? 18 : 0);
         int itemWidth = 16;
         int totalCount = getItems(livingEntity).size();
         float startX = (x - ((totalCount * itemWidth) / 2.f));
@@ -268,7 +338,7 @@ public class Nametag extends Feature {
                             String name = getEnchantName(compoundTag);
                             if (compoundTag.getString("id").equalsIgnoreCase("minecraft:binding_curse") || compoundTag.getString("id").equalsIgnoreCase("minecraft:vanishing_curse"))
                                 name = "\247c" + name;
-                            float nameWidth = FontHelper.INSTANCE.getStringWidth(name, customFont || CustomFont.INSTANCE.getState());
+                            float nameWidth = FontHelper.INSTANCE.getStringWidth(name, customFontProperty.value() || CustomFont.INSTANCE.getState());
                             Render2DHelper.INSTANCE.fillNoDraw(matrixStack, newerX, newY - 1, newerX + nameWidth, newY + 9, 0x35000000);
                             enchCount++;
                         } catch (Exception ignored) {}
@@ -288,7 +358,7 @@ public class Nametag extends Feature {
                     float x = (float) vec.x - 8;
                     float y = (float) vec.y - 16;
 
-                    if (showPlayerFace && entity instanceof PlayerEntity) {
+                    if (showPlayerFaceProperty.value() && entity instanceof PlayerEntity) {
                         PlayerListEntry playerListEntry = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(entity.getUuid());
                         if (playerListEntry != null) {
                             Render2DHelper.INSTANCE.drawFace(matrixStack, x, y, 2, playerListEntry.getSkinTexture());
@@ -344,18 +414,18 @@ public class Nametag extends Feature {
             if (itemEntity.getStack().getCount() > 1)
                 name += " \247fx" + itemEntity.getStack().getCount();
         }
-        if (ping && entity instanceof PlayerEntity playerEntity && Wrapper.INSTANCE.getLocalPlayer().networkHandler != null) {
+        if (pingProperty.value() && entity instanceof PlayerEntity playerEntity && Wrapper.INSTANCE.getLocalPlayer().networkHandler != null) {
             PlayerListEntry entry = Wrapper.INSTANCE.getLocalPlayer().networkHandler.getPlayerListEntry(playerEntity.getUuid());
             if (entry != null) {
                 int ping = entry.getLatency();
                 name += String.format(" %s[%s%dms%s]%s", Formatting.GRAY, getPingFormatting(ping), ping, Formatting.GRAY, Formatting.RESET);
             }
         }
-        if (distance) {
+        if (distanceProperty.value()) {
             name += String.format(" %s[%s%.1f%s]%s", Formatting.GRAY, Formatting.WHITE, Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity), Formatting.GRAY, Formatting.RESET);
         }
         if (entity instanceof LivingEntity)
-            if (health && !healthMode.equalsIgnoreCase("Bar")) {
+            if (healthProperty.value() && healthModeProperty.value() != HealthMode.BAR) {
                 name += " " + getHealthString((LivingEntity) entity);
             }
         return name;
@@ -371,21 +441,21 @@ public class Nametag extends Feature {
         return Formatting.DARK_RED;
     }
 
-    private int getColor(Entity player) {
-        if ((player instanceof ItemEntity))
-            return ESP.INSTANCE.itemColor;
-        if (EntityHelper.INSTANCE.isHostileMob(player))
-            return ESP.INSTANCE.hostileColor;
-        if (EntityHelper.INSTANCE.isPassiveMob(player))
-            return ESP.INSTANCE.passiveColor;
-        if (EntityHelper.INSTANCE.isNeutralMob(player))
-            return ESP.INSTANCE.neutralColor;
-        if (player instanceof PlayerEntity) {
-            if (FriendHelper.INSTANCE.isFriend(player.getName().asString()))
-                return ESP.INSTANCE.friendColor;
-            else if (player.isInvisible())
+    private int getColor(Entity entity) {
+        if ((entity instanceof ItemEntity))
+            return ESP.INSTANCE.itemColorProperty.value().getRGB();
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
+            return ESP.INSTANCE.hostileColorProperty.value().getRGB();
+        if (EntityHelper.INSTANCE.isPassiveMob(entity))
+            return ESP.INSTANCE.passiveColorProperty.value().getRGB();
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
+            return ESP.INSTANCE.neutralColorProperty.value().getRGB();
+        if (entity instanceof PlayerEntity playerEntity) {
+            if (FriendHelper.INSTANCE.isFriend(playerEntity))
+                return ESP.INSTANCE.friendColorProperty.value().getRGB();
+            else if (entity.isInvisible())
                 return new Color(200, 70, 0).getRGB();
-            else if (player.isSneaking())
+            else if (entity.isSneaking())
                 return Color.red.getRGB();
         }
         return -1;
@@ -407,41 +477,45 @@ public class Nametag extends Feature {
     }
 
     private float getHealth(LivingEntity player) {
-        return switch (healthMode) {
-            case "Hearts" -> player.getHealth() / 2;
-            case "HP" -> Math.round(player.getHealth());
-            case "Percent" -> player.getHealth() * 5;
+        return switch (healthModeProperty.value()) {
+            case HEARTS -> player.getHealth() / 2;
+            case HP -> Math.round(player.getHealth());
+            case PERCENT -> player.getHealth() * 5;
             default -> player.getHealth();
         };
     }
 
     private int getHealthColor(LivingEntity player) {
-        float percent = (player.getHealth() / player.getMaxHealth()) * 100;
-        return Render2DHelper.INSTANCE.getPercentColor(percent);
+        float percent = (player.getHealth() / player.getMaxHealth());
+        return ColorHelper.INSTANCE.redGreenShift(percent);
     }
 
     private boolean isValid(Entity entity) {
         if (entity instanceof ItemEntity)
-            return items;
+            return itemsProperty.value();
         else if (entity instanceof LivingEntity livingEntity && livingEntity.isSleeping())
             return false;
-        else if (mobs && EntityHelper.INSTANCE.isHostileMob(entity)) {
-            if (specialMobsOnly && !isSpecialMob(entity))
+        else if (mobsProperty.value() && EntityHelper.INSTANCE.isBossMob(entity)) {
+            if (specialMobsOnlyProperty.value() && !isSpecialMob(entity))
                 return false;
-            return hostiles;
-        } else if (mobs && EntityHelper.INSTANCE.isPassiveMob(entity)) {
-            if (specialMobsOnly && !isSpecialMob(entity))
+            return bossesProperty.value();
+        } else if (mobsProperty.value() && EntityHelper.INSTANCE.isHostileMob(entity)) {
+            if (specialMobsOnlyProperty.value() && !isSpecialMob(entity))
                 return false;
-            return passives;
-        } else if (mobs && EntityHelper.INSTANCE.isNeutralMob(entity)) {
-            if (specialMobsOnly && !isSpecialMob(entity))
+            return hostilesProperty.value();
+        } else if (mobsProperty.value() && EntityHelper.INSTANCE.isPassiveMob(entity)) {
+            if (specialMobsOnlyProperty.value() && !isSpecialMob(entity))
                 return false;
-            return neutrals;
+            return passivesProperty.value();
+        } else if (mobsProperty.value() && EntityHelper.INSTANCE.isNeutralMob(entity)) {
+            if (specialMobsOnlyProperty.value() && !isSpecialMob(entity))
+                return false;
+            return neutralsProperty.value();
         } else if (entity instanceof PlayerEntity)
             if (!EntityHelper.INSTANCE.isNPC((PlayerEntity) entity)) {
                 if (entity == Wrapper.INSTANCE.getLocalPlayer())
-                    return showself && Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON;
-                return players;
+                    return showselfProperty.value() && Wrapper.INSTANCE.getOptions().getPerspective() != Perspective.FIRST_PERSON;
+                return playersProperty.value();
             }
         return false;
     }
@@ -478,4 +552,7 @@ public class Nametag extends Feature {
         return pos != null && (pos.z > -1 && pos.z < 1);
     }
 
+    public enum HealthMode {
+        BAR, HEARTS, HP, PERCENT
+    }
 }

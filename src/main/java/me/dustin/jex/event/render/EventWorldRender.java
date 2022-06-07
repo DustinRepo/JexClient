@@ -1,27 +1,23 @@
 package me.dustin.jex.event.render;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
 import me.dustin.events.core.Event;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class EventWorldRender extends Event {
 
-    private float partialTicks;
-    private MatrixStack matrixStack;
+    private final float partialTicks;
+    private final MatrixStack poseStack;
 
-    public EventWorldRender(MatrixStack matrixStack, float partialTicks2) {
+    public EventWorldRender(MatrixStack poseStack, float partialTicks2) {
         this.partialTicks = partialTicks2;
-        this.matrixStack = matrixStack;
+        this.poseStack = poseStack;
     }
 
     public float getPartialTicks() {
         return partialTicks;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public MatrixStack getPoseStack() {
+        return poseStack;
     }
 }

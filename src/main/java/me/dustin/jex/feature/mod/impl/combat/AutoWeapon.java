@@ -3,10 +3,11 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventAttackEntity;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.player.InventoryHelper;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -15,19 +16,27 @@ import net.minecraft.item.*;
 
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically swap to the best weapon when attacking.")
 public class AutoWeapon extends Feature {
 
-    @Op(name = "Living Only")
-    public boolean livingOnly = true;
-    @Op(name = "Mode", all = {"Sword", "Sword&Axe", "All Tools"})
-    public String mode = "Sword";
+    public final Property<Boolean> livingOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Living Only")
+            .description("Only pull your weapon out for living entities.")
+            .value(true)
+            .build();
+    public final Property<AttackMode> mode = new Property.PropertyBuilder<AttackMode>(this.getClass())
+            .name("Mode")
+            .value(AttackMode.SWORD)
+            .build();
+
+    public AutoWeapon() {
+        super(Category.COMBAT, "Automatically swap to the best weapon when attacking.");
+    }
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
         if (AutoEat.isEating)
             return;
-        if (livingOnly && !(event.getEntity() instanceof LivingEntity))
+        if (livingOnlyProperty.value() && !(event.getEntity() instanceof LivingEntity))
             return;
         int slot = -1;
         float str = 1;
@@ -60,11 +69,10 @@ public class AutoWeapon extends Feature {
     });
 
     private boolean isGoodItem(Item item) {
-        return switch (mode.toLowerCase()) {
-            case "sword" -> item instanceof SwordItem;
-            case "sword&axe" -> item instanceof SwordItem || item instanceof AxeItem;
-            case "all tools" -> item instanceof ToolItem;
-            default -> false;
+        return switch (mode.value()) {
+            case SWORD -> item instanceof SwordItem;
+            case SWORD_AND_AXE -> item instanceof SwordItem || item instanceof AxeItem;
+            case ALL_TOOLS -> item instanceof ToolItem;
         };
     }
 
@@ -87,5 +95,9 @@ public class AutoWeapon extends Feature {
             }
         }
         return 0;
+    }
+
+    public enum AttackMode {
+        SWORD, SWORD_AND_AXE, ALL_TOOLS
     }
 }

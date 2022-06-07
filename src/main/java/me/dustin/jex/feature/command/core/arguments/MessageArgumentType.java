@@ -9,11 +9,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.command.EntitySelectorReader;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,11 +22,11 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
    }
 
    public static Text getMessage(CommandContext<FabricClientCommandSource> command, String name) throws CommandSyntaxException {
-      return ((MessageArgumentType.MessageFormat)command.getArgument(name, MessageArgumentType.MessageFormat.class)).format((FabricClientCommandSource)command.getSource(), ((FabricClientCommandSource)command.getSource()).hasPermissionLevel(2));
+      return ((MessageFormat)command.getArgument(name, MessageFormat.class)).format((FabricClientCommandSource)command.getSource(), ((FabricClientCommandSource)command.getSource()).hasPermissionLevel(2));
    }
 
-   public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
-      return MessageArgumentType.MessageFormat.parse(stringReader, true);
+   public MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
+      return MessageFormat.parse(stringReader, true);
    }
 
    public Collection<String> getExamples() {
@@ -38,9 +35,9 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
    public static class MessageFormat {
       private final String contents;
-      private final MessageArgumentType.MessageSelector[] selectors;
+      private final MessageSelector[] selectors;
 
-      public MessageFormat(String contents, MessageArgumentType.MessageSelector[] selectors) {
+      public MessageFormat(String contents, MessageSelector[] selectors) {
          this.contents = contents;
          this.selectors = selectors;
       }
@@ -50,16 +47,16 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
       }
 
       public Text format(FabricClientCommandSource source, boolean bl) throws CommandSyntaxException {
-         return new LiteralText(this.contents);
+         return Text.of(this.contents);
       }
 
-      public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
+      public static MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
          String string = reader.getString().substring(reader.getCursor(), reader.getTotalLength());
          if (!bl) {
             reader.setCursor(reader.getTotalLength());
-            return new MessageArgumentType.MessageFormat(string, new MessageArgumentType.MessageSelector[0]);
+            return new MessageFormat(string, new MessageSelector[0]);
          } else {
-            List<MessageArgumentType.MessageSelector> list = Lists.newArrayList();
+            List<MessageSelector> list = Lists.newArrayList();
             int i = reader.getCursor();
 
             while(true) {
@@ -70,7 +67,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
                         reader.skip();
                   }
 
-                  return new MessageArgumentType.MessageFormat(string, (MessageArgumentType.MessageSelector[])list.toArray(new MessageArgumentType.MessageSelector[list.size()]));
+                  return new MessageFormat(string, (MessageSelector[])list.toArray(new MessageSelector[list.size()]));
                }
             }
          }
@@ -102,7 +99,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
       @Nullable
       public Text format(FabricClientCommandSource source) throws CommandSyntaxException {
-         return new LiteralText("");//EntitySelector.getNames(this.selector.getEntities(source));
+         return Text.of("");//EntitySelector.getNames(this.selector.getEntities(source));
       }
    }
 }

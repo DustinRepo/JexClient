@@ -1,6 +1,6 @@
 package me.dustin.jex.feature.mod.impl.player;
 
-import me.dustin.jex.JexClient;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -12,9 +12,13 @@ import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.Formatting;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Automatically swap your Elytra and your Chestplate on toggle")
 public class ElytraSwap extends Feature {
+
+    public ElytraSwap() {
+        super(Category.PLAYER, "Automatically swap your Elytra and your Chestplate on toggle");
+    }
 
     @Override
     public void onEnable() {
@@ -50,9 +54,9 @@ public class ElytraSwap extends Feature {
                 }
                 //swap on slot 6 as that's the chest slot
                 InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 6, SlotActionType.SWAP, bestElytraSlot);
-                ChatHelper.INSTANCE.addRawMessage("\2478[\247aElytraSwap\2478]\247f: \2477Equipped " + bestSelected.getName().getString());
+                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%sElytraSwap%s]%s: %sEquipped %s", Formatting.DARK_GRAY, Formatting.GREEN, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY, bestSelected.getName().getString()));
             } else {
-                ChatHelper.INSTANCE.addRawMessage("\2478[\247aElytraSwap\2478]\247f: \2477No elytra available for swap!");
+                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%sElytraSwap%s]%s: %sNo elytra available for swap!", Formatting.DARK_GRAY, Formatting.GREEN, Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY));
             }
         } else if (equippedStack.getItem() == Items.ELYTRA){
             //wearing elytra, look for armor

@@ -26,28 +26,18 @@ public class DirectionElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().direction;
+        return getHud().infoProperty.value() && getHud().directionProperty.value();
     }
 
     private String getDirection() {
         Direction direction = Wrapper.INSTANCE.getLocalPlayer().getHorizontalFacing();
-        String string7;
-        switch (direction) {
-            case NORTH:
-                string7 = "(-Z)";
-                break;
-            case SOUTH:
-                string7 = "(+Z)";
-                break;
-            case WEST:
-                string7 = "(-X)";
-                break;
-            case EAST:
-                string7 = "(+X)";
-                break;
-            default:
-                string7 = "";
-        }
+        String string7 = switch (direction) {
+            case NORTH -> "(-Z)";
+            case SOUTH -> "(+Z)";
+            case WEST -> "(-X)";
+            case EAST -> "(+X)";
+            default -> "";
+        };
         return string7;
     }
 }

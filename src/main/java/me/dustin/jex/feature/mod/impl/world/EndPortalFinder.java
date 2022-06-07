@@ -4,24 +4,28 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.util.math.Vec3d;
+import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Find end portals with just two eye of ender. Math from https://www.omnicalculator.com/other/end-portal-finder")
 public class EndPortalFinder extends Feature {
 
-	double[] portalPos = null;
+	private double[] portalPos = null;
 	private Vec3d firstPos;
 	private float firstYaw = -999;
 	private Vec3d secondPos;
 	private float secondYaw = -999;
 	private int pearl = 0;
 	private EyeOfEnderEntity trackedEye;
+
+	public EndPortalFinder() {
+		super(Category.WORLD, "Find end portals with just two eye of ender. Math from https://www.omnicalculator.com/other/end-portal-finder");
+	}
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

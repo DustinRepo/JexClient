@@ -2,19 +2,12 @@ package me.dustin.jex.addon.cape;
 
 import com.google.common.collect.Maps;
 import me.dustin.jex.helper.file.FileHelper;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
-import org.apache.commons.codec.binary.Base64;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 public class Cape {

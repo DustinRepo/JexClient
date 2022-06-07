@@ -4,22 +4,32 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Save your mending tools from breaking by putting them away automatically.")
 public class MendingSaver extends Feature {
 
-    @Op(name = "Notify")
-    public boolean notify;
-    @Op(name = "Item %", max = 30)
-    public int itemPercent = 10;
+    public Property<Boolean> notifyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Notify")
+            .description("Whether or not to notify the player when activated.")
+            .value(false)
+            .build();
+    public Property<Integer> itemPercentProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Item %")
+            .value(10)
+            .max(30)
+            .build();
+
+    public MendingSaver() {
+        super(Category.MISC, "Save your mending tools from breaking by putting them away automatically.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -27,8 +37,8 @@ public class MendingSaver extends Feature {
             ItemStack currentStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
             if (currentStack != null && InventoryHelper.INSTANCE.hasEnchantment(currentStack, Enchantments.MENDING)) {
                 float percent = (((float) currentStack.getMaxDamage() - (float) currentStack.getDamage()) / (float) currentStack.getMaxDamage()) * 100;
-                if (percent < itemPercent) {
-                    if (notify)
+                if (percent < itemPercentProperty.value()) {
+                    if (notifyProperty.value())
                         ChatHelper.INSTANCE.addClientMessage("MendingSaver just saved your \247b" + currentStack.getName().getString());
 
                     if (!InventoryHelper.INSTANCE.isInventoryFullIgnoreHotbar())

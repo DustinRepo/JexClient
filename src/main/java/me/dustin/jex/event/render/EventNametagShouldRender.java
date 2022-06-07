@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 
 public class EventNametagShouldRender extends Event {
 
-    private Entity entity;
+    private final Entity entity;
 
     public EventNametagShouldRender(Entity entity) {
         this.entity = entity;

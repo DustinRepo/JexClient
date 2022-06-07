@@ -3,8 +3,9 @@ package me.dustin.jex.feature.mod.impl.world;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -13,19 +14,28 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Spam XP Bottles on a button press")
 public class XPBottleSpammer extends Feature {
 
-    @Op(name = "Speed", min = 1, max = 5)
-    public int speed = 1;
+    public final Property<Integer> speedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Speed")
+            .value(1)
+            .min(1)
+            .max(5)
+            .build();
+    public final Property<Integer> throwKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Throw Key")
+            .value(KeyboardHelper.INSTANCE.MIDDLE_CLICK)
+            .isKey()
+            .build();
 
-    @Op(name = "Throw Key", isKeybind = true)
-    public int throwKey = KeyboardHelper.INSTANCE.MIDDLE_CLICK;
+    public XPBottleSpammer() {
+        super(Category.WORLD, "Spam XP Bottles on a button press");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (!KeyboardHelper.INSTANCE.isPressed(throwKey))
+            if (!KeyboardHelper.INSTANCE.isPressed(throwKeyProperty.value()))
                 return;
             int xpBottleHotbar = InventoryHelper.INSTANCE.getFromHotbar(Items.EXPERIENCE_BOTTLE);
             if (xpBottleHotbar == -1) {
@@ -36,14 +46,14 @@ public class XPBottleSpammer extends Feature {
             }
             event.setRotation(new RotationVector(Wrapper.INSTANCE.getLocalPlayer().getYaw(), 90));
         } else if (event.getMode() == EventPlayerPackets.Mode.POST) {
-            if (!KeyboardHelper.INSTANCE.isPressed(throwKey))
+            if (!KeyboardHelper.INSTANCE.isPressed(throwKeyProperty.value()))
                 return;
             int xpBottleHotbar = InventoryHelper.INSTANCE.getFromHotbar(Items.EXPERIENCE_BOTTLE);
             if (xpBottleHotbar == -1)
                 return;
             InventoryHelper.INSTANCE.setSlot(xpBottleHotbar, false, true);
-            for (int i = 0; i < speed; i++)
-                Wrapper.INSTANCE.getInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND);
+            for (int i = 0; i < speedProperty.value(); i++)
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
             InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
         }
     });

@@ -4,9 +4,10 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.AutoArmor;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -15,19 +16,25 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
-
 import java.util.ArrayList;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Spam switch between armor in your inventory")
 public class ArmorDerp extends Feature {
 
-    @Op(name = "Delay (MS)", max = 1000, inc = 10)
-    public int delay = 50;
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay (MS)")
+            .value(50L)
+            .max(1000)
+            .inc(10)
+            .build();
 
     private boolean autoArmor;
     private final Random random = new Random();
     private final StopWatch stopWatch = new StopWatch();
+
+    public ArmorDerp() {
+        super(Category.MISC, "Spam switch between armor in your inventory");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -39,7 +46,7 @@ public class ArmorDerp extends Feature {
         }
 
         if (!armorInfos.isEmpty()) {
-            if (stopWatch.hasPassed(delay)) {
+            if (stopWatch.hasPassed(delayProperty.value())) {
                 int r = random.nextInt(armorInfos.size());
                 ArmorInfo armorInfo = armorInfos.get(r);
                 EquipmentSlot equipmentSlot = armorInfo.armorItem().getSlotType();
@@ -47,9 +54,9 @@ public class ArmorDerp extends Feature {
                 int slot = armorInfo.slot();
                 if (Wrapper.INSTANCE.getLocalPlayer().getEquippedStack(equipmentSlot).getItem() != Items.AIR) {
                     if (InventoryHelper.INSTANCE.isInventoryFull())
-                        Wrapper.INSTANCE.getInteractionManager().clickSlot(0, armorSlot, 0, SlotActionType.THROW, Wrapper.INSTANCE.getLocalPlayer());
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickSlot(0, armorSlot, 0, SlotActionType.THROW, Wrapper.INSTANCE.getLocalPlayer());
                     else
-                        Wrapper.INSTANCE.getInteractionManager().clickSlot(0, armorSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickSlot(0, armorSlot, 0, SlotActionType.QUICK_MOVE, Wrapper.INSTANCE.getLocalPlayer());
                 }
                 InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, slot < 9 ? slot + 36 : slot, SlotActionType.QUICK_MOVE);
                 stopWatch.reset();

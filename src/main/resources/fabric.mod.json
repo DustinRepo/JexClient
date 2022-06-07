@@ -9,7 +9,6 @@
     "sl - Code Contributor",
     "c10udburst - Code Contributor",
     "Vonr/Qther - Code Contributor",
-    "Alex3236 - Code Contributor",
     "BobIsMyManager - Contributor"
   ],
   "contact": {
@@ -31,9 +30,9 @@
     "jex.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.11.3",
+    "fabricloader": ">=0.14.0",
     "fabric": "*",
-    "minecraft": "1.18.x",
+    "minecraft": "1.19.x",
     "java": ">=17"
   },
   "suggests": {

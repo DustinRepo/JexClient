@@ -2,7 +2,6 @@ package me.dustin.jex.event.filters;
 
 import me.dustin.jex.event.misc.EventSetScreen;
 import net.minecraft.client.gui.screen.Screen;
-
 import java.util.function.Predicate;
 
 public class SetScreenFilter implements Predicate<EventSetScreen> {

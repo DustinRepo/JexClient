@@ -1,15 +1,11 @@
 package me.dustin.jex.event.render;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
 import me.dustin.events.core.Event;
 import net.minecraft.block.Block;
 
 public class EventBlockBrightness extends Event {
 
-    private Block block;
+    private final Block block;
     private int brightness;
 
     public EventBlockBrightness(Block block, int brightness) {

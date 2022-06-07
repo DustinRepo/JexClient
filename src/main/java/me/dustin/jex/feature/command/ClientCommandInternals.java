@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.command;
 
-import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.argument;
-import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.literal;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,20 +23,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.mixin.command.HelpCommandAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandException;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public final class ClientCommandInternals {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String API_COMMAND_NAME = "jex_command";
-    private static final String SHORT_API_COMMAND_NAME = "jex";
+    private static final String SHORT_API_COMMAND_NAME = "assets/jex";
 
     /**
      * Executes a client-sided command from a message.
@@ -91,7 +89,7 @@ public final class ClientCommandInternals {
         Text message = Texts.toText(e.getRawMessage());
         String context = e.getContext();
 
-        return context != null ? new TranslatableText("command.context.parse_error", message, context) : message;
+        return context != null ? Text.translatable("command.context.parse_error", message, context) : message;
     }
 
     /**
@@ -135,7 +133,7 @@ public final class ClientCommandInternals {
         Map<CommandNode<FabricClientCommandSource>, String> commands = CommandManagerJex.DISPATCHER.getSmartUsage(startNode, context.getSource());
 
         for (String command : commands.values()) {
-            context.getSource().sendFeedback(new LiteralText("/" + command));
+            context.getSource().sendFeedback(Text.of("/" + command));
         }
 
         return commands.size();

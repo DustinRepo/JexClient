@@ -1,16 +1,16 @@
 package me.dustin.jex.helper.misc;
 
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
-
 import java.util.Locale;
+import net.minecraft.client.util.InputUtil;
 
 public enum KeyboardHelper {
     INSTANCE;
 
     public final int MIDDLE_CLICK = 10002;
-    public final int MB4 = 10002;
-    public final int MB5 = 10002;
+    public final int MB4 = 10004;
+    public final int MB5 = 10003;
 
     public boolean isPressed(int key) {
         if (key > 10000)
@@ -26,8 +26,8 @@ public enum KeyboardHelper {
             }
             return "MB" + (mousebutton + 1);
         }
-        String s = (GLFW.glfwGetKeyName(key, 0) == null ? InputUtil.fromKeyCode(key, 0).getTranslationKey().replace("key.keyboard.", "").replace(".", "_") : GLFW.glfwGetKeyName(key, 0).toUpperCase()).toUpperCase().replace("key.keyboard.", "").replace(".", "_");
-        return s.equalsIgnoreCase("_") ? "." : s;
+        String s = InputUtil.fromTranslationKey(InputUtil.fromKeyCode(key, 0).getTranslationKey()).getLocalizedText().getString();
+        return s.length() == 1 ? s.toUpperCase() : s;
     }
 
     public int getKeyFromName(String keyName) {

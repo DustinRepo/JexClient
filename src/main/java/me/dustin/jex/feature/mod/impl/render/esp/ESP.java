@@ -3,66 +3,116 @@ package me.dustin.jex.feature.mod.impl.render.esp;
 import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.misc.EventJoinWorld;
+import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.render.esp.impl.OutlineBox;
-import me.dustin.jex.helper.player.FriendHelper;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
+import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.render.esp.impl.BoxESP;
-import me.dustin.jex.feature.mod.impl.render.esp.impl.ShaderESP;
-import me.dustin.jex.feature.mod.impl.render.esp.impl.TwoDeeESP;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.helper.player.FriendHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.render.esp.impl.BoxESP;
+import me.dustin.jex.feature.mod.impl.render.esp.impl.ShaderESP;
+import me.dustin.jex.feature.mod.impl.render.esp.impl.TwoDeeESP;
 import java.awt.*;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Mark entities/players through walls")
 public class ESP extends Feature {
     public static ESP INSTANCE;
-    @Op(name = "Mode", all = {"Shader", "2D", "Box Outline", "Box"})
-    public String mode = "Shader";
 
-    @Op(name = "Player")
-    public boolean player = true;
-    @Op(name = "Neutral")
-    public boolean neutral = true;
-    @Op(name = "Boss")
-    public boolean boss = true;
-    @Op(name = "Hostile")
-    public boolean hostile = true;
-    @Op(name = "Passive")
-    public boolean passive = true;
-    @Op(name = "Item")
-    public boolean item = false;
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.SHADER)
+            .build();
+    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Player")
+            .value(true)
+            .build();
+    public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Color on Distance")
+            .description("Change the color from green (far away) to red (close).")
+            .value(false)
+            .parent(playerProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> playerColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Player Color")
+            .value(Color.RED)
+            .parent(playerProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> friendColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Friend Color")
+            .value(Color.BLUE)
+            .parent(playerProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Neutral")
+            .value(true)
+            .build();
+    public final Property<Color> neutralColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Neutral Color")
+            .value(Color.PINK)
+            .parent(neutralProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Boss")
+            .value(true)
+            .build();
+    public final Property<Color> bossColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Boss Color")
+            .value(Color.RED.darker())
+            .parent(bossProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> hostileProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hostile")
+            .value(true)
+            .build();
+    public final Property<Color> hostileColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Hostile Color")
+            .value(Color.ORANGE)
+            .parent(hostileProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> passiveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Passive")
+            .value(true)
+            .build();
+    public final Property<Color> passiveColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Passive Color")
+            .value(Color.GREEN)
+            .parent(passiveProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Color> petColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Pets Color")
+            .value(Color.BLUE)
+            .parent(passiveColorProperty)
+            .build();
+    public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Item")
+            .value(true)
+            .build();
+    public final Property<Color> itemColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Item Color")
+            .value(Color.WHITE)
+            .parent(itemProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
-    @OpChild(name = "Player Color", isColor = true, parent = "Player")
-    public int playerColor = 0xffff0000;
-    @OpChild(name = "Color on Distance", parent = "Player Color")
-    public boolean colorOnDistance;
-    @OpChild(name = "Friend Color", isColor = true, parent = "Player Color")
-    public int friendColor = 0xff0080ff;
-    @OpChild(name = "Boss Color", isColor = true, parent = "Boss")
-    public int bossColor = 0xffff0000;
-    @OpChild(name = "Hostile Color", isColor = true, parent = "Hostile")
-    public int hostileColor = 0xffff8000;
-    @OpChild(name = "Neutral Color", isColor = true, parent = "Neutral")
-    public int neutralColor = 0xffff00ff;
-    @OpChild(name = "Passive Color", isColor = true, parent = "Passive")
-    public int passiveColor = 0xff00ff00;
-    @OpChild(name = "Pets Color", isColor = true, parent = "Passive Color")
-    public int petColor = 0xff0000ff;
-    @OpChild(name = "Item Color", isColor = true, parent = "Item")
-    public int itemColor = 0xffffffff;
-    String lastMode;
+    private Mode lastMode;
 
     public ESP() {
+        super(Category.VISUAL, "Mark entities/players through walls");
         new ShaderESP();
         new BoxESP();
         new OutlineBox();
@@ -77,31 +127,31 @@ public class ESP extends Feature {
     @EventPointer
     private final EventListener<EventRender2DNoScale> eventRender2DNoScaleEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
-    private final EventListener<EventOutlineColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
+    private final EventListener<EventTeamColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
-    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> sendEvent(event));
+    private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
     private final EventListener<EventHasOutline> eventHasOutlineEventListener = new EventListener<>(event -> sendEvent(event));
 
     private void sendEvent(Event event) {
-        if (lastMode != null && !mode.equalsIgnoreCase(lastMode)) {
+        if (lastMode != null && modeProperty.value() != lastMode) {
             FeatureExtension.get(lastMode, this).disable();
-            FeatureExtension.get(mode, this).enable();
+            FeatureExtension.get(modeProperty.value(), this).enable();
         }
-        FeatureExtension.get(mode, this).pass(event);
-        this.setSuffix(mode);
-        lastMode = mode;
+        FeatureExtension.get(modeProperty.value(), this).pass(event);
+        this.setSuffix(modeProperty.value());
+        lastMode = modeProperty.value();
     }
 
     @Override
     public void onEnable() {
-        FeatureExtension.get(mode, this).enable();
+        FeatureExtension.get(modeProperty.value(), this).enable();
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        FeatureExtension.get(mode, this).disable();
+        FeatureExtension.get(modeProperty.value(), this).disable();
         super.onDisable();
     }
 
@@ -109,7 +159,7 @@ public class ESP extends Feature {
         if (entity == null)
             return false;
         if (entity instanceof ItemEntity)
-            return item;
+            return itemProperty.value();
         if (!(entity instanceof LivingEntity livingEntity))
             return false;
         if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
@@ -117,54 +167,45 @@ public class ESP extends Feature {
         if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
             return false;
         if (livingEntity instanceof PlayerEntity)
-            return player;
+            return playerProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
-            return neutral;
+            return neutralProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
-            return boss;
+            return bossProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
-            return hostile;
+            return hostileProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
-            return passive;
+            return passiveProperty.value();
         return false;
     }
 
     public int getColor(Entity entity) {
         if (entity instanceof ItemEntity)
-            return itemColor;
+            return itemColorProperty.value().getRGB();
         if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
-            return friendColor;
+            return friendColorProperty.value().getRGB();
         if (entity instanceof PlayerEntity) {
-            if (colorOnDistance) {
-                return getColor(entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64).getRGB();
+            if (colorOnDistanceProperty.value()) {
+                return ColorHelper.INSTANCE.redGreenShift(entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64);
             }
-            return playerColor;
+            return playerColorProperty.value().getRGB();
         }
 
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
             if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
-                return petColor;
+                return petColorProperty.value().getRGB();
             else
-                return passiveColor;
+                return passiveColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isBossMob(entity))
-            return bossColor;
+            return bossColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
-            return hostileColor;
+            return hostileColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
-            return neutralColor;
+            return neutralColorProperty.value().getRGB();
         return -1;
     }
 
-    public Color getColor(double power) {
-        if (power > 1)
-            power = 1;
-        double H = power * 0.35; // Hue (note 0.35 = Green, see huge chart below)
-        double S = 0.9; // Saturation
-        double B = 0.9; // Brightness
-
-        return Color.getHSBColor((float) H, (float) S, (float) B);
+    public enum Mode {
+        SHADER, TWO_DEE, BOX_OUTLINE, BOX
     }
-
-
-
 }

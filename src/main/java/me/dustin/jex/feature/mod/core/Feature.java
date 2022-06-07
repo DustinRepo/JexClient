@@ -2,34 +2,50 @@ package me.dustin.jex.feature.mod.core;
 
 import me.dustin.jex.feature.keybind.Keybind;
 import me.dustin.jex.feature.mod.impl.render.hud.Hud;
-import me.dustin.jex.feature.option.Option;
-import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.events.EventManager;
+import me.dustin.jex.feature.property.Property;
+import org.apache.commons.lang3.text.WordUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 public class Feature {
-
+    private static final Feature dummyFeature = new Feature(Category.COMBAT, "Error");
     private String name;
     private String displayName;
     private String description;
     private boolean state;
-    private boolean visible;
-    private Category featureCategory;
+    private final Category category;
+    private final boolean defaultState;
 
-    public Feature() {
-        this.name = this.getClass().getAnnotation(Manifest.class).name();
-        if (name.equalsIgnoreCase("\\"))
-            name = this.getClass().getSimpleName();
+    private final Property<Boolean> visibleProperty;
+
+    public Feature(Category category, String description) {
+        this("", category, description, false, true, 0);
+    }
+
+    public Feature(Category category, String description, int key) {
+        this("", category, description, false, true, key);
+    }
+
+    public Feature(String name, Category category, String description) {
+        this(name, category, description, false, true, 0);
+    }
+
+    public Feature(String name, Category category, String description, boolean state, boolean visible, int key) {
+        this.name = name;
+        if (this.name.isEmpty())
+            this.name = this.getClass().getSimpleName();
         this.displayName = this.name;
-        this.description = this.getClass().getAnnotation(Manifest.class).description();
-        this.featureCategory = this.getClass().getAnnotation(Manifest.class).category();
-        int key = this.getClass().getAnnotation(Manifest.class).key();
+        this.description = description;
+        this.category = category;
         if (key != 0)
             Keybind.add(key, "t " + this.getName(), true);
-        this.visible = this.getClass().getAnnotation(Manifest.class).visible();
+        this.visibleProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+                .name("Is Visible")
+                .description("Whether or not this mod is visible on the HUD.")
+                .value(visible)
+                .build();
+        this.defaultState = state;
     }
 
     public static <T extends Feature> T get(Class<T> clazz) {
@@ -41,7 +57,7 @@ public class Feature {
             if (feature.getClass() == clazz)
                 return feature;
         }
-        return new Feature();
+        return dummyFeature;
     }
 
     public static Feature get(String name) {
@@ -55,21 +71,12 @@ public class Feature {
     public static ArrayList<Feature> getModules(Category category) {
         ArrayList<Feature> features = new ArrayList<>();
         FeatureManager.INSTANCE.getFeatures().forEach(module -> {
-            if (module.getFeatureCategory() == category)
+            if (module.getCategory() == category)
                 features.add(module);
         });
         return features;
     }
 
-    public ArrayList<Option> getOptions() {
-        ArrayList<Option> options = new ArrayList<Option>();
-        OptionManager.get().getOptions().forEach(option ->
-        {
-            if (option.getFeature() == this)
-                options.add(option);
-        });
-        return options;
-    }
     public void toggleState() {
         this.setState(!this.getState());
     }
@@ -106,10 +113,6 @@ public class Feature {
         this.description = description;
     }
 
-    public void setFeatureCategory(Category category) {
-        this.featureCategory = category;
-    }
-
     public boolean getState() {
         return state;
     }
@@ -124,7 +127,7 @@ public class Feature {
     }
 
     public void setSuffix(String suffix) {
-        if (!Hud.INSTANCE.suffixes) {
+        if (!Hud.INSTANCE.suffixesProperty.value()) {
             this.setDisplayName(this.getName());
             return;
         }
@@ -135,24 +138,30 @@ public class Feature {
         this.setDisplayName(this.getName() + "\2477: \2478" + suffix);
     }
 
+    public void setSuffix(Enum<?> suffix) {
+        setSuffix(WordUtils.capitalize(suffix.name().toLowerCase().replace("_", " ")));
+    }
+
+    public void setSuffix(Enum<?> one, Enum<?> two) {
+        setSuffix(WordUtils.capitalize(one.name().toLowerCase().replace("_", " ")) + " : " + WordUtils.capitalize(two.name().toLowerCase().replace("_", " ")));
+    }
+
     public boolean isVisible() {
-        return visible;
+        return visibleProperty.value();
     }
 
     public void setVisible(boolean visible) {
-        this.visible = visible;
+        this.visibleProperty.setValue(visible);
     }
 
-    public Category getFeatureCategory() {
-        return featureCategory;
+    public Category getCategory() {
+        return category;
     }
 
-    public Feature loadFeature() {
+    public void loadFeature() {
         //fuck-ass workaround for having mods enabled by default in the code messing with the event manager
-        if (this.getClass().getAnnotation(Manifest.class) != null && this.getClass().getAnnotation(Manifest.class).enabled()) {
+        if (defaultState)
             setState(true);
-        }
-        return this;
     }
 
     public void setKey(int key) {
@@ -169,18 +178,4 @@ public class Feature {
             return keybind.key();
         else return 0;
     }
-
-    public enum Category {
-        COMBAT, PLAYER, MOVEMENT, WORLD, VISUAL, MISC
-    }
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface Manifest {
-        String name() default "\\";
-        Category category();
-        String description();
-        int key() default 0;
-        boolean enabled() default false;
-        boolean visible() default true;
-    }
-
 }

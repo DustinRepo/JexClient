@@ -4,56 +4,64 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
+import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.helper.world.wurstpathfinder.PathFinder;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Prevent yourself from being detected as AFK and potentially kicked")
 public class AntiAFK extends Feature {
 
-    @Op(name = "Mode", all = {"Wander", "Swing", "Jump", "Chat"})
-    public String mode = "Wander";
-
-    @Op(name = "Timer (Seconds)", min = 5, max = 120, inc = 1)
-    public int secondsDelay = 5;
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.WANDER)
+            .build();
+    public final Property<Integer> secondsDelay = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Timer (Seconds)")
+            .value(5)
+            .min(5)
+            .max(120)
+            .build();
 
     private final StopWatch stopWatch = new StopWatch();
 
     private BlockPos afkSpot;
     private BlockPos[] lastSpots;
 
+    public AntiAFK() {
+        super(Category.MISC, "Prevent yourself from being detected as AFK and potentially kicked");
+    }
+
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        setSuffix(mode);
+        setSuffix(modeProperty.value());
         if (afkSpot == null)
             afkSpot = Wrapper.INSTANCE.getPlayer().getBlockPos();
         if (lastSpots == null)
             lastSpots = new BlockPos[]{Wrapper.INSTANCE.getPlayer().getBlockPos(), Wrapper.INSTANCE.getPlayer().getBlockPos()};
-        if (stopWatch.hasPassed(secondsDelay * 1000L)) {
-            switch (mode) {
-                case "Swing":
+        if (stopWatch.hasPassed(secondsDelay.value() * 1000L)) {
+            switch (modeProperty.value()) {
+                case SWING:
                     Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                     break;
-                case "Jump":
+                case JUMP:
                     if (Wrapper.INSTANCE.getPlayer().isOnGround())
                         Wrapper.INSTANCE.getPlayer().jump();
                     break;
-                case "Chat":
-                    NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(Wrapper.INSTANCE.getPlayer().age + ""));
+                case CHAT:
+                    ChatHelper.INSTANCE.sendChatMessage(Wrapper.INSTANCE.getPlayer().age + "");
                     break;
-                case "Wander":
+                case WANDER:
                     PathingHelper.INSTANCE.setAllowMining(false);
                     PathingHelper.INSTANCE.setPathFinder(new WanderPathFinder(afkSpot, this));
                     break;
@@ -99,5 +107,9 @@ public class AntiAFK extends Feature {
             }
             return done;
         }
+    }
+
+    public enum Mode {
+        WANDER, SWING, JUMP, CHAT
     }
 }

@@ -3,51 +3,114 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderItem;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.feature.property.Property;
 import net.minecraft.client.util.math.MatrixStack;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Change the scale and positioning of items in your hands")
 public class ItemScale extends Feature {
 
-    @Op(name = "Right Hand")
-    public boolean rightHand = true;
-    @OpChild(name = "RH Scale", min = 0.1f, max = 3, inc = 0.05f, parent = "Right Hand")
-    public float rightHandScale = 1;
-    @OpChild(name = "RH X", min = -2, max = 2, inc = 0.05f, parent = "Right Hand")
-    public float rightHandX;
-    @OpChild(name = "RH Y", min = -2, max = 2, inc = 0.05f, parent = "Right Hand")
-    public float rightHandY;
-    @OpChild(name = "RH Z", min = -2, max = 2, inc = 0.05f, parent = "Right Hand")
-    public float rightHandZ;
+    public final Property<Boolean> rightHandProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Right Hand")
+            .value(true)
+            .build();
+    public final Property<Float> rightHandScaleProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("RH Scale")
+            .value(1f)
+            .min(0.1f)
+            .max(3)
+            .inc(0.05f)
+            .parent(rightHandProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Float> rightHandXProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("RH X")
+            .value(0f)
+            .min(-2)
+            .max(2)
+            .inc(0.05f)
+            .parent(rightHandProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Float> rightHandYProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("RH Y")
+            .value(0f)
+            .min(-2)
+            .max(2)
+            .inc(0.05f)
+            .parent(rightHandProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Float> rightHandZProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("RH Z")
+            .value(0f)
+            .min(-2)
+            .max(2)
+            .inc(0.05f)
+            .parent(rightHandProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
 
-    @Op(name = "Left Hand")
-    public boolean leftHand = true;
-    @OpChild(name = "LH Scale", min = 0.1f, max = 3, inc = 0.05f, parent = "Left Hand")
-    public float leftHandScale = 1;
-    @OpChild(name = "LH X", min = -2, max = 2, inc = 0.05f, parent = "Left Hand")
-    public float leftHandX;
-    @OpChild(name = "LH Y", min = -2, max = 2, inc = 0.05f, parent = "Left Hand")
-    public float leftHandY;
-    @OpChild(name = "LH Z", min = -2, max = 2, inc = 0.05f, parent = "Left Hand")
-    public float leftHandZ;
+    public final Property<Boolean> leftHandProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Left Hand")
+            .value(true)
+            .build();
+    public final Property<Float> leftHandScaleProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("LH Scale")
+            .value(1f)
+            .min(0.1f)
+            .max(3)
+            .inc(0.05f)
+            .parent(rightHandProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Float> leftHandXProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("LH X")
+            .value(0f)
+            .min(-2)
+            .max(2)
+            .inc(0.05f)
+            .parent(rightHandProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Float> leftHandYProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("LH Y")
+            .value(0f)
+            .min(-2)
+            .max(2)
+            .inc(0.05f)
+            .parent(rightHandProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Float> leftHandZProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("LH Z")
+            .value(0f)
+            .min(-2)
+            .max(2)
+            .inc(0.05f)
+            .parent(rightHandProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+
+    public ItemScale() {
+        super(Category.VISUAL, "Change the scale and positioning of items in your hands");
+    }
 
     @EventPointer
     private final EventListener<EventRenderItem> eventRenderItemEventListener = new EventListener<>(event -> {
         if (event.getType().isFirstPerson()) {
-            MatrixStack matrixStack = event.getMatrixStack();
+            MatrixStack matrixStack = event.getPoseStack();
             switch (event.getRenderTime()) {
                 case PRE -> {
                     matrixStack.push();
                     switch (event.getType()) {
                         case FIRST_PERSON_RIGHT_HAND -> {
-                            matrixStack.translate(rightHandX, rightHandY, rightHandZ);
-                            matrixStack.scale(rightHandScale, rightHandScale, rightHandScale);
+                            matrixStack.translate(rightHandXProperty.value(), rightHandYProperty.value(), rightHandZProperty.value());
+                            matrixStack.scale(rightHandScaleProperty.value(), rightHandScaleProperty.value(), rightHandScaleProperty.value());
                         }
                         case FIRST_PERSON_LEFT_HAND -> {
-                            matrixStack.translate(leftHandX, leftHandY, leftHandZ);
-                            matrixStack.scale(leftHandScale, leftHandScale, leftHandScale);
+                            matrixStack.translate(leftHandXProperty.value(), leftHandYProperty.value(), leftHandZProperty.value());
+                            matrixStack.scale(leftHandScaleProperty.value(), leftHandScaleProperty.value(), leftHandScaleProperty.value());
                         }
                     }
                 }

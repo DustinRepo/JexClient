@@ -1,8 +1,4 @@
 package me.dustin.jex.event.render;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
 import me.dustin.events.core.Event;
 import net.minecraft.block.entity.BlockEntity;

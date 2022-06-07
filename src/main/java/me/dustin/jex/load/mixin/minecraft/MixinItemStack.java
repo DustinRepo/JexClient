@@ -12,8 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack {
 
-    @Shadow
-    public abstract int getCount();
+    @Shadow public abstract int getCount();
 
     @Inject(method = "setCount", at = @At("HEAD"))
     public void setCountPre(int count, CallbackInfo ci) {
@@ -34,6 +33,5 @@ public abstract class MixinItemStack {
     public void decrementPost(int amount, CallbackInfo ci) {
         new EventItemStackDecrement(EventItemStackDecrement.Mode.POST, (ItemStack)(Object)this, amount, this.getCount()).run();
     }
-
 
 }

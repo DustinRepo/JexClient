@@ -6,10 +6,11 @@ import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventWalkOffBlock;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Scaffold;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -19,7 +20,11 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
@@ -31,27 +36,44 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Place blocks under yourself automatically when walking on liquids.")
 public class AntiLiquid extends Feature {
 
-    @Op(name = "Place Mode", all = {"Post", "Pre"})
-    public String placeMode = "Post";
-    @Op(name = "Source Only")
-    public boolean sourceOnly = false;
-    @Op(name = "Sneak on Place")
-    public boolean sneak = false;
-    @Op(name = "Distance", min = 1, max = 5)
-    public int distance = 3;
-    @Op(name = "Allow Illegal Place")
-    public boolean illegalPlace = true;
+    public final Property<PlaceMode> placeModeProperty = new Property.PropertyBuilder<PlaceMode>(this.getClass())
+            .name("Place Mode")
+            .description("Timing to place the blocks.")
+            .value(PlaceMode.POST)
+            .build();
+    public final Property<Boolean> sourceOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Source Only")
+            .value(true)
+            .build();
+    public final Property<Boolean> sneakProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sneak on Place")
+            .value(false)
+            .build();
+    public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Distance")
+            .value(3)
+            .min(1)
+            .max(5)
+            .build();
+    public final Property<Boolean> illegalPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Allow Illegal Place")
+            .description("Allow placements without having a side of a block to use.")
+            .value(true)
+            .build();
+
     private BlockPos pos;
 
     private ArrayList<BlockPos> list;
+
+    public AntiLiquid() {
+        super(Category.WORLD, "Place blocks under yourself automatically when walking on liquids.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -61,19 +83,19 @@ public class AntiLiquid extends Feature {
             pos = null;
             list = null;
 
-            Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - distance, Wrapper.INSTANCE.getPlayer().getBlockY() - distance, Wrapper.INSTANCE.getPlayer().getBlockZ() - distance, Wrapper.INSTANCE.getPlayer().getBlockX() + distance, Wrapper.INSTANCE.getPlayer().getBlockY() + distance, Wrapper.INSTANCE.getPlayer().getBlockZ() + distance);
+            Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockY() - distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockZ() - distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockX() + distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockY() + distanceProperty.value(), Wrapper.INSTANCE.getPlayer().getBlockZ() + distanceProperty.value());
             list = WorldHelper.INSTANCE.getBlocksInBox(box);
             list.sort(Comparator.comparingDouble(value -> ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos(), Vec3d.ofCenter(value))));
 
             for (BlockPos blockPos : list) {
-                if (blockPos != Wrapper.INSTANCE.getPlayer().getBlockPos() && blockPos != Wrapper.INSTANCE.getPlayer().getBlockPos().up() && canPlaceHere(blockPos) && isReplaceable(blockPos) && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, Wrapper.INSTANCE.getPlayer().getEyeHeight(Wrapper.INSTANCE.getPlayer().getPose()), 0), Vec3d.ofCenter(blockPos)) <= Wrapper.INSTANCE.getInteractionManager().getReachDistance()) {
+                if (blockPos != Wrapper.INSTANCE.getPlayer().getBlockPos() && blockPos != Wrapper.INSTANCE.getPlayer().getBlockPos().up() && canPlaceHere(blockPos) && isReplaceable(blockPos) && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, Wrapper.INSTANCE.getPlayer().getEyeHeight(Wrapper.INSTANCE.getPlayer().getPose()), 0), Vec3d.ofCenter(blockPos)) <= Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance()) {
                     List<Entity> list = Wrapper.INSTANCE.getWorld().getOtherEntities(null, new Box(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1));
                     boolean collides = !list.isEmpty();
                     if (collides)
                         continue;
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
                     if (!(block instanceof FluidBlock)) {
-                        Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
                         return;
                     }
                     if (getBlockFromHotbar() == -1) {
@@ -85,22 +107,22 @@ public class AntiLiquid extends Feature {
                     }
                     if (getBlockFromHotbar() != -1) {
                         pos = blockPos;
-                        if (sneak) {
+                        if (sneakProperty.value()) {
                             NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
                         }
                         event.setRotation(PlayerHelper.INSTANCE.rotateFromVec(PlayerHelper.INSTANCE.getPlacingLookPos(pos), Wrapper.INSTANCE.getPlayer()));
                         InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
-                        if (placeMode.equalsIgnoreCase("Pre")) {
-                            PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlace);
+                        if (placeModeProperty.value() == PlaceMode.PRE) {
+                            PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlaceProperty.value());
                         }
                     }
                     return;
                 }
             }
         } else if (pos != null) {
-            if (placeMode.equalsIgnoreCase("Post"))
-                PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlace);
-            if (sneak) {
+            if (placeModeProperty.value() == PlaceMode.POST)
+                PlayerHelper.INSTANCE.placeBlockInPos(pos, Hand.MAIN_HAND, illegalPlaceProperty.value());
+            if (sneakProperty.value()) {
                 NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
             }
         }
@@ -119,7 +141,7 @@ public class AntiLiquid extends Feature {
         boolean foundPlacing = false;
         ArrayList<Render3DHelper.BoxStorage> renderList = new ArrayList<>();
         for (BlockPos pos : list) {
-            if (pos != Wrapper.INSTANCE.getPlayer().getBlockPos() && pos != Wrapper.INSTANCE.getPlayer().getBlockPos().up() && isReplaceable(pos) && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, Wrapper.INSTANCE.getPlayer().getEyeHeight(Wrapper.INSTANCE.getPlayer().getPose()), 0), Vec3d.ofCenter(pos)) <= Wrapper.INSTANCE.getInteractionManager().getReachDistance()) {
+            if (pos != Wrapper.INSTANCE.getPlayer().getBlockPos() && pos != Wrapper.INSTANCE.getPlayer().getBlockPos().up() && isReplaceable(pos) && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getPlayer().getPos().add(0, Wrapper.INSTANCE.getPlayer().getEyeHeight(Wrapper.INSTANCE.getPlayer().getPose()), 0), Vec3d.ofCenter(pos)) <= Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance()) {
                 Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(pos);
                 Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
                 renderList.add(new Render3DHelper.BoxStorage(box, canPlaceHere(pos) && !foundPlacing ? 0xff00ff00 : 0xffff0000));
@@ -133,10 +155,10 @@ public class AntiLiquid extends Feature {
         renderList.forEach(blockStorage -> {
             Box box = blockStorage.box();
             int color = blockStorage.color();
-            Render3DHelper.INSTANCE.drawOutlineBox(event.getMatrixStack(), box, color, false);
+            Render3DHelper.INSTANCE.drawOutlineBox(event.getPoseStack(), box, color, false);
         });
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         Render3DHelper.INSTANCE.end3DRender();
     });
 
@@ -147,7 +169,7 @@ public class AntiLiquid extends Feature {
     }
 
     private boolean canPlaceHere(BlockPos pos) {
-        return illegalPlace || getBlockInfo(pos) != null;
+        return illegalPlaceProperty.value() || getBlockInfo(pos) != null;
     }
 
     public Scaffold.BlockInfo getBlockInfo(BlockPos pos) {
@@ -171,7 +193,7 @@ public class AntiLiquid extends Feature {
     }
 
     private boolean isReplaceable(BlockPos blockPos) {
-        return (WorldHelper.INSTANCE.getBlock(blockPos) instanceof FluidBlock fluidBlock && (!sourceOnly || fluidBlock.getFluidState(WorldHelper.INSTANCE.getBlockState(blockPos)).isStill())) || (WorldHelper.INSTANCE.isWaterlogged(blockPos) && !(WorldHelper.INSTANCE.getBlock(blockPos) instanceof FluidBlock));
+        return (WorldHelper.INSTANCE.getBlock(blockPos) instanceof FluidBlock fluidBlock && (!sourceOnlyProperty.value() || fluidBlock.getFluidState(WorldHelper.INSTANCE.getBlockState(blockPos)).isStill())) || (WorldHelper.INSTANCE.isWaterlogged(blockPos) && !(WorldHelper.INSTANCE.getBlock(blockPos) instanceof FluidBlock));
     }
 
     public int getBlockFromInv() {
@@ -198,5 +220,9 @@ public class AntiLiquid extends Feature {
 
     public BlockPos getPos() {
         return pos;
+    }
+
+    public enum PlaceMode {
+        PRE, POST
     }
 }

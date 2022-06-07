@@ -3,7 +3,6 @@ package me.dustin.jex.feature.command.impl;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.MessageArgumentType;
@@ -11,9 +10,7 @@ import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;
 import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.bot.PlayerBot;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.util.Hand;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.util.math.Vec3d;
 
 @Cmd(name = "botcmd", syntax = ".botcmd <bot> <action> <data>", description = "Send commands to your connected bots")

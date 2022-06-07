@@ -3,7 +3,7 @@ package me.dustin.jex.feature.command.core.arguments.impl;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.argument.CoordinateArgument;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;

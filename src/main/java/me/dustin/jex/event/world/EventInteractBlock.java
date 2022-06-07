@@ -1,14 +1,13 @@
 package me.dustin.jex.event.world;
 
 import me.dustin.events.core.Event;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 
 public class EventInteractBlock extends Event {
-    private BlockPos pos;
-    private BlockHitResult blockHitResult;
-    private Mode mode;
+    private final BlockPos pos;
+    private final BlockHitResult blockHitResult;
+    private final Mode mode;
 
     public EventInteractBlock(BlockPos blockPos, BlockHitResult blockHitResult, Mode mode) {
         this.pos = blockPos;

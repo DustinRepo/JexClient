@@ -6,8 +6,8 @@ import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.*;
-import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.keybind.Keybind;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
@@ -18,6 +18,7 @@ import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.feature.mod.impl.render.CustomFont;
 import me.dustin.jex.feature.plugin.JexPlugin;
 import me.dustin.jex.gui.changelog.changelog.JexChangelog;
+import me.dustin.jex.gui.keybind.JexKeybindListScreen;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
@@ -36,21 +37,24 @@ import me.dustin.jex.helper.render.EntityPositionHelper;
 import me.dustin.jex.helper.update.JexVersion;
 import me.dustin.jex.helper.world.PathingHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.option.OptionManager;
 import me.dustin.jex.helper.update.UpdateManager;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.annotate.EventPointer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.entity.EntityType;
+import net.minecraft.network.NetworkSide;
+import net.minecraft.network.NetworkState;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public enum JexClient {
     INSTANCE;
@@ -58,7 +62,7 @@ public enum JexClient {
     private boolean soundOnLaunch = true;
     private final Logger logger = LogManager.getFormatterLogger("Jex");
     private JexVersion version;
-    private final String baseUrl = "http://129.213.167.11/";
+    private final String baseUrl = "http://jexclient.tk/";
 
     private static boolean loadedOnce = false;
 
@@ -73,14 +77,12 @@ public enum JexClient {
 
         getLogger().info("Initializing Features");
         FeatureManager.INSTANCE.initializeFeatureManager();
-        getLogger().info("Initializing Options");
-        OptionManager.INSTANCE.initializeOptionManager();
-        getLogger().info("Initializing Commands");
-        CommandManagerJex.INSTANCE.registerCommands();
 
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             getLogger().info("Creating mods.json for website.");
             createJson();
+            createEntityIdList();
+            createVersionsJson();
         }
 
         getLogger().info("Reading Config Files");
@@ -132,7 +134,7 @@ public enum JexClient {
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_GAME));
 
     @EventPointer
-    private final EventListener<EventScheduleStop> eventScheduleStopEventListener = new EventListener<>(event -> {
+    private final EventListener<EventStop> eventScheduleStopEventListener = new EventListener<>(event -> {
         ModFileHelper.INSTANCE.closeGame();
     });
 
@@ -157,10 +159,6 @@ public enum JexClient {
             version = new JexVersion(v);
         }
         return version;
-    }
-
-    public String getBuildMetaData() {
-        return this.getModContainer().getMetadata().getCustomValue("buildVersion").getAsString();
     }
 
     public Logger getLogger() {
@@ -189,7 +187,7 @@ public enum JexClient {
 
     private void createJson() {
         JsonObject jsonObject = new JsonObject();
-        for (Feature.Category featureCategory : Feature.Category.values()) {
+        for (Category featureCategory : Category.values()) {
             JsonArray categoryArray = new JsonArray();
             for (Feature feature : Feature.getModules(featureCategory)) {
                 JsonObject object = new JsonObject();
@@ -210,5 +208,48 @@ public enum JexClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void createEntityIdList() {
+        //for the entity id lists made for ChatBot
+        int i = 0;
+        ArrayList<String> l = new ArrayList<>();
+        for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
+            l.add(i + "=" + entityType.getTranslationKey());
+            i++;
+        }
+        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_entity_ids.txt"), l);
+    }
+
+    public void createVersionsJson() {
+        JsonObject jsonObject = new JsonObject();
+        JsonObject protocolObject = new JsonObject();
+        JsonObject packets = new JsonObject();
+        JsonArray c2s = new JsonArray();
+        JsonArray s2c = new JsonArray();
+
+        protocolObject.addProperty("name", SharedConstants.getGameVersion().getName());
+        protocolObject.addProperty("protocol_id", SharedConstants.getProtocolVersion());
+
+        String[] c2sPackets = new String[150];
+        String[] s2cPackets = new String[150];
+        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.SERVERBOUND).forEach((integer, aClass) -> c2sPackets[integer] = aClass.getSimpleName().split("C2S")[0]);
+        NetworkState.PLAY.getPacketIdToPacketMap(NetworkSide.CLIENTBOUND).forEach((integer, aClass) -> s2cPackets[integer] = aClass.getSimpleName().split("S2C")[0]);
+        for (String c2sPacket : c2sPackets) {
+            if (c2sPacket == null)
+                break;
+            c2s.add(c2sPacket);
+        }
+        for (String s2cPacket : s2cPackets) {
+            if (s2cPacket == null)
+                break;
+            s2c.add(s2cPacket);
+        }
+        packets.add("c2s", c2s);
+        packets.add("s2c", s2c);
+        protocolObject.add("packets", packets);
+        jsonObject.add("841", protocolObject);
+
+        FileHelper.INSTANCE.writeFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), SharedConstants.getGameVersion().getName() + "_packetIds.json"), List.of(JsonHelper.INSTANCE.prettyGson.toJson(jsonObject).split("\n")));
     }
 }

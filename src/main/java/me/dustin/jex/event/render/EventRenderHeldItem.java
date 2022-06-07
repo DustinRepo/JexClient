@@ -7,16 +7,16 @@ import net.minecraft.util.Hand;
 
 public class EventRenderHeldItem extends Event {
 
-    private ItemStack itemStack;
-    private Hand hand;
-    private float partialTicks;
-    private MatrixStack matrixStack;
+    private final ItemStack itemStack;
+    private final Hand hand;
+    private final float partialTicks;
+    private final MatrixStack poseStack;
 
-    public EventRenderHeldItem(ItemStack itemStack, Hand hand, float partialTicks, MatrixStack matrixStack) {
+    public EventRenderHeldItem(ItemStack itemStack, Hand hand, float partialTicks, MatrixStack poseStack) {
         this.itemStack = itemStack;
         this.hand = hand;
         this.partialTicks = partialTicks;
-        this.matrixStack = matrixStack;
+        this.poseStack = poseStack;
     }
 
     public ItemStack getItemStack() {
@@ -31,7 +31,7 @@ public class EventRenderHeldItem extends Event {
         return partialTicks;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public MatrixStack getPoseStack() {
+        return poseStack;
     }
 }

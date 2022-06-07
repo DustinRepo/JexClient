@@ -6,9 +6,9 @@ import net.minecraft.util.math.Direction;
 
 public class EventClickBlock extends Event {
 
-	private BlockPos blockPos;
-	private Direction face;
-	private Mode mode;
+	private final BlockPos blockPos;
+	private final Direction face;
+	private final Mode mode;
 
 	public EventClickBlock(BlockPos loc, Direction face, Mode mode) {
 		this.blockPos = loc;

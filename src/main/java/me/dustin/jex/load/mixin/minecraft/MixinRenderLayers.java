@@ -1,6 +1,6 @@
 package me.dustin.jex.load.mixin.minecraft;
 
-import me.dustin.jex.event.render.EventGetRenderLayer;
+import me.dustin.jex.event.render.EventGetRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinRenderLayers {
     @Inject(method = "getBlockLayer", at = @At("HEAD"), cancellable = true)
     private static void getBlockLayer(BlockState state, CallbackInfoReturnable<RenderLayer> cir) {
-        EventGetRenderLayer eventGetRenderLayer = new EventGetRenderLayer(state, cir.getReturnValue()).run();
-        if (eventGetRenderLayer.isCancelled()) {
-            cir.setReturnValue(eventGetRenderLayer.getRenderLayer());
+        EventGetRenderType eventGetRenderType = new EventGetRenderType(state, cir.getReturnValue()).run();
+        if (eventGetRenderType.isCancelled()) {
+            cir.setReturnValue(eventGetRenderType.getRenderType());
             cir.cancel();
         }
     }

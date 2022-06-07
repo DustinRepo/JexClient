@@ -2,15 +2,14 @@ package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.feature.mod.impl.player.Freecam;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -18,9 +17,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -29,21 +26,33 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically dig tunnels")
 public class Tunneller extends Feature {
 
-    @Op(name = "Handle Liquids")
-    public boolean handleLiquids = true;
-    @Op(name = "Width", min = 1, max = 5)
-    public int width = 3;
-    @Op(name = "Height", min = 1, max = 5)
-    public int height = 3;
+    public final Property<Boolean> handleLiquidsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Handle Liquids")
+            .value(true)
+            .build();
+    public final Property<Integer> widthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Width")
+            .value(3)
+            .min(1)
+            .max(5)
+            .build();
+    public final Property<Integer> heightProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Height")
+            .value(3)
+            .min(1)
+            .max(5)
+            .build();
 
     private Direction direction;
+
+    public Tunneller() {
+        super(Category.WORLD, "Automatically dig tunnels");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -53,7 +62,7 @@ public class Tunneller extends Feature {
             direction = Wrapper.INSTANCE.getPlayer().getHorizontalFacing();
         setSuffix(getDirectionString());
         //do liquid replacing
-        if (handleLiquids)
+        if (handleLiquidsProperty.value())
             for (BlockPos liquidCheckSpot : getLiquidCheckSpots()) {
                 if (WorldHelper.INSTANCE.getBlock(liquidCheckSpot) instanceof FluidBlock) {
                     if (moveToBlocks()) {
@@ -65,7 +74,7 @@ public class Tunneller extends Feature {
                         return;
                     }
                 } else if (WorldHelper.INSTANCE.isWaterlogged(liquidCheckSpot)){
-                    Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(liquidCheckSpot, Direction.UP);
+                    Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(liquidCheckSpot, Direction.UP);
                     Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                     return;
                 }
@@ -73,7 +82,7 @@ public class Tunneller extends Feature {
         //break-a da blocks
         for (BlockPos blockPos : getBlocksInTunnel()) {
             if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
-                Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
                 Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                 return;
             }
@@ -164,12 +173,12 @@ public class Tunneller extends Feature {
     }
 
     private Box getTunnelBox() {
-        Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockX() + width / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY() + height - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + width / 2.f);
+        Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - widthProperty.value() / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - widthProperty.value() / 2.f, Wrapper.INSTANCE.getPlayer().getBlockX() + widthProperty.value() / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY() + heightProperty.value() - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + widthProperty.value() / 2.f);
         switch (direction) {
-            case NORTH -> box = box.offset(0, 0, -width / 2.f);
-            case SOUTH -> box = box.offset(0, 0, width / 2.f);
-            case EAST -> box = box.offset(width / 2.f, 0, 0);
-            case WEST -> box = box.offset(-width / 2.f, 0, 0);
+            case NORTH -> box = box.offset(0, 0, -widthProperty.value() / 2.f);
+            case SOUTH -> box = box.offset(0, 0, widthProperty.value() / 2.f);
+            case EAST -> box = box.offset(widthProperty.value() / 2.f, 0, 0);
+            case WEST -> box = box.offset(-widthProperty.value() / 2.f, 0, 0);
         }
         return box;
     }
@@ -182,9 +191,9 @@ public class Tunneller extends Feature {
     }
 
     public double getSpeedModSpeed() {
-        return switch (Speed.INSTANCE.mode.toLowerCase()) {
-            case "vanilla" -> Speed.INSTANCE.vanillaSpeed;
-            case "strafe" -> Speed.INSTANCE.strafeSpeed;
+        return switch (Speed.INSTANCE.modeProperty.value()) {
+            case VANILLA -> Speed.INSTANCE.vanillaSpeedProperty.value();
+            case STRAFE -> Speed.INSTANCE.strafeSpeedProperty.value();
             default -> PlayerHelper.INSTANCE.getBaseMoveSpeed();
         };
     }

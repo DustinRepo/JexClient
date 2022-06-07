@@ -11,7 +11,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.KeybindFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 @Cmd(name = "bind", syntax = {".bind add <module> <key>", ".bind clear <module>", ".bind list"}, description = "Modify keybinds with a command. List with bind list")
 public class CommandBind extends Command {

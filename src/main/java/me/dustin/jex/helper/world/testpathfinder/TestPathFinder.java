@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-
 import java.util.ArrayList;
 
 public class TestPathFinder {
@@ -45,7 +44,7 @@ public class TestPathFinder {
             PathNode nextNode = null;
             double bestDistance = Double.POSITIVE_INFINITY;
             for (int[] posOffset : posOffsets) {
-                PathNode testNode = latestNode.offset(posOffset[0], posOffset[1], posOffset[2]);
+                PathNode testNode = latestNode.add(posOffset[0], posOffset[1], posOffset[2]);
                 if (canMoveTo(testNode, latestNode)) {
                     if (testNode.isAt(goal)) {
                         isDone = true;
@@ -126,7 +125,7 @@ public class TestPathFinder {
             super(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         }
 
-        public PathNode offset(int x, int y, int z) {
+        public PathNode add(int x, int y, int z) {
             int x1 = this.getX() + x;
             int y1 = this.getY() + y;
             int z1 = this.getZ() + z;

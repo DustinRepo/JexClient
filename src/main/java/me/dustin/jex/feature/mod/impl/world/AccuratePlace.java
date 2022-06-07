@@ -7,21 +7,20 @@ import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
-import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -31,17 +30,23 @@ import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "")
 public class AccuratePlace extends Feature {
 
-    @Op(name = "Next Key", isKeybind = true)
-    public int nextKey = GLFW.GLFW_KEY_UP;
-    @Op(name = "Last Key", isKeybind = true)
-    public int lastKey = GLFW.GLFW_KEY_DOWN;
+    public final Property<Integer> nextKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Next Key")
+            .value(GLFW.GLFW_KEY_UP)
+            .build();
+    public final Property<Integer> lastKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Last Key")
+            .value(GLFW.GLFW_KEY_DOWN)
+            .build();
 
-    private RotationVector saved;
     private Direction facing = Direction.DOWN;
     private int index = 0;
+
+    public AccuratePlace() {
+        super(Category.WORLD, "Change the direction that you place blocks");
+    }
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
@@ -65,7 +70,7 @@ public class AccuratePlace extends Feature {
             Vec3d newVec = blockHitResult.getPos().add(blockHitResult.getSide().getOffsetX(), blockHitResult.getSide().getOffsetY(), blockHitResult.getSide().getOffsetZ()).add(facing.getOffsetX(), facing.getOffsetY(), facing.getOffsetZ());
             BlockPos newPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
             BlockHitResult newHitResult = new BlockHitResult(newVec, facing, newPos, blockHitResult.isInsideBlock());
-            PlayerInteractBlockC2SPacket newPacket = new PlayerInteractBlockC2SPacket(playerInteractBlockC2SPacket.getHand(), newHitResult);
+            PlayerInteractBlockC2SPacket newPacket = new PlayerInteractBlockC2SPacket(playerInteractBlockC2SPacket.getHand(), newHitResult, playerInteractBlockC2SPacket.getSequence());
             event.setPacket(newPacket);
         }
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, PlayerInteractBlockC2SPacket.class));
@@ -73,7 +78,7 @@ public class AccuratePlace extends Feature {
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
        //do rendering
-        MatrixStack matrixStack = event.getMatrixStack();
+        MatrixStack matrixStack = event.getPoseStack();
         HitResult hitResult = Wrapper.INSTANCE.getMinecraft().crosshairTarget;
         if (hitResult instanceof BlockHitResult blockHitResult && WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) != Blocks.AIR) {
             matrixStack.push();
@@ -92,12 +97,12 @@ public class AccuratePlace extends Feature {
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
-        if (event.getKey() == nextKey) {
+        if (event.getKey() == nextKeyProperty.value()) {
             index++;
             if (index > Direction.values().length - 1)
                 index = 0;
             facing = Direction.values()[index];
-        } else if (event.getKey() == lastKey) {
+        } else if (event.getKey() == lastKeyProperty.value()) {
             index--;
             if (index < 0)
                 index = Direction.values().length - 1;

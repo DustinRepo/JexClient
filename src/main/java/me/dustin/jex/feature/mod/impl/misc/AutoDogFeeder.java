@@ -4,6 +4,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -12,20 +13,23 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically feed your pups to keep them at full health at all times.")
 public class AutoDogFeeder extends Feature {
+
+    public AutoDogFeeder() {
+        super(Category.MISC, "Automatically feed your pups to keep them at full health at all times.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
         int slot = getDogFoodSlot();
         if (slot == -1)
             return;
+        int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
                 if (wolfEntity.getHealth() < wolfEntity.getMaxHealth()) {
                     InventoryHelper.INSTANCE.setSlot(slot, false, true);
-                    Wrapper.INSTANCE.getInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
+                    Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
             }

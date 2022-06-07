@@ -3,39 +3,49 @@ package me.dustin.jex.feature.mod.impl.movement;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time")
 public class BucketCatch extends Feature {
 
-    @Op(name = "Fall Distance", min = 3, max = 10)
-    public int fallDistance = 5;
-    @Op(name = "Rotate")
-    public boolean rotate = false;
+    public final Property<Double> fallDistanceProperty = new Property.PropertyBuilder<Double>(this.getClass())
+            .name("Fall Distance")
+            .value(5D)
+            .min(3)
+            .max(10)
+            .inc(0.5f)
+            .build();
+    public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Rotate")
+            .description("Whether or not to rotate your head on the server.")
+            .value(false)
+            .build();
 
     private boolean placedBucket;
     private boolean click;
 
+    public BucketCatch() {
+        super(Category.MOVEMENT, "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time");
+    }
+
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-            if (placedBucket && Wrapper.INSTANCE.getLocalPlayer().fallDistance < fallDistance) {
+            if (placedBucket && Wrapper.INSTANCE.getLocalPlayer().fallDistance < fallDistanceProperty.value()) {
                 int bucket = InventoryHelper.INSTANCE.getFromHotbar(Items.BUCKET);
                 if (bucket != -1) {
                     InventoryHelper.INSTANCE.setSlot(bucket, true, true);
-                    if (rotate)
+                    if (rotateProperty.value())
                         PlayerHelper.INSTANCE.setPitch(90);
                     event.setPitch(90);
                     if (Wrapper.INSTANCE.getLocalPlayer().isTouchingWater()) {
@@ -47,11 +57,11 @@ public class BucketCatch extends Feature {
                     placedBucket = false;
                 }
             }
-            if (!placedBucket && Wrapper.INSTANCE.getLocalPlayer().fallDistance >= fallDistance && EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) <= 3.5f && !placedBucket) {
+            if (!placedBucket && Wrapper.INSTANCE.getLocalPlayer().fallDistance >= fallDistanceProperty.value() && EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) <= 3.5f && !placedBucket) {
                 int waterBucketSlot = InventoryHelper.INSTANCE.getFromHotbar(Items.WATER_BUCKET);
                 if (waterBucketSlot != -1) {
                     InventoryHelper.INSTANCE.setSlot(waterBucketSlot, true, true);
-                    if (rotate)
+                    if (rotateProperty.value())
                         PlayerHelper.INSTANCE.setPitch(90);
                     event.setPitch(90);
                     BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(0, -3f, 0);
@@ -62,7 +72,7 @@ public class BucketCatch extends Feature {
                 }
             }
         } else if (click) {
-            NetworkHelper.INSTANCE.sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND));
+            Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
             click = false;
         }
     });

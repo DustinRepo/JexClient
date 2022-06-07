@@ -5,12 +5,13 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.item.Item;
@@ -18,18 +19,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
-
 import java.util.List;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically turn ingots into blocks by opening a crafting table.")
 public class SpeedCrafter extends Feature {
 
-    @Op(name = "Delay", max = 500)
-    public int delay = 0;
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay")
+            .value(0L)
+            .max(500)
+            .build();
 
     public Item craftingItem;
     private boolean alerted;
-    private StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
+
+    public SpeedCrafter() {
+        super(Category.MISC, "Automatically craft by opening a crafting table.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -42,16 +48,16 @@ public class SpeedCrafter extends Feature {
                 return;
             }
             alerted = false;
-            if (!stopWatch.hasPassed(delay))
+            if (!stopWatch.hasPassed(delayProperty.value()))
                 return;
             List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_BUILDING_BLOCKS);
             for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList) {
                 for (Recipe<?> recipe : recipeResultCollection.getRecipes(true)) {
                     if (recipe.getOutput().getItem() == craftingItem) {
-                        Wrapper.INSTANCE.getInteractionManager().clickRecipe(craftingScreenHandler.syncId, recipe, true);
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickRecipe(craftingScreenHandler.syncId, recipe, true);
                         InventoryHelper.INSTANCE.windowClick(craftingScreenHandler, 0, SlotActionType.QUICK_MOVE, 1);
                         stopWatch.reset();
-                        if (delay > 0)
+                        if (delayProperty.value() > 0)
                             return;
                     }
                 }

@@ -11,7 +11,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.SearchFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.registry.Registry;
@@ -21,7 +21,7 @@ public class CommandSearch extends Command {
 
     @Override
     public void registerCommand() {
-        dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState()).then(argument("color", ColorArgumentType.color()).executes(context -> {
+        dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).then(argument("color", ColorArgumentType.color()).executes(context -> {
             Block block = BlockStateArgumentType.getBlockState(context, "block").getBlockState().getBlock();
             int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColorValue())).getRGB();
             if (block != Blocks.AIR) {
@@ -34,7 +34,7 @@ public class CommandSearch extends Command {
                 }
             }
             return 1;
-        })))).then(literal("del").then(argument("block", BlockStateArgumentType.blockState()).executes(context -> {
+        })))).then(literal("del").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).executes(context -> {
             Block block = BlockStateArgumentType.getBlockState(context, "block").getBlockState().getBlock();
             if (!Search.getBlocks().containsKey(block))
                 ChatHelper.INSTANCE.addClientMessage("That block is not in the Search list!");

@@ -6,25 +6,35 @@ import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventPacketSent;
+import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.network.Packet;
-
+import me.dustin.jex.feature.mod.core.Feature;
 import java.util.ArrayList;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Pretend to lag")
 public class Fakelag extends Feature {
 
-    @Op(name = "Catch when", all = {"Both", "OnGround", "In Air"})
-    public String catchWhen = "Both";
-    @Op(name = "Choke MS", min = 50, max = 2000, inc = 10)
-    public int choke = 100;
+    public final Property<CatchWhen> catchWhenProperty = new Property.PropertyBuilder<CatchWhen>(this.getClass())
+            .name("Catch When")
+            .value(CatchWhen.BOTH)
+            .build();
+    public final Property<Integer> chokeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Choke MS")
+            .value(100)
+            .min(50)
+            .max(2000)
+            .inc(10)
+            .build();
 
     private final ArrayList<Packet<?>> packets = new ArrayList<>();
     private final StopWatch stopWatch = new StopWatch();
     private boolean sending = false;
+
+    public Fakelag() {
+        super(Category.MISC, "Pretend to lag");
+    }
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
@@ -34,7 +44,7 @@ public class Fakelag extends Feature {
             packets.clear();
             stopWatch.reset();
         }
-        if (!stopWatch.hasPassed(choke) && shouldCatchPackets()) {
+        if (!stopWatch.hasPassed(chokeProperty.value()) && shouldCatchPackets()) {
             packets.add(event.getPacket());
             event.cancel();
         } else {
@@ -55,11 +65,10 @@ public class Fakelag extends Feature {
     }, new TickFilter(EventTick.Mode.PRE));
 
     private boolean shouldCatchPackets() {
-        return switch (catchWhen.toLowerCase()) {
-            case "both" -> true;
-            case "onground" -> Wrapper.INSTANCE.getLocalPlayer().isOnGround();
-            case "in air" -> !Wrapper.INSTANCE.getLocalPlayer().isOnGround();
-            default -> false;
+        return switch (catchWhenProperty.value()) {
+            case BOTH -> true;
+            case ON_GROUND -> Wrapper.INSTANCE.getLocalPlayer().isOnGround();
+            case IN_AIR -> !Wrapper.INSTANCE.getLocalPlayer().isOnGround();
         };
     }
 
@@ -77,5 +86,9 @@ public class Fakelag extends Feature {
             packets.clear();
         }
         super.onDisable();
+    }
+
+    public enum CatchWhen {
+        BOTH, ON_GROUND, IN_AIR
     }
 }

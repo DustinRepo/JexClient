@@ -10,7 +10,9 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.feature.command.core.Command;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import org.apache.commons.lang3.StringUtils;
 
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -20,8 +22,6 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
-import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 
 @Cmd(name = "plugins", syntax = ".plugins", description = "List all plugins used on a server", alias = "pl")
 public class CommandPlugins extends Command {

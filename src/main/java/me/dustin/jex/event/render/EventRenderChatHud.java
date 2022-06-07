@@ -5,13 +5,13 @@ import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class EventRenderChatHud extends Event {
-    private ChatHud chatHud;
-    private MatrixStack matrixStack;
-    private int tickDelta;
+    private final ChatHud chatHud;
+    private final MatrixStack poseStack;
+    private final int tickDelta;
 
-    public EventRenderChatHud(ChatHud chatHud, MatrixStack matrixStack, int tickDelta) {
+    public EventRenderChatHud(ChatHud chatHud, MatrixStack poseStack, int tickDelta) {
         this.chatHud = chatHud;
-        this.matrixStack = matrixStack;
+        this.poseStack = poseStack;
         this.tickDelta = tickDelta;
     }
 
@@ -19,8 +19,8 @@ public class EventRenderChatHud extends Event {
         return chatHud;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public MatrixStack getPoseStack() {
+        return poseStack;
     }
 
     public int getTickDelta() {

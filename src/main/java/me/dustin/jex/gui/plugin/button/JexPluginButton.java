@@ -13,7 +13,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.StringJoiner;
@@ -42,7 +41,7 @@ public class JexPluginButton extends Button {
             trimmed = trimmed + "...";
         FontHelper.INSTANCE.draw(matrixStack, trimmed, getX() + 37, getY() + 14.5f, -1);
 
-        preTrim = "By: %s%s".formatted(Formatting.GRAY, getAuthors());
+        preTrim = Text.translatable("jex.plugins.authors", Formatting.GRAY + getAuthors()).getString();
         trimmed = Wrapper.INSTANCE.getTextRenderer().trimToWidth(preTrim, (int)getWidth() - 67);
         if (!trimmed.equalsIgnoreCase(preTrim))
             trimmed = trimmed + "...";

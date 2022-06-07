@@ -2,34 +2,46 @@ package me.dustin.jex.feature.mod.impl.combat;
 
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.events.core.annotate.EventPointer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SplashPotionItem;
-import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
+import me.dustin.events.core.annotate.EventPointer;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Uses health potions when health goes below selected amount.")
 public class AutoPot extends Feature {
 
-	@Op(name = "Health", min = 1, max = 20)
-	public int health = 17;
+	public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+			.name("Health")
+			.value(17)
+			.min(1)
+			.max(20)
+			.build();
+	public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+			.name("Delay (MS)")
+			.value(160L)
+			.max(1000)
+			.inc(10)
+			.build();
+	public final Property<Long> throwdelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+			.name("Throw Delay (MS)")
+			.value(20L)
+			.max(1000)
+			.build();
 
-	@Op(name = "Delay (MS)", max = 1000, inc = 10)
-	public int delay = 160;
-
-	@Op(name = "Throw Delay (MS)", max = 1000, inc = 1)
-	public int throwdelay = 20;
 	public boolean throwing = false;
 	int savedSlot;
-	private StopWatch stopWatch = new StopWatch();
+	private final StopWatch stopWatch = new StopWatch();
+
+	public AutoPot() {
+		super(Category.COMBAT, "Uses health potions when health goes below selected amount.");
+	}
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -38,9 +50,9 @@ public class AutoPot extends Feature {
 			if (throwing) {
 				event.setPitch(90);
 			}
-			if (!stopWatch.hasPassed(delay) || throwing)
+			if (!stopWatch.hasPassed(delayProperty.value()) || throwing)
 				return;
-			if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= health && getPotions() > 0) {
+			if (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= healthProperty.value() && getPotions() > 0) {
 				if (getFirstPotion() < 9) {
 					throwing = true;
 
@@ -62,10 +74,10 @@ public class AutoPot extends Feature {
 				throwing = false;
 			}
 		} else {
-			if (throwing && stopWatch.hasPassed(throwdelay)) {
+			if (throwing && stopWatch.hasPassed(throwdelayProperty.value())) {
 				if (getFirstPotion() != -1) {
 					if (getFirstPotion() < 9) {
-						NetworkHelper.INSTANCE.sendPacket(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND));
+						Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getPlayer(), Hand.MAIN_HAND);
 						InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
 						throwing = false;
 						stopWatch.reset();

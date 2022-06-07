@@ -1,11 +1,10 @@
 package me.dustin.jex.helper.player;
 
 import com.google.common.collect.Maps;
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
-import me.dustin.jex.event.misc.EventJoinWorld;
+import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -26,7 +25,6 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.tag.FluidTags;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,7 +119,7 @@ public enum InventoryHelper {
     }
 
     public void windowClick(ScreenHandler container, int slot, SlotActionType action, int clickData) {
-        Wrapper.INSTANCE.getInteractionManager().clickSlot(container.syncId, slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
+        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickSlot(container.syncId, slot, clickData, action, Wrapper.INSTANCE.getLocalPlayer());
     }
 
     public void swapToHotbar(int slot, int hotbarSlot) {
@@ -302,7 +300,7 @@ public enum InventoryHelper {
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, UpdateSelectedSlotC2SPacket.class));
 
     @EventPointer
-    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+    private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> {
         lastSlotSent = -1;
     });
 }

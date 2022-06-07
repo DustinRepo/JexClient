@@ -2,9 +2,7 @@ package me.dustin.jex.helper.math;
 
 import me.dustin.jex.helper.math.vector.Vector3D;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
 import org.lwjgl.system.MemoryStack;
-
 import java.nio.FloatBuffer;
 
 public class Matrix4x4 {
@@ -44,32 +42,6 @@ public class Matrix4x4 {
         this.a31 = floatBuffer.get(offset+13);
         this.a32 = floatBuffer.get(offset+14);
         this.a33 = floatBuffer.get(offset+15);
-    }
-
-    public Matrix4x4(Quaternion quaternion) {
-        float f = quaternion.getX();
-        float g = quaternion.getY();
-        float h = quaternion.getZ();
-        float i = quaternion.getW();
-        float j = 2.0F * f * f;
-        float k = 2.0F * g * g;
-        float l = 2.0F * h * h;
-        this.a00 = 1.0F - k - l;
-        this.a11 = 1.0F - l - j;
-        this.a22 = 1.0F - j - k;
-        this.a33 = 1.0F;
-        float m = f * g;
-        float n = g * h;
-        float o = h * f;
-        float p = f * i;
-        float q = g * i;
-        float r = h * i;
-        this.a10 = 2.0F * (m + r);
-        this.a01 = 2.0F * (m - r);
-        this.a20 = 2.0F * (o - q);
-        this.a02 = 2.0F * (o + q);
-        this.a21 = 2.0F * (n + p);
-        this.a12 = 2.0F * (n - p);
     }
 
     public Matrix4x4(float[] floats) {
@@ -267,41 +239,6 @@ public class Matrix4x4 {
         this.a32 *= scalar;
         this.a33 *= scalar;
         return this;
-    }
-
-    public void multiply(Matrix4x4 matrix) {
-        float f = this.a00 * matrix.a00 + this.a01 * matrix.a10 + this.a02 * matrix.a20 + this.a03 * matrix.a30;
-        float g = this.a00 * matrix.a01 + this.a01 * matrix.a11 + this.a02 * matrix.a21 + this.a03 * matrix.a31;
-        float h = this.a00 * matrix.a02 + this.a01 * matrix.a12 + this.a02 * matrix.a22 + this.a03 * matrix.a32;
-        float i = this.a00 * matrix.a03 + this.a01 * matrix.a13 + this.a02 * matrix.a23 + this.a03 * matrix.a33;
-        float j = this.a10 * matrix.a00 + this.a11 * matrix.a10 + this.a12 * matrix.a20 + this.a13 * matrix.a30;
-        float k = this.a10 * matrix.a01 + this.a11 * matrix.a11 + this.a12 * matrix.a21 + this.a13 * matrix.a31;
-        float l = this.a10 * matrix.a02 + this.a11 * matrix.a12 + this.a12 * matrix.a22 + this.a13 * matrix.a32;
-        float m = this.a10 * matrix.a03 + this.a11 * matrix.a13 + this.a12 * matrix.a23 + this.a13 * matrix.a33;
-        float n = this.a20 * matrix.a00 + this.a21 * matrix.a10 + this.a22 * matrix.a20 + this.a23 * matrix.a30;
-        float o = this.a20 * matrix.a01 + this.a21 * matrix.a11 + this.a22 * matrix.a21 + this.a23 * matrix.a31;
-        float p = this.a20 * matrix.a02 + this.a21 * matrix.a12 + this.a22 * matrix.a22 + this.a23 * matrix.a32;
-        float q = this.a20 * matrix.a03 + this.a21 * matrix.a13 + this.a22 * matrix.a23 + this.a23 * matrix.a33;
-        float r = this.a30 * matrix.a00 + this.a31 * matrix.a10 + this.a32 * matrix.a20 + this.a33 * matrix.a30;
-        float s = this.a30 * matrix.a01 + this.a31 * matrix.a11 + this.a32 * matrix.a21 + this.a33 * matrix.a31;
-        float t = this.a30 * matrix.a02 + this.a31 * matrix.a12 + this.a32 * matrix.a22 + this.a33 * matrix.a32;
-        float u = this.a30 * matrix.a03 + this.a31 * matrix.a13 + this.a32 * matrix.a23 + this.a33 * matrix.a33;
-        this.a00 = f;
-        this.a01 = g;
-        this.a02 = h;
-        this.a03 = i;
-        this.a10 = j;
-        this.a11 = k;
-        this.a12 = l;
-        this.a13 = m;
-        this.a20 = n;
-        this.a21 = o;
-        this.a22 = p;
-        this.a23 = q;
-        this.a30 = r;
-        this.a31 = s;
-        this.a32 = t;
-        this.a33 = u;
     }
 
     public Matrix4x4 add(Matrix4x4 matrix) {

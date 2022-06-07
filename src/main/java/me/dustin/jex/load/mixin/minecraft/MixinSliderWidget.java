@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(SliderWidget.class)
 public class MixinSliderWidget implements ISliderWidget {
+
     @Shadow protected double value;
 
     @Override

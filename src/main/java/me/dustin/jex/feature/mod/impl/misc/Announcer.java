@@ -10,8 +10,9 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -19,16 +20,18 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Fastest way to get muted! Fully customizable with files in the Jex folder")
 public class Announcer extends Feature {
 
-    @Op(name = "Message Delay", min = 50, max = 5000, inc = 10)
-    public int messageDelay = 1000;
+    public final Property<Long> messageDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Message Delay")
+            .value(1000L)
+            .min(50)
+            .max(5000)
+            .inc(10)
+            .build();
 
     private final File announcerFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "announcer.json");
 
@@ -37,9 +40,13 @@ public class Announcer extends Feature {
 
     private final StopWatch stopWatch = new StopWatch();
 
+    public Announcer() {
+        super(Category.MISC, "Fastest way to get muted! Fully customizable with files in the Jex folder");
+    }
+
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !stopWatch.hasPassed(messageDelay))
+        if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !stopWatch.hasPassed(messageDelayProperty.value()))
             return;
         PlayerListS2CPacket playerListPacket = (PlayerListS2CPacket) event.getPacket();
 
@@ -48,7 +55,11 @@ public class Announcer extends Feature {
             if (entry != null) {
                 String name = entry.getProfile().getName();
                 int rand = ClientMathHelper.INSTANCE.getRandom(leaveMessages.size());
-                NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(leaveMessages.get(rand).replace("%player", name)));
+                String message = leaveMessages.get(rand).replace("%player", name);
+                if (message.startsWith("/"))
+                    Wrapper.INSTANCE.getLocalPlayer().sendCommand(message.substring(1));
+                else
+                    ChatHelper.INSTANCE.sendChatMessage(message);
                 stopWatch.reset();
             }
         } else if (playerListPacket.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
@@ -56,7 +67,11 @@ public class Announcer extends Feature {
             if (entry != null) {
                 String name = entry.getProfile().getName();
                 int rand = ClientMathHelper.INSTANCE.getRandom(joinMessages.size());
-                NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(joinMessages.get(rand).replace("%player", name)));
+                String message = joinMessages.get(rand).replace("%player", name);
+                if (message.startsWith("/"))
+                    Wrapper.INSTANCE.getLocalPlayer().sendCommand(message.substring(1));
+                else
+                    ChatHelper.INSTANCE.sendChatMessage(message);
                 stopWatch.reset();
             }
         }

@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 public class BoostElytraFly extends FeatureExtension {
     private ElytraPlus elytraPlus;
     public BoostElytraFly() {
-        super("Boost", ElytraPlus.class);
+        super(ElytraPlus.Mode.BOOST, ElytraPlus.class);
     }
 
     @Override
@@ -25,11 +25,11 @@ public class BoostElytraFly extends FeatureExtension {
                 ClientPlayerEntity player = Wrapper.INSTANCE.getLocalPlayer();
                 double currentVel = Math.abs(player.getVelocity().x) + Math.abs(player.getVelocity().y) + Math.abs(player.getVelocity().z);
                 float radianYaw = (float) Math.toRadians(player.getYaw());
-                if (currentVel <= elytraPlus.maxBoost) {
-                    if (KeyboardHelper.INSTANCE.isPressed(elytraPlus.boostKey)) {
-                        player.addVelocity(MathHelper.sin(radianYaw) * -elytraPlus.boost, 0, MathHelper.cos(radianYaw) * elytraPlus.boost);
-                    } else if (KeyboardHelper.INSTANCE.isPressed(elytraPlus.slowKey)) {
-                        player.addVelocity(MathHelper.sin(radianYaw) * elytraPlus.boost, 0, MathHelper.cos(radianYaw) * -elytraPlus.boost);
+                if (currentVel <= elytraPlus.maxBoostProperty.value()) {
+                    if (KeyboardHelper.INSTANCE.isPressed(elytraPlus.boostKeyProperty.value())) {
+                        player.addVelocity(MathHelper.sin(radianYaw) * -elytraPlus.boostProperty.value(), 0, MathHelper.cos(radianYaw) * elytraPlus.boostProperty.value());
+                    } else if (KeyboardHelper.INSTANCE.isPressed(elytraPlus.slowKeyProperty.value())) {
+                        player.addVelocity(MathHelper.sin(radianYaw) * elytraPlus.boostProperty.value(), 0, MathHelper.cos(radianYaw) * -elytraPlus.boostProperty.value());
                     }
                 }
             }

@@ -1,14 +1,13 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.world.AutoSign;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.world.AutoSign;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,7 +29,7 @@ public class MixinSignEditScreen extends Screen {
     @Inject(method = "init", at = @At("RETURN"))
     public void init(CallbackInfo ci) {
         AutoSign autoSign = Feature.get(AutoSign.class);
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 142, 200, 20, new LiteralText("Set AutoSign Text"), (buttonWidget_1) -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 142, 200, 20, Text.of("Set AutoSign Text"), (buttonWidget_1) -> {
             autoSign.signText[0] = sign.getTextOnRow(0, false);
             autoSign.signText[1] = sign.getTextOnRow(1, false);
             autoSign.signText[2] = sign.getTextOnRow(2, false);

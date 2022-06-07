@@ -4,18 +4,16 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.helper.player.FriendHelper;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -23,46 +21,89 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-
+import me.dustin.jex.feature.mod.core.Feature;
 import java.awt.*;
 import java.util.List;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Auto place/destroy End Crystals")
 public class CrystalAura extends Feature {
-
-	@Op(name = "Mode", all = { "Suicidal", "Risky" })
-	public String mode = "Suicidal";
-
-	@Op(name = "Attack", all = { "Any", "Near Target" })
-	public String attackMode = "Any";
-
-	@OpChild(name = "Max Attack Distance", min = 1, max = 6, inc = 0.1f, parent = "Attack")
-	public float attackDistance = 4;
-
-	@Op(name = "Auto Place")
-	public boolean autoPlace = false;
-
-	@OpChild(name = "Visualize", parent = "Auto Place")
-	public boolean visualize = true;
-	@OpChild(name = "Only show placements", parent = "Visualize")
-	public boolean onlyShowPlacements;
-	@OpChild(name = "Thinking Color", isColor = true, parent = "Visualize")
-	public int thinkingColor = new Color(0, 150, 255).getRGB();
-	@OpChild(name = "Placing Color", isColor = true, parent = "Visualize")
-	public int placingColor = new Color(255, 0, 0).getRGB();
-
-	@OpChild(name = "Place Delay", min = 0, max = 2000, parent = "Auto Place")
-	public int delay = 200;
+	public final Property<TargetMode> modeProperty = new Property.PropertyBuilder<TargetMode>(this.getClass())
+			.name("Mode")
+			.value(TargetMode.SUICIDAL)
+			.build();
+	public final Property<AttackMode> attackModeProperty = new Property.PropertyBuilder<AttackMode>(this.getClass())
+			.name("Explode")
+			.description("The targeting mode for crystals.")
+			.value(AttackMode.ANY)
+			.build();
+	public final Property<Float> attackDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
+			.name("Max Attack Distance")
+			.value(5f)
+			.min(1)
+			.max(6)
+			.inc(0.1f)
+			.build();
+	public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+			.name("Attack Delay (MS)")
+			.value(200L)
+			.max(2000)
+			.build();
+	public final Property<Boolean> autoPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Auto Place")
+			.value(false)
+			.build();
+	public final Property<Boolean> visualizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Visualize")
+			.value(true)
+			.parent(autoPlaceProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
+	public final Property<Boolean> onlyShowPlacementsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Only show placements")
+			.value(false)
+			.parent(visualizeProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
+	public final Property<Color> thinkingColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+			.name("Thinking Color")
+			.value(new Color(0, 150, 255))
+			.parent(visualizeProperty)
+			.depends(parent -> (boolean)parent.value())
+			.build();
+	public final Property<Color> placingColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+			.name("Placing Color")
+			.value(new Color(255, 0, 0))
+			.parent(visualizeProperty)
+			.depends(parent -> (boolean)parent.value())
+			.build();
+	public final Property<Long> placeDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+			.name("Place Delay")
+			.value(200L)
+			.max(2000)
+			.parent(autoPlaceProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
+	public final Property<Float> placeDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
+			.name("Place Distance")
+			.value(3.5f)
+			.min(1)
+			.max(6)
+			.inc(0.1f)
+			.parent(autoPlaceProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
 
 	private final StopWatch stopWatch = new StopWatch();
 	private BlockPos placePos;
+
+	public CrystalAura() {
+		super(Category.COMBAT, "Auto place/destroy End Crystals");
+	}
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -70,16 +111,16 @@ public class CrystalAura extends Feature {
 			return;
 		boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.END_CRYSTAL;
 		if (event.getMode() == EventPlayerPackets.Mode.PRE) {
-			this.setSuffix(mode);
+			this.setSuffix(modeProperty.value());
 			if (placePos != null) {
 				RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 				event.setRotation(rotation);
 			}
 
-			if (stopWatch.hasPassed(delay))
-				if (autoPlace && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.END_CRYSTAL) || offhand)) {
+			if (stopWatch.hasPassed(placeDelayProperty.value()))
+				if (autoPlaceProperty.value() && ((Wrapper.INSTANCE.getLocalPlayer().getMainHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() == Items.END_CRYSTAL) || offhand)) {
 					Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-						if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().asString())) {
+						if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer() && !FriendHelper.INSTANCE.isFriend(entity.getDisplayName().getString())) {
 							BlockPos placingPos = getOpenBlockPos(entityPlayer);
 							if (placingPos != null) {
 								EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
@@ -99,7 +140,7 @@ public class CrystalAura extends Feature {
 					if (shouldAttack(enderCrystalEntity)) {
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
-						Wrapper.INSTANCE.getInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
+						Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
 						Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 					}
 				}
@@ -107,7 +148,7 @@ public class CrystalAura extends Feature {
 		} else {
 			if (placePos != null) {
 				BlockHitResult blockHitResult = new BlockHitResult(new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()), Direction.UP, placePos, false);
-				NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND, blockHitResult));
+				Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND, blockHitResult);
 				Wrapper.INSTANCE.getLocalPlayer().swingHand(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
 				placePos = null;
 			}
@@ -116,15 +157,15 @@ public class CrystalAura extends Feature {
 
 	@EventPointer
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-		if (autoPlace && visualize)
+		if (autoPlaceProperty.value() && visualizeProperty.value())
 			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 				if (entity instanceof PlayerEntity entityPlayer && entity != Wrapper.INSTANCE.getLocalPlayer()) {
 					BlockPos placingPos = getOpenBlockPos(entityPlayer);
-					if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().asString())) {
+					if (placingPos != null && !FriendHelper.INSTANCE.isFriend(entityPlayer.getDisplayName().getString())) {
 						EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
 						Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(placingPos.getX(), placingPos.getY(), placingPos.getZ());
 						Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-						Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), box, shouldAttack(crystal) ? placingColor : thinkingColor);
+						Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), box, shouldAttack(crystal) ? placingColorProperty.value().getRGB() : thinkingColorProperty.value().getRGB());
 					}
 				}
 			});
@@ -172,9 +213,9 @@ public class CrystalAura extends Feature {
 	}
 
 	public boolean shouldAttack(EndCrystalEntity enderCrystalEntity) {
-		if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(enderCrystalEntity) > attackDistance)
+		if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(enderCrystalEntity) > attackDistanceProperty.value())
 			return false;
-		boolean hasTarget = mode.equalsIgnoreCase("Any");
+		boolean hasTarget = attackModeProperty.value() == AttackMode.ANY;
 		if (!hasTarget)
 			for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
 				if (entity instanceof LivingEntity livingEntity && isTarget(livingEntity, enderCrystalEntity)) {
@@ -185,7 +226,7 @@ public class CrystalAura extends Feature {
 		if (!hasTarget)
 			return false;
 		float damage = WorldHelper.INSTANCE.calcExplosionDamage(6, Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity.getBlockPos());
-		if (mode.equalsIgnoreCase("Risky"))
+		if (modeProperty.value() == TargetMode.RISKY)
 			return damage <= 65;
 		return true;
 	}
@@ -197,4 +238,11 @@ public class CrystalAura extends Feature {
 		return false;
 	}
 
+	public enum TargetMode {
+		SUICIDAL, RISKY, SAFE
+	}
+
+	public enum AttackMode {
+		ANY, NEAR_TARGET
+	}
 }

@@ -2,7 +2,6 @@ package me.dustin.jex.helper.render.shader;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderEffect;
@@ -17,7 +16,7 @@ public enum ShaderHelper {
     public ShaderEffect storageShader;
     public Framebuffer boxOutlineFBO;
     public ShaderEffect boxOutlineShader;
-    public Identifier outlineId = new Identifier("jex", "shaders/entity_outline.json");
+    public final Identifier identifier_1 = new Identifier("jex", "shaders/entity_outline.json");
 
     private static Shader rainbowEnchantShader;
     private static Shader translucentShader;
@@ -62,10 +61,10 @@ public enum ShaderHelper {
             boxOutlineShader.close();
         }
         try {
-            storageShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), outlineId);
+            storageShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
             storageShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
             storageFBO = storageShader.getSecondaryTarget("final");
-            boxOutlineShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), outlineId);
+            boxOutlineShader = new ShaderEffect(Wrapper.INSTANCE.getMinecraft().getTextureManager(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getFramebuffer(), identifier_1);
             boxOutlineShader.setupDimensions(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight());
             boxOutlineFBO = boxOutlineShader.getSecondaryTarget("final");
         } catch (Exception var3) {

@@ -23,6 +23,6 @@ public class UsernameElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().showUsername;
+        return getHud().infoProperty.value() && getHud().showUsernameProperty.value();
     }
 }

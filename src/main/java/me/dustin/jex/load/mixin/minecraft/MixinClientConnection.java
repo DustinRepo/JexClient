@@ -1,7 +1,6 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
@@ -33,26 +32,23 @@ import java.net.InetSocketAddress;
 public abstract class MixinClientConnection {
 
     @Shadow
-    @Final
-    private NetworkSide side;
-
-    @Shadow
     public abstract void send(Packet<?> packet_1, GenericFutureListener<? extends Future<? super Void>> genericFutureListener_1);
-
-    @Shadow
-    public abstract boolean isOpen();
 
     @Shadow @Final public static Lazy<EpollEventLoopGroup> EPOLL_CLIENT_IO_GROUP;
 
     @Shadow @Final public static Lazy<NioEventLoopGroup> CLIENT_IO_GROUP;
+
+    @Shadow @Final private NetworkSide side;
+
+    @Shadow public abstract boolean isOpen();
 
     @Inject(method = "connect", at = @At("HEAD"), cancellable = true)
     private static void connect1(InetSocketAddress address, boolean useEpoll, CallbackInfoReturnable<ClientConnection> cir) {
         if (!ProxyHelper.INSTANCE.isConnectedToProxy())
             return;
         final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
-        Class<? extends Channel> channelClass;
-        Lazy<?> group;
+        Class channelClass;
+        Lazy group;
         if (Epoll.isAvailable() && useEpoll) {
             channelClass = EpollSocketChannel.class;
             group = EPOLL_CLIENT_IO_GROUP;

@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class AlwaysBoostElytraFly extends FeatureExtension {
     public AlwaysBoostElytraFly() {
-        super("AlwaysBoost", ElytraPlus.class);
+        super(ElytraPlus.Mode.ALWAYS_BOOST, ElytraPlus.class);
     }
 
     @Override

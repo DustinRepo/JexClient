@@ -9,15 +9,13 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
 import java.io.File;
 
 public class ImportFromTXTScreen extends Screen {
     protected ImportFromTXTScreen() {
-        super(new LiteralText("Import From TXT"));
+        super(Text.translatable("jex.account.import.txt"));
     }
 
     private FileBrowser fileBrowser;
@@ -28,15 +26,15 @@ public class ImportFromTXTScreen extends Screen {
     @Override
     protected void init() {
         fileBrowser = new FileBrowser(ModFileHelper.INSTANCE.getJexDirectory().getPath(), width / 2.f - 150, height / 2.f - 150, 300, 300, null, "txt");
-        importButton = new ButtonWidget(width / 2 - 150, height / 2 + 152, 300, 20, new LiteralText("Import"), button -> {
+        importButton = new ButtonWidget(width / 2 - 150, height / 2 + 152, 300, 20, Text.translatable("jex.account.import"), button -> {
             File file = fileBrowser.getSelectedFiles().get(0);
             ConfigManager.INSTANCE.get(AltFile.class).importFromTXT(file);
-            message = Formatting.GREEN + "Successfully imported " + file.getName();
+            message = Formatting.GREEN + Text.translatable("jex.account.import.txt.success", file.getName()).getString();
         });
-        cancelButton = new ButtonWidget(width / 2 - 150, height / 2 + 174, 300, 20, new LiteralText("Cancel"), button -> {
+        cancelButton = new ButtonWidget(width / 2 - 150, height / 2 + 174, 300, 20, Text.translatable("jex.button.cancel"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new AccountManagerScreen());
         });
-        message = Formatting.AQUA + "Supports username:email:password or email:password";
+        message = Formatting.AQUA + Text.translatable("jex.account.import.supports").getString();
         this.addDrawableChild(importButton);
         this.addDrawableChild(cancelButton);
         super.init();

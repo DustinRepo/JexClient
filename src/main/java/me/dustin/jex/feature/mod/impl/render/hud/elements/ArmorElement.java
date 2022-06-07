@@ -28,7 +28,7 @@ public class ArmorElement extends HudElement{
                 continue;
             float x = (getX() + getWidth() - 16 - (16 * count));
             Render2DHelper.INSTANCE.drawItem(itemStack, x, getY());
-            if (itemStack.hasEnchantments() && getHud().drawEnchants) {
+            if (itemStack.hasEnchantments() && getHud().drawEnchantsProperty.value()) {
                 float scale = 0.5f;
                 matrixStack.push();
                 matrixStack.scale(scale, scale, 1);
@@ -56,7 +56,7 @@ public class ArmorElement extends HudElement{
 
     @Override
     public boolean isVisible() {
-        return getHud().armor;
+        return getHud().armorProperty.value();
     }
 
     private String getEnchantName(NbtCompound compoundTag) {

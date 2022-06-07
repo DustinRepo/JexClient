@@ -14,6 +14,7 @@ public class JexMixinConfigPlugin implements IMixinConfigPlugin {
     private final Logger LOGGER = LogManager.getFormatterLogger("JexMixins");
     @Override
     public void onLoad(String mixinPackage) {
+
     }
 
     @Override
@@ -37,6 +38,7 @@ public class JexMixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
+
     }
 
     @Override

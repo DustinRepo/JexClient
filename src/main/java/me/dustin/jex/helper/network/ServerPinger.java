@@ -16,7 +16,6 @@ import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.UUID;

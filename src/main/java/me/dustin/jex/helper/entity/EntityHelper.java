@@ -1,6 +1,5 @@
 package me.dustin.jex.helper.entity;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
@@ -12,16 +11,45 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.mob.*;
-import net.minecraft.entity.passive.*;
+import net.minecraft.entity.mob.ElderGuardianEntity;
+import net.minecraft.entity.mob.EndermanEntity;
+import net.minecraft.entity.mob.GhastEntity;
+import net.minecraft.entity.mob.HoglinEntity;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.PhantomEntity;
+import net.minecraft.entity.mob.PiglinActivity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.mob.ShulkerEntity;
+import net.minecraft.entity.mob.SlimeEntity;
+import net.minecraft.entity.mob.WardenEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.AllayEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.BatEntity;
+import net.minecraft.entity.passive.BeeEntity;
+import net.minecraft.entity.passive.DolphinEntity;
+import net.minecraft.entity.passive.FishEntity;
+import net.minecraft.entity.passive.HorseEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.OcelotEntity;
+import net.minecraft.entity.passive.PandaEntity;
+import net.minecraft.entity.passive.PolarBearEntity;
+import net.minecraft.entity.passive.SquidEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.passive.WanderingTraderEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterials;
+import net.minecraft.item.DyeableArmorItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ShieldItem;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.RaycastContext;
-
 import java.util.UUID;
 
 public enum EntityHelper {
@@ -33,8 +61,8 @@ public enum EntityHelper {
         KillAura killaura = Feature.get(KillAura.class);
         if (killaura.getState()) {
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                if (killaura.isValid(entity, false) && (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.autoblockDistance || Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.reach)) {
-                    return killaura.autoBlock && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem;
+                if (killaura.isValid(entity, false) && (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.autoBlockDistanceProperty.value() || Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) <= killaura.reachProperty.value())) {
+                    return killaura.autoBlockProperty.value() && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() instanceof ShieldItem;
                 }
             }
         }
@@ -44,7 +72,7 @@ public enum EntityHelper {
     }
 
     public boolean isPassiveMob(Entity entity) {
-        return !(entity instanceof HoglinEntity) && doesPlayerOwn(entity) || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
+        return !(entity instanceof HoglinEntity) && doesPlayerOwn(entity) || entity instanceof AllayEntity || entity instanceof WanderingTraderEntity || entity instanceof FishEntity || entity instanceof DolphinEntity || entity instanceof SquidEntity || entity instanceof BatEntity || entity instanceof VillagerEntity || entity instanceof OcelotEntity || entity instanceof HorseEntity || entity instanceof AnimalEntity;
     }
 
     public boolean isNeutralMob(Entity entity) {
@@ -58,8 +86,9 @@ public enum EntityHelper {
     }
 
     public boolean isBossMob(Entity entity) {
-        return entity instanceof WitherEntity || entity instanceof ElderGuardianEntity || entity instanceof EnderDragonEntity;
+        return entity instanceof WitherEntity || entity instanceof ElderGuardianEntity || entity instanceof EnderDragonEntity || entity instanceof WardenEntity;
     }
+
 
     public boolean doesPlayerOwn(Entity entity) {
         return doesPlayerOwn(entity, Wrapper.INSTANCE.getLocalPlayer());
@@ -77,7 +106,7 @@ public enum EntityHelper {
                 return tameableEntity.getOwnerUuid();
             }
         }
-        if (livingEntity instanceof HorseBaseEntity horseBaseEntity) {
+        if (livingEntity instanceof AbstractHorseEntity horseBaseEntity) {
             return horseBaseEntity.getOwnerUuid();
         }
         return null;

@@ -10,133 +10,265 @@ import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender2DItem;
 import me.dustin.jex.event.render.EventRenderEffects;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.feature.mod.impl.render.hud.elements.*;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.HudElementsFile;
-import me.dustin.jex.gui.click.dropdown.DropDownGui;
-import me.dustin.jex.gui.click.dropdown.impl.window.DropdownWindow;
-import me.dustin.jex.gui.click.navigator.Navigator;
 import me.dustin.jex.gui.tab.TabGui;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.*;
 import me.dustin.jex.helper.render.font.FontHelper;
-import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.*;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.MathHelper;
+import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.feature.mod.core.Feature;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.*;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Renders an in-game HUD", enabled = true, visible = false)
 public class Hud extends Feature {
     public static Hud INSTANCE;
-    @Op(name = "Client Color", isColor = true)
-    public int clientColor = 0xff00a1ff;
-    @OpChild(name = "Rainbow", parent = "Client Color")
-    public boolean rainbowClientColor;
-    @Op(name = "Collision")
-    public boolean collision = true;
-    @Op(name = "Constrict Elements Key", isKeybind = true)
-    public int constrictKey = GLFW.GLFW_KEY_LEFT_CONTROL;
-    @Op(name = "Watermark")
-    public boolean watermark = true;
-    @OpChild(name = "Jex Effect", all = {"Static", "Spin Only", "Flip Only", "SpinFlip"}, parent = "Watermark")
-    public String watermarkMode = "Static";
-    @Op(name = "Draw Face")
-    public boolean drawFace = true;
-    @Op(name = "Array List")
-    public boolean showArrayList = true;
-    @OpChild(name = "Suffixes", parent = "Array List")
-    public boolean suffixes = true;
-    @OpChild(name = "Color", parent = "Array List", all = {"Client Color", "Rainbow", "Category"})
-    public String colorMode = "Client Color";
-    @OpChild(name = "Combat", parent = "Color", dependency = "Category", isColor = true)
-    public int combatColor = new Color(255, 61, 56).getRGB();
-    @OpChild(name = "Player", parent = "Color", dependency = "Category", isColor = true)
-    public int playerColor = new Color(64, 255, 83).getRGB();
-    @OpChild(name = "Movement", parent = "Color", dependency = "Category", isColor = true)
-    public int movementColor = new Color(141, 95, 255).getRGB();
-    @OpChild(name = "Visual", parent = "Color", dependency = "Category", isColor = true)
-    public int visualColor = new Color(255, 92, 252).getRGB();
-    @OpChild(name = "World", parent = "Color", dependency = "Category", isColor = true)
-    public int worldColor = new Color(74, 84, 255).getRGB();
-    @OpChild(name = "Misc", parent = "Color", dependency = "Category", isColor = true)
-    public int miscColor = new Color(247, 255, 65).getRGB();
-    @OpChild(name = "Rainbow Speed", parent = "Color", min = 1, max = 20, dependency = "Rainbow")
-    public int rainbowSpeed = 3;
-    @OpChild(name = "Rainbow Saturation", parent = "Color", dependency = "Rainbow", inc = 0.1f)
-    public float rainbowSaturation = 1;
-    @Op(name = "Potion Effects")
-    public boolean potionEffects = true;
-    @OpChild(name = "Icons", parent = "Potion Effects")
-    public boolean icons = true;
-    @Op(name = "Lagometer")
-    public boolean lagometer = true;
-    @Op(name = "Coordinates")
-    public boolean coords = false;
-    @OpChild(name = "Nether Coords", parent = "Coordinates")
-    public boolean netherCoords = true;
-    @Op(name = "Armor")
-    public boolean armor = true;
-    @OpChild(name = "Draw Enchants", parent = "Armor")
-    public boolean drawEnchants = true;
-    @Op(name = "Item Durability")
-    public boolean itemDurability = true;
-    @OpChild(name = "Static Color", parent = "Item Durability")
-    public boolean staticColor = false;
-    @Op(name = "Info")
-    public boolean info = true;
-    @Op(name = "TabGui")
-    public boolean tabGui = true;
-    @OpChild(name = "Hover Bar", parent = "TabGui")
-    public boolean hoverBar;
-    @OpChild(name = "TabGui Width", parent = "TabGui", min = 55, max = 200)
-    public float tabGuiWidth = 75;
-    @OpChild(name = "Button Height", parent = "TabGui", min = 10, max = 25)
-    public float buttonHeight = 12;
-    @OpChild(name = "Show Username", parent = "Info")
-    public boolean showUsername = true;
-    @OpChild(name = "Server", parent = "Info")
-    public boolean serverName = true;
-    @OpChild(name = "Ping", parent = "Info")
-    public boolean ping = true;
-    @OpChild(name = "TPS", parent = "Info")
-    public boolean tps = true;
-    @OpChild(name = "Show Instant", parent = "TPS")
-    public boolean instantTPS = false;
-    @OpChild(name = "FPS", parent = "Info")
-    public boolean fps = true;
-    @OpChild(name = "Biome", parent = "Info")
-    public boolean biome = true;
-    @OpChild(name = "Player Count", parent = "Info")
-    public boolean playerCount = true;
-    @OpChild(name = "Yaw/Pitch", parent = "Info")
-    public boolean yawAndPitch = true;
-    @OpChild(name = "Direction", parent = "Info")
-    public boolean direction = true;
-    @OpChild(name = "Saturation", parent = "Info")
-    public boolean saturation = true;
-    @OpChild(name = "Speed", parent = "Info")
-    public boolean speed = true;
-    @OpChild(name = " ", parent = "Speed", all = {"Blocks", "Feet", "Miles", "KM"})
-    public String distanceMode = "Blocks";
-    @OpChild(name = "Per", parent = " ", all = {"Second", "Tick", "Minute", "Hour", "Day"})
-    public String timeMode = "Second";
+
+    public final Property<Color> clientColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Client Color")
+            .value(new Color(0, 161, 255))
+            .build();
+    public final Property<Boolean> rainbowClientColorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Rainbow")
+            .value(false)
+            .parent(clientColorProperty)
+            .build();
+    public final Property<Boolean> collisionProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Collision")
+            .description("Whether or not to allow the HUD elements to collide with one another.")
+            .value(true)
+            .build();
+    public final Property<Integer> constrictKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Constrict Elements Key")
+            .description("The key to bring all elements back on screen.")
+            .value(GLFW.GLFW_KEY_LEFT_CONTROL)
+            .isKey()
+            .build();
+    public final Property<Boolean> watermarkProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Watermark")
+            .value(true)
+            .build();
+    public final Property<WatermarkEffect> watermarkModeProperty = new Property.PropertyBuilder<WatermarkEffect>(this.getClass())
+            .name("Jex Effect")
+            .value(WatermarkEffect.STATIC)
+            .parent(watermarkProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> drawFaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Draw Face")
+            .value(true)
+            .build();
+    public final Property<Boolean> showArrayListProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Array List")
+            .value(true)
+            .build();
+    public final Property<Boolean> suffixesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Suffixes")
+            .description("Allow for suffixes to display in the ArrayList")
+            .value(true)
+            .parent(showArrayListProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<ArrayListColor> colorModeProperty = new Property.PropertyBuilder<ArrayListColor>(this.getClass())
+            .name("Color")
+            .value(ArrayListColor.CLIENT_COLOR)
+            .parent(showArrayListProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Integer> rainbowSpeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Rainbow Speed")
+            .value(3)
+            .min(1)
+            .max(20)
+            .parent(colorModeProperty)
+            .depends(parent -> parent.value() == ArrayListColor.RAINBOW)
+            .build();
+    public final Property<Float> rainbowSaturationProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Rainbow Saturation")
+            .value(1f)
+            .inc(0.1f)
+            .parent(colorModeProperty)
+            .depends(parent -> parent.value() == ArrayListColor.RAINBOW)
+            .build();
+    public final Property<Boolean> potionEffectsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Potion Effects")
+            .value(true)
+            .build();
+    public final Property<Boolean> iconsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Icons")
+            .value(true)
+            .parent(potionEffectsProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> lagometerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Lagometer")
+            .value(true)
+            .build();
+    public final Property<Boolean> coordsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Coordinates")
+            .value(false)
+            .build();
+    public final Property<Boolean> netherCoordsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Nether Coords")
+            .value(false)
+            .parent(coordsProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> armorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Armor")
+            .value(true)
+            .build();
+    public final Property<Boolean> drawEnchantsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Draw Enchants")
+            .value(false)
+            .parent(armorProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> itemDurabilityProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Item Durability")
+            .value(true)
+            .build();
+    public final Property<Boolean> staticColorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Static Color")
+            .value(false)
+            .parent(itemDurabilityProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> tabGuiProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("TabGui")
+            .value(true)
+            .build();
+    public final Property<Boolean> hoverBarProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hover Bar")
+            .value(false)
+            .parent(tabGuiProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> tabGuiWidthProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("TabGui Width")
+            .value(75f)
+            .min(55)
+            .max(200)
+            .parent(tabGuiProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> buttonHeightProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Button Height")
+            .value(12f)
+            .min(10)
+            .max(25)
+            .parent(tabGuiProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> infoProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Info")
+            .value(true)
+            .build();
+    public final Property<Boolean> showUsernameProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Show Username")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> serverNameProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Server")
+            .description("Show the server IP on the HUD.")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> pingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Ping")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> tpsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("TPS")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> instantTPSProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Show Instant")
+            .value(true)
+            .parent(tpsProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> fpsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("FPS")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> biomeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Biome")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> playerCountProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Player Count")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> yawAndPitchProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Yaw/Pitch")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> directionProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Direction")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> saturationProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Saturation")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> speedProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Speed")
+            .value(true)
+            .parent(infoProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<DistanceMode> distanceModeProperty = new Property.PropertyBuilder<DistanceMode>(this.getClass())
+            .name(" ")
+            .value(DistanceMode.BLOCKS)
+            .parent(speedProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<TimeMode> timeModeProperty = new Property.PropertyBuilder<TimeMode>(this.getClass())
+            .name("Per")
+            .value(TimeMode.SECOND)
+            .parent(distanceModeProperty)
+            .build();
 
     private float lagOMeterY = -11;
     public ArrayList<HudElement> hudElements = new ArrayList<>();
     private boolean gaveEditorMessage;
 
     public Hud() {
+        super("Hud", Category.VISUAL, "Mark entities/players through walls", true, false, 0);
         INSTANCE = this;
     }
 
@@ -157,29 +289,24 @@ public class Hud extends Feature {
         if (Wrapper.INSTANCE.getOptions().debugEnabled)
             return;
         if (!gaveEditorMessage && ModFileHelper.INSTANCE.isFirstTimeLoading()) {
-            ChatHelper.INSTANCE.addClientMessage("Welcome to Jex Client");
-            ChatHelper.INSTANCE.addClientMessage("If you would like to customize the HUD you see infront of you, simply open the Chat");
-            ChatHelper.INSTANCE.addClientMessage("You can press \247b" + KeyboardHelper.INSTANCE.getKeyName(constrictKey) + "\2477 to bring them back on-screen, and right-click them to flip them");
-            ChatHelper.INSTANCE.addClientMessage("Press \247b" + KeyboardHelper.INSTANCE.getKeyName(Feature.get(Gui.class).getKey()) + "\2477 to open the ClickGui");
+            ChatHelper.INSTANCE.addClientMessage(Text.translatable("jex.welcome").getString());
+            ChatHelper.INSTANCE.addClientMessage(Text.translatable("jex.intro.one").getString());
+            ChatHelper.INSTANCE.addClientMessage(Text.translatable("jex.intro.two", Formatting.AQUA + KeyboardHelper.INSTANCE.getKeyName(constrictKeyProperty.value()) + Formatting.GRAY).getString());
+            ChatHelper.INSTANCE.addClientMessage(Text.translatable("jex.intro.three", Formatting.AQUA + KeyboardHelper.INSTANCE.getKeyName(Feature.get(Gui.class).getKey()) + Formatting.GRAY).getString());
             gaveEditorMessage = true;
         }
         if (hudElements.isEmpty())
             loadElements();
         hudElements.forEach(hudElement -> {
-            hudElement.render(event.getMatrixStack());
+            hudElement.render(event.getPoseStack());
         });
-        if (lagometer)
+        if (lagometerProperty.value())
             drawLagometer(event);
-        for (DropdownWindow window : DropDownGui.getCurrentTheme().windows) {
-            if (window.isPinned() && !(Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DropDownGui || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof Navigator)) {
-                window.render(event.getMatrixStack());
-            }
-        }
     });
 
     @EventPointer
     private final EventListener<EventRenderEffects> eventRenderEffectsEventListener = new EventListener<>(event -> {
-        if (this.potionEffects)
+        if (this.potionEffectsProperty.value())
             event.cancel();
     });
 
@@ -191,7 +318,7 @@ public class Hud extends Feature {
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen && event.getKey() == this.constrictKey)
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen && event.getKey() == this.constrictKeyProperty.value())
             hudElements.forEach(hudElement -> {
                 hudElement.setX(MathHelper.clamp(hudElement.getX(), 0, Render2DHelper.INSTANCE.getScaledWidth() - hudElement.getWidth()));
                 hudElement.setY(MathHelper.clamp(hudElement.getY(), 0, Render2DHelper.INSTANCE.getScaledHeight() - hudElement.getHeight()));
@@ -200,7 +327,7 @@ public class Hud extends Feature {
 
     @EventPointer
     private final EventListener<EventRender2DItem> eventRender2DItemEventListener = new EventListener<>(event -> {
-        if (this.itemDurability)
+        if (this.itemDurabilityProperty.value())
             drawItemDurability(event);
     });
     @EventPointer
@@ -242,7 +369,7 @@ public class Hud extends Feature {
     }
 
     public void drawLagometer(EventRender2D eventRender2D) {
-        FontHelper.INSTANCE.drawCenteredString(eventRender2D.getMatrixStack(), String.format("Server is lagging: %.1f", (float) Lagometer.INSTANCE.getLagTime() / 1000), Render2DHelper.INSTANCE.getScaledWidth() / 2, lagOMeterY, ColorHelper.INSTANCE.getClientColor());
+        FontHelper.INSTANCE.drawCenteredString(eventRender2D.getPoseStack(), String.format("Server is lagging: %.1f", (float) Lagometer.INSTANCE.getLagTime() / 1000), Render2DHelper.INSTANCE.getScaledWidth() / 2, lagOMeterY, ColorHelper.INSTANCE.getClientColor());
     }
 
     private void drawItemDurability(EventRender2DItem eventRender2DItem) {
@@ -250,28 +377,20 @@ public class Hud extends Feature {
             int maxDamage = eventRender2DItem.getStack().getMaxDamage();
             int damage = eventRender2DItem.getStack().getDamage();
             int durability = maxDamage - damage;
-            float percent = (((float) eventRender2DItem.getStack().getMaxDamage() - (float) eventRender2DItem.getStack().getDamage()) / (float) eventRender2DItem.getStack().getMaxDamage()) * 100;
-            int color = Render2DHelper.INSTANCE.getPercentColor(percent);
+            float percent = (((float) eventRender2DItem.getStack().getMaxDamage() - (float) eventRender2DItem.getStack().getDamage()) / (float) eventRender2DItem.getStack().getMaxDamage());
+            int color = ColorHelper.INSTANCE.redGreenShift(percent);
 
             MatrixStack matrixStack = new MatrixStack();
             matrixStack.translate(0.0, 0.0, eventRender2DItem.getItemRenderer().zOffset + 200.0);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            eventRender2DItem.getFontRenderer().draw(Integer.toString(durability), eventRender2DItem.getX() * 2.0f, eventRender2DItem.getY() * 2.0f, staticColor ? 0xFFFFFF : color, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, 15728880);
+            eventRender2DItem.getFontRenderer().draw(Integer.toString(durability), eventRender2DItem.getX() * 2.0f, eventRender2DItem.getY() * 2.0f, staticColorProperty.value() ? 0xFFFFFF : color, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, 15728880);
             immediate.draw();
         }
     }
 
-    public int getCategoryColor(Feature.Category category) {
-        switch (category) {
-            case MOVEMENT -> { return movementColor; }
-            case VISUAL -> { return visualColor; }
-            case PLAYER -> { return playerColor; }
-            case MISC -> { return miscColor; }
-            case WORLD -> { return worldColor; }
-            case COMBAT -> { return combatColor; }
-        }
-        return 0xffffffff;
+    public int getCategoryColor(Category category) {
+        return category.color();
     }
 
     public HudElement getElement(String name) {
@@ -280,5 +399,18 @@ public class Hud extends Feature {
                 return hudElement;
         }
         return null;
+    }
+
+    public enum WatermarkEffect {
+        STATIC, SPIN_ONLY, FLIP_ONLY, SPINFLIP
+    }
+    public enum ArrayListColor {
+        CLIENT_COLOR, RAINBOW, CATEGORY
+    }
+    public enum DistanceMode {
+        BLOCKS, FEET, MILES, KM
+    }
+    public enum TimeMode {
+        SECOND, TICK, MINUTE, HOUR, DAY
     }
 }

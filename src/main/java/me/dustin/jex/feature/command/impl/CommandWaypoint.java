@@ -15,7 +15,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.util.math.Vec3d;
 
 @Cmd(name = "waypoint", description = "Add or remove waypoints", syntax = {".waypoint add <name> <x/y/z/here> <color>", ".waypoint del <name>"})

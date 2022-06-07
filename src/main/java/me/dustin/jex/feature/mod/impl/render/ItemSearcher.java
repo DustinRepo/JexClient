@@ -9,6 +9,7 @@ import me.dustin.jex.event.filters.MousePressFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.render.EventDrawScreen;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
@@ -28,15 +29,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import org.lwjgl.glfw.GLFW;
-
 import java.util.HashMap;
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Search for items while in a chest or your inventory")
 public class ItemSearcher extends Feature {
 
     private boolean typing;
     private String searchField = "";
+
+    public ItemSearcher() {
+        super(Category.VISUAL, "Search for items while in a chest or your inventory");
+    }
 
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
@@ -82,9 +85,9 @@ public class ItemSearcher extends Feature {
     @EventPointer
     private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
         if (event.getScreen() instanceof HandledScreen<?> handledScreen) {
-            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), "Type here to search:", Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() - 30, -1);
-            Render2DHelper.INSTANCE.fillAndBorder(event.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 150, Render2DHelper.INSTANCE.getScaledHeight() - 22, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + 150, Render2DHelper.INSTANCE.getScaledHeight() - 1, typing ? ColorHelper.INSTANCE.getClientColor() : 0xffffffff, 0x90000000, 1);
-            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), searchField, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() - 15, -1);
+            FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), "Type here to search:", Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() - 30, -1);
+            Render2DHelper.INSTANCE.fillAndBorder(event.getPoseStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 150, Render2DHelper.INSTANCE.getScaledHeight() - 22, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + 150, Render2DHelper.INSTANCE.getScaledHeight() - 1, typing ? ColorHelper.INSTANCE.getClientColor() : 0xffffffff, 0x90000000, 1);
+            FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), searchField, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() - 15, -1);
 
             IHandledScreen iHandledScreen = (IHandledScreen) handledScreen;
             if (!searchField.isEmpty())
@@ -100,7 +103,7 @@ public class ItemSearcher extends Feature {
                                 correct = true;
                         }
                     }
-                    Render2DHelper.INSTANCE.fillAndBorder(event.getMatrixStack(), x - 1, y - 1, x + 17, y + 17, correct ? ColorHelper.INSTANCE.getClientColor() : 0x00000000, correct ? 0x00ffffff : 0xaa000000, 1);
+                    Render2DHelper.INSTANCE.fillAndBorder(event.getPoseStack(), x - 1, y - 1, x + 17, y + 17, correct ? ColorHelper.INSTANCE.getClientColor() : 0x00000000, correct ? 0x00ffffff : 0xaa000000, 1);
                 }
         }
     }, Priority.FIRST, new DrawScreenFilter(EventDrawScreen.Mode.POST_CONTAINER));

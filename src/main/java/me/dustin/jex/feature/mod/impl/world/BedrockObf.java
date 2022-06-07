@@ -4,9 +4,9 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,18 +16,21 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
-
+import me.dustin.jex.feature.mod.core.Feature;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.")
 public class BedrockObf extends Feature {
 
     private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Chunk> obfuscatedChunks = new ConcurrentLinkedQueue<>();
     private final Random random = new Random();
     private Thread thread;
+
+    public BedrockObf() {
+        super(Category.WORLD, "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.");
+    }
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
@@ -58,7 +61,7 @@ public class BedrockObf extends Feature {
                 if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
                     obfuscatedChunks.remove(chunk);
             }
-            int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            int distance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
@@ -86,7 +89,7 @@ public class BedrockObf extends Feature {
                 }
             }
         })).start();
-        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        int distance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
                 for (int j = -distance; j < distance; j++) {

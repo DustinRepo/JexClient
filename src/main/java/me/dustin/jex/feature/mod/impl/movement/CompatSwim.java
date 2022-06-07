@@ -7,17 +7,21 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventGetPose;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.player.Jesus;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.Vec3d;
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.player.Jesus;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Change swim speed to work on pre 1.13 servers with anticheats")
 public class CompatSwim extends Feature {
+
+    public CompatSwim() {
+        super(Category.MOVEMENT, "Change swim speed to work on pre 1.13 servers with anticheats");
+    }
 
     @EventPointer
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {

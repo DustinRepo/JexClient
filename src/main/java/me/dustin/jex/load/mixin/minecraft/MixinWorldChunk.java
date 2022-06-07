@@ -22,7 +22,7 @@ public class MixinWorldChunk {
         }
     }
 
-    @Inject(method = "removeBlockEntity(Lnet/minecraft/util/math/BlockPos;)V", at = @At("HEAD"))
+    @Inject(method = "removeBlockEntity", at = @At("HEAD"))
     public void removeBlockEntity(BlockPos blockPos, CallbackInfo ci) {
         WorldHelper.INSTANCE.getBlockEntityList().remove(blockPos);
     }

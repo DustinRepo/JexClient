@@ -13,17 +13,16 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
 
 public class JexPersonalizationScreen extends Screen {
 
     private Screen parent;
     protected JexPersonalizationScreen(Screen parent) {
-        super(new LiteralText("Personalization"));
+        super(Text.translatable("jex.personalization"));
         this.parent = parent;
     }
     public static String setCape;
@@ -53,7 +52,7 @@ public class JexPersonalizationScreen extends Screen {
     @Override
     protected void init() {
         float midX = width / 2.f;
-        setCapeButton = new ButtonWidget((int)midX - 255 + 2, 215, 250, 20, new LiteralText("Set Cape"), button -> {
+        setCapeButton = new ButtonWidget((int)midX - 255 + 2, 215, 250, 20, Text.translatable("jex.personalization.set_cape"), button -> {
             if (fileBrowser.getSelectedFiles().isEmpty() || fileBrowser.getSelectedFiles().get(0).isDirectory())
                 return;
             File cape = fileBrowser.getSelectedFiles().get(0);
@@ -61,17 +60,17 @@ public class JexPersonalizationScreen extends Screen {
             Cape.setPersonalCape(cape);
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
-        prevHatButton = new ButtonWidget((int)midX + 8, 137, 40, 20, new LiteralText("<"), button -> {
+        prevHatButton = new ButtonWidget((int)midX + 8, 137, 40, 20, Text.of("<"), button -> {
             selectedHat--;
             if (selectedHat < -1)
                 selectedHat = Hat.HatType.values().length - 1;
         });
-        nextHatButton = new ButtonWidget((int)midX + 88, 137, 40, 20, new LiteralText(">"), button -> {
+        nextHatButton = new ButtonWidget((int)midX + 88, 137, 40, 20, Text.of(">"), button -> {
             selectedHat++;
             if (selectedHat > Hat.HatType.values().length - 1)
                 selectedHat = -1;
         });
-        setHatButton = new ButtonWidget((int)midX + 8, 170, 120, 20, new LiteralText("Set Hat"), button -> {
+        setHatButton = new ButtonWidget((int)midX + 8, 170, 120, 20, Text.translatable("jex.personalization.set_hat"), button -> {
             String uuid = Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "");
             if (selectedHat == -1) {
                 Hat.clearHat(uuid);
@@ -113,12 +112,12 @@ public class JexPersonalizationScreen extends Screen {
         } else {
             hatName = "None";
         }
-        FontHelper.INSTANCE.drawWithShadow(matrices, "Selected Hat: " + StringUtils.capitalize(hatName), midX + 9, 160, -1);
+        FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.personalization.selected_hat", StringUtils.capitalize(hatName)), midX + 9, 160, -1);
 
         Render2DHelper.INSTANCE.bindTexture(hatsPic);
         DrawableHelper.drawTexture(matrices, (int)midX + 8, 18, 0, 0, 120, 120, 120, 120);
         Hat.HatInfo hatInfo = Hat.getInfo(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
-        FontHelper.INSTANCE.drawWithShadow(matrices, "Current Hat: " + (hatInfo == null ? "None" : StringUtils.capitalize(hatInfo.type.name().replace("_", " ").toLowerCase())), midX + 9, 192, -1);
+        FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.personalization.current_hat", hatInfo == null ? "None" : StringUtils.capitalize(hatInfo.type.name().replace("_", " ").toLowerCase())), midX + 9, 192, -1);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

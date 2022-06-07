@@ -13,7 +13,6 @@ import me.dustin.jex.load.impl.IClientPlayerInteractionManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -42,6 +41,8 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
     @Mutable
     @Shadow @Final private ClientPlayNetworkHandler networkHandler;
 
+    @Mutable
+
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick1(CallbackInfo ci) {
         new EventPlayerInteractionTick().run();
@@ -60,14 +61,14 @@ public class MixinClientPlayerInteractionManager implements IClientPlayerInterac
     }
 
     @Inject(method = "interactBlock", at = @At("HEAD"), cancellable = true)
-    public void interactBlockPre(ClientPlayerEntity player, ClientWorld world, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
+    public void interactBlockPre(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
         EventInteractBlock eventInteractBlock = new EventInteractBlock(hitResult.getBlockPos(), hitResult, EventInteractBlock.Mode.PRE).run();
         if (eventInteractBlock.isCancelled())
             cir.setReturnValue(ActionResult.PASS);
     }
 
     @Inject(method = "interactBlock", at = @At("RETURN"), cancellable = true)
-    public void interactBlockPost(ClientPlayerEntity player, ClientWorld world, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
+    public void interactBlockPost(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult, CallbackInfoReturnable<ActionResult> cir) {
         new EventInteractBlock(hitResult.getBlockPos(), hitResult, EventInteractBlock.Mode.POST).run();
     }
 

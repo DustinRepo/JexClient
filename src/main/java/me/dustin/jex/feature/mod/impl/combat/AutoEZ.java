@@ -7,35 +7,42 @@ import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.player.EventAttackEntity;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
-import me.dustin.jex.helper.network.NetworkHelper;
-import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
-
+import me.dustin.events.core.annotate.EventPointer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically send messages when you kill players. Configurable messages in .minecraft/JexClient/KillMessages.json")
 public class AutoEZ extends Feature {
 
-    @Op(name = "Max Kill Detect Delay(MS)", min = 100, max = 500, inc = 10)
-    public int killDetectDelay = 200;
+    public final Property<Long> killDetectDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Max Kill Detect Delay(MS)")
+            .description("The amount of time between attacking someone and them dying to consider it a kill.")
+            .value(200L)
+            .min(100)
+            .max(500)
+            .inc(10)
+            .build();
 
-    private ArrayList<String> messages = new ArrayList<>();
-
+    private final Map<PlayerEntity, Long> fightingPlayers = new HashMap<>();
+    private final ArrayList<String> messages = new ArrayList<>();
     private boolean isFighting;
-    private Map<PlayerEntity, Long> fightingPlayers = new HashMap<>();
+
+    public AutoEZ() {
+        super(Category.COMBAT, "Automatically send messages when you kill players. Configurable messages in .minecraft/JexClient/KillMessages.json");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -57,9 +64,9 @@ public class AutoEZ extends Feature {
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
         if (event.getEntity() instanceof PlayerEntity playerEntity) {
             if (fightingPlayers.containsKey(playerEntity))
-                fightingPlayers.replace(playerEntity, System.currentTimeMillis() + killDetectDelay);
+                fightingPlayers.replace(playerEntity, System.currentTimeMillis() + killDetectDelayProperty.value());
             else
-                fightingPlayers.put(playerEntity, System.currentTimeMillis() + killDetectDelay);
+                fightingPlayers.put(playerEntity, System.currentTimeMillis() + killDetectDelayProperty.value());
         }
     });
 
@@ -82,7 +89,10 @@ public class AutoEZ extends Feature {
         String name = playerEntity.getGameProfile().getName();
         Random random = new Random();
         String message = messages.get(random.nextInt(messages.size())).replace("%player", name);
-        NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(message));
+        if (message.startsWith("/"))
+            Wrapper.INSTANCE.getLocalPlayer().sendCommand(message.substring(1));
+        else
+            ChatHelper.INSTANCE.sendChatMessage(message);
     }
 
     private void loadMessages() {

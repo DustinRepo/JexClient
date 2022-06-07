@@ -1,13 +1,11 @@
 package bedrockminer.utils;
 
+import java.util.ArrayList;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-
-import java.util.ArrayList;
-//import net.minecraft.world.World;
 
 public class TargetBlock {
     private BlockPos blockPos;

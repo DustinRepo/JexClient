@@ -4,7 +4,7 @@ import me.dustin.events.core.Event;
 
 public class EventRenderTick extends Event {
 
-    public float timeScale = 0;
+    public float timeScale;
 
     public EventRenderTick(float timeScale)
     {

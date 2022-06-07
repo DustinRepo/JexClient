@@ -1,8 +1,5 @@
 package bedrockminer.utils;
 
-//import net.fabricmc.fabric.api.event.client.player.ClientPickBlockCallback;
-//import net.minecraft.client.MinecraftClient;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;

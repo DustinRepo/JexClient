@@ -18,7 +18,7 @@ public class MixinChestBlockEntityRenderer {
 
     @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/model/ModelPart;Lnet/minecraft/client/model/ModelPart;Lnet/minecraft/client/model/ModelPart;FII)V", at = @At("HEAD"), cancellable = true)
     public void render1(MatrixStack matrices, VertexConsumer vertices, ModelPart lid, ModelPart latch, ModelPart base, float openFactor, int light, int overlay, CallbackInfo ci) {
-        EventRenderChest eventRenderChest = new EventRenderChest(matrices, EventRenderChest.Mode.PRE, christmas).run();
+        EventRenderChest eventRenderChest = new EventRenderChest(EventRenderChest.Mode.PRE, christmas).run();
         this.christmas = eventRenderChest.isChristmas();
         if (eventRenderChest.isCancelled())
             ci.cancel();
@@ -26,7 +26,7 @@ public class MixinChestBlockEntityRenderer {
 
     @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/model/ModelPart;Lnet/minecraft/client/model/ModelPart;Lnet/minecraft/client/model/ModelPart;FII)V", at = @At("RETURN"))
     public void render2(MatrixStack matrices, VertexConsumer vertices, ModelPart lid, ModelPart latch, ModelPart base, float openFactor, int light, int overlay, CallbackInfo ci) {
-        EventRenderChest eventRenderChest = new EventRenderChest(matrices, EventRenderChest.Mode.POST, christmas).run();
+        EventRenderChest eventRenderChest = new EventRenderChest(EventRenderChest.Mode.POST, christmas).run();
         this.christmas = eventRenderChest.isChristmas();
     }
 }

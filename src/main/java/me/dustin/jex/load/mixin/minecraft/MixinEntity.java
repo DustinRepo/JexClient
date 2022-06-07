@@ -5,14 +5,10 @@ import me.dustin.jex.event.player.EventPushAwayFromEntity;
 import me.dustin.jex.event.player.EventSlowdown;
 import me.dustin.jex.event.player.EventStep;
 import me.dustin.jex.event.render.EventNametagShouldRender;
-import me.dustin.jex.event.render.EventOutlineColor;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.movement.CompatSwim;
+import me.dustin.jex.event.render.EventTeamColor;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.MovementType;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.math.Box;
@@ -28,28 +24,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity {
 
-    @Shadow
-    public abstract AbstractTeam getScoreboardTeam();
-
-    @Shadow
-    public abstract boolean isSneaking();
-
     @Shadow public abstract Box getBoundingBox();
-
-    @Shadow public World world;
 
     @Shadow protected boolean onGround;
 
-    @Shadow public float stepHeight;
-
     @Shadow public abstract void move(MovementType type, Vec3d movement);
 
+    @Shadow @Nullable public abstract AbstractTeam getScoreboardTeam();
+
     @Shadow private Box boundingBox;
+
+    @Shadow public World world;
+
+    @Shadow public float stepHeight;
 
     @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
     public void push(Entity entity, CallbackInfo ci) {
@@ -68,8 +59,8 @@ public abstract class MixinEntity {
     public void getTeamColorValue(CallbackInfoReturnable<Integer> cir) {
         AbstractTeam abstractTeam = this.getScoreboardTeam();
         int o = abstractTeam != null && abstractTeam.getColor().getColorValue() != null ? abstractTeam.getColor().getColorValue() : 16777215;
-        EventOutlineColor eventOutlineColor = new EventOutlineColor(o, (Entity) (Object) this).run();
-        cir.setReturnValue(eventOutlineColor.getColor());
+        EventTeamColor eventTeamColor = new EventTeamColor(o, (Entity) (Object) this).run();
+        cir.setReturnValue(eventTeamColor.getColor());
     }
 
     @Inject(method = "shouldRender(DDD)Z", at = @At("HEAD"), cancellable = true)

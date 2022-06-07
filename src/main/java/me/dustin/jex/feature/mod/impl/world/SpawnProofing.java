@@ -4,15 +4,24 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.block.*;
+import net.minecraft.block.AbstractButtonBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CarpetBlock;
+import net.minecraft.block.GlassBlock;
+import net.minecraft.block.PressurePlateBlock;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.SoulSandBlock;
+import net.minecraft.block.StainedGlassBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -21,26 +30,40 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Automatically place carpets/slabs to spawn proof around you")
 public class SpawnProofing extends Feature {
 
-    @Op(name = "Delay", max = 1000, inc = 10)
-    public int delay = 50;
-    @Op(name = "Range", max = 6, min = 2)
-    public int range = 5;
-    @Op(name = "Use Glass")
-    public boolean useGlass = true;
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay")
+            .value(50L)
+            .max(1000)
+            .inc(10)
+            .build();
+    public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Range")
+            .value(5)
+            .min(2)
+            .max(6)
+            .build();
+    public final Property<Boolean> useGlassProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Use Glass")
+            .description("Allow glass to be used for spawn proofing.")
+            .value(true)
+            .build();
 
     private final StopWatch stopWatch = new StopWatch();
 
+    public SpawnProofing() {
+        super(Category.WORLD, "Automatically place carpets/slabs to spawn proof around you");
+    }
+
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!stopWatch.hasPassed(delay) || KillAura.INSTANCE.hasTarget() || AutoEat.isEating)
+        if (!stopWatch.hasPassed(delayProperty.value()) || KillAura.INSTANCE.hasTarget() || AutoEat.isEating)
             return;
         stopWatch.reset();
-        for (int x = -range; x < range; x++) {
-            for (int y = -range; y < range; y++) {
-                for (int z = -range; z < range; z++) {
+        for (int x = -rangeProperty.value(); x < rangeProperty.value(); x++) {
+            for (int y = -rangeProperty.value(); y < rangeProperty.value(); y++) {
+                for (int z = -rangeProperty.value(); z < rangeProperty.value(); z++) {
                     BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (x == 0 && y == 0 && z == 0)
                         continue;
@@ -56,12 +79,12 @@ public class SpawnProofing extends Feature {
                         }
                         InventoryHelper.INSTANCE.setSlot(spawnproofItem, true, true);
                         BlockHitResult blockHitResult = new BlockHitResult(Vec3d.ofBottomCenter(pos), Direction.UP, pos.down(), false);
-                        Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
                         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 
                         ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(spawnproofItem);
                         setSuffix(itemStack.getName().getString());
-                        if (delay != 0)
+                        if (delayProperty.value() != 0)
                             return;
                     }
                 }
@@ -72,7 +95,7 @@ public class SpawnProofing extends Feature {
     private int getSpawnProofingItem() {
         for (int i = 0; i < 36; i++) {
             ItemStack itemStack = InventoryHelper.INSTANCE.getInventory().getStack(i);
-            if (itemStack.getItem() instanceof BlockItem blockItem && (blockItem.getBlock() instanceof AbstractButtonBlock || blockItem.getBlock() instanceof CarpetBlock || blockItem.getBlock() instanceof PressurePlateBlock || blockItem.getBlock() instanceof SlabBlock || blockItem.getBlock() == Blocks.SEA_LANTERN || blockItem.getBlock() == Blocks.GLOWSTONE || ((blockItem.getBlock() instanceof GlassBlock || blockItem.getBlock() instanceof StainedGlassBlock) && useGlass))) {
+            if (itemStack.getItem() instanceof BlockItem blockItem && (blockItem.getBlock() instanceof AbstractButtonBlock || blockItem.getBlock() instanceof CarpetBlock || blockItem.getBlock() instanceof PressurePlateBlock || blockItem.getBlock() instanceof SlabBlock || blockItem.getBlock() == Blocks.SEA_LANTERN || blockItem.getBlock() == Blocks.GLOWSTONE || ((blockItem.getBlock() instanceof GlassBlock || blockItem.getBlock() instanceof StainedGlassBlock) && useGlassProperty.value()))) {
                 return i;
             }
         }

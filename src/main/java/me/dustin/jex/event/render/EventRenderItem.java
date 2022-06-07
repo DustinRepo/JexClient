@@ -7,15 +7,15 @@ import net.minecraft.item.ItemStack;
 
 public class EventRenderItem extends Event {
 
-    private MatrixStack matrixStack;
-    private ItemStack itemStack;
-    private ModelTransformation.Mode type;
-    private RenderTime renderTime;
-    private boolean leftHanded;
+    private final MatrixStack poseStack;
+    private final ItemStack itemStack;
+    private final ModelTransformation.Mode type;
+    private final RenderTime renderTime;
+    private final boolean leftHanded;
 
-    public EventRenderItem(MatrixStack matrixStack, ItemStack itemStack, ModelTransformation.Mode type, RenderTime renderTime, boolean leftHanded)
+    public EventRenderItem(MatrixStack poseStack, ItemStack itemStack, ModelTransformation.Mode type, RenderTime renderTime, boolean leftHanded)
     {
-        this.matrixStack = matrixStack;
+        this.poseStack = poseStack;
         this.itemStack = itemStack;
         this.type = type;
         this.renderTime = renderTime;
@@ -34,8 +34,8 @@ public class EventRenderItem extends Event {
         return renderTime;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public MatrixStack getPoseStack() {
+        return poseStack;
     }
 
     public boolean isLeftHanded() {

@@ -4,7 +4,7 @@ import me.dustin.events.core.Event;
 
 public class EventRenderOverlay extends Event {
 
-    private Overlay overlay;
+    private final Overlay overlay;
 
     public EventRenderOverlay(Overlay overlay) {
         this.overlay = overlay;

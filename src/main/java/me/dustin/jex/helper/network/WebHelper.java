@@ -5,24 +5,10 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.text.*;
-import net.minecraft.util.Formatting;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.Header;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -130,17 +116,18 @@ public enum WebHelper {
 
     private void openLinkOnOS(String url) throws IOException {
         String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("win")) {
+        if (os.indexOf("win") >= 0) {
             Runtime rt = Runtime.getRuntime();
             rt.exec("rundll32 url.dll,FileProtocolHandler " + url);
-        } else if (os.contains("mac")) {
+        } else if (os.indexOf("mac") >= 0) {
             Runtime rt = Runtime.getRuntime();
             rt.exec("open " + url);
-        } else if (os.contains("nix") || os.contains("nux")) {
+        } else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0) {
             Runtime rt = Runtime.getRuntime();
-            String[] browsers = {"epiphany", "firefox", "mozilla", "konqueror", "netscape", "opera", "links", "lynx"};
+            String[] browsers = {"epiphany", "firefox", "mozilla", "konqueror",
+                    "netscape", "opera", "links", "lynx"};
 
-            StringBuilder cmd = new StringBuilder();
+            StringBuffer cmd = new StringBuffer();
             for (int i = 0; i < browsers.length; i++)
                 if (i == 0)
                     cmd.append(String.format("%s \"%s\"", browsers[i], url));

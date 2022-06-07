@@ -5,7 +5,6 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -29,6 +28,6 @@ public class BiomeElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().biome;
+        return getHud().infoProperty.value() && getHud().biomeProperty.value();
     }
 }

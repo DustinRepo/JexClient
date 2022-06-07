@@ -1,6 +1,6 @@
 package me.dustin.jex.load.mixin.minecraft;
 
-import me.dustin.jex.event.player.EventAttackCooldownPerTick;
+import me.dustin.jex.event.player.EventCurrentItemAttackStrengthDelay;
 import me.dustin.jex.event.player.EventWalkOffBlock;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,9 +14,9 @@ public class MixinPlayerEntity {
 
     @Inject(method = "getAttackCooldownProgressPerTick", at = @At("HEAD"), cancellable = true)
     public void getAttackCooldownProgress(CallbackInfoReturnable<Float> ci) {
-        EventAttackCooldownPerTick eventAttackCooldownPerTick = new EventAttackCooldownPerTick().run();
-        if (eventAttackCooldownPerTick.getValue() != -1)
-            ci.setReturnValue((float) (eventAttackCooldownPerTick.getValue() / ((PlayerEntity) (Object) this).getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED).getValue() * 20.0D));
+        EventCurrentItemAttackStrengthDelay eventCurrentItemAttackStrengthDelay = new EventCurrentItemAttackStrengthDelay().run();
+        if (eventCurrentItemAttackStrengthDelay.getValue() != -1)
+            ci.setReturnValue((float) (eventCurrentItemAttackStrengthDelay.getValue() / ((PlayerEntity) (Object) this).getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED).getValue() * 20.0D));
     }
 
     @Inject(method = "clipAtLedge", at = @At("HEAD"), cancellable = true)

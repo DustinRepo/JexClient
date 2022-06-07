@@ -3,12 +3,12 @@ package me.dustin.jex.feature.mod.impl.render;
 import java.awt.Color;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderBackground;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -21,23 +21,28 @@ import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.Matrix4f;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Draws a custom background rather than the simple dark one")
 public class CustomBG extends Feature {
 
-    @Op(name = "InGame Only")
-    public boolean inGameOnly = true;
+    public final Property<Boolean> inGameOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("InGame Only")
+            .value(true)
+            .build();
 
     float offset = 0;
     float a = 0.49f;
     boolean up = false;
-    private StopWatch stopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
+
+    public CustomBG() {
+        super(Category.VISUAL, "Draws a custom background rather than the simple dark one");
+    }
 
     @EventPointer
     private final EventListener<EventRenderBackground> eventRenderBackgroundEventListener = new EventListener<>(event -> {
-        if (inGameOnly && Wrapper.INSTANCE.getLocalPlayer() == null)
+        if (inGameOnlyProperty.value() && Wrapper.INSTANCE.getLocalPlayer() == null)
             return;
         event.cancel();
-        Matrix4f matrix4f = event.getMatrixStack().peek().getPositionMatrix();
+        Matrix4f matrix4f = event.getPoseStack().peek().getPositionMatrix();
         if (stopWatch.hasPassed(20)) {
             if (up) {
                 if (a < .49f)
@@ -81,7 +86,7 @@ public class CustomBG extends Feature {
         float height = Render2DHelper.INSTANCE.getScaledHeight();
 
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), 0, 0, width, height, 0xff7f7f7f);
+            Render2DHelper.INSTANCE.fill(event.getPoseStack(), 0, 0, width, height, 0xff7f7f7f);
         }
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -90,8 +95,8 @@ public class CustomBG extends Feature {
         bufferBuilder.vertex(matrix4f,x,y, 0).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, a + 0.3f).next();
         bufferBuilder.vertex(matrix4f,x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a).next();
         bufferBuilder.vertex(matrix4f,x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f).next();
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
     });
 }

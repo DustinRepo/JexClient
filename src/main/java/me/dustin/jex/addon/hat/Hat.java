@@ -1,13 +1,17 @@
 package me.dustin.jex.addon.hat;
 
+import java.util.ArrayList;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-
-import java.util.ArrayList;
 
 public class Hat {
 
@@ -53,6 +57,7 @@ public class Hat {
             default -> new ItemStack(Items.AIR);
         };
     }
+
 
     public static HatType getType(PlayerEntity playerEntity) {
         HatInfo info = getInfo(playerEntity);
@@ -112,7 +117,7 @@ public class Hat {
     }
 
     public void load() {
-        topHat = register("jex:top_hat", new Block(Block.Settings.of(Material.STONE)));
+        topHat = register("jex:top_hat", new Block(AbstractBlock.Settings.of(Material.STONE)));
         register(new BlockItem(topHat, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)));
 
         halo = register("jex:halo", new Block(Block.Settings.of(Material.STONE)));

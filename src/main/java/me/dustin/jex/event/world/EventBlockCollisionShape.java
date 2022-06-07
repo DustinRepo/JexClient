@@ -7,8 +7,8 @@ import net.minecraft.util.shape.VoxelShape;
 
 public class EventBlockCollisionShape extends Event {
 
-    private BlockPos blockPos;
-    private Block block;
+    private final BlockPos blockPos;
+    private final Block block;
     private VoxelShape voxelShape;
 
     public EventBlockCollisionShape(BlockPos blockPos, Block block, VoxelShape voxelShape) {

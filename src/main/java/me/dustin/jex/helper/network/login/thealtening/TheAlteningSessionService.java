@@ -2,10 +2,10 @@ package me.dustin.jex.helper.network.login.thealtening;
 
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.exceptions.*;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
+import com.mojang.authlib.minecraft.InsecurePublicKeyException;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.yggdrasil.response.*;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -69,6 +69,11 @@ public class TheAlteningSessionService extends HttpMinecraftSessionService {
     public GameProfile fillProfileProperties(final GameProfile profile, final boolean requireSecure) {
         //This part uses the base url but just returning the original method doesn't seem to change anything
         return NetworkHelper.INSTANCE.getStoredSessionService().fillProfileProperties(profile, requireSecure);
+    }
+
+    @Override
+    public String getSecurePropertyValue(Property property) throws InsecurePublicKeyException {
+        return NetworkHelper.INSTANCE.getStoredSessionService().getSecurePropertyValue(property);
     }
 
 }

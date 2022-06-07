@@ -3,16 +3,16 @@ package me.dustin.jex.feature.mod.impl.combat;
 import com.google.gson.JsonArray;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.misc.EventSetScreen;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
+import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import me.dustin.events.core.annotate.EventPointer;
 import net.minecraft.client.gui.screen.DeathScreen;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
-
+import me.dustin.events.core.annotate.EventPointer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,10 +21,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically send messages when you die to a player. Configurable messages in .minecraft/JexClient/CopeMessages.json")
 public class AutoCope extends Feature {
 
-    private ArrayList<String> messages = new ArrayList<>();
+    private final ArrayList<String> messages = new ArrayList<>();
+
+    public AutoCope() {
+        super(Category.COMBAT, "Automatically send messages when you die to a player. Configurable messages in .minecraft/JexClient/CopeMessages.json");
+    }
 
     @EventPointer
     private final EventListener<EventSetScreen> eventSetScreenEventListener = new EventListener<>(event -> {
@@ -41,7 +44,10 @@ public class AutoCope extends Feature {
     private void sendMessage() {
         Random random = new Random();
         String message = messages.get(random.nextInt(messages.size()));
-        NetworkHelper.INSTANCE.sendPacket(new ChatMessageC2SPacket(message));
+        if (message.startsWith("/"))
+            Wrapper.INSTANCE.getLocalPlayer().sendCommand(message.substring(1));
+        else
+            ChatHelper.INSTANCE.sendChatMessage(message);
     }
 
     private void loadMessages() {

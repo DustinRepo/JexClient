@@ -8,11 +8,10 @@ import com.mojang.authlib.GameProfile;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
-import me.dustin.jex.event.misc.EventJoinWorld;
+import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketReceive;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.core.Feature.Category;
-import me.dustin.jex.feature.mod.core.Feature.Manifest;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.helper.math.ClientMathHelper;
@@ -23,14 +22,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
 
-@Manifest(category = Category.WORLD, description = "Shows you where players have logged out at")
 public class LogOutSpot extends Feature {
 	
 	private final ArrayList<PlayerData> logOutList = new ArrayList<>();
 	private final ArrayList<FakePlayerEntity> fakePlayers = new ArrayList<>();
 
+	public LogOutSpot() {
+		super(Category.WORLD, "Shows you where players have logged out at");
+	}
+
 	@EventPointer
-	private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+	private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> {
 		logOutList.clear();
 	});
 
@@ -46,10 +48,10 @@ public class LogOutSpot extends Feature {
 				PlayerEntity player = Wrapper.INSTANCE.getWorld().getPlayerByUuid(uuid);
 				if (player == null || player.getName().getString().isEmpty() || EntityHelper.INSTANCE.isNPC(player))
 					return;
-				PlayerData playerInfo = new PlayerData(player.getName().asString(), uuid, id);
-				String name = "LOG: \247b" + player.getName().asString();
+				PlayerData playerInfo = new PlayerData(player.getName().getString(), uuid, id);
+				String name = "LOG: \247b" + player.getName().getString();
 				logOutList.add(playerInfo);
-				ChatHelper.INSTANCE.addClientMessage(player.getName().asString() + " logged out");
+				ChatHelper.INSTANCE.addClientMessage(player.getName().getString() + " logged out");
 				FakePlayerEntity fakePlayer = new FakePlayerEntity(Wrapper.INSTANCE.getWorld(), new GameProfile(UUID.randomUUID(), name));
 				fakePlayer.copyFrom(player);
 				fakePlayer.copyPositionAndRotation(player);
@@ -63,7 +65,7 @@ public class LogOutSpot extends Feature {
 					if (data.uuid().compareTo(entry.getProfile().getId()) == 0) {
 						for (int j = 0; j < fakePlayers.size(); j++) {
 							FakePlayerEntity fakePlayer = fakePlayers.get(j);
-							if (fakePlayer.getName().asString().contains(data.name())) {
+							if (fakePlayer.getName().getString().contains(data.name())) {
 								fakePlayer.setPos(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 								Wrapper.INSTANCE.getWorld().removeEntity(fakePlayer.getId(), RemovalReason.DISCARDED);
 								fakePlayers.remove(j);

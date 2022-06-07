@@ -3,7 +3,6 @@ package me.dustin.jex.helper.network;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.InitialDirContext;
-import java.net.InetAddress;
 import java.util.Hashtable;
 
 public class MinecraftServerAddress {

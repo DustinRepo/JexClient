@@ -7,25 +7,25 @@ import net.minecraft.entity.LivingEntity;
 
 public class EventRenderNametags extends Event {
 
-    private LivingEntity entity;
-    private MatrixStack matrices;
-    private VertexConsumerProvider vertexConsumers;
+    private final LivingEntity entity;
+    private final MatrixStack poseStack;
+    private final VertexConsumerProvider multiBufferSource;
 
-    public EventRenderNametags(LivingEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
+    public EventRenderNametags(LivingEntity entity, MatrixStack poseStack, VertexConsumerProvider multiBufferSource) {
         this.entity = entity;
-        this.matrices = matrices;
-        this.vertexConsumers = vertexConsumers;
+        this.poseStack = poseStack;
+        this.multiBufferSource = multiBufferSource;
     }
 
     public LivingEntity getEntity() {
         return entity;
     }
 
-    public MatrixStack getMatrices() {
-        return matrices;
+    public MatrixStack getPoseStack() {
+        return poseStack;
     }
 
-    public VertexConsumerProvider getVertexConsumers() {
-        return vertexConsumers;
+    public VertexConsumerProvider getMultiBufferSource() {
+        return multiBufferSource;
     }
 }

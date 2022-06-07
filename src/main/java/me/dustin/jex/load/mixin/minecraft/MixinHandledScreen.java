@@ -14,6 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,14 +25,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(HandledScreen.class)
 public class MixinHandledScreen extends Screen implements IHandledScreen {
 
-    @Shadow
-    protected Slot focusedSlot;
-    @Shadow
-    protected int x;//x
-    @Shadow
-    protected int y;//y
+    @Shadow @Nullable protected Slot focusedSlot;
 
     @Shadow @Final protected ScreenHandler handler;
+
+    @Shadow protected int x;
+
+    @Shadow protected int y;
 
     protected MixinHandledScreen(Text title) {
         super(title);
@@ -48,8 +48,8 @@ public class MixinHandledScreen extends Screen implements IHandledScreen {
             ci.cancel();
             if (eventRenderToolTip.getOther() != null) {
                 toolTipRender(matrixStack, eventRenderToolTip.getOther().itemStack(), eventRenderToolTip.getOther().x(), eventRenderToolTip.getOther().y());
-                if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(ToolTips.class) && Feature.get(ToolTips.class).mapToolTip) {
-                    Render2DHelper.INSTANCE.drawMap(eventRenderToolTip.getMatrixStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
+                if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(ToolTips.class) && Feature.get(ToolTips.class).mapToolTipProperty.value()) {
+                    Render2DHelper.INSTANCE.drawMap(eventRenderToolTip.getPoseStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
                 }
             }
             return;
@@ -70,8 +70,8 @@ public class MixinHandledScreen extends Screen implements IHandledScreen {
             other = eventRenderToolTip.getOther();
         if (other != null) {
             toolTipRender(matrixStack, other.itemStack(), other.x(), other.y());
-            if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(ToolTips.class) && Feature.get(ToolTips.class).mapToolTip) {
-                Render2DHelper.INSTANCE.drawMap(eventRenderToolTip.getMatrixStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
+            if (eventRenderToolTip.getOther().itemStack().getItem() == Items.FILLED_MAP && Feature.getState(ToolTips.class) && Feature.get(ToolTips.class).mapToolTipProperty.value()) {
+                Render2DHelper.INSTANCE.drawMap(eventRenderToolTip.getPoseStack(), eventRenderToolTip.getOther().x() + 9, eventRenderToolTip.getOther().y() - 165, eventRenderToolTip.getOther().itemStack());
             }
         }
         other = null;

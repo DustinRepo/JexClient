@@ -6,7 +6,7 @@ import net.minecraft.util.math.Box;
 
 public class EventEntityHitbox extends Event {
 
-    private Entity entity;
+    private final Entity entity;
     private Box box;
 
     public EventEntityHitbox(Entity entity, Box box) {

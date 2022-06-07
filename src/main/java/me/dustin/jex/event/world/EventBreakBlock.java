@@ -5,8 +5,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 
 public class EventBreakBlock extends Event {
-    private BlockState blockState;
-    private BlockPos pos;
+    private final BlockState blockState;
+    private final BlockPos pos;
 
     public EventBreakBlock(BlockState blockState, BlockPos blockPos) {
         this.blockState = blockState;

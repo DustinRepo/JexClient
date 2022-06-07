@@ -8,7 +8,7 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.MessageArgumentType;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 @Cmd(name = "baritone", description = "Access Baritone commands", syntax = ".b <command>", alias = {"b", "bar"})
 public class CommandBaritone extends Command {
@@ -22,7 +22,7 @@ public class CommandBaritone extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        String cmd = MessageArgumentType.getMessage(context, "message").asString();
+        String cmd = MessageArgumentType.getMessage(context, "message").getString();
         if (BaritoneHelper.INSTANCE.baritoneExists()) {
             ChatHelper.INSTANCE.addClientMessage("Sending command to Baritone.");
             BaritoneHelper.INSTANCE.sendCommand(cmd);

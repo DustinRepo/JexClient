@@ -8,7 +8,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,7 +19,7 @@ public class CommandHat extends Command {
 
     @Override
     public void registerCommand() {
-        dispatcher.register(literal(this.name).executes(this).then(argument("item", ItemStackArgumentType.itemStack()).executes(context -> {
+        dispatcher.register(literal(this.name).executes(this).then(argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(context -> {
 
             if (!Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
                 ChatHelper.INSTANCE.addClientMessage("This command is for creative mode only!");

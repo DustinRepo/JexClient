@@ -1,24 +1,15 @@
 package me.dustin.jex.feature.command.core.arguments;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.EntitySelectorReader;
-import net.minecraft.command.argument.GameProfileArgumentType;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.text.Text;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
@@ -45,7 +36,7 @@ public class PlayerNameArgumentType implements ArgumentType<String> {
         if (nameString.length() <= 16 && !b) {
             return nameString;
         } else {
-            throw new SimpleCommandExceptionType(new LiteralText("Not a name")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Text.of("Not a name")).createWithContext(reader);
         }
     }
 

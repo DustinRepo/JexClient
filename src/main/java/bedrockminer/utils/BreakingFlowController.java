@@ -6,7 +6,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-
 import java.util.ArrayList;
 //import java.util.List;
 
@@ -57,7 +56,7 @@ public class BreakingFlowController {
                 break;
             }
 
-            if (blockInPlayerRange(selectedBlock.getBlockPos(), player, Wrapper.INSTANCE.getInteractionManager().getReachDistance())) {
+            if (blockInPlayerRange(selectedBlock.getBlockPos(), player, Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance())) {
                 TargetBlock.Status status = cachedTargetBlockList.get(i).tick();
                 if (status == TargetBlock.Status.RETRACTING) {
                     working = true;

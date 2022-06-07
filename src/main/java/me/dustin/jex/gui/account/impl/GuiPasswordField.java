@@ -21,7 +21,10 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.*;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
@@ -94,7 +97,7 @@ public class GuiPasswordField extends ClickableWidget implements Drawable, Eleme
 
     protected MutableText getNarrationMessage() {
         Text text = this.getMessage();
-        return new TranslatableText("gui.narrate.editBox", new Object[]{text, this.text});
+        return Text.translatable("gui.narrate.editBox", text, this.text);
     }
 
     public void setText(String text) {
@@ -258,7 +261,7 @@ public class GuiPasswordField extends ClickableWidget implements Drawable, Eleme
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!this.isActive()) {
+        if (!this.isNarratable()) {
             return false;
         } else {
             this.selecting = Screen.hasShiftDown();
@@ -334,12 +337,12 @@ public class GuiPasswordField extends ClickableWidget implements Drawable, Eleme
         }
     }
 
-    public boolean isActive() {
+    public boolean isNarratable() {
         return this.isVisible() && this.isFocused() && this.isEditable();
     }
 
     public boolean charTyped(char chr, int modifiers) {
-        if (!this.isActive()) {
+        if (!this.isNarratable()) {
             return false;
         } else if (SharedConstants.isValidChar(chr)) {
             if (this.editable) {
@@ -606,6 +609,6 @@ public class GuiPasswordField extends ClickableWidget implements Drawable, Eleme
     }
 
     public void appendNarrations(NarrationMessageBuilder builder) {
-        builder.put(NarrationPart.TITLE, new TranslatableText("narration.edit_box", new Object[]{this.getText()}));
+        builder.put(NarrationPart.TITLE, Text.translatable("narration.edit_box", this.getText()));
     }
 }

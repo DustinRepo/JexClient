@@ -5,8 +5,8 @@ import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import me.dustin.jex.helper.render.Render2DHelper;
 
 public class ServerButton extends Button {
 

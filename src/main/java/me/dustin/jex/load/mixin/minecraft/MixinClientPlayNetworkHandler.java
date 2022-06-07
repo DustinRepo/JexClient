@@ -12,7 +12,7 @@ import me.dustin.jex.helper.network.ConnectedServerHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.player.bot.BotClientPlayNetworkHandler;
 import me.dustin.jex.load.impl.IClientPlayNetworkHandler;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -22,7 +22,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.network.packet.s2c.play.ChunkData;
+import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.explosion.Explosion;
 import org.spongepowered.asm.mixin.Final;
@@ -35,13 +39,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetworkHandler {
 
-    @Shadow private ClientWorld world;
-    @Shadow @Final private MinecraftClient client;
     private float yaw, pitch;
     private EventServerTurn eventServerTurn;
-
-    @Shadow
-    private CommandDispatcher<CommandSource> commandDispatcher;
 
     @Shadow
     @Final
@@ -50,6 +49,12 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetwor
     @Shadow @Final private ClientConnection connection;
 
     @Shadow public abstract void sendPacket(Packet<?> packet);
+
+    @Shadow private ClientWorld world;
+
+    @Shadow private CommandDispatcher<CommandSource> commandDispatcher;
+
+    @Shadow @Final private MinecraftClient client;
 
     @Inject(method = "sendPacket", at = @At("HEAD"), cancellable = true)
     public void sendPacketPre(Packet<?> packet, CallbackInfo ci) {
@@ -64,37 +69,17 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetwor
         }
     }
 
-    @Inject(method = "onPlayerPositionLook", at = @At("HEAD"))
-    public void posLook(PlayerPositionLookS2CPacket packet, CallbackInfo ci) {
-        //fix for viafabric getting stuck on "Loading terrain..." on 2b2t specifically
-        if (!Wrapper.INSTANCE.getMinecraft().isInSingleplayer() && ConnectedServerHelper.INSTANCE.getServerAddress() != null && ConnectedServerHelper.INSTANCE.getServerAddress().getAddress().contains("2b2t.org") && Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null)
-            Wrapper.INSTANCE.getMinecraft().setScreen(null);
-    }
-
-    @Inject(method = "loadChunk", at = @At("HEAD"), cancellable = true)
-    public void loadChunk(int x, int z, ChunkData chunkData, CallbackInfo ci) {
-        WorldChunk worldChunk = world.getChunkManager().loadChunkFromPacket(x, z, chunkData.getSectionsDataBuf(), chunkData.getHeightmap(), chunkData.getBlockEntities(x, z));
-        new EventLoadChunk(worldChunk).run();
-        ci.cancel();
-    }
-
     @Inject(method = "sendPacket", at = @At("HEAD"))
     public void sendPacketPost(Packet<?> packet, CallbackInfo ci) {
         if (isBotHandler())
             return;
         new EventPacketSent(packet, EventPacketSent.Mode.POST).run();
     }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Inject(method = "onCommandTree", at = @At("RETURN"))
-    private void onOnCommandTree(CommandTreeS2CPacket packet, CallbackInfo info) {
-        if (isBotHandler())
-            return;
-        ClientCommandInternals.addCommands((CommandDispatcher) commandDispatcher, (FabricClientCommandSource) commandSource);
-    }
 
     @Inject(method = "onPlayerPositionLook", at = @At("HEAD"))
     public void onPlayerPositionLook1(PlayerPositionLookS2CPacket packet, CallbackInfo ci) {
+        if (!Wrapper.INSTANCE.getMinecraft().isInSingleplayer() && ConnectedServerHelper.INSTANCE.getServerAddress() != null && ConnectedServerHelper.INSTANCE.getServerAddress().getAddress().contains("2b2t.org") && Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null)
+            Wrapper.INSTANCE.getMinecraft().setScreen(null);
         if (isBotHandler())
             return;
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
@@ -114,6 +99,21 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetwor
             PlayerHelper.INSTANCE.setPitch(pitch);
         }
         eventServerTurn = null;
+    }
+
+    @Inject(method = "loadChunk", at = @At("HEAD"), cancellable = true)
+    public void loadChunk(int x, int z, ChunkData chunkData, CallbackInfo ci) {
+        WorldChunk worldChunk = world.getChunkManager().loadChunkFromPacket(x, z, chunkData.getSectionsDataBuf(), chunkData.getHeightmap(), chunkData.getBlockEntities(x, z));
+        new EventLoadChunk(worldChunk).run();
+        ci.cancel();
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Inject(method = "onCommandTree", at = @At("RETURN"))
+    private void onOnCommandTree(CommandTreeS2CPacket packet, CallbackInfo info) {
+        if (isBotHandler())
+            return;
+        ClientCommandInternals.addCommands((CommandDispatcher) commandDispatcher, (FabricClientCommandSource) commandSource);
     }
 
     @Inject(method = "onExplosion", at = @At("HEAD"), cancellable = true)

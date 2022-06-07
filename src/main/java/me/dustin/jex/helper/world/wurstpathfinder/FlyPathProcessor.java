@@ -7,14 +7,15 @@
  */
 package me.dustin.jex.helper.world.wurstpathfinder;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import net.minecraft.util.math.*;
-
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import java.util.ArrayList;
 
 public class FlyPathProcessor extends PathProcessor
@@ -106,7 +107,7 @@ public class FlyPathProcessor extends PathProcessor
 			}
 			//fix for speed going way past the point
 			if (Feature.getState(Fly.class)) {
-				if (!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= Feature.get(Fly.class).speed) {
+				if (!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= fly.speedProperty.value()) {
 					PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
 					PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
 					Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
@@ -125,23 +126,23 @@ public class FlyPathProcessor extends PathProcessor
 			
 			if(Wrapper.INSTANCE.getPlayer().horizontalCollision)
 				if(posVec.y > nextBox.maxY)
-					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.speed);
+					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.speedProperty.value());
 				else if(posVec.y < nextBox.minY)
-					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.speed);
+					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.speedProperty.value());
 				
 			// vertical movement
 		}else if(y)
 		{
 			PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), 0);
-			if(!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= Feature.get(Fly.class).speed) {
+			if(!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= fly.speedProperty.value()) {
 				Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 				return;
 			}
 
 			if(posVec.y < nextBox.minY)
-				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.speed);
+				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.speedProperty.value());
 			else
-				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.speed);
+				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.speedProperty.value());
 			
 			if(Wrapper.INSTANCE.getPlayer().verticalCollision) {
 				float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
@@ -159,7 +160,7 @@ public class FlyPathProcessor extends PathProcessor
 
 	public double moveSpeed() {
 		if (Speed.INSTANCE.getState()) {
-			return Feature.get(Fly.class).speed;
+			return Feature.get(Fly.class).speedProperty.value();
 		}
 		return PlayerHelper.INSTANCE.getBaseMoveSpeed();
 	}

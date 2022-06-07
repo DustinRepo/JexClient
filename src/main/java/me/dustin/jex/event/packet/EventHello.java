@@ -5,8 +5,8 @@ import net.minecraft.network.ClientConnection;
 
 public class EventHello extends Event {
 
-    private ClientConnection clientConnection;
-    private String serverhash;
+    private final ClientConnection clientConnection;
+    private final String serverhash;
 
     public EventHello(ClientConnection clientConnection, String serverhash) {
         this.clientConnection = clientConnection;

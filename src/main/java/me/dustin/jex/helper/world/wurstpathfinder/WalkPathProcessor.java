@@ -9,7 +9,6 @@ package me.dustin.jex.helper.world.wurstpathfinder;
 
 import java.util.ArrayList;
 
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.Step;
 import me.dustin.jex.feature.mod.impl.movement.speed.Speed;
@@ -77,11 +76,11 @@ public class WalkPathProcessor extends PathProcessor
 		float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
 
 		if (WorldHelper.INSTANCE.getBlockState(nextPos).getMaterial().blocksMovement()) {
-			Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(nextPos, Direction.UP);
+			Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(nextPos, Direction.UP);
 			Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
 			return;
 		} else if (WorldHelper.INSTANCE.getBlockState(nextPos.up()).getMaterial().blocksMovement()) {
-			Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(nextPos.up(), Direction.UP);
+			Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(nextPos.up(), Direction.UP);
 			Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
 			return;
 		}
@@ -210,9 +209,9 @@ public class WalkPathProcessor extends PathProcessor
 	}
 
 	public double getSpeedModSpeed() {
-		return switch (Speed.INSTANCE.mode.toLowerCase()) {
-			case "vanilla" -> Speed.INSTANCE.vanillaSpeed;
-			case "strafe" -> Speed.INSTANCE.strafeSpeed;
+		return switch (Speed.INSTANCE.modeProperty.value()) {
+			case VANILLA -> Speed.INSTANCE.vanillaSpeedProperty.value();
+			case STRAFE -> Speed.INSTANCE.strafeSpeedProperty.value();
 			default -> PlayerHelper.INSTANCE.getBaseMoveSpeed();
 		};
 	}

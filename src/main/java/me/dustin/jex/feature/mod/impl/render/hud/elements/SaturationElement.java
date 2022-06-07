@@ -23,6 +23,6 @@ public class SaturationElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().saturation;
+        return getHud().infoProperty.value() && getHud().saturationProperty.value();
     }
 }

@@ -12,44 +12,62 @@ import me.dustin.jex.event.player.EventIsPlayerTouchingWater;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.CreativeFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.NormalFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.ThreeDFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.TightFly;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
-import me.dustin.jex.feature.mod.impl.world.Excavator;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
-import me.dustin.jex.helper.world.PathingHelper;
-import me.dustin.jex.helper.world.wurstpathfinder.PathProcessor;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Fly in survival", key = GLFW.GLFW_KEY_F)
 public class Fly extends Feature {
 
-    @Op(name = "Mode", all = {"Normal", "Creative", "Tight", "3D"})
-    public String mode = "Normal";
-    @Op(name = "Speed", min = 0.1f, max = 5f, inc = 0.1f)
-    public float speed = 0.5f;
-    @Op(name = "Walk Animation")
-    public boolean walkAnimation = true;
-    @Op(name = "Fly Check Bypass")
-    public boolean flyCheckBypass;
-    @Op(name = "Glide")
-    public boolean glide = false;
-    @OpChild(name = "Glide Speed", min = 0.01f, max = 2, inc = 0.01f, parent = "Glide")
-    public float glideSpeed = 0.034f;
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.NORMAL)
+            .build();
+    public final Property<Float> speedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Speed")
+            .value(0.5f)
+            .min(0.1f)
+            .max(5)
+            .inc(0.1f)
+            .build();
+    public final Property<Boolean> walkAnimationProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Walk Animation")
+            .description("Show the hand-moving walk animation while flying.")
+            .value(true)
+            .build();
+    public final Property<Boolean> flyCheckBypassProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Fly Check Bypass")
+            .description("Attempt to bypass the server's fly check.")
+            .value(true)
+            .build();
+    public final Property<Boolean> glideProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Glide")
+            .value(false)
+            .build();
+    public final Property<Float> glideSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Glide Speed")
+            .value(0.01f)
+            .max(2)
+            .inc(0.01f)
+            .parent(glideProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
     private float strideDistance;
-    private String lastMode;
+    private Mode lastMode;
 
     public Fly() {
+        super(Category.MOVEMENT,  "Fly in survival", GLFW.GLFW_KEY_F);
         new NormalFly();
         new TightFly();
         new ThreeDFly();
@@ -58,7 +76,7 @@ public class Fly extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (walkAnimation) {
+        if (walkAnimationProperty.value()) {
             float g;
             if (!Wrapper.INSTANCE.getLocalPlayer().isDead() && !Wrapper.INSTANCE.getLocalPlayer().isSwimming()) {
                 g = Math.min(0.1F, (float) Wrapper.INSTANCE.getLocalPlayer().getVelocity().horizontalLength());
@@ -72,7 +90,7 @@ public class Fly extends Feature {
             Wrapper.INSTANCE.getLocalPlayer().prevStrideDistance = lastStrideDist;
         }
         sendEvent(event);
-        this.setSuffix(mode);
+        this.setSuffix(modeProperty.value());
     }, Priority.LAST, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
@@ -82,7 +100,7 @@ public class Fly extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        if (!flyCheckBypass || Feature.getState(Freecam.class))
+        if (!flyCheckBypassProperty.value() || Feature.getState(Freecam.class))
             return;
         PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
         if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {
@@ -108,23 +126,27 @@ public class Fly extends Feature {
     });
 
     private void sendEvent(Event event) {
-        if (!mode.equalsIgnoreCase(lastMode) && lastMode != null) {
+        if (modeProperty.value() != lastMode && lastMode != null) {
             FeatureExtension.get(lastMode, this).disable();
-            FeatureExtension.get(mode, this).enable();
+            FeatureExtension.get(modeProperty.value(), this).enable();
         }
-        FeatureExtension.get(mode, this).pass(event);
-        lastMode = mode;
+        FeatureExtension.get(modeProperty.value(), this).pass(event);
+        lastMode = modeProperty.value();
     }
 
     @Override
     public void onEnable() {
-        FeatureExtension.get(mode, this).enable();
+        FeatureExtension.get(modeProperty.value(), this).enable();
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        FeatureExtension.get(mode, this).disable();
+        FeatureExtension.get(modeProperty.value(), this).disable();
         super.onDisable();
+    }
+
+    public enum Mode {
+        NORMAL, CREATIVE, TIGHT, THREE_D
     }
 }

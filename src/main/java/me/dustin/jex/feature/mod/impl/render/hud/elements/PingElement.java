@@ -25,6 +25,6 @@ public class PingElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().ping;
+        return getHud().infoProperty.value() && getHud().pingProperty.value();
     }
 }

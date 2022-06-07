@@ -2,7 +2,7 @@ package me.dustin.jex.file.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import me.dustin.jex.feature.mod.impl.world.xray.Xray;
+import me.dustin.jex.feature.mod.impl.world.Xray;
 import me.dustin.jex.file.core.ConfigFile;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -10,7 +10,6 @@ import me.dustin.jex.helper.file.YamlHelper;
 import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

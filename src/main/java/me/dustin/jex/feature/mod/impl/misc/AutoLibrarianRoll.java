@@ -8,9 +8,10 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Nametag;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
@@ -35,7 +36,7 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -43,21 +44,28 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerProfession;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Automatically break lecterns matched to a villager until it has the trade you want")
 public class AutoLibrarianRoll extends Feature {
 
-    @Op(name = "Price Mode", all = {"Normal", "Adjusted"})
-    public String priceMode = "Normal";
-    @Op(name = "Max Price", min = 1, max = 75)
-    public int price = 20;
-    @Op(name = "Auto Trade")
-    public boolean autoTrade = true;
+    public final Property<PriceMode> priceModeProperty = new Property.PropertyBuilder<PriceMode>(this.getClass())
+            .name("Price Mode")
+            .description("The type of pricing to consider.")
+            .value(PriceMode.NORMAL)
+            .build();
+    public final Property<Integer> priceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Max Price")
+            .value(20)
+            .min(1)
+            .max(75)
+            .build();
+    public final Property<Boolean> autoTradeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Auto Trade")
+            .description("Whether or not to automatically trade when it is found.")
+            .value(true)
+            .build();
 
     private VillagerEntity villager;
     private VillagerProfession lastProfession;
@@ -71,6 +79,10 @@ public class AutoLibrarianRoll extends Feature {
     public static Map<Enchantment, ArrayList<Integer>> enchantments = new HashMap<>();
 
     private static final Map<VillagerEntity, BlockPos> doneVillagers = new HashMap<>();
+
+    public AutoLibrarianRoll() {
+        super(Category.MISC, "Automatically break lecterns matched to a villager until it has the trade you want");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -94,16 +106,16 @@ public class AutoLibrarianRoll extends Feature {
                         Map<Enchantment, Integer> enchants = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(tradeOffer.getSellItem()));
                         for (Map.Entry<Enchantment, ArrayList<Integer>> entry : enchantments.entrySet()) {
                             Enchantment enchantment = entry.getKey();
-                            String enchantName = new TranslatableText(enchantment.getTranslationKey()).getString();
+                            String enchantName = Text.translatable(enchantment.getTranslationKey()).getString();
                             if (enchants.containsKey(enchantment) && entry.getValue().contains(enchants.get(enchantment))) {
-                                int count = priceMode.equalsIgnoreCase("Normal") ? tradeOffer.getOriginalFirstBuyItem().getCount() : tradeOffer.getAdjustedFirstBuyItem().getCount();
-                                if (count <= price) {
+                                int count = priceModeProperty.value() == PriceMode.NORMAL ? tradeOffer.getOriginalFirstBuyItem().getCount() : tradeOffer.getAdjustedFirstBuyItem().getCount();
+                                if (count <= priceProperty.value()) {
                                     ChatHelper.INSTANCE.addClientMessage(enchantName + " " + enchants.get(enchantment) + " found at price " + count + " emeralds");
                                     tradeFound = true;
                                     doneVillagers.put(villager, lecternPos);
                                     this.setState(false);
 
-                                    if (autoTrade) {
+                                    if (autoTradeProperty.value()) {
                                         int book = getItem(Items.BOOK) - 6;
                                         if (book != -1) {
                                             int emerald = getItem(Items.EMERALD) - 6;
@@ -144,7 +156,7 @@ public class AutoLibrarianRoll extends Feature {
             if (lecternPos == null || tradeFound) {
                 checkedTrades = false;
             } else if (WorldHelper.INSTANCE.getBlock(lecternPos) == Blocks.LECTERN) {
-                Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(lecternPos, Direction.UP);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(lecternPos, Direction.UP);
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             } else if (WorldHelper.INSTANCE.getBlock(lecternPos) == Blocks.AIR) {
                 checkedTrades = false;
@@ -188,10 +200,10 @@ public class AutoLibrarianRoll extends Feature {
         if (lecternPos != null) {
             Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(lecternPos);
             Box box = new Box(renderPos.x, renderPos.y, renderPos.z, renderPos.x + 1, renderPos.y + 1, renderPos.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), box, 0xff00ff00);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), box, 0xff00ff00);
         }
         if (villager != null) {
-            villagerPos = Render2DHelper.INSTANCE.getHeadPos(villager, event.getPartialTicks(), event.getMatrixStack());
+            villagerPos = Render2DHelper.INSTANCE.getHeadPos(villager, event.getPartialTicks(), event.getPoseStack());
         }
     });
 
@@ -200,11 +212,11 @@ public class AutoLibrarianRoll extends Feature {
         if (villager != null && Render2DHelper.INSTANCE.isOnScreen(villagerPos)) {
             Nametag nametag = Feature.get(Nametag.class);
             float x = (float) villagerPos.x;
-            float y = (float) villagerPos.y - (nametag.getState() && nametag.passives ? 15 : 0);
+            float y = (float) villagerPos.y - (nametag.getState() && nametag.passivesProperty.value() ? 15 : 0);
             String string1 = "Searching:";
             StringBuilder sb = new StringBuilder();
             for (Enchantment enchantment : enchantments.keySet()) {
-                sb.append(new TranslatableText(enchantment.getTranslationKey()).getString()).append(": ");
+                sb.append(Text.translatable(enchantment.getTranslationKey()).getString()).append(": ");
                 for (int level : enchantments.get(enchantment)) {
                     sb.append(level).append(", ");
                 }
@@ -214,25 +226,25 @@ public class AutoLibrarianRoll extends Feature {
             sb.setLength(sb.length() - 3);
             String string2 = sb.toString();
 
-            String string3 = price + " Emeralds";
+            String string3 = priceProperty.value() + " Emeralds";
             float length1 = FontHelper.INSTANCE.getStringWidth(string1);
             float length2 = FontHelper.INSTANCE.getStringWidth(string2);
             float length3 = FontHelper.INSTANCE.getStringWidth(string3);
 
-            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), x - (length1 / 2) - 2, y - 34, x + (length1 / 2) + 2, y - 23, 0x35000000);
-            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), string1, x, y - 32, -1);
+            Render2DHelper.INSTANCE.fill(event.getPoseStack(), x - (length1 / 2) - 2, y - 34, x + (length1 / 2) + 2, y - 23, 0x35000000);
+            FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), string1, x, y - 32, -1);
 
-            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), x - (length2 / 2) - 2, y - 23, x + (length2 / 2) + 2, y - 12, 0x35000000);
-            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), string2, x, y - 21, ColorHelper.INSTANCE.getClientColor());
+            Render2DHelper.INSTANCE.fill(event.getPoseStack(), x - (length2 / 2) - 2, y - 23, x + (length2 / 2) + 2, y - 12, 0x35000000);
+            FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), string2, x, y - 21, ColorHelper.INSTANCE.getClientColor());
 
-            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), x - (length3 / 2) - 2, y - 12, x + (length3 / 2) + 2, y - 1, 0x35000000);
-            FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), string3, x, y - 10, 0xff00ff00);
+            Render2DHelper.INSTANCE.fill(event.getPoseStack(), x - (length3 / 2) - 2, y - 12, x + (length3 / 2) + 2, y - 1, 0x35000000);
+            FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), string3, x, y - 10, 0xff00ff00);
         }
     });
 
     @Override
     public void onEnable() {
-        if ((enchantments.isEmpty()) && Wrapper.INSTANCE.getLocalPlayer() != null) {
+        if (enchantments.isEmpty() && Wrapper.INSTANCE.getLocalPlayer() != null) {
             ChatHelper.INSTANCE.addClientMessage("Enchantment not set! Set enchantment with " + CommandManagerJex.INSTANCE.getPrefix() + "librarianroll add <enchant> <level>");
         }
         super.onEnable();
@@ -272,4 +284,7 @@ public class AutoLibrarianRoll extends Feature {
         return lectern;
     }
 
+    public enum PriceMode {
+        NORMAL, ADJUSTED
+    }
 }

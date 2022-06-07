@@ -3,31 +3,47 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventAttackEntity;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import me.dustin.jex.helper.network.NetworkHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Automatically deal critical strikes when attacking.")
 public class Criticals extends Feature {
 
-    @Op(name = "Living Only")
-    public boolean livingOnly = true;
-    @Op(name = "Extra Particles")
-    public boolean extraParticles;
-    @OpChild(name = "Amount", min = 1, max = 20, inc = 1, parent = "Extra Particles")
-    public int amount = 5;
+    public final Property<Boolean> livingOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Living Only")
+            .description("Only use Criticals on living entities.")
+            .value(true)
+            .build();
+    public final Property<Boolean> extraParticlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Extra Particles")
+            .description("Whether or not to add extra (fake) critical particles.")
+            .value(true)
+            .build();
+    public final Property<Integer> amountProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Amount")
+            .value(5)
+            .min(1)
+            .max(20)
+            .inc(1)
+            .parent(extraParticlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+
+    public Criticals() {
+        super(Category.COMBAT, "Automatically deal critical strikes when attacking.");
+    }
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
-        if (livingOnly && !(event.getEntity() instanceof LivingEntity))
+        if (livingOnlyProperty.value() && !(event.getEntity() instanceof LivingEntity))
             return;
-        if (extraParticles) {
-            for (int i = 0; i < amount; i++) {
+        if (extraParticlesProperty.value()) {
+            for (int i = 0; i < amountProperty.value(); i++) {
                 Wrapper.INSTANCE.getLocalPlayer().addCritParticles(event.getEntity());
             }
         }

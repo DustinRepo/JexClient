@@ -3,7 +3,7 @@ package me.dustin.jex.feature.mod.impl.render.storageesp.impl;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventHasOutline;
-import me.dustin.jex.event.render.EventOutlineColor;
+import me.dustin.jex.event.render.EventTeamColor;
 import me.dustin.jex.event.render.EventRender2DNoScale;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.extension.FeatureExtension;
@@ -17,16 +17,20 @@ import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Matrix4f;
-
 import java.awt.*;
 
 public class OutlineStorageESP extends FeatureExtension {
     private StorageESP storageESP;
     public OutlineStorageESP() {
-        super("Shader", StorageESP.class);
+        super(StorageESP.Mode.SHADER, StorageESP.class);
     }
 
     @Override
@@ -50,9 +54,8 @@ public class OutlineStorageESP extends FeatureExtension {
                         renderTileEntity(blockEntity, eventRender3D, storageESP);
                     }
                 });
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
-
+                bufferBuilder.clear();
+                BufferRenderer.drawWithShader(bufferBuilder.end());
                 RenderSystem.disableBlend();
                 RenderSystem.disableDepthTest();
                 RenderSystem.enableTexture();
@@ -73,9 +76,9 @@ public class OutlineStorageESP extends FeatureExtension {
                 eventHasOutline.setOutline(true);
                 event.cancel();
             }
-        } else if (event instanceof EventOutlineColor eventOutlineColor) {
-            if (storageESP.isValid(eventOutlineColor.getEntity())) {
-                eventOutlineColor.setColor(storageESP.getColor(eventOutlineColor.getEntity()));
+        } else if (event instanceof EventTeamColor eventTeamColor) {
+            if (storageESP.isValid(eventTeamColor.getEntity())) {
+                eventTeamColor.setColor(storageESP.getColor(eventTeamColor.getEntity()));
                 event.cancel();
             }
         }
@@ -92,7 +95,7 @@ public class OutlineStorageESP extends FeatureExtension {
         BlockState blockState = blockEntity.getCachedState();
 
         blockState.getOutlineShape(Wrapper.INSTANCE.getWorld(), blockEntity.getPos()).getBoundingBoxes().forEach(bb -> {
-            Matrix4f matrix4f = eventRender3D.getMatrixStack().peek().getPositionMatrix();
+            Matrix4f matrix4f = eventRender3D.getPoseStack().peek().getPositionMatrix();
             Color color1 = ColorHelper.INSTANCE.getColor(esp.getColor(blockEntity));
             Box box = bb.offset(Render3DHelper.INSTANCE.getRenderPosition(blockEntity.getPos().getX(), blockEntity.getPos().getY(), blockEntity.getPos().getZ()));
             float minX = (float)box.minX;

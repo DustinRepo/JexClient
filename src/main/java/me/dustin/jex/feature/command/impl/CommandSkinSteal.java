@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;
@@ -14,7 +13,7 @@ import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.network.WebHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 

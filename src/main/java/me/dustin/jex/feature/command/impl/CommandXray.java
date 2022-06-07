@@ -6,12 +6,12 @@ import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.BlockStateArgumentType;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.world.xray.Xray;
+import me.dustin.jex.feature.mod.impl.world.Xray;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.Block;
 
 @Cmd(name = "xray", description = "Add or remove blocks from Xray", syntax = {".xray add <blockname>", ".xray del <blockname>", ".xray list"})
@@ -19,7 +19,7 @@ public class CommandXray extends Command {
 
     @Override
     public void registerCommand() {
-        dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState()).executes(ctx -> {
+        dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).executes(ctx -> {
             Block block = BlockStateArgumentType.getBlockState(ctx, "block").getBlockState().getBlock();
             if (!Xray.blockList.contains(block)) {
                 Xray.blockList.add(block);
@@ -32,7 +32,7 @@ public class CommandXray extends Command {
                 ChatHelper.INSTANCE.addClientMessage("Xray already contains \247c" + block.getName().getString() + "\2477.");
             }
             return 1;
-        }))).then(literal("del").then(argument("block", BlockStateArgumentType.blockState()).executes(ctx -> {
+        }))).then(literal("del").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).executes(ctx -> {
             Block block = BlockStateArgumentType.getBlockState(ctx, "block").getBlockState().getBlock();
             if (Xray.blockList.contains(block)) {
                 Xray.blockList.remove(block);

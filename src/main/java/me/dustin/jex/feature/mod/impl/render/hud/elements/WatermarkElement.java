@@ -33,16 +33,16 @@ public class WatermarkElement extends HudElement {
         int y = (int)this.getY() + 17;
         matrixStack.push();
         matrixStack.translate(x, y, 0);
-        switch (getHud().watermarkMode) {
-            case "Static":
+        switch (getHud().watermarkModeProperty.value()) {
+            case STATIC:
                 break;
-            case "Spin Only":
+            case SPIN_ONLY:
                 matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, 1.0F), rot, true));
                 break;
-            case "Flip Only":
+            case FLIP_ONLY:
                 matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 1F, 0F), rot, true));
                 break;
-            case "SpinFlip":
+            case SPINFLIP:
                 matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.5f, 1F), rot, true));
                 break;
         }
@@ -58,16 +58,16 @@ public class WatermarkElement extends HudElement {
         matrixStack.scale(1 / 0.75f, 1 / 0.75f, 1);
         matrixStack.translate(x, y, 0);
 
-        switch (getHud().watermarkMode) {
-            case "Static":
+        switch (getHud().watermarkModeProperty.value()) {
+            case STATIC:
                 break;
-            case "Spin Only":
+            case SPIN_ONLY:
                 matrixStack.multiply(new Quaternion(new Vec3f(0.0F, 0.0F, -1.0F), rot, true));
                 break;
-            case "Flip Only":
+            case FLIP_ONLY:
                 matrixStack.multiply(new Quaternion(new Vec3f(0.0F, -1F, 0F), rot, true));
                 break;
-            case "SpinFlip":
+            case SPINFLIP:
                 matrixStack.multiply(new Quaternion(new Vec3f(0.0F, -0.5f, -1F), rot, true));
                 break;
         }
@@ -76,22 +76,22 @@ public class WatermarkElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().watermark;
+        return getHud().watermarkProperty.value();
     }
 
     @Override
     public void tick() {
-        if (getHud().watermark) {
-            switch (getHud().watermarkMode) {
-                case "Static":
+        if (getHud().watermarkProperty.value()) {
+            switch (getHud().watermarkModeProperty.value()) {
+                case STATIC:
                     break;
-                case "SpinFlip":
-                case "Spin Only":
+                case SPINFLIP:
+                case SPIN_ONLY:
                     rot+=2;
                     if (rot > 360)
                         rot -= 360;
                     break;
-                case "Flip Only":
+                case FLIP_ONLY:
                     if (flipRot) {
                         rot-=2;
                         if (rot <= 0)

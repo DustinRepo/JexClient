@@ -5,7 +5,7 @@ import net.minecraft.block.Block;
 
 public class EventRenderFluid extends Event {
 
-    private Block block;
+    private final Block block;
 
     public EventRenderFluid(Block block) {
         this.block = block;

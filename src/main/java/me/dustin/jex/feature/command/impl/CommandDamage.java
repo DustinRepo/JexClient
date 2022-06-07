@@ -8,7 +8,7 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 @Cmd(name = "damage", description = "Cause yourself to take damage", syntax = ".damage <amount> (max 7)", alias = {"dmg"})

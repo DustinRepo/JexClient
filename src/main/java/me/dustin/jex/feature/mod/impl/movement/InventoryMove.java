@@ -4,17 +4,21 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.option.KeyBinding;
+import me.dustin.jex.feature.mod.core.Feature;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Move while in your inventory.")
 public class InventoryMove extends Feature {
+
+    public InventoryMove() {
+        super(Category.MOVEMENT, "Move while in your inventory.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {

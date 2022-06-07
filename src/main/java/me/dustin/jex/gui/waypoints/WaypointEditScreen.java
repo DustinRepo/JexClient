@@ -2,6 +2,7 @@ package me.dustin.jex.gui.waypoints;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.WaypointFile;
 import me.dustin.jex.helper.render.Button;
@@ -11,17 +12,19 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import me.dustin.jex.helper.render.Render2DHelper;
-import me.dustin.jex.feature.option.types.ColorOption;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
-
+import me.dustin.jex.helper.render.Render2DHelper;
 import java.awt.*;
 import java.util.Random;
 
@@ -43,7 +46,10 @@ public class WaypointEditScreen extends Screen {
     private Button cancelButton;
 
     private boolean isSliding;
-    private ColorOption v = new ColorOption("###waypoint");
+    private Property<Color> v = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("###waypoints")
+            .value(Color.WHITE)
+            .build();
     private Identifier colorSlider = new Identifier("jex", "gui/click/colorslider.png");
     private float colorX;
     private float colorY;
@@ -56,7 +62,7 @@ public class WaypointEditScreen extends Screen {
     private boolean tempDrawTracer = false;
 
     public WaypointEditScreen(String server, Waypoints.Waypoint waypoint) {
-        super(new LiteralText("Waypoint Edit"));
+        super(Text.of("Waypoint Edit"));
         this.waypoint = waypoint;
         this.server = server;
     }
@@ -82,11 +88,11 @@ public class WaypointEditScreen extends Screen {
         String nametagButtonName = waypoint != null ? "Nametag: " + waypoint.isDrawNametag() : "";
         String beaconButtonName = waypoint != null ? "Beacon: " + waypoint.isDrawBeacon() : "";
         String tracerButtonName = waypoint != null ? "Tracer: " + waypoint.isDrawTracer() : "";
-        serverName = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 95, 200, 20, new LiteralText(server));
-        name = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 60, 200, 20, new LiteralText(waypointName));
-        xPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 65, 20, new LiteralText(waypointX));
-        yPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 33, height / 2 - 25, 66, 20, new LiteralText(waypointY));
-        zPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 + 35, height / 2 - 25, 65, 20, new LiteralText(waypointZ));
+        serverName = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 95, 200, 20, Text.of(server));
+        name = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 60, 200, 20, Text.of(waypointName));
+        xPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 65, 20, Text.of(waypointX));
+        yPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 33, height / 2 - 25, 66, 20, Text.of(waypointY));
+        zPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 + 35, height / 2 - 25, 65, 20, Text.of(waypointZ));
         nametagButton = new Button(nametagButtonName, width / 2.f - 100, height / 2.f + 5, 65, 20, nametagListener);
         beaconButton = new Button(beaconButtonName, width / 2.f - 32.5f, height / 2.f + 5, 65, 20, beaconListener);
         tracerButton = new Button(tracerButtonName, width / 2.f + 35, height / 2.f + 5, 65, 20, tracerListener);
@@ -107,18 +113,11 @@ public class WaypointEditScreen extends Screen {
         this.addSelectableChild(zPos);
         if (waypoint != null) {
             Color color = Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(waypoint.getColor()));
-            float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-
-            v.setH((int) (hsb[0] * 270));
-            v.setS(hsb[1]);
-            v.setB(hsb[2]);
-
+            v.setValue(color);
             currentColor = color.getRGB();
         } else {
             float h = new Random().nextFloat() * 270.f;
-            v.setH((int) (h));
-            v.setS(1);
-            v.setB(1);
+            v.setValue(ColorHelper.INSTANCE.getColorViaHue(h));
 
             this.currentColor = ColorHelper.INSTANCE.getColorViaHue(h).getRGB();
         }
@@ -190,15 +189,16 @@ public class WaypointEditScreen extends Screen {
         }
 
 
-        float huepos = (((float) v.getH() / 270)) * (80);
+        float[] hsb = Color.RGBtoHSB(v.value().getRed(), v.value().getGreen(), v.value().getBlue(), null);
+        float huepos = hsb[0] * 80;
 
-        float satpos = ((float) (v.getS())) * (80);
-        float brightpos = ((float) ((1 - v.getB())) * 79);
+        float satpos = hsb[1] * 80;
+        float brightpos = ((1 - hsb[2])) * 79;
 
 
         handleSliders(v);
         Render2DHelper.INSTANCE.drawGradientRect(this.colorX + 5, this.colorY + 15, this.colorX + 85, this.colorY + 95, -1, 0xff000000);
-        drawGradientRect(matrixStack, this.colorX + 5, this.colorY + 15, this.colorX + 85, this.colorY + 95, ColorHelper.INSTANCE.getColorViaHue(v.getH()).getRGB(), 0xff000000);
+        drawGradientRect(matrixStack, this.colorX + 5, this.colorY + 15, this.colorX + 85, this.colorY + 95, ColorHelper.INSTANCE.getColorViaHue(hsb[0] * 270).getRGB(), 0xff000000);
         Render2DHelper.INSTANCE.drawGradientRect(this.colorX + 5, this.colorY + 15, this.colorX + 85, this.colorY + 95, 0x20000000, 0xff000000);
         //color cursor
         Render2DHelper.INSTANCE.fill(matrixStack, this.colorX + 5 + satpos - 1, this.colorY + 15 + brightpos - 1, this.colorX + 5 + satpos + 1, this.colorY + 15 + brightpos + 1, -1);
@@ -212,8 +212,9 @@ public class WaypointEditScreen extends Screen {
         FontHelper.INSTANCE.drawWithShadow(matrixStack, "Color", this.colorX + 3, this.colorY + 3, currentColor);
     }
 
-    void handleSliders(ColorOption v) {
+    void handleSliders(Property<Color> colorProperty) {
         if (MouseHelper.INSTANCE.isMouseButtonDown(0) && isSliding) {
+            float[] hsb = Color.RGBtoHSB(colorProperty.value().getRed(), colorProperty.value().getGreen(), colorProperty.value().getBlue(), null);
             if (MouseHelper.INSTANCE.getMouseX() > this.colorX + 100) {
                 float position = MouseHelper.INSTANCE.getMouseY() - (this.colorY + 15);
                 float percent = position / 79 * 100;
@@ -231,20 +232,21 @@ public class WaypointEditScreen extends Screen {
                 if (value < 0) {
                     value = 0;
                 }
-                v.setH((int) value);
+                hsb[0] = value;
             } else {
+                hsb[0] *= 270;
                 float position = MouseHelper.INSTANCE.getMouseX() - (this.colorX + 5);
-                float percent = position / 80 * 100;
+                float percent = position / 80.f;
                 if (percent > 100) {
                     percent = 100;
                 }
                 if (percent < 0) {
                     percent = 0;
                 }
-                v.setS(percent / 100);
+                hsb[1] = percent;
 
                 position = MouseHelper.INSTANCE.getMouseY() - (this.colorY + 15);
-                percent = position / 79 * 100;
+                percent = position / 79.f;
                 percent = 100 - percent;
                 if (percent > 100) {
                     percent = 100;
@@ -252,10 +254,9 @@ public class WaypointEditScreen extends Screen {
                 if (percent < 0) {
                     percent = 0;
                 }
-
-                v.setB(percent / 100);
+                hsb[2] = percent;
             }
-            currentColor = ColorHelper.INSTANCE.getColorViaHue(v.getH(), v.getS(), v.getB()).getRGB();
+            currentColor = ColorHelper.INSTANCE.getColorViaHue(hsb[0], hsb[1], hsb[2]).getRGB();
         }
     }
 

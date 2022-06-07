@@ -5,22 +5,25 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
-import me.dustin.jex.event.misc.EventJoinWorld;
+import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.feature.option.annotate.OpChild;
+import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
-import me.dustin.jex.helper.render.Render3DHelper.BoxStorage;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -30,26 +33,38 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
-
+import me.dustin.jex.feature.mod.core.Feature;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Search for a specific block. use \".help search\"")
 public class Search extends Feature {
 
-    private static ConcurrentMap<Block, Integer> blocks = Maps.newConcurrentMap();
-    private static ConcurrentMap<BlockPos, Block> worldBlocks = Maps.newConcurrentMap();
-    @Op(name = "Tracers")
-    public boolean tracers;
-    @Op(name = "Limit Range")
-    public boolean limitRange = false;
-    @OpChild(name = "Range", min = 10, max = 100, parent = "Limit Range")
-    public int range = 25;
+    public final Property<Boolean> tracersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Tracers")
+            .value(false)
+            .build();
+    public final Property<Boolean> limitRangeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Limit Range")
+            .value(false)
+            .build();
+    public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Range")
+            .value(25)
+            .min(10)
+            .max(100)
+            .build();
+
+    private static final ConcurrentMap<Block, Integer> blocks = Maps.newConcurrentMap();
+    private static final ConcurrentMap<BlockPos, Block> worldBlocks = Maps.newConcurrentMap();
 
     private Thread thread;
     private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
+
+    public Search() {
+        super(Category.VISUAL, "Search for a specific block. use \".help search\"");
+    }
 
     public static void firstLoad() {
         blocks.put(Blocks.DIAMOND_ORE, new Color(0, 150, 255).getRGB());
@@ -75,7 +90,7 @@ public class Search extends Feature {
             }
         })).start();
         if (Wrapper.INSTANCE.getWorld() != null) {
-            int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            int distance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
             if (Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
@@ -94,7 +109,7 @@ public class Search extends Feature {
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (blocks == null || blocks.isEmpty())
             return;
-        ArrayList<BoxStorage> boxList = new ArrayList<>();
+        ArrayList<Render3DHelper.BoxStorage> boxList = new ArrayList<>();
         for (BlockPos pos : worldBlocks.keySet()) {
             Block block = worldBlocks.get(pos);
             if (WorldHelper.INSTANCE.getBlock(pos) != block) {
@@ -103,19 +118,19 @@ public class Search extends Feature {
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
             assert cameraEntity != null;
-            if (limitRange && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos)) > range)
+            if (limitRangeProperty.value() && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos)) > rangeProperty.value())
                 continue;
             Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
             Box box = new Box(entityPos.x - 0.5f, entityPos.y, entityPos.z - 0.5f, entityPos.x + 1 - 0.5f, entityPos.y + 1, entityPos.z + 1 - 0.5f);
-            BoxStorage boxStorage = new BoxStorage(box, blocks.get(block));
+            Render3DHelper.BoxStorage boxStorage = new Render3DHelper.BoxStorage(box, blocks.get(block));
             boxList.add(boxStorage);
         }
-        Render3DHelper.INSTANCE.drawList(event.getMatrixStack(), boxList, true);
+        Render3DHelper.INSTANCE.drawList(event.getPoseStack(), boxList, true);
     });
 
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
-        if (!tracers)
+        if (!tracersProperty.value())
             return;
         for (BlockPos pos : worldBlocks.keySet()) {
             Block block = worldBlocks.get(pos);
@@ -138,8 +153,8 @@ public class Search extends Feature {
             bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-            bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            bufferBuilder.clear();
+            BufferRenderer.drawWithShader(bufferBuilder.end());
 
             Render3DHelper.INSTANCE.end3DRender();
         }
@@ -170,7 +185,7 @@ public class Search extends Feature {
         }
 
         if (emptyChunk != null) {
-            int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            int distance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
@@ -184,8 +199,8 @@ public class Search extends Feature {
     }, new ServerPacketFilter(EventPacketReceive.Mode.PRE, ChunkDeltaUpdateS2CPacket.class, ChunkDataS2CPacket.class, BlockUpdateS2CPacket.class));
 
     @EventPointer
-    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
-        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+    private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> {
+        int distance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
                 for (int j = -distance; j < distance; j++) {

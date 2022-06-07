@@ -5,8 +5,9 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRotateItemEntity;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -21,24 +22,36 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Items will rotate around in the air and flop down")
 public class ItemPhysics extends Feature {//fancier version that's not just flat items on the ground like the fabric mod
 
-    @Op(name = "Roll Spin Speed", max = 50)
-    public int rollSpeed = 0;
-    @Op(name = "Pitch Spin Speed", max = 50)
-    public int pitchSpeed = 25;
-    @Op(name = "Yaw Spin Speed", max = 50)
-    public int yawSpeed = 25;
+    public final Property<Integer> rollSpeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Roll Spin Speed")
+            .value(0)
+            .max(50)
+            .build();
+    public final Property<Integer> pitchSpeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Pitch Spin Speed")
+            .value(25)
+            .max(50)
+            .build();
+    public final Property<Integer> yawSpeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Yaw Spin Speed")
+            .value(25)
+            .max(50)
+            .build();
 
     private final HashMap<ItemEntity, Vec3d> itemRotations = new HashMap<>();
     private final HashMap<ItemEntity, Vec3d> prevItemRotations = new HashMap<>();
     private final HashMap<ItemEntity, Vec3d> negValues = new HashMap<>();
 
+    public ItemPhysics() {
+        super(Category.VISUAL, "Items will rotate around in the air and flop down");
+    }
+
     @EventPointer
     private final EventListener<EventRotateItemEntity> eventRotateItemEntityEventListener = new EventListener<>(event -> {
         ItemEntity itemEntity = event.getItemEntity();
-        MatrixStack matrixStack = event.getMatrixStack();
+        MatrixStack matrixStack = event.getPoseStack();
         float g = event.getG();
         float n = itemEntity.getRotation(g);
 
@@ -84,7 +97,7 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
                     prevItemRotations.replace(itemEntity, itemRotations.get(itemEntity));
                     Vec3d vec = itemRotations.get(itemEntity);
                     if (!itemEntity.isOnGround()) {
-                        vec = new Vec3d(vec.x + pitchSpeed, vec.y + yawSpeed, vec.z + rollSpeed);
+                        vec = new Vec3d(vec.x + pitchSpeedProperty.value(), vec.y + yawSpeedProperty.value(), vec.z + rollSpeedProperty.value());
                     } else
                         vec = new Vec3d(90, 0, vec.z);
                     itemRotations.replace(itemEntity, vec);

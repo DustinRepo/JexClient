@@ -6,7 +6,6 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
-
 import java.io.File;
 import java.util.ArrayList;
 

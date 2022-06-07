@@ -12,7 +12,6 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
-
 import java.util.ArrayList;
 
 public class HudElement {
@@ -113,7 +112,7 @@ public class HudElement {
     }
 
     public void checkCollisions() {
-        if (!hud.collision)
+        if (!hud.collisionProperty.value())
             return;
         ArrayList<HudElement> colliding = getCollidingElements();
         if (!colliding.isEmpty()) {
@@ -135,7 +134,7 @@ public class HudElement {
     }
 
     public void checkCollisionsMoveOthers() {
-        if (!hud.collision)
+        if (!hud.collisionProperty.value())
             return;
         ArrayList<HudElement> colliding = getCollidingElements();
         if (!colliding.isEmpty()) {
@@ -162,7 +161,7 @@ public class HudElement {
     }
 
     public void checkCollisionsMoveOthers(ArrayList<HudElement> exempt) {
-        if (!hud.collision)
+        if (!hud.collisionProperty.value())
             return;
         ArrayList<HudElement> colliding = getCollidingElements();
         exempt.add(this);
@@ -190,7 +189,7 @@ public class HudElement {
     }
 
     public void bringOldCollisions() {
-        if (!hud.collision)
+        if (!hud.collisionProperty.value())
             return;
         ArrayList<HudElement> noLongerColliding = new ArrayList<>();
         ArrayList<HudElement> colliding = getCollidingElements();
@@ -223,7 +222,7 @@ public class HudElement {
     }
 
     public void bringOldCollisions(ArrayList<HudElement> exempt) {
-        if (!hud.collision)
+        if (!hud.collisionProperty.value())
             return;
         ArrayList<HudElement> noLongerColliding = new ArrayList<>();
         ArrayList<HudElement> colliding = getCollidingElements();

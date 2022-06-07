@@ -5,7 +5,7 @@ import net.minecraft.client.particle.Particle;
 
 public class EventTickParticle extends Event {
 
-    private Particle particle;
+    private final Particle particle;
 
     public EventTickParticle(Particle particle) {
         this.particle = particle;

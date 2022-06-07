@@ -3,14 +3,14 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
-import me.dustin.jex.event.misc.EventJoinWorld;
+import me.dustin.jex.event.misc.EventSetLevel;
 import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.block.Blocks;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -20,22 +20,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
-
+import me.dustin.jex.feature.mod.core.Feature;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(category = Feature.Category.VISUAL, description = "Find tunnels in the nether that might lead to bases.")
 public class TunnelFinder extends Feature {
 
-    @Op(name = "Color", isColor = true)
-    public int color = new Color(175, 250, 0).getRGB();
-
+    public final Property<Color> colorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Color")
+            .value(new Color(175, 250, 0))
+            .build();
 
     private final ConcurrentLinkedQueue<BlockPos> positions = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
 
     private Thread thread;
+
+    public TunnelFinder() {
+        super(Category.VISUAL, "Find tunnels in the nether that might lead to bases.");
+    }
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
@@ -61,7 +65,7 @@ public class TunnelFinder extends Feature {
         }
 
         if (emptyChunk != null) {
-            int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+            int distance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
             if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
                 for (int i = -distance; i < distance; i++) {
                     for (int j = -distance; j < distance; j++) {
@@ -83,14 +87,14 @@ public class TunnelFinder extends Feature {
             }
             Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
             Box box = new Box(entityPos.x, entityPos.y, entityPos.z, entityPos.x + 1, entityPos.y + 2, entityPos.z + 1);
-            Render3DHelper.INSTANCE.drawBoxOutline(event.getMatrixStack(), box, color);
+            Render3DHelper.INSTANCE.drawBoxOutline(event.getPoseStack(), box, colorProperty.value().getRGB());
         }
     });
 
     @EventPointer
-    private final EventListener<EventJoinWorld> eventJoinWorldEventListener = new EventListener<>(event -> {
+    private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> {
         positions.clear();
-        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        int distance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
                 for (int j = -distance; j < distance; j++) {
@@ -116,7 +120,7 @@ public class TunnelFinder extends Feature {
                 }
             }
         })).start();
-        int distance = Wrapper.INSTANCE.getOptions().viewDistance;
+        int distance = Wrapper.INSTANCE.getOptions().getViewDistance().getValue();
         if (Wrapper.INSTANCE.getWorld() != null && Wrapper.INSTANCE.getLocalPlayer() != null) {
             for (int i = -distance; i < distance; i++) {
                 for (int j = -distance; j < distance; j++) {

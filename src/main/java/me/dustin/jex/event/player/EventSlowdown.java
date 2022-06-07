@@ -1,14 +1,10 @@
 package me.dustin.jex.event.player;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
 import me.dustin.events.core.Event;
 
 public class EventSlowdown extends Event {
 
-    private State state;
+    private final State state;
 
     public EventSlowdown(State state) {
         this.state = state;

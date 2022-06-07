@@ -7,7 +7,6 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Formatting;
-
 import java.util.UUID;
 
 public class TheAlteningAccountButton {

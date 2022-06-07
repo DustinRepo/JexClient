@@ -6,19 +6,19 @@ import net.minecraft.client.util.math.MatrixStack;
 
 public class EventRenderWidget extends Event {
 
-    private ClickableWidget clickableWidget;
-    private MatrixStack matrixStack;
+    private final ClickableWidget abstractWidget;
+    private final MatrixStack poseStack;
 
-    public EventRenderWidget(ClickableWidget clickableWidget, MatrixStack matrixStack) {
-        this.clickableWidget = clickableWidget;
-        this.matrixStack = matrixStack;
+    public EventRenderWidget(ClickableWidget abstractWidget, MatrixStack poseStack) {
+        this.abstractWidget = abstractWidget;
+        this.poseStack = poseStack;
     }
 
-    public ClickableWidget getClickableWidget() {
-        return clickableWidget;
+    public ClickableWidget getAbstractWidget() {
+        return abstractWidget;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public MatrixStack getPoseStack() {
+        return poseStack;
     }
 }

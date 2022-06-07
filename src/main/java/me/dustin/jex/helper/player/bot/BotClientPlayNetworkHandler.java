@@ -1,57 +1,65 @@
 package me.dustin.jex.helper.player.bot;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.load.impl.IChatHud;
 import me.dustin.jex.load.impl.IClientPlayNetworkHandler;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyboardInput;
-import net.minecraft.client.network.*;
-import net.minecraft.client.recipebook.ClientRecipeBook;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.sound.AbstractBeeSoundInstance;
-import net.minecraft.client.sound.AggressiveBeeSoundInstance;
-import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.util.telemetry.TelemetrySender;
-import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.c2s.play.*;
-import net.minecraft.network.packet.s2c.play.*;
-import net.minecraft.stat.StatHandler;
+import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
+import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProperties;
-import net.minecraft.world.chunk.ChunkNibbleArray;
-import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
-
 import java.util.*;
 
 public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
@@ -76,7 +84,7 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         ArrayList<RegistryKey<World>> list = Lists.newArrayList(packet.dimensionIds());
         Collections.shuffle(list);
         RegistryKey<World> registryKey = packet.dimensionId();
-        RegistryEntry<DimensionType> registryEntry = packet.dimensionType();
+        RegistryEntry<DimensionType> registryEntry = this.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).entryOf(packet.dimensionType());
         int chunkLoadDistance = packet.viewDistance();
         int simulationDistance = packet.simulationDistance();
         boolean bl = packet.debugWorld();
@@ -87,7 +95,7 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         IClientPlayNetworkHandler iClientPlayNetworkHandler = (IClientPlayNetworkHandler)this;
         iClientPlayNetworkHandler.setWorld(playerBot.getWorld());
 
-        playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile()));
+        playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile(), playerBot.getKeyPair().publicKey()));
         if (playerBot.getPlayerInventory() == null)
             playerBot.setPlayerInventory(new PlayerInventory(playerBot.getPlayer()));
         playerBot.getPlayer().world = playerBot.getWorld();
@@ -106,7 +114,7 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
                 if (Wrapper.INSTANCE.getOptions().isPlayerModelPartEnabled(playerModelPart))
                     i |= playerModelPart.getBitFlag();
             }
-            this.playerBot.getClientConnection().send(new ClientSettingsC2SPacket(Wrapper.INSTANCE.getOptions().language, Wrapper.INSTANCE.getOptions().viewDistance, Wrapper.INSTANCE.getOptions().chatVisibility, Wrapper.INSTANCE.getOptions().chatColors, i, Wrapper.INSTANCE.getOptions().mainArm, Wrapper.INSTANCE.getMinecraft().shouldFilterText(), Wrapper.INSTANCE.getOptions().allowServerListing));
+            this.playerBot.getClientConnection().send(new ClientSettingsC2SPacket(Wrapper.INSTANCE.getOptions().language, Wrapper.INSTANCE.getOptions().getViewDistance().getValue(), Wrapper.INSTANCE.getOptions().getChatVisibility().getValue(), Wrapper.INSTANCE.getOptions().getChatColors().getValue(), i, Wrapper.INSTANCE.getOptions().getMainArm().getValue(), Wrapper.INSTANCE.getMinecraft().shouldFilterText(), Wrapper.INSTANCE.getOptions().getAllowServerListing().getValue()));
         }
     }
 
@@ -178,27 +186,8 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
         NetworkThreadUtils.forceMainThread(packet, this, Wrapper.INSTANCE.getMinecraft());
         if (packet.getEntityId() == entityId) {
             sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
-            playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile()));
+            playerBot.setPlayer(new OtherClientPlayerEntity(this.getWorld(), playerBot.getGameProfile(), playerBot.getKeyPair().publicKey()));
             playerBot.setPlayerInventory(new PlayerInventory(playerBot.getPlayer()));
-        }
-    }
-
-    @Override
-    public void onEntityPosition(EntityPositionS2CPacket packet) {
-        NetworkThreadUtils.forceMainThread(packet, this, Wrapper.INSTANCE.getMinecraft());
-        Entity entity = this.playerBot.getWorld().getEntityById(packet.getId());
-        if (entity == null) {
-            return;
-        }
-        double d = packet.getX();
-        double e = packet.getY();
-        double f = packet.getZ();
-        entity.updateTrackedPosition(d, e, f);
-        if (!entity.isLogicalSideForUpdatingMovement()) {
-            float g = (float)(packet.getYaw() * 360) / 256.0f;
-            float h = (float)(packet.getPitch() * 360) / 256.0f;
-            entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
-            entity.setOnGround(packet.isOnGround());
         }
     }
 
@@ -213,11 +202,11 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
     }
 
     @Override
-    public void onGameMessage(GameMessageS2CPacket packet) {
+    public void onChatMessage(ChatMessageS2CPacket packet) {
         IChatHud iChatHud = (IChatHud) Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud();
         try {
-            if (!iChatHud.containsMessage(packet.getMessage().getString()))
-                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", Formatting.DARK_GRAY, Formatting.GREEN, playerBot.getGameProfile().getName(), Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY, packet.getMessage().getString()));
+            if (!iChatHud.containsMessage(packet.getSignedMessage().signedContent().getString()))
+                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", Formatting.DARK_GRAY, Formatting.GREEN, playerBot.getGameProfile().getName(), Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY, packet.getSignedMessage().signedContent().getString()));
         } catch (Exception e){}
     }
 

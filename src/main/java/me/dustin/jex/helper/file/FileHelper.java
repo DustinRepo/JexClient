@@ -1,13 +1,13 @@
 package me.dustin.jex.helper.file;
 
 
+import org.apache.commons.codec.binary.Base64;
+
+import javax.imageio.ImageIO;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
-import org.apache.commons.codec.binary.Base64;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;

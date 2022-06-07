@@ -1,19 +1,38 @@
 package me.dustin.jex.helper.world;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
-import net.minecraft.block.*;
+import me.dustin.jex.helper.network.ConnectedServerHelper;
+import net.minecraft.block.AbstractButtonBlock;
+import net.minecraft.block.AbstractRailBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CandleBlock;
+import net.minecraft.block.CarpetBlock;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.ComparatorBlock;
+import net.minecraft.block.CropBlock;
+import net.minecraft.block.FlowerPotBlock;
+import net.minecraft.block.FluidBlock;
+import net.minecraft.block.GlassBlock;
+import net.minecraft.block.LeverBlock;
+import net.minecraft.block.PressurePlateBlock;
+import net.minecraft.block.RedstoneTorchBlock;
+import net.minecraft.block.RedstoneWireBlock;
+import net.minecraft.block.RepeaterBlock;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.block.SkullBlock;
+import net.minecraft.block.StainedGlassBlock;
+import net.minecraft.block.TintedGlassBlock;
+import net.minecraft.block.TripwireHookBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.world.GeneratorType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -24,19 +43,19 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
-import net.minecraft.world.level.storage.LevelStorage;
-
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.ConcurrentMap;
 import java.util.*;
 
@@ -141,11 +160,6 @@ public enum WorldHelper {
         return blocks;
     }
 
-    public boolean isSlimeChunk(long seed, int chunkX, int chunkZ) {
-        Random r = new Random(seed + (int)(chunkX * chunkX * 0x4c1906) + (int)(chunkX * 0x5ac0db) + (int)(chunkZ * chunkZ) * 0x4307a7L + (int)(chunkZ * 0x5f24f) ^ 0x3AD8025FL);
-        return (r.nextInt(10) == 0);
-    }
-
     public Vec3d sideOfBlock(BlockPos pos, Direction direction) {
         switch (direction) {
             case NORTH -> Vec3d.ofCenter(pos).add(0, 0, -0.5);
@@ -159,7 +173,7 @@ public enum WorldHelper {
     }
 
     public Block getBlockAboveEntity(Entity entity) {
-        return getBlockAboveEntity(entity, -0.5f);
+        return getBlockAboveEntity(entity, -2.5f);
     }
 
     public Block getBlockBelowEntity(Entity entity) {
@@ -193,14 +207,14 @@ public enum WorldHelper {
     public String getCurrentServerName() {
         try {
             boolean isSinglePlayer = Wrapper.INSTANCE.getMinecraft().isInSingleplayer();
-            if (isSinglePlayer) {
+            if (isSinglePlayer && Wrapper.INSTANCE.getMinecraft().getServer() != null) {
                 String preString = Wrapper.INSTANCE.getMinecraft().getServer().getIconFile().toString().replace(File.separator + "icon.png", "").replace(File.separator, "/");
                 String[] list = preString.split("/");
                 return list[list.length - 1];
             } else {
-                if (Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry() == null)
+                if (ConnectedServerHelper.INSTANCE.getServerAddress() == null)
                     return "";
-                return Wrapper.INSTANCE.getMinecraft().getCurrentServerEntry().address;
+                return ConnectedServerHelper.INSTANCE.getServerAddress().getAddress();
             }
         } catch (Exception e) {
             return e.getMessage();
@@ -238,30 +252,9 @@ public enum WorldHelper {
         return onLiquid;
     }
 
-    public boolean isNotOnLiquid(Entity entity) {
-        if (entity == null) {
-            return false;
-        }
-        Box boundingBox = entity.getBoundingBox();
-        boundingBox = boundingBox.expand(-0.01D, -0.0D, -0.01D).offset(0.0D, -0.01D, 0.0D);
-        boolean onBlock = false;
-        int y = (int) boundingBox.minY;
-        for (int x = MathHelper.floor(boundingBox.minX); x < MathHelper.floor(boundingBox.maxX + 1.0D); x++) {
-            for (int z = MathHelper.floor(boundingBox.minZ); z < MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
-                BlockPos blockPos = new BlockPos(x, y, z);
-                Box blockBB = SINGLE_BOX.offset(blockPos);
-                if (boundingBox.minX < blockBB.maxX &&
-                        boundingBox.maxX > blockBB.minX &&
-                        boundingBox.minY < blockBB.maxY &&
-                        boundingBox.maxY > blockBB.minY &&
-                        boundingBox.minZ < blockBB.maxZ &&
-                        boundingBox.maxZ > blockBB.minZ) {
-                    System.out.println("f");
-                    onBlock = true;
-                }
-            }
-        }
-        return onBlock;
+    public boolean isSlimeChunk(long seed, int chunkX, int chunkZ) {
+        Random r = new Random(seed + (int)(chunkX * chunkX * 0x4c1906) + (int)(chunkX * 0x5ac0db) + (int)(chunkZ * chunkZ) * 0x4307a7L + (int)(chunkZ * 0x5f24f) ^ 0x3AD8025FL);
+        return (r.nextInt(10) == 0);
     }
 
     public boolean isTouchingLiquidBlockSpace(Entity entity) {
@@ -273,7 +266,8 @@ public enum WorldHelper {
         boolean onLiquid = false;
         int y = (int) boundingBox.minY;
         for (int x = MathHelper.floor(boundingBox.minX); x < MathHelper.floor(boundingBox.maxX + 1.0D); x++) {
-            for (int z = MathHelper.floor(boundingBox.minZ); z < MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
+            for (int z = MathHelper.floor(boundingBox.minZ); z <
+                    MathHelper.floor(boundingBox.maxZ + 1.0D); z++) {
                 Block block = getBlock(new BlockPos(x, y, z));
                 if (block != Blocks.AIR) {
                     if (!isWaterlogged(new BlockPos(x, y, z))) {

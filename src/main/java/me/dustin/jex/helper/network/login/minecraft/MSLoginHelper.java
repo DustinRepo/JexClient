@@ -1,14 +1,12 @@
 package me.dustin.jex.helper.network.login.minecraft;
 
 import com.google.gson.JsonObject;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.util.Session;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;

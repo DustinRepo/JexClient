@@ -11,7 +11,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.feature.mod.core.Feature;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.util.Formatting;
 
 @Cmd(name = "toggle", description = "Toggle modules.", alias = {"t"}, syntax = ".toggle <mod>")

@@ -1,14 +1,15 @@
 package me.dustin.jex.feature.mod.impl.player;
 
 import com.mojang.authlib.GameProfile;
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.*;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.FakePlayerEntity;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.render.EventMarkChunkClosed;
@@ -17,8 +18,6 @@ import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.MovementType;
@@ -27,29 +26,39 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
 import java.util.UUID;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Take a look around like a ghost.")
 public class Freecam extends Feature {
 
-    @Op(name = "Stealth")
-    public boolean stealth;
-    @Op(name = "Reset Pos on Disable")
-    public boolean resetPos = true;
-    @Op(name = "Speed", min = 0.1f, max = 5f, inc = 0.1f)
-    public float speed = 0.5f;
+    public final Property<Boolean> stealthProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Stealth")
+            .description("Cancels all packets.")
+            .value(true)
+            .build();
+    public final Property<Boolean> resetPosProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Reset Pos on Disable")
+            .value(true)
+            .build();
+    public final Property<Float> speedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Speed")
+            .value(0.5f)
+            .min(0.1f)
+            .max(5)
+            .inc(0.1f)
+            .build();
 
     private Vec3d savedCoords = Vec3d.ZERO;
     private RotationVector lookVec = new RotationVector(0, 0);
     public static PlayerEntity playerEntity;
 
+    public Freecam() {
+        super(Category.PLAYER, "Take a look around like a ghost.");
+    }
+
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        if (stealth) {
+        if (stealthProperty.value()) {
             if (!(event.getPacket() instanceof KeepAliveC2SPacket || event.getPacket() instanceof ChatMessageC2SPacket))
                 event.cancel();
         } else if (event.getPacket() instanceof PlayerMoveC2SPacket) {
@@ -72,7 +81,7 @@ public class Freecam extends Feature {
             }
             if (Feature.getState(Fly.class))
                 playerEntity.setVelocity(0, 0, 0);
-            if (!stealth) {
+            if (!stealthProperty.value()) {
                 playerEntity.setStackInHand(Hand.MAIN_HAND, Wrapper.INSTANCE.getLocalPlayer().getMainHandStack());
                 playerEntity.setStackInHand(Hand.OFF_HAND, Wrapper.INSTANCE.getLocalPlayer().getOffHandStack());
             }
@@ -87,13 +96,13 @@ public class Freecam extends Feature {
             event.setX(0);
             event.setZ(0);
         } else {
-            PlayerHelper.INSTANCE.setMoveSpeed(event, speed);
+            PlayerHelper.INSTANCE.setMoveSpeed(event, speedProperty.value());
         }
         event.setY(0);
         if (Wrapper.INSTANCE.getOptions().sneakKey.isPressed())
-            event.setY(-speed);
+            event.setY(-speedProperty.value());
         if (Wrapper.INSTANCE.getOptions().jumpKey.isPressed())
-            event.setY(speed);
+            event.setY(speedProperty.value());
     });
 
     @EventPointer
@@ -133,7 +142,7 @@ public class Freecam extends Feature {
     @Override
     public void onDisable() {
         super.onDisable();
-        if (Wrapper.INSTANCE.getLocalPlayer() != null && resetPos) {
+        if (Wrapper.INSTANCE.getLocalPlayer() != null && resetPosProperty.value()) {
             Wrapper.INSTANCE.getLocalPlayer().noClip = false;
             Wrapper.INSTANCE.getWorldRenderer().reload();
             if (playerEntity == null) {

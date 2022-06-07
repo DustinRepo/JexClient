@@ -2,7 +2,6 @@ package me.dustin.jex.helper.player.bot;
 
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
-import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
@@ -19,7 +18,6 @@ import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,9 +45,9 @@ public class BotLoginNetworkHandler extends ClientLoginNetworkHandler {
         Cipher cipher;
         String string;
         try {
-            SecretKey secretKey = NetworkEncryptionUtils.generateKey();
+            SecretKey secretKey = NetworkEncryptionUtils.generateSecretKey();
             PublicKey publicKey = packet.getPublicKey();
-            string = new BigInteger(NetworkEncryptionUtils.generateServerId(packet.getServerId(), publicKey, secretKey)).toString(16);
+            string = new BigInteger(NetworkEncryptionUtils.computeServerId(packet.getServerId(), publicKey, secretKey)).toString(16);
             cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
             cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
             loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, packet.getNonce());
@@ -57,7 +55,7 @@ public class BotLoginNetworkHandler extends ClientLoginNetworkHandler {
         catch (NetworkEncryptionException secretKey) {
             throw new IllegalStateException("Protocol error", secretKey);
         }
-        ChatHelper.INSTANCE.addRawMessage(new TranslatableText("connect.authorizing"));
+        ChatHelper.INSTANCE.addRawMessage(Text.translatable("connect.authorizing"));
         NetworkUtils.EXECUTOR.submit(() -> {
             Text text = contactSessionServers(string);
             if (text != null) {
@@ -68,7 +66,7 @@ public class BotLoginNetworkHandler extends ClientLoginNetworkHandler {
                     return;
                 }
             }
-            ChatHelper.INSTANCE.addRawMessage(new TranslatableText("connect.encrypting"));
+            ChatHelper.INSTANCE.addRawMessage(Text.translatable("connect.encrypting"));
             this.playerBot.getClientConnection().send(loginKeyC2SPacket, future -> this.playerBot.getClientConnection().setupEncryption(cipher, cipher2));
         });
     }

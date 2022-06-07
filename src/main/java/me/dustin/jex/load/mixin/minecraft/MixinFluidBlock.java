@@ -22,19 +22,19 @@ public class MixinFluidBlock {
 
     @Shadow
     @Final
-    public static VoxelShape COLLISION_SHAPE;
-
-    @Shadow
-    @Final
     public static IntProperty LEVEL;
 
     @Shadow
     @Final
     protected FlowableFluid fluid;
 
+    @Shadow
+    @Final
+    public static VoxelShape COLLISION_SHAPE;
+
     @Inject(method = "getCollisionShape", at = @At("HEAD"), cancellable = true)
     public void getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context, CallbackInfoReturnable<VoxelShape> ci) {
-        EventBlockCollisionShape eventBlockCollisionShape = new EventBlockCollisionShape(pos, state.getBlock(), context.isAbove(this.COLLISION_SHAPE, pos, true) && (Integer)state.get(LEVEL) == 0 && context.canWalkOnFluid(world.getFluidState(pos.up()), state.getFluidState()) ? COLLISION_SHAPE : VoxelShapes.empty()).run();
+        EventBlockCollisionShape eventBlockCollisionShape = new EventBlockCollisionShape(pos, state.getBlock(), context.isAbove(COLLISION_SHAPE, pos, true) && (Integer)state.get(LEVEL) == 0 && context.canWalkOnFluid(world.getFluidState(pos.up()), state.getFluidState()) ? COLLISION_SHAPE : VoxelShapes.empty()).run();
         if (eventBlockCollisionShape.isCancelled())
             ci.setReturnValue(eventBlockCollisionShape.getVoxelShape());
     }

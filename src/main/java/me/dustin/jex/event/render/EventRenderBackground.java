@@ -5,13 +5,13 @@ import net.minecraft.client.util.math.MatrixStack;
 
 public class EventRenderBackground extends Event {
 
-    private MatrixStack matrixStack;
+    private final MatrixStack poseStack;
 
-    public EventRenderBackground(MatrixStack matrixStack) {
-        this.matrixStack = matrixStack;
+    public EventRenderBackground(MatrixStack poseStack) {
+        this.poseStack = poseStack;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public MatrixStack getPoseStack() {
+        return poseStack;
     }
 }

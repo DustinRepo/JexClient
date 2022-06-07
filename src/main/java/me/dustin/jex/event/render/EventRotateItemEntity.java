@@ -6,13 +6,13 @@ import net.minecraft.entity.ItemEntity;
 
 public class EventRotateItemEntity extends Event {
 
-    private ItemEntity itemEntity;
-    private MatrixStack matrixStack;
-    private float g;
+    private final ItemEntity itemEntity;
+    private final MatrixStack poseStack;
+    private final float g;
 
-    public EventRotateItemEntity(ItemEntity itemEntity, MatrixStack matrixStack, float g) {
+    public EventRotateItemEntity(ItemEntity itemEntity, MatrixStack poseStack, float g) {
         this.itemEntity = itemEntity;
-        this.matrixStack = matrixStack;
+        this.poseStack = poseStack;
         this.g = g;
     }
 
@@ -20,8 +20,8 @@ public class EventRotateItemEntity extends Event {
         return itemEntity;
     }
 
-    public MatrixStack getMatrixStack() {
-        return matrixStack;
+    public MatrixStack getPoseStack() {
+        return poseStack;
     }
 
     public float getG() {

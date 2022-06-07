@@ -1,6 +1,8 @@
 package me.dustin.jex.helper.player.bot;
 
+import com.google.common.primitives.Longs;
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.yggdrasil.response.KeyPairResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -14,10 +16,18 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ProxyHelper;
-import net.minecraft.client.network.*;
+import me.dustin.jex.helper.network.WebHelper;
+import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.client.network.Address;
+import net.minecraft.client.network.AllowedAddressResolver;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.OtherClientPlayerEntity;
+import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -26,14 +36,23 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.NetworkEncryptionException;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.PlayerKeyPair;
+import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.message.MessageSignature;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
-import net.minecraft.network.packet.c2s.play.*;
+import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -42,14 +61,20 @@ import net.minecraft.util.Lazy;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
-
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
+import java.time.Instant;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class PlayerBot {
@@ -67,11 +92,17 @@ public class PlayerBot {
     private int useDelay, attackDelay;
     private int countedTicks;
 
+    private PlayerKeyPair keyPair;
     private ClientWorld world;
 
     public PlayerBot(GameProfile gameProfile, Session session) {
         this.gameProfile = gameProfile;
         this.session = session;
+        try {
+            keyPair = generateKeyPair();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         EventManager.register(this);
     }
 
@@ -79,7 +110,7 @@ public class PlayerBot {
         Thread loginThread = new Thread(() -> {
             try {
                 Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
-                if (!optional.isPresent()) {
+                if (optional.isEmpty()) {
                     ChatHelper.INSTANCE.addClientMessage("Error logging in player while grabbing IP");
                     disconnect();
                     return;
@@ -88,7 +119,7 @@ public class PlayerBot {
                 this.clientConnection = currentConnection = connect(optional.get());
                 clientConnection.setPacketListener(new BotLoginNetworkHandler(clientConnection, Wrapper.INSTANCE.getMinecraft(), null, this::log, gameProfile, this));
                 clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.LOGIN));
-                clientConnection.send(new LoginHelloC2SPacket(gameProfile));
+                clientConnection.send(new LoginHelloC2SPacket(gameProfile.getName(), keyPair == null ? Optional.empty() : Optional.ofNullable(keyPair.publicKey().data())));
             } catch (Exception e) {
                 ChatHelper.INSTANCE.addClientMessage("Error logging in player");
                 e.printStackTrace();
@@ -97,6 +128,19 @@ public class PlayerBot {
         });
         loginThread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(JexClient.INSTANCE.getLogger()));
         loginThread.start();
+    }
+
+    private PlayerKeyPair generateKeyPair() throws NetworkEncryptionException {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json; charset=utf-8");
+        headers.put("Content-Length", "0");
+        headers.put("Authorization", "Bearer " + getSession().getAccessToken());
+        WebHelper.HttpResponse httpResponse = WebHelper.INSTANCE.httpRequest("https://api.minecraftservices.com/player/certificates", null, headers, "POST");
+
+        KeyPairResponse keyPairResponse = JsonHelper.INSTANCE.gson.fromJson(httpResponse.data(), KeyPairResponse.class);
+        PublicKey publicKey = NetworkEncryptionUtils.decodeRsaPublicKeyPem(keyPairResponse.getPublicKey());
+        byte[] keySig = Base64.getDecoder().decode(keyPairResponse.getPublicKeySignature());
+        return new PlayerKeyPair(NetworkEncryptionUtils.decodeRsaPrivateKeyPem(keyPairResponse.getPrivateKey()), new PlayerPublicKey(new PlayerPublicKey.PublicKeyData(Instant.parse(keyPairResponse.getExpiresAt()), publicKey, keySig)), Instant.parse(keyPairResponse.getRefreshedAfter()));
     }
 
     public void disconnect() {
@@ -160,8 +204,51 @@ public class PlayerBot {
         return gameProfile;
     }
 
-    public void sendMessage(String message) {
-        this.clientConnection.send(new ChatMessageC2SPacket(message));
+    public void sendMessage(String chat) {
+        Instant instant = Instant.now();
+        MessageSignature chatSigData = new MessageSignature(UUID.fromString(getSession().getUuid()), instant, sigForMessage(instant, chat));
+        this.clientConnection.send(new ChatMessageC2SPacket(chat, chatSigData, false));
+    }
+
+    private NetworkEncryptionUtils.SignatureData sigForMessage(Instant instant, String string) {
+        try {
+            Signature signature = getSignature();
+            if (signature != null) {
+                long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
+                updateSig(signature, l, UUID.fromString(session.getUuid()), instant, string);
+                return new NetworkEncryptionUtils.SignatureData(l, signature.sign());
+            }
+        } catch (GeneralSecurityException var6) {
+            JexClient.INSTANCE.getLogger().error("Failed to sign chat message {}", instant, var6);
+        }
+
+        return NetworkEncryptionUtils.SignatureData.NONE;
+    }
+
+    private static void updateSig(Signature signature, long l, UUID uUID, Instant instant, String string) throws SignatureException {
+        signature.update(Longs.toByteArray(l));
+        signature.update(uuidToBytes(uUID.getMostSignificantBits(), uUID.getLeastSignificantBits()));
+        signature.update(Longs.toByteArray(instant.getEpochSecond()));
+        signature.update(string.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static byte[] uuidToBytes(long l, long m) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(16).order(ByteOrder.BIG_ENDIAN);
+        byteBuffer.putLong(l).putLong(m);
+        return byteBuffer.array();
+    }
+
+    public Signature getSignature() throws GeneralSecurityException {
+        if (keyPair == null)
+            return null;
+        PrivateKey privateKey = keyPair.privateKey();
+        if (privateKey == null) {
+            return null;
+        } else {
+            Signature signature = Signature.getInstance("SHA1withRSA");
+            signature.initSign(privateKey);
+            return signature;
+        }
     }
 
     public void drop(boolean all) {
@@ -170,6 +257,7 @@ public class PlayerBot {
             this.getPlayerInventory().dropSelectedItem(all);
         this.clientConnection.send(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
     }
+
     public void dropInventory() {
         for (int i = 0; i < playerInventory.size(); i++) {
             ItemStack stack = playerInventory.getStack(i);
@@ -180,25 +268,25 @@ public class PlayerBot {
     }
 
     public void use() {
-        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getInteractionManager().getReachDistance());
+        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance());
         if (crosshair != null) {
             clientConnection.send(PlayerInteractEntityC2SPacket.interact(crosshair, player.isSneaking(), Hand.MAIN_HAND));
             clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
-        } else if (raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && world.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
-            clientConnection.send(new PlayerInteractBlockC2SPacket(Hand.MAIN_HAND, blockHitResult));
-            if (canUseOnPos(blockHitResult.getBlockPos()))
+        } else if (raycast(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && WorldHelper.INSTANCE.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
+            Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
+            if (WorldHelper.INSTANCE.canUseOnPos(blockHitResult.getBlockPos()))
                 clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
         } else
-            clientConnection.send(new PlayerInteractItemC2SPacket(Hand.MAIN_HAND));
+            Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
     }
 
     public void attack() {
-        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getInteractionManager().getReachDistance());
+        Entity crosshair = getCrosshairEntity(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance());
         if (crosshair != null) {
             player.resetLastAttackedTicks();
             clientConnection.send(PlayerInteractEntityC2SPacket.attack(crosshair, player.isSneaking()));
             clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
-        } else if (raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && world.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
+        } else if (raycast(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance(), 1, false) instanceof BlockHitResult blockHitResult && world.getBlockState(blockHitResult.getBlockPos()).getOutlineShape(player.getWorld(), blockHitResult.getBlockPos()) != VoxelShapes.empty()) {
             clientConnection.send(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getSide()));
             clientConnection.send(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockHitResult.getBlockPos(), blockHitResult.getSide()));
             clientConnection.send(new HandSwingC2SPacket(Hand.MAIN_HAND));
@@ -392,6 +480,10 @@ public class PlayerBot {
 
     public void setWorld(ClientWorld world) {
         this.world = world;
+    }
+
+    public PlayerKeyPair getKeyPair() {
+        return keyPair;
     }
 
     public static PlayerBot getBot(String name) {

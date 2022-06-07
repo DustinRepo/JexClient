@@ -12,16 +12,24 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.util.math.*;
-
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import java.awt.*;
 
 public class OutlineBox extends FeatureExtension {
 
 	public OutlineBox() {
-		super("Box Outline", ESP.class);
+		super(ESP.Mode.BOX_OUTLINE, ESP.class);
 	}
 
 	@Override
@@ -47,11 +55,11 @@ public class OutlineBox extends FeatureExtension {
 							bb = new Box(vec.x - 0.15, vec.y + 0.1f, vec.z - 0.15, vec.x + 0.15, vec.y + 0.5, vec.z + 0.15);
 						float yaw = EntityHelper.INSTANCE.getYaw(entity);
 
-						eventRender3D.getMatrixStack().translate(vec.x, vec.y, vec.z);
-						eventRender3D.getMatrixStack().multiply(new Quaternion(new Vec3f(0, -1, 0), yaw, true));
-						eventRender3D.getMatrixStack().translate(-vec.x, -vec.y, -vec.z);
+						eventRender3D.getPoseStack().translate(vec.x, vec.y, vec.z);
+						eventRender3D.getPoseStack().multiply(new Quaternion(new Vec3f(0, -1, 0), yaw, true));
+						eventRender3D.getPoseStack().translate(-vec.x, -vec.y, -vec.z);
 
-						Matrix4f matrix4f = eventRender3D.getMatrixStack().peek().getPositionMatrix();
+						Matrix4f matrix4f = eventRender3D.getPoseStack().peek().getPositionMatrix();
 						Color color1 = ColorHelper.INSTANCE.getColor(ESP.INSTANCE.getColor(entity));
 						float minX = (float) bb.minX;
 						float minY = (float) bb.minY;
@@ -89,13 +97,13 @@ public class OutlineBox extends FeatureExtension {
 						bufferBuilder.vertex(matrix4f, minX, maxY, maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 						bufferBuilder.vertex(matrix4f, minX, maxY, minZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 
-						eventRender3D.getMatrixStack().translate(vec.x, vec.y, vec.z);
-						eventRender3D.getMatrixStack().multiply(new Quaternion(new Vec3f(0, 1, 0), yaw, true));
-						eventRender3D.getMatrixStack().translate(-vec.x, -vec.y, -vec.z);
+						eventRender3D.getPoseStack().translate(vec.x, vec.y, vec.z);
+						eventRender3D.getPoseStack().multiply(new Quaternion(new Vec3f(0, 1, 0), yaw, true));
+						eventRender3D.getPoseStack().translate(-vec.x, -vec.y, -vec.z);
 					}
 				});
-				bufferBuilder.end();
-				BufferRenderer.draw(bufferBuilder);
+				bufferBuilder.clear();
+				BufferRenderer.drawWithShader(bufferBuilder.end());
 
 				RenderSystem.disableBlend();
 				RenderSystem.disableDepthTest();

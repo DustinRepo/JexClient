@@ -11,7 +11,6 @@ import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.Session;
 import net.minecraft.util.Identifier;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;

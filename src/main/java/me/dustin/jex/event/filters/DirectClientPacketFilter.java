@@ -2,12 +2,11 @@ package me.dustin.jex.event.filters;
 
 import me.dustin.jex.event.packet.EventPacketSent;
 import net.minecraft.network.Packet;
-
 import java.util.function.Predicate;
 
 public class DirectClientPacketFilter implements Predicate<EventPacketSent.EventPacketSentDirect> {
 
-    private EventPacketSent.Mode mode;
+    private final EventPacketSent.Mode mode;
     private final Class<? extends Packet<?>>[] packets;
 
     @SafeVarargs

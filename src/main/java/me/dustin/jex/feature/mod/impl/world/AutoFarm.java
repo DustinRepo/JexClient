@@ -10,10 +10,11 @@ import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
@@ -49,13 +50,18 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Mine out a selected area")
 public class AutoFarm extends Feature {
 
-    @Op(name = "Render Area Box")
-    public boolean renderAreaBox = true;
-    @Op(name = "Sort Delay", max = 1000, inc = 10)
-    public int sortDelay = 350;
+    public final Property<Boolean> renderAreaBoxProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Render Area Box")
+            .value(true)
+            .build();
+    public final Property<Integer> sortDelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Sort Delay")
+            .value(250)
+            .max(1000)
+            .inc(10)
+            .build();
 
     public static FarmingArea farmArea;
     private Stage stage = Stage.SET_POS1;
@@ -63,6 +69,10 @@ public class AutoFarm extends Feature {
     private BlockPos tempPos1;
     private BlockPos tempPos2;
     private final StopWatch sortStopWatch = new StopWatch();
+
+    public AutoFarm() {
+        super(Category.WORLD, "Farm a selected area");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -164,26 +174,26 @@ public class AutoFarm extends Feature {
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 
-        if (farmArea != null && renderAreaBox) {
+        if (farmArea != null && renderAreaBoxProperty.value()) {
             Vec3d miningAreaVec1 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(farmArea.getAreaBB().minX, farmArea.getAreaBB().minY, farmArea.getAreaBB().minZ));
             Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(farmArea.getAreaBB().maxX, farmArea.getAreaBB().maxY, farmArea.getAreaBB().maxZ));
             Box miningAreaBox = new Box(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), miningAreaBox, 0xffffff00);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), miningAreaBox, 0xffffff00);
         } else if (tempPos1 != null) {//draws yellow box on first set pos
             Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos1);
             Box closestBox = new Box(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), closestBox, 0xffffff00);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), closestBox, 0xffffff00);
         }
         if (tempPos2 != null) {//draws yellow box on first set pos
             Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos2);
             Box closestBox = new Box(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), closestBox, 0xffffff00);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), closestBox, 0xffffff00);
         }
         //draws yellow box on crosshair block
         if (farmArea == null && Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof BlockHitResult blockHitResult) {
             Vec3d hitVec = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
             Box hoverBox = new Box(hitVec.x, hitVec.y, hitVec.z, hitVec.x + 1, hitVec.y + 1, hitVec.z + 1);
-            Render3DHelper.INSTANCE.drawBox(event.getMatrixStack(), hoverBox, 0xff00ff00);
+            Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), hoverBox, 0xff00ff00);
         }
     });
 
@@ -221,8 +231,8 @@ public class AutoFarm extends Feature {
             message = Formatting.WHITE + "AutoFarm Stage: " + Formatting.GREEN + StringUtils.capitalize(stage.name().toLowerCase().replace("_", " "));
 
         float width = FontHelper.INSTANCE.getStringWidth(message);
-        Render2DHelper.INSTANCE.outlineAndFill(event.getMatrixStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 10, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 24, 0x70696969, 0x40000000);
-        FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 13, farmArea != null ? 0xffff0000 : -1);
+        Render2DHelper.INSTANCE.outlineAndFill(event.getPoseStack(), Render2DHelper.INSTANCE.getScaledWidth() / 2.f - width / 2.f - 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 10, Render2DHelper.INSTANCE.getScaledWidth() / 2.f + width / 2.f + 2, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 24, 0x70696969, 0x40000000);
+        FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), message, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f + 13, farmArea != null ? 0xffff0000 : -1);
     });
 
     @EventPointer
@@ -313,7 +323,7 @@ public class AutoFarm extends Feature {
         Wrapper.INSTANCE.getLocalPlayer().setHeadYaw(rotationVector.getYaw());
         Wrapper.INSTANCE.getLocalPlayer().setBodyYaw(rotationVector.getYaw());
 
-        Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockPos, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
+        Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockPos, blockHitResult == null ? Direction.UP : blockHitResult.getSide());
         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
     }
 
@@ -351,7 +361,7 @@ public class AutoFarm extends Feature {
         RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.of(blockPos).add(0.5, 0, 0.5));
         RotationVector saved = new RotationVector(Wrapper.INSTANCE.getLocalPlayer());
         PlayerHelper.INSTANCE.setRotation(rotationVector);
-        HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getInteractionManager().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
+        HitResult result = Wrapper.INSTANCE.getLocalPlayer().raycast(Wrapper.INSTANCE.getClientPlayerInteractionManager().getReachDistance(), 1, false);// Wrapper.clientWorld().rayTraceBlock(getVec(entity), getVec(entity).add(0, -256, 0), false, true, false);
         PlayerHelper.INSTANCE.setRotation(saved);
         if (result instanceof BlockHitResult blockHitResult)
             return blockHitResult;
@@ -381,7 +391,7 @@ public class AutoFarm extends Feature {
         }
 
         public BlockPos getClosestCrop() {
-            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelay)) {
+            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelayProperty.value())) {
                 sortList();
                 autoFarm.sortStopWatch.reset();
             }
@@ -394,7 +404,7 @@ public class AutoFarm extends Feature {
         }
 
         public BlockPos getClosestFarmland() {
-            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelay)) {
+            if (autoFarm.sortStopWatch.hasPassed(autoFarm.sortDelayProperty.value())) {
                 sortList();
                 autoFarm.sortStopWatch.reset();
             }

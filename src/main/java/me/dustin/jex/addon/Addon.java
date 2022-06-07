@@ -9,9 +9,6 @@ import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
@@ -40,23 +37,25 @@ public class Addon {
 			return;
 		requestedUUIds.add(uuid);
 		Thread addonDownload = new Thread(() -> {
-			String url = JexClient.INSTANCE.getBaseUrl() + "includes/loadprofile.inc.php?uuid=" + uuid;
-			String response = WebHelper.INSTANCE.httpRequest(url, null, null, "GET").data();
-			JsonObject json = new Gson().fromJson(response, JsonObject.class);
-			String cape = json.get("cape").getAsString();
-			String hat = json.get("hat").getAsString();
-			boolean linkedToAccount = json.get("linkedToAccount").getAsBoolean();
-			AddonResponse addonResponse = new AddonResponse(uuid, cape, hat, linkedToAccount);
-			responses.add(addonResponse);
-			if (linkedToAccount) {
-				if (cape != null && !cape.equals("null") && !cape.isEmpty()) {
-					Cape.parseCape(cape, uuid);
-				}
+			try {
+				String url = JexClient.INSTANCE.getBaseUrl() + "includes/loadprofile.inc.php?uuid=" + uuid;
+				String response = WebHelper.INSTANCE.httpRequest(url, null, null, "GET").data();
+				JsonObject json = new Gson().fromJson(response, JsonObject.class);
+				String cape = json.get("cape").getAsString();
+				String hat = json.get("hat").getAsString();
+				boolean linkedToAccount = json.get("linkedToAccount").getAsBoolean();
+				AddonResponse addonResponse = new AddonResponse(uuid, cape, hat, linkedToAccount);
+				responses.add(addonResponse);
+				if (linkedToAccount) {
+					if (cape != null && !cape.equals("null") && !cape.isEmpty()) {
+						Cape.parseCape(cape, uuid);
+					}
 
-				if (hat != null && !hat.equals("null") && !hat.equals("none")) {
-					Hat.setHat(uuid, hat);
+					if (hat != null && !hat.equals("null") && !hat.equals("none")) {
+						Hat.setHat(uuid, hat);
+					}
 				}
-			}
+			} catch (Exception e) {}
 		});
 		addonDownload.setDaemon(true);
 		addonDownload.start();

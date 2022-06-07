@@ -9,15 +9,10 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.LiteralText;
-
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.text.Text;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class FeatureArgumentType implements ArgumentType<String> {
 
@@ -35,7 +30,7 @@ public class FeatureArgumentType implements ArgumentType<String> {
         if (Feature.get(str) != null) {
             return str;
         } else {
-            throw new SimpleCommandExceptionType(new LiteralText("Not a feature")).createWithContext(reader);
+            throw new SimpleCommandExceptionType(Text.of("Not a feature")).createWithContext(reader);
         }
     }
 

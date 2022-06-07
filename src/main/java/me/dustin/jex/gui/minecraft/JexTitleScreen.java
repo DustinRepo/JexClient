@@ -15,17 +15,13 @@ import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.changelog.ChangelogScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
-import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
-
 import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import me.dustin.jex.JexClient;
 import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -47,12 +43,14 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -82,7 +80,7 @@ public class JexTitleScreen extends Screen {
     }
 
     public JexTitleScreen(boolean doBackgroundFade) {
-        super(new TranslatableText("narrator.screen.title"));
+        super(Text.translatable("narrator.screen.title"));
         this.backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
         this.doBackgroundFade = doBackgroundFade;
         this.isMinceraft = (double) (new Random()).nextFloat() < 1.0E-4D;
@@ -95,7 +93,7 @@ public class JexTitleScreen extends Screen {
         capeYaw+=2;
     }
 
-    public boolean isPauseScreen() {
+    public boolean shouldPause() {
         return false;
     }
 
@@ -117,16 +115,16 @@ public class JexTitleScreen extends Screen {
 
         this.initWidgetsNormal(j);
 
-        if (customMainMenu.customBackground) {
+        if (customMainMenu.customBackgroundProperty.value()) {
             if (!backgrounds.isEmpty()) {
-                this.addDrawableChild(new ButtonWidget(this.width - 22, this.height - 22, 20, 20, new LiteralText(">"), button -> {
+                this.addDrawableChild(new ButtonWidget(this.width - 22, this.height - 22, 20, 20, Text.of(">"), button -> {
                     JexTitleScreen.background += 1;
                     if (JexTitleScreen.background > backgrounds.size() - 1) {
                         JexTitleScreen.background = 0;
                     }
                     ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
                 }));
-                this.addDrawableChild(new ButtonWidget(this.width - 44, this.height - 22, 20, 20, new LiteralText("<"), button -> {
+                this.addDrawableChild(new ButtonWidget(this.width - 44, this.height - 22, 20, 20, Text.of("<"), button -> {
                     JexTitleScreen.background -= 1;
                     if (JexTitleScreen.background < 0) {
                         JexTitleScreen.background = backgrounds.size() - 1;
@@ -134,7 +132,7 @@ public class JexTitleScreen extends Screen {
                     ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
                 }));
             } else {
-                this.addDrawableChild(new ButtonWidget(this.width - 152, this.height - 22, 150, 20, new LiteralText("Open Backgrounds Folder"), button -> {
+                this.addDrawableChild(new ButtonWidget(this.width - 152, this.height - 22, 150, 20, Text.of("Open Backgrounds Folder"), button -> {
                     Util.getOperatingSystem().open(new File(ModFileHelper.INSTANCE.getJexDirectory(), "backgrounds"));
                 }));
             }
@@ -149,22 +147,22 @@ public class JexTitleScreen extends Screen {
 
     private void initWidgetsNormal(int y) {
         JexTitleScreen titleScreen = this;
-        this.addDrawableChild(new ButtonWidget(2, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y, 200, 20, Text.translatable("menu.singleplayer"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new SelectWorldScreen(titleScreen));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24, 175, 20, new TranslatableText("menu.multiplayer"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24, 175, 20, Text.translatable("menu.multiplayer"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new MultiplayerScreen(titleScreen));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24 * 2, 150, 20, new TranslatableText("menu.online"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24 * 2, 150, 20, Text.translatable("menu.online"), button -> {
             titleScreen.switchToRealms();
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24 * 3, 125, 20, new TranslatableText("menu.options"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24 * 3, 125, 20, Text.translatable("menu.options"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new OptionsScreen(titleScreen, Wrapper.INSTANCE.getOptions()));
         }));
-        this.addDrawableChild(new ButtonWidget(2, y + 24 * 4, 100, 20, new TranslatableText("menu.quit"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, y + 24 * 4, 100, 20, Text.translatable("menu.quit"), button -> {
             Wrapper.INSTANCE.getMinecraft().scheduleStop();
         }));
-        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, new TranslatableText("Changelog"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, Text.translatable("Changelog"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new ChangelogScreen());
         }));
     }
@@ -179,7 +177,7 @@ public class JexTitleScreen extends Screen {
         if (this.backgroundFadeStart == 0L && this.doBackgroundFade) {
             this.backgroundFadeStart = Util.getMeasuringTimeMs();
         }
-        if (customMainMenu.scroll && stopWatch.hasPassed(customMainMenu.scrollDelay * 1000L)) {
+        if (customMainMenu.scrollProperty.value() && stopWatch.hasPassed(customMainMenu.scrollDelayProperty.value() * 1000L)) {
             background++;
             if (background < 0) {
                 background = backgrounds.size() - 1;
@@ -201,7 +199,7 @@ public class JexTitleScreen extends Screen {
         float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
         int l = MathHelper.ceil(g * 255.0F) << 24;
 
-        if (!JexTitleScreen.backgrounds.isEmpty() && customMainMenu.customBackground) {
+        if (!JexTitleScreen.backgrounds.isEmpty() && customMainMenu.customBackgroundProperty.value()) {
             Background currentBackground = backgrounds.get(background);
             Render2DHelper.INSTANCE.bindTexture(currentBackground.identifier);
             DrawableHelper.drawTexture(matrices, (int) 0, (int) 0, 0, 0, width, height, width, height);
@@ -222,18 +220,18 @@ public class JexTitleScreen extends Screen {
             matrices.pop();
 
             if (UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH) {
-                String updateString = "Jex Client is outdated. You can open the Jex Options screen in Options to update to Build " + UpdateManager.INSTANCE.getLatestVersion().version();
+                String updateString = Text.translatable("jex.title.outdated", UpdateManager.INSTANCE.getLatestVersion().version()).getString();
                 float strWidth = FontHelper.INSTANCE.getStringWidth(updateString);
                 Render2DHelper.INSTANCE.fillAndBorder(matrices, (midX) - (strWidth / 2) - 2, -1, (midX) + (strWidth / 2) + 2, 15, ColorHelper.INSTANCE.getClientColor(), 0x80000000, 1);
                 FontHelper.INSTANCE.drawCenteredString(matrices, updateString, midX, 2, ColorHelper.INSTANCE.getClientColor());
             }
 
-            if (customMainMenu.customBackground) {
+            if (customMainMenu.customBackgroundProperty.value()) {
                 if (backgrounds.isEmpty()) {
-                    String backgroundString = "You don't have any backgrounds yet.";
+                    String backgroundString = Text.translatable("jex.title.no_bgs").getString();
                     FontHelper.INSTANCE.drawWithShadow(matrices, backgroundString, width - FontHelper.INSTANCE.getStringWidth(backgroundString) - 2, height - 30, -1);
                 } else {
-                    String backgroundString = "Background: (" + (background + 1) + "/" + backgrounds.size() + ")";
+                    String backgroundString = Text.translatable("jex.title.bg_index", background + 1, backgrounds.size()).getString();
                     FontHelper.INSTANCE.drawWithShadow(matrices, backgroundString, width - FontHelper.INSTANCE.getStringWidth(backgroundString) - 2, height - 30, -1);
                 }
             }
@@ -248,23 +246,23 @@ public class JexTitleScreen extends Screen {
             float right = 205;
 
             Render2DHelper.INSTANCE.drawFace(matrices, 2, (int)bottom + 2, 4, MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()));
-            FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Welcome, " + (isDonator ? "\247r" : (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")) ? "\247a" : "\247f")) + Wrapper.INSTANCE.getMinecraft().getSession().getUsername(), 37, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
+            FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.welcome",(isDonator ? "\247r" : (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")) ? "\247a" : "\247f")) + Wrapper.INSTANCE.getMinecraft().getSession().getUsername()).styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
             if (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
-                FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Jex Utility Client", 37, bottom + 12, -1);
+                FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.name").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 12, 0xff696969);
                 Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
                 try {
                     if (response.getCape() != null && !response.getCape().isEmpty() && !response.getCape().equalsIgnoreCase("null")) {
-                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")), capeYaw, 0);
+                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("assets/jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")), capeYaw, 0);
                     } else {
-                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("jex", "cape/jex_cape.png"), capeYaw, 0);
+                        Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("assets/jex", "cape/jex_cape.png"), capeYaw, 0);
                     }
                 }catch (Exception e) {}
             } else {
                 if (Cape.capes.containsKey("self")) {
                     Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, Cape.capes.get("self"), capeYaw, 0);
                 }
-                FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Account not linked. You can link your account for a free Jex Cape", 37, bottom + 12, -1);
-                FontHelper.INSTANCE.drawWithShadow(matrices, "\2477Also join the Discord!", 37, bottom + 22, -1);
+                FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.not_linked").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 12, -1);
+                FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.join_discord").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 22, -1);
             }
             Render2DHelper.INSTANCE.fillAndBorder(matrices, left, top, right, bottom, ColorHelper.INSTANCE.getClientColor(), 0x40000000, 1);
             super.render(matrices, mouseX, mouseY, delta);
@@ -346,10 +344,10 @@ public class JexTitleScreen extends Screen {
     }
 
 
-    public class Background {
+    public static class Background {
         private String name;
         private int width, height;
-        private Identifier identifier;
+        private final Identifier identifier;
 
         public Background(String name, int width, int height, Identifier identifier) {
             this.name = name;

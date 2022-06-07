@@ -1,8 +1,4 @@
 package me.dustin.jex.event.render;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
 import me.dustin.events.core.Event;
 import net.minecraft.block.Block;
@@ -12,8 +8,8 @@ import net.minecraft.util.math.Direction;
 public class EventShouldDrawSide extends Event {
 
     private Block block;
-    private Direction side;
-    private BlockPos blockPos;
+    private final Direction side;
+    private final BlockPos blockPos;
     private boolean shouldDrawSide;
 
     public EventShouldDrawSide(Block block, Direction side, BlockPos blockPos) {

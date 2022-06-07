@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -27,7 +26,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class TwoDeeESP extends FeatureExtension {
     public TwoDeeESP() {
-        super("2D", ESP.class);
+        super(ESP.Mode.TWO_DEE, ESP.class);
     }
 
 
@@ -41,12 +40,11 @@ public class TwoDeeESP extends FeatureExtension {
             footPos.clear();
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                 if (ESP.INSTANCE.isValid(entity)) {
-                    headPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, entity.getHeight() + 0.2f, eventRender3D.getPartialTicks(), eventRender3D.getMatrixStack()));
-                    footPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, -0.2f, eventRender3D.getPartialTicks(), eventRender3D.getMatrixStack()));
+                    headPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, entity.getHeight() + 0.2f, eventRender3D.getPartialTicks(), eventRender3D.getPoseStack()));
+                    footPos.put(entity, Render2DHelper.INSTANCE.getPos(entity, -0.2f, eventRender3D.getPartialTicks(), eventRender3D.getPoseStack()));
                 }
             }
-        } else if (event instanceof EventRender2D) {
-            EventRender2D eventRender2D = (EventRender2D)event;
+        } else if (event instanceof EventRender2D eventRender2D) {
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
             Render2DHelper.INSTANCE.setup2DRender(true);
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -74,11 +72,11 @@ public class TwoDeeESP extends FeatureExtension {
                         dif /= 2;
                     else
                         dif /= ClientMathHelper.INSTANCE.clamp(entity.getWidth() * 5f, 1f, 10f);
-                    drawBox(eventRender2D.getMatrixStack(), x - dif, y + 1, x2 + dif, y2, entity);
+                    drawBox(eventRender2D.getPoseStack(), x - dif, y + 1, x2 + dif, y2, entity);
                 }
             });
-            bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
+            bufferBuilder.clear();
+            BufferRenderer.drawWithShader(bufferBuilder.end());
             bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             headPos.keySet().forEach(entity -> {
                 Vec3d top = headPos.get(entity);
@@ -104,12 +102,11 @@ public class TwoDeeESP extends FeatureExtension {
                         dif /= 2;
                     else
                         dif /= ClientMathHelper.INSTANCE.clamp(entity.getWidth() * 5f, 1f, 10f);
-                    outlineBox(eventRender2D.getMatrixStack(), x - dif, y + 1, x2 + dif, y2, entity);
+                    outlineBox(eventRender2D.getPoseStack(), x - dif, y + 1, x2 + dif, y2, entity);
                 }
             });
-            bufferBuilder.end();
-            BufferRenderer.draw(bufferBuilder);
-            
+            bufferBuilder.clear();
+            BufferRenderer.drawWithShader(bufferBuilder.end());
             Render2DHelper.INSTANCE.end2DRender();
         }
     }

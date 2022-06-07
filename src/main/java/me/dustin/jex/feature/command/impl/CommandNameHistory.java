@@ -7,7 +7,7 @@ import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.MCAPIHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixins;
 
-
 public class PreLaunch implements PreLaunchEntrypoint {
     private final Logger LOGGER = LogManager.getFormatterLogger("JexPlugins");
     @Override

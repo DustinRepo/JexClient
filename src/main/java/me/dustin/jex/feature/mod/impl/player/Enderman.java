@@ -5,37 +5,43 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
+import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.PLAYER, description = "Select how to deal with enderman.")
 public class Enderman extends Feature {
 
-    @Op(name = "Mode", all = {"Look At", "Look Away"})
-    public String mode = "Look At";
+    public final Property<LookMode> lookModeProperty = new Property.PropertyBuilder<LookMode>(this.getClass())
+            .name("Look")
+            .value(LookMode.AWAY)
+            .build();
+
+    public Enderman() {
+        super(Category.PLAYER, "Select how to deal with enderman.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        setSuffix(mode);
-        switch (mode.toLowerCase()) {
-            case "look at":
+        setSuffix(lookModeProperty.value());
+        switch (lookModeProperty.value()) {
+            case AT:
                 EndermanEntity lookat = getEnderman();
                 if (lookat != null) {
                     RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(lookat);
                     event.setRotation(rotation);
                 }
                 break;
-            case "look away":
+            case AWAY:
                 for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
                     if (entity instanceof EndermanEntity) {
                         if (isPlayerStaring(Wrapper.INSTANCE.getLocalPlayer(), (EndermanEntity) entity)) {
@@ -75,4 +81,7 @@ public class Enderman extends Feature {
         return null;
     }
 
+    public enum LookMode {
+        AT, AWAY
+    }
 }

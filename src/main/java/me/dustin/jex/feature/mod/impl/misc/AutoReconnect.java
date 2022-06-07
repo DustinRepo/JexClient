@@ -9,30 +9,39 @@ import me.dustin.jex.event.misc.EventSetScreen;
 import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.packet.EventConnect;
 import me.dustin.jex.event.render.EventDrawScreen;
+import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.network.ServerAddress;
+import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Reconnect automatically.")
 public class AutoReconnect extends Feature {
 
-    @Op(name = "Delay", min = 1000, max = 20000, inc = 500)
-    public int delay = 5000;
+    public final Property<Float> delayProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Delay (Seconds)")
+            .value(5f)
+            .min(0)
+            .max(20)
+            .inc(0.5f)
+            .build();
 
     public StopWatch stopWatch = new StopWatch();
     private ServerAddress serverAddress;
 
+    public AutoReconnect() {
+        super(Category.MISC, "Reconnect automatically.");
+    }
+
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
-        if (stopWatch.hasPassed(delay) && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen) {
+        if (stopWatch.hasPassed((long) (delayProperty.value() * 1000L)) && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof DisconnectedScreen) {
             connect();
             stopWatch.reset();
         }
@@ -50,10 +59,10 @@ public class AutoReconnect extends Feature {
 
     @EventPointer
     private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
-        float timeLeft = (stopWatch.getLastMS() + delay) - stopWatch.getCurrentMS();
+        float timeLeft = (stopWatch.getLastMS() + (long) (delayProperty.value() * 1000L)) - stopWatch.getCurrentMS();
         timeLeft /= 1000;
         String messageString = String.format("Reconnecting in %.1fs", timeLeft);
-        FontHelper.INSTANCE.drawCenteredString(event.getMatrixStack(), messageString, Wrapper.INSTANCE.getWindow().getScaledWidth() / 2.f, 2, ColorHelper.INSTANCE.getClientColor());
+        FontHelper.INSTANCE.drawCenteredString(event.getPoseStack(), messageString, Wrapper.INSTANCE.getWindow().getScaledWidth() / 2.f, 2, ColorHelper.INSTANCE.getClientColor());
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, DisconnectedScreen.class));
 
     public void connect() {

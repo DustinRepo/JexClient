@@ -3,15 +3,13 @@ package me.dustin.jex.feature.mod.impl.combat;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.helper.player.FriendHelper;
+import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
-import me.dustin.jex.feature.option.annotate.OpChild;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -19,35 +17,60 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import me.dustin.jex.feature.mod.core.Feature;
 
-@Feature.Manifest(category = Feature.Category.COMBAT, description = "Roast your friends.")
 public class Roaster extends Feature {
 
-    @Op(name = "Player")
-    public boolean player = true;
-    @OpChild(name = "Friend", parent = "Player")
-    public boolean friends = false;
+    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Player")
+            .value(true)
+            .build();
+    public final Property<Boolean> friendsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Player")
+            .description("Light your friends on fire too")
+            .value(false)
+            .parent(playerProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
-    @Op(name = "Hostile")
-    public boolean hostile = true;
-    @Op(name = "Passive")
-    public boolean passive = true;
-    @Op(name = "On Fire")
-    public boolean onFire = false;
-    @Op(name = "Rotate")
-    public boolean rotate = true;
-    @Op(name = "Swing")
-    public boolean swing = true;
+    public final Property<Boolean> hostileProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hostile")
+            .value(true)
+            .build();
+    public final Property<Boolean> passiveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Passive")
+            .value(true)
+            .build();
+    public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Neutral")
+            .value(true)
+            .build();
+    public final Property<Boolean> onFireProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("On Fire")
+            .description("Keep placing fire under them even if they are already on fire.")
+            .value(false)
+            .build();
+    public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Rotate")
+            .description("Whether or not to rotate your head on the server.")
+            .value(true)
+            .build();
+    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
+            .build();
 
+    private Hand hand = null;
+    private BlockPos blockPos = null;
 
-    Hand hand = null;
-    BlockPos blockPos = null;
+    public Roaster() {
+        super(Category.COMBAT, "Roast your friends.");
+    }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -67,7 +90,7 @@ public class Roaster extends Feature {
                         Block footBlock = Wrapper.INSTANCE.getWorld().getBlockState(livingEntity.getBlockPos()).getBlock();
                         if (footBlock == Blocks.AIR) {
                             blockPos = livingEntity.getBlockPos().down();
-                            if (rotate) {
+                            if (rotateProperty.value()) {
                                 RotationVector rotations = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                                 event.setRotation(rotations);
                             }
@@ -79,8 +102,8 @@ public class Roaster extends Feature {
             if (blockPos != null) {
                 Vec3d pos = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                 BlockHitResult hitResult = new BlockHitResult(pos, Direction.UP, blockPos, false);
-                NetworkHelper.INSTANCE.sendPacket(new PlayerInteractBlockC2SPacket(hand, hitResult));
-                if (swing)
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), hand, hitResult);
+                if (swingProperty.value())
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(hand);
             }
             blockPos = null;
@@ -92,21 +115,21 @@ public class Roaster extends Feature {
             return false;
         if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(livingEntity) > 4)
             return false;
-        if (livingEntity.isOnFire() && !onFire)
+        if (livingEntity.isOnFire() && !onFireProperty.value())
             return false;
         if (livingEntity.isFireImmune())
             return false;
         if (!livingEntity.isOnGround())
             return false;
         if (livingEntity instanceof PlayerEntity) {
-            if (FriendHelper.INSTANCE.isFriend(livingEntity.getName().asString()))
-                return friends;
-            return player;
+            if (FriendHelper.INSTANCE.isFriend(livingEntity.getName().getString()))
+                return friendsProperty.value();
+            return playerProperty.value();
         }
         if (EntityHelper.INSTANCE.isHostileMob(livingEntity))
-            return hostile;
+            return hostileProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(livingEntity) && !EntityHelper.INSTANCE.doesPlayerOwn(livingEntity))
-            return passive;
+            return passiveProperty.value();
         return false;
     }
 }

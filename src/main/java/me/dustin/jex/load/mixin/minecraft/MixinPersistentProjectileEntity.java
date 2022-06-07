@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(PersistentProjectileEntity.class)
 public abstract class MixinPersistentProjectileEntity implements IPersistentProjectileEntity {
-    @Shadow
-    protected abstract boolean canHit(Entity entity);
+
+    @Shadow protected abstract boolean canHit(Entity entity);
 
     @Override
     public boolean callCanHit(Entity entity) {

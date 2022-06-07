@@ -29,29 +29,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GameRenderer.class)
 public abstract class MixinGameRenderer {
 
-    @Shadow @Final private Camera camera;
-
-    @Shadow
-    public abstract void loadProjectionMatrix(Matrix4f matrix4f);
-
-    @Shadow
-    protected abstract void bobViewWhenHurt(MatrixStack matrixStack, float f);
 
     @Shadow protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
 
-    @Shadow public abstract Matrix4f getBasicProjectionMatrix(double d);
+    @Shadow protected abstract void bobView(MatrixStack matrices, float f);
+
+
+    @Shadow @Final private Camera camera;
+
+    @Shadow public abstract Matrix4f getBasicProjectionMatrix(double fov);
+
+    @Shadow public abstract void loadProjectionMatrix(Matrix4f projectionMatrix);
+
+    @Shadow protected abstract void bobViewWhenHurt(MatrixStack matrices, float tickDelta);
+
+    @Shadow @Final private MinecraftClient client;
+
+    @Shadow @Nullable private static Shader renderTypeTranslucentShader;
 
     @Shadow @Nullable private static Shader renderTypeGlintDirectShader;
 
     @Shadow @Nullable private static Shader renderTypeArmorEntityGlintShader;
 
     @Shadow @Nullable private static Shader renderTypeArmorGlintShader;
-
-    @Shadow @Nullable private static Shader renderTypeTranslucentShader;
-
-    @Shadow @Final private MinecraftClient client;
-
-    @Shadow protected abstract void bobView(MatrixStack matrices, float f);
 
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V", at = @At(value = "INVOKE", target = "com/mojang/blaze3d/systems/RenderSystem.clear(IZ)V"))
     private void onRenderWorld(float partialTicks, long finishTimeNano, MatrixStack matrixStack1, CallbackInfo ci) {
@@ -68,7 +68,7 @@ public abstract class MixinGameRenderer {
         loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
         new EventRender3D.EventRender3DNoBob(matrixStack, partialTicks).run();
         Render3DHelper.INSTANCE.fixCameraRots(matrixStack);
-        if (this.client.options.bobView) {
+        if (this.client.options.getBobView().getValue()) {
             bobView(matrixStack, partialTicks);
         }
         loadProjectionMatrix(matrixStack.peek().getPositionMatrix());

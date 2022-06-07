@@ -3,10 +3,8 @@ package me.dustin.jex.feature.command.impl;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.events.EventManager;
-import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.filters.ClientPacketFilter;
 import me.dustin.jex.event.filters.DirectClientPacketFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
@@ -21,7 +19,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -63,10 +61,10 @@ public class CommandDupe extends Command {
         if (Wrapper.INSTANCE.getMinecraft().crosshairTarget.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult) Wrapper.INSTANCE.getMinecraft().crosshairTarget;
             if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) instanceof ShulkerBoxBlock) {
-                Wrapper.INSTANCE.getInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Wrapper.INSTANCE.getWorld(), Hand.MAIN_HAND, blockHitResult);
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
                 ChatHelper.INSTANCE.addClientMessage("Running dupe");
                 this.blockHitResult = blockHitResult;
-                this.speedmine = Feature.getState(SpeedMine.class) && Feature.get(SpeedMine.class).mode.equalsIgnoreCase("Instant");
+                this.speedmine = Feature.getState(SpeedMine.class) && Feature.get(SpeedMine.class).modeProperty.value() == SpeedMine.Mode.INSTANT;
                 if (speedmine) {
                     Feature.get(SpeedMine.class).setState(false);
                 }
@@ -82,7 +80,7 @@ public class CommandDupe extends Command {
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Feature.getState(AutoTool.class))
             new EventClickBlock(blockHitResult.getBlockPos(), blockHitResult.getSide(), EventClickBlock.Mode.PRE).run();
-        Wrapper.INSTANCE.getInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
+        Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockHitResult.getBlockPos(), blockHitResult.getSide());
     }, new TickFilter(EventTick.Mode.PRE));
 
     @EventPointer

@@ -3,12 +3,11 @@ package me.dustin.jex.helper.render;
 
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
-import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.render.Gui;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
-
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.render.Gui;
 import java.util.ArrayList;
 
 public class Button {
@@ -158,6 +157,10 @@ public class Button {
 
     public void setBackgroundColor(int color) {
         this.backgroundColor = color;
+    }
+
+    public int getBackgroundColor() {
+        return backgroundColor;
     }
 
     public void move(float x, float y) {

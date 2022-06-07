@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 public class EventHorseIsSaddled extends Event {
 
     private boolean isSaddled;
-    private Entity entity;
+    private final Entity entity;
 
     public EventHorseIsSaddled(Entity entity) {
         this.entity = entity;

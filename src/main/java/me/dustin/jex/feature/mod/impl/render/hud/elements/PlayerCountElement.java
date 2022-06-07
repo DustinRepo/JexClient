@@ -23,6 +23,6 @@ public class PlayerCountElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().playerCount;
+        return getHud().infoProperty.value() && getHud().playerCountProperty.value();
     }
 }

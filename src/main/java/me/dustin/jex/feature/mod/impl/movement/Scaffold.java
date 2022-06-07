@@ -4,8 +4,10 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.player.EventWalkOffBlock;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -13,7 +15,6 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import me.dustin.jex.feature.option.annotate.Op;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
@@ -23,23 +24,38 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Feature.Manifest(category = Feature.Category.MOVEMENT, description = "Place blocks under yourself automatically.")
 public class Scaffold extends Feature {
 
-    @Op(name = "Place Mode", all = {"Post", "Pre"})
-    public String placeMode = "Post";
-    @Op(name = "Delay", min = 0, max = 1000, inc = 10)
-    public int delay = 50;
-    @Op(name = "Sneak on Place")
-    public boolean sneak = false;
-    @Op(name = "Range", min = 0, max = 4)
-    public int range = 0;
-    BlockHitResult blockHitResult;
+    public final Property<PlaceTiming> placeModeProperty = new Property.PropertyBuilder<PlaceTiming>(this.getClass())
+            .name("Place Mode")
+            .value(PlaceTiming.POST)
+            .build();
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay")
+            .value(50L)
+            .max(1000)
+            .inc(10)
+            .build();
+    public final Property<Boolean> sneakProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sneak on Place")
+            .description("Sneak when you place a block.")
+            .value(false)
+            .build();
+    public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Range")
+            .value(0)
+            .max(4)
+            .build();
+
+    private BlockHitResult blockHitResult;
     private final StopWatch stopWatch = new StopWatch();
     private final ConcurrentLinkedQueue<BlockInfo> emptyNearBlocks = new ConcurrentLinkedQueue<>();
+
+    public Scaffold() {
+        super(Category.MOVEMENT, "Place blocks under yourself automatically.");
+    }
 
     @EventPointer
     private final EventListener<EventWalkOffBlock> eventWalkOffBlockEventListener = new EventListener<>(event -> event.cancel());
@@ -64,19 +80,19 @@ public class Scaffold extends Feature {
                         InventoryHelper.INSTANCE.setSlot(getBlockFromHotbar(), true, true);
                         place(blockInfo, event);
                         emptyNearBlocks.remove(blockInfo);
-                        if (delay > 0 && placeMode.equalsIgnoreCase("Pre"))
+                        if (delayProperty.value() > 0 && placeModeProperty.value() == PlaceTiming.PRE)
                             return;
                     }
                 }
             }
         } else if (blockHitResult != null) {
-            if (!stopWatch.hasPassed(delay)) {
+            if (!stopWatch.hasPassed(delayProperty.value())) {
                 return;
             }
-            if (placeMode.equalsIgnoreCase("Post"))
+            if (placeModeProperty.value() == PlaceTiming.POST)
                 PlayerHelper.INSTANCE.placeBlockInPos(blockHitResult.getBlockPos(), Hand.MAIN_HAND, false);
 
-            if (sneak)
+            if (sneakProperty.value())
                 NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
             stopWatch.reset();
         }
@@ -100,7 +116,7 @@ public class Scaffold extends Feature {
 
     private void getNearBlocks(BlockPos blockPos) {
         emptyNearBlocks.clear();
-        if (range == 0) {
+        if (rangeProperty.value() == 0) {
             BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
             if (!isReplaceable(WorldHelper.INSTANCE.getBlock(below)))
                 return;
@@ -124,8 +140,8 @@ public class Scaffold extends Feature {
             }
             return;
         }
-        for (int x = -range - 1; x < range + 1; x++) {
-            for (int z = -range - 1; z < range + 1; z++) {
+        for (int x = -rangeProperty.value() - 1; x < rangeProperty.value() + 1; x++) {
+            for (int z = -rangeProperty.value() - 1; z < rangeProperty.value() + 1; z++) {
                 BlockPos blockPos1 = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, -0.5f, 0)).add(x, 0, z);
                 if (isReplaceable(WorldHelper.INSTANCE.getBlock(blockPos1)) || goingToPlace(blockPos1)) {
                     BlockInfo blockInfo = getBlockInfo(blockPos1);
@@ -142,7 +158,7 @@ public class Scaffold extends Feature {
         }
         if (blockInfo == null)
             return;
-        if (sneak) {
+        if (sneakProperty.value()) {
             NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
         }
         BlockPos lookAtPos = blockInfo.blockpos();
@@ -154,7 +170,7 @@ public class Scaffold extends Feature {
         Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
 
         blockHitResult = new BlockHitResult(new Vec3d(blockInfo.blockpos().getX(), blockInfo.blockpos().getY(), blockInfo.blockpos().getZ()), blockInfo.facing(), blockInfo.blockpos(), false);
-        if (placeMode.equalsIgnoreCase("Pre"))
+        if (placeModeProperty.value() == PlaceTiming.PRE)
             PlayerHelper.INSTANCE.placeBlockInPos(blockInfo.blockpos(), Hand.MAIN_HAND, false);
     }
 
@@ -201,4 +217,8 @@ public class Scaffold extends Feature {
     }
 
     public record BlockInfo (BlockPos blockpos, Direction facing) {}
+
+    public enum PlaceTiming {
+        PRE, POST
+    }
 }

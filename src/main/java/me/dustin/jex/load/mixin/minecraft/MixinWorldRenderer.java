@@ -66,7 +66,7 @@ public abstract class MixinWorldRenderer {
 
     public Identifier getIDForOutline() {
         try {
-            if ((ESP.INSTANCE.getState() && ESP.INSTANCE.mode.equalsIgnoreCase("Shader")) || Feature.getState(StorageESP.class) && Feature.get(StorageESP.class).mode.equalsIgnoreCase("Shader")) {
+            if ((ESP.INSTANCE.getState() && ESP.INSTANCE.modeProperty.value() == ESP.Mode.SHADER) || Feature.getState(StorageESP.class) && Feature.get(StorageESP.class).modeProperty.value() == StorageESP.Mode.SHADER) {
                 return my_outline;
             }
         } catch (Exception e) {

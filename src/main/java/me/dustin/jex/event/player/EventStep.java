@@ -4,9 +4,9 @@ import me.dustin.events.core.Event;
 import net.minecraft.entity.Entity;
 
 public class EventStep extends Event {
-    private Entity entity;
-    private Mode mode;
-    private double stepHeight;
+    private final Entity entity;
+    private final Mode mode;
+    private final double stepHeight;
 
     public EventStep(Entity entity, Mode mode, double stepHeight) {
         this.entity = entity;

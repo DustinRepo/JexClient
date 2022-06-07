@@ -1,6 +1,5 @@
 package me.dustin.jex.event.filters;
 
-import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.world.EventClickBlock;
 
 import java.util.function.Predicate;

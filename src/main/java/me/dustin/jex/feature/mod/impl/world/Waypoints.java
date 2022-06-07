@@ -4,12 +4,11 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.filters.TickFilter;
-import me.dustin.jex.event.misc.EventTick;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -18,32 +17,51 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Feature.Manifest(category = Feature.Category.WORLD, description = "Display Waypoints to mark areas.")
 public class Waypoints extends Feature {
+
+	public final Property<Boolean> fovBasedTagProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("FOV Based Tag")
+			.value(true)
+			.build();
+	public final Property<Integer> fovDistanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+			.name("Distance")
+			.value(35)
+			.min(20)
+			.max(150)
+			.parent(fovBasedTagProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
+	public final Property<Boolean> distanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Show Distance")
+			.value(true)
+			.build();
+	public final Property<Boolean> lastDeathProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Last Death")
+			.value(true)
+			.build();
 
 	public static ArrayList<String> servers = new ArrayList<>();
 	public static ArrayList<Waypoint> waypoints = new ArrayList<>();
 	private static final Map<Waypoint, Vec3d> waypointPositions = Maps.newHashMap();
-	@Op(name = "FOV based Tag")
-	public boolean fovBasedTag = true;
-	@Op(name = "Distance", min = 20, max = 150)
-	public int fovDistance = 35;
-	@Op(name = "Distance on Tag")
-	public boolean distance = true;
-	@Op(name = "Last Death")
-	public boolean lastDeath = true;
-	int spin = 0;
+
+	public Waypoints() {
+		super(Category.WORLD, "Display Waypoints to mark areas.");
+	}
 
 	public static Waypoint get(String name, String server) {
 		for (Waypoint waypoint : waypoints) {
@@ -70,7 +88,7 @@ public class Waypoints extends Feature {
 	private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
 
 		String server = WorldHelper.INSTANCE.getCurrentServerName();
-		if (!Wrapper.INSTANCE.getLocalPlayer().isAlive() && lastDeath) {
+		if (!Wrapper.INSTANCE.getLocalPlayer().isAlive() && lastDeathProperty.value()) {
 			Waypoint oldWaypoint = get("Last Death", server);
 			if (oldWaypoint != null) {
 				waypoints.remove(oldWaypoint);
@@ -89,13 +107,13 @@ public class Waypoints extends Feature {
 				Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(x, waypoint.getY(), z));
 				if (distance < 270) {
 					Box box = new Box(renderPos.x - 0.2f, renderPos.y, renderPos.z - 0.2f, renderPos.x + 0.2f, (256 - waypoint.y), renderPos.z + 0.2f);
-					Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getMatrixStack(), box, waypoint.getColor());
+					Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getPoseStack(), box, waypoint.getColor());
 				} else {
 					float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(x, y, z)).getYaw();
 					x = (float) Wrapper.INSTANCE.getLocalPlayer().getX() + 250 * (float) Math.cos(Math.toRadians(yaw + 90));
 					z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ() + 250 * (float) Math.sin(Math.toRadians(yaw + 90));
 				}
-				Vec3d screenPos = Render2DHelper.INSTANCE.to2D(new Vec3d(x, waypoint.getY() + Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(EntityPose.STANDING), z), event.getMatrixStack());
+				Vec3d screenPos = Render2DHelper.INSTANCE.to2D(new Vec3d(x, waypoint.getY() + Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(EntityPose.STANDING), z), event.getPoseStack());
 				waypointPositions.put(waypoint, screenPos);
 			}
 		}
@@ -135,9 +153,8 @@ public class Waypoints extends Feature {
 			bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR);
 			bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 			bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-			bufferBuilder.end();
-			BufferRenderer.draw(bufferBuilder);
-
+			bufferBuilder.clear();
+			BufferRenderer.drawWithShader(bufferBuilder.end());
 			Render3DHelper.INSTANCE.end3DRender();
 		}
 	});
@@ -150,25 +167,20 @@ public class Waypoints extends Feature {
 			Vec3d renderPos = waypointPositions.get(waypoint);
 			if (shouldRender(renderPos)) {
 				String name = waypoint.getName();
-				if (this.distance) {
+				if (this.distanceProperty.value()) {
 					name = String.format("%s [%.1f]", waypoint.getName(), ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(waypoint.getX(), waypoint.getY(), waypoint.getZ())));
 				}
 				float x = (float) renderPos.x;
 				float y = (float) renderPos.y;
 				float crosshairFOV = ClientMathHelper.INSTANCE.getDistance2D(new Vec2f(x, y), new Vec2f(Render2DHelper.INSTANCE.getScaledWidth() / 2.f, Render2DHelper.INSTANCE.getScaledHeight() / 2.f));
-				if (fovBasedTag && crosshairFOV > fovDistance)
+				if (fovBasedTagProperty.value() && crosshairFOV > fovDistanceProperty.value())
 					name = "[]";
 				float width = FontHelper.INSTANCE.getStringWidth(name);
-				Render2DHelper.INSTANCE.fill(((EventRender2D) event).getMatrixStack(), x - (width / 2) - 2, y - 11, x + (width / 2.f) + 2, y, 0x50000000);
-				FontHelper.INSTANCE.drawCenteredString(((EventRender2D) event).getMatrixStack(), name, x, y - 9, waypoint.color);
+				Render2DHelper.INSTANCE.fill(((EventRender2D) event).getPoseStack(), x - (width / 2) - 2, y - 11, x + (width / 2.f) + 2, y, 0x50000000);
+				FontHelper.INSTANCE.drawCenteredString(((EventRender2D) event).getPoseStack(), name, x, y - 9, waypoint.color);
 			}
 		});
 	});
-
-	@EventPointer
-	private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
-		spin++;
-	}, new TickFilter(EventTick.Mode.PRE));
 
 	public boolean shouldRender(Vec3d pos) {
 		return pos != null && (pos.getZ() > -1 && pos.getZ() < 1);

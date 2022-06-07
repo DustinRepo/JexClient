@@ -1,10 +1,8 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
-import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.feature.mod.impl.world.Radar;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
-import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
@@ -12,22 +10,20 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Block;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.map.MapState;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.Heightmap;
-
 import java.awt.*;
 
 public class RadarElement extends HudElement{
@@ -58,7 +54,7 @@ public class RadarElement extends HudElement{
                     Render2DHelper.INSTANCE.fill(matrixStack, xPos, yPos, xPos + 1, yPos + 1, ESP.INSTANCE.getColor(entity));
                 }
             }
-        if (Radar.INSTANCE.waypoints) {
+        if (Radar.INSTANCE.waypointsProperty.value()) {
             matrixStack.push();
             float scale = 0.75f;
             matrixStack.scale(scale, scale, 1);
@@ -130,8 +126,8 @@ public class RadarElement extends HudElement{
         bufferBuilder.vertex(matrix4f,-1, 0, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.vertex(matrix4f,1, 0, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
         bufferBuilder.vertex(matrix4f,0, -4, 0).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
 
         Render2DHelper.INSTANCE.end2DRender();
     }

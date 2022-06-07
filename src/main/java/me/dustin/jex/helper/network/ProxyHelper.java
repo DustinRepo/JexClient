@@ -1,7 +1,6 @@
 package me.dustin.jex.helper.network;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelException;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.proxy.Socks4ProxyHandler;
@@ -16,7 +15,6 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.network.*;
-
 import java.net.InetSocketAddress;
 
 public enum ProxyHelper {
@@ -50,7 +48,7 @@ public enum ProxyHelper {
         if (isConnectedToProxy()) {
             ProxyHelper.ClientProxy proxy = getProxy();
             String string = "Current Proxy: " + proxy.host() + ":" + proxy.port();
-            FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), string, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(string) - 2, 22, ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), string, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(string) - 2, 22, ColorHelper.INSTANCE.getClientColor());
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
 

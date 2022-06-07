@@ -1,86 +1,71 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
-    id "com.github.johnrengelman.shadow" version "7.0.0"
+	id 'fabric-loom' version '0.11-SNAPSHOT'
+	id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-
 version = project.mod_version
 group = project.maven_group
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    def dependency = { id ->
-        implementation id
-        shadow id
-    } as Object
-    //to change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	def dependency = { id ->
+		implementation id
+		shadow id
+	} as Object
+	// To change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	dependency group: 'org.yaml', name: 'snakeyaml', version: '1.30'
+	dependency files('lib/IRCClient.jar')
+	implementation group: 'io.netty', name: 'netty-handler-proxy', version: '4.1.77.Final'
 
-    dependency group: 'org.yaml', name: 'snakeyaml', version: '1.30'
-    dependency files('lib/IRCClient.jar')
-
-    implementation files('lib/baritone-1.6.3-dev.jar')
-    //so there's two ways to go about implementing Sodium. First is to just modImplementation with like fabricAPI and use jitpack as host
-    //modImplementation "com.github.CaffeineMC:sodium-fabric:mc1.16.3-0.1.0"
-    //The good part is that you can actually see the code in the IDE and it also loads as a mod in the game
-    //but that's also the bad part because if I wanted to update MC versions I would either have to wait for Sodium to also update or leave the fix out sometimes
-    //now for the other one which is annoying because local file, but if you delete the "fabric.mod.json" from the jar and use "implementation" instead it is just used as a library, still requiring you to put it in your mods folder to use as a mod
-    //this is also what I do for baritone
-    implementation files('lib/sodium.jar')
+	implementation files('lib/baritone-1.6.3-dev.jar')
+	implementation files('lib/sodium.jar')
 }
 
 processResources {
-    inputs.property "version", project.version
+	inputs.property "version", project.version
 
-    filesMatching("fabric.mod.json") {
-        expand ('version': project.version)
-    }
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
-    it.options.encoding = "UTF-8"
-
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 17
+	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+	it.options.release = 17
 }
 
-// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-// if it is present.
-// If you remove this task, sources will not be generated.
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
-}
-
-shadowJar {
-    archiveName = "jex-plugin-dev.jar"
-    configurations = [project.configurations.shadow]
-    exclude("com/google/")
-}
-
-remapJar {
-    input.set(shadowJar.archiveFile)
-    archiveName = "JexClient.jar"
+java {
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	// if it is present.
+	// If you remove this line, sources will not be generated.
+	withSourcesJar()
 }
 
 jar {
-    from "LICENSE"
-    //no longer needed as the JFrame was only used for converting to Optifabric support, something which is done automatically now
-    //manifest.attributes("Main-Class": "me.dustin.jex.frame.JexFrame")
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
+	}
+}
+
+remapJar {
+	input.set(shadowJar.archiveFile)
+	archiveName("JexClient-Snap.jar")
+}
+
+shadowJar {
+	archiveName("jex-plugin-dev.jar")
+	configurations = [project.configurations.shadow]
+	exclude("com/google/")
 }

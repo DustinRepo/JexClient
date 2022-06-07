@@ -6,13 +6,13 @@ import net.minecraft.client.util.math.MatrixStack;
 
 public class EventDrawScreen extends Event {
 
-	private Screen screen;
-	private MatrixStack matrixStack;
-	private Mode mode;
+	private final Screen screen;
+	private final MatrixStack poseStack;
+	private final Mode mode;
 
-	public EventDrawScreen(Screen screen, MatrixStack matrixStack, Mode mode) {
+	public EventDrawScreen(Screen screen, MatrixStack poseStack, Mode mode) {
 		this.screen = screen;
-		this.matrixStack = matrixStack;
+		this.poseStack = poseStack;
 		this.mode = mode;
 	}
 
@@ -20,8 +20,8 @@ public class EventDrawScreen extends Event {
 		return screen;
 	}
 
-	public MatrixStack getMatrixStack() {
-		return matrixStack;
+	public MatrixStack getPoseStack() {
+		return poseStack;
 	}
 
 	public Mode getMode() {

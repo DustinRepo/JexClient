@@ -5,7 +5,12 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.ModFileHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
@@ -239,8 +244,8 @@ public class NahrFont {
                 } catch (ArrayIndexOutOfBoundsException indexException) {
                 }
             }
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        bufferBuilder.clear();
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         Render2DHelper.INSTANCE.shaderColor(0xffffffff);
     }
 

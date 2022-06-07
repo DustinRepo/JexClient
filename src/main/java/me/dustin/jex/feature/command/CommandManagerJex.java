@@ -1,14 +1,11 @@
 package me.dustin.jex.feature.command;
-/*
- * @Author Dustin
- * 9/29/2019
- */
 
 import com.mojang.brigadier.CommandDispatcher;
 import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.chat.EventSendMessage;
+import me.dustin.jex.event.chat.EventShouldPreviewChat;
 import me.dustin.jex.event.filters.DrawScreenFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventTick;
@@ -20,16 +17,14 @@ import me.dustin.jex.helper.misc.ClassHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IChatScreen;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.CommandSuggestor;
-
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public enum CommandManagerJex {
-
     INSTANCE;
     private String prefix = ".";
     private int overlayAlpha = 0;
@@ -38,7 +33,7 @@ public enum CommandManagerJex {
     private static final ArrayList<Command> commands = new ArrayList<>();
     public static final CommandDispatcher<FabricClientCommandSource> DISPATCHER = new CommandDispatcher<>();
 
-    public void registerCommands() {
+    public void registerCommands(ClientPlayNetworkHandler networkHandler) {
         EventManager.unregister(this);
         this.getCommands().clear();
         List<Class<?>> classList = ClassHelper.INSTANCE.getClasses("me.dustin.jex.feature.command.impl", Command.class);
@@ -46,6 +41,7 @@ public enum CommandManagerJex {
             try {
                 @SuppressWarnings("deprecation")
                 Command instance = (Command) clazz.newInstance();
+                instance.setCommandRegistryAccess(networkHandler);
                 this.getCommands().add(instance);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
@@ -64,13 +60,12 @@ public enum CommandManagerJex {
             overlayOn = true;
             chatScreen.getWidget().setMaxLength(100000);
         } else {
-            if (overlayOn)
-                chatScreen.getWidget().setMaxLength(256);
             overlayOn = false;
+            chatScreen.getWidget().setMaxLength(256);
         }
         Color color1 = Color.decode("0x" + Integer.toHexString(ColorHelper.INSTANCE.getClientColor()).substring(2));
         int color = new Color(color1.getRed(), color1.getGreen(), color1.getBlue(), overlayAlpha).getRGB();
-        Render2DHelper.INSTANCE.fillAndBorder(event.getMatrixStack(), chatScreen.getWidget().x - 2, chatScreen.getWidget().y - 2, chatScreen.getWidget().x + chatScreen.getWidget().getWidth() - 2, chatScreen.getWidget().y + chatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
+        Render2DHelper.INSTANCE.fillAndBorder(event.getPoseStack(), chatScreen.getWidget().x - 2, chatScreen.getWidget().y - 2, chatScreen.getWidget().x + chatScreen.getWidget().getWidth() - 2, chatScreen.getWidget().y + chatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
 
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, ChatScreen.class));
 
@@ -99,6 +94,17 @@ public enum CommandManagerJex {
     private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {
         if (event.getMessage().startsWith(prefix) && ClientCommandInternals.executeCommand(event.getMessage())) {
             event.cancel();
+        }
+    });
+
+    @EventPointer
+    private final EventListener<EventShouldPreviewChat> eventShouldPreviewChatEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen chatScreen) {
+            IChatScreen iChatScreen = (IChatScreen)chatScreen;
+            if (iChatScreen.getText().startsWith(prefix)) {
+                event.cancel();
+                event.setEnabled(false);
+            }
         }
     });
 

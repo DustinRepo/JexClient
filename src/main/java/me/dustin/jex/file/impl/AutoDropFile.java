@@ -6,7 +6,6 @@ import me.dustin.jex.helper.file.YamlHelper;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

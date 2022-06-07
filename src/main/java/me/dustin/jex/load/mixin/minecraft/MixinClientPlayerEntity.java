@@ -1,26 +1,41 @@
 package me.dustin.jex.load.mixin.minecraft;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.ParseResults;
 import me.dustin.jex.event.chat.EventSendMessage;
 import me.dustin.jex.event.misc.EventPortalCloseGUI;
 import me.dustin.jex.event.player.*;
+import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
+import me.dustin.jex.load.impl.IClientPlayerEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.*;
+import net.minecraft.command.CommandSource;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.JumpingMount;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.message.ArgumentSignatureDataMap;
+import net.minecraft.network.message.ChatMessageSigner;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
+import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,64 +45,61 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayerEntity.class)
-public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity {
+public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity implements IClientPlayerEntity {
+
+    private EventPlayerPackets preEvent;
 
     @Shadow
     public Input input;
-    @Shadow
-    @Final
-    public ClientPlayNetworkHandler networkHandler;
-    @Shadow
-    public int ticksSinceSprintingChanged;
-    @Shadow
-    @Final
-    protected MinecraftClient client;
-    @Shadow
-    protected int ticksLeftToDoubleTapSprint;
-    EventPlayerPackets preEvent;
-    @Shadow
-    private int field_3938;
-    @Shadow
-    private int underwaterVisibilityTicks;
-    @Shadow
-    private boolean inSneakingPose;
 
-    public MixinClientPlayerEntity(ClientWorld world, GameProfile profile) {
-        super(world, profile);
-    }
+    @Shadow protected abstract void autoJump(float dx, float dz);
 
-    @Shadow
-    protected abstract void autoJump(float dx, float dz);
+    @Shadow public int ticksSinceSprintingChanged;
 
-    @Shadow
-    protected abstract void startRidingJump();
+    @Shadow protected int ticksLeftToDoubleTapSprint;
 
+    @Shadow protected abstract void updateNausea();
 
-    @Shadow
-    public abstract boolean hasJumpingMount();
+    @Shadow protected abstract boolean isWalking();
 
-    @Shadow
-    protected abstract boolean isCamera();
+    @Shadow private boolean inSneakingPose;
 
-    @Shadow
-    protected abstract boolean isWalking();
+    @Shadow public abstract boolean shouldSlowDown();
 
-    @Shadow
-    protected abstract void pushOutOfBlocks(double x, double y);
-
-    @Shadow
-    public abstract boolean shouldSlowDown();
-
-    @Shadow
-    protected abstract void updateNausea();
+    @Shadow @Final protected MinecraftClient client;
 
     @Shadow private int ticksToNextAutojump;
 
+    @Shadow protected abstract void pushOutOfBlocks(double x, double z);
+
+    @Shadow @Final public ClientPlayNetworkHandler networkHandler;
+
     @Shadow private boolean falling;
+
+    @Shadow private int underwaterVisibilityTicks;
+
+    @Shadow protected abstract boolean isCamera();
+
+    @Shadow public abstract boolean hasJumpingMount();
 
     @Shadow private float mountJumpStrength;
 
+    @Shadow private int field_3938;
+
     @Shadow public abstract float getMountJumpStrength();
+
+    @Shadow protected abstract void startRidingJump();
+
+    @Shadow protected abstract ArgumentSignatureDataMap signArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults, @Nullable Text text);
+
+    public MixinClientPlayerEntity(ClientWorld world, GameProfile profile, PlayerPublicKey playerPublicKey) {
+        super(world, profile, playerPublicKey);
+    }
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    public void initPlayer(MinecraftClient client, ClientWorld world, ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook, boolean lastSneaking, boolean lastSprinting, CallbackInfo ci) {
+        CommandManagerJex.INSTANCE.registerCommands(networkHandler);
+    }
 
     @Override
     public boolean isTouchingWater() {
@@ -118,8 +130,8 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         new EventPlayerPackets().run();
     }
 
-    @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
-    public void sendChatMessage(String string, CallbackInfo ci) {
+    @Inject(method = "sendChatMessagePacket", at = @At("HEAD"), cancellable = true)
+    public void sendChatMessage(ChatMessageSigner messageSigner, String string, Text component, CallbackInfo ci) {
         EventSendMessage eventSendMessage = new EventSendMessage(string).run();
         if (eventSendMessage.isCancelled()) {
             ci.cancel();
@@ -181,7 +193,8 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         boolean bl2 = this.input.sneaking;
         boolean bl3 = this.isWalking();
         this.inSneakingPose = !this.getAbilities().flying && !this.isSwimming() && this.wouldPoseNotCollide(EntityPose.CROUCHING) && (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
-        this.input.tick(this.shouldSlowDown());
+        float f = MathHelper.clamp(0.3F + EnchantmentHelper.getSwiftSneakSpeedBoost(this), 0.0F, 1.0F);
+        this.input.tick(this.shouldSlowDown(), f);
         this.client.getTutorialManager().onMovement(this.input);
         if ((this.isUsingItem() || AutoEat.isEating) && !this.hasVehicle()) {
             EventSlowdown eventSlowdown = new EventSlowdown(EventSlowdown.State.USE_ITEM).run();
@@ -202,10 +215,10 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         }
 
         if (!this.noClip) {
-            this.pushOutOfBlocks(this.getX() - (double) this.getWidth() * 0.35D, this.getZ() + (double) this.getWidth() * 0.35D);
-            this.pushOutOfBlocks(this.getX() - (double) this.getWidth() * 0.35D, this.getZ() - (double) this.getWidth() * 0.35D);
-            this.pushOutOfBlocks(this.getX() + (double) this.getWidth() * 0.35D, this.getZ() - (double) this.getWidth() * 0.35D);
-            this.pushOutOfBlocks(this.getX() + (double) this.getWidth() * 0.35D, this.getZ() + (double) this.getWidth() * 0.35D);
+            this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35D, this.getZ() + (double)this.getWidth() * 0.35D);
+            this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35D, this.getZ() - (double)this.getWidth() * 0.35D);
+            this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35D, this.getZ() - (double)this.getWidth() * 0.35D);
+            this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35D, this.getZ() + (double)this.getWidth() * 0.35D);
         }
 
         if (bl2) {
@@ -270,34 +283,34 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
             this.knockDownwards();
         }
 
-        int j;
+        int i;
         if (this.isSubmergedIn(FluidTags.WATER)) {
-            j = this.isSpectator() ? 10 : 1;
-            this.underwaterVisibilityTicks = MathHelper.clamp(this.underwaterVisibilityTicks + j, 0, 600);
+            i = this.isSpectator() ? 10 : 1;
+            this.underwaterVisibilityTicks = MathHelper.clamp(this.underwaterVisibilityTicks + i, 0, 600);
         } else if (this.underwaterVisibilityTicks > 0) {
             this.isSubmergedIn(FluidTags.WATER);
             this.underwaterVisibilityTicks = MathHelper.clamp(this.underwaterVisibilityTicks - 10, 0, 600);
         }
 
         if (this.getAbilities().flying && this.isCamera()) {
-            j = 0;
+            i = 0;
             if (this.input.sneaking) {
-                --j;
+                --i;
             }
 
             if (this.input.jumping) {
-                ++j;
+                ++i;
             }
 
-            if (j != 0) {
-                this.setVelocity(this.getVelocity().add(0.0D, (double) ((float) j * this.getAbilities().getFlySpeed() * 3.0F), 0.0D));
+            if (i != 0) {
+                this.setVelocity(this.getVelocity().add(0.0D, (double)((float)i * this.getAbilities().getFlySpeed() * 3.0F), 0.0D));
             }
         }
 
         if (this.hasJumpingMount()) {
-            JumpingMount jumpingMount = (JumpingMount) this.getVehicle();
+            JumpingMount playerRideableJumping = (JumpingMount)this.getVehicle();
             if (this.field_3938 < 0) {
-                ++this.field_3938;
+                ++this.field_3938;//jumpRidingTicks
                 if (this.field_3938 == 0) {
                     this.mountJumpStrength = 0.0F;
                 }
@@ -305,7 +318,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
             if (bl && !this.input.jumping) {
                 this.field_3938 = -10;
-                jumpingMount.setJumpStrength(MathHelper.floor(this.getMountJumpStrength() * 100.0F));
+                playerRideableJumping.setJumpStrength(MathHelper.floor(this.getMountJumpStrength() * 100.0F));
                 this.startRidingJump();
             } else if (!bl && this.input.jumping) {
                 this.field_3938 = 0;
@@ -313,9 +326,9 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
             } else if (bl) {
                 ++this.field_3938;
                 if (this.field_3938 < 10) {
-                    this.mountJumpStrength = (float) this.field_3938 * 0.1F;
+                    this.mountJumpStrength = (float)this.field_3938 * 0.1F;
                 } else {
-                    this.mountJumpStrength = 0.8F + 2.0F / (float) (this.field_3938 - 9) * 0.1F;
+                    this.mountJumpStrength = 0.8F + 2.0F / (float)(this.field_3938 - 9) * 0.1F;
                 }
             }
         } else {
@@ -355,5 +368,10 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     @Redirect(method = "sendMovementPackets", at = @At(value = "FIELD", target = "net/minecraft/client/network/ClientPlayerEntity.onGround:Z"))
     public boolean redirOG(ClientPlayerEntity me) {
         return preEvent.isOnGround();
+    }
+
+    @Override
+    public ArgumentSignatureDataMap callSignArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults, Text text) {
+        return this.signArguments(signer, parseResults, text);
     }
 }

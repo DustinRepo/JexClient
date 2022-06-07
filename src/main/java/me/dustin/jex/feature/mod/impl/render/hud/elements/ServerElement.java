@@ -25,6 +25,6 @@ public class ServerElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().serverName;
+        return getHud().infoProperty.value() && getHud().serverNameProperty.value();
     }
 }

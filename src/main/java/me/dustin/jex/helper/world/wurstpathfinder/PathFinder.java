@@ -12,15 +12,28 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.block.AbstractSignBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CobwebBlock;
+import net.minecraft.block.FenceBlock;
+import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.LadderBlock;
+import net.minecraft.block.Material;
+import net.minecraft.block.PressurePlateBlock;
+import net.minecraft.block.SlimeBlock;
+import net.minecraft.block.SoulSandBlock;
+import net.minecraft.block.TripwireBlock;
+import net.minecraft.block.VineBlock;
+import net.minecraft.block.WallBlock;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
-
-import net.minecraft.block.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 
 public class PathFinder
 {
@@ -28,7 +41,7 @@ public class PathFinder
 	private final boolean creativeFlying = Wrapper.INSTANCE.getPlayer().getAbilities().flying;
 	protected final boolean flying = creativeFlying || Feature.getState(Fly.class);
 	private final boolean immuneToFallDamage = invulnerable || Feature.getState(NoFall.class);
-	private final boolean noWaterSlowdown = Feature.getState(NoPush.class) && Feature.get(NoPush.class).water;
+	private final boolean noWaterSlowdown = Feature.getState(NoPush.class) && Feature.get(NoPush.class).waterProperty.value();
 	private final boolean jesus = Feature.getState(Jesus.class);
 	private final boolean spider = Feature.getState(Spider.class);
 	protected boolean fallingAllowed = true;
@@ -569,7 +582,7 @@ public class PathFinder
 				|| Feature.get(Fly.class).getState())
 				|| immuneToFallDamage != (invulnerable
 				|| Feature.get(NoFall.class).getState())
-				|| noWaterSlowdown != Feature.get(NoPush.class).getState() && ((NoPush)Feature.get(NoPush.class)).water
+				|| noWaterSlowdown != Feature.get(NoPush.class).getState() && ((NoPush)Feature.get(NoPush.class)).waterProperty.value()
 				|| jesus != Feature.get(Jesus.class).getState()
 				|| spider != Feature.get(Spider.class).getState())
 			return false;

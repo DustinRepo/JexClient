@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class JexPluginScreen extends Screen {
     private final Screen parent;
     public JexPluginScreen(Screen parent) {
-        super(Text.of("Plugin Manager"));
+        super(Text.translatable("jex.plugins"));
         this.parent = parent;
     }
 
@@ -44,11 +44,10 @@ public class JexPluginScreen extends Screen {
             pluginButtons.add(new JexPluginButton(plugin, 5, 50 + (38 * i), 200, 36));
             i++;
         }
-        ButtonWidget cancelButton = new ButtonWidget(width / 2 + 2, height - 22, 200, 20, Text.of("Cancel"), button -> Wrapper.INSTANCE.getMinecraft().setScreen(parent));
-        ButtonWidget openFolderButton = new ButtonWidget(width / 2 - 202, height - 22, 200, 20, Text.of("Open Plugins Folder"), button -> Util.getOperatingSystem().open(new File(ModFileHelper.INSTANCE.getJexDirectory(), "plugins")));
-        enableButton = new ButtonWidget(width / 2 - 202, height - 44, 200, 20, Text.of("Enable"), button -> JexPlugin.enable(getSelected().getJexPlugin()));
-        disableButton = new ButtonWidget(width / 2 + 2, height - 44, 200, 20, Text.of("Disable"), button -> JexPlugin.disable(getSelected().getJexPlugin()));
-
+        ButtonWidget cancelButton = new ButtonWidget(width / 2 + 2, height - 22, 200, 20, Text.translatable("jex.button.cancel"), button -> Wrapper.INSTANCE.getMinecraft().setScreen(parent));
+        ButtonWidget openFolderButton = new ButtonWidget(width / 2 - 202, height - 22, 200, 20, Text.translatable("jex.plugins.open_folder"), button -> Util.getOperatingSystem().open(new File(ModFileHelper.INSTANCE.getJexDirectory(), "plugins")));
+        enableButton = new ButtonWidget(width / 2 - 202, height - 44, 200, 20, Text.translatable("jex.button.enable"), button -> JexPlugin.enable(getSelected().getJexPlugin()));
+        disableButton = new ButtonWidget(width / 2 + 2, height - 44, 200, 20, Text.translatable("jex.button.disable"), button -> JexPlugin.disable(getSelected().getJexPlugin()));
         addDrawableChild(cancelButton);
         addDrawableChild(openFolderButton);
         addDrawableChild(enableButton);
@@ -67,14 +66,12 @@ public class JexPluginScreen extends Screen {
         renderBackground(matrices);
         Render2DHelper.INSTANCE.fill(matrices, 0, 0, width, 45, 0x60000000);
         Render2DHelper.INSTANCE.fill(matrices, 0, height - 45, width, height, 0x60000000);
-        FontHelper.INSTANCE.drawCenteredString(matrices, "Plugin Manager", width / 2.f, 5, -1);
-        FontHelper.INSTANCE.draw(matrices, "Plugins: %s%d".formatted(Formatting.AQUA, pluginButtons.size()), 5, 35, -1);
-
-        Render2DHelper.INSTANCE.fill(matrices, 2, 50, 208, height - 50, 0x70000000);
+        FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.plugins"), width / 2.f, 5, -1);
+        FontHelper.INSTANCE.draw(matrices, Text.translatable("jex.plugins.count", Formatting.AQUA + String.valueOf(pluginButtons.size())), 5, 35, -1);
         Scissor.INSTANCE.cut(0, 50, 205, height - 100);
         pluginButtons.forEach(jexPluginButton -> jexPluginButton.render(matrices));
         Scissor.INSTANCE.seal();
-        Render2DHelper.INSTANCE.fill(matrices, 210, 50, width - 5, height - 50, 0x70000000);
+        Render2DHelper.INSTANCE.fill(matrices, 210, 50, width - 5, height - 50, 0x50000000);
         JexPluginButton selected = getSelected();
         if (selected != null) {
             if (selected.getIcon() != null) {
@@ -82,10 +79,10 @@ public class JexPluginScreen extends Screen {
                 Render2DHelper.INSTANCE.drawTexture(matrices, 215, 55, 0, 0, 64, 64, 64, 64);
             }
             FontHelper.INSTANCE.draw(matrices, "%s v%s".formatted(selected.getJexPlugin().getInfo().getName(), selected.getJexPlugin().getInfo().getVersion()), 285, 55, -1);
-            FontHelper.INSTANCE.draw(matrices, "By: %s%s".formatted(Formatting.GRAY, selected.getAuthors()), 285, 66, -1);
-            FontHelper.INSTANCE.draw(matrices, "Allows Disabling: " + greenTrueRedFalse(selected.getJexPlugin().getInfo().isAllowDisable()), 285, 77, -1);
-            FontHelper.INSTANCE.draw(matrices, "Enabled: " + greenTrueRedFalse(selected.getJexPlugin().isEnabled()), 285, 88, -1);
-            Wrapper.INSTANCE.getTextRenderer().drawTrimmed(Text.of(selected.getJexPlugin().getInfo().getDescription()), 215, 125, width - 220, -1);
+            FontHelper.INSTANCE.draw(matrices, Text.translatable("jex.plugins.authors", Formatting.GRAY + selected.getAuthors()), 285, 66, -1);
+            FontHelper.INSTANCE.draw(matrices, Text.translatable("jex.plugins.allows_disable", greenTrueRedFalse(selected.getJexPlugin().getInfo().isAllowDisable())), 285, 77, -1);
+            FontHelper.INSTANCE.draw(matrices, Text.translatable("jex.plugins.enabled", greenTrueRedFalse(selected.getJexPlugin().isEnabled())), 285, 88, -1);
+            Wrapper.INSTANCE.getTextRenderer().drawTrimmed(Text.literal(selected.getJexPlugin().getInfo().getDescription()), 215, 125, width - 220, -1);
         }
         enableButton.active = selected != null && selected.getJexPlugin().getInfo().isAllowDisable() && !selected.getJexPlugin().isEnabled();
         disableButton.active = selected != null && selected.getJexPlugin().getInfo().isAllowDisable() && selected.getJexPlugin().isEnabled();
@@ -126,7 +123,7 @@ public class JexPluginScreen extends Screen {
     @Override
     public boolean mouseScrolled(double d, double e, double amount) {
         if (pluginButtons.isEmpty())
-            return false;
+        return false;
         if (amount > 0) {
             JexPluginButton topButton = pluginButtons.get(0);
             if (topButton == null) return false;

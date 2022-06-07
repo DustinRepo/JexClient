@@ -7,7 +7,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 
 public class EventPlayerPackets extends Event {
 
-    private Mode mode;
+    private final Mode mode;
     private float yaw;
     private float pitch;
     private boolean onGround;

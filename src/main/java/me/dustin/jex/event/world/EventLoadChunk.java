@@ -5,7 +5,7 @@ import net.minecraft.world.chunk.WorldChunk;
 
 public class EventLoadChunk extends Event {
 
-    private WorldChunk worldChunk;
+    private final WorldChunk worldChunk;
 
     public EventLoadChunk(WorldChunk worldChunk) {
         this.worldChunk = worldChunk;

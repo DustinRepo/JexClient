@@ -57,7 +57,7 @@ public enum PathingHelper {
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
         if (pathFinder != null)
-            pathFinder.renderPath(event.getMatrixStack(), false, true);
+            pathFinder.renderPath(event.getPoseStack(), false, true);
     });
 
     public void pathTo(BlockPos blockPos) {

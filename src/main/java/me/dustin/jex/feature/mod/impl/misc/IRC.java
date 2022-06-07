@@ -4,12 +4,14 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.irc.IRCClient;
 import me.dustin.jex.event.chat.EventSendMessage;
+import me.dustin.jex.event.chat.EventShouldPreviewChat;
 import me.dustin.jex.event.filters.DrawScreenFilter;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRenderChatHud;
 import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.option.annotate.Op;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -18,17 +20,19 @@ import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.load.impl.IChatScreen;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
-@Feature.Manifest(category = Feature.Category.MISC, description = "Connect to an IRC server to chat with other Jex users", enabled = true)
 public class IRC extends Feature {
 
-    @Op(name = "Send Prefix", maxStringLength = 2)
-    public String sendPrefix = "@";
+    public final Property<String> sendPrefixProperty = new Property.PropertyBuilder<String>(this.getClass())
+            .name("Send Prefix")
+            .description("The prefix used to activate the IRC chat mode.")
+            .value("@")
+            .max(2)
+            .build();
 
     public boolean ircChatOverride;
     public boolean renderAboveChat = true;
@@ -42,6 +46,10 @@ public class IRC extends Feature {
         ircChatOverride = false;
         ircClient = null;
     };
+
+    public IRC() {
+        super("IRC", Category.MISC, "Connect to an IRC server to chat with other Jex users", true, true, 0);
+    }
 
 
     @Override
@@ -64,9 +72,9 @@ public class IRC extends Feature {
     private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {
         if (event.getMessage().startsWith(CommandManagerJex.INSTANCE.getPrefix()))
             return;
-        if ((event.getMessage().startsWith(sendPrefix) || ircChatOverride) && ircClient != null) {
+        if ((event.getMessage().startsWith(sendPrefixProperty.value()) || ircChatOverride) && ircClient != null) {
             event.cancel();
-            String message = event.getMessage().startsWith(sendPrefix) ? event.getMessage().substring(sendPrefix.length()) : event.getMessage();
+            String message = event.getMessage().startsWith(sendPrefixProperty.value()) ? event.getMessage().substring(sendPrefixProperty.value().length()) : event.getMessage();
             if (message.isEmpty()) {
                 addIRCMessage("Your message was empty.");
                 return;
@@ -118,7 +126,7 @@ public class IRC extends Feature {
                     String reason = message.replace("/mute " + username + " " + timeString + " ", "");
                     ircClient.mute(username, reason, parseMuteTime(timeString));
                 } else {
-                    addIRCMessage("Invalid args. /mute <name> <time> <reason>");
+                    addIRCMessage("Invalid args. /admin <name>");
                 }
                 return;
             }
@@ -138,11 +146,22 @@ public class IRC extends Feature {
     });
 
     @EventPointer
+    private final EventListener<EventShouldPreviewChat> eventShouldPreviewChatEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen chatScreen) {
+            IChatScreen iChatScreen = (IChatScreen) chatScreen;
+            if (ircChatOverride || iChatScreen.getText().startsWith(sendPrefixProperty.value())) {
+                event.cancel();
+                event.setEnabled(false);
+            }
+        }
+    });
+
+    @EventPointer
     private final EventListener<EventRenderChatHud> eventRenderChatHudEventListener = new EventListener<>(event -> {
         if (event.getChatHud() == Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud()) {
             if (ircChatOverride) {
                 event.cancel();
-                ircChatHud.render(event.getMatrixStack(), event.getTickDelta());
+                ircChatHud.render(event.getPoseStack(), event.getTickDelta());
             }
         }
     });
@@ -152,20 +171,20 @@ public class IRC extends Feature {
         IChatScreen iChatScreen = (IChatScreen) event.getScreen();
         String chatString = iChatScreen.getText();
         if (ircClient != null && ircClient.isConnected() && renderAboveChat) {
-            FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"), iChatScreen.getWidget().x + 84, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
+            FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), "\2477Selected channel: " + (ircChatOverride ? "\247cIRC" : "\247rGame Chat"), iChatScreen.getWidget().x + 84, iChatScreen.getWidget().y - 11, ColorHelper.INSTANCE.getClientColor());
         }
-        if ((chatString.startsWith(sendPrefix) || ircChatOverride) && ircClient != null && ircClient.isConnected()) {
+        if ((chatString.startsWith(sendPrefixProperty.value()) || ircChatOverride) && ircClient != null && ircClient.isConnected()) {
             int color = 0xffFF5555;
             int users = ircClient.getUsers().length;
             String usersString = "IRC Users: \247f" + users;
             String nameString = "Name: \247f" + ircClient.getUsername();
-            Render2DHelper.INSTANCE.fillAndBorder(event.getMatrixStack(), iChatScreen.getWidget().x - 2, iChatScreen.getWidget().y - 2, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y + iChatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
+            Render2DHelper.INSTANCE.fillAndBorder(event.getPoseStack(), iChatScreen.getWidget().x - 2, iChatScreen.getWidget().y - 2, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y + iChatScreen.getWidget().getHeight() - 2, color, 0x00ffffff, 1);
 
             //IRC info right side
-            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), (iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(nameString) - 4, iChatScreen.getWidget().y - 13, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y - 2, 0x90000000);
-            FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), nameString, ((iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(nameString)) - 1.5f, iChatScreen.getWidget().y - 11, color);
-            Render2DHelper.INSTANCE.fill(event.getMatrixStack(), (iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(usersString) - 4, iChatScreen.getWidget().y - 24, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y - 13, 0x90000000);
-            FontHelper.INSTANCE.drawWithShadow(event.getMatrixStack(), usersString, ((iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(usersString)) - 1.5f, iChatScreen.getWidget().y - 22, color);
+            Render2DHelper.INSTANCE.fill(event.getPoseStack(), (iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(nameString) - 4, iChatScreen.getWidget().y - 13, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y - 2, 0x90000000);
+            FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), nameString, ((iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(nameString)) - 1.5f, iChatScreen.getWidget().y - 11, color);
+            Render2DHelper.INSTANCE.fill(event.getPoseStack(), (iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(usersString) - 4, iChatScreen.getWidget().y - 24, iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth() - 2, iChatScreen.getWidget().y - 13, 0x90000000);
+            FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), usersString, ((iChatScreen.getWidget().x + iChatScreen.getWidget().getWidth()) - FontHelper.INSTANCE.getStringWidth(usersString)) - 1.5f, iChatScreen.getWidget().y - 22, color);
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, ChatScreen.class));
 
@@ -205,6 +224,6 @@ public class IRC extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             ChatHelper.INSTANCE.addRawMessage(ircString);
         }
-        ircChatHud.addMessage(new LiteralText(ircString));
+        ircChatHud.addMessage(Text.of(ircString));
     }
 }

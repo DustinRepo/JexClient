@@ -11,26 +11,25 @@ import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.helper.render.Scrollbar;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
-
 import java.util.ArrayList;
 
 public class WaypointScreen extends Screen {
 
     public WaypointScreen() {
-        super(new LiteralText("Waypoints"));
+        super(Text.of("Waypoints"));
     }
 
     private String goToServer;
 
     public WaypointScreen(String server) {
-        super(new LiteralText("Waypoints"));
+        super(Text.of("Waypoints"));
     }
 
 

@@ -17,7 +17,7 @@ public class TPSElement extends HudElement {
             return;
         super.render(matrixStack);
         String str = String.format("TPS\247f: \2477%.2f", TPSHelper.INSTANCE.getAverageTPS());
-        if (getHud().instantTPS) {
+        if (getHud().instantTPSProperty.value()) {
             str += String.format("\247r Instant\247f: \2477%.2f", TPSHelper.INSTANCE.getTPS(2));
         }
         float x = isLeftSide() ? getX() + 2.5f : getX() + getWidth() - 0.5f - FontHelper.INSTANCE.getStringWidth(str);
@@ -27,6 +27,6 @@ public class TPSElement extends HudElement {
 
     @Override
     public boolean isVisible() {
-        return getHud().info && getHud().tps;
+        return getHud().infoProperty.value() && getHud().tpsProperty.value();
     }
 }

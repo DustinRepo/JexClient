@@ -19,10 +19,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.glfw.GLFW;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -38,27 +37,27 @@ public class SearchSelectScreen extends Screen {
     private Scrollbar leftScrollbar;
     private Scrollbar rightScrollbar;
     public SearchSelectScreen() {
-        super(new LiteralText("Search Selection"));
+        super(Text.translatable("jex.search_select"));
     }
 
     @Override
     protected void init() {
-        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 - 200;
-        float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 + 2;
-        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
+        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 200;
+        float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f + 2;
+        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 125;
         float buttonWidth = 198;
         loadBlocks();
-        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, new LiteralText(""));
+        searchField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), (int) allowedLeftX, (int) startY - 25, 350, 20, Text.of(""));
         searchField.setVisible(true);
         searchField.setEditable(true);
-        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, new LiteralText("Search"), button -> {
+        searchButton = new ButtonWidget(Render2DHelper.INSTANCE.getScaledWidth() / 2 + 155, (int) startY - 25, 45, 20, Text.translatable("jex.button.search"), button -> {
             if (searchField.getText().isEmpty())
                 loadBlocks();
             else
                 loadBlocks(searchField.getText());
         });
 
-        removeSearchBlockButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Remove From Search"), button -> {
+        removeSearchBlockButton = new ButtonWidget((int) allowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.translatable("jex.search_select.remove"), button -> {
             getSelectedAllowed().forEach(blockButton -> {
                 Search.getBlocks().remove(blockButton.getBlock());
                 allowedBlocks.remove(blockButton);
@@ -70,7 +69,7 @@ public class SearchSelectScreen extends Screen {
                 loadBlocks(searchField.getText());
             ConfigManager.INSTANCE.get(SearchFile.class).write();
         });
-        addSearchBlockButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, new LiteralText("Add To Search"), button -> {
+        addSearchBlockButton = new ButtonWidget((int) notAllowedLeftX, (int) startY + 255, (int) buttonWidth, 20, Text.translatable("jex.search_select.add"), button -> {
             getSelectedNotAllowed().forEach(blockButton -> {
                 Search.getBlocks().put(blockButton.getBlock(), ColorHelper.INSTANCE.getColorViaHue(new Random().nextFloat() * 270).getRGB());
                 allowedBlocks.add(blockButton);
@@ -83,7 +82,7 @@ public class SearchSelectScreen extends Screen {
             ConfigManager.INSTANCE.get(SearchFile.class).write();
         });
 
-        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2 - 100), height - 22, 200, 20, new LiteralText("Done"), button -> {
+        doneButton = new ButtonWidget((int) (Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 100), height - 22, 200, 20, Text.translatable("jex.button.done"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexOptionsScreen());
         });
 
@@ -107,11 +106,11 @@ public class SearchSelectScreen extends Screen {
 
         this.addSearchBlockButton.active = !getSelectedNotAllowed().isEmpty();
         this.removeSearchBlockButton.active = !getSelectedAllowed().isEmpty();
-        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 - 200;
-        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
+        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 200;
+        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 125;
 
         Render2DHelper.INSTANCE.fill(matrices, allowedLeftX, startY, allowedLeftX + 400, startY + 250, 0x60000000);
-        Render2DHelper.INSTANCE.fill(matrices, Render2DHelper.INSTANCE.getScaledWidth() / 2 - 1, startY, Render2DHelper.INSTANCE.getScaledWidth() / 2, startY + 250, ColorHelper.INSTANCE.getClientColor());
+        Render2DHelper.INSTANCE.fill(matrices, Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 1, startY, Render2DHelper.INSTANCE.getScaledWidth() / 2.f, startY + 250, ColorHelper.INSTANCE.getClientColor());
 
         Scissor.INSTANCE.cut(0, (int) startY, width, 250);
         this.allowedBlocks.forEach(button -> {
@@ -171,9 +170,9 @@ public class SearchSelectScreen extends Screen {
                 if (allowedBlocks.isEmpty())
                     return false;
                 BlockButton topButton = allowedBlocks.get(0);
-                if (topButton.getY() < ((height / 2) - 125)) {
+                if (topButton.getY() < ((height / 2.f) - 125)) {
                     for (int i = 0; i < 40; i++) {
-                        if (topButton.getY() < ((height / 2) - 125)) {
+                        if (topButton.getY() < ((height / 2.f) - 125)) {
                             for (BlockButton button : allowedBlocks) {
                                 button.setY(button.getY() + 1);
                             }
@@ -186,9 +185,9 @@ public class SearchSelectScreen extends Screen {
                 if (notAllowedBlocks.isEmpty())
                     return false;
                 BlockButton topButton = notAllowedBlocks.get(0);
-                if (topButton.getY() < ((height / 2) - 125)) {
+                if (topButton.getY() < ((height / 2.f) - 125)) {
                     for (int i = 0; i < 40; i++) {
-                        if (topButton.getY() < ((height / 2) - 125)) {
+                        if (topButton.getY() < ((height / 2.f) - 125)) {
                             for (BlockButton button : notAllowedBlocks) {
                                 button.setY(button.getY() + 1);
                             }
@@ -203,9 +202,9 @@ public class SearchSelectScreen extends Screen {
                 if (allowedBlocks.isEmpty())
                     return false;
                 BlockButton bottomButton = allowedBlocks.get(allowedBlocks.size() - 1);
-                if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125)) {
+                if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2.f) + 125)) {
                     for (int i = 0; i < 40; i++) {
-                        if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125)) {
+                        if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2.f) + 125)) {
                             for (BlockButton button : allowedBlocks) {
                                 button.setY(button.getY() - 1);
                             }
@@ -218,9 +217,9 @@ public class SearchSelectScreen extends Screen {
                 if (notAllowedBlocks.isEmpty())
                     return false;
                 BlockButton bottomButton = notAllowedBlocks.get(notAllowedBlocks.size() - 1);
-                if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125)) {
+                if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2.f) + 125)) {
                     for (int i = 0; i < 40; i++) {
-                        if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2) + 125)) {
+                        if (bottomButton.getY() + bottomButton.getHeight() > ((height / 2.f) + 125)) {
                             for (BlockButton button : notAllowedBlocks) {
                                 button.setY(button.getY() - 1);
                             }
@@ -253,15 +252,15 @@ public class SearchSelectScreen extends Screen {
     }
 
     private boolean isHoveredAllowed() {
-        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 - 200;
-        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
+        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 200;
+        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 125;
         float buttonWidth = 198;
         return Render2DHelper.INSTANCE.isHovered(allowedLeftX, startY, buttonWidth, 250);
     }
 
     private boolean isHoveredNotAllowed() {
-        float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 + 2;
-        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
+        float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f + 2;
+        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 125;
         float buttonWidth = 198;
         return Render2DHelper.INSTANCE.isHovered(notAllowedLeftX, startY, buttonWidth, 250);
     }
@@ -272,9 +271,9 @@ public class SearchSelectScreen extends Screen {
         int allowedCount = 0;
         int notAllowedCount = 0;
 
-        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 - 200;
-        float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 + 2;
-        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
+        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 200;
+        float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f + 2;
+        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 125;
         float buttonWidth = 198;
         float buttonHeight = 20;
 
@@ -309,9 +308,9 @@ public class SearchSelectScreen extends Screen {
         int allowedCount = 0;
         int notAllowedCount = 0;
 
-        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 - 200;
-        float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2 + 2;
-        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2 - 125;
+        float allowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 200;
+        float notAllowedLeftX = Render2DHelper.INSTANCE.getScaledWidth() / 2.f + 2;
+        float startY = Render2DHelper.INSTANCE.getScaledHeight() / 2.f - 125;
         float buttonWidth = 198;
         float buttonHeight = 20;
 

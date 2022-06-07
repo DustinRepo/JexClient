@@ -8,14 +8,12 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import me.dustin.jex.helper.update.JexVersion;
 import net.minecraft.client.util.math.MatrixStack;
-
 import java.awt.*;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class JexChangelog {
-    private JexVersion version;
-    private ArrayList<ChangelogLine> lines = new ArrayList<>();
+    private final JexVersion version;
+    private final ArrayList<ChangelogLine> lines = new ArrayList<>();
     private float y;
 
     public JexChangelog(JexVersion version) {

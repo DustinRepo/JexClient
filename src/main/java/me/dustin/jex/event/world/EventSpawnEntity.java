@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 
 public class EventSpawnEntity extends Event {
 
-    private Entity entity;
+    private final Entity entity;
 
     public EventSpawnEntity(Entity entity) {
         this.entity = entity;
