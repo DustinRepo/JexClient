@@ -25,10 +25,10 @@ public class KeybindFile extends ConfigFile {
     @Override
     public void read() {
         if (!getFile().exists()) return;
-        Keybind.getKeybinds().clear();
         Map<String, Object> binds = YamlHelper.INSTANCE.readFile(getFile());
         if (binds == null || binds.isEmpty())
             return;
+        Keybind.getKeybinds().clear();
         binds.forEach((command, map) -> {
             Map<String, Object> bind = (Map<String, Object>)map;
             int key = (int) bind.get("key");
