@@ -58,7 +58,7 @@ import java.util.*;
 
 public enum JexClient {
     INSTANCE;
-    private boolean autoSaveModules = false;
+    private boolean autoSaveModules = true;
     private boolean soundOnLaunch = true;
     private final Logger logger = LogManager.getFormatterLogger("Jex");
     private JexVersion version;
