@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "me.dustin.jex.load.JexMixinConfigPlugin",
   "mixins": [
-    "minecraft.MixinServerInfo"
   ],
   "client": [
     "indigo.MixinClientLoginNetworkAddon",
@@ -20,6 +19,7 @@
     "minecraft.MixinCactusBlock",
     "minecraft.MixinCamera",
     "minecraft.MixinChatHud",
+    "minecraft.MixinChatMessageC2SPacket",
     "minecraft.MixinChatScreen",
     "minecraft.MixinChestBlockEntityRenderer",
     "minecraft.MixinChunkOcclusionDataBuilder",
@@ -61,11 +61,11 @@
     "minecraft.MixinPlayerEntity",
     "minecraft.MixinPlayerEntityRenderer",
     "minecraft.MixinPowderSnowBlock",
-
     "minecraft.MixinProjectileEntity",
     "minecraft.MixinRenderLayers",
     "minecraft.MixinRenderTickCounter",
     "minecraft.MixinScreen",
+    "minecraft.MixinServerInfo",
     "minecraft.MixinShaderInstance",
     "minecraft.MixinSignEditScreen",
     "minecraft.MixinSimpleOption",

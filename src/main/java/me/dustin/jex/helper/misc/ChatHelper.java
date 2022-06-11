@@ -31,7 +31,7 @@ public enum ChatHelper {
         NetworkHelper.INSTANCE.sendPacket(new CommandExecutionC2SPacket(command, chatMessageSigner.timeStamp(), argumentSignatureDataMap, false));
     }
 
-    private MessageSignature signChatMessage(ChatMessageSigner signer, Text message) {
+    public MessageSignature signChatMessage(ChatMessageSigner signer, Text message) {
         try {
             Signer lv = Wrapper.INSTANCE.getMinecraft().getProfileKeys().getSigner();
             if (lv != null) {

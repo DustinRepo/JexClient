@@ -7,9 +7,16 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
+import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.load.impl.IChatMessageC2SPacket;
+import net.minecraft.network.encryption.Signer;
+import net.minecraft.network.message.ChatMessageSigner;
 import net.minecraft.network.message.MessageSignature;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
+import net.minecraft.text.Text;
+
 import java.util.Random;
 
 public class Messages extends Feature {
@@ -26,7 +33,6 @@ public class Messages extends Feature {
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         ChatMessageC2SPacket chatMessageC2SPacket = (ChatMessageC2SPacket) event.getPacket();
-        MessageSignature sigData = chatMessageC2SPacket.createSignatureInstance(Wrapper.INSTANCE.getLocalPlayer().getUuid());
         String message = chatMessageC2SPacket.getChatMessage();
         if (message.startsWith("/"))
             return;
@@ -40,12 +46,16 @@ public class Messages extends Feature {
                     char replace = fancyChars.charAt(replaceChars.indexOf(currentChar));
                     s = s.replace(currentChar, replace);
                 }
-                event.setPacket(new ChatMessageC2SPacket(s, sigData, chatMessageC2SPacket.isPreviewed()));
+                message = s;
             }
-            case UPSIDE_DOWN -> event.setPacket(new ChatMessageC2SPacket(upsideDown(message), sigData, chatMessageC2SPacket.isPreviewed()));
-            case BACKWARDS -> event.setPacket(new ChatMessageC2SPacket(new StringBuilder(message).reverse().toString(), sigData, chatMessageC2SPacket.isPreviewed()));
-            case RANDOM_CAPITAL -> event.setPacket(new ChatMessageC2SPacket(randomCapitalize(message), sigData, chatMessageC2SPacket.isPreviewed()));
+            case UPSIDE_DOWN -> message = upsideDown(message);
+            case BACKWARDS -> message = new StringBuilder(message).reverse().toString();
+            case RANDOM_CAPITAL -> message = randomCapitalize(message);
         }
+        ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(Wrapper.INSTANCE.getLocalPlayer().getUuid());
+        MessageSignature chatSigData = ChatHelper.INSTANCE.signChatMessage(chatMessageSigner, Text.literal(message));
+        NetworkHelper.INSTANCE.sendPacketDirect(new ChatMessageC2SPacket(message, chatSigData, false));
+        event.cancel();
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ChatMessageC2SPacket.class));
 
     public String randomCapitalize(String str) {
