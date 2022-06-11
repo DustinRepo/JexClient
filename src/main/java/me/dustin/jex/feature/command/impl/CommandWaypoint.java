@@ -16,6 +16,7 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
 @Cmd(name = "waypoint", description = "Add or remove waypoints", syntax = {".waypoint add <name> <x/y/z/here> <color>", ".waypoint del <name>"})
@@ -27,7 +28,8 @@ public class CommandWaypoint extends Command {
             //adding "here"
             String server = WorldHelper.INSTANCE.getCurrentServerName();
             String name = StringArgumentType.getString(context,"name").replace("_", " ");
-            int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColorValue())).getRGB();
+            Formatting formatting = ColorArgumentType.getColor(context, "color");
+            int color = formatting == Formatting.DARK_GREEN ? 0xff00AA00 : Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(formatting.getColorValue())).getRGB();
             float x = (float) Wrapper.INSTANCE.getLocalPlayer().getX();
             float y = (float) Wrapper.INSTANCE.getLocalPlayer().getY();
             float z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ();
@@ -40,7 +42,8 @@ public class CommandWaypoint extends Command {
             String server = WorldHelper.INSTANCE.getCurrentServerName();
             Vec3d pos = Vec3ArgumentType.getVec3(context, "pos");
             String name = StringArgumentType.getString(context,"name").replace("_", " ");
-            int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColorValue())).getRGB();
+            Formatting formatting = ColorArgumentType.getColor(context, "color");
+            int color = formatting == Formatting.DARK_GREEN ? 0xff00AA00 : Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(formatting.getColorValue())).getRGB();
             float x = (float) pos.getX();
             float y = (float) pos.getY();
             float z = (float) pos.getZ();
