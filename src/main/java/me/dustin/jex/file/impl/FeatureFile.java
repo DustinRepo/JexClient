@@ -3,6 +3,7 @@ package me.dustin.jex.file.impl;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
+import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.property.PropertyManager;
 import me.dustin.jex.file.core.ConfigFile;
@@ -32,8 +33,9 @@ public class FeatureFile extends ConfigFile {
                     if (property.getDefaultValue() instanceof Enum<?>) {
                         Property<Enum<?>> enumProperty = (Property<Enum<?>>) property;
                         optionsMap.put(property.getName(), enumProperty.value().name());
-                    } else if (property.getDefaultValue() instanceof Color color) {
-                        optionsMap.put(property.getName(), Integer.toHexString(color.getRGB()));
+                    } else if (property.getDefaultValue() instanceof Color) {
+                        Property<Color> colorProperty = (Property<Color>) property;
+                        optionsMap.put(property.getName(), Integer.toHexString(colorProperty.value().getRGB()).substring(2));
                     } else
                         optionsMap.put(property.getName(), property.value());
                 }
@@ -56,8 +58,9 @@ public class FeatureFile extends ConfigFile {
                     if (property.getDefaultValue() instanceof Enum<?>) {
                         Property<Enum<?>> enumProperty = (Property<Enum<?>>) property;
                         optionsMap.put(property.getName(), enumProperty.value().name());
-                    } else if (property.getDefaultValue() instanceof Color color) {
-                        optionsMap.put(property.getName(), Integer.toHexString(color.getRGB()));
+                    } else if (property.getDefaultValue() instanceof Color) {
+                        Property<Color> colorProperty = (Property<Color>) property;
+                        optionsMap.put(property.getName(), Integer.toHexString(colorProperty.value().getRGB()).substring(2));
                     } else
                      optionsMap.put(property.getName(), property.value());
                 }
@@ -97,7 +100,9 @@ public class FeatureFile extends ConfigFile {
                                 property.setEnumValue((String) o1);
                             } else if (property.getDefaultValue() instanceof Color) {
                                 Property<Color> colorProperty = (Property<Color>) property;
-                                colorProperty.setValue(Render2DHelper.INSTANCE.hex2Rgb(String.valueOf(o1)));
+                                String str = "ff" + String.valueOf(o1);
+                                Color color = Render2DHelper.INSTANCE.hex2Rgb(str);
+                                colorProperty.setValue(color);
                             } else if (property.getDefaultValue() instanceof Float) {
                                 Property<Float> floatProperty = (Property<Float>) property;
                                 floatProperty.setValue((float) (double) o1);
