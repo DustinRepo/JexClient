@@ -48,18 +48,18 @@ public class JexGuiScreen extends Screen {
         searchBar.setTextFieldFocused(true);
         populateCategories();
 
-        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, Text.translatable("jex.button.load"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 44, 100, 20, Text.translatable("jex.button.load"), button -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).read();
         }));
-        this.addDrawableChild(new ButtonWidget(2, height - 44, 100, 20, Text.translatable("jex.button.save"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 66, 100, 20, Text.translatable("jex.button.save"), button -> {
             ConfigManager.INSTANCE.get(FeatureFile.class).saveButton();
         }));
-        this.addDrawableChild(new ButtonWidget(2, height - 66, 100, 20, Text.translatable(JexClient.INSTANCE.isAutoSaveEnabled() ? "jex.gui.autosave.on" : "jex.gui.autosave.off"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 88, 100, 20, Text.translatable(JexClient.INSTANCE.isAutoSaveEnabled() ? "jex.gui.autosave.on" : "jex.gui.autosave.off"), button -> {
             JexClient.INSTANCE.setAutoSave(!JexClient.INSTANCE.isAutoSaveEnabled());
             button.setMessage(Text.translatable(JexClient.INSTANCE.isAutoSaveEnabled() ? "jex.gui.autosave.on" : "jex.gui.autosave.off"));
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }));
-        this.addDrawableChild(new ButtonWidget(2, height - 88, 100, 20, Text.translatable("jex.keybinds"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 110, 100, 20, Text.translatable("jex.keybinds"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new JexKeybindListScreen(Wrapper.INSTANCE.getLocalPlayer() == null ? this : null));
         }));
         super.init();
