@@ -4,6 +4,7 @@ Fixed keybinds not being set properly on first launch
 Fixed Messages mod blocking messages from being sent in chat
 Fixed "dark_green" color for waypoints setting the color to white
 Fixed "No Categories" GUI option making mod descriptions get blocked by the gui buttons
+Fixed colors not being saved after setting them
 
 0.7.7
 Merged snapshot changes into main version (new gui, keybind list screen, etc)
