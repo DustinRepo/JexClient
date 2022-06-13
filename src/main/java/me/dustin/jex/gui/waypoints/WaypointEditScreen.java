@@ -31,7 +31,7 @@ import java.util.Random;
 public class WaypointEditScreen extends Screen {
 
     private Waypoints.Waypoint waypoint;
-    private String server;
+    private final String server;
 
     private TextFieldWidget serverName;
     private TextFieldWidget name;
@@ -50,7 +50,7 @@ public class WaypointEditScreen extends Screen {
             .name("###waypoints")
             .value(Color.WHITE)
             .build();
-    private Identifier colorSlider = new Identifier("jex", "gui/click/colorslider.png");
+    private final Identifier colorSlider = new Identifier("jex", "gui/click/colorslider.png");
     private float colorX;
     private float colorY;
     private float colorWidth;
@@ -84,10 +84,10 @@ public class WaypointEditScreen extends Screen {
         String waypointX = waypoint != null ? String.valueOf(ClientMathHelper.INSTANCE.round(waypoint.getX(), 2)) : "";
         String waypointY = waypoint != null ? String.valueOf(ClientMathHelper.INSTANCE.round(waypoint.getY(), 2)) : "";
         String waypointZ = waypoint != null ? String.valueOf(ClientMathHelper.INSTANCE.round(waypoint.getZ(), 2)) : "";
-        String hiddenButtonName = waypoint != null ? "Hidden: " + waypoint.isHidden() : "";
-        String nametagButtonName = waypoint != null ? "Nametag: " + waypoint.isDrawNametag() : "";
-        String beaconButtonName = waypoint != null ? "Beacon: " + waypoint.isDrawBeacon() : "";
-        String tracerButtonName = waypoint != null ? "Tracer: " + waypoint.isDrawTracer() : "";
+        String hiddenButtonName = waypoint != null ? Text.translatable("jex.waypoint.hidden", waypoint.isHidden()).getString() : "";
+        String nametagButtonName = waypoint != null ? Text.translatable("jex.waypoint.nametag", waypoint.isDrawNametag()).getString() : "";
+        String beaconButtonName = waypoint != null ? Text.translatable("jex.waypoint.beacon", waypoint.isDrawBeacon()).getString() : "";
+        String tracerButtonName = waypoint != null ? Text.translatable("jex.waypoint.tracer", waypoint.isDrawTracer()).getString() : "";
         serverName = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 95, 200, 20, Text.of(server));
         name = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 60, 200, 20, Text.of(waypointName));
         xPos = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 65, 20, Text.of(waypointX));
@@ -105,8 +105,8 @@ public class WaypointEditScreen extends Screen {
         this.colorX = width / 2.f - 5;
         this.colorY = height / 2.f + 50;
         this.colorWidth = 110;
-        saveButton = new Button("Save", width / 2.f - 100, height / 2.f + 55, 80, 20, saveListener);
-        cancelButton = new Button("Cancel", width / 2.f - 100, height / 2.f + 80, 80, 20, cancelListener);
+        saveButton = new Button(Text.translatable("jex.button.save").getString(), width / 2.f - 100, height / 2.f + 55, 80, 20, saveListener);
+        cancelButton = new Button(Text.translatable("jex.button.cancel").getString(), width / 2.f - 100, height / 2.f + 80, 80, 20, cancelListener);
         this.addSelectableChild(name);
         this.addSelectableChild(xPos);
         this.addSelectableChild(yPos);
@@ -149,11 +149,11 @@ public class WaypointEditScreen extends Screen {
         saveButton.render(matrices);
         cancelButton.render(matrices);
         drawColorPicker(matrices);
-        FontHelper.INSTANCE.drawCenteredString(matrices, "Server", width / 2.f, height / 2.f - 107, -1);
-        FontHelper.INSTANCE.drawCenteredString(matrices, "Waypoint Name", width / 2.f, height / 2.f - 72, -1);
-        FontHelper.INSTANCE.drawCenteredString(matrices, "X", width / 2.f - 100 + (65 / 2.f), height / 2.f - 37, -1);
-        FontHelper.INSTANCE.drawCenteredString(matrices, "Y", width / 2.f - 33 + (65 / 2.f), height / 2.f - 37, -1);
-        FontHelper.INSTANCE.drawCenteredString(matrices, "Z", width / 2.f + 35 + (65 / 2.f), height / 2.f - 37, -1);
+        FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.waypoint.server"), width / 2.f, height / 2.f - 107, -1);
+        FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.waypoint.name"), width / 2.f, height / 2.f - 72, -1);
+        FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.waypoint.x"), width / 2.f - 100 + (65 / 2.f), height / 2.f - 37, -1);
+        FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.waypoint.y"), width / 2.f - 33 + (65 / 2.f), height / 2.f - 37, -1);
+        FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.waypoint.z"), width / 2.f + 35 + (65 / 2.f), height / 2.f - 37, -1);
         saveButton.setEnabled(areCoordsGood());
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -319,28 +319,28 @@ public class WaypointEditScreen extends Screen {
         @Override
         public void invoke() {
             tempDrawNametag = !tempDrawNametag;
-            nametagButton.setName("Nametag: " + tempDrawNametag);
+            nametagButton.setName(Text.translatable("jex.waypoint.nametag", tempDrawNametag).getString());
         }
     };
     private ButtonListener beaconListener = new ButtonListener() {
         @Override
         public void invoke() {
             tempDrawBeacon = !tempDrawBeacon;
-            beaconButton.setName("Beacon: " + tempDrawBeacon);
+            beaconButton.setName(Text.translatable("jex.waypoint.beacon", tempDrawBeacon).getString());
         }
     };
     private ButtonListener tracerListener = new ButtonListener() {
         @Override
         public void invoke() {
             tempDrawTracer = !tempDrawTracer;
-            tracerButton.setName("Tracer: " + tempDrawTracer);
+            tracerButton.setName(Text.translatable("jex.waypoint.tracer", tempDrawTracer).getString());
         }
     };
     private ButtonListener hiddenListener = new ButtonListener() {
         @Override
         public void invoke() {
             tempIsHidden = !tempIsHidden;
-            hiddenButton.setName("Hidden: " + tempIsHidden);
+            hiddenButton.setName(Text.translatable("jex.waypoint.hidden", tempIsHidden).getString());
         }
     };
 }

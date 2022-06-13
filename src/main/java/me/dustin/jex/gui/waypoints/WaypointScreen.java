@@ -23,13 +23,14 @@ import java.util.ArrayList;
 public class WaypointScreen extends Screen {
 
     public WaypointScreen() {
-        super(Text.of("Waypoints"));
+        super(Text.translatable("jex.waypoint"));
     }
 
     private String goToServer;
 
     public WaypointScreen(String server) {
-        super(Text.of("Waypoints"));
+        super(Text.translatable("jex.waypoint"));
+        this.goToServer = server;
     }
 
 
@@ -43,7 +44,7 @@ public class WaypointScreen extends Screen {
     private int serverCount = 0;
     private int waypointCount = 0;
     private static int page = 0;
-    private int buttonWidth = 100;
+    private final int buttonWidth = 100;
 
     private Scrollbar scrollbar;
 
@@ -76,7 +77,7 @@ public class WaypointScreen extends Screen {
         float viewportHeight = 190;
         float scrollBarHeight = viewportHeight * (contentHeight / viewportHeight);
         scrollbar = new Scrollbar(getMidX() + buttonWidth + 2, getMidY() - 90, 2, scrollBarHeight, viewportHeight, contentHeight, -1);
-        editButton = new Button( "Edit Waypoints", getMidX() - 100, getMidY() + 105, 200, 20, new ButtonListener() {
+        editButton = new Button( Text.translatable("jex.waypoint.edit").getString(), getMidX() - 100, getMidY() + 105, 200, 20, new ButtonListener() {
             @Override
             public void invoke() {
                 WaypointScreen.page = 1;
@@ -92,8 +93,8 @@ public class WaypointScreen extends Screen {
 
                 scrollbar.setY(getMidY() - 90);
                 scrollbar.setContentHeight(waypointCount * 20);
-                editWaypointButton = new Button("Edit", getMidX() - 99, getMidY() + 105, 98, 20, editListener);
-                deleteButton = new Button("Delete", getMidX() + 1, getMidY() + 105, 98, 20, deleteListener);
+                editWaypointButton = new Button(Text.translatable("jex.button.edit").getString(), getMidX() - 99, getMidY() + 105, 98, 20, editListener);
+                deleteButton = new Button(Text.translatable("jex.button.remove").getString(), getMidX() + 1, getMidY() + 105, 98, 20, deleteListener);
 
             }
         });
@@ -111,7 +112,7 @@ public class WaypointScreen extends Screen {
         if(page == 0)
         {
             Render2DHelper.INSTANCE.fill(matrixStack, getMidX() - buttonWidth - 1, getMidY() - 100, getMidX() + buttonWidth + 1, getMidY() + 100, 0x60000000);
-            FontHelper.INSTANCE.drawCenteredString(matrixStack, "Servers", getMidX(), getMidY() - 99, -1);
+            FontHelper.INSTANCE.drawCenteredString(matrixStack, Text.translatable("jex.waypoint.servers"), getMidX(), getMidY() - 99, -1);
             Scissor.INSTANCE.cut((int)getMidX() - buttonWidth - 1, (int)getMidY() - 90, 200, 190);
             serverButtons.forEach(button -> {
                 button.render(matrixStack);
@@ -123,7 +124,7 @@ public class WaypointScreen extends Screen {
         if(page == 1)
         {
             Render2DHelper.INSTANCE.fill(matrixStack, getMidX() - buttonWidth - 1, getMidY() - 100, getMidX() + buttonWidth + 1, getMidY() + 100, 0x60000000);
-            FontHelper.INSTANCE.drawCenteredString(matrixStack, "Waypoints", getMidX(), getMidY() - 99, -1);
+            FontHelper.INSTANCE.drawCenteredString(matrixStack, Text.translatable("jex.waypoint.waypoints"), getMidX(), getMidY() - 99, -1);
             Scissor.INSTANCE.cut((int)getMidX() - buttonWidth - 1, (int)getMidY() - 90, 200, 190);
             waypointButtons.forEach(button -> button.render(matrixStack));
             Scissor.INSTANCE.seal();
