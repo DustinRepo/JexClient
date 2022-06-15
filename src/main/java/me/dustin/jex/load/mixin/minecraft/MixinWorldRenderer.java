@@ -82,22 +82,19 @@ public abstract class MixinWorldRenderer {
             ci.cancel();
     }
 
-    @Inject(method = "drawShapeOutline", at = @At("HEAD"), cancellable = true)
-    private static void drawShapeOutline1(MatrixStack matrixStack, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j, CallbackInfo ci) {
+    @Inject(method = "drawCuboidShapeOutline", at = @At("HEAD"), cancellable = true)
+    private static void drawShapeOutline1(MatrixStack matrices, VertexConsumer vertexConsumer, VoxelShape shape, double offsetX, double offsetY, double offsetZ, float red, float green, float blue, float alpha, CallbackInfo ci) {
         EventBlockOutlineColor eventBlockOutlineColor = new EventBlockOutlineColor().run();
         if (eventBlockOutlineColor.isCancelled()) {
             Color color = Render2DHelper.INSTANCE.hex2Rgb(Integer.toHexString(eventBlockOutlineColor.getColor()));
-            net.minecraft.client.util.math.MatrixStack.Entry entry = matrixStack.peek();
-            voxelShape.forEachEdge((k, l, m, n, o, p) -> {
-                float q = (float)(n - k);
-                float r = (float)(o - l);
-                float s = (float)(p - m);
-                float t = MathHelper.sqrt(q * q + r * r + s * s);
-                q /= t;
-                r /= t;
-                s /= t;
-                vertexConsumer.vertex(entry.getPositionMatrix(), (float)(k + d), (float)(l + e), (float)(m + f)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormalMatrix(), q, r, s).next();
-                vertexConsumer.vertex(entry.getPositionMatrix(), (float)(n + d), (float)(o + e), (float)(p + f)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormalMatrix(), q, r, s).next();
+            net.minecraft.client.util.math.MatrixStack.Entry entry = matrices.peek();
+            shape.forEachEdge((minX, minY, minZ, maxX, maxY, maxZ) -> {
+                float k = (float)(maxX - minX);
+                float l = (float)(maxY - minY);
+                float m = (float)(maxZ - minZ);
+                float n = MathHelper.sqrt(k * k + l * l + m * m);
+                vertexConsumer.vertex(entry.getPositionMatrix(), (float)(minX + offsetX), (float)(minY + offsetY), (float)(minZ + offsetZ)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormalMatrix(), k /= n, l /= n, m /= n).next();
+                vertexConsumer.vertex(entry.getPositionMatrix(), (float)(maxX + offsetX), (float)(maxY + offsetY), (float)(maxZ + offsetZ)).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).normal(entry.getNormalMatrix(), k, l, m).next();
             });
             ci.cancel();
         }
