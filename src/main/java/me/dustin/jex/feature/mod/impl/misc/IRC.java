@@ -65,6 +65,7 @@ public class IRC extends Feature {
     public void onDisable() {
         if (ircClient != null)
             ircClient.disconnect();
+        ircClient = null;
         super.onDisable();
     }
 
