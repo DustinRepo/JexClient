@@ -61,7 +61,7 @@ public class JexFeatureListScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_TAB) {
             Wrapper.INSTANCE.getMinecraft().setScreen(parentScreen);
             return false;
         }
