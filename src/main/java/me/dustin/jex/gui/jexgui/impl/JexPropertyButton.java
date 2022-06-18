@@ -12,13 +12,13 @@ import java.util.ArrayList;
 
 public class JexPropertyButton extends Button {
     private final Property<?> genericProperty;
-    private final ArrayList<JexPropertyButton> buttonsList;
+    private final ArrayList<Button> buttonsList;
     private JexPropertyButton parentButton;
     private JexPropertyButton masterButton;
     private float buttonsHeight;
     private final int color;
 
-    public JexPropertyButton(Property<?> property, float x, float y, float width, float height, ArrayList<JexPropertyButton> buttonsList, int color) {
+    public JexPropertyButton(Property<?> property, float x, float y, float width, float height, ArrayList<Button> buttonsList, int color) {
         super(property.getName(), x, y, width, height, null);
         this.genericProperty = property;
         this.buttonsList = buttonsList;
@@ -146,7 +146,7 @@ public class JexPropertyButton extends Button {
 
     public ArrayList<Button> allButtonsAfter(Button button1) {
         ArrayList<Button> buttons = new ArrayList<>();
-        for (JexPropertyButton button : buttonsList) {
+        for (Button button : buttonsList) {
             if (buttonsList.indexOf(button) > buttonsList.indexOf(button1) && button.isVisible()) {
                 buttons.add(button);
                 buttons = addAllChildren(buttons, button);

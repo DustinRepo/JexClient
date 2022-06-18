@@ -6,6 +6,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.jexgui.impl.JexPropertyButton;
 import me.dustin.jex.helper.math.ColorHelper;
+import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 public class JexBooleanPropertyButton extends JexPropertyButton {
     private final Property<Boolean> booleanProperty;
     private float colorShift;
-    public JexBooleanPropertyButton(Property<Boolean> booleanProperty, float x, float y, float width, float height, ArrayList<JexPropertyButton> buttonList, int color) {
+    public JexBooleanPropertyButton(Property<Boolean> booleanProperty, float x, float y, float width, float height, ArrayList<Button> buttonList, int color) {
         super(booleanProperty, x, y, width, height, buttonList, color);
         this.booleanProperty = booleanProperty;
         this.colorShift = booleanProperty.value() ? 1 : 0;

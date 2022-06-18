@@ -7,6 +7,7 @@ import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.gui.jexgui.impl.JexPropertyButton;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.MouseHelper;
+import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 public class JexFloatPropertyButton extends JexPropertyButton {
     private final Property<Float> floatProperty;
     private boolean isSliding;
-    public JexFloatPropertyButton(Property<Float> floatProperty, float x, float y, float width, float height, ArrayList<JexPropertyButton> buttonList, int color) {
+    public JexFloatPropertyButton(Property<Float> floatProperty, float x, float y, float width, float height, ArrayList<Button> buttonList, int color) {
         super(floatProperty, x, y, width, height, buttonList, color);
         this.floatProperty = floatProperty;
     }

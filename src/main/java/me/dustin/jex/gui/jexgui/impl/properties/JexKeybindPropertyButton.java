@@ -11,6 +11,7 @@ import me.dustin.jex.gui.jexgui.JexPropertyListScreen;
 import me.dustin.jex.gui.jexgui.impl.JexPropertyButton;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 
 public class JexKeybindPropertyButton extends JexPropertyButton {
     private final Property<Integer> keybindProperty;
-    public JexKeybindPropertyButton(Property<Integer> keybindProperty, float x, float y, float width, float height, ArrayList<JexPropertyButton> buttonList, int color) {
+    public JexKeybindPropertyButton(Property<Integer> keybindProperty, float x, float y, float width, float height, ArrayList<Button> buttonList, int color) {
         super(keybindProperty, x, y, width, height, buttonList, color);
         this.keybindProperty = keybindProperty;
     }

@@ -9,6 +9,7 @@ import me.dustin.jex.gui.jexgui.JexPropertyListScreen;
 import me.dustin.jex.gui.jexgui.impl.JexPropertyButton;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.Button;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.MinecraftClient;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 public class JexStringPropertyButton extends JexPropertyButton {
     private final Property<String> stringProperty;
     private int currentTicks = 0;
-    public JexStringPropertyButton(Property<String> stringProperty, float x, float y, float width, float height, ArrayList<JexPropertyButton> buttonList, int color) {
+    public JexStringPropertyButton(Property<String> stringProperty, float x, float y, float width, float height, ArrayList<Button> buttonList, int color) {
         super(stringProperty, x, y, width, height, buttonList, color);
         this.stringProperty = stringProperty;
     }

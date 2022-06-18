@@ -4,6 +4,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.property.PropertyManager;
 import me.dustin.jex.gui.jexgui.impl.JexFeatureButton;
+import me.dustin.jex.gui.jexgui.impl.JexKeybindButton;
 import me.dustin.jex.gui.jexgui.impl.JexPropertyButton;
 import me.dustin.jex.gui.jexgui.impl.properties.*;
 import me.dustin.jex.helper.math.ColorHelper;
@@ -29,7 +30,7 @@ public class JexPropertyListScreen extends Screen {
         this.feature = feature;
     }
 
-    private final ArrayList<JexPropertyButton> propertyButtons = new ArrayList<>();
+    private final ArrayList<Button> propertyButtons = new ArrayList<>();
 
     @Override
     protected void init() {
@@ -50,9 +51,9 @@ public class JexPropertyListScreen extends Screen {
         propertyButtons.forEach(propertyButton -> propertyButton.render(matrices));
         Scissor.INSTANCE.seal();
 
-        JexPropertyButton hovered = getHovered();
-        if (hovered != null) {
-            String desc = hovered.getGenericProperty().getDescription();
+        Button hovered = getHovered();
+        if (hovered instanceof JexPropertyButton jexPropertyButton) {
+            String desc = jexPropertyButton.getGenericProperty().getDescription();
             if (desc != null) {
                 Render2DHelper.INSTANCE.fillAndBorder(matrices, 0, height - 14, FontHelper.INSTANCE.getStringWidth(desc) + 6, height, feature.getCategory().color(), 0xa0000000, 1);
                 FontHelper.INSTANCE.drawWithShadow(matrices, desc, 3, height - 11, feature.getCategory().color());
@@ -80,8 +81,11 @@ public class JexPropertyListScreen extends Screen {
 
     @Override
     public void tick() {
-        propertyButtons.forEach(JexPropertyButton::tick);
-        JexPropertyButton veryBottom = getVeryBottomButton();
+        propertyButtons.forEach(button -> {
+            if (button instanceof JexPropertyButton jexPropertyButton)
+                jexPropertyButton.tick();
+        });
+        Button veryBottom = getVeryBottomButton();
         if (veryBottom != null)
             while (veryBottom.getY() + veryBottom.getHeight() < JexGuiScreen.getBottom() - 1) {
                 if (propertyButtons.get(0).getY() == JexGuiScreen.getY() + 40)
@@ -98,7 +102,7 @@ public class JexPropertyListScreen extends Screen {
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (!propertyButtons.isEmpty()) {
             if (amount > 0) {
-                JexPropertyButton topButton = propertyButtons.get(0);
+                Button topButton = propertyButtons.get(0);
                 if (topButton == null) return false;
                 if (topButton.getY() < JexGuiScreen.getY() + 40) {
                     for (int i = 0; i < 20; i++) {
@@ -111,7 +115,7 @@ public class JexPropertyListScreen extends Screen {
                     }
                 }
             } else if (amount < 0) {
-                JexPropertyButton bottomButton = getVeryBottomButton();
+                Button bottomButton = getVeryBottomButton();
                 if (bottomButton == null) return false;
                 if (bottomButton.getY() + bottomButton.getHeight() > JexGuiScreen.getBottom() - 1) {
                     for (int i = 0; i < 20; i++) {
@@ -136,23 +140,23 @@ public class JexPropertyListScreen extends Screen {
         });
     }
 
-    public JexPropertyButton getHovered() {
-        for (JexPropertyButton propertyButton : propertyButtons) {
+    public Button getHovered() {
+        for (Button propertyButton : propertyButtons) {
             if (propertyButton.isHovered())
                 return propertyButton;
-            JexPropertyButton hover = getHovered(propertyButton);
+            Button hover = getHovered(propertyButton);
             if (hover != null)
                 return hover;
         }
         return null;
     }
 
-    public JexPropertyButton getHovered(JexPropertyButton jexPropertyButton) {
+    public Button getHovered(Button jexPropertyButton) {
         for (Button propertyButton : jexPropertyButton.getChildren()) {
             if (propertyButton instanceof JexPropertyButton jexPropertyButton1) {
                 if (propertyButton.isHovered())
                     return jexPropertyButton1;
-                JexPropertyButton hover = getHovered(jexPropertyButton1);
+                Button hover = getHovered(jexPropertyButton1);
                 if (hover != null)
                     return hover;
             }
@@ -163,6 +167,10 @@ public class JexPropertyListScreen extends Screen {
     public void populateProperties() {
         propertyButtons.clear();
         int buttonsHeight = 0;
+
+        this.propertyButtons.add(new JexKeybindButton(feature, JexGuiScreen.getX() + 2, JexGuiScreen.getY() + 40 + buttonsHeight, JexGuiScreen.getGuiWidth() - 4, 25, feature.getCategory().color()));
+        buttonsHeight += 26;
+
         for (Property<?> property : PropertyManager.INSTANCE.get(feature.getClass())) {
             if (property.getParent() != null) continue;
             JexPropertyButton jexPropertyButton = null;
@@ -202,12 +210,12 @@ public class JexPropertyListScreen extends Screen {
         matrices.push();
     }
 
-    public JexPropertyButton getVeryBottomButton() {
+    public Button getVeryBottomButton() {
         if (propertyButtons.size() == 0)
             return null;
-        JexPropertyButton b = propertyButtons.get(propertyButtons.size() - 1);
+        Button b = propertyButtons.get(propertyButtons.size() - 1);
         while (b.hasChildren() && b.isOpen()) {
-            b = (JexPropertyButton) b.getChildren().get(b.getChildren().size() - 1);
+            b = b.getChildren().get(b.getChildren().size() - 1);
         }
         return b;
     }
