@@ -11,7 +11,9 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.util.Formatting;
 
 @Cmd(name = "toggle", description = "Toggle modules.", alias = {"t"}, syntax = ".toggle <mod>")
@@ -28,7 +30,7 @@ public class CommandToggle extends Command {
         feature.toggleState();
         if (JexClient.INSTANCE.isAutoSaveEnabled())
             ConfigManager.INSTANCE.get(FeatureFile.class).write();
-        if (!(feature instanceof Gui))
+        if (!(feature instanceof Gui) && Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ChatScreen)
             ChatHelper.INSTANCE.addClientMessage("%s set to: %s%s".formatted(feature.getName(), feature.getState() ? Formatting.AQUA : Formatting.RED, feature.getState()));
         return 1;
     }
