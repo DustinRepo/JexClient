@@ -34,11 +34,11 @@ public abstract class MixinAbstractClientPlayer extends PlayerEntity {
     @Inject(method = "getCapeTexture", at = @At("HEAD"), cancellable = true)
     public void getCapeTexture(CallbackInfoReturnable<Identifier> cir) {
         String uuid = ((AbstractClientPlayerEntity) (Object) this).getUuidAsString().replace("-", "");
-        if (Cape.capes.containsKey(uuid)) {
-            cir.setReturnValue(Cape.capes.get(uuid));
+        if (Cape.hasCape(uuid)) {
+            cir.setReturnValue(Cape.getCape(uuid));
         } else if (this.getGameProfile() == Wrapper.INSTANCE.getLocalPlayer().getGameProfile()) {
-            if (Cape.capes.containsKey("self")) {
-                cir.setReturnValue(Cape.capes.get("self"));
+            if (Cape.hasCape("self")) {
+                cir.setReturnValue(Cape.getCape("self"));
             }
         } else if (Addon.isLinkedToAccount(uuid)) {
             cir.setReturnValue(jex_cape);

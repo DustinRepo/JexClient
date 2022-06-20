@@ -251,15 +251,15 @@ public class JexTitleScreen extends Screen {
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.name").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 12, 0xff696969);
                 Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
                 try {
-                    if (response.getCape() != null && !response.getCape().isEmpty() && !response.getCape().equalsIgnoreCase("null")) {
+                    if (response.cape() != null && !response.cape().isEmpty() && !response.cape().equalsIgnoreCase("null")) {
                         Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("assets/jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")), capeYaw, 0);
                     } else {
                         Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("assets/jex", "cape/jex_cape.png"), capeYaw, 0);
                     }
                 }catch (Exception e) {}
             } else {
-                if (Cape.capes.containsKey("self")) {
-                    Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, Cape.capes.get("self"), capeYaw, 0);
+                if (Cape.hasCape("self")) {
+                    Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, Cape.getCape("self"), capeYaw, 0);
                 }
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.not_linked").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 12, -1);
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.join_discord").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 22, -1);

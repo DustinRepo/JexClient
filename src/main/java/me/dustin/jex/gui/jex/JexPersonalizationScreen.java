@@ -82,7 +82,7 @@ public class JexPersonalizationScreen extends Screen {
             }
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
-        fileBrowser = new FileBrowser(LAST_PATH, midX - 255 + 2, 15, 250, 200, doubleClickListener, ".png", ".jpg");
+        fileBrowser = new FileBrowser(LAST_PATH, midX - 255 + 2, 15, 250, 200, doubleClickListener, ".png", ".jpg", ".gif");
         fileBrowser.setMultiSelect(false);
         this.addDrawableChild(setCapeButton);
         this.addDrawableChild(prevHatButton);
@@ -100,8 +100,8 @@ public class JexPersonalizationScreen extends Screen {
         //Cape
         Render2DHelper.INSTANCE.fillAndBorder(matrices, midX - 255 + 2, 1, midX - 255 + 250, 13, 0x90696969, 0x70000000, 1);
         FontHelper.INSTANCE.drawWithShadow(matrices, fileBrowser.getPath(), midX - 255 + 5, 3, -1);
-        if (Cape.capes.containsKey("self"))
-            Render2DHelper.INSTANCE.draw3DCape(matrices, midX - 255 - 35, 15, Cape.capes.get("self"), yaw, 0);
+        if (Cape.hasCape("self"))
+            Render2DHelper.INSTANCE.draw3DCape(matrices, midX - 255 - 35, 15, Cape.getCape("self"), yaw, 0);
         fileBrowser.render(matrices);
         //Hat
         Render2DHelper.INSTANCE.fillAndBorder(matrices, midX + 5, 15, midX + 131, 203, 0x90696969, 0x70000000, 1);

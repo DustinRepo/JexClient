@@ -138,7 +138,7 @@ public class JexOptionsScreen extends Screen {
         prefixField.render(matrices, mouseX, mouseY, delta);
         setPrefixButton.active = !prefixField.getText().isEmpty();
         if (!stopWatch.hasPassed(30 * 1000)) {
-            reloadAddonsButton.setMessage(Text.translatable("jex.options.reload_time",30 - (stopWatch.getCurrentMS() - stopWatch.getLastMS() / 1000) + ")"));
+            reloadAddonsButton.setMessage(Text.translatable("jex.options.reload_time",30 - ((stopWatch.getCurrentMS() - stopWatch.getLastMS()) / 1000)));
             reloadAddonsButton.active = false;
         } else {
             reloadAddonsButton.setMessage(Text.translatable("jex.options.reload"));

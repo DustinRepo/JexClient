@@ -22,12 +22,11 @@ public enum FileHelper {
 
     public NativeImage readTexture(String textureBase64) {
         try {
-            byte[] imgBytes = Base64.decodeBase64(textureBase64);
-            ByteArrayInputStream bais = new ByteArrayInputStream(imgBytes);
+            byte[] bytes = Base64.decodeBase64(textureBase64);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             return NativeImage.read(bais);
         } catch (IOException e) {
             e.printStackTrace();
-
             return null;
         }
     }

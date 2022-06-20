@@ -6,6 +6,7 @@ import me.dustin.jex.JexClient;
 import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;
 import me.dustin.jex.helper.entity.EntityHelper;
+import me.dustin.jex.helper.file.JsonHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -64,7 +65,7 @@ public class Addon {
 	public static boolean isLinkedToAccount(String uuid) {
 		AddonResponse response = getResponse(uuid);
 		if (response != null) {
-			return response.isLinkedToAccount();
+			return response.linkedToAccount();
 		}
 		return false;
 	}
@@ -72,7 +73,7 @@ public class Addon {
 	public static boolean isDonator(String uuid) {
 		if (!hasResquested(uuid))
 			loadAddons(uuid);
-		return Hat.hasHat(uuid) || Cape.capes.keySet().contains(uuid);
+		return Hat.hasHat(uuid) || Cape.hasCape(uuid);
 	}
 
 	private static boolean hasResquested(String uuid) {
@@ -86,7 +87,7 @@ public class Addon {
 		}
 		try {
 			for (AddonResponse response : responses) {
-				if (response != null && response.getUuid() != null && response.getUuid().equalsIgnoreCase(uuid))
+				if (response != null && response.uuid() != null && response.uuid().equalsIgnoreCase(uuid))
 					return response;
 			}
 		} catch (ConcurrentModificationException e) {}
@@ -96,38 +97,9 @@ public class Addon {
 	public static void clearAddons() {
 		responses.clear();
 		requestedUUIds.clear();
-		Cape.capes.clear();
+		Cape.clear();
 		Hat.hatPlayers.clear();
 	}
 
-	public static class AddonResponse {
-		private String uuid;
-		private String cape;
-		private String hat;
-		private boolean linkedToAccount;
-
-		public AddonResponse(String uuid, String cape, String hat, boolean linkedToAccount) {
-			this.uuid = uuid;
-			this.cape = cape;
-			this.hat = hat;
-			this.linkedToAccount = linkedToAccount;
-		}
-
-		public String getUuid() {
-			return uuid;
-		}
-
-		public String getCape() {
-			return cape;
-		}
-
-		public String getHat() {
-			return hat;
-		}
-
-		public boolean isLinkedToAccount() {
-			return linkedToAccount;
-		}
-	}
-
+	public record AddonResponse(String uuid, String cape, String hat, boolean linkedToAccount) {}
 }
