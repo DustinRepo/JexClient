@@ -46,7 +46,7 @@ public class AutoWeapon extends Feature {
             if (stackInSlot != null) {
                 if (!isGoodItem(stackInSlot.getItem()))
                     continue;
-                float damage = getAdjustedDamage(stackInSlot);
+                float damage = InventoryHelper.INSTANCE.getAdjustedDamage(stackInSlot);
 
                 if (damage > str) {
                     str = damage;
@@ -74,27 +74,6 @@ public class AutoWeapon extends Feature {
             case SWORD_AND_AXE -> item instanceof SwordItem || item instanceof AxeItem;
             case ALL_TOOLS -> item instanceof ToolItem;
         };
-    }
-
-    private float getAdjustedDamage(ItemStack itemStack) {
-        float damage = 1;
-        if (itemStack.getItem() instanceof SwordItem itemSword) {
-            damage = itemSword.getAttackDamage();
-        } else if (itemStack.getItem() instanceof MiningToolItem miningToolItem) {
-            damage = miningToolItem.getAttackDamage();
-        }
-        return damage + getSharpnessModifier(itemStack);
-    }
-
-    public float getSharpnessModifier(ItemStack itemStack) {
-        if (itemStack.hasEnchantments()) {
-            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.get(itemStack);
-            if (equippedEnchants.containsKey(Enchantments.SHARPNESS)) {
-                int level = equippedEnchants.get(Enchantments.SHARPNESS);
-                return 0.5f * level + 0.5f;
-            }
-        }
-        return 0;
     }
 
     public enum AttackMode {

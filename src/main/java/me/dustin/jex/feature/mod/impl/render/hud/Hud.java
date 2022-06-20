@@ -365,6 +365,7 @@ public class Hud extends Feature {
         hudElements.add(new TabGuiElement(0, 133, 55, 55));
         hudElements.add(new ArmorElement((Render2DHelper.INSTANCE.getScaledWidth() / 2.f) + 5, Render2DHelper.INSTANCE.getScaledHeight() - 50, 16, 16));
         hudElements.add(new RadarElement(Render2DHelper.INSTANCE.getScaledWidth() - 120 - 100, 0, 120, 120));
+        hudElements.add(new TargetHudElement(Render2DHelper.INSTANCE.getScaledWidth() / 2.f - 75, 0, 150, 75));
         ConfigManager.INSTANCE.get(HudElementsFile.class).read();
     }
 

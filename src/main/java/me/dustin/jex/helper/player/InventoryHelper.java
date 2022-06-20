@@ -16,10 +16,7 @@ import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.AirBlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.ScreenHandler;
@@ -216,6 +213,27 @@ public enum InventoryHelper {
 
     public boolean isShulker(ItemStack stack) {
         return !stack.isEmpty() && (stack.getItem() == Items.SHULKER_BOX || stack.getItem() == Items.BLACK_SHULKER_BOX || stack.getItem() == Items.BLUE_SHULKER_BOX || stack.getItem() == Items.BROWN_SHULKER_BOX || stack.getItem() == Items.CYAN_SHULKER_BOX || stack.getItem() == Items.GRAY_SHULKER_BOX || stack.getItem() == Items.GREEN_SHULKER_BOX || stack.getItem() == Items.LIGHT_BLUE_SHULKER_BOX || stack.getItem() == Items.LIGHT_GRAY_SHULKER_BOX || stack.getItem() == Items.LIME_SHULKER_BOX || stack.getItem() == Items.MAGENTA_SHULKER_BOX || stack.getItem() == Items.ORANGE_SHULKER_BOX || stack.getItem() == Items.PINK_SHULKER_BOX || stack.getItem() == Items.PURPLE_SHULKER_BOX || stack.getItem() == Items.RED_SHULKER_BOX || stack.getItem() == Items.WHITE_SHULKER_BOX || stack.getItem() == Items.YELLOW_SHULKER_BOX);
+    }
+
+    public float getAdjustedDamage(ItemStack itemStack) {
+        float damage = 1;
+        if (itemStack.getItem() instanceof SwordItem itemSword) {
+            damage = itemSword.getAttackDamage();
+        } else if (itemStack.getItem() instanceof MiningToolItem miningToolItem) {
+            damage = miningToolItem.getAttackDamage();
+        }
+        return damage + getSharpnessModifier(itemStack);
+    }
+
+    public float getSharpnessModifier(ItemStack itemStack) {
+        if (itemStack.hasEnchantments()) {
+            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.get(itemStack);
+            if (equippedEnchants.containsKey(Enchantments.SHARPNESS)) {
+                int level = equippedEnchants.get(Enchantments.SHARPNESS);
+                return 0.5f * level + 0.5f;
+            }
+        }
+        return 0;
     }
 
     public int countItems(Item item) {
