@@ -47,19 +47,34 @@ public class Addon {
 				boolean linkedToAccount = json.get("linkedToAccount").getAsBoolean();
 				AddonResponse addonResponse = new AddonResponse(uuid, cape, hat, linkedToAccount);
 				responses.add(addonResponse);
-				if (linkedToAccount) {
-					if (cape != null && !cape.equals("null") && !cape.isEmpty()) {
-						Cape.parseCape(cape, uuid);
-					}
-
-					if (hat != null && !hat.equals("null") && !hat.equals("none")) {
-						Hat.setHat(uuid, hat);
-					}
+				if (cape != null && !cape.equals("null") && !cape.isEmpty()) {
+					Cape.parseCape(cape, uuid);
+				} else {
+					downloadMCCapes(uuid);
 				}
-			} catch (Exception e) {}
+				if (hat != null && !hat.equals("null") && !hat.equals("none")) {
+					Hat.setHat(uuid, hat);
+				}
+			} catch (Exception e) {
+				downloadMCCapes(uuid);
+			}
 		});
 		addonDownload.setDaemon(true);
 		addonDownload.start();
+	}
+
+	private static void downloadMCCapes(String uuid) {
+		try {
+			String url = "https://minecraftcapes.net/profile/" + uuid;
+			String response = WebHelper.INSTANCE.httpRequest(url, null, null, "GET").data();
+			JsonObject json = new Gson().fromJson(response, JsonObject.class);
+			JsonObject textures = json.getAsJsonObject("textures");
+
+			String cape = textures.get("cape").getAsString();
+			if (cape != null && !cape.equals("null") && !cape.isEmpty()) {
+				Cape.parseCape(cape, uuid);
+			}
+		} catch (Exception e) {}
 	}
 
 	public static boolean isLinkedToAccount(String uuid) {
