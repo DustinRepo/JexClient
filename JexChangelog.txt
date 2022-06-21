@@ -1,3 +1,7 @@
+0.8.1
+Fixed IRC giving random errors in the chat area
+Added back ability to use non-ascii characters in IRC
+
 0.8.0
 Added TargetHud mod
 Added support for animated capes in .gif format
