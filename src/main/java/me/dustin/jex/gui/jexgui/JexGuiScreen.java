@@ -1,6 +1,10 @@
 package me.dustin.jex.gui.jexgui;
 
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
+import me.dustin.jex.event.filters.KeyPressFilter;
+import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.core.FeatureManager;
@@ -93,12 +97,14 @@ public class JexGuiScreen extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
+    @EventPointer
+    private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
+        closeGui();
+        event.setCancelled(true);
+    }, new KeyPressFilter(EventKeyPressed.PressType.IN_MENU, GLFW.GLFW_KEY_ESCAPE, GLFW.GLFW_KEY_TAB));
+
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_TAB) {
-            Wrapper.INSTANCE.getMinecraft().setScreen(parentScreen);
-            return false;
-        }
         searchBar.keyPressed(keyCode, scanCode, modifiers);
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
@@ -203,6 +209,10 @@ public class JexGuiScreen extends Screen {
             }
         }
         return super.mouseScrolled(mouseX, mouseY, amount);
+    }
+
+    public void closeGui() {
+        Wrapper.INSTANCE.getMinecraft().setScreen(parentScreen);
     }
 
     public JexFeatureButton getHovered() {
