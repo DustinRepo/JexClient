@@ -1,15 +1,18 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
@@ -17,7 +20,7 @@ import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 @Cmd(name = "cgive", description = "Give yourself items in creative mode", syntax = ".cgive <item> <amount (optional)>", alias = "i")
 public class CommandCGive extends Command {
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(context -> {
             if (!context.getSource().getPlayer().isCreative()) {
                 ChatHelper.INSTANCE.addClientMessage("You must be in creative to use this command");

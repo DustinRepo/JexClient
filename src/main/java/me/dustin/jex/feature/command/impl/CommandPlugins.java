@@ -3,6 +3,7 @@ package me.dustin.jex.feature.command.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.events.EventManager;
@@ -11,6 +12,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ServerPacketFilter;
 import me.dustin.jex.feature.command.core.Command;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +48,7 @@ public class CommandPlugins extends Command {
 
 
 	@Override
-	public void registerCommand() {
+	public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
 		dispatcher.register(literal(this.name).executes(this));
 	}
 

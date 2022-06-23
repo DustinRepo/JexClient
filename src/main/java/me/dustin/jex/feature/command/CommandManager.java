@@ -17,40 +17,44 @@ import me.dustin.jex.helper.misc.ClassHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IChatScreen;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.command.CommandRegistryAccess;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum CommandManagerJex {
+public enum CommandManager {
     INSTANCE;
     private String prefix = ".";
     private int overlayAlpha = 0;
     private boolean overlayOn = false;
 
     private static final ArrayList<Command> commands = new ArrayList<>();
-    public static final CommandDispatcher<FabricClientCommandSource> DISPATCHER = new CommandDispatcher<>();
+    public static CommandDispatcher<FabricClientCommandSource> DISPATCHER;
 
-    public void registerCommands(ClientPlayNetworkHandler networkHandler) {
-        EventManager.unregister(this);
-        this.getCommands().clear();
-        List<Class<?>> classList = ClassHelper.INSTANCE.getClasses("me.dustin.jex.feature.command.impl", Command.class);
-        classList.forEach(clazz -> {
-            try {
-                @SuppressWarnings("deprecation")
-                Command instance = (Command) clazz.newInstance();
-                instance.setCommandRegistryAccess(networkHandler);
-                this.getCommands().add(instance);
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
+    public void initializeCommandManager() {
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+            DISPATCHER = dispatcher;
+            EventManager.unregister(this);
+            this.getCommands().clear();
+            List<Class<?>> classList = ClassHelper.INSTANCE.getClasses("me.dustin.jex.feature.command.impl", Command.class);
+            classList.forEach(clazz -> {
+                try {
+                    @SuppressWarnings("deprecation")
+                    Command instance = (Command) clazz.newInstance();
+                    this.getCommands().add(instance);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            });
+            JexPlugin.commandsLoad();
+            this.getCommands().sort((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()));
+            this.getCommands().forEach(command -> command.registerCommand(dispatcher, dedicated));
+            EventManager.register(this);
         });
-        JexPlugin.commandsLoad();
-        this.getCommands().sort((c1, c2) -> c1.getName().compareToIgnoreCase(c2.getName()));
-        this.getCommands().forEach(Command::registerCommand);
-        EventManager.register(this);
     }
 
     @EventPointer

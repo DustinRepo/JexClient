@@ -1,7 +1,9 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.mod.impl.player.AutoDrop;
@@ -9,6 +11,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.AutoDropFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
@@ -17,7 +20,7 @@ import net.minecraft.util.registry.Registry;
 public class CommandAutoDrop extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).then(literal("add").then(argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(ctx -> {
             Item item = ItemStackArgumentType.getItemStackArgument(ctx, "item").getItem();
             if (!AutoDrop.INSTANCE.getItems().contains(item)) {

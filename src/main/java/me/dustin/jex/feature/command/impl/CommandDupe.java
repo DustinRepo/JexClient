@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.events.EventManager;
@@ -21,6 +22,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -38,7 +40,7 @@ public class CommandDupe extends Command {
     private boolean all;
     private boolean throwItems = false;
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal("d").redirect(dispatcher.register(literal(this.name).executes(this).then(literal("all").executes(context -> {
             this.all = true;
             run(context);

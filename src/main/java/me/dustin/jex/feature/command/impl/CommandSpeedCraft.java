@@ -1,8 +1,10 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -10,6 +12,7 @@ import me.dustin.jex.feature.mod.impl.misc.SpeedCrafter;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.Items;
 
@@ -17,7 +20,7 @@ import net.minecraft.item.Items;
 public class CommandSpeedCraft extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         LiteralCommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(literal("clear").executes(context -> {
             //clear item
             SpeedCrafter speedCrafter = Feature.get(SpeedCrafter.class);

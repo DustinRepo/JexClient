@@ -52,11 +52,6 @@ public abstract class MixinMinecraft implements IMinecraft {
         this.itemUseCooldown = timer;
     }
 
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void onConstruct(RunArgs args, CallbackInfo info) {
-        ClientCommandInternals.finalizeInit();
-    }
-
     @Inject(method = "tick", at = @At("HEAD"))
     public void tickPre(CallbackInfo ci) {
         new EventTick(EventTick.Mode.PRE).run();

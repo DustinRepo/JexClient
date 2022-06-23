@@ -8,7 +8,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.dustin.jex.JexClient;
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.command.core.Command;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.text.Text;
@@ -28,7 +28,7 @@ public class CommandArgumentType implements ArgumentType<String> {
         }
         String str = reader.getString().substring(argBeginning, reader.getCursor());
         Command command = null;
-        for (Command cmd : CommandManagerJex.INSTANCE.getCommands()) {
+        for (Command cmd : CommandManager.INSTANCE.getCommands()) {
             JexClient.INSTANCE.getLogger().info(cmd.getName());
             if (cmd.getName().equalsIgnoreCase(str)) {
                 command = cmd;
@@ -47,7 +47,7 @@ public class CommandArgumentType implements ArgumentType<String> {
     public static Command getCommand(CommandContext<FabricClientCommandSource> commandContext, String string) throws CommandSyntaxException {
         String s = commandContext.getArgument(string, String.class);
         Command command = null;
-        for (Command cmd : CommandManagerJex.INSTANCE.getCommands()) {
+        for (Command cmd : CommandManager.INSTANCE.getCommands()) {
             if (cmd.getName().equalsIgnoreCase(s)) {
                 command = cmd;
             }
@@ -57,7 +57,7 @@ public class CommandArgumentType implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        CommandManagerJex.INSTANCE.getCommands().forEach(command -> {
+        CommandManager.INSTANCE.getCommands().forEach(command -> {
             builder.suggest(command.getName().toLowerCase());
         });
         return builder.buildFuture();

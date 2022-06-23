@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -16,6 +17,7 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
@@ -23,7 +25,7 @@ import net.minecraft.util.math.Vec3d;
 public class CommandWaypoint extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         LiteralArgumentBuilder<FabricClientCommandSource> builder = literal(this.name).then(literal("add").then(argument("name", StringArgumentType.string()).then(literal("here").then(argument("color", ColorArgumentType.color()).executes(context -> {
             //adding "here"
             String server = WorldHelper.INSTANCE.getCurrentServerName();

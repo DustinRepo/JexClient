@@ -2,6 +2,7 @@ package me.dustin.jex.feature.command.impl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
@@ -14,6 +15,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,7 +29,7 @@ public class CommandSkinSteal extends Command {
 
     private boolean setSkin;
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(argument("player", PlayerNameArgumentType.playerName()).executes(context -> run(context, false)).then(literal("upload").executes(context -> run(context, true)))));
         dispatcher.register(literal("skin").redirect(node));
     }

@@ -6,6 +6,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.*;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.keybind.Keybind;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -18,7 +19,6 @@ import me.dustin.jex.feature.mod.impl.player.Jesus;
 import me.dustin.jex.feature.mod.impl.render.CustomFont;
 import me.dustin.jex.feature.plugin.JexPlugin;
 import me.dustin.jex.gui.changelog.changelog.JexChangelog;
-import me.dustin.jex.gui.keybind.JexKeybindListScreen;
 import me.dustin.jex.gui.waypoints.WaypointScreen;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.file.JsonHelper;
@@ -77,6 +77,7 @@ public enum JexClient {
 
         getLogger().info("Initializing Features");
         FeatureManager.INSTANCE.initializeFeatureManager();
+        CommandManager.INSTANCE.initializeCommandManager();
 
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             getLogger().info("Creating mods.json for website.");

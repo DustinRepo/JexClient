@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -11,6 +12,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -21,7 +23,7 @@ import net.minecraft.util.registry.Registry;
 public class CommandEnchant extends Command {
 
 	@Override
-	public void registerCommand() {
+	public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
 		CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(literal("all").executes(context -> {
 			ItemStack stack = context.getSource().getPlayer().getMainHandStack();
 			if (stack.getItem() == Items.AIR || !context.getSource().getPlayer().isCreative()) {

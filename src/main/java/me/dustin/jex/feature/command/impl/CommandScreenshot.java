@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
@@ -8,12 +9,14 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.WebHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.util.ScreenshotRecorder;
+import net.minecraft.command.CommandRegistryAccess;
+
 import java.io.File;
 
 @Cmd(name = "screenshot", description = "Take a screenshot and upload to imgur", alias = "ss")
 public class CommandScreenshot extends Command {
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).executes(this));
         dispatcher.register(literal("ss").executes(this));
     }

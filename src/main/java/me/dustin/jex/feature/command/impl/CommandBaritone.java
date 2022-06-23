@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
@@ -9,12 +10,13 @@ import me.dustin.jex.feature.command.core.arguments.MessageArgumentType;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 
 @Cmd(name = "baritone", description = "Access Baritone commands", syntax = ".b <command>", alias = {"b", "bar"})
 public class CommandBaritone extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).requires(source-> BaritoneHelper.INSTANCE.baritoneExists()).then(argument("message", MessageArgumentType.message()).executes(this)));
         dispatcher.register(literal("b").redirect(node));
         dispatcher.register(literal("bar").redirect(node));

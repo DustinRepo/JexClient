@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
@@ -14,13 +15,14 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.util.registry.Registry;
 
 @Cmd(name = "search", description = "Add or remove blocks from Search", syntax = {".search add <blockname> <hex color (f62d3e)/random>", ".search del <blockname>", ".search list"})
 public class CommandSearch extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).then(literal("add").then(argument("block", BlockStateArgumentType.blockState(commandRegistryAccess)).then(argument("color", ColorArgumentType.color()).executes(context -> {
             Block block = BlockStateArgumentType.getBlockState(context, "block").getBlockState().getBlock();
             int color = Render2DHelper.INSTANCE.hex2Rgb("0x" + Integer.toHexString(ColorArgumentType.getColor(context, "color").getColorValue())).getRGB();

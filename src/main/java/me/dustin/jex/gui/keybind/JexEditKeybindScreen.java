@@ -4,12 +4,11 @@ import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventKeyPressed;
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.keybind.Keybind;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FeatureFile;
 import me.dustin.jex.file.impl.KeybindFile;
-import me.dustin.jex.gui.jexgui.JexPropertyListScreen;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.font.FontHelper;
@@ -19,7 +18,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.checkerframework.checker.units.qual.K;
 import org.lwjgl.glfw.GLFW;
 
 public class JexEditKeybindScreen extends Screen {
@@ -45,7 +43,7 @@ public class JexEditKeybindScreen extends Screen {
         addDrawableChild(saveButton = new ButtonWidget(width / 2 - 125, height - 50, 250, 20, Text.translatable("jex.button.save"), button -> {
             if (keybind != null)
                 Keybind.getKeybinds().remove(keybind);
-            boolean isJexCommand = commandField.getText().startsWith(CommandManagerJex.INSTANCE.getPrefix());
+            boolean isJexCommand = commandField.getText().startsWith(CommandManager.INSTANCE.getPrefix());
             Keybind.add(key, isJexCommand ? commandField.getText().substring(1) : commandField.getText(), isJexCommand);
             Wrapper.INSTANCE.getMinecraft().setScreen(parent);
             ConfigManager.INSTANCE.get(KeybindFile.class).write();
@@ -54,7 +52,7 @@ public class JexEditKeybindScreen extends Screen {
                 Wrapper.INSTANCE.getMinecraft().setScreen(parent);
         }));
         if (keybind != null) {
-            commandField.setText("%s%s".formatted(keybind.isJexCommand() ? CommandManagerJex.INSTANCE.getPrefix() : "", keybind.command()));
+            commandField.setText("%s%s".formatted(keybind.isJexCommand() ? CommandManager.INSTANCE.getPrefix() : "", keybind.command()));
             key = keybind.key();
         }
         super.init();

@@ -1,22 +1,25 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.command.core.arguments.FriendArgumentType;
+import me.dustin.jex.feature.command.core.arguments.MessageArgumentType;
 import me.dustin.jex.feature.command.core.arguments.PlayerNameArgumentType;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.FriendFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.player.FriendHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 
 @Cmd(name = "friend", syntax = {".friend add <name> (optional)<alias>", ".friend del <name>", ".friend list"}, description = "Add or remove friends.")
 public class CommandFriend extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).then(literal("del").then(argument("name", FriendArgumentType.friend()).executes(context -> {
             String friendName = FriendArgumentType.getPlayerName(context, "name");
             FriendHelper.Friend friend = FriendHelper.INSTANCE.getFriendViaName(friendName);
@@ -40,9 +43,9 @@ public class CommandFriend extends Command {
                 ConfigManager.INSTANCE.get(FriendFile.class).write();
             }
             return 1;
-        }).then(argument("alias", PlayerNameArgumentType.playerName()).executes(context -> {
+        }).then(argument("alias", MessageArgumentType.message()).executes(context -> {
             String name = PlayerNameArgumentType.getPlayerName(context, "name");
-            String alias = PlayerNameArgumentType.getPlayerName(context, "alias");
+            String alias = MessageArgumentType.getMessage(context, "alias").getString();
             if (FriendHelper.INSTANCE.isFriend(name)) {
                 ChatHelper.INSTANCE.addClientMessage(name + " is already a friend!");
                 return 0;

@@ -1,6 +1,6 @@
 package me.dustin.jex.gui.keybind.impl;
 
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.keybind.Keybind;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
@@ -26,7 +26,7 @@ public class JexKeybindButton extends Button {
         if (isSelected())
             Render2DHelper.INSTANCE.outlineAndFill(matrixStack, getX(), getY(), getX() + getWidth(), getY() + getHeight(), ColorHelper.INSTANCE.getClientColor(), 0x00ffffff);
         FontHelper.INSTANCE.drawWithShadow(matrixStack, Text.translatable("jex.keybinds.key", Formatting.AQUA, KeyboardHelper.INSTANCE.getKeyName(keybind.key())), getX() + 2, getY() + 2, 0xff696969);
-        FontHelper.INSTANCE.drawWithShadow(matrixStack, Text.translatable("jex.keybinds.command", Formatting.AQUA, keybind.isJexCommand() ? CommandManagerJex.INSTANCE.getPrefix() : "", keybind.command()), getX() + 2, getY() + 13, 0xff696969);
+        FontHelper.INSTANCE.drawWithShadow(matrixStack, Text.translatable("jex.keybinds.command", Formatting.AQUA, keybind.isJexCommand() ? CommandManager.INSTANCE.getPrefix() : "", keybind.command()), getX() + 2, getY() + 13, 0xff696969);
     }
 
     public boolean isSelected() {

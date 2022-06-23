@@ -1,6 +1,6 @@
 package me.dustin.jex.feature.keybind;
 
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.text.Text;
 
@@ -42,7 +42,7 @@ public record Keybind(int key, String command, boolean isJexCommand) {
             Wrapper.INSTANCE.getLocalPlayer().sendCommand(command().substring(1), Text.literal(command()));
             return;
         }
-        Wrapper.INSTANCE.getLocalPlayer().sendChatMessage((isJexCommand() ? CommandManagerJex.INSTANCE.getPrefix() : "") + command());
+        Wrapper.INSTANCE.getLocalPlayer().sendChatMessage((isJexCommand() ? CommandManager.INSTANCE.getPrefix() : "") + command());
     }
     public static ArrayList<Keybind> getKeybinds() {
         return keybinds;

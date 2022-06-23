@@ -8,7 +8,7 @@ import me.dustin.jex.event.chat.EventShouldPreviewChat;
 import me.dustin.jex.event.filters.DrawScreenFilter;
 import me.dustin.jex.event.render.EventDrawScreen;
 import me.dustin.jex.event.render.EventRenderChatHud;
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
@@ -71,7 +71,7 @@ public class IRC extends Feature {
 
     @EventPointer
     private final EventListener<EventSendMessage> eventSendMessageEventListener = new EventListener<>(event -> {
-        if (event.getMessage().startsWith(CommandManagerJex.INSTANCE.getPrefix()))
+        if (event.getMessage().startsWith(CommandManager.INSTANCE.getPrefix()))
             return;
         if ((event.getMessage().startsWith(sendPrefixProperty.value()) || ircChatOverride) && ircClient != null) {
             event.cancel();

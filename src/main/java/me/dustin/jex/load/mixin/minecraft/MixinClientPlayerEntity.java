@@ -5,7 +5,6 @@ import com.mojang.brigadier.ParseResults;
 import me.dustin.jex.event.chat.EventSendMessage;
 import me.dustin.jex.event.misc.EventPortalCloseGUI;
 import me.dustin.jex.event.player.*;
-import me.dustin.jex.feature.command.CommandManagerJex;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import me.dustin.jex.load.impl.IClientPlayerEntity;
 import net.minecraft.client.MinecraftClient;
@@ -14,7 +13,6 @@ import net.minecraft.client.input.Input;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandSource;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -30,7 +28,6 @@ import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.ChatMessageSigner;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -94,11 +91,6 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
     public MixinClientPlayerEntity(ClientWorld world, GameProfile profile, PlayerPublicKey playerPublicKey) {
         super(world, profile, playerPublicKey);
-    }
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void initPlayer(MinecraftClient client, ClientWorld world, ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook, boolean lastSneaking, boolean lastSprinting, CallbackInfo ci) {
-        CommandManagerJex.INSTANCE.registerCommands(networkHandler);
     }
 
     @Override

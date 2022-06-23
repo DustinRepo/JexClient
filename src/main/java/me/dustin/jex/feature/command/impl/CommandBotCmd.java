@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -11,12 +12,13 @@ import me.dustin.jex.feature.command.core.arguments.Vec3ArgumentType;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.bot.PlayerBot;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.util.math.Vec3d;
 
 @Cmd(name = "botcmd", syntax = ".botcmd <bot> <action> <data>", description = "Send commands to your connected bots")
 public class CommandBotCmd extends Command {
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).then(argument("name", PlayerNameArgumentType.playerName()).then(literal("type").then(argument("message", MessageArgumentType.message()).executes(context -> {
             String name = PlayerNameArgumentType.getPlayerName(context, "name");
             String message = MessageArgumentType.getMessage(context, "message").getString();

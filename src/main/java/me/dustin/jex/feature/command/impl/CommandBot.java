@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.command.impl;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
@@ -18,12 +19,14 @@ import me.dustin.jex.helper.network.login.minecraft.MinecraftAccountManager;
 import me.dustin.jex.helper.network.login.minecraft.MojangLoginHelper;
 import me.dustin.jex.helper.player.bot.PlayerBot;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
+
 import java.util.UUID;
 
 @Cmd(name = "bot", syntax = ".bot <connect/disconnect> <name>", description = "Have bots join your server")
 public class CommandBot extends Command {
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).then(literal("connect").then(argument("name", new PlayerNameArgumentType()).executes(context -> {
             String username = PlayerNameArgumentType.getPlayerName(context, "name");
                 if (MinecraftAccountManager.INSTANCE.getAccounts().isEmpty())

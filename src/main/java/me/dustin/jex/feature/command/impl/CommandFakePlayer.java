@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.command.impl;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
@@ -15,6 +16,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.MCAPIHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.Entity;
 import java.util.UUID;
 
@@ -22,7 +24,7 @@ import java.util.UUID;
 public class CommandFakePlayer extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(literal("add").then(argument("name", PlayerNameArgumentType.playerName()).executes(context -> {
             String name = PlayerNameArgumentType.getPlayerName(context, "name");
             int id = 69420 + ClientMathHelper.INSTANCE.getRandom(200);

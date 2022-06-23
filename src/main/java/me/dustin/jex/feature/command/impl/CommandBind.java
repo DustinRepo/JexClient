@@ -1,9 +1,10 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.command.core.Command;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import me.dustin.jex.feature.keybind.Keybind;
@@ -12,27 +13,28 @@ import me.dustin.jex.file.impl.KeybindFile;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 
 @Cmd(name = "bind", syntax = {".bind add <module> <key>", ".bind clear <module>", ".bind list"}, description = "Modify keybinds with a command. List with bind list")
 public class CommandBind extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).then(literal("list").executes(this)).then(literal("add").then(argument("key", StringArgumentType.string()).then(argument("command", StringArgumentType.string()).executes(context -> {
             int key = KeyboardHelper.INSTANCE.getKeyFromName(StringArgumentType.getString(context, "key"));
             String command = StringArgumentType.getString(context, "command");
-            boolean isJexCommand = command.startsWith(CommandManagerJex.INSTANCE.getPrefix());
+            boolean isJexCommand = command.startsWith(CommandManager.INSTANCE.getPrefix());
             Keybind.add(key, isJexCommand ? command.substring(1) : command, isJexCommand);
             ChatHelper.INSTANCE.addClientMessage("Added %s to key: %s".formatted(command, StringArgumentType.getString(context, "key")));
             ConfigManager.INSTANCE.get(KeybindFile.class).write();
             return 1;
         })))).then(literal("remove").then(argument("command", StringArgumentType.string()).executes(context -> {
             String command = StringArgumentType.getString(context, "command");
-            if (command.startsWith(CommandManagerJex.INSTANCE.getPrefix()))
+            if (command.startsWith(CommandManager.INSTANCE.getPrefix()))
                 command = command.substring(1);
             Keybind bind = Keybind.get(command);
             if (bind == null) {
-                ChatHelper.INSTANCE.addClientMessage("No bind matching command! If trying to clear all binds from a key, use %sbind clear".formatted(CommandManagerJex.INSTANCE.getPrefix()));
+                ChatHelper.INSTANCE.addClientMessage("No bind matching command! If trying to clear all binds from a key, use %sbind clear".formatted(CommandManager.INSTANCE.getPrefix()));
                 return 0;
             }
             Keybind.remove(bind);

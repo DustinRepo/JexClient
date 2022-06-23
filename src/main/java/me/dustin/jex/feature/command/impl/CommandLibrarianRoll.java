@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.command.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,6 +11,7 @@ import me.dustin.jex.feature.command.core.arguments.EnchantmentArgumentType;
 import me.dustin.jex.feature.mod.impl.misc.AutoLibrarianRoll;
 import me.dustin.jex.helper.misc.ChatHelper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.text.Text;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import java.util.List;
 public class CommandLibrarianRoll extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         CommandNode<FabricClientCommandSource> node = dispatcher.register(literal(this.name).then(literal("clear").executes(context -> {
             AutoLibrarianRoll.enchantments.clear();
 

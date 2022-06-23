@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.addon.cape.Cape;
 import me.dustin.jex.addon.hat.Hat;
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.file.core.ConfigFile;
 import me.dustin.jex.gui.jex.JexPersonalizationScreen;
 import me.dustin.jex.gui.minecraft.JexTitleScreen;
@@ -27,7 +27,7 @@ public class ClientSettingsFile extends ConfigFile {
     @Override
     public void write() {
         Map<String, Object> yamlMap = new HashMap<>();
-        yamlMap.put("prefix", CommandManagerJex.INSTANCE.getPrefix());
+        yamlMap.put("prefix", CommandManager.INSTANCE.getPrefix());
         yamlMap.put("main-menu-bg", JexTitleScreen.background);
         yamlMap.put("auto-save", JexClient.INSTANCE.isAutoSaveEnabled());
         yamlMap.put("launch-sound", JexClient.INSTANCE.playSoundOnLaunch());
@@ -44,7 +44,7 @@ public class ClientSettingsFile extends ConfigFile {
         Map<String, Object> parsedYaml = YamlHelper.INSTANCE.readFile(getFile());
         if (parsedYaml == null || parsedYaml.isEmpty())
             return;
-        CommandManagerJex.INSTANCE.setPrefix((String)parsedYaml.get("prefix"));
+        CommandManager.INSTANCE.setPrefix((String)parsedYaml.get("prefix"));
         JexTitleScreen.background = (int)parsedYaml.get("main-menu-bg");
         JexClient.INSTANCE.setAutoSave((boolean)parsedYaml.get("auto-save"));
         JexClient.INSTANCE.setPlaySoundOnLaunch((boolean)parsedYaml.get("launch-sound"));
@@ -75,7 +75,7 @@ public class ClientSettingsFile extends ConfigFile {
             }
             JsonObject object = JsonHelper.INSTANCE.prettyGson.fromJson(String.valueOf(stringBuffer), JsonObject.class);
             in.close();
-            CommandManagerJex.INSTANCE.setPrefix(object.get("prefix").getAsString());
+            CommandManager.INSTANCE.setPrefix(object.get("prefix").getAsString());
             JexTitleScreen.background = object.get("main-menu-bg").getAsInt();
             JexClient.INSTANCE.setAutoSave(object.get("auto-save").getAsBoolean());
             JexClient.INSTANCE.setPlaySoundOnLaunch(object.get("launch-sound").getAsBoolean());

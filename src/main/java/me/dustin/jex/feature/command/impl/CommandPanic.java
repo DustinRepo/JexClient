@@ -1,6 +1,7 @@
 package me.dustin.jex.feature.command.impl;
 
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.dustin.jex.feature.command.core.Command;
@@ -9,12 +10,13 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 
 @Cmd(name = "panic", description = "Disables all mods that are not visual incase an admin is nearby.")
 public class CommandPanic extends Command {
 
     @Override
-    public void registerCommand() {
+    public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).executes(this));
     }
 

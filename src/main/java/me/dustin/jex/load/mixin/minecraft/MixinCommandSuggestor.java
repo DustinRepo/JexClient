@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.load.impl.ICommandSuggestor;
 import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -36,7 +36,7 @@ public abstract class MixinCommandSuggestor implements ICommandSuggestor {
     @Redirect(method = "refresh", at = @At(value = "INVOKE", target = "com/mojang/brigadier/StringReader.peek()C"))
     public char refresh(StringReader stringReader) {
         String string = this.textField.getText();
-        boolean bl = string.startsWith(CommandManagerJex.INSTANCE.getPrefix());
+        boolean bl = string.startsWith(CommandManager.INSTANCE.getPrefix());
         if (bl) {
             return '/';
         }
@@ -46,7 +46,7 @@ public abstract class MixinCommandSuggestor implements ICommandSuggestor {
     @Inject(method = "sortSuggestions", at = @At("HEAD"), cancellable = true)
     public void sort(Suggestions suggestions, CallbackInfoReturnable<List<Suggestion>> cir) {
         String s = this.textField.getText();
-        boolean bl = s.startsWith(CommandManagerJex.INSTANCE.getPrefix());
+        boolean bl = s.startsWith(CommandManager.INSTANCE.getPrefix());
         String string = this.textField.getText().substring(0, this.textField.getCursor());
         int i = getLastPlayerNameStart(string);
         String string2 = string.substring(i).toLowerCase(Locale.ROOT);
@@ -54,9 +54,9 @@ public abstract class MixinCommandSuggestor implements ICommandSuggestor {
         ArrayList<Suggestion> list2 = Lists.newArrayList();
         for (Suggestion suggestion : suggestions.getList()) {
             if (bl) {
-                if (!CommandManagerJex.INSTANCE.isJexCommand(suggestion.getText()) && !this.textField.getText().contains(" "))
+                if (!CommandManager.INSTANCE.isJexCommand(suggestion.getText()) && !this.textField.getText().contains(" "))
                     continue;
-            } else if (CommandManagerJex.INSTANCE.isJexCommand(suggestion.getText()))
+            } else if (CommandManager.INSTANCE.isJexCommand(suggestion.getText()))
                 continue;
             if (suggestion.getText().startsWith(string2) || (!bl && suggestion.getText().startsWith("minecraft:" + string2))) {
                 list.add(suggestion);

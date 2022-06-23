@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.jex;
 
 import me.dustin.jex.addon.Addon;
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Gui;
 import me.dustin.jex.file.core.ConfigManager;
@@ -54,12 +54,12 @@ public class JexOptionsScreen extends Screen {
         int centerX = Render2DHelper.INSTANCE.getScaledWidth() / 2;
         int centerY = Render2DHelper.INSTANCE.getScaledHeight() / 2;
         int topY = centerY - 100;
-        prefixField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), centerX - 55, topY, 50, 20, Text.literal(CommandManagerJex.INSTANCE.getPrefix()));
+        prefixField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), centerX - 55, topY, 50, 20, Text.literal(CommandManager.INSTANCE.getPrefix()));
         prefixField.setMaxLength(1);
-        prefixField.setText(CommandManagerJex.INSTANCE.getPrefix());
+        prefixField.setText(CommandManager.INSTANCE.getPrefix());
         prefixField.setVisible(true);
         setPrefixButton = new ButtonWidget(centerX + 1, topY, 54, 20, Text.translatable("jex.options.set_prefix"), button -> {
-            CommandManagerJex.INSTANCE.setPrefix(prefixField.getText());
+            CommandManager.INSTANCE.setPrefix(prefixField.getText());
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
         //left

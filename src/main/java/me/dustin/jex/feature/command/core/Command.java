@@ -4,18 +4,16 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import me.dustin.jex.feature.command.CommandManagerJex;
+import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.command.core.annotate.Cmd;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.command.CommandRegistryAccess;
+
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class Command implements com.mojang.brigadier.Command<FabricClientCommandSource> {
-    protected CommandDispatcher<FabricClientCommandSource> dispatcher = CommandManagerJex.DISPATCHER;
-    protected CommandRegistryAccess commandRegistryAccess;
     protected String name, description;
     private List<String> alias, syntax;
 
@@ -42,11 +40,7 @@ public abstract class Command implements com.mojang.brigadier.Command<FabricClie
         return alias;
     }
 
-    public abstract void registerCommand();
-
-    public void setCommandRegistryAccess(ClientPlayNetworkHandler networkHandler) {
-        commandRegistryAccess = new CommandRegistryAccess(networkHandler.getRegistryManager());
-    }
+    public abstract void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess);
 
     public LiteralArgumentBuilder<FabricClientCommandSource> literal(String s) {
         return ClientCommandManager.literal(s);
