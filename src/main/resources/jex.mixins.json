@@ -19,7 +19,6 @@
     "minecraft.MixinCactusBlock",
     "minecraft.MixinCamera",
     "minecraft.MixinChatHud",
-    "minecraft.MixinChatMessageC2SPacket",
     "minecraft.MixinChatScreen",
     "minecraft.MixinChestBlockEntityRenderer",
     "minecraft.MixinChunkOcclusionDataBuilder",

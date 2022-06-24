@@ -10,8 +10,6 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import me.dustin.jex.load.impl.IChatMessageC2SPacket;
-import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.message.ChatMessageSigner;
 import net.minecraft.network.message.MessageSignature;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
