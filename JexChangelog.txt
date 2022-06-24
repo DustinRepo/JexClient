@@ -1,3 +1,10 @@
+0.8.2
+Added Nuker mod
+Fixed JexGUI sometimes opening the pause menu when closing the menu
+Fixed NoWeather not blocking rain sounds/sky color
+Fixed Friend command not allowing re-naming a friend without it being a name that would work on a Minecraft account
+Fixed Hitboxes crashing when loading into singleplayer worlds
+
 0.8.1
 Fixed IRC giving random errors in the chat area
 Added back ability to use non-ascii characters in IRC
