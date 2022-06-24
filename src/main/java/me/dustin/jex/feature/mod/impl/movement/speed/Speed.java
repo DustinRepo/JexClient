@@ -6,7 +6,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.speed.impl.StrafeSpeed;

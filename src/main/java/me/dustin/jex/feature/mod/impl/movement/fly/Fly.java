@@ -11,7 +11,7 @@ import me.dustin.jex.event.player.EventGetPose;
 import me.dustin.jex.event.player.EventIsPlayerTouchingWater;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.event.player.EventPlayerPackets;
-import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.CreativeFly;

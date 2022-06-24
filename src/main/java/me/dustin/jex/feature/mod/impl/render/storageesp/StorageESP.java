@@ -5,7 +5,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.render.*;
-import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.render.storageesp.impl.OutlineStorageESP;
 import me.dustin.jex.feature.property.Property;

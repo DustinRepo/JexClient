@@ -2,7 +2,7 @@ package me.dustin.jex.feature.mod.impl.render.esp.impl;
 
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import net.minecraft.util.math.Vec3d;

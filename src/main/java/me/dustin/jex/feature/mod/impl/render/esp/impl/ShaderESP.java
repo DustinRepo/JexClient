@@ -3,7 +3,7 @@ package me.dustin.jex.feature.mod.impl.render.esp.impl;
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventHasOutline;
 import me.dustin.jex.event.render.EventTeamColor;
-import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.helper.misc.Wrapper;
 

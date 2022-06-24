@@ -1,10 +1,8 @@
-package me.dustin.jex.feature.extension;
+package me.dustin.jex.feature.mod.core;
 
 import me.dustin.events.core.Event;
-import me.dustin.jex.feature.mod.core.Feature;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 public abstract class FeatureExtension {
 

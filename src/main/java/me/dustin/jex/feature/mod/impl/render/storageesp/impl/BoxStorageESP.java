@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import me.dustin.events.core.Event;
 import me.dustin.jex.event.render.EventRender3D;
-import me.dustin.jex.feature.extension.FeatureExtension;
+import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.storageesp.StorageESP;
 import me.dustin.jex.helper.math.ClientMathHelper;
