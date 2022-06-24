@@ -69,7 +69,7 @@ public enum CommandManager {
     @EventPointer
     private final EventListener<EventSortSuggestions> eventSortSuggestionsEventListener = new EventListener<>(event -> {
         boolean isJex = event.getText().startsWith(getPrefix());
-        event.getOutput().removeIf(suggestion -> (isJex && !isJexCommand(suggestion.getText()) && !suggestion.getText().contains(" ")) || (!isJex && isJexCommand(suggestion.getText())));
+        event.getOutput().removeIf(suggestion -> (isJex && !isJexCommand(suggestion.getText()) && !event.getText().contains(" ")) || (!isJex && isJexCommand(suggestion.getText())));
     });
 
     @EventPointer
