@@ -6,13 +6,11 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.event.player.EventExplosionVelocity;
 import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.event.world.EventLoadChunk;
-import me.dustin.jex.feature.command.ClientCommandInternals;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ConnectedServerHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.player.bot.BotClientPlayNetworkHandler;
 import me.dustin.jex.load.impl.IClientPlayNetworkHandler;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -23,7 +21,6 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkData;
-import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
@@ -42,17 +39,11 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetwor
     private float yaw, pitch;
     private EventServerTurn eventServerTurn;
 
-    @Shadow
-    @Final
-    private ClientCommandSource commandSource;
-
     @Shadow @Final private ClientConnection connection;
 
     @Shadow public abstract void sendPacket(Packet<?> packet);
 
     @Shadow private ClientWorld world;
-
-    @Shadow private CommandDispatcher<CommandSource> commandDispatcher;
 
     @Shadow @Final private MinecraftClient client;
 
@@ -108,14 +99,6 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlayNetwor
         ci.cancel();
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Inject(method = "onCommandTree", at = @At("RETURN"))
-    private void onOnCommandTree(CommandTreeS2CPacket packet, CallbackInfo info) {
-        if (isBotHandler())
-            return;
-        ClientCommandInternals.addCommands((CommandDispatcher) commandDispatcher, (FabricClientCommandSource) commandSource);
-    }
-
     @Inject(method = "onExplosion", at = @At("HEAD"), cancellable = true)
     public void onExplosion(ExplosionS2CPacket packet, CallbackInfo ci) {
         if (isBotHandler())
