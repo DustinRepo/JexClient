@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import me.dustin.jex.addon.cape.Cape;
+import me.dustin.jex.helper.addon.AddonHelper;
+import me.dustin.jex.helper.addon.cape.CapeHelper;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.changelog.ChangelogScreen;
@@ -23,7 +24,6 @@ import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.JexClient;
-import me.dustin.jex.addon.Addon;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.CustomMainMenu;
 import me.dustin.jex.helper.file.ModFileHelper;
@@ -186,7 +186,7 @@ public class JexTitleScreen extends Screen {
             }
             stopWatch.reset();
         }
-        isDonator = Addon.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+        isDonator = AddonHelper.INSTANCE.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
         int midX = Render2DHelper.INSTANCE.getScaledWidth() / 2;
         float f = this.doBackgroundFade ? (float) (Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
         fill(matrices, 0, 0, this.width, this.height, -1);
@@ -246,10 +246,10 @@ public class JexTitleScreen extends Screen {
             float right = 205;
 
             Render2DHelper.INSTANCE.drawFace(matrices, 2, (int)bottom + 2, 4, MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()));
-            FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.welcome",(isDonator ? "\247r" : (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")) ? "\247a" : "\247f")) + Wrapper.INSTANCE.getMinecraft().getSession().getUsername()).styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
-            if (Addon.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
+            FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.welcome",(isDonator ? "\247r" : (AddonHelper.INSTANCE.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")) ? "\247a" : "\247f")) + Wrapper.INSTANCE.getMinecraft().getSession().getUsername()).styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
+            if (AddonHelper.INSTANCE.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.name").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 12, 0xff696969);
-                Addon.AddonResponse response = Addon.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+                AddonHelper.AddonResponse response = AddonHelper.INSTANCE.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
                 try {
                     if (response.cape() != null && !response.cape().isEmpty() && !response.cape().equalsIgnoreCase("null")) {
                         Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("assets/jex", "capes/" + Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")), capeYaw, 0);
@@ -258,8 +258,8 @@ public class JexTitleScreen extends Screen {
                     }
                 }catch (Exception e) {}
             } else {
-                if (Cape.hasCape("self")) {
-                    Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, Cape.getCape("self"), capeYaw, 0);
+                if (CapeHelper.INSTANCE.hasCape("self")) {
+                    Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, CapeHelper.INSTANCE.getCape("self"), capeYaw, 0);
                 }
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.not_linked").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 12, -1);
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.join_discord").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 22, -1);

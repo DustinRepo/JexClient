@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.jex.selection;
 
 
-import me.dustin.jex.addon.hat.Hat;
+import me.dustin.jex.helper.addon.hat.HatHelper;
 import me.dustin.jex.feature.mod.impl.player.AutoDrop;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.AutoDropFile;
@@ -278,7 +278,7 @@ public class AutoDropSelectScreen extends Screen {
         float buttonHeight = 20;
 
         for (Item item : Registry.ITEM) {
-            if (item == Items.AIR || item == Hat.cowboyHat.asItem() || item == Hat.topHat.asItem() || item == Hat.propeller.asItem() || item == Hat.crown.asItem() || item == Hat.halo.asItem())
+            if (item == Items.AIR || item == HatHelper.INSTANCE.cowboyHat.asItem() || item == HatHelper.INSTANCE.topHat.asItem() || item == HatHelper.INSTANCE.propeller.asItem() || item == HatHelper.INSTANCE.crown.asItem() || item == HatHelper.INSTANCE.halo.asItem())
                 continue;
             if (AutoDrop.INSTANCE.getItems().contains(item)) {
                 float y = startY + (buttonHeight * allowedCount);
@@ -315,7 +315,7 @@ public class AutoDropSelectScreen extends Screen {
         float buttonHeight = 20;
 
         for (Item item : Registry.ITEM) {
-            if (item == Items.AIR || item == Hat.cowboyHat.asItem() || item == Hat.topHat.asItem() || item == Hat.propeller.asItem() || item == Hat.crown.asItem() || item == Hat.halo.asItem())
+            if (item == Items.AIR || item == HatHelper.INSTANCE.cowboyHat.asItem() || item == HatHelper.INSTANCE.topHat.asItem() || item == HatHelper.INSTANCE.propeller.asItem() || item == HatHelper.INSTANCE.crown.asItem() || item == HatHelper.INSTANCE.halo.asItem())
                 continue;
             String itemName = Registry.ITEM.getId(item).toString();
             if (itemName.contains(":"))

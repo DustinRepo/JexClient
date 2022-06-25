@@ -2,8 +2,8 @@ package me.dustin.jex.file.impl;
 
 import com.google.gson.JsonObject;
 import me.dustin.jex.JexClient;
-import me.dustin.jex.addon.cape.Cape;
-import me.dustin.jex.addon.hat.Hat;
+import me.dustin.jex.helper.addon.cape.CapeHelper;
+import me.dustin.jex.helper.addon.hat.HatHelper;
 import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.file.core.ConfigFile;
 import me.dustin.jex.gui.jex.JexPersonalizationScreen;
@@ -54,10 +54,10 @@ public class ClientSettingsFile extends ConfigFile {
 
         if (JexPersonalizationScreen.setCape != null) {
             File capeFile = new File(JexPersonalizationScreen.setCape);
-            Cape.setPersonalCape(capeFile);
+            CapeHelper.INSTANCE.setPersonalCape(capeFile);
         }
         if (JexPersonalizationScreen.setHat != null && !JexPersonalizationScreen.setHat.equalsIgnoreCase("None")) {
-            Hat.setHat(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""), JexPersonalizationScreen.setHat);
+            HatHelper.INSTANCE.setHat(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""), JexPersonalizationScreen.setHat);
         }
     }
 
@@ -85,10 +85,10 @@ public class ClientSettingsFile extends ConfigFile {
                 String hat = object.get("personal-hat").getAsString();
                 File capeFile = new File(capeLoc);
                 if (capeFile.exists()) {
-                    Cape.setPersonalCape(capeFile);
+                    CapeHelper.INSTANCE.setPersonalCape(capeFile);
                     JexPersonalizationScreen.setCape = capeLoc;
                 }
-                Hat.setHat(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""), hat);
+                HatHelper.INSTANCE.setHat(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""), hat);
                 JexPersonalizationScreen.setHat = hat;
             }
             if (object.get("altening-api-key") != null) {

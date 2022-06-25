@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.jex;
 
-import me.dustin.jex.addon.cape.Cape;
-import me.dustin.jex.addon.hat.Hat;
+import me.dustin.jex.helper.addon.cape.CapeHelper;
+import me.dustin.jex.helper.addon.hat.HatHelper;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.helper.render.ButtonListener;
@@ -44,7 +44,7 @@ public class JexPersonalizationScreen extends Screen {
                 return;
             File cape = fileBrowser.getSelectedFiles().get(0);
             setCape = cape.getPath();
-            Cape.setPersonalCape(cape);
+            CapeHelper.INSTANCE.setPersonalCape(cape);
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         }
     };
@@ -57,27 +57,27 @@ public class JexPersonalizationScreen extends Screen {
                 return;
             File cape = fileBrowser.getSelectedFiles().get(0);
             setCape = cape.getPath();
-            Cape.setPersonalCape(cape);
+            CapeHelper.INSTANCE.setPersonalCape(cape);
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
         });
         prevHatButton = new ButtonWidget((int)midX + 8, 137, 40, 20, Text.of("<"), button -> {
             selectedHat--;
             if (selectedHat < -1)
-                selectedHat = Hat.HatType.values().length - 1;
+                selectedHat = HatHelper.HatType.values().length - 1;
         });
         nextHatButton = new ButtonWidget((int)midX + 88, 137, 40, 20, Text.of(">"), button -> {
             selectedHat++;
-            if (selectedHat > Hat.HatType.values().length - 1)
+            if (selectedHat > HatHelper.HatType.values().length - 1)
                 selectedHat = -1;
         });
         setHatButton = new ButtonWidget((int)midX + 8, 170, 120, 20, Text.translatable("jex.personalization.set_hat"), button -> {
             String uuid = Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "");
             if (selectedHat == -1) {
-                Hat.clearHat(uuid);
+                HatHelper.INSTANCE.clearHat(uuid);
                 setHat = "None";
             } else {
-                Hat.HatType hatType = Hat.HatType.values()[selectedHat];
-                Hat.setHat(uuid, hatType.name());
+                HatHelper.HatType hatType = HatHelper.HatType.values()[selectedHat];
+                HatHelper.INSTANCE.setHat(uuid, hatType.name());
                 setHat = hatType.name();
             }
             ConfigManager.INSTANCE.get(ClientSettingsFile.class).write();
@@ -100,14 +100,14 @@ public class JexPersonalizationScreen extends Screen {
         //Cape
         Render2DHelper.INSTANCE.fillAndBorder(matrices, midX - 255 + 2, 1, midX - 255 + 250, 13, 0x90696969, 0x70000000, 1);
         FontHelper.INSTANCE.drawWithShadow(matrices, fileBrowser.getPath(), midX - 255 + 5, 3, -1);
-        if (Cape.hasCape("self"))
-            Render2DHelper.INSTANCE.draw3DCape(matrices, midX - 255 - 35, 15, Cape.getCape("self"), yaw, 0);
+        if (CapeHelper.INSTANCE.hasCape("self"))
+            Render2DHelper.INSTANCE.draw3DCape(matrices, midX - 255 - 35, 15, CapeHelper.INSTANCE.getCape("self"), yaw, 0);
         fileBrowser.render(matrices);
         //Hat
         Render2DHelper.INSTANCE.fillAndBorder(matrices, midX + 5, 15, midX + 131, 203, 0x90696969, 0x70000000, 1);
         String hatName;
         if (selectedHat != -1) {
-            Hat.HatType hatType = Hat.HatType.values()[selectedHat];
+            HatHelper.HatType hatType = HatHelper.HatType.values()[selectedHat];
             hatName = hatType.name().replace("_", " ").toLowerCase();
         } else {
             hatName = "None";
@@ -116,7 +116,7 @@ public class JexPersonalizationScreen extends Screen {
 
         Render2DHelper.INSTANCE.bindTexture(hatsPic);
         DrawableHelper.drawTexture(matrices, (int)midX + 8, 18, 0, 0, 120, 120, 120, 120);
-        Hat.HatInfo hatInfo = Hat.getInfo(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+        HatHelper.HatInfo hatInfo = HatHelper.INSTANCE.getInfo(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
         FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.personalization.current_hat", hatInfo == null ? "None" : StringUtils.capitalize(hatInfo.type.name().replace("_", " ").toLowerCase())), midX + 9, 192, -1);
         super.render(matrices, mouseX, mouseY, delta);
     }

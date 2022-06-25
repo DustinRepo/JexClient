@@ -1,10 +1,11 @@
 package me.dustin.jex.load.mixin.minecraft;
 
-import me.dustin.jex.addon.hat.HatFeatureRenderer;
+import me.dustin.jex.helper.addon.cape.JexCapeFeatureRenderer;
+import me.dustin.jex.helper.addon.cape.JexElytraFeatureRenderer;
+import me.dustin.jex.helper.addon.hat.JexHatFeatureRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +22,9 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Pla
 
 	@Inject(method = { "<init>" }, at = { @At("RETURN") })
 	private void construct(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
-		addFeature(new HatFeatureRenderer((FeatureRendererContext<PlayerEntity, PlayerEntityModel<PlayerEntity>>) (Object) this));
+		addFeature(new JexHatFeatureRenderer(this));
+		addFeature(new JexCapeFeatureRenderer(this));
+		addFeature(new JexElytraFeatureRenderer(this, ctx.getModelLoader()));
 	}
 
 }

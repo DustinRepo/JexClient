@@ -3,6 +3,8 @@ package me.dustin.jex;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.dustin.events.core.EventListener;
+import me.dustin.jex.helper.addon.AddonHelper;
+import me.dustin.jex.helper.addon.cape.CapeHelper;
 import me.dustin.jex.event.filters.KeyPressFilter;
 import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.*;
@@ -100,6 +102,8 @@ public enum JexClient {
         EventManager.register(EntityPositionHelper.INSTANCE);
         EventManager.register(PathingHelper.INSTANCE);
         EventManager.register(ConnectedServerHelper.INSTANCE);
+        EventManager.register(AddonHelper.INSTANCE);
+        EventManager.register(CapeHelper.INSTANCE);
         getLogger().info("Checking for update");
         UpdateManager.INSTANCE.checkForUpdate();
         CustomFont.INSTANCE.loadFont();

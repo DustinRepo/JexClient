@@ -1,6 +1,6 @@
 package me.dustin.jex.gui.jex;
 
-import me.dustin.jex.addon.Addon;
+import me.dustin.jex.helper.addon.AddonHelper;
 import me.dustin.jex.feature.command.CommandManager;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.Gui;
@@ -76,11 +76,11 @@ public class JexOptionsScreen extends Screen {
         downloadInstallerButton.active = UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED || UpdateManager.INSTANCE.getStatus() == UpdateManager.Status.OUTDATED_BOTH;
 
         reloadAddonsButton = new ButtonWidget(centerX - 230, topY + 100, 150, 20, Text.translatable("jex.options.reload"), button -> {
-            Addon.clearAddons();
+            AddonHelper.INSTANCE.clearAddons();
             if (Wrapper.INSTANCE.getWorld() != null) {
                 Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                     if (entity instanceof PlayerEntity playerEntity) {
-                        Addon.loadAddons(playerEntity);
+                        AddonHelper.INSTANCE.loadAddons(playerEntity);
                     }
                 });
             }

@@ -1,7 +1,7 @@
 package me.dustin.jex.gui.jex.selection;
 
 
-import me.dustin.jex.addon.hat.Hat;
+import me.dustin.jex.helper.addon.hat.HatHelper;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.SearchFile;
 import me.dustin.jex.gui.jex.JexOptionsScreen;
@@ -278,7 +278,7 @@ public class SearchSelectScreen extends Screen {
         float buttonHeight = 20;
 
         for (Block block : Registry.BLOCK) {
-            if (block == Blocks.AIR || block == Hat.cowboyHat || block == Hat.halo || block == Hat.topHat || block == Hat.crown || block == Hat.propeller)
+            if (block == Blocks.AIR || block == HatHelper.INSTANCE.cowboyHat || block == HatHelper.INSTANCE.halo || block == HatHelper.INSTANCE.topHat || block == HatHelper.INSTANCE.crown || block == HatHelper.INSTANCE.propeller)
                 continue;
             if (Search.getBlocks().keySet().contains(block)) {
                 float y = startY + (buttonHeight * allowedCount);
@@ -315,7 +315,7 @@ public class SearchSelectScreen extends Screen {
         float buttonHeight = 20;
 
         for (Block block : Registry.BLOCK) {
-            if (block == Blocks.AIR || block == Hat.cowboyHat || block == Hat.halo || block == Hat.topHat || block == Hat.crown || block == Hat.propeller)
+            if (block == Blocks.AIR || block == HatHelper.INSTANCE.cowboyHat || block == HatHelper.INSTANCE.halo || block == HatHelper.INSTANCE.topHat || block == HatHelper.INSTANCE.crown || block == HatHelper.INSTANCE.propeller)
                 continue;
             String blockName = Registry.BLOCK.getId(block).toString();
             if (blockName.contains(":"))

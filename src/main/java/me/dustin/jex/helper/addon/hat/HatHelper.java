@@ -1,4 +1,4 @@
-package me.dustin.jex.addon.hat;
+package me.dustin.jex.helper.addon.hat;
 
 import java.util.ArrayList;
 import net.minecraft.block.AbstractBlock;
@@ -13,30 +13,30 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class Hat {
+public enum HatHelper {
+    INSTANCE;
+    public static final ArrayList<HatInfo> hatPlayers = new ArrayList<>();
 
-    public static ArrayList<HatInfo> hatPlayers = new ArrayList<>();
+    public Block topHat;
+    public Block halo;
+    public Block propeller;
+    public Block crown;
+    public Block cowboyHat;
 
-    public static Block topHat;
-    public static Block halo;
-    public static Block propeller;
-    public static Block crown;
-    public static Block cowboyHat;
-
-    public static void setHat(String uuid, String hat) {
-        if (!Hat.hasHat(uuid)) {
-            Hat.hatPlayers.add(new HatInfo(uuid, getHatType(hat)));
+    public void setHat(String uuid, String hat) {
+        if (!hasHat(uuid)) {
+            hatPlayers.add(new HatInfo(uuid, getHatType(hat)));
         } else {
-            Hat.hatPlayers.remove(getInfo(uuid));
-            Hat.hatPlayers.add(new HatInfo(uuid, getHatType(hat)));
+            hatPlayers.remove(getInfo(uuid));
+            hatPlayers.add(new HatInfo(uuid, getHatType(hat)));
         }
     }
 
-    public static void clearHat(String uuid) {
-        Hat.hatPlayers.remove(getInfo(uuid));
+    public void clearHat(String uuid) {
+        hatPlayers.remove(getInfo(uuid));
     }
 
-    public static HatType getHatType(String type) {
+    public HatType getHatType(String type) {
         for (HatType hat : HatType.values()) {
             if (hat.name().equalsIgnoreCase(type))
                 return hat;
@@ -44,7 +44,7 @@ public class Hat {
         return HatType.TOP_HAT;
     }
 
-    public static ItemStack getHat(PlayerEntity playerEntity) {
+    public ItemStack getHat(PlayerEntity playerEntity) {
         HatInfo info = getInfo(playerEntity);
         if (info == null)
             return new ItemStack(Items.AIR);
@@ -59,12 +59,12 @@ public class Hat {
     }
 
 
-    public static HatType getType(PlayerEntity playerEntity) {
+    public HatType getType(PlayerEntity playerEntity) {
         HatInfo info = getInfo(playerEntity);
         return info.type;
     }
 
-    public static boolean hasHat(PlayerEntity playerEntity) {
+    public boolean hasHat(PlayerEntity playerEntity) {
         for (HatInfo hatInfo : hatPlayers) {
             if (hatInfo.uuid.equalsIgnoreCase(playerEntity.getUuid().toString().replace("-", "")))
                 return true;
@@ -72,7 +72,7 @@ public class Hat {
         return false;
     }
 
-    public static boolean hasHat(String uuid) {
+    public boolean hasHat(String uuid) {
         for (HatInfo hatInfo : hatPlayers) {
             if (hatInfo.uuid.equalsIgnoreCase(uuid))
                 return true;
@@ -80,7 +80,7 @@ public class Hat {
         return false;
     }
 
-    public static HatInfo getInfo(PlayerEntity playerEntity) {
+    public HatInfo getInfo(PlayerEntity playerEntity) {
         for (HatInfo info : hatPlayers) {
             if (info.uuid.equalsIgnoreCase(playerEntity.getUuid().toString().replace("-", "")))
                 return info;
@@ -88,7 +88,7 @@ public class Hat {
         return null;
     }
 
-    public static HatInfo getInfo(String uuid) {
+    public HatInfo getInfo(String uuid) {
         for (HatInfo info : hatPlayers) {
             if (info.uuid.equalsIgnoreCase(uuid))
                 return info;
@@ -96,15 +96,15 @@ public class Hat {
         return null;
     }
 
-    private static Block register(String string_1, Block block_1) {
+    private Block register(String string_1, Block block_1) {
         return Registry.register(Registry.BLOCK, new Identifier(string_1), block_1);
     }
 
-    protected static Item register(Block block_1, Item item_1) {
+    private Item register(Block block_1, Item item_1) {
         return register(Registry.BLOCK.getId(block_1), item_1);
     }
 
-    private static Item register(Identifier identifier_1, Item item_1) {
+    private Item register(Identifier identifier_1, Item item_1) {
         if (item_1 instanceof BlockItem) {
             ((BlockItem) item_1).appendBlocks(Item.BLOCK_ITEMS, item_1);
         }
@@ -112,8 +112,8 @@ public class Hat {
         return (Item) Registry.register(Registry.ITEM, identifier_1, item_1);
     }
 
-    private static Item register(BlockItem blockItem_1) {
-        return register((Block) blockItem_1.getBlock(), (Item) blockItem_1);
+    private Item register(BlockItem blockItem_1) {
+        return register(blockItem_1.getBlock(), blockItem_1);
     }
 
     public void load() {

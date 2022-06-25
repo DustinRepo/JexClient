@@ -1,30 +1,38 @@
-package me.dustin.jex.addon.cape;
+package me.dustin.jex.helper.addon.cape;
 
 import com.google.common.collect.Maps;
+import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
-import me.dustin.jex.addon.Addon;
+import me.dustin.jex.event.render.EventRenderFeature;
 import me.dustin.jex.helper.file.FileHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.render.GifDecoder;
+import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Identifier;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Cape {
+public enum CapeHelper {
+    INSTANCE;
     private static final HashMap<String, Identifier> capes = Maps.newHashMap();
     private static final HashMap<String, GifInfo> gifCapes = Maps.newHashMap();
     private static boolean selfAnimated;
 
-    public static void setPersonalCape(File file) {
+    @EventPointer
+    private final EventListener<EventRenderFeature> eventRenderFeatureEventListener = new EventListener<>(event -> {
+        if ((event.getFeatureRenderer() instanceof CapeFeatureRenderer || event.getFeatureRenderer() instanceof ElytraFeatureRenderer) && hasCape(event.getEntity().getUuidAsString().replace("-", "")))
+            event.cancel();
+    });
+
+    public void setPersonalCape(File file) {
         if (!file.exists())
             return;
         new Thread(() -> {
@@ -80,7 +88,7 @@ public class Cape {
         }).start();
     }
 
-    public static void parseCape(String cape, String uuid) {
+    public void parseCape(String cape, String uuid) {
         byte[] bytes = Base64.decodeBase64(cape);
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         GifDecoder decoder = new GifDecoder();
@@ -125,16 +133,16 @@ public class Cape {
         capes.put(uuid, id);
     }
 
-    public static void clear() {
+    public void clear() {
         capes.clear();
         gifCapes.clear();
     }
 
-    public static boolean hasCape(String uuid) {
+    public boolean hasCape(String uuid) {
         return capes.containsKey(uuid) || gifCapes.containsKey(uuid);
     }
 
-    public static Identifier getCape(String uuid) {
+    public Identifier getCape(String uuid) {
         if (!hasCape(uuid))
             return null;
         GifInfo gifInfo = gifCapes.get(uuid);
