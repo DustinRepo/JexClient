@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.jexgui;
 
+import me.dustin.events.EventManager;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.JexClient;
@@ -101,6 +102,7 @@ public class JexGuiScreen extends Screen {
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
         closeGui();
         event.setCancelled(true);
+        EventManager.unregister(this);
     }, new KeyPressFilter(EventKeyPressed.PressType.IN_MENU, GLFW.GLFW_KEY_ESCAPE, GLFW.GLFW_KEY_TAB));
 
     @Override
