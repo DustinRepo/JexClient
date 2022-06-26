@@ -57,7 +57,8 @@ public enum AddonHelper {
 				String cape = json.get("cape").getAsString();
 				String hat = json.get("hat").getAsString();
 				boolean linkedToAccount = json.get("linkedToAccount").getAsBoolean();
-				AddonResponse addonResponse = new AddonResponse(uuid, cape, hat, linkedToAccount);
+				boolean donator = json.get("donator").getAsBoolean();
+				AddonResponse addonResponse = new AddonResponse(uuid, cape, hat, linkedToAccount, donator);
 				responses.add(addonResponse);
 				if (cape != null && !cape.equals("null") && !cape.isEmpty())
 					CapeHelper.INSTANCE.parseCape(cape, uuid);
@@ -99,7 +100,8 @@ public enum AddonHelper {
 	public boolean isDonator(String uuid) {
 		if (!hasResquested(uuid))
 			loadAddons(uuid);
-		return HatHelper.INSTANCE.hasHat(uuid) && CapeHelper.INSTANCE.hasCape(uuid);
+		AddonResponse response = getResponse(uuid);
+		return response != null && response.isDonator();
 	}
 
 	private boolean hasResquested(String uuid) {
@@ -127,5 +129,5 @@ public enum AddonHelper {
 		HatHelper.hatPlayers.clear();
 	}
 
-	public record AddonResponse(String uuid, String cape, String hat, boolean linkedToAccount) {}
+	public record AddonResponse(String uuid, String cape, String hat, boolean linkedToAccount, boolean isDonator) {}
 }

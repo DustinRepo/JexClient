@@ -247,6 +247,8 @@ public class JexTitleScreen extends Screen {
 
             Render2DHelper.INSTANCE.drawFace(matrices, 2, (int)bottom + 2, 4, MCAPIHelper.INSTANCE.getPlayerSkin(Wrapper.INSTANCE.getMinecraft().getSession().getProfile().getId()));
             FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.welcome",(isDonator ? "\247r" : (AddonHelper.INSTANCE.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")) ? "\247a" : "\247f")) + Wrapper.INSTANCE.getMinecraft().getSession().getUsername()).styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 2, ColorHelper.INSTANCE.getRainbowColor());
+            Render2DHelper.INSTANCE.fillAndBorder(matrices, left, top, right, bottom, ColorHelper.INSTANCE.getClientColor(), 0x40000000, 1);
+            super.render(matrices, mouseX, mouseY, delta);
             if (AddonHelper.INSTANCE.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.name").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 12, 0xff696969);
                 AddonHelper.AddonResponse response = AddonHelper.INSTANCE.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
@@ -264,8 +266,6 @@ public class JexTitleScreen extends Screen {
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.not_linked").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 12, -1);
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.title.join_discord").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 22, -1);
             }
-            Render2DHelper.INSTANCE.fillAndBorder(matrices, left, top, right, bottom, ColorHelper.INSTANCE.getClientColor(), 0x40000000, 1);
-            super.render(matrices, mouseX, mouseY, delta);
         }
     }
 
