@@ -33,10 +33,11 @@ public enum EarsHelper {
 
     @EventPointer
     private final EventListener<EventPlayerEntityTexturedModelData> eventPlayerEntityTexturedModelDataEventListener = new EventListener<>(event -> {
-        event.getModelData().getRoot().addChild("ear", ModelPartBuilder.create(), ModelTransform.NONE);
-        ModelPartData modelPartData = event.getModelData().getRoot().getChild("ear");
-        modelPartData.addChild("left", ModelPartBuilder.create().uv(0, 0).cuboid(1.5F, -10.5F, -1.0F, 6.0F, 6.0F, 1.0F, event.getDilation(), 14.f / 64.f, 7.f / 64.f), ModelTransform.NONE);
-        modelPartData.addChild("right", ModelPartBuilder.create().uv(0, 0).cuboid(-7.5F, -10.5F, -1.0F, 6.0F, 6.0F, 1.0F, event.getDilation(), 14.f / 64.f, 7.f / 64.f), ModelTransform.NONE);
+        event.getModelData().getRoot().addChild("ear",
+                ModelPartBuilder.create()
+                    .uv(0, 0).cuboid(1.5F, -10.5F, -1.0F, 6.0F, 6.0F, 1.0F, event.getDilation(), 14.f / 64.f, 7.f / 64.f)
+                    .uv(0, 0).cuboid(-7.5F, -10.5F, -1.0F, 6.0F, 6.0F, 1.0F, event.getDilation(), 14.f / 64.f, 7.f / 64.f),
+                ModelTransform.NONE);
     });
 
     public void setPersonalEars(File file) {

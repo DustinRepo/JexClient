@@ -51,7 +51,8 @@ public enum PeglegHelper {
                 ModelPartBuilder.create()
                     .uv(0, 16).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 4.0F, 4.0F, event.getDilation()),
                 ModelTransform.pivot(1.9f, 12.0f, 0.0f));
-        event.getModelData().getRoot().addChild("cut_pants", ModelPartBuilder.create()
+        event.getModelData().getRoot().addChild("cut_pants",
+                ModelPartBuilder.create()
                     .uv(0, 48).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 4.0F, 4.0F, event.getDilation().add(0.25f)),
                 ModelTransform.pivot(1.9f, 12.0f, 0.0f));
         event.getModelData().getRoot().addChild("stick_pegleg",
