@@ -116,8 +116,8 @@ public class JexPersonalizationScreen extends Screen {
 
         Render2DHelper.INSTANCE.bindTexture(hatsPic);
         DrawableHelper.drawTexture(matrices, (int)midX + 8, 18, 0, 0, 120, 120, 120, 120);
-        HatHelper.HatInfo hatInfo = HatHelper.INSTANCE.getInfo(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
-        FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.personalization.current_hat", hatInfo == null ? "None" : StringUtils.capitalize(hatInfo.type.name().replace("_", " ").toLowerCase())), midX + 9, 192, -1);
+        HatHelper.HatType hatType = HatHelper.INSTANCE.getHatType(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+        FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.personalization.current_hat", hatType == null ? "None" : StringUtils.capitalize(hatType.name().replace("_", " ").toLowerCase())), midX + 9, 192, -1);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

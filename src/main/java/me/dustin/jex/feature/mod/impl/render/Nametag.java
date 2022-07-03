@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.helper.addon.ears.EarsHelper;
 import me.dustin.jex.helper.addon.hat.HatHelper;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender3D;
@@ -174,9 +175,13 @@ public class Nametag extends Feature {
                 float offset = entity.getHeight() + 0.2f;
                 if (entity instanceof PlayerEntity playerEntity) {
                     if (HatHelper.INSTANCE.hasHat(playerEntity)) {
-                        if (HatHelper.INSTANCE.getType(playerEntity) == HatHelper.HatType.TOP_HAT || playerEntity.getEquippedStack(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD)
+                        if (HatHelper.INSTANCE.getType(playerEntity) == HatHelper.HatType.TOP_HAT || playerEntity.getEquippedStack(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD || EarsHelper.INSTANCE.hasEars(playerEntity.getUuidAsString().replace("-", "")))
                             offset = entity.getHeight() + 0.7f;
                         else
+                            offset = entity.getHeight() + 0.4f;
+                    }
+                    if (EarsHelper.INSTANCE.hasEars(playerEntity.getUuidAsString().replace("-", ""))) {
+                        if (offset < entity.getHeight() + 0.4f)
                             offset = entity.getHeight() + 0.4f;
                     }
                 }

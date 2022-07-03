@@ -65,8 +65,6 @@ public class Nuker extends Feature {
         if (!stopWatch.hasPassed(delayProperty.value()))
             return;
         ArrayList<BlockPos> positions = getPositions();
-        if (positions.size() > 0)
-            JexClient.INSTANCE.getLogger().info(positions.size());
         positions.forEach(blockPos -> {
             new EventClickBlock(blockPos, Direction.UP, EventClickBlock.Mode.PRE).run();
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.UP));
@@ -99,7 +97,7 @@ public class Nuker extends Feature {
                             break;
                     }
                 }
-        //blockPosList.sort(Comparator.comparing(o -> o.getSquaredDistance(Wrapper.INSTANCE.getPlayer().getPos())));
+        blockPosList.sort(Comparator.comparing(o -> o.getSquaredDistance(Wrapper.INSTANCE.getPlayer().getPos())));
         return blockPosList;
     }
 }

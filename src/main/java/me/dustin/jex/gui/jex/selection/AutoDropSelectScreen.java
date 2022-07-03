@@ -278,7 +278,7 @@ public class AutoDropSelectScreen extends Screen {
         float buttonHeight = 20;
 
         for (Item item : Registry.ITEM) {
-            if (item == Items.AIR || item == HatHelper.INSTANCE.cowboyHat.asItem() || item == HatHelper.INSTANCE.topHat.asItem() || item == HatHelper.INSTANCE.propeller.asItem() || item == HatHelper.INSTANCE.crown.asItem() || item == HatHelper.INSTANCE.halo.asItem())
+            if (item == Items.AIR)
                 continue;
             if (AutoDrop.INSTANCE.getItems().contains(item)) {
                 float y = startY + (buttonHeight * allowedCount);
@@ -315,7 +315,7 @@ public class AutoDropSelectScreen extends Screen {
         float buttonHeight = 20;
 
         for (Item item : Registry.ITEM) {
-            if (item == Items.AIR || item == HatHelper.INSTANCE.cowboyHat.asItem() || item == HatHelper.INSTANCE.topHat.asItem() || item == HatHelper.INSTANCE.propeller.asItem() || item == HatHelper.INSTANCE.crown.asItem() || item == HatHelper.INSTANCE.halo.asItem())
+            if (item == Items.AIR)
                 continue;
             String itemName = Registry.ITEM.getId(item).toString();
             if (itemName.contains(":"))

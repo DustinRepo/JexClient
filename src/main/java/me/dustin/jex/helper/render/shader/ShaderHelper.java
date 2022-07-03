@@ -20,8 +20,6 @@ public enum ShaderHelper {
 
     private static Shader rainbowEnchantShader;
     private static Shader translucentShader;
-    private static Shader testShader;
-
     public void drawStorageFBO() {
         if (canDrawFBO()) {
             RenderSystem.enableBlend();
@@ -76,9 +74,10 @@ public enum ShaderHelper {
 
     public static void loadCustomMCShaders(ResourceFactory factory) {
         try {
-            rainbowEnchantShader = new Shader(factory, "jex:rainbow_enchant", VertexFormats.POSITION_TEXTURE);
-            translucentShader = new Shader(factory, "jex:translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-            testShader = new Shader(factory, "jex:test", VertexFormats.POSITION_COLOR);
+            if (rainbowEnchantShader == null) {
+                rainbowEnchantShader = new Shader(factory, "jex:rainbow_enchant", VertexFormats.POSITION_TEXTURE);
+                translucentShader = new Shader(factory, "jex:translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,9 +99,4 @@ public enum ShaderHelper {
     public static Shader getTranslucentShader() {
         return translucentShader;
     }
-
-    public static Shader getTestShader() {
-        return testShader;
-    }
-
 }

@@ -1,3 +1,11 @@
+0.8.3
+Added more cosmetics available through the Jex website, including new Hats, customizable Ears, Peg-Legs, an Appendage, and the Dinnerbone upside-down effect
+Added Swim mode to Jesus
+Added ability to use Nuker in survival
+Added translucency to capes
+Fixed CustomMainMenu no longer displaying custom capes properly
+Fixed EnchantColor not allowing customization after changing texture packs
+
 0.8.2
 Added Nuker mod
 Fixed JexGUI sometimes opening the pause menu when closing the menu

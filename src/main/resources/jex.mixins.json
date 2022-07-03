@@ -59,6 +59,7 @@
     "minecraft.MixinPersistentProjectileEntity",
     "minecraft.MixinPlayerEntity",
     "minecraft.MixinPlayerEntityRenderer",
+    "minecraft.MixinPlayerEntityModel",
     "minecraft.MixinPowderSnowBlock",
     "minecraft.MixinProjectileEntity",
     "minecraft.MixinRenderLayers",

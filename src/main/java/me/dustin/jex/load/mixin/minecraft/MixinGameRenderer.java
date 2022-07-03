@@ -76,21 +76,6 @@ public abstract class MixinGameRenderer {
         new EventRender3D(matrixStack1, partialTicks).run();
     }
 
-    @Inject(method = "preloadShaders", at = @At("RETURN"))
-    public void preLoadShaders1(ResourceFactory factory, CallbackInfo ci) {
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
-            @Override
-            public void reload(ResourceManager manager) {
-                ShaderHelper.loadCustomMCShaders(manager);
-            }
-
-            @Override
-            public Identifier getFabricId() {
-                return new Identifier("jex:shaders/core/");
-            }
-        });
-    }
-
     @Inject(method = "getRenderTypeTranslucentShader", at = @At("HEAD"), cancellable = true)
     private static void overrideTranslucentShader(CallbackInfoReturnable<Shader> cir) {
         EventGetTranslucentShader eventGetTranslucentShader = new EventGetTranslucentShader(renderTypeTranslucentShader).run();

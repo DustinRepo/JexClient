@@ -278,7 +278,7 @@ public class SearchSelectScreen extends Screen {
         float buttonHeight = 20;
 
         for (Block block : Registry.BLOCK) {
-            if (block == Blocks.AIR || block == HatHelper.INSTANCE.cowboyHat || block == HatHelper.INSTANCE.halo || block == HatHelper.INSTANCE.topHat || block == HatHelper.INSTANCE.crown || block == HatHelper.INSTANCE.propeller)
+            if (block == Blocks.AIR)
                 continue;
             if (Search.getBlocks().keySet().contains(block)) {
                 float y = startY + (buttonHeight * allowedCount);
@@ -315,7 +315,7 @@ public class SearchSelectScreen extends Screen {
         float buttonHeight = 20;
 
         for (Block block : Registry.BLOCK) {
-            if (block == Blocks.AIR || block == HatHelper.INSTANCE.cowboyHat || block == HatHelper.INSTANCE.halo || block == HatHelper.INSTANCE.topHat || block == HatHelper.INSTANCE.crown || block == HatHelper.INSTANCE.propeller)
+            if (block == Blocks.AIR)
                 continue;
             String blockName = Registry.BLOCK.getId(block).toString();
             if (blockName.contains(":"))

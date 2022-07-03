@@ -2,7 +2,10 @@ package me.dustin.jex.load.mixin.minecraft;
 
 import me.dustin.jex.helper.addon.cape.JexCapeFeatureRenderer;
 import me.dustin.jex.helper.addon.cape.JexElytraFeatureRenderer;
+import me.dustin.jex.helper.addon.ears.JexEarsFeatureRenderer;
 import me.dustin.jex.helper.addon.hat.JexHatFeatureRenderer;
+import me.dustin.jex.helper.addon.pegleg.JexPeglegFeatureRenderer;
+import me.dustin.jex.helper.addon.penis.JexPenisFeatureRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
@@ -24,6 +27,9 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Pla
 	private void construct(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
 		addFeature(new JexHatFeatureRenderer(this));
 		addFeature(new JexCapeFeatureRenderer(this));
+		addFeature(new JexEarsFeatureRenderer(this));
+		addFeature(new JexPenisFeatureRenderer(this));
+		addFeature(new JexPeglegFeatureRenderer(this));
 		addFeature(new JexElytraFeatureRenderer(this, ctx.getModelLoader()));
 	}
 

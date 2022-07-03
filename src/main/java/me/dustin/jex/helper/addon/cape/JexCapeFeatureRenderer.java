@@ -1,7 +1,6 @@
 package me.dustin.jex.helper.addon.cape;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import me.dustin.jex.helper.addon.AddonHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -11,11 +10,13 @@ import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 
@@ -34,6 +35,10 @@ public class JexCapeFeatureRenderer extends FeatureRenderer<PlayerEntity, Player
         if (itemStack.isOf(Items.ELYTRA)) {
             return;
         }
+        AddonHelper.AddonResponse addonResponse = AddonHelper.INSTANCE.getResponse(uuid);
+        render(matrixStack, vertexConsumerProvider, light, playerEntity, tickDelta, CapeHelper.INSTANCE.getCape(uuid), addonResponse.enchantedcape());
+    }
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, PlayerEntity playerEntity, float tickDelta, Identifier texture, boolean enchanted) {
         matrixStack.push();
         matrixStack.translate(0.0, 0.0, 0.125);
         double d = MathHelper.lerp(tickDelta, playerEntity.prevCapeX, playerEntity.capeX) - MathHelper.lerp(tickDelta, playerEntity.prevX, playerEntity.getX());
@@ -59,7 +64,7 @@ public class JexCapeFeatureRenderer extends FeatureRenderer<PlayerEntity, Player
         matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(6.0f + r / 2.0f + q));
         matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(s / 2.0f));
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - s / 2.0f));
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(CapeHelper.INSTANCE.getCape(uuid)));
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumerProvider, RenderLayer.getArmorCutoutNoCull(texture), false, enchanted);
         this.getContextModel().renderCape(matrixStack, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
     }

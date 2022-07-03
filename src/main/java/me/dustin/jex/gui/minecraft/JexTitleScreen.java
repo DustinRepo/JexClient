@@ -251,9 +251,8 @@ public class JexTitleScreen extends Screen {
             super.render(matrices, mouseX, mouseY, delta);
             if (AddonHelper.INSTANCE.isLinkedToAccount(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
                 FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.name").styled(style -> style.withColor(Formatting.GRAY)), 37, bottom + 12, 0xff696969);
-                AddonHelper.AddonResponse response = AddonHelper.INSTANCE.getResponse(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
                 try {
-                    if (response != null && response.cape() != null && !response.cape().isEmpty() && !response.cape().equalsIgnoreCase("null")) {
+                    if (CapeHelper.INSTANCE.hasCape(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""))) {
                         Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, CapeHelper.INSTANCE.getCape(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", "")), capeYaw, 0);
                     } else {
                         Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("assets/jex", "cape/jex_cape.png"), capeYaw, 0);
