@@ -112,6 +112,8 @@ public enum PeglegHelper {
     }
 
     public boolean hasPegleg(PlayerEntity playerEntity) {
+        if (playerEntity == null)
+            return false;
         return hasPegleg(playerEntity.getUuid().toString().replace("-", ""));
     }
 
