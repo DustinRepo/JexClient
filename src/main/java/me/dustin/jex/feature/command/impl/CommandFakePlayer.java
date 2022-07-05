@@ -59,7 +59,6 @@ public class CommandFakePlayer extends Command {
             return 1;
         }))));
         dispatcher.register(literal("fp").redirect(node));
-        dispatcher.register(literal("player").redirect(node));
     }
 
     @Override
