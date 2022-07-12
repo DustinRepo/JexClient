@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public enum PeglegHelper {
     INSTANCE;
@@ -27,17 +28,17 @@ public enum PeglegHelper {
     private ModelPart stick_pegleg;
     private ModelPart lightning_rod_pegleg;
     private ModelPart robot_pegleg;
-    private PlayerEntity currentRender;
+    private UUID currentRender;
 
     @EventPointer
     private final EventListener<EventLivingEntityCallRender> eventLivingEntityCallRenderEventListener = new EventListener<>(event -> {
         if (event.getLivingEntity() instanceof PlayerEntity playerEntity)
-            currentRender = playerEntity;
+            currentRender = playerEntity.getGameProfile().getId();
     });
 
     @EventPointer
     private final EventListener<EventPlayerEntityGetBodyParts> eventPlayerEntityGetBodyPartsEventListener = new EventListener<>(event -> {
-       if (hasPegleg(currentRender)) {
+       if (hasPegleg(currentRender.toString().replace("-", ""))) {
            event.getBodyParts().remove(event.getPlayerEntityModel().leftLeg);
            event.getBodyParts().remove(event.getPlayerEntityModel().leftPants);
            event.getBodyParts().add(cut_leg);
@@ -111,6 +112,12 @@ public enum PeglegHelper {
         return peglegs.get(uuid);
     }
 
+    public PeglegType getType(String uuid) {
+        if (!peglegs.containsKey(uuid))
+            return null;
+        return peglegs.get(uuid);
+    }
+
     public boolean hasPegleg(PlayerEntity playerEntity) {
         if (playerEntity == null)
             return false;
@@ -123,6 +130,10 @@ public enum PeglegHelper {
 
     public Identifier getPeglegTexture(String uuid) {
         PeglegType type = peglegs.get(uuid);
+        return getPeglegTexture(type);
+    }
+
+    public Identifier getPeglegTexture(PeglegType type) {
         switch (type) {
             case STICK -> {
                 return STICK;
@@ -139,15 +150,9 @@ public enum PeglegHelper {
 
     public void renderPegleg(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, PeglegType peglegType) {
         switch (peglegType) {
-            case STICK -> {
-                stick_pegleg.render(matrices, vertices, light, overlay);
-            }
-            case LIGHTNING_ROD -> {
-                lightning_rod_pegleg.render(matrices, vertices, light, overlay);
-            }
-            case ROBOT -> {
-                robot_pegleg.render(matrices, vertices, light, overlay);
-            }
+            case STICK -> stick_pegleg.render(matrices, vertices, light, overlay);
+            case LIGHTNING_ROD -> lightning_rod_pegleg.render(matrices, vertices, light, overlay);
+            case ROBOT -> robot_pegleg.render(matrices, vertices, light, overlay);
         }
     }
 
@@ -157,6 +162,10 @@ public enum PeglegHelper {
 
     public ModelPart getCut_Pants() {
         return cut_pants;
+    }
+
+    public void setCurrentRender(UUID currentRender) {
+        this.currentRender = currentRender;
     }
 
     public enum PeglegType {

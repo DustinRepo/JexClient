@@ -11,11 +11,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import me.dustin.jex.gui.site.JexLoginRegisterScreen;
+import me.dustin.jex.gui.site.JexWebsiteScreen;
 import me.dustin.jex.helper.addon.AddonHelper;
 import me.dustin.jex.helper.addon.cape.CapeHelper;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.ClientSettingsFile;
 import me.dustin.jex.gui.changelog.ChangelogScreen;
+import me.dustin.jex.helper.network.jexsite.JexSiteHelper;
 import net.minecraft.util.Formatting;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -162,9 +165,18 @@ public class JexTitleScreen extends Screen {
         this.addDrawableChild(new ButtonWidget(2, y + 24 * 4, 100, 20, Text.translatable("menu.quit"), button -> {
             Wrapper.INSTANCE.getMinecraft().scheduleStop();
         }));
-        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, Text.translatable("Changelog"), button -> {
+        this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, Text.translatable("jex.changelog"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new ChangelogScreen());
         }));
+        /*if (JexSiteHelper.INSTANCE.getUser() == null) {
+            this.addDrawableChild(new ButtonWidget(107, height - 22, 100, 20, Text.translatable("jex.site.login"), button -> {
+                Wrapper.INSTANCE.getMinecraft().setScreen(new JexLoginRegisterScreen(true, this));
+            }));
+        } else {
+            this.addDrawableChild(new ButtonWidget(107, height - 22, 100, 20, Text.translatable("jex.site.edit"), button -> {
+                Wrapper.INSTANCE.getMinecraft().setScreen(new JexWebsiteScreen(this));
+            }));
+        }*/
     }
 
     private void switchToRealms() {

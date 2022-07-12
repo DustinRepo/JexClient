@@ -132,5 +132,22 @@
   "jex.waypoint.name": "Waypoint Name",
   "jex.waypoint.x": "X",
   "jex.waypoint.y": "Y",
-  "jex.waypoint.z": "Z"
+  "jex.waypoint.z": "Z",
+  "jex.site.login": "Login to Jex Site",
+  "jex.site.register": "Register to Jex Site",
+  "jex.site.connect": "Link Account",
+  "jex.site.username": "Jex Username",
+  "jex.site.email": "Email",
+  "jex.site.password": "Password",
+  "jex.site.password_confirm": "Confirm Password",
+  "jex.site.edit": "Edit Jex Profile",
+  "jex.site.show_name": "Profile name: %s",
+  "jex.site.mc_name": "Minecraft account: %s",
+  "jex.site.no_mc": "No Minecraft account linked.",
+  "jex.site.no_account_question": "Don't have a Jex account?",
+  "jex.site.player_preview": "Preview",
+  "jex.site.connect_error": "Unable to link account",
+  "jex.site.cape": "Cape",
+  "jex.site.ears": "Ears",
+  "jex.site.leg": "Peg-leg"
 }

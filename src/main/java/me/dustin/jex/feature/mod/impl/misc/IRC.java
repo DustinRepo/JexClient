@@ -54,10 +54,12 @@ public class IRC extends Feature {
 
     @Override
     public void onEnable() {
-        ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
-        ircClient.setMessageConsumer(messageListener);
-        ircClient.setDisconnectConsumer(disconnectListener);
-        ircClient.connect("132.145.154.217", 6969);
+        if (ircClient == null) {
+            ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
+            ircClient.setMessageConsumer(messageListener);
+            ircClient.setDisconnectConsumer(disconnectListener);
+            ircClient.connect("132.145.154.217", 6969);
+        }
         super.onEnable();
     }
 

@@ -23,6 +23,8 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public enum AddonHelper {
 	INSTANCE;
@@ -58,51 +60,57 @@ public enum AddonHelper {
 		loadAddons(s);
 	}
 
+	private AddonResponse loadAddonsNoThread(String uuid) {
+		if (!requestedUUIds.contains(uuid))
+			requestedUUIds.add(uuid);
+		try {
+			String url = "%sinc/profile-info.inc.php?uuid=%s".formatted(JexClient.INSTANCE.getBaseUrl(), uuid);
+			String response = WebHelper.INSTANCE.httpRequest(url, null, null, "GET").data();
+			JsonObject json = new Gson().fromJson(response, JsonObject.class);
+			if (json.has("error")) {
+				JexClient.INSTANCE.getLogger().error("Addons: %s: %s".formatted(json.get("error").getAsString(), json.get("errorMessage").getAsString()));
+				return null;
+			}
+			String cape = json.has("cape") ? json.get("cape").getAsString() : "none";
+			String hat = json.has("hat") ? json.get("hat").getAsString() : "none";
+			String pegleg = json.has("pegleg") ? json.get("pegleg").getAsString() : "none";
+			String ears = json.has("ears") ? json.get("ears").getAsString() : "none";
+			String penis = json.has("penis") ? json.get("penis").getAsString() : "none";
+			boolean donator = json.has("donator") && json.get("donator").getAsBoolean();
+			boolean upsideDown = json.has("upsidedown") && json.get("upsidedown").getAsBoolean();
+			boolean enchantedcape = json.has("enchantedcape") && json.get("enchantedcape").getAsBoolean();
+			boolean enchantedears = json.has("enchantedears") && json.get("enchantedears").getAsBoolean();
+			boolean enchantedleg = json.has("enchantedleg") && json.get("enchantedleg").getAsBoolean();
+			AddonResponse addonResponse = new AddonResponse(uuid, upsideDown, enchantedcape, enchantedears, enchantedleg, donator);
+			responses.add(addonResponse);
+			if (!hat.equals("none"))
+				HatHelper.INSTANCE.setHat(uuid, hat);
+
+			if (!pegleg.equalsIgnoreCase("none"))
+				PeglegHelper.INSTANCE.setPegleg(uuid, pegleg);
+
+			if (!ears.equalsIgnoreCase("none"))
+				EarsHelper.INSTANCE.parseEars(ears, uuid);
+
+			if (!penis.equalsIgnoreCase("none"))
+				PenisHelper.INSTANCE.parsePenis(penis, uuid);
+
+			if (!cape.equalsIgnoreCase("none"))
+				CapeHelper.INSTANCE.parseCape(cape, uuid);
+			else
+				downloadMCCapes(uuid);
+			return addonResponse;
+		} catch (Exception e) {
+			downloadMCCapes(uuid);
+		}
+		return null;
+	}
+
 	private void loadAddons(String uuid) {
 		if (requestedUUIds.contains(uuid))
 			return;
 		requestedUUIds.add(uuid);
-		Thread addonDownload = new Thread(() -> {
-			try {
-				String url = "%sinc/profile-info.inc.php?uuid=%s".formatted(JexClient.INSTANCE.getBaseUrl(), uuid);
-				String response = WebHelper.INSTANCE.httpRequest(url, null, null, "GET").data();
-				JsonObject json = new Gson().fromJson(response, JsonObject.class);
-				if (json.has("error")) {
-					JexClient.INSTANCE.getLogger().error("Addons: %s: %s".formatted(json.get("error").getAsString(), json.get("errorMessage").getAsString()));
-					return;
-				}
-				String cape = json.has("cape") ? json.get("cape").getAsString() : "none";
-				String hat = json.has("hat") ? json.get("hat").getAsString() : "none";
-				String pegleg = json.has("pegleg") ? json.get("pegleg").getAsString() : "none";
-				String ears = json.has("ears") ? json.get("ears").getAsString() : "none";
-				String penis = json.has("penis") ? json.get("penis").getAsString() : "none";
-				boolean donator = json.has("donator") && json.get("donator").getAsBoolean();
-				boolean upsideDown = json.has("upsidedown") && json.get("upsidedown").getAsBoolean();
-				boolean enchantedcape = json.has("enchantedcape") && json.get("enchantedcape").getAsBoolean();
-				boolean enchantedears = json.has("enchantedears") && json.get("enchantedears").getAsBoolean();
-				boolean enchantedleg = json.has("enchantedleg") && json.get("enchantedleg").getAsBoolean();
-				AddonResponse addonResponse = new AddonResponse(uuid, upsideDown, enchantedcape, enchantedears, enchantedleg, donator);
-				responses.add(addonResponse);
-				if (!hat.equals("none"))
-					HatHelper.INSTANCE.setHat(uuid, hat);
-
-				if (!pegleg.equalsIgnoreCase("none"))
-					PeglegHelper.INSTANCE.setPegleg(uuid, pegleg);
-
-				if (!ears.equalsIgnoreCase("none"))
-					EarsHelper.INSTANCE.parseEars(ears, uuid);
-
-				if (!penis.equalsIgnoreCase("none"))
-					PenisHelper.INSTANCE.parsePenis(penis, uuid);
-
-				if (!cape.equalsIgnoreCase("none"))
-					CapeHelper.INSTANCE.parseCape(cape, uuid);
-				else
-					downloadMCCapes(uuid);
-			} catch (Exception e) {
-				downloadMCCapes(uuid);
-			}
-		});
+		Thread addonDownload = new Thread(() -> loadAddonsNoThread(uuid));
 		addonDownload.setDaemon(true);
 		addonDownload.start();
 	}
@@ -152,6 +160,14 @@ public enum AddonHelper {
 			}
 		} catch (ConcurrentModificationException e) {}
 		return null;
+	}
+
+	public void getAddonResponse(String uuid, Consumer<AddonResponse> consumer) {
+		if (!requestedUUIds.contains(uuid)) {
+			new Thread(() -> {
+				consumer.accept(loadAddonsNoThread(uuid));
+			}).start();
+		}
 	}
 
 	public void clearAddons() {

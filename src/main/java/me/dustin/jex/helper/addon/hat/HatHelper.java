@@ -132,6 +132,12 @@ public enum HatHelper {
         return hats.get(uuid);
     }
 
+    public HatType getType(String uuid) {
+        if (!hats.containsKey(uuid))
+            return null;
+        return hats.get(uuid);
+    }
+
     public boolean hasHat(PlayerEntity playerEntity) {
         return hasHat(playerEntity.getUuid().toString().replace("-", ""));
     }

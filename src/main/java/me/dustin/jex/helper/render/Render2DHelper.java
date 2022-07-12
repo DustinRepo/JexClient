@@ -1,6 +1,11 @@
 package me.dustin.jex.helper.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.jex.helper.addon.AddonHelper;
+import me.dustin.jex.helper.addon.cape.CapeHelper;
+import me.dustin.jex.helper.addon.ears.EarsHelper;
+import me.dustin.jex.helper.addon.hat.HatHelper;
+import me.dustin.jex.helper.addon.pegleg.PeglegHelper;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.math.Matrix4x4;
@@ -11,16 +16,21 @@ import me.dustin.jex.load.impl.IItemRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.PlayerEntityRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
@@ -40,9 +50,8 @@ import java.awt.*;
 
 public enum Render2DHelper {
     INSTANCE;
-    private final Identifier cog = new Identifier("jex", "gui/click/cog.png");
     private final static Identifier MAP_BACKGROUND = new Identifier("textures/map/map_background_checkerboard.png");
-
+    private EntityRendererFactory.Context context;
     public void setup2DRender(boolean disableDepth) {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
@@ -77,7 +86,11 @@ public enum Render2DHelper {
         drawTexture(matrices, x, x + width, y, y + height, 0, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
     }
 
-    private void drawTexture(MatrixStack matrices, float x0, float y0, float x1, float y1, int z, float regionWidth, float regionHeight, float u, float v, int textureWidth, int textureHeight) {
+    private void renderTexture(MatrixStack matrices, float x, float y, float z, float width, float height, float u, float v, float regionWidth, float regionHeight, int textureWidth, int textureHeight) {
+        drawTexture(matrices, x, x + width, y, y + height, z, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
+    }
+
+    private void drawTexture(MatrixStack matrices, float x0, float y0, float x1, float y1, float z, float regionWidth, float regionHeight, float u, float v, int textureWidth, int textureHeight) {
         drawTexturedQuad(matrices.peek().getPositionMatrix(), x0, y0, x1, y1, z, (u + 0.0F) / (float)textureWidth, (u + (float)regionWidth) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)regionHeight) / (float)textureHeight);
     }
 
@@ -85,10 +98,10 @@ public enum Render2DHelper {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(matrices, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
-        bufferBuilder.vertex(matrices, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
-        bufferBuilder.vertex(matrices, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
-        bufferBuilder.vertex(matrices, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
+        bufferBuilder.vertex(matrices, x0, y1, z).texture(u0, v1).next();
+        bufferBuilder.vertex(matrices, x1, y1, z).texture(u1, v1).next();
+        bufferBuilder.vertex(matrices, x1, y0, z).texture(u1, v0).next();
+        bufferBuilder.vertex(matrices, x0, y0, z).texture(u0, v0).next();
         bufferBuilder.clear();
         BufferRenderer.drawWithShader(bufferBuilder.end());
     }
@@ -96,10 +109,10 @@ public enum Render2DHelper {
     public void drawTexturedQuadNoDraw(Matrix4f matrices, float x0, float x1, float y0, float y1, float z, float u0, float u1, float v0, float v1) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.vertex(matrices, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
-        bufferBuilder.vertex(matrices, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
-        bufferBuilder.vertex(matrices, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
-        bufferBuilder.vertex(matrices, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
+        bufferBuilder.vertex(matrices, x0, y1, z).texture(u0, v1).next();
+        bufferBuilder.vertex(matrices, x1, y1, z).texture(u1, v1).next();
+        bufferBuilder.vertex(matrices, x1, y0, z).texture(u1, v0).next();
+        bufferBuilder.vertex(matrices, x0, y0, z).texture(u0, v0).next();
     }
 
     public void fill(MatrixStack poseStack, float x1, float y1, float x2, float y2, int color) {
@@ -127,10 +140,10 @@ public enum Render2DHelper {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x1, y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x2, y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x2, y1, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x1, y1, 0.0F).color(g, h, k, f).next();
         bufferBuilder.clear();
         BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
@@ -157,18 +170,147 @@ public enum Render2DHelper {
         float h = (float)(color >> 8 & 255) / 255.0F;
         float k = (float)(color & 255) / 255.0F;
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x1, y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x2, y2, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x2, y1, 0.0F).color(g, h, k, f).next();
+        bufferBuilder.vertex(matrix, x1, y1, 0.0F).color(g, h, k, f).next();
     }
 
     public void drawFace(MatrixStack poseStack, float x, float y, int renderScale, Identifier id) {
         try {
             bindTexture(id);
+            RenderSystem.enableBlend();
             drawTexture(poseStack, x, y, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 64 * renderScale, 64 * renderScale);
             drawTexture(poseStack, x, y, 8 * renderScale, 8 * renderScale, 40 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 64 * renderScale, 64 * renderScale);
         }catch (Exception e){}
+    }
+
+
+
+    public void renderPlayerIn3D(Identifier skin, String uuid, float x, float y, float yaw, float scale) {
+        AddonHelper.AddonResponse addonResponse = AddonHelper.INSTANCE.getResponse(uuid);
+        if (context == null) {
+            context = new EntityRendererFactory.Context(Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher(), Wrapper.INSTANCE.getMinecraft().getItemRenderer(), Wrapper.INSTANCE.getMinecraft().getBlockRenderManager(), Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().getHeldItemRenderer(), Wrapper.INSTANCE.getMinecraft().getResourceManager(), Wrapper.INSTANCE.getMinecraft().getEntityModelLoader(), Wrapper.INSTANCE.getTextRenderer());
+        }
+        PlayerEntityModel<PlayerEntity> playerEntityPlayerEntityModel = new PlayerEntityModel<>(context.getPart(EntityModelLayers.PLAYER), false);
+        playerEntityPlayerEntityModel.getHead().scale(new Vec3f(-0.3f, -0.3f, -0.3f));//??? no fucking clue why it's needed
+
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.push();
+        matrixStack.translate(x, y - scale / 2.f, 1050.0);
+        matrixStack.scale(1.0f, 1.0f, -1.0f);
+        RenderSystem.applyModelViewMatrix();
+        MatrixStack matrixStack2 = new MatrixStack();
+        matrixStack2.translate(0.0, 0.0, 1000.0);
+        matrixStack2.scale(scale, scale, scale);
+        Quaternion quaternion = Vec3f.POSITIVE_Z.getDegreesQuaternion(0);
+        Quaternion quaternion2 = Vec3f.POSITIVE_Y.getDegreesQuaternion(yaw);
+        quaternion.hamiltonProduct(quaternion2);
+        matrixStack2.multiply(quaternion);
+        DiffuseLighting.method_34742();
+        int overlayTexture = OverlayTexture.DEFAULT_UV;
+        VertexConsumerProvider.Immediate vertexConsumerProvider = Wrapper.INSTANCE.getMinecraft().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(skin));
+        playerEntityPlayerEntityModel.render(matrixStack2, vertexConsumer, 0xF000F0, overlayTexture, 1, 1, 1, 1);
+        if (EarsHelper.INSTANCE.hasEars(uuid)) {
+            vertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumerProvider, RenderLayer.getArmorCutoutNoCull(EarsHelper.INSTANCE.getEars(uuid)), false, addonResponse != null && addonResponse.enchantedears());
+            matrixStack2.translate(0, 0.8, 0);
+            playerEntityPlayerEntityModel.renderEars(matrixStack2, vertexConsumer, 0xF000F0, overlayTexture);
+            matrixStack2.translate(0, -0.8, 0);
+        }
+        if (CapeHelper.INSTANCE.hasCape(uuid)) {
+            vertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumerProvider, RenderLayer.getArmorCutoutNoCull(CapeHelper.INSTANCE.getCape(uuid)), false, addonResponse != null && addonResponse.enchantedcape());
+            matrixStack2.translate(0, 0.75, 0.05);
+            matrixStack2.scale(0.5f, 0.5f, 0.5f);
+            matrixStack2.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+            matrixStack2.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(10));
+            playerEntityPlayerEntityModel.renderCape(matrixStack2, vertexConsumer, 0xF000F0, overlayTexture);
+            matrixStack2.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(10));
+            matrixStack2.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(180.0f));
+            matrixStack2.scale(2, 2, 2);
+            matrixStack2.translate(0, -0.75, 0.1);
+        }
+        if (PeglegHelper.INSTANCE.hasPegleg(uuid)) {
+            vertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumerProvider, RenderLayer.getArmorCutoutNoCull(PeglegHelper.INSTANCE.getPeglegTexture(uuid)), false, addonResponse != null && addonResponse.enchantedleg());
+            matrixStack2.translate(0, 1.125, -0.15);
+            matrixStack2.scale(0.5f, 0.5f, 0.5f);
+            PeglegHelper.INSTANCE.renderPegleg(matrixStack2, vertexConsumer, 0xF000F0, overlayTexture, PeglegHelper.INSTANCE.getType(uuid));
+            matrixStack2.translate(0, -1.125, 0.15);
+            matrixStack2.scale(2, 2, 2);
+        }
+        if (HatHelper.INSTANCE.hasHat(uuid)) {
+            vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(HatHelper.INSTANCE.getHatTexture(uuid)));
+            matrixStack2.translate(0, -0.075, -0.075);
+            matrixStack2.scale(0.5f, 0.5f, 0.5f);
+            HatHelper.INSTANCE.renderHat(matrixStack2, vertexConsumer, 0xF000F0, overlayTexture, HatHelper.INSTANCE.getType(uuid));
+            matrixStack2.translate(0, 0.075, 0.075);
+            matrixStack2.scale(2, 2, 2);
+        }
+        vertexConsumerProvider.draw();
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
+        DiffuseLighting.enableGuiDepthLighting();
+    }
+
+    public void draw3DHead(MatrixStack matrixStack, Identifier skin, float x, float y, float yaw, float pitch) {
+        bindTexture(skin);
+        RenderSystem.enableBlend();
+        matrixStack.translate(x - 4, y - 4, 0);
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 1, 0), yaw, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), pitch, true));
+
+        //face
+        renderTexture(matrixStack, -8, -8, -8, 32, 32, 8, 8, 8, 8, 64, 64);
+        renderTexture(matrixStack, -8, -8, -8, 32, 32, 40, 8, 8, 8, 64, 64);
+
+        //top of head
+        matrixStack.multiply(new Quaternion(new Vec3f(-1, 0, 0), 90, true));
+        renderTexture(matrixStack, -8, -24, -8, 32, 32, 8, 0, 8, 8, 64, 64);
+        renderTexture(matrixStack, -8, -24, -8, 32, 32, 40, 0, 8, 8, 64, 64);
+        matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90, true));
+
+        //back of head
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 1, 0), 180, true));
+        renderTexture(matrixStack, -24, -8, -24, 32, 32, 24, 8, 8, 8, 64, 64);
+        renderTexture(matrixStack, -24, -8, -24, 32, 32, 48, 8, 8, 8, 64, 64);
+        matrixStack.multiply(new Quaternion(new Vec3f(0, -1, 0), 180, true));
+
+        //bottom of head
+        matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 0, 1), 180, true));
+        renderTexture(matrixStack, -24, -24, -24, 32, 32, 16, 0, 8, 8, 64, 64);
+        renderTexture(matrixStack, -24, -24, -24, 32, 32, 48, 0, 8, 8, 64, 64);
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 0, -1), 180, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(-1, 0, 0), 90, true));
+
+        //right side head
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 1, 0), 90, true));
+        renderTexture(matrixStack, -24, -8, -8, 32, 32, 0, 8, 8, 8, 64, 64);
+        renderTexture(matrixStack, -24, -8, -8, 32, 32, 32, 8, 8, 8, 64, 64);
+        matrixStack.multiply(new Quaternion(new Vec3f(0, -1, 0), 90, true));
+
+        //left side head
+        matrixStack.multiply(new Quaternion(new Vec3f(0, 1, 0), 270, true));
+        renderTexture(matrixStack, -8, -8, -24, 32, 32, 16, 8, 8, 8, 64, 64);
+        renderTexture(matrixStack, -8, -8, -24, 32, 32, 48, 8, 8, 8, 64, 64);
+        matrixStack.multiply(new Quaternion(new Vec3f(0, -1, 0), 270, true));
+    }
+
+    public void draw3DCape(MatrixStack poseStack, float x, float y, Identifier identifier, float yaw, float pitch) {
+        poseStack.push();
+        poseStack.translate(x + 16, y + 30, 64);
+        poseStack.multiply(new Quaternion(new Vec3f(0, 1, 0), yaw, true));
+        poseStack.multiply(new Quaternion(new Vec3f(1, 0, 0), pitch, true));
+        //
+        bindTexture(identifier);
+        //front of cape
+        DrawableHelper.drawTexture(poseStack, -16, -30, 2.5f, 4, 32, 60, 198, 124);
+        //back of cape
+        poseStack.multiply(new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), 180, true));
+        DrawableHelper.drawTexture(poseStack, -16, -30, 34.5f, 4, 32, 60, 198, 124);
+        poseStack.multiply(new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), -180, true));
+        //
+        poseStack.pop();
     }
 
     public void fillAndBorder(MatrixStack poseStack, float left, float top, float right, float bottom, int bcolor, int icolor, float f) {
@@ -371,31 +513,6 @@ public enum Render2DHelper {
         }
     }
 
-    public void drawCheckmark(MatrixStack poseStack, float x, float y, int color) {
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        Matrix4f matrix = poseStack.peek().getPositionMatrix();
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferBuilder.begin(DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-        float f = (float)(color >> 24 & 255) / 255.0F;
-        float g = (float)(color >> 16 & 255) / 255.0F;
-        float h = (float)(color >> 8 & 255) / 255.0F;
-        float k = (float)(color & 255) / 255.0F;
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferBuilder.vertex(matrix, x, y + 5, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, x + 3, y + 8, 0.0F).color(g, h, k, f).next();
-
-        bufferBuilder.vertex(matrix, x + 3, y + 8, 0.0F).color(g, h, k, f).next();
-        bufferBuilder.vertex(matrix, x + 9, y - 1, 0.0F).color(g, h, k, f).next();
-
-        bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
-    }
-
     public void drawFullCircle(int cx, int cy, double r, int c, MatrixStack poseStack) {
         float f = (c >> 24 & 0xFF) / 255.0F;
         float f1 = (c >> 16 & 0xFF) / 255.0F;
@@ -557,29 +674,12 @@ public enum Render2DHelper {
         }
     }
 
-    public void draw3DCape(MatrixStack poseStack, float x, float y, Identifier identifier, float yaw, float pitch) {
-        poseStack.push();
-        poseStack.translate(x + 16, y + 30, 64);
-        poseStack.multiply(new Quaternion(new Vec3f(0, 1, 0), yaw, true));
-        poseStack.multiply(new Quaternion(new Vec3f(1, 0, 0), pitch, true));
-        //
-        bindTexture(identifier);
-        //front of cape
-        DrawableHelper.drawTexture(poseStack, -16, -30, 2.5f, 4, 32, 60, 198, 124);
-        //back of cape
-        poseStack.multiply(new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), 180, true));
-        DrawableHelper.drawTexture(poseStack, -16, -30, 34.5f, 4, 32, 60, 198, 124);
-        poseStack.multiply(new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), -180, true));
-        //
-        poseStack.pop();
-    }
-
     private void renderGuiQuad(BufferBuilder buffer, float x, float y, float width, float height, int red, int green, int blue, int alpha) {
         buffer.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        buffer.vertex((double) (x + 0), (double) (y + 0), 0.0D).color(red, green, blue, alpha).next();
-        buffer.vertex((double) (x + 0), (double) (y + height), 0.0D).color(red, green, blue, alpha).next();
-        buffer.vertex((double) (x + width), (double) (y + height), 0.0D).color(red, green, blue, alpha).next();
-        buffer.vertex((double) (x + width), (double) (y + 0), 0.0D).color(red, green, blue, alpha).next();
+        buffer.vertex(x + 0, y + 0, 0.0D).color(red, green, blue, alpha).next();
+        buffer.vertex(x + 0, y + height, 0.0D).color(red, green, blue, alpha).next();
+        buffer.vertex(x + width, y + height, 0.0D).color(red, green, blue, alpha).next();
+        buffer.vertex( x + width, y + 0, 0.0D).color(red, green, blue, alpha).next();
         Tessellator.getInstance().draw();
     }
 
@@ -633,13 +733,6 @@ public enum Render2DHelper {
         vector4f.transform(poseStack.peek().getPositionMatrix());
         Vec3d twoD = to2D(vector4f.getX(), vector4f.getY(), vector4f.getZ());
         return new Vec3d(twoD.x, twoD.y, twoD.z);
-    }
-
-    public void drawArrow(MatrixStack poseStack, float x, float y, boolean open, int color) {
-        bindTexture(cog);
-        shaderColor(color);
-        DrawableHelper.drawTexture(poseStack, (int) x - 5, (int) y - 5, 0, 0, 10, 10, 10, 10);
-        shaderColor(-1);
     }
 
     public void bindTexture(Identifier identifier) {

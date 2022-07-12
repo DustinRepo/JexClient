@@ -16,6 +16,8 @@ public class MinecraftServerAddress {
     }
 
     public static MinecraftServerAddress resolve(String ip, int port) {
+        if (ip.equalsIgnoreCase("localhost"))
+            return new MinecraftServerAddress(ip, port);
         InitialDirContext ctx;
         try {
             Class.forName("com.sun.jndi.dns.DnsContextFactory");
