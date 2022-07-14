@@ -213,8 +213,6 @@ public class StorageESP extends Feature {
     private final EventListener<EventRender2DNoScale> eventRender2DNoScaleEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
     private final EventListener<EventHasOutline> eventHasOutlineEventListener = new EventListener<>(event -> sendEvent(event));
-    @EventPointer
-    private final EventListener<EventTeamColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
 
 
     private void sendEvent(Event event) {

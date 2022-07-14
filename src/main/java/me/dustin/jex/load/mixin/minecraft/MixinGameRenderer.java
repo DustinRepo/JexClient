@@ -65,27 +65,6 @@ public abstract class MixinGameRenderer {
         new EventRender3D(matrixStack1, partialTicks).run();
     }
 
-    @Inject(method = "getRenderTypeGlintDirectShader", at = @At("HEAD"), cancellable = true)
-    private static void overrideGlintShader(CallbackInfoReturnable<Shader> cir) {
-        EventGetGlintShaders eventGetGlintShaders = new EventGetGlintShaders(renderTypeGlintDirectShader).run();
-        if (eventGetGlintShaders.isCancelled())
-            cir.setReturnValue(eventGetGlintShaders.getShader());
-    }
-
-    @Inject(method = "getRenderTypeArmorEntityGlintShader", at = @At("HEAD"), cancellable = true)
-    private static void overrideGlintShader1(CallbackInfoReturnable<Shader> cir) {
-        EventGetGlintShaders eventGetGlintShaders = new EventGetGlintShaders(renderTypeArmorEntityGlintShader).run();
-        if (eventGetGlintShaders.isCancelled())
-            cir.setReturnValue(eventGetGlintShaders.getShader());
-    }
-
-    @Inject(method = "getRenderTypeArmorGlintShader", at = @At("HEAD"), cancellable = true)
-    private static void overrideGlintShader2(CallbackInfoReturnable<Shader> cir) {
-        EventGetGlintShaders eventGetGlintShaders = new EventGetGlintShaders(renderTypeArmorGlintShader).run();
-        if (eventGetGlintShaders.isCancelled())
-            cir.setReturnValue(eventGetGlintShaders.getShader());
-    }
-
     @Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)
     public void renderHand(MatrixStack matrices, Camera camera, float tickDelta, CallbackInfo ci) {
         EventRenderHand eventRenderHand = new EventRenderHand().run();

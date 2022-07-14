@@ -5,7 +5,6 @@ import me.dustin.jex.event.player.EventPushAwayFromEntity;
 import me.dustin.jex.event.player.EventSlowdown;
 import me.dustin.jex.event.player.EventStep;
 import me.dustin.jex.event.render.EventNametagShouldRender;
-import me.dustin.jex.event.render.EventTeamColor;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -54,14 +53,6 @@ public abstract class MixinEntity {
     public void getBoundBox1(CallbackInfoReturnable<Box> cir) {
         EventEntityHitbox eventEntityHitbox = new EventEntityHitbox((Entity)(Object)this, this.boundingBox).run();
         cir.setReturnValue(eventEntityHitbox.getBox());
-    }
-
-    @Inject(method = "getTeamColorValue", at = @At("HEAD"), cancellable = true)
-    public void getTeamColorValue(CallbackInfoReturnable<Integer> cir) {
-        AbstractTeam abstractTeam = this.getScoreboardTeam();
-        int o = abstractTeam != null && abstractTeam.getColor().getColorValue() != null ? abstractTeam.getColor().getColorValue() : 16777215;
-        EventTeamColor eventTeamColor = new EventTeamColor(o, (Entity) (Object) this).run();
-        cir.setReturnValue(eventTeamColor.getColor());
     }
 
     @Inject(method = "shouldRender(DDD)Z", at = @At("HEAD"), cancellable = true)

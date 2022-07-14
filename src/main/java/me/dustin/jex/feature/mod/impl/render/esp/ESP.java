@@ -158,8 +158,6 @@ public class ESP extends Feature {
     @EventPointer
     private final EventListener<EventRender2DNoScale> eventRender2DNoScaleEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
-    private final EventListener<EventTeamColor> eventOutlineColorEventListener = new EventListener<>(event -> sendEvent(event));
-    @EventPointer
     private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
     private final EventListener<EventHasOutline> eventHasOutlineEventListener = new EventListener<>(event -> sendEvent(event));

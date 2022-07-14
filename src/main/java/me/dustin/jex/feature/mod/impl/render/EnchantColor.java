@@ -1,10 +1,8 @@
 package me.dustin.jex.feature.mod.impl.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
-import me.dustin.jex.event.render.EventGetGlintShaders;
 import me.dustin.jex.event.render.EventRenderWithShader;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -14,8 +12,6 @@ import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.render.shader.ShaderProgram;
 import me.dustin.jex.helper.render.shader.impl.EnchantColorShader;
-import me.dustin.jex.load.impl.IShader;
-import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
