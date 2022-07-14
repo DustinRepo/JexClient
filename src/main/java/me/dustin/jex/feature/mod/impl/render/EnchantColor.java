@@ -81,6 +81,7 @@ public class EnchantColor extends Feature{
             EnchantColorShader shader = ShaderHelper.INSTANCE.getEnchantColorShader();
             shader.bind();
             setUniforms(shader);
+            RenderSystem.enableBlend();
             BufferRenderer.drawWithoutShader(buffer);
             ShaderHelper.INSTANCE.getEnchantColorShader().detach();
             if (stopWatch.hasPassed(25)) {

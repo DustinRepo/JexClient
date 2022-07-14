@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.helper.addon.AddonHelper;
 import me.dustin.jex.helper.addon.cape.CapeHelper;
@@ -12,19 +13,18 @@ import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.math.vector.Vector3D;
 import me.dustin.jex.helper.misc.MouseHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
+import me.dustin.jex.helper.render.shader.impl.BlurShader;
 import me.dustin.jex.load.impl.IItemRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexFormat.DrawMode;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -51,6 +51,8 @@ import java.awt.*;
 public enum Render2DHelper {
     INSTANCE;
     private final static Identifier MAP_BACKGROUND = new Identifier("textures/map/map_background_checkerboard.png");
+    private final Framebuffer blurFBO = new SimpleFramebuffer(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false, false);
+    private int lastWidth, lastHeight;
     private EntityRendererFactory.Context context;
     public void setup2DRender(boolean disableDepth) {
         RenderSystem.enableBlend();
@@ -113,6 +115,76 @@ public enum Render2DHelper {
         bufferBuilder.vertex(matrices, x1, y1, z).texture(u1, v1).next();
         bufferBuilder.vertex(matrices, x1, y0, z).texture(u1, v0).next();
         bufferBuilder.vertex(matrices, x0, y0, z).texture(u0, v0).next();
+    }
+
+    public void blur(float radius, Framebuffer in) {
+        Matrix4f proj = RenderSystem.getProjectionMatrix();
+        checkResize();
+        BlurShader shader = ShaderHelper.INSTANCE.getBlurShader();
+        RenderSystem.enableTexture();
+        RenderSystem.resetTextureMatrix();
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        //render shader effect
+        in.endWrite();
+        in.beginRead();
+        float f = in.textureWidth;
+        float g = in.textureHeight;
+        RenderSystem.viewport(0, 0, (int)f, (int)g);
+        shader.bind();
+        shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
+        shader.getUniform("BlurDir").setVec(new Vec2f(1, 0));
+        shader.getUniform("Radius").setFloat(radius);
+        this.blurFBO.clear(MinecraftClient.IS_SYSTEM_MAC);
+        this.blurFBO.beginWrite(false);
+        RenderSystem.depthFunc(519);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+        bufferBuilder.vertex(0.0, 0.0, 500.0).next();
+        bufferBuilder.vertex(f, 0.0, 500.0).next();
+        bufferBuilder.vertex(f, g, 500.0).next();
+        bufferBuilder.vertex(0.0, g, 500.0).next();
+        BufferRenderer.drawWithoutShader(bufferBuilder.end());
+        RenderSystem.depthFunc(515);
+        shader.detach();
+        this.blurFBO.endWrite();
+        Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
+        blurFBO.draw(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
+
+        //render shader effect
+        in.endWrite();
+        in.beginRead();
+        RenderSystem.viewport(0, 0, (int)f, (int)g);
+        shader.bind();
+        shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
+        shader.getUniform("BlurDir").setVec(new Vec2f(0, 1));
+        shader.getUniform("Radius").setFloat(radius);
+        this.blurFBO.clear(MinecraftClient.IS_SYSTEM_MAC);
+        this.blurFBO.beginWrite(false);
+        RenderSystem.depthFunc(519);
+        bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+        bufferBuilder.vertex(0.0, 0.0, 500.0).next();
+        bufferBuilder.vertex(f, 0.0, 500.0).next();
+        bufferBuilder.vertex(f, g, 500.0).next();
+        bufferBuilder.vertex(0.0, g, 500.0).next();
+        BufferRenderer.drawWithoutShader(bufferBuilder.end());
+        RenderSystem.depthFunc(515);
+        shader.detach();
+        this.blurFBO.endWrite();
+
+        in.endRead();
+        Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
+        blurFBO.draw(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
+        RenderSystem.setProjectionMatrix(proj);
+    }
+
+    void checkResize() {
+        if (lastHeight != Wrapper.INSTANCE.getWindow().getFramebufferHeight() || lastWidth != Wrapper.INSTANCE.getWindow().getFramebufferWidth()) {
+            blurFBO.resize(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
+        }
+        lastWidth = Wrapper.INSTANCE.getWindow().getFramebufferWidth();
+        lastHeight = Wrapper.INSTANCE.getWindow().getFramebufferHeight();
     }
 
     public void fill(MatrixStack poseStack, float x1, float y1, float x2, float y2, int color) {

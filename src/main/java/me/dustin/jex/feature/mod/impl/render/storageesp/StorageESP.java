@@ -7,7 +7,6 @@ import me.dustin.events.core.priority.Priority;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.feature.mod.core.Category;
-import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.feature.mod.impl.render.storageesp.impl.OutlineStorageESP;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -211,9 +210,6 @@ public class StorageESP extends Feature {
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
     private final EventListener<EventRender2DNoScale> eventRender2DNoScaleEventListener = new EventListener<>(event -> sendEvent(event));
-    @EventPointer
-    private final EventListener<EventHasOutline> eventHasOutlineEventListener = new EventListener<>(event -> sendEvent(event));
-
 
     private void sendEvent(Event event) {
         if (lastMode != null && modeProperty.value() != lastMode) {

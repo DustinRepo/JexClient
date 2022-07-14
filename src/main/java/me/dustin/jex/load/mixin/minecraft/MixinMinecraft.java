@@ -2,7 +2,6 @@ package me.dustin.jex.load.mixin.minecraft;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import me.dustin.jex.event.misc.*;
-import me.dustin.jex.event.render.EventHasOutline;
 import me.dustin.jex.load.impl.IMinecraft;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -80,12 +79,6 @@ public abstract class MixinMinecraft implements IMinecraft {
                 setScreen(eventSetScreen.getScreen());
         }
 
-    }
-
-    @Inject(method = "hasOutline", at = @At("HEAD"), cancellable = true)
-    public void hasOutline1(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        EventHasOutline eventHasOutline = new EventHasOutline(entity, entity.isGlowing() || this.player != null && this.player.isSpectator() && this.options.spectatorOutlinesKey.isPressed() && entity.getType() == EntityType.PLAYER).run();
-        cir.setReturnValue(eventHasOutline.isOutline());
     }
 
     @Inject(method = "scheduleStop", at = @At("HEAD"))

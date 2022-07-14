@@ -159,8 +159,6 @@ public class ESP extends Feature {
     private final EventListener<EventRender2DNoScale> eventRender2DNoScaleEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
     private final EventListener<EventSetLevel> eventJoinWorldEventListener = new EventListener<>(event -> sendEvent(event));
-    @EventPointer
-    private final EventListener<EventHasOutline> eventHasOutlineEventListener = new EventListener<>(event -> sendEvent(event));
 
     private void sendEvent(Event event) {
         if (lastMode != null && modeProperty.value() != lastMode) {

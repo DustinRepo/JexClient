@@ -15,7 +15,7 @@ in vec3 Pos;
 
 out vec4 fragColor;
 
-vec3 hsb2rgb( in vec3 c ){
+vec3 hsb2rgb(in vec3 c){
     vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0,
     0.0,
     1.0 );
@@ -36,7 +36,7 @@ vec4 transRights(vec3 Pos) {
 
 void main() {
     vec4 color = texture(Sampler, TexCoord) * ColorModulator;
-    if (color.a < 1.0F) {
+    if (color.a < 0.1) {
         discard;
     }
     if (CrazyRainbow == 1) {

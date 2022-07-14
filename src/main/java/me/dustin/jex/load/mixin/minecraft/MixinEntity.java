@@ -10,12 +10,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,8 +31,6 @@ public abstract class MixinEntity {
     @Shadow protected boolean onGround;
 
     @Shadow public abstract void move(MovementType type, Vec3d movement);
-
-    @Shadow @Nullable public abstract AbstractTeam getScoreboardTeam();
 
     @Shadow private Box boundingBox;
 
