@@ -1,28 +1,23 @@
 package me.dustin.jex.helper.render.shader;
 
+import me.dustin.jex.helper.render.shader.impl.EnchantColorShader;
 import me.dustin.jex.helper.render.shader.impl.OutlineShader;
-import net.minecraft.client.render.*;
-import net.minecraft.resource.ResourceFactory;
-
-import java.io.IOException;
 
 public enum ShaderHelper {
     INSTANCE;
-    private static Shader rainbowEnchantShader;
+    private OutlineShader outlineShader;
+    private EnchantColorShader enchantColorShader;
 
-    private static OutlineShader outlineShader;
-
-    public static void loadShaders(ResourceFactory factory) throws IOException {
+    public void loadShaders() {
         outlineShader = new OutlineShader();
-        if (rainbowEnchantShader == null)
-            rainbowEnchantShader = new Shader(factory, "jex:rainbow_enchant", VertexFormats.POSITION_TEXTURE);
-    }
-
-    public static Shader getRainbowEnchantShader() {
-        return rainbowEnchantShader;
+        enchantColorShader = new EnchantColorShader();
     }
 
     public OutlineShader getOutlineShader() {
         return outlineShader;
+    }
+
+    public EnchantColorShader getEnchantColorShader() {
+        return enchantColorShader;
     }
 }

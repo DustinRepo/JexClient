@@ -10,17 +10,15 @@ import static org.lwjgl.opengl.GL20.*;
 
 public abstract class ShaderProgram {
 
-	private String shaderName;
-	private int shaderProgram;
-	private int vertexID;
-	private int fragID;
-	private ArrayList<ShaderUniform> uniforms = new ArrayList<>();
+	private final String shaderName;
+	private final int shaderProgram;
+	private final ArrayList<ShaderUniform> uniforms = new ArrayList<>();
 
 	public ShaderProgram(String shaderName) {
 		this.shaderName = shaderName;
 		this.shaderProgram = glCreateProgram();
-		String vCode = readShader("/assets/jex/shaders/jex/" + shaderName + ".vsh");
-		String fCode = readShader("/assets/jex/shaders/jex/" + shaderName + ".fsh");
+		String vCode = readShader("/assets/jex/shaders/" + shaderName + ".vsh");
+		String fCode = readShader("/assets/jex/shaders/" + shaderName + ".fsh");
 		createProgram(vCode, fCode);
 	}
 
@@ -59,8 +57,8 @@ public abstract class ShaderProgram {
 	}
 
 	public void createProgram(String vertex, String frag) {
-		vertexID = loadShader(vertex, GL_VERTEX_SHADER);
-		fragID = loadShader(frag, GL_FRAGMENT_SHADER);
+		int vertexID = loadShader(vertex, GL_VERTEX_SHADER);
+		int fragID = loadShader(frag, GL_FRAGMENT_SHADER);
 		glAttachShader(shaderProgram, vertexID);
 		glAttachShader(shaderProgram, fragID);
 		glLinkProgram(shaderProgram);

@@ -1,16 +1,26 @@
 package me.dustin.jex.feature.mod.impl.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventGetGlintShaders;
+import me.dustin.jex.event.render.EventRenderWithShader;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
+import me.dustin.jex.helper.render.shader.ShaderProgram;
+import me.dustin.jex.helper.render.shader.impl.EnchantColorShader;
 import me.dustin.jex.load.impl.IShader;
 import net.minecraft.client.gl.GlUniform;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.util.math.Vector4f;
+
 import java.awt.*;
 
 public class EnchantColor extends Feature{
@@ -63,63 +73,37 @@ public class EnchantColor extends Feature{
 
     private int col;
     private final StopWatch stopWatch = new StopWatch();
-    private GlUniform glintColorU;
-    private GlUniform crazyRainbowU;
-    private GlUniform saturationU;
-    private GlUniform alphaU;
-    private GlUniform mathModeU;
 
     public EnchantColor() {
         super(Category.VISUAL, "Change the color of the enchanment glint (or make it rainbow!)");
     }
 
     @EventPointer
-    private final EventListener<EventGetGlintShaders> eventGetGlintShadersEventListener = new EventListener<>(event -> {
-        if (glintColorU == null || crazyRainbowU == null || saturationU == null || mathModeU == null) {
-            IShader iShader = (IShader) ShaderHelper.getRainbowEnchantShader();
-            if (iShader != null) {
-                glintColorU = iShader.getCustomUniform("GlintColor");
-                crazyRainbowU = iShader.getCustomUniform("CrazyRainbow");
-                saturationU = iShader.getCustomUniform("Saturation");
-                alphaU = iShader.getCustomUniform("Alpha");
-                mathModeU = iShader.getCustomUniform("MathMode");
+    private final EventListener<EventRenderWithShader> eventRenderWithShaderEventListener = new EventListener<>(event -> {
+        if (RenderSystem.getShader() == GameRenderer.getRenderTypeGlintDirectShader() || RenderSystem.getShader() == GameRenderer.getRenderTypeArmorEntityGlintShader() || RenderSystem.getShader() == GameRenderer.getRenderTypeArmorGlintShader()) {
+            BufferBuilder.BuiltBuffer buffer = event.getBuffer();
+            EnchantColorShader shader = ShaderHelper.INSTANCE.getEnchantColorShader();
+            shader.bind();
+            setUniforms(shader);
+            BufferRenderer.drawWithoutShader(buffer);
+            ShaderHelper.INSTANCE.getEnchantColorShader().detach();
+            if (stopWatch.hasPassed(25)) {
+                col+=rainbowSpeedProperty.value();
+                if (col > 270)
+                    col-=270;
+                stopWatch.reset();
             }
-        }
-        if (glintColorU != null) {
-            Color setColor = rainbowProperty.value() ? ColorHelper.INSTANCE.getColorViaHue(col) : colorProperty.value();
-            glintColorU.set(setColor.getRed() / 255.f, setColor.getGreen() / 255.f, setColor.getBlue() / 255.f, 1);
-        }
-        if (crazyRainbowU != null) {
-            crazyRainbowU.set(modeProperty.value() == EffectMode.SHADER_RAINBOW ? 1 : 0);
-        }
-        if (saturationU != null) {
-            saturationU.set(saturationProperty.value());
-        }
-        if (alphaU != null) {
-            alphaU.set(alphaProperty.value());
-        }
-        if (mathModeU != null) {
-            mathModeU.set(getShaderMode());
-        }
-        event.setShader(ShaderHelper.getRainbowEnchantShader());
-        event.cancel();
-
-        if (stopWatch.hasPassed(25)) {
-            col+=rainbowSpeedProperty.value();
-            if (col > 270)
-                col-=270;
-            stopWatch.reset();
+            event.cancel();
         }
     });
 
-    public int getShaderMode() {
-        switch (shaderModeProperty.value()) {
-            case RAINBOW -> {return 0;}
-            case TRANS_RIGHTS -> {return 1;}
-            case TV -> {return 2;}
-            case TEST -> {return 3;}
-        }
-        return 0;
+    public void setUniforms(ShaderProgram shader) {
+        Color setColor = rainbowProperty.value() ? ColorHelper.INSTANCE.getColorViaHue(col) : colorProperty.value();
+        shader.getUniform("GlintColor").setVec(new Vector4f(setColor.getRed() / 255.f, setColor.getGreen() / 255.f, setColor.getBlue() / 255.f, 1));
+        shader.getUniform("CrazyRainbow").setBoolean(modeProperty.value() == EffectMode.SHADER_RAINBOW);
+        shader.getUniform("Saturation").setFloat(saturationProperty.value());
+        shader.getUniform("Alpha").setFloat(alphaProperty.value());
+        shader.getUniform("MathMode").setInt(shaderModeProperty.value().ordinal());
     }
 
     public enum EffectMode {

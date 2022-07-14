@@ -15,6 +15,7 @@
     "minecraft.MixinBackgroundRenderer",
     "minecraft.MixinBlock",
     "minecraft.MixinBlockEntityRenderDispatcher",
+    "minecraft.MixinBufferRenderer",
     "minecraft.MixinCactusBlock",
     "minecraft.MixinCamera",
     "minecraft.MixinChatHud",

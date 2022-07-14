@@ -38,7 +38,7 @@ public enum PeglegHelper {
 
     @EventPointer
     private final EventListener<EventPlayerEntityGetBodyParts> eventPlayerEntityGetBodyPartsEventListener = new EventListener<>(event -> {
-       if (hasPegleg(currentRender.toString().replace("-", ""))) {
+       if (currentRender != null && hasPegleg(currentRender.toString().replace("-", ""))) {
            event.getBodyParts().remove(event.getPlayerEntityModel().leftLeg);
            event.getBodyParts().remove(event.getPlayerEntityModel().leftPants);
            event.getBodyParts().add(cut_leg);
