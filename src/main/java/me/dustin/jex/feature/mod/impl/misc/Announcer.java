@@ -46,7 +46,7 @@ public class Announcer extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketReceive> eventPacketReceiveEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().age < 30 || !stopWatch.hasPassed(messageDelayProperty.value()))
+        if (Wrapper.INSTANCE.getLocalPlayer() == null || Wrapper.INSTANCE.getLocalPlayer().age < 30 || !stopWatch.hasPassed(messageDelayProperty.value()))
             return;
         PlayerListS2CPacket playerListPacket = (PlayerListS2CPacket) event.getPacket();
 

@@ -125,7 +125,7 @@ public enum Render2DHelper {
         RenderSystem.resetTextureMatrix();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
-        //render shader effect
+
         in.endWrite();
         in.beginRead();
         float f = in.textureWidth;
@@ -151,7 +151,6 @@ public enum Render2DHelper {
         Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
         blurFBO.draw(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
 
-        //render shader effect
         in.endWrite();
         in.beginRead();
         RenderSystem.viewport(0, 0, (int)f, (int)g);
@@ -172,8 +171,8 @@ public enum Render2DHelper {
         RenderSystem.depthFunc(515);
         shader.detach();
         this.blurFBO.endWrite();
-
         in.endRead();
+
         Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
         blurFBO.draw(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
         RenderSystem.setProjectionMatrix(proj);
