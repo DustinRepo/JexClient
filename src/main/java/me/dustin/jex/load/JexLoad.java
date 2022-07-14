@@ -16,7 +16,11 @@ public class JexLoad implements ModInitializer {
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public void reload(ResourceManager manager) {
-                ShaderHelper.loadCustomMCShaders(manager);
+                try {
+                    ShaderHelper.loadShaders(manager);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override

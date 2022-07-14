@@ -30,6 +30,33 @@ public class ESP extends Feature {
             .name("Mode")
             .value(Mode.SHADER)
             .build();
+
+    public final Property<Integer> lineWidthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Line Width")
+            .description("Line width for shaders (in pixels)")
+            .value(2)
+            .min(1)
+            .max(10)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.SHADER || parent.value() == Mode.BOX_OUTLINE)
+            .build();
+    public final Property<Boolean> glowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Glow")
+            .description("Whether or not to add a glow effect to the outline")
+            .value(false)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.SHADER || parent.value() == Mode.BOX_OUTLINE)
+            .build();
+    public final Property<Float> glowIntensityProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Glow Intensity")
+            .description("Intensity for the glow effect")
+            .value(0.5f)
+            .min(0.1f)
+            .max(1)
+            .inc(0.1f)
+            .parent(glowProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
     public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
@@ -122,6 +149,10 @@ public class ESP extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventWorldRender> eventWorldRenderEventListener = new EventListener<>(event -> sendEvent(event));
+    @EventPointer
+    private final EventListener<EventWorldRenderEntity> eventWorldRenderEntityEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer
     private final EventListener<EventRender2D> eventRender2DEventListener = new EventListener<>(event -> sendEvent(event));
     @EventPointer

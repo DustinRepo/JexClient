@@ -6,6 +6,7 @@ import me.dustin.jex.event.player.EventSlowdown;
 import me.dustin.jex.event.player.EventStep;
 import me.dustin.jex.event.render.EventNametagShouldRender;
 import me.dustin.jex.event.render.EventTeamColor;
+import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -86,6 +87,8 @@ public abstract class MixinEntity {
 
     @Inject(method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;", at = @At("HEAD"), cancellable = true)
     public void move1(Vec3d movement, CallbackInfoReturnable<Vec3d> cir) {
+        if (((Entity)(Object)this) != Wrapper.INSTANCE.getLocalPlayer() || Wrapper.INSTANCE.getLocalPlayer() == null)
+            return;
         Box box = this.getBoundingBox();
         List<VoxelShape> list = this.world.getEntityCollisions((Entity)(Object)this, box.stretch(movement));
         Vec3d vec3d = movement.lengthSquared() == 0.0D ? movement : Entity.adjustMovementForCollisions((Entity)(Object)this, movement, box, this.world, list);

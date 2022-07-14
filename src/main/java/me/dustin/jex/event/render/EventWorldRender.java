@@ -8,9 +8,12 @@ public class EventWorldRender extends Event {
     private final float partialTicks;
     private final MatrixStack poseStack;
 
-    public EventWorldRender(MatrixStack poseStack, float partialTicks2) {
+    private final Mode mode;
+
+    public EventWorldRender(MatrixStack poseStack, float partialTicks2, Mode mode) {
         this.partialTicks = partialTicks2;
         this.poseStack = poseStack;
+        this.mode = mode;
     }
 
     public float getPartialTicks() {
@@ -19,5 +22,13 @@ public class EventWorldRender extends Event {
 
     public MatrixStack getPoseStack() {
         return poseStack;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public enum Mode {
+        PRE, POST
     }
 }

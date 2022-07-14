@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinBlockRenderer {
     @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true, remap = false)
     public void renderModel1(BlockRenderView world, BlockState state, BlockPos pos, BlockPos origin, BakedModel model, ChunkModelBuilder buffers, boolean cull, long seed, CallbackInfoReturnable<Boolean> cir) {
-        RenderSystem.setShader(ShaderHelper::getTranslucentShader);
         EventRenderBlock eventRenderBlock = new EventRenderBlock(state.getBlock()).run();
         if (eventRenderBlock.isCancelled())
             cir.setReturnValue(false);

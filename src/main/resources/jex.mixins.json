@@ -31,7 +31,6 @@
     "minecraft.MixinCommandSuggestor",
     "minecraft.MixinConnectScreen",
     "minecraft.MixinEntity",
-    "minecraft.MixinEntityRenderDispatcher",
     "minecraft.MixinEntityRenderer",
     "minecraft.MixinFluidBlock",
     "minecraft.MixinFluidRenderer",

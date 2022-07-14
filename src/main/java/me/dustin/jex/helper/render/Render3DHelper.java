@@ -122,6 +122,14 @@ public enum Render3DHelper {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
     }
 
+    public void renderEntity(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float tickDelta, Camera camera) {
+        double d = MathHelper.lerp(tickDelta, entity.lastRenderX, entity.getX());
+        double e = MathHelper.lerp(tickDelta, entity.lastRenderY, entity.getY());
+        double f = MathHelper.lerp(tickDelta, entity.lastRenderZ, entity.getZ());
+        float g = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw());
+        Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().render(entity, d - camera.getPos().getX(), e - camera.getPos().getY(), f - camera.getPos().getZ(), g, tickDelta, matrixStack, vertexConsumerProvider, 0xF000F0);
+    }
+
     public void drawSphere(MatrixStack poseStack, float radius, int gradation, int color, boolean testDepth, Vec3d pos) {
         Matrix4f matrix4f = poseStack.peek().getPositionMatrix();
         Color color1 = ColorHelper.INSTANCE.getColor(color);

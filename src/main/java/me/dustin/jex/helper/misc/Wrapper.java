@@ -61,5 +61,4 @@ public enum Wrapper {
     public GameRenderer getGameRenderer() {
         return getMinecraft().gameRenderer;
     }
-
 }

@@ -4,18 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
-import me.dustin.jex.helper.render.shader.ShaderHelper;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Shader;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.resource.ResourceFactory;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -29,11 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GameRenderer.class)
 public abstract class MixinGameRenderer {
 
-
     @Shadow protected abstract double getFov(Camera camera, float tickDelta, boolean changingFov);
 
     @Shadow protected abstract void bobView(MatrixStack matrices, float f);
-
 
     @Shadow @Final private Camera camera;
 
@@ -44,8 +35,6 @@ public abstract class MixinGameRenderer {
     @Shadow protected abstract void bobViewWhenHurt(MatrixStack matrices, float tickDelta);
 
     @Shadow @Final private MinecraftClient client;
-
-    @Shadow @Nullable private static Shader renderTypeTranslucentShader;
 
     @Shadow @Nullable private static Shader renderTypeGlintDirectShader;
 
@@ -74,13 +63,6 @@ public abstract class MixinGameRenderer {
         loadProjectionMatrix(matrixStack.peek().getPositionMatrix());
 
         new EventRender3D(matrixStack1, partialTicks).run();
-    }
-
-    @Inject(method = "getRenderTypeTranslucentShader", at = @At("HEAD"), cancellable = true)
-    private static void overrideTranslucentShader(CallbackInfoReturnable<Shader> cir) {
-        EventGetTranslucentShader eventGetTranslucentShader = new EventGetTranslucentShader(renderTypeTranslucentShader).run();
-        if (eventGetTranslucentShader.isCancelled())
-            cir.setReturnValue(eventGetTranslucentShader.getShader());
     }
 
     @Inject(method = "getRenderTypeGlintDirectShader", at = @At("HEAD"), cancellable = true)

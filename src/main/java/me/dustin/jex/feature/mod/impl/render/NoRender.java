@@ -3,7 +3,7 @@ package me.dustin.jex.feature.mod.impl.render;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderBlockEntity;
-import me.dustin.jex.event.render.EventRenderEntity;
+import me.dustin.jex.event.render.EventWorldRenderEntity;
 import me.dustin.jex.event.world.EventTickParticle;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -96,7 +96,7 @@ public class NoRender extends Feature {
     }
 
     @EventPointer
-    private final EventListener<EventRenderEntity> eventRenderEntityEventListener = new EventListener<>(event -> {
+    private final EventListener<EventWorldRenderEntity> eventRenderEntityEventListener = new EventListener<>(event -> {
         if (event.getEntity() instanceof ItemEntity && itemProperty.value())
             event.cancel();
         if (event.getEntity() instanceof WitherEntity && withersProperty.value())
