@@ -66,7 +66,6 @@
     "minecraft.MixinRenderTickCounter",
     "minecraft.MixinScreen",
     "minecraft.MixinServerInfo",
-    "minecraft.MixinShaderInstance",
     "minecraft.MixinSignEditScreen",
     "minecraft.MixinSimpleOption",
     "minecraft.MixinSliderWidget",
