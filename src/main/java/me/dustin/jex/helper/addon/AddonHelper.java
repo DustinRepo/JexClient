@@ -41,7 +41,8 @@ public enum AddonHelper {
 
 	@EventPointer
 	private final EventListener<EventSetLevel> eventSetLevelEventListener = new EventListener<>(event -> {
-		loadAddons(Wrapper.INSTANCE.getLocalPlayer());
+		if (Wrapper.INSTANCE.getLocalPlayer() != null)
+			loadAddons(Wrapper.INSTANCE.getLocalPlayer());
 	});
 
 	@EventPointer

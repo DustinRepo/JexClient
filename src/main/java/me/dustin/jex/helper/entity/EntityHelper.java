@@ -165,6 +165,8 @@ public enum EntityHelper {
     }
 
     public boolean isNPC(PlayerEntity player) {
+        if (Wrapper.INSTANCE.getLocalPlayer() == null)
+            return true;
         if (player instanceof FakePlayerEntity)
             return false;
         try {
