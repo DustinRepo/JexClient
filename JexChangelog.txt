@@ -1,3 +1,10 @@
+0.8.4
+Added "Line Width" options to Shader and Outline Box ESP as well as to Shader StorageESP
+Added blur effect option to CustomBG
+Added ability to register and login to Jex website from client, as well as being able to link your account.
+Fixed error sometimes joining servers
+Reworked shader ESP and StorageESP modes
+
 0.8.3
 Added more cosmetics available through the Jex website, including new Hats, customizable Ears, Peg-Legs, an Appendage, and the Dinnerbone upside-down effect
 Added Swim mode to Jesus
