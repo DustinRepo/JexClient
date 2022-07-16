@@ -30,7 +30,7 @@ public enum JexSiteHelper {
         Map<String, String> data = new HashMap<>();
         data.put("username", username);
         data.put("password", password);
-        String response = WebHelper.INSTANCE.httpRequest("http://localhost/inc/client/client-login.inc.php", data, null, "POST").data();
+        String response = WebHelper.INSTANCE.httpRequest(JexClient.INSTANCE.getBaseUrl() + "/inc/client/client-login.inc.php", data, null, "POST").data();
         try {
             JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(response, JsonObject.class);
             if (jsonObject.has("error"))
@@ -57,7 +57,7 @@ public enum JexSiteHelper {
         data.put("email", email);
         data.put("password", password);
         data.put("passwordConfirm", passwordConfirm);
-        String response = WebHelper.INSTANCE.httpRequest("http://localhost/inc/client/client-register.inc.php", data, null, "POST").data();
+        String response = WebHelper.INSTANCE.httpRequest(JexClient.INSTANCE.getBaseUrl() + "/inc/client/client-register.inc.php", data, null, "POST").data();
         try {
             JsonObject jsonObject = JsonHelper.INSTANCE.gson.fromJson(response, JsonObject.class);
             if (jsonObject.has("error"))
@@ -77,7 +77,7 @@ public enum JexSiteHelper {
         data.put("auth", user.token());
         data.put("token", token);
         data.put("userId", "%d".formatted(user.id()));
-        String response = WebHelper.INSTANCE.httpRequest("http://localhost/inc/client/client-link-account.inc.php", data, null, "POST").data();
+        String response = WebHelper.INSTANCE.httpRequest(JexClient.INSTANCE.getBaseUrl() + "/inc/client/client-link-account.inc.php", data, null, "POST").data();
         try {
             JsonObject object = JsonHelper.INSTANCE.gson.fromJson(response, JsonObject.class);
             if (object.has("error"))
@@ -94,7 +94,7 @@ public enum JexSiteHelper {
         data.put("auth", user.token());
         data.put("userId", String.valueOf(user.id()));
         data.put(setting, String.valueOf(value));
-        String response = WebHelper.INSTANCE.httpRequest("http://localhost/inc/client/client-push-settings.inc.php", data, null, "POST").data();
+        String response = WebHelper.INSTANCE.httpRequest(JexClient.INSTANCE.getBaseUrl() + "/inc/client/client-push-settings.inc.php", data, null, "POST").data();
         System.out.println(response);
         try {
             JsonObject object = JsonHelper.INSTANCE.gson.fromJson(response, JsonObject.class);

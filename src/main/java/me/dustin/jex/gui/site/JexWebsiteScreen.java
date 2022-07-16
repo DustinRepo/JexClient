@@ -56,7 +56,7 @@ public class JexWebsiteScreen extends Screen {
     @Override
     protected void init() {
         if (this.uuid != null) {
-            capeFileBrowser = new FileBrowser(Wrapper.INSTANCE.getMinecraft().runDirectory.getPath(), 2, 50, 200, 200, new ButtonListener() {
+            /*capeFileBrowser = new FileBrowser(Wrapper.INSTANCE.getMinecraft().runDirectory.getPath(), 2, 50, 200, 200, new ButtonListener() {
                 @Override
                 public void invoke() {
                     try {
@@ -70,7 +70,7 @@ public class JexWebsiteScreen extends Screen {
                         throw new RuntimeException(e);
                     }
                 }
-            }, ".png", ".jpg", ".jpeg", JexSiteHelper.INSTANCE.getUser().donator() ? ".gif" : "");
+            }, ".png", ".jpg", ".jpeg", JexSiteHelper.INSTANCE.getUser().donator() ? ".gif" : "");*/
         } else {
             this.addDrawableChild(this.connectAccountButton = new ButtonWidget(width / 2 - 100, 50, 200, 20, Text.translatable("jex.site.connect"), button -> {
                JexSiteHelper.INSTANCE.connectAndLinkAccount();
@@ -86,12 +86,12 @@ public class JexWebsiteScreen extends Screen {
         FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.site.show_name", JexSiteHelper.INSTANCE.getUser().name()), width / 2.f, 20, -1);
         if (uuid != null) {
             FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.site.mc_name", mcName), width / 2.f, 30, -1);
-            FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.site.player_preview", mcName), width / 2.f, 45, -1);
+            FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.site.coming_soon"), width / 2.f, 45, -1);
             String uuidString = uuid.toString().replace("-", "");
             PeglegHelper.INSTANCE.setCurrentRender(uuid);
             Render2DHelper.INSTANCE.renderPlayerIn3D(MCAPIHelper.INSTANCE.getPlayerSkin(uuid), uuidString, width / 2.f, 80, yaw, 75);
 
-            FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.site.cape", mcName), 2, 45, -1);
+            //FontHelper.INSTANCE.drawWithShadow(matrices, Text.translatable("jex.site.cape", mcName), 2, 45, -1);
             if (capeFileBrowser != null)
                 capeFileBrowser.render(matrices);
         } else {

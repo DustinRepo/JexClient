@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package me.dustin.jex.gui.minecraft;
 
 import java.io.ByteArrayInputStream;
@@ -61,11 +56,9 @@ import net.minecraft.util.math.MathHelper;
 public class JexTitleScreen extends Screen {
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
-    private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier JEX_TITLE_TEXTURE = new Identifier("jex", "gui/jex/jex-logo.png");
-    private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     public static int background = 0;
-    private static ArrayList<Background> backgrounds = new ArrayList<>();
+    private static final ArrayList<Background> backgrounds = new ArrayList<>();
     private final boolean isMinceraft;
     private final RotatingCubeMapRenderer backgroundRenderer;
     private final boolean doBackgroundFade;
@@ -74,9 +67,8 @@ public class JexTitleScreen extends Screen {
     private Screen realmsNotificationGui;
     private long backgroundFadeStart;
 
-    private CustomMainMenu customMainMenu;
-    private StopWatch stopWatch = new StopWatch();
-    private boolean isDonator;
+    private final CustomMainMenu customMainMenu;
+    private final StopWatch stopWatch = new StopWatch();
 
     public JexTitleScreen() {
         this(false);
@@ -168,7 +160,7 @@ public class JexTitleScreen extends Screen {
         this.addDrawableChild(new ButtonWidget(2, height - 22, 100, 20, Text.translatable("jex.changelog"), button -> {
             Wrapper.INSTANCE.getMinecraft().setScreen(new ChangelogScreen());
         }));
-        /*if (JexSiteHelper.INSTANCE.getUser() == null) {
+        if (JexSiteHelper.INSTANCE.getUser() == null) {
             this.addDrawableChild(new ButtonWidget(107, height - 22, 100, 20, Text.translatable("jex.site.login"), button -> {
                 Wrapper.INSTANCE.getMinecraft().setScreen(new JexLoginRegisterScreen(true, this));
             }));
@@ -176,7 +168,7 @@ public class JexTitleScreen extends Screen {
             this.addDrawableChild(new ButtonWidget(107, height - 22, 100, 20, Text.translatable("jex.site.edit"), button -> {
                 Wrapper.INSTANCE.getMinecraft().setScreen(new JexWebsiteScreen(this));
             }));
-        }*/
+        }
     }
 
     private void switchToRealms() {
@@ -198,7 +190,7 @@ public class JexTitleScreen extends Screen {
             }
             stopWatch.reset();
         }
-        isDonator = AddonHelper.INSTANCE.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
+        boolean isDonator = AddonHelper.INSTANCE.isDonator(Wrapper.INSTANCE.getMinecraft().getSession().getUuid().replace("-", ""));
         int midX = Render2DHelper.INSTANCE.getScaledWidth() / 2;
         float f = this.doBackgroundFade ? (float) (Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
         fill(matrices, 0, 0, this.width, this.height, -1);
