@@ -14,7 +14,7 @@ import java.util.List;
 public enum TPSHelper {
 
     INSTANCE;
-    private List<Long> reports = new ArrayList<>();
+    private final List<Long> reports = new ArrayList<>();
 
     public double getTPS(int averageOfSeconds) {
         if (reports.size() < 2) {
