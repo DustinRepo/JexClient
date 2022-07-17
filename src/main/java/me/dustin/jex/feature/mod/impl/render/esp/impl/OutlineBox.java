@@ -13,6 +13,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.render.shader.ShaderProgram;
+import me.dustin.jex.helper.render.shader.post.impl.PostProcessOutline;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.SimpleFramebuffer;
@@ -36,9 +37,7 @@ public class OutlineBox extends FeatureExtension {
 		super(ESP.Mode.BOX_OUTLINE, ESP.class);
 	}
 
-	private int lastWidth, lastHeight;
-	private final Framebuffer first = new SimpleFramebuffer(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false, false);
-	private final Framebuffer second = new SimpleFramebuffer(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false, false);
+	private final PostProcessOutline postProcessOutline = new PostProcessOutline();
 
 	@Override
 	public void pass(Event event) {
@@ -51,10 +50,9 @@ public class OutlineBox extends FeatureExtension {
 				shader.getUniform("GlowIntensity").setFloat(ESP.INSTANCE.glowIntensityProperty.value());
 			});
 
-			checkResize();
 			RenderSystem.depthFunc(519);
-			first.clear(MinecraftClient.IS_SYSTEM_MAC);
-			first.beginWrite(false);
+			postProcessOutline.getFirst().clear(MinecraftClient.IS_SYSTEM_MAC);
+			postProcessOutline.getFirst().beginWrite(false);
 			RenderSystem.teardownOverlayColor();
 			RenderSystem.setShader(GameRenderer::getPositionColorShader);
 			RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -126,44 +124,13 @@ public class OutlineBox extends FeatureExtension {
 			RenderSystem.resetTextureMatrix();
 			RenderSystem.depthMask(false);
 
-			//render shader effect
-			this.first.endWrite();
-			this.first.beginRead();
-			float f = this.second.textureWidth;
-			float g = this.second.textureHeight;
-			RenderSystem.viewport(0, 0, (int)f, (int)g);
-			shader.bind();
-			this.second.clear(MinecraftClient.IS_SYSTEM_MAC);
-			this.second.beginWrite(false);
-			RenderSystem.depthFunc(519);
-			bufferBuilder = Tessellator.getInstance().getBuffer();
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-			bufferBuilder.vertex(0.0, 0.0, 500.0).next();
-			bufferBuilder.vertex(f, 0.0, 500.0).next();
-			bufferBuilder.vertex(f, g, 500.0).next();
-			bufferBuilder.vertex(0.0, g, 500.0).next();
-			BufferRenderer.drawWithoutShader(bufferBuilder.end());
-			RenderSystem.depthFunc(515);
-			shader.detach();
-			this.second.endWrite();
-			this.first.endRead();
-			Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
+			postProcessOutline.render();
 		} else if (event instanceof EventRender2DNoScale) {
-			checkResize();
 			int width = Wrapper.INSTANCE.getWindow().getFramebufferWidth();
 			int height = Wrapper.INSTANCE.getWindow().getFramebufferHeight();
 			RenderSystem.enableBlend();
-			second.draw(width, height, false);
+			postProcessOutline.getSecond().draw(width, height, false);
 			Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
 		}
-	}
-
-	void checkResize() {
-		if (lastHeight != Wrapper.INSTANCE.getWindow().getFramebufferHeight() || lastWidth != Wrapper.INSTANCE.getWindow().getFramebufferWidth()) {
-			first.resize(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
-			second.resize(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
-		}
-		lastWidth = Wrapper.INSTANCE.getWindow().getFramebufferWidth();
-		lastHeight = Wrapper.INSTANCE.getWindow().getFramebufferHeight();
 	}
 }

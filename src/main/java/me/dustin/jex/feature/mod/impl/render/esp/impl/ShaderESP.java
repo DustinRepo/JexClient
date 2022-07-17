@@ -11,6 +11,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.render.shader.ShaderProgram;
+import me.dustin.jex.helper.render.shader.post.impl.PostProcessOutline;
 import me.dustin.jex.load.impl.IWorldRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -25,16 +26,14 @@ public class ShaderESP extends FeatureExtension {
         super(ESP.Mode.SHADER, ESP.class);
     }
 
-    private final Framebuffer first = new SimpleFramebuffer(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false, false);
-    private final Framebuffer second = new SimpleFramebuffer(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false, false);
-    private int lastWidth, lastHeight;
+    private final PostProcessOutline postProcessOutline = new PostProcessOutline();
 
     @Override
     public void pass(Event event) {
         if (event instanceof EventWorldRender eventWorldRender) {
             if (eventWorldRender.getMode() == EventWorldRender.Mode.PRE) {
                 IWorldRenderer iWorldRenderer = (IWorldRenderer) Wrapper.INSTANCE.getWorldRenderer();
-                ShaderProgram shader = ShaderHelper.INSTANCE.getOutlineShader();
+                ShaderProgram shader = postProcessOutline.getShader();
                 shader.setUpdateUniforms(() -> {
                     shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
                     shader.getUniform("Width").setInt(ESP.INSTANCE.lineWidthProperty.value());
@@ -46,12 +45,11 @@ public class ShaderESP extends FeatureExtension {
                     return;
                 //setup the entityOutlinesFramebuffer in WorldRenderer because it gets auto applied there
                 Framebuffer originalEntityOutlinesFramebuffer = iWorldRenderer.getEntityOutlinesFramebuffer();
-                iWorldRenderer.setEntityOutlinesFramebuffer(first);
+                iWorldRenderer.setEntityOutlinesFramebuffer(postProcessOutline.getFirst());
                 //begin write on first fbo then render entities
-                first.beginWrite(false);
-                first.clear(false);
+                postProcessOutline.getFirst().beginWrite(false);
+                postProcessOutline.getFirst().clear(false);
                 RenderSystem.depthFunc(519);
-                checkResize();
                 RenderSystem.teardownOverlayColor();
                 RenderSystem.setShaderColor(1, 1, 1, 1);
 
@@ -72,45 +70,15 @@ public class ShaderESP extends FeatureExtension {
                 iWorldRenderer.setEntityOutlinesFramebuffer(originalEntityOutlinesFramebuffer);
 
                 //render shader effect
-                this.first.endWrite();
-                this.first.beginRead();
-                float f = this.second.textureWidth;
-                float g = this.second.textureHeight;
-                RenderSystem.viewport(0, 0, (int)f, (int)g);
-                shader.bind();
-                this.second.clear(MinecraftClient.IS_SYSTEM_MAC);
-                this.second.beginWrite(false);
-                RenderSystem.depthFunc(519);
-                BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-                bufferBuilder.vertex(0.0, 0.0, 500.0).next();
-                bufferBuilder.vertex(f, 0.0, 500.0).next();
-                bufferBuilder.vertex(f, g, 500.0).next();
-                bufferBuilder.vertex(0.0, g, 500.0).next();
-                BufferRenderer.drawWithoutShader(bufferBuilder.end());
-                RenderSystem.depthFunc(515);
-                shader.detach();
-                this.second.endWrite();
-                this.first.endRead();
-                Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
+                this.postProcessOutline.render();
             }
         } else if (event instanceof EventRender2DNoScale) {
             //render frame buffer
-            checkResize();
             int width = Wrapper.INSTANCE.getWindow().getFramebufferWidth();
             int height = Wrapper.INSTANCE.getWindow().getFramebufferHeight();
             RenderSystem.enableBlend();
-            second.draw(width, height, false);
+            this.postProcessOutline.getSecond().draw(width, height, false);
             Wrapper.INSTANCE.getMinecraft().getFramebuffer().beginWrite(true);
         }
-    }
-
-    void checkResize() {
-        if (lastHeight != Wrapper.INSTANCE.getWindow().getFramebufferHeight() || lastWidth != Wrapper.INSTANCE.getWindow().getFramebufferWidth()) {
-            first.resize(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
-            second.resize(Wrapper.INSTANCE.getWindow().getFramebufferWidth(), Wrapper.INSTANCE.getWindow().getFramebufferHeight(), false);
-        }
-        lastWidth = Wrapper.INSTANCE.getWindow().getFramebufferWidth();
-        lastHeight = Wrapper.INSTANCE.getWindow().getFramebufferHeight();
     }
 }
