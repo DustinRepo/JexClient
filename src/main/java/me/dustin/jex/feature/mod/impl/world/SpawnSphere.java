@@ -7,7 +7,9 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -67,15 +69,13 @@ public class SpawnSphere extends Feature {
         });
 
         Render3DHelper.INSTANCE.setup3DRender(seethroughProperty.value());
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         boxes.forEach(blockStorage -> {
             Box box = blockStorage.box();
             int color = blockStorage.color();
             Render3DHelper.INSTANCE.drawFilledBox(matrixStack, box, color & 0x50ffffff, false);
         });
-        bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
         Render3DHelper.INSTANCE.end3DRender();
     });
 

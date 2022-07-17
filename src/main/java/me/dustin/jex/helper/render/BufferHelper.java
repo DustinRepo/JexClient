@@ -13,14 +13,15 @@ public enum BufferHelper {
         bufferBuilder.begin(drawMode, format);
     }
 
-    public void begin(VertexFormat.DrawMode drawMode, VertexFormat format) {
+    public BufferBuilder begin(VertexFormat.DrawMode drawMode, VertexFormat format) {
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         begin(bufferBuilder, drawMode, format);
+        return bufferBuilder;
     }
 
     public void drawWithShader(BufferBuilder bufferBuilder, ShaderProgram shaderProgram) {
-        shaderProgram.bind();
         bufferBuilder.clear();
+        shaderProgram.bind();
         BufferRenderer.drawWithoutShader(bufferBuilder.end());
         shaderProgram.detach();
     }

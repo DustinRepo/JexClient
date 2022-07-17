@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec2f;
 public class PosColorShader extends ShaderProgram {
     private final ShaderUniform projection, modelView;
     public PosColorShader() {
-        super("posColor");
+        super("pos_color");
         this.projection = addUniform("Projection");
         this.modelView = addUniform("ModelView");
         this.bindAttribute("Position", 0);

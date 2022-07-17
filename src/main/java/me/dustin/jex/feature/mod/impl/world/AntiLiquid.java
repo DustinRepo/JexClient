@@ -16,7 +16,9 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.FluidBlock;
@@ -150,15 +152,13 @@ public class AntiLiquid extends Feature {
             }
         }
         Render3DHelper.INSTANCE.setup3DRender(true);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         renderList.forEach(blockStorage -> {
             Box box = blockStorage.box();
             int color = blockStorage.color();
             Render3DHelper.INSTANCE.drawOutlineBox(event.getPoseStack(), box, color, false);
         });
-        bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
         Render3DHelper.INSTANCE.end3DRender();
     });
 

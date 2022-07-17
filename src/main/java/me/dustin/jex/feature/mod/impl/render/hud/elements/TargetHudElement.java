@@ -9,9 +9,11 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.TargetHud;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.EntityPositionHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -51,9 +53,7 @@ public class TargetHudElement extends HudElement{
                 Vec3d headPos = EntityPositionHelper.INSTANCE.getHeadPos(target);
                 if (Render2DHelper.INSTANCE.isOnScreen(headPos)) {
                     Color color = targetHud.markColorProperty.value();
-                    BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                    RenderSystem.setShader(GameRenderer::getPositionColorShader);
-                    bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+                    BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
                     int size = 5;
                     float[] bottom = {(float) headPos.x, (float) (headPos.y + size)};
                     float[] left = {(float) headPos.x - size / 2.f, (float) headPos.y};
@@ -68,8 +68,7 @@ public class TargetHudElement extends HudElement{
                     bufferBuilder.vertex(matrix4f, right[0], right[1], 0).color(color.getRGB()).next();
                     bufferBuilder.vertex(matrix4f, right[0], right[1], 0).color(color.getRGB()).next();
                     bufferBuilder.vertex(matrix4f, bottom[0], bottom[1], 0).color(color.getRGB()).next();
-                    bufferBuilder.clear();
-                    BufferRenderer.drawWithShader(bufferBuilder.end());
+                    BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
                     matrixStack.translate(0, -bob, 0);
                     matrixStack.pop();
                 }

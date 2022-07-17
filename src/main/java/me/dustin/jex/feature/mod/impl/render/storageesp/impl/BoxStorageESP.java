@@ -10,7 +10,9 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.storageesp.StorageESP;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
@@ -78,26 +80,23 @@ public class BoxStorageESP extends FeatureExtension {
             });
 
             Render3DHelper.INSTANCE.setup3DRender(true);
-            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-            bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+            BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             list.forEach(blockStorage -> {
                 Box box = blockStorage.box();
                 Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenCloseProperty.value() ? 255 : Math.max(0, Math.min(255, (int)(blockStorage.distance - storageESP.fadeDistanceProperty.value()) * 12)));
                 int color = blockStorage.color();
                 Render3DHelper.INSTANCE.drawOutlineBox(eventRender3D.getPoseStack(), box, color & alphaColor.getRGB(), false);
             });
-            bufferBuilder.clear();
-            BufferRenderer.drawWithShader(bufferBuilder.end());
+            BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
 
-            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+            BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
             list.forEach(blockStorage -> {
                 Box box = blockStorage.box();
                 Color alphaColor = new Color((int)255, (int)255, (int)255, !storageESP.fadeBoxesWhenCloseProperty.value() ? 100 : Math.max(0, Math.min(100, (int)(blockStorage.distance - storageESP.fadeDistanceProperty.value()) * 12)));
                 int color = blockStorage.color();
                 Render3DHelper.INSTANCE.drawFilledBox(eventRender3D.getPoseStack(), box, color & alphaColor.getRGB(), false);
             });
-            bufferBuilder.clear();
-            BufferRenderer.drawWithShader(bufferBuilder.end());
+            BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
             Render3DHelper.INSTANCE.end3DRender();
         }
     }

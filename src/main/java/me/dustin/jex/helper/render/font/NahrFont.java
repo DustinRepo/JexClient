@@ -3,6 +3,7 @@ package me.dustin.jex.helper.render.font;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.file.ModFileHelper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
@@ -218,9 +219,8 @@ public class NahrFont {
         float startX = x;
         boolean scramble = false;
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+        BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
         for (int i = 0; i < text.length(); i++)
             if ((text.charAt(i) == '\247') && (i + 1 < text.length())) {
                 char oneMore = Character.toLowerCase(text.charAt(i + 1));
@@ -244,8 +244,7 @@ public class NahrFont {
                 } catch (ArrayIndexOutOfBoundsException indexException) {
                 }
             }
-        bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        BufferHelper.INSTANCE.drawWithShader(bufferBuilder, GameRenderer::getPositionTexColorShader);
         Render2DHelper.INSTANCE.shaderColor(0xffffffff);
     }
 

@@ -18,7 +18,9 @@ import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.FriendHelper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.font.FontHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.render.BufferBuilder;
@@ -205,8 +207,7 @@ public class Nametag extends Feature {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (!exceptions.contains(entity) && isValid(entity)) {
                 Vec3d vec = positions.get(entity);
@@ -244,8 +245,7 @@ public class Nametag extends Feature {
                 }
             }
         });
-        bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         //draw all text since we can't also do that while rendering the boxes

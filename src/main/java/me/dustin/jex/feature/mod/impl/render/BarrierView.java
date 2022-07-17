@@ -11,7 +11,9 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.BarrierBlock;
 import net.minecraft.client.render.BufferBuilder;
@@ -62,8 +64,7 @@ public class BarrierView extends Feature {
 		});
 		//Render3DHelper.INSTANCE.drawList(eventRender3D.getMatrixStack(), list);
 		Render3DHelper.INSTANCE.setup3DRender(true);
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+		BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 		list.forEach(blockStorage -> {
 			Box box = blockStorage.box();
 			int color = blockStorage.color();
@@ -100,16 +101,14 @@ public class BarrierView extends Feature {
 			bufferBuilder.vertex(matrix4f, (float)box.minX, (float)box.maxY, (float)box.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 			bufferBuilder.vertex(matrix4f, (float)box.maxX, (float)box.minY, (float)box.maxZ).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
 		});
-		bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
+		BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		list.forEach(blockStorage -> {
 			Box box = blockStorage.box();
 			int color = blockStorage.color();
 			Render3DHelper.INSTANCE.drawFilledBox(event.getPoseStack(), box, color & 0x45ffffff, false);
 		});
-		bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+		BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
 		Render3DHelper.INSTANCE.end3DRender();
 	});
 }

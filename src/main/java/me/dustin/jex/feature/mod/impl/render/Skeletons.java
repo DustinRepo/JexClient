@@ -9,7 +9,9 @@ import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.render.BufferBuilder;
@@ -82,8 +84,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
 
                 if (swimming) matrixStack.translate(0, -0.95f, 0);
 
-                BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+                BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 
                 Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
                 bufferBuilder.vertex(matrix4f, 0, sneaking ? 0.6f : 0.7f, sneaking ? 0.23f : 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
@@ -135,8 +136,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
                 bufferBuilder.vertex(matrix4f, 0, -0.55f, 0).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
                 matrixStack.pop();
 
-                bufferBuilder.clear();
-                BufferRenderer.drawWithShader(bufferBuilder.end());
+                BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
 
                 if (swimming) matrixStack.translate(0, 0.95f, 0);
                 if (swimming || flying) matrixStack.multiply(new Quaternion(new Vec3f(1, 0, 0), 90 + m, true));

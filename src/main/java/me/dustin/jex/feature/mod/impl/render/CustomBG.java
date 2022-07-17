@@ -12,7 +12,9 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
@@ -101,15 +103,12 @@ public class CustomBG extends Feature {
             if (Wrapper.INSTANCE.getLocalPlayer() == null) {
                 Render2DHelper.INSTANCE.fill(event.getPoseStack(), 0, 0, width, height, 0xff7f7f7f);
             }
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-            bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+            BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(DrawMode.QUADS, VertexFormats.POSITION_COLOR);
             bufferBuilder.vertex(matrix4f, x + width, y, 0).color(topRight.getRed() / 255.f, topRight.getGreen() / 255.f, topRight.getBlue() / 255.f, 0.5f - a).next();
             bufferBuilder.vertex(matrix4f, x, y, 0).color(topLeft.getRed() / 255.f, topLeft.getGreen() / 255.f, topLeft.getBlue() / 255.f, a + 0.3f).next();
             bufferBuilder.vertex(matrix4f, x, y + height, 0).color(bottomLeft.getRed() / 255.f, bottomLeft.getGreen() / 255.f, bottomLeft.getBlue() / 255.f, 0.5f - a).next();
             bufferBuilder.vertex(matrix4f, x + width, y + height, 0).color(bottomRight.getRed() / 255.f, bottomRight.getGreen() / 255.f, bottomRight.getBlue() / 255.f, a + 0.3f).next();
-            bufferBuilder.clear();
-            BufferRenderer.drawWithShader(bufferBuilder.end());
+            BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
             RenderSystem.enableTexture();
         }
         if (modeProperty.value() == Mode.BOTH || modeProperty.value() == Mode.BLUR) {

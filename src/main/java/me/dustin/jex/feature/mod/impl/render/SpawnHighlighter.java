@@ -11,7 +11,9 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -111,15 +113,13 @@ public class SpawnHighlighter extends Feature {
 			boxes.add(new Render3DHelper.BoxStorage(box, color));
 		});
 		Render3DHelper.INSTANCE.setup3DRender(disableDepthProperty.value());
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+		BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		boxes.forEach(blockStorage -> {
 			Box box = blockStorage.box();
 			int color = blockStorage.color();
 			Render3DHelper.INSTANCE.drawFilledBox(event.getPoseStack(), box, color & 0x70ffffff, false);
 		});
-		bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+		BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
 		Render3DHelper.INSTANCE.end3DRender();
 	});
 

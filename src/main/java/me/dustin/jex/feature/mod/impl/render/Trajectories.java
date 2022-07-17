@@ -11,7 +11,9 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import me.dustin.jex.helper.world.WorldHelper;
 import me.dustin.jex.load.impl.IPersistentProjectileEntity;
 import me.dustin.jex.load.impl.IProjectile;
@@ -95,12 +97,10 @@ public class Trajectories extends Feature {
                     double z1 = vec1.z - Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera.getPos().z;
 
                     Render3DHelper.INSTANCE.setup3DRender(disableDepthProperty.value());
-                    BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-                    bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+                    BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
                     bufferBuilder.vertex(matrix4f, (float) x, (float) y, (float) z).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
                     bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, (float) z1).color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()).next();
-                    bufferBuilder.clear();
-                    BufferRenderer.drawWithShader(bufferBuilder.end());
+                    BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
                     Render3DHelper.INSTANCE.end3DRender();
                 } else {
                     Vec3d vec = Render3DHelper.INSTANCE.getRenderPosition(positions.get(i).x, positions.get(i).y, positions.get(i).z);

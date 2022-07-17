@@ -2,6 +2,8 @@ package me.dustin.jex.gui.account.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager.LogicOp;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dustin.jex.helper.render.BufferHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -481,18 +483,16 @@ public class GuiPasswordField extends ClickableWidget implements Drawable, Eleme
         }
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionShader);
         RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(LogicOp.OR_REVERSE);
-        bufferBuilder.begin(DrawMode.QUADS, VertexFormats.POSITION);
+        BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(DrawMode.QUADS, VertexFormats.POSITION);
         bufferBuilder.vertex((double)x1, (double)y2, 0.0D).next();
         bufferBuilder.vertex((double)x2, (double)y2, 0.0D).next();
         bufferBuilder.vertex((double)x2, (double)y1, 0.0D).next();
         bufferBuilder.vertex((double)x1, (double)y1, 0.0D).next();
-        tessellator.draw();
+        BufferHelper.INSTANCE.drawWithShader(bufferBuilder, GameRenderer::getPositionShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableColorLogicOp();
         RenderSystem.enableTexture();

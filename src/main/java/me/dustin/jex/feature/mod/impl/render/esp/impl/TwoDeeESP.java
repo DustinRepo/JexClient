@@ -11,7 +11,9 @@ import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.helper.math.ClientMathHelper;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
+import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
@@ -45,9 +47,8 @@ public class TwoDeeESP extends FeatureExtension {
                 }
             }
         } else if (event instanceof EventRender2D eventRender2D) {
-            BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
             Render2DHelper.INSTANCE.setup2DRender(true);
-            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+            BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
             headPos.keySet().forEach(entity -> {
                 Vec3d top = headPos.get(entity);
                 Vec3d bottom = footPos.get(entity);
@@ -75,9 +76,8 @@ public class TwoDeeESP extends FeatureExtension {
                     drawBox(eventRender2D.getPoseStack(), x - dif, y + 1, x2 + dif, y2, entity);
                 }
             });
-            bufferBuilder.clear();
-            BufferRenderer.drawWithShader(bufferBuilder.end());
-            bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+            BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
+            BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             headPos.keySet().forEach(entity -> {
                 Vec3d top = headPos.get(entity);
                 Vec3d bottom = footPos.get(entity);
@@ -105,8 +105,7 @@ public class TwoDeeESP extends FeatureExtension {
                     outlineBox(eventRender2D.getPoseStack(), x - dif, y + 1, x2 + dif, y2, entity);
                 }
             });
-            bufferBuilder.clear();
-            BufferRenderer.drawWithShader(bufferBuilder.end());
+            BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
             Render2DHelper.INSTANCE.end2DRender();
         }
     }
@@ -119,7 +118,6 @@ public class TwoDeeESP extends FeatureExtension {
         float g = (float)(color >> 16 & 255) / 255.0F;
         float h = (float)(color >> 8 & 255) / 255.0F;
         float k = (float)(color & 255) / 255.0F;
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferBuilder.vertex(matrix, (float)x, (float)y2, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, (float)x2, (float)y, 0.0F).color(g, h, k, f).next();
@@ -134,7 +132,6 @@ public class TwoDeeESP extends FeatureExtension {
         float g = (float)(color >> 16 & 255) / 255.0F;
         float h = (float)(color >> 8 & 255) / 255.0F;
         float k = (float)(color & 255) / 255.0F;
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferBuilder.vertex(matrix, (float)x, (float)y, 0.0F).color(g, h, k, f).next();
         bufferBuilder.vertex(matrix, (float)x, (float)y2, 0.0F).color(g, h, k, f).next();
 
