@@ -35,6 +35,13 @@ public class ShaderESP extends FeatureExtension {
             if (eventWorldRender.getMode() == EventWorldRender.Mode.PRE) {
                 IWorldRenderer iWorldRenderer = (IWorldRenderer) Wrapper.INSTANCE.getWorldRenderer();
                 ShaderProgram shader = ShaderHelper.INSTANCE.getOutlineShader();
+                shader.setUpdateUniforms(() -> {
+                    shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
+                    shader.getUniform("Width").setInt(ESP.INSTANCE.lineWidthProperty.value());
+                    shader.getUniform("Glow").setBoolean(ESP.INSTANCE.glowProperty.value());
+                    shader.getUniform("GlowIntensity").setFloat(ESP.INSTANCE.glowIntensityProperty.value());
+                });
+
                 if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher() == null || Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null)
                     return;
                 //setup the entityOutlinesFramebuffer in WorldRenderer because it gets auto applied there
@@ -71,10 +78,6 @@ public class ShaderESP extends FeatureExtension {
                 float g = this.second.textureHeight;
                 RenderSystem.viewport(0, 0, (int)f, (int)g);
                 shader.bind();
-                shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
-                shader.getUniform("Width").setInt(ESP.INSTANCE.lineWidthProperty.value());
-                shader.getUniform("Glow").setBoolean(ESP.INSTANCE.glowProperty.value());
-                shader.getUniform("GlowIntensity").setFloat(ESP.INSTANCE.glowIntensityProperty.value());
                 this.second.clear(MinecraftClient.IS_SYSTEM_MAC);
                 this.second.beginWrite(false);
                 RenderSystem.depthFunc(519);

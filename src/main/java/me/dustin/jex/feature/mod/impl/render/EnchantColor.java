@@ -79,8 +79,8 @@ public class EnchantColor extends Feature{
         if (RenderSystem.getShader() == GameRenderer.getRenderTypeGlintDirectShader() || RenderSystem.getShader() == GameRenderer.getRenderTypeArmorEntityGlintShader() || RenderSystem.getShader() == GameRenderer.getRenderTypeArmorGlintShader()) {
             BufferBuilder.BuiltBuffer buffer = event.getBuffer();
             EnchantColorShader shader = ShaderHelper.INSTANCE.getEnchantColorShader();
+            shader.setUpdateUniforms(this::setUniforms);
             shader.bind();
-            setUniforms(shader);
             RenderSystem.enableBlend();
             BufferRenderer.drawWithoutShader(buffer);
             ShaderHelper.INSTANCE.getEnchantColorShader().detach();
@@ -94,7 +94,8 @@ public class EnchantColor extends Feature{
         }
     });
 
-    public void setUniforms(ShaderProgram shader) {
+    public void setUniforms() {
+        EnchantColorShader shader = ShaderHelper.INSTANCE.getEnchantColorShader();
         Color setColor = rainbowProperty.value() ? ColorHelper.INSTANCE.getColorViaHue(col) : colorProperty.value();
         shader.getUniform("GlintColor").setVec(new Vector4f(setColor.getRed() / 255.f, setColor.getGreen() / 255.f, setColor.getBlue() / 255.f, 1));
         shader.getUniform("CrazyRainbow").setBoolean(modeProperty.value() == EffectMode.SHADER_RAINBOW);

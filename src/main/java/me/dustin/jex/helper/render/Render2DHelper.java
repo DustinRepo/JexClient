@@ -121,6 +121,13 @@ public enum Render2DHelper {
         Matrix4f proj = RenderSystem.getProjectionMatrix();
         checkResize();
         BlurShader shader = ShaderHelper.INSTANCE.getBlurShader();
+
+        shader.setUpdateUniforms(() -> {
+            shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
+            shader.getUniform("BlurDir").setVec(new Vec2f(1, 0));
+            shader.getUniform("Radius").setFloat(radius);
+        });
+
         RenderSystem.enableTexture();
         RenderSystem.resetTextureMatrix();
         RenderSystem.depthMask(false);
@@ -132,9 +139,6 @@ public enum Render2DHelper {
         float g = in.textureHeight;
         RenderSystem.viewport(0, 0, (int)f, (int)g);
         shader.bind();
-        shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
-        shader.getUniform("BlurDir").setVec(new Vec2f(1, 0));
-        shader.getUniform("Radius").setFloat(radius);
         this.blurFBO.clear(MinecraftClient.IS_SYSTEM_MAC);
         this.blurFBO.beginWrite(false);
         RenderSystem.depthFunc(519);
@@ -498,10 +502,6 @@ public enum Render2DHelper {
             y = y2;
             y2 = j;
         }
-        float f = (float)(color >> 24 & 255) / 255.0F;
-        float g = (float)(color >> 16 & 255) / 255.0F;
-        float h = (float)(color >> 8 & 255) / 255.0F;
-        float k = (float)(color & 255) / 255.0F;
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
@@ -519,7 +519,7 @@ public enum Render2DHelper {
                 float rad1 = (float) Math.toRadians(r);
                 float sin = (float) (Math.sin(rad1) * rad);
                 float cos = (float) (Math.cos(rad1) * rad);
-                bufferBuilder.vertex(matrix, (float) current[0] + sin, (float) current[1] + cos, 0.0F).color(f, g, h, k).next();
+                bufferBuilder.vertex(matrix, (float) current[0] + sin, (float) current[1] + cos, 0.0F).color(color).next();
             }
         }
         bufferBuilder.clear();

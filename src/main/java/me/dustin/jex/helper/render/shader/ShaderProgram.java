@@ -13,18 +13,29 @@ public abstract class ShaderProgram {
 	private final String shaderName;
 	private final int shaderProgram;
 	private final ArrayList<ShaderUniform> uniforms = new ArrayList<>();
+	private Runnable updateUniforms;
 
 	public ShaderProgram(String shaderName) {
 		this.shaderName = shaderName;
 		this.shaderProgram = glCreateProgram();
-		String vCode = readShader("/assets/jex/shaders/" + shaderName + ".vsh");
-		String fCode = readShader("/assets/jex/shaders/" + shaderName + ".fsh");
+		String vCode = readShader("/assets/jex/shaders/%s.vsh".formatted(shaderName));
+		String fCode = readShader("/assets/jex/shaders/%s.fsh".formatted(shaderName));
+		createProgram(vCode, fCode);
+	}
+
+	public ShaderProgram(String namespace, String shaderName) {
+		this.shaderName = shaderName;
+		this.shaderProgram = glCreateProgram();
+		String vCode = readShader("/assets/%s/shaders/%s.vsh".formatted(namespace, shaderName));
+		String fCode = readShader("/assets/%s/shaders/%s.fsh".formatted(namespace, shaderName));
 		createProgram(vCode, fCode);
 	}
 
 	public void bind() {
 		glUseProgram(shaderProgram);
 		updateUniforms();
+		if (this.updateUniforms != null)
+			this.updateUniforms.run();
 	}
 
 	public void detach() {
@@ -115,5 +126,9 @@ public abstract class ShaderProgram {
 			e.printStackTrace();
 			return "Error";
 		}
+	}
+
+	public void setUpdateUniforms(Runnable updateUniforms) {
+		this.updateUniforms = updateUniforms;
 	}
 }

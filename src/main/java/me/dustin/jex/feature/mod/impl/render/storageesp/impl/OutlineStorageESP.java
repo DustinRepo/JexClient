@@ -43,8 +43,16 @@ public class OutlineStorageESP extends FeatureExtension {
             storageESP = Feature.get(StorageESP.class);
         IWorldRenderer iWorldRenderer = (IWorldRenderer) Wrapper.INSTANCE.getWorldRenderer();
         ShaderProgram shader = ShaderHelper.INSTANCE.getOutlineShader();
+
         if (event instanceof EventRender3D eventRender3D) {
             checkResize();
+            shader.setUpdateUniforms(() -> {
+                shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
+                shader.getUniform("Width").setInt(storageESP.lineWidthProperty.value());
+                shader.getUniform("Glow").setBoolean(storageESP.glowProperty.value());
+                shader.getUniform("GlowIntensity").setFloat(storageESP.glowIntensityProperty.value());
+            });
+            //render block entities
             first.beginWrite(false);
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -64,10 +72,6 @@ public class OutlineStorageESP extends FeatureExtension {
             float g = this.second.textureHeight;
             RenderSystem.viewport(0, 0, (int)f, (int)g);
             shader.bind();
-            shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
-            shader.getUniform("Width").setInt(storageESP.lineWidthProperty.value());
-            shader.getUniform("Glow").setBoolean(storageESP.glowProperty.value());
-            shader.getUniform("GlowIntensity").setFloat(storageESP.glowIntensityProperty.value());
             this.second.clear(MinecraftClient.IS_SYSTEM_MAC);
             this.second.beginWrite(false);
             RenderSystem.depthFunc(519);
