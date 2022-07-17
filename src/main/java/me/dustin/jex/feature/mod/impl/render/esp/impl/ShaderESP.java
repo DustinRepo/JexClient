@@ -35,7 +35,6 @@ public class ShaderESP extends FeatureExtension {
                 IWorldRenderer iWorldRenderer = (IWorldRenderer) Wrapper.INSTANCE.getWorldRenderer();
                 ShaderProgram shader = postProcessOutline.getShader();
                 shader.setUpdateUniforms(() -> {
-                    shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
                     shader.getUniform("Width").setInt(ESP.INSTANCE.lineWidthProperty.value());
                     shader.getUniform("Glow").setBoolean(ESP.INSTANCE.glowProperty.value());
                     shader.getUniform("GlowIntensity").setFloat(ESP.INSTANCE.glowIntensityProperty.value());

@@ -44,7 +44,6 @@ public class OutlineBox extends FeatureExtension {
 		if (event instanceof EventRender3D eventRender3D) {
 			ShaderProgram shader = ShaderHelper.INSTANCE.getOutlineShader();
 			shader.setUpdateUniforms(() -> {
-				shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
 				shader.getUniform("Width").setInt(ESP.INSTANCE.lineWidthProperty.value());
 				shader.getUniform("Glow").setBoolean(ESP.INSTANCE.glowProperty.value());
 				shader.getUniform("GlowIntensity").setFloat(ESP.INSTANCE.glowIntensityProperty.value());

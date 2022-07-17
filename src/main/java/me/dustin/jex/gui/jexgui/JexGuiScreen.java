@@ -20,13 +20,14 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
+import me.dustin.jex.helper.render.Stencil;
 import me.dustin.jex.helper.render.font.FontHelper;
+import me.dustin.jex.helper.render.shader.post.impl.PostProcessOutline;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -36,10 +37,12 @@ public class JexGuiScreen extends Screen {
     private TextFieldWidget searchBar;
     private String lastSearch = "";
     private final boolean noCategories;
+    private final PostProcessOutline postProcessOutline;
     public JexGuiScreen(Screen parentScreen, boolean noCategories) {
         super(Text.translatable("jex.gui"));
         this.parentScreen = parentScreen;
         this.noCategories = noCategories;
+        this.postProcessOutline = new PostProcessOutline();
     }
 
     private final ArrayList<JexCategoryButton> categoryButtons = new ArrayList<>();
@@ -73,7 +76,14 @@ public class JexGuiScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
-        Render2DHelper.INSTANCE.fillAndBorder(matrices, getX(), getY(), getRight(), getBottom(), ColorHelper.INSTANCE.getClientColor(), 0x80303030, 1);
+        Render2DHelper.INSTANCE.renderRoundedQuad(matrices, getX(), getY(), getRight(), getBottom(), 0x70000000, 5, 15);
+
+Stencil.INSTANCE.write();
+Render2DHelper.INSTANCE.renderRoundedQuad(matrices, getX(), getY(), getRight(), getBottom(), ColorHelper.INSTANCE.getClientColor(), 5, 15);
+Stencil.INSTANCE.erase();
+Render2DHelper.INSTANCE.renderRoundedQuad(matrices, getX() - 1, getY() - 1, getRight() + 1, getBottom() + 1, ColorHelper.INSTANCE.getClientColor(), 5, 15);
+Stencil.INSTANCE.dispose();
+
         drawClientText(matrices);
 
         Render2DHelper.INSTANCE.fill(matrices, getX(), getY() + 25, getRight(), getY() + 26, ColorHelper.INSTANCE.getClientColor());

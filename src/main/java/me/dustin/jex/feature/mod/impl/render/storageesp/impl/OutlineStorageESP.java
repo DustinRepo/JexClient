@@ -52,7 +52,6 @@ public class OutlineStorageESP extends FeatureExtension {
                 if (Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher() == null || Wrapper.INSTANCE.getMinecraft().getEntityRenderDispatcher().camera == null)
                     return;
                 shader.setUpdateUniforms(() -> {
-                    shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
                     shader.getUniform("Width").setInt(storageESP.lineWidthProperty.value());
                     shader.getUniform("Glow").setBoolean(storageESP.glowProperty.value());
                     shader.getUniform("GlowIntensity").setFloat(storageESP.glowIntensityProperty.value());

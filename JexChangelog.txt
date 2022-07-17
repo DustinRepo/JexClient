@@ -1,3 +1,6 @@
+0.8.5
+Redesigned GUI to use rounded corners
+
 0.8.4
 Added "Line Width" options to Shader and Outline Box ESP as well as to Shader StorageESP
 Added blur effect option to CustomBG

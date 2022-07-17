@@ -12,6 +12,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.ButtonListener;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
+import me.dustin.jex.helper.render.Stencil;
 import me.dustin.jex.helper.render.font.FontHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -40,7 +41,14 @@ public class JexFeatureListScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
-        Render2DHelper.INSTANCE.fillAndBorder(matrices, JexGuiScreen.getX(), JexGuiScreen.getY(), JexGuiScreen.getRight(), JexGuiScreen.getBottom(), category.color(), 0x80303030, 1);
+        Render2DHelper.INSTANCE.renderRoundedQuad(matrices, JexGuiScreen.getX(), JexGuiScreen.getY(), JexGuiScreen.getRight(), JexGuiScreen.getBottom(), 0x70000000, 5, 15);
+
+        Stencil.INSTANCE.write();
+        Render2DHelper.INSTANCE.renderRoundedQuad(matrices, JexGuiScreen.getX(), JexGuiScreen.getY(), JexGuiScreen.getRight(), JexGuiScreen.getBottom(), category.color(), 5, 15);
+        Stencil.INSTANCE.erase();
+        Render2DHelper.INSTANCE.renderRoundedQuad(matrices, JexGuiScreen.getX() - 1, JexGuiScreen.getY() - 1, JexGuiScreen.getRight() + 1, JexGuiScreen.getBottom() + 1, category.color(), 5, 15);
+        Stencil.INSTANCE.dispose();
+        drawClientText(matrices);;
         drawClientText(matrices);
 
         Render2DHelper.INSTANCE.fill(matrices, JexGuiScreen.getX(), JexGuiScreen.getY() + 25, JexGuiScreen.getRight(), JexGuiScreen.getY() + 26, category.color());
@@ -154,7 +162,7 @@ public class JexFeatureListScreen extends Screen {
     public void drawClientText(MatrixStack matrices) {
         matrices.push();
         matrices.scale(2, 2, 1);
-        FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.name"), (width / 2.f) / 2.f, (JexGuiScreen.getY() + 5) / 2.f, ColorHelper.INSTANCE.getClientColor());
+        FontHelper.INSTANCE.drawCenteredString(matrices, Text.translatable("jex.name"), (width / 2.f) / 2.f, (JexGuiScreen.getY() + 5) / 2.f, category.color());
         matrices.scale(0.5f, 0.5f, 1);
         matrices.push();
     }

@@ -121,7 +121,6 @@ public enum Render2DHelper {
         ShaderProgram shader = postProcessBlur.getShader();
         postProcessBlur.setFirst(in);
         shader.setUpdateUniforms(() -> {
-            shader.getUniform("Projection").setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
             shader.getUniform("BlurDir").setVec(new Vec2f(0, 1));
             shader.getUniform("Radius").setFloat(radius);
         });
@@ -429,43 +428,59 @@ public enum Render2DHelper {
     }
 
     //credits to 0x150 for this
-    public void fillRound(MatrixStack matrixStack, float x, float y, float x2, float y2, int color, double rad, double samples) {
-        Matrix4f matrix = matrixStack.peek().getPositionMatrix();
-        float j;
-        if (x < x2) {
-            j = x;
-            x = x2;
-            x2 = j;
-        }
-        if (y < y2) {
-            j = y;
-            y = y2;
-            y2 = j;
-        }
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferBuilder.begin(DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
-        double toX1 = x2 - rad;
-        double toY1 = y2 - rad;
-        double fromX1 = x + rad;
-        double fromY1 = y + rad;
-        double[][] map = new double[][]{new double[]{toX1, toY1}, new double[]{toX1, fromY1}, new double[]{fromX1, fromY1}, new double[]{fromX1, toY1}};
+    private void renderRoundedQuadInternal(Matrix4f matrix, float cr, float cg, float cb, float ca, double fromX, double fromY, double toX, double toY, double rad, double samples) {
+        BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+        buffer.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
+
+        double toX1 = toX - rad;
+        double toY1 = toY - rad;
+        double fromX1 = fromX + rad;
+        double fromY1 = fromY + rad;
+        double[][] map = new double[][] { new double[] { toX1, toY1 }, new double[] { toX1, fromY1 },
+                new double[] { fromX1, fromY1 }, new double[] { fromX1, toY1 } };
         for (int i = 0; i < 4; i++) {
             double[] current = map[i];
-            for (double r = i * 90d; r < (360 / 4d + i * 90d); r += (90 / samples)) {
+            double max = (360 / 4d + i * 90d);
+            for (double r = i * 90d; r < max; r += (90 / samples)) {
                 float rad1 = (float) Math.toRadians(r);
                 float sin = (float) (Math.sin(rad1) * rad);
                 float cos = (float) (Math.cos(rad1) * rad);
-                bufferBuilder.vertex(matrix, (float) current[0] + sin, (float) current[1] + cos, 0.0F).color(color).next();
+                buffer.vertex(matrix, (float) current[0] + sin, (float) current[1] + cos, 0.0F)
+                        .color(cr, cg, cb, ca)
+                        .next();
             }
+            // make sure we render the corner properly by adding one final vertex at the end
+            float rad1 = (float) Math.toRadians(max);
+            float sin = (float) (Math.sin(rad1) * rad);
+            float cos = (float) (Math.cos(rad1) * rad);
+            buffer.vertex(matrix, (float) current[0] + sin, (float) current[1] + cos, 0.0F)
+                    .color(cr, cg, cb, ca)
+                    .next();
         }
-        bufferBuilder.clear();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
+        BufferHelper.INSTANCE.drawWithShader(buffer, RenderSystem::getShader);
+    }
+
+    public void renderRoundedQuad(MatrixStack matrices, double fromX, double fromY, double toX, double toY, int c, double rad, double samples) {
+        double height = toY - fromY;
+        double width = toX - fromX;
+        double smallestC = Math.min(height, width) / 2d;
+        rad = Math.min(rad, smallestC);
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
+        Color color = ColorHelper.INSTANCE.getColor(c);
+        setup2DRender(false);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        renderRoundedQuadInternal(matrix,
+                color.getRed() / 255.f,
+                color.getGreen() / 255.f,
+                color.getBlue() / 255.f,
+                color.getAlpha() / 255.f,
+                fromX,
+                fromY,
+                toX,
+                toY,
+                rad,
+                samples);
+        //end2DRender();
     }
 
     public void outlineAndFill(MatrixStack poseStack, float x, float y, float x2, float y2, int bcolor, int icolor) {
