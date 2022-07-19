@@ -57,7 +57,7 @@ public class ShaderUniform {
     public void setMatrix(Matrix4f matrix) {
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             FloatBuffer floatBuffer = memoryStack.mallocFloat(16);
-            matrix.write(floatBuffer, true);
+            matrix.write(floatBuffer, false);
             glUniformMatrix4fv(location, false, floatBuffer);
         }
     }

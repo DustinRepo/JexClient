@@ -1,7 +1,6 @@
 package me.dustin.jex.gui.jex.selection;
 
 
-import me.dustin.jex.helper.addon.hat.HatHelper;
 import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.gui.jex.JexOptionsScreen;
@@ -12,7 +11,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.helper.render.Scissor;
 import me.dustin.jex.feature.mod.core.Feature;
-import me.dustin.jex.feature.mod.impl.world.Xray;
+import me.dustin.jex.feature.mod.impl.world.xray.Xray;
 import me.dustin.jex.helper.render.Scrollbar;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;

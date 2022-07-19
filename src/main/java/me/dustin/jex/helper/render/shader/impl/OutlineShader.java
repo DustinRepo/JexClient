@@ -5,6 +5,7 @@ import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.shader.ShaderProgram;
 import me.dustin.jex.helper.render.shader.ShaderUniform;
+import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec2f;
 
@@ -23,11 +24,11 @@ public class OutlineShader extends ShaderProgram {
 
     @Override
     public void updateUniforms() {
-        width.setInt(1);
-        size.setVec(new Vec2f(Wrapper.INSTANCE.getMinecraft().getFramebuffer().viewportWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().viewportHeight));
-        sampler.setInt(0);
-        glowIntensity.setFloat(1);
-        glow.setBoolean(false);
-        projection.setMatrix(Matrix4x4.copyFromColumnMajor(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f)));
+        this.width.setInt(1);
+        this.size.setVec(new Vec2f(Wrapper.INSTANCE.getMinecraft().getFramebuffer().viewportWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().viewportHeight));
+        this.sampler.setInt(FabricLoaderImpl.INSTANCE.isModLoaded("sodium") ? 2 : 0);
+        this.glowIntensity.setFloat(1);
+        this.glow.setBoolean(false);
+        this.projection.setMatrix(Matrix4f.projectionMatrix(0.0f, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureWidth, Wrapper.INSTANCE.getMinecraft().getFramebuffer().textureHeight, 0.0f, 0.1f, 1000.0f));
     }
 }

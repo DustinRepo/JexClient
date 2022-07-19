@@ -5,7 +5,7 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.SearchFile;
 import me.dustin.jex.file.impl.XrayFile;
 import me.dustin.jex.helper.misc.Wrapper;
-import me.dustin.jex.feature.mod.impl.world.Xray;
+import me.dustin.jex.feature.mod.impl.world.xray.Xray;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;

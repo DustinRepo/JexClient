@@ -11,6 +11,7 @@
     "indigo.MixinTerrainRenderContext",
     "minecraft.MixinAbstractBlock",
     "minecraft.MixinAbstractBlockState",
+    "minecraft.MixinAbstractClientPlayerEntity",
     "minecraft.MixinAbstractHorseEntity",
     "minecraft.MixinBackgroundRenderer",
     "minecraft.MixinBlock",
@@ -58,14 +59,15 @@
     "minecraft.MixinParticleManager",
     "minecraft.MixinPersistentProjectileEntity",
     "minecraft.MixinPlayerEntity",
-    "minecraft.MixinPlayerEntityRenderer",
     "minecraft.MixinPlayerEntityModel",
+    "minecraft.MixinPlayerEntityRenderer",
     "minecraft.MixinPowderSnowBlock",
     "minecraft.MixinProjectileEntity",
     "minecraft.MixinRenderLayers",
     "minecraft.MixinRenderTickCounter",
     "minecraft.MixinScreen",
     "minecraft.MixinServerInfo",
+    "minecraft.MixinShader",
     "minecraft.MixinSignEditScreen",
     "minecraft.MixinSimpleOption",
     "minecraft.MixinSliderWidget",
@@ -77,7 +79,9 @@
     "sodium.MixinBlockOcclusionCache",
     "sodium.MixinBlockRenderer",
     "sodium.MixinFluidRenderer",
-    "sodium.MixinShaderChunkRenderer"
+    "sodium.MixinGlProgram",
+    "sodium.MixinShaderChunkRenderer",
+    "sodium.MixinShaderLoader"
   ],
   "injectors": {
     "defaultRequire": 1

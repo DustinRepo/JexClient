@@ -5,6 +5,7 @@ import me.dustin.jex.helper.math.Matrix4x4;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.render.shader.ShaderProgram;
 import me.dustin.jex.helper.render.shader.ShaderUniform;
+import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vector4f;
 
@@ -29,15 +30,15 @@ public class EnchantColorShader extends ShaderProgram {
     @Override
     public void updateUniforms() {
         float[] c = RenderSystem.getShaderColor();
-        sampler.setInt(0);
-        projection.setMatrix(Matrix4x4.copyFromColumnMajor(RenderSystem.getProjectionMatrix()));
-        modelView.setMatrix(Matrix4x4.copyFromColumnMajor(RenderSystem.getModelViewMatrix()));
-        textureMatrix.setMatrix(Matrix4x4.copyFromColumnMajor(RenderSystem.getTextureMatrix()));
-        colorModulator.setVec(new Vector4f(c[0], c[1], c[2], c[3]));
-        glintColor.setVec(new Vector4f(1, 1, 1, 1));
-        crazyRainbow.setBoolean(true);
-        saturation.setFloat(1);
-        alpha.setFloat(1);
-        mathmode.setInt(0);
+        this.sampler.setInt(FabricLoaderImpl.INSTANCE.isModLoaded("sodium") ? 2 : 0);
+        this.projection.setMatrix(RenderSystem.getProjectionMatrix());
+        this.modelView.setMatrix(RenderSystem.getModelViewMatrix());
+        this.textureMatrix.setMatrix(RenderSystem.getTextureMatrix());
+        this.colorModulator.setVec(new Vector4f(c[0], c[1], c[2], c[3]));
+        this.glintColor.setVec(new Vector4f(1, 1, 1, 1));
+        this.crazyRainbow.setBoolean(true);
+        this.saturation.setFloat(1);
+        this.alpha.setFloat(1);
+        this.mathmode.setInt(0);
     }
 }

@@ -1,9 +1,6 @@
 package me.dustin.jex.load.mixin.minecraft;
 
-import me.dustin.jex.event.render.EventBlockOutlineColor;
-import me.dustin.jex.event.render.EventRenderRain;
-import me.dustin.jex.event.render.EventWorldRender;
-import me.dustin.jex.event.render.EventWorldRenderEntity;
+import me.dustin.jex.event.render.*;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.load.impl.IWorldRenderer;
 import net.minecraft.client.gl.Framebuffer;
@@ -29,12 +26,12 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
 
     @Inject(method = "render", at = @At(value = "HEAD"))
     public void render(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
-        new EventWorldRender(matrices, tickDelta, EventWorldRender.Mode.PRE).run();
+        new EventWorldRender(matrices, tickDelta, matrix4f, EventWorldRender.Mode.PRE).run();
     }
 
     @Inject(method = "render", at = @At(value = "RETURN"))
     public void render1(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
-        new EventWorldRender(matrices, tickDelta, EventWorldRender.Mode.POST).run();
+        new EventWorldRender(matrices, tickDelta, matrix4f, EventWorldRender.Mode.POST).run();
     }
 
     @Inject(method = "renderEntity", at = @At("HEAD"), cancellable = true)

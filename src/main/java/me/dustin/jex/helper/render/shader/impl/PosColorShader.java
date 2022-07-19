@@ -20,7 +20,7 @@ public class PosColorShader extends ShaderProgram {
 
     @Override
     public void updateUniforms() {
-        this.projection.setMatrix(Matrix4x4.copyFromColumnMajor(RenderSystem.getProjectionMatrix()));
-        this.modelView.setMatrix(Matrix4x4.copyFromColumnMajor(RenderSystem.getModelViewMatrix()));
+        this.projection.setMatrix(RenderSystem.getProjectionMatrix());
+        this.modelView.setMatrix(RenderSystem.getModelViewMatrix());
     }
 }

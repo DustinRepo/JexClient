@@ -1,15 +1,22 @@
-package me.dustin.jex.feature.mod.impl.world;
+package me.dustin.jex.feature.mod.impl.world.xray;
 
+import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.event.player.EventGetSkinTexture;
 import me.dustin.jex.event.render.*;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.core.FeatureExtension;
+import me.dustin.jex.feature.mod.impl.world.xray.impl.NormalXray;
+import me.dustin.jex.feature.mod.impl.world.xray.impl.OpacityXray;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.lwjgl.glfw.GLFW;
@@ -17,11 +24,35 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 
 public class Xray extends Feature {
-
+    public static Xray INSTANCE;
     public static ArrayList<Block> blockList = new ArrayList<>();
+
+    public Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.NORMAL)
+            .build();
+    public Property<Integer> alphaProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Opacity")
+            .description("How opaque the blocks should be (less = less visible)")
+            .value(50)
+            .min(1)
+            .max(100)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.OPACITY)
+            .build();
+
+    public Property<Boolean> playerXray = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Player Xray")
+            .description("See through the clothes of other players!")
+            .value(false)
+            .build();
+    private Mode lastMode;
 
     public Xray() {
         super(Category.WORLD, "Have 200 iq while mining. Not cheating I promise.", GLFW.GLFW_KEY_X);
+        INSTANCE = this;
+        new NormalXray();
+        new OpacityXray();
     }
 
     public static void firstLoad() {
@@ -41,47 +72,61 @@ public class Xray extends Feature {
     }
 
     @EventPointer
-    private final EventListener<EventShouldDrawSide> eventShouldDrawSideEventListener = new EventListener<>(event -> {
-        if (isValid(event.getBlock()))
-            event.setShouldDrawSide(shouldDrawSide(event.getSide(), event.getBlockPos()));
-        else event.setShouldDrawSide(false);
+    private final EventListener<EventShouldDrawSide> eventShouldDrawSideEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventBlockBrightness> eventBlockBrightnessEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventMarkChunkClosed> eventMarkChunkClosedEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventRenderBlockEntity> eventRenderBlockEntityEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventRenderBlock> eventRenderBlockEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventRenderFluid> eventRenderFluidEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventGetRenderType> eventGetRenderTypeEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventBindShader> eventBindShaderEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventWorldRender> eventWorldRenderEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventSodiumQuadAlpha> eventSodiumQuadAlphaEventListener = new EventListener<>(event -> sendEvent(event));
+
+    @EventPointer
+    private final EventListener<EventGetSkinTexture> eventGetSkinTextureEventListener = new EventListener<>(event -> {
+        if (!playerXray.value())
+            return;
+        if (event.getPlayerEntity() == Wrapper.INSTANCE.getLocalPlayer())
+            return;
+        event.setSkin(new Identifier("jex", "skin/speedo.png"));
         event.cancel();
     });
 
-    @EventPointer
-    private final EventListener<EventBlockBrightness> eventBlockBrightnessEventListener = new EventListener<>(event -> {
-        if (isValid(event.getBlock()))
-            event.setBrightness(15);
-    });
-
-    @EventPointer
-    private final EventListener<EventMarkChunkClosed> eventMarkChunkClosedEventListener = new EventListener<>(event -> {
-        event.cancel();
-    });
-
-    @EventPointer
-    private final EventListener<EventRenderBlockEntity> eventRenderBlockEntityEventListener = new EventListener<>(event -> {
-        if (!isValid(WorldHelper.INSTANCE.getBlock(event.blockEntity.getPos())))
-            event.cancel();
-    });
-
-    @EventPointer
-    private final EventListener<EventRenderBlock> eventRenderBlockEventListener = new EventListener<>(event -> {
-        if (!isValid(event.block))
-            event.cancel();
-    });
-
-    @EventPointer
-    private final EventListener<EventRenderFluid> eventRenderFluidEventListener = new EventListener<>(event -> {
-        if (!isValid(event.getBlock()))
-            event.cancel();
-    });
+    private void sendEvent(Event event) {
+        if (lastMode != null && modeProperty.value() != lastMode) {
+            if (Wrapper.INSTANCE.getWorldRenderer() != null)
+                Wrapper.INSTANCE.getWorldRenderer().reload();
+        }
+        FeatureExtension.get(modeProperty.value(), this).pass(event);
+        this.setSuffix(modeProperty.value());
+        lastMode = modeProperty.value();
+    }
 
     @Override
     public void setState(boolean state) {
-        super.setState(state);
         if (Wrapper.INSTANCE.getWorldRenderer() != null)
             Wrapper.INSTANCE.getWorldRenderer().reload();
+        super.setState(state);
+        lastMode = modeProperty.value();
     }
 
     public boolean shouldDrawSide(Direction side, BlockPos blockPos) {
@@ -107,5 +152,9 @@ public class Xray extends Feature {
 
     public boolean isValid(Block block) {
         return blockList.contains(block);
+    }
+
+    public enum Mode {
+        NORMAL, OPACITY
     }
 }
