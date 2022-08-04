@@ -3,9 +3,9 @@ package me.dustin.jex.load.mixin.minecraft;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.misc.IRC;
 import me.dustin.jex.load.impl.IChatScreen;
-import me.dustin.jex.load.impl.ICommandSuggestor;
+import me.dustin.jex.load.impl.IChatInputSuggestor;
+import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinChatScreen implements IChatScreen {
 
     @Shadow protected TextFieldWidget chatField;
-    @Shadow private CommandSuggestor commandSuggestor;
+    @Shadow private ChatInputSuggestor chatInputSuggestor;
     private ButtonWidget normalChatButton;
     private ButtonWidget ircChatButton;
     private IRC ircMod;
@@ -41,9 +41,9 @@ public class MixinChatScreen implements IChatScreen {
         });
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/CommandSuggestor.render(Lnet/minecraft/client/util/math/MatrixStack;II)V"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/screen/ChatInputSuggestor.render(Lnet/minecraft/client/util/math/MatrixStack;II)V"))
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        ICommandSuggestor mc = (ICommandSuggestor) this.commandSuggestor;
+        IChatInputSuggestor mc = (IChatInputSuggestor) this.chatInputSuggestor;
         ircMod.renderAboveChat = !mc.isWindowActive();
 
         if (ircMod.renderAboveChat && ircMod.ircClient != null && ircMod.ircClient.isConnected()) {

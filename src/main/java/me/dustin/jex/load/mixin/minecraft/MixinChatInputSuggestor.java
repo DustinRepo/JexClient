@@ -5,8 +5,8 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import me.dustin.jex.event.chat.EventSortSuggestions;
 import me.dustin.jex.feature.command.CommandManager;
-import me.dustin.jex.load.impl.ICommandSuggestor;
-import net.minecraft.client.gui.screen.CommandSuggestor;
+import me.dustin.jex.load.impl.IChatInputSuggestor;
+import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -19,10 +19,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-@Mixin(CommandSuggestor.class)
-public abstract class MixinCommandSuggestor implements ICommandSuggestor {
+@Mixin(ChatInputSuggestor.class)
+public abstract class MixinChatInputSuggestor implements IChatInputSuggestor {
     @Shadow @Final private TextFieldWidget textField;
-    @Shadow @Nullable private CommandSuggestor.SuggestionWindow window;
+    @Shadow @Nullable private ChatInputSuggestor.SuggestionWindow window;
 
     @Redirect(method = "refresh", at = @At(value = "INVOKE", target = "com/mojang/brigadier/StringReader.peek()C"))
     public char refresh(StringReader stringReader) {

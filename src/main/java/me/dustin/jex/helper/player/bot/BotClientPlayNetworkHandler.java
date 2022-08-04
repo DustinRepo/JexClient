@@ -205,8 +205,8 @@ public class BotClientPlayNetworkHandler extends ClientPlayNetworkHandler {
     public void onChatMessage(ChatMessageS2CPacket packet) {
         IChatHud iChatHud = (IChatHud) Wrapper.INSTANCE.getMinecraft().inGameHud.getChatHud();
         try {
-            if (!iChatHud.containsMessage(packet.getSignedMessage().signedContent().getString()))
-                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", Formatting.DARK_GRAY, Formatting.GREEN, playerBot.getGameProfile().getName(), Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY, packet.getSignedMessage().signedContent().getString()));
+            if (!iChatHud.containsMessage(packet.message().getContent().getString()))
+                ChatHelper.INSTANCE.addRawMessage(String.format("%s[%s%s%s]%s: %s%s", Formatting.DARK_GRAY, Formatting.GREEN, playerBot.getGameProfile().getName(), Formatting.DARK_GRAY, Formatting.WHITE, Formatting.GRAY, packet.message().getContent().getString()));
         } catch (Exception e){}
     }
 

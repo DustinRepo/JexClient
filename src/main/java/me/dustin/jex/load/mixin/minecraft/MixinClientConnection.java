@@ -14,10 +14,12 @@ import me.dustin.jex.event.packet.EventPacketReceive;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.helper.network.ProxyHelper;
 import me.dustin.jex.helper.player.bot.BotClientConnection;
+import net.minecraft.class_7648;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.Packet;
 import net.minecraft.util.Lazy;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,9 +33,6 @@ import java.net.InetSocketAddress;
 @Mixin(ClientConnection.class)
 public abstract class MixinClientConnection {
 
-    @Shadow
-    public abstract void send(Packet<?> packet_1, GenericFutureListener<? extends Future<? super Void>> genericFutureListener_1);
-
     @Shadow @Final public static Lazy<EpollEventLoopGroup> EPOLL_CLIENT_IO_GROUP;
 
     @Shadow @Final public static Lazy<NioEventLoopGroup> CLIENT_IO_GROUP;
@@ -41,6 +40,8 @@ public abstract class MixinClientConnection {
     @Shadow @Final private NetworkSide side;
 
     @Shadow public abstract boolean isOpen();
+
+    @Shadow public abstract void send(Packet<?> packet, @Nullable class_7648 arg);
 
     @Inject(method = "connect", at = @At("HEAD"), cancellable = true)
     private static void connect1(InetSocketAddress address, boolean useEpoll, CallbackInfoReturnable<ClientConnection> cir) {

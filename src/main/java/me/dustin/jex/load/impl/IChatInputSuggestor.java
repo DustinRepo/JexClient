@@ -1,5 +1,5 @@
 package me.dustin.jex.load.impl;
 
-public interface ICommandSuggestor {
+public interface IChatInputSuggestor {
     boolean isWindowActive();
 }

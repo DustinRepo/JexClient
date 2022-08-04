@@ -10,11 +10,14 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
-import net.minecraft.network.message.ChatMessageSigner;
-import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.DecoratedContents;
+import net.minecraft.network.message.LastSeenMessageList;
+import net.minecraft.network.message.MessageMetadata;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.text.Text;
 
+import java.time.Instant;
 import java.util.Random;
 
 public class Messages extends Feature {
@@ -31,7 +34,7 @@ public class Messages extends Feature {
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         ChatMessageC2SPacket chatMessageC2SPacket = (ChatMessageC2SPacket) event.getPacket();
-        String message = chatMessageC2SPacket.getChatMessage();
+        String message = chatMessageC2SPacket.chatMessage();
         if (message.startsWith("/"))
             return;
         switch (modeProperty.value()) {
@@ -50,9 +53,11 @@ public class Messages extends Feature {
             case BACKWARDS -> message = new StringBuilder(message).reverse().toString();
             case RANDOM_CAPITAL -> message = randomCapitalize(message);
         }
-        ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(Wrapper.INSTANCE.getLocalPlayer().getUuid());
-        MessageSignature chatSigData = ChatHelper.INSTANCE.signChatMessage(chatMessageSigner, Text.literal(message));
-        NetworkHelper.INSTANCE.sendPacketDirect(new ChatMessageC2SPacket(message, chatSigData, false));
+        DecoratedContents decoratedContents = ChatHelper.INSTANCE.getDecoratedContents(message, null);
+        LastSeenMessageList.Acknowledgment acknowledgment = Wrapper.INSTANCE.getMinecraft().getNetworkHandler().consumeAcknowledgment();
+        MessageMetadata chatMessageSigner = MessageMetadata.of(Wrapper.INSTANCE.getLocalPlayer().getUuid());
+        MessageSignatureData chatSigData = ChatHelper.INSTANCE.signChatMessage(chatMessageSigner, decoratedContents, acknowledgment.lastSeen());
+        NetworkHelper.INSTANCE.sendPacketDirect(new ChatMessageC2SPacket(message, Instant.now(), new Random().nextLong(), chatSigData, false, acknowledgment));
         event.cancel();
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, ChatMessageC2SPacket.class));
 

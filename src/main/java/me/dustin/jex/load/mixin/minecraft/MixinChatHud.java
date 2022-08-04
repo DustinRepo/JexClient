@@ -21,7 +21,7 @@ import java.util.List;
 @Mixin(ChatHud.class)
 public class MixinChatHud implements IChatHud {
 
-    @Shadow @Final private List<ChatHudLine<Text>> messages;
+    @Shadow @Final private List<ChatHudLine> messages;
 
     @Inject(method = "isChatHidden", at = @At("HEAD"), cancellable = true)
     public void isChatHidden1(CallbackInfoReturnable<Boolean> cir) {
@@ -68,15 +68,15 @@ public class MixinChatHud implements IChatHud {
 
     @Override
     public boolean containsMessage(String message) {
-        for (ChatHudLine<Text> textChatHudLine : this.messages) {
-            if (textChatHudLine.getText().getString().equalsIgnoreCase(message))
+        for (ChatHudLine textChatHudLine : this.messages) {
+            if (textChatHudLine.content().getString().equalsIgnoreCase(message))
                 return true;
         }
         return false;
     }
 
     @Override
-    public List<ChatHudLine<Text>> getMessages() {
+    public List<ChatHudLine> getMessages() {
         return messages;
     }
 }

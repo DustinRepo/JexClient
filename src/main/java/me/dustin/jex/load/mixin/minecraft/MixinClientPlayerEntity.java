@@ -26,7 +26,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
-import net.minecraft.network.message.ChatMessageSigner;
+import net.minecraft.network.message.LastSeenMessageList;
+import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
@@ -87,7 +88,8 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
 
     @Shadow protected abstract void startRidingJump();
 
-    @Shadow protected abstract ArgumentSignatureDataMap signArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults, @Nullable Text text);
+
+    @Shadow protected abstract ArgumentSignatureDataMap signArguments(MessageMetadata signer, ParseResults<CommandSource> parseResults, @Nullable Text preview, LastSeenMessageList lastSeenMessages);
 
     public MixinClientPlayerEntity(ClientWorld world, GameProfile profile, PlayerPublicKey playerPublicKey) {
         super(world, profile, playerPublicKey);
@@ -123,7 +125,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     }
 
     @Inject(method = "sendChatMessagePacket", at = @At("HEAD"), cancellable = true)
-    public void sendChatMessage(ChatMessageSigner messageSigner, String string, Text component, CallbackInfo ci) {
+    public void sendChatMessage(String string, Text text, CallbackInfo ci) {
         EventSendMessage eventSendMessage = new EventSendMessage(string).run();
         if (eventSendMessage.isCancelled()) {
             ci.cancel();
@@ -363,7 +365,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
     }
 
     @Override
-    public ArgumentSignatureDataMap callSignArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults, Text text) {
-        return this.signArguments(signer, parseResults, text);
+    public ArgumentSignatureDataMap callSignArguments(MessageMetadata signer, ParseResults<CommandSource> parseResults, @Nullable Text preview, LastSeenMessageList lastSeenMessages) {
+        return this.signArguments(signer, parseResults, preview, lastSeenMessages);
     }
 }

@@ -1,4 +1,6 @@
 0.8.5
+Added Opacity mode back to Xray
+Fixed blur effect and shader ESP modes becoming broken by Sodium
 Redesigned GUI to use rounded corners
 
 0.8.4

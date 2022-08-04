@@ -21,7 +21,7 @@ import java.util.Optional;
 @Mixin(Main.class)
 public class MixinMain {
 
-    @ModifyArgs(at = @At(value = "INVOKE", target = "net/minecraft/client/util/Session.<init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Optional;Ljava/util/Optional;Lnet/minecraft/client/util/Session$AccountType;)V"), method = "main")
+    @ModifyArgs(at = @At(value = "INVOKE", target = "net/minecraft/client/util/Session.<init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Optional;Ljava/util/Optional;Lnet/minecraft/client/util/Session$AccountType;)V"), method = "main([Ljava/lang/String;Z)V")
     private static void modifySession(Args args) {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             Map<String, Object> parsedYaml = YamlHelper.INSTANCE.readFile(new File(ModFileHelper.INSTANCE.getJexDirectory(), "dev-login.yml"));

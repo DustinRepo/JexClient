@@ -322,7 +322,7 @@ public enum PlayerHelper {
                 Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
 
                 Box box = entity.getBoundingBox().stretch(vec3d2.multiply(reach)).expand(1.0D, 1.0D, 1.0D);
-                EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.collides(), reach);
+                EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.canHit(), reach);
                 if (entityHitResult != null) {
                     Entity entity2 = entityHitResult.getEntity();
                     if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {

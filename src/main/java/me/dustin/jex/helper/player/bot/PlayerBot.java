@@ -44,7 +44,7 @@ import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -119,7 +119,7 @@ public class PlayerBot {
                 this.clientConnection = currentConnection = connect(optional.get());
                 clientConnection.setPacketListener(new BotLoginNetworkHandler(clientConnection, Wrapper.INSTANCE.getMinecraft(), null, this::log, gameProfile, this));
                 clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.LOGIN));
-                clientConnection.send(new LoginHelloC2SPacket(gameProfile.getName(), keyPair == null ? Optional.empty() : Optional.ofNullable(keyPair.publicKey().data())));
+                clientConnection.send(new LoginHelloC2SPacket(gameProfile.getName(), keyPair == null ? Optional.empty() : Optional.ofNullable(keyPair.publicKey().data()), Optional.ofNullable(this.session.getUuidOrNull())));
             } catch (Exception e) {
                 ChatHelper.INSTANCE.addClientMessage("Error logging in player");
                 e.printStackTrace();
@@ -139,8 +139,8 @@ public class PlayerBot {
 
         KeyPairResponse keyPairResponse = JsonHelper.INSTANCE.gson.fromJson(httpResponse.data(), KeyPairResponse.class);
         PublicKey publicKey = NetworkEncryptionUtils.decodeRsaPublicKeyPem(keyPairResponse.getPublicKey());
-        byte[] keySig = Base64.getDecoder().decode(keyPairResponse.getPublicKeySignature());
-        return new PlayerKeyPair(NetworkEncryptionUtils.decodeRsaPrivateKeyPem(keyPairResponse.getPrivateKey()), new PlayerPublicKey(new PlayerPublicKey.PublicKeyData(Instant.parse(keyPairResponse.getExpiresAt()), publicKey, keySig)), Instant.parse(keyPairResponse.getRefreshedAfter()));
+        ByteBuffer keySig = Base64.getDecoder().decode(keyPairResponse.getPublicKeySignature());
+        return new PlayerKeyPair(NetworkEncryptionUtils.decodeRsaPrivateKeyPem(keyPairResponse.getPrivateKey()), new PlayerPublicKey(new PlayerPublicKey.PublicKeyData(Instant.parse(keyPairResponse.getExpiresAt()), publicKey, keySig.array())), Instant.parse(keyPairResponse.getRefreshedAfter()));
     }
 
     public void disconnect() {
@@ -205,9 +205,10 @@ public class PlayerBot {
     }
 
     public void sendMessage(String chat) {
-        Instant instant = Instant.now();
-        MessageSignature chatSigData = new MessageSignature(UUID.fromString(getSession().getUuid()), instant, sigForMessage(instant, chat));
-        this.clientConnection.send(new ChatMessageC2SPacket(chat, chatSigData, false));
+        //TODO: fix this
+        /*Instant instant = Instant.now();
+        MessageSignatureData chatSigData = new MessageSignatureData(UUID.fromString(getSession().getUuid()), instant, sigForMessage(instant, chat));
+        this.clientConnection.send(new ChatMessageC2SPacket(chat, chatSigData, false));*/
     }
 
     private NetworkEncryptionUtils.SignatureData sigForMessage(Instant instant, String string) {
@@ -331,7 +332,7 @@ public class PlayerBot {
                 Vec3d vec3d3 = vec3d.add(vec3d2.x * reach, vec3d2.y * reach, vec3d2.z * reach);
 
                 Box box = player.getBoundingBox().stretch(vec3d2.multiply(reach)).expand(1.0D, 1.0D, 1.0D);
-                EntityHitResult entityHitResult = raycast(player, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.collides(), reach);
+                EntityHitResult entityHitResult = raycast(player, vec3d, vec3d3, box, (entityx) -> !entityx.isSpectator() && entityx.canHit(), reach);
                 if (entityHitResult != null) {
                     Entity entity2 = entityHitResult.getEntity();
                     if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {

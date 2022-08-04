@@ -6,6 +6,7 @@ import me.dustin.jex.helper.misc.ChatHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.network.WebHelper;
+import net.minecraft.class_7648;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
@@ -67,7 +68,7 @@ public class BotLoginNetworkHandler extends ClientLoginNetworkHandler {
                 }
             }
             ChatHelper.INSTANCE.addRawMessage(Text.translatable("connect.encrypting"));
-            this.playerBot.getClientConnection().send(loginKeyC2SPacket, future -> this.playerBot.getClientConnection().setupEncryption(cipher, cipher2));
+            this.playerBot.getClientConnection().send(loginKeyC2SPacket, class_7648.method_45084(() -> this.playerBot.getClientConnection().setupEncryption(cipher, cipher2)));
         });
     }
 

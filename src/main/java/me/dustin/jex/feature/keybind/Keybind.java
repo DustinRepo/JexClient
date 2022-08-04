@@ -42,7 +42,7 @@ public record Keybind(int key, String command, boolean isJexCommand) {
             Wrapper.INSTANCE.getLocalPlayer().sendCommand(command().substring(1), Text.literal(command()));
             return;
         }
-        Wrapper.INSTANCE.getLocalPlayer().sendChatMessage((isJexCommand() ? CommandManager.INSTANCE.getPrefix() : "") + command());
+        Wrapper.INSTANCE.getLocalPlayer().sendChatMessage((isJexCommand() ? CommandManager.INSTANCE.getPrefix() : "") + command(), null);
     }
     public static ArrayList<Keybind> getKeybinds() {
         return keybinds;
