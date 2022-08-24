@@ -124,7 +124,7 @@ public abstract class MixinClientPlayerEntity extends AbstractClientPlayerEntity
         new EventPlayerPackets().run();
     }
 
-    @Inject(method = "sendChatMessagePacket", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "sendChatMessageInternal", at = @At("HEAD"), cancellable = true)
     public void sendChatMessage(String string, Text text, CallbackInfo ci) {
         EventSendMessage eventSendMessage = new EventSendMessage(string).run();
         if (eventSendMessage.isCancelled()) {

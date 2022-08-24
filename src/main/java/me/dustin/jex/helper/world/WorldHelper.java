@@ -65,15 +65,25 @@ public enum WorldHelper {
     public static final Box SINGLE_BOX = new Box(0, 0, 0, 1, 1, 1);
 
     public Block getBlock(BlockPos pos) {
-        if (Wrapper.INSTANCE.getWorld() == null)
+        try {
+            if (Wrapper.INSTANCE.getWorld() == null)
+                return null;
+            return Wrapper.INSTANCE.getWorld().getBlockState(pos).getBlock();
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
-        return Wrapper.INSTANCE.getWorld().getBlockState(pos).getBlock();
+        }
     }
 
     public BlockState getBlockState(BlockPos pos) {
-        if (Wrapper.INSTANCE.getWorld() == null)
+        try {
+            if (Wrapper.INSTANCE.getWorld() == null)
+                return null;
+            return Wrapper.INSTANCE.getWorld().getBlockState(pos);
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
-        return Wrapper.INSTANCE.getWorld().getBlockState(pos);
+        }
     }
 
     public boolean isWaterlogged(BlockPos pos) {

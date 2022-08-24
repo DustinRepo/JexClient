@@ -23,6 +23,7 @@ import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 public enum JexSiteHelper {
     INSTANCE;
@@ -135,7 +136,11 @@ public enum JexSiteHelper {
                     e.printStackTrace();
                 }
                 clientConnection.send(new HandshakeC2SPacket(minecraftServerAddress.getIp(), minecraftServerAddress.getPort(), NetworkState.LOGIN));
-                clientConnection.send(new LoginHelloC2SPacket(Wrapper.INSTANCE.getMinecraft().getSession().getUsername(), Wrapper.INSTANCE.getMinecraft().getProfileKeys().getPublicKeyData(), Optional.ofNullable(Wrapper.INSTANCE.getMinecraft().getSession().getUuidOrNull())));
+                try {
+                    clientConnection.send(new LoginHelloC2SPacket(Wrapper.INSTANCE.getMinecraft().getSession().getUsername(), Wrapper.INSTANCE.getMinecraft().getProfileKeys().refresh().get(), Optional.ofNullable(Wrapper.INSTANCE.getMinecraft().getSession().getUuidOrNull())));
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
             }
         };
         thread.start();
