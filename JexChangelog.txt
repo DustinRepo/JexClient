@@ -1,3 +1,7 @@
+0.8.6
+Fixed switching accounts not allowing connection to servers since 1.19.1
+Fixed VanillaSpoof not working
+
 0.8.5
 Added Opacity mode back to Xray
 Fixed blur effect and shader ESP modes becoming broken by Sodium
