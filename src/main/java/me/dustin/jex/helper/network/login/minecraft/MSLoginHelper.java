@@ -5,7 +5,11 @@ import me.dustin.jex.file.core.ConfigManager;
 import me.dustin.jex.file.impl.AltFile;
 import me.dustin.jex.gui.account.account.MinecraftAccount;
 import me.dustin.jex.helper.file.JsonHelper;
+import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.network.WebHelper;
+import me.dustin.jex.load.impl.IMinecraft;
+import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.Session;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -133,8 +137,10 @@ public class MSLoginHelper {
             if (updateAccount) {
                 updateAccount(name, uuid, bearerToken, refreshToken);
             }
+            Session session = new Session(name, uuid, bearerToken, Optional.of(""), Optional.of(""), Session.AccountType.MSA);
 
-            return new Session(name, uuid, bearerToken, Optional.of(""), Optional.of(""), Session.AccountType.MSA);
+            NetworkHelper.INSTANCE.updateKeys(session);
+            return session;
         } catch (Exception e) {
             e.printStackTrace();
             statusConsumer.accept(e.getMessage());

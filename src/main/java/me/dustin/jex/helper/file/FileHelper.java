@@ -78,6 +78,16 @@ public enum FileHelper {
         }
     }
 
+    public void writeFile(File file, String content) {
+        try {
+            PrintWriter printWriter = new PrintWriter(file);
+            printWriter.print(content);
+            printWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void createFile(File path, String name) {
         try {
             File file = new File(path, name);

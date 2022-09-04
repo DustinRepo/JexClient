@@ -64,7 +64,9 @@ public class MojangLoginHelper {
             Session session = login(this.email, this.password);
             sessionConsumer.accept(session);
         }).start();
-        else
+        else {
             sessionConsumer.accept(new Session(email, UUID.randomUUID().toString(), "fakeToken", Optional.of(""), Optional.of(""), Session.AccountType.LEGACY));
+            NetworkHelper.INSTANCE.dropKeys();
+        }
     }
 }
