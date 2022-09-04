@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.filters.ClientPacketFilter;
+import me.dustin.jex.event.filters.DirectClientPacketFilter;
 import me.dustin.jex.event.packet.EventPacketSent;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -18,7 +19,7 @@ public class VanillaSpoof extends Feature {
     }
 
     @EventPointer
-    private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+    private final EventListener<EventPacketSent.EventPacketSentDirect> eventPacketSentEventListener = new EventListener<>(event -> {
         CustomPayloadC2SPacket packet = (CustomPayloadC2SPacket) event.getPacket();
         if (packet.getChannel() == CustomPayloadC2SPacket.BRAND) {
             CustomPayloadC2SPacket newPacket = new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString("vanilla"));
@@ -26,5 +27,5 @@ public class VanillaSpoof extends Feature {
         } else if (packet.getData().toString(StandardCharsets.UTF_8).toLowerCase().contains("fabric")) {
             event.cancel();
         }
-    }, new ClientPacketFilter(EventPacketSent.Mode.PRE, CustomPayloadC2SPacket.class));
+    }, new DirectClientPacketFilter(EventPacketSent.Mode.PRE, CustomPayloadC2SPacket.class));
 }
