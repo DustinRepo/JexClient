@@ -49,7 +49,14 @@ public class AntiOverlay extends Feature {
             .name("Vignette")
             .value(true)
             .build();
-
+    public final Property<Boolean> scoreboardProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Scoreboard")
+            .value(true)
+            .build();
+public final Property<Boolean> witherbarProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Witherbar")
+            .value(true)
+            .build();
     public AntiOverlay() {
         super(Category.VISUAL, "Remove overlays");
     }
@@ -57,6 +64,14 @@ public class AntiOverlay extends Feature {
     @EventPointer
     private final EventListener<EventRenderOverlay> eventRenderOverlayEventListener = new EventListener<>(event -> {
         switch (event.getOverlay()) {
+            case WITHERBAR -> {
+            if (witherbarProperty.value())
+                    event.cancel();
+            }
+            case SCOREBOARD -> {
+                if (scoreboardProperty.value())
+                    event.cancel();
+            }
             case FIRE -> {
                 if (fireProperty.value())
                     event.cancel();
