@@ -49,12 +49,12 @@ public class AntiOverlay extends Feature {
             .name("Vignette")
             .value(true)
             .build();
-    public final Property<Boolean> scoreboardProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> ScoreboardProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Scoreboard")
             .value(true)
             .build();
-public final Property<Boolean> witherbarProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Witherbar")
+public final Property<Boolean> BossBarProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Boss")
             .value(true)
             .build();
     public AntiOverlay() {
@@ -64,8 +64,8 @@ public final Property<Boolean> witherbarProperty = new Property.PropertyBuilder<
     @EventPointer
     private final EventListener<EventRenderOverlay> eventRenderOverlayEventListener = new EventListener<>(event -> {
         switch (event.getOverlay()) {
-            case WITHERBAR -> {
-            if (witherbarProperty.value())
+            case BOSSBAR -> {
+            if (BossBarProperty.value())
                     event.cancel();
             }
             case SCOREBOARD -> {
