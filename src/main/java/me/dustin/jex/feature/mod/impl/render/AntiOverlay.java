@@ -69,7 +69,7 @@ public final Property<Boolean> BossBarProperty = new Property.PropertyBuilder<Bo
                     event.cancel();
             }
             case SCOREBOARD -> {
-                if (scoreboardProperty.value())
+                if (ScoreboardProperty.value())
                     event.cancel();
             }
             case FIRE -> {
