@@ -13,7 +13,6 @@ public class HighJump extends Feature {
   	
 public Property <Integer> jumplevelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
 .name ("Jump level")
-.description ("Blocks jump multipler, specified with a value of 1 to 1)
 .value(0)
 .min(2)
 .max(1000)
