@@ -19,7 +19,7 @@ public Property <Integer> jumplevelProperty = new Property.PropertyBuilder<Integ
 .inc(1)
 .build();
 							
-public AntiKnockback() {
+public HighJump() {
 super(Category.MOVEMENT, "Multiple the jump height".);
 }
 	      
