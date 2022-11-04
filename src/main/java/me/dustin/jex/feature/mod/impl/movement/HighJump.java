@@ -7,7 +7,6 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
-import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.property.Property;
 
 public class HighJump extends Feature {
@@ -24,8 +23,10 @@ public Property <Integer> jumplevelProperty = new Property.PropertyBuilder<Integ
 public AntiKnockback() {
 super(Category.MOVEMENT, "Multiple the jump height".);
 }
+	      
 @Eventpointer
 private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
 if (Wrapper.INSTANCE.getLocalPlayer().jumplevel > jumplevelProperty.value())
-event.setY(+jumplevelProperty.value());
+event.setY((int)(event.getY() * jumplevelProperty.value));
+    }		 
 }
