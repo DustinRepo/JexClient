@@ -61,6 +61,7 @@ public class NoSlow extends Feature {
 		Block block = WorldHelper.INSTANCE.getBlockBelowEntity(Wrapper.INSTANCE.getLocalPlayer(), 0.7f);
 		if (block == Blocks.SOUL_SAND && soulSandProperty.value()) {
 			event.setX(event.getX() * 1.72111554);
+			event.setY(event.getY() * 1.72111554);
 			event.setZ(event.getZ() * 1.72111554);
 		}
 	}, Priority.FIRST);
