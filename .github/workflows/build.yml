@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Clone repo
+    - name: Clone1
       uses: actions/checkout@v2
     - name: Set up JDK 17
       uses: actions/setup-java@v2
