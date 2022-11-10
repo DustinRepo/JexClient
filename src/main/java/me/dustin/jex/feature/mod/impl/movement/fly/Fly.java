@@ -37,7 +37,7 @@ public class Fly extends Feature {
             .name("Speed")
             .value(0.5f)
             .min(0.1f)
-            .max(5)
+            .max(20)
             .inc(0.1f)
             .build();
     public final Property<Boolean> walkAnimationProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -57,7 +57,7 @@ public class Fly extends Feature {
     public final Property<Float> glideSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Glide Speed")
             .value(0.01f)
-            .max(2)
+            .max(3)
             .inc(0.01f)
             .parent(glideProperty)
             .depends(parent -> (boolean) parent.value())
