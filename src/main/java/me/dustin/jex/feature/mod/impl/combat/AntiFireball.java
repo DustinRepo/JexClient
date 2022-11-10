@@ -19,7 +19,7 @@ public class AntiFireball extends Feature {
             .name("Range")
             .value(5f)
             .min(1)
-            .max(6)
+            .max(7)
             .inc(0.1f)
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
