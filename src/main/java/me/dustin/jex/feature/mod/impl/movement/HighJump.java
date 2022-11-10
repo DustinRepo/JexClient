@@ -13,9 +13,9 @@ public class HighJump extends Feature {
   	
 public Property <Integer> jumplevelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
 .name ("Jump level")
-.value(0)
-.min(2)
-.max(1000)
+.value(1)
+.min(1)
+.max(256)
 .inc(1)
 .build();
 	
