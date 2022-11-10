@@ -65,7 +65,7 @@ public final Property<Boolean> BossbarProperty = new Property.PropertyBuilder<Bo
     private final EventListener<EventRenderOverlay> eventRenderOverlayEventListener = new EventListener<>(event -> {
         switch (event.getOverlay()) {
             case BOSS -> {
-            if (BossBarProperty.value())
+            if (BossbarProperty.value())
                     event.cancel();
             }
             case BOARD -> {
