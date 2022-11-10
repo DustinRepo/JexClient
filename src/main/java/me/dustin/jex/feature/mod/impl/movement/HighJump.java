@@ -26,5 +26,5 @@ super(Category.MOVEMENT, "Multiple the jump height");
 @Eventpointer
 private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
 Wrapper.INSTANCE.getLocalPlayer().jumplevelProperty.value();
-event.setY((int)(event.getY() * jumplevelProperty.value));
+event.setY((int)(event.getY() * jumplevelProperty.value());
 }		 
