@@ -24,7 +24,7 @@ super(Category.MOVEMENT, "Multiple the jump height");
  }
 	      
 @Eventpointer
-private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
+public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
 event.setY(event.getY() * jumplevelProperty.value());
-   });
-}	
+   });	
+}
