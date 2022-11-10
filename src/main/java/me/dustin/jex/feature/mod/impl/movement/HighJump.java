@@ -11,12 +11,12 @@ import me.dustin.jex.feature.property.Property;
 
 public class HighJump extends Feature {
   	
-public Property <Float> jumplevelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+public Property <Integer> jumplevelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
 .name ("Jump level")
-.value(1f)
+.value(1)
 .min(1)
 .max(256)
-.inc(1f)
+.inc(1)
 .build();
 	
 public HighJump() {
