@@ -12,9 +12,9 @@ public class Hitboxes extends Feature {
 
     public final Property<Float> expansionProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Expansion")
-            .value(0.5f)
-            .min(0.5f)
-            .max(2)
+            .value(0.1f)
+            .min(0.1f)
+            .max(1f)
             .inc(0.1f)
             .build();
 
