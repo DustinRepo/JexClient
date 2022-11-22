@@ -59,7 +59,7 @@ public enum ProxyHelper {
 
     public ClientConnection clientConnection;
     public final ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {
-        @Inject(method = initChannel(Lio/netty/channel/ChannelInitializer;)V", at = @At("HEAD"), cancellable = true)
+        @Inject(method = initChannel(Lio/netty/channel/Channel;)V", at = @At("HEAD"), cancellable = true)
         protected void initChannel(Channel channel) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
             if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
@@ -69,14 +69,7 @@ public enum ProxyHelper {
                     channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port())));
                 }
             }
-            channel.config().setOption(ChannelOption.TCP_NODELAY, true);
 
-            channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
-            channel.pipeline().addLast("splitter", new SplitterHandler());
-            channel.pipeline().addLast("decoder", new DecoderHandler(NetworkSide.CLIENTBOUND));
-            channel.pipeline().addLast("prepender", new SizePrepender());
-            channel.pipeline().addLast("encoder", new PacketEncoder(NetworkSide.SERVERBOUND));
-            channel.pipeline().addLast("packet_handler", clientConnection);
         }
     };
 }
