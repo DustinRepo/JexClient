@@ -56,8 +56,10 @@ public enum ProxyHelper {
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
 
+    @Mixin(targets = "net/minecraft/network/ClientConnection$1")
     public ClientConnection clientConnection;
     public final ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {
+        @Inject(method = "initChannel(Lio/netty/channel/Channel;)V", at = @At("HEAD"))
         protected void initChannel(Channel channel) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
             if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
