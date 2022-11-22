@@ -56,7 +56,6 @@ public enum ProxyHelper {
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
 
-    @Mixin(targets = "net/minecraft/network/ClientConnection$1")
     public ClientConnection clientConnection;
     public final ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {
         @Inject(method = "initChannel(Lio/netty/channel/Channel;)V", at = @At("HEAD"))
@@ -64,7 +63,7 @@ public enum ProxyHelper {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
             if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
                 if (proxy.socksType() == ProxyHelper.SocksType.FIVE) {
-                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), proxy.username.isEmpty() ? null : proxy.username, proxy.password.isEmpty ? null : proxy.password));
+                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), proxy.authName.isEmpty() ? null : proxy.authName, proxy.authPass.isEmpty ? null : proxy.authPass));
                 } else {
                     channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port())));
                 }
