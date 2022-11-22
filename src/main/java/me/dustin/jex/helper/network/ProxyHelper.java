@@ -56,7 +56,7 @@ public enum ProxyHelper {
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
 
-     @Override(targets = "net/minecraft/network/initChannel")
+     @Mixins(targets = "net/minecraft/network/initChannel")
     public ClientConnection clientConnection;
     public final ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {
         @Inject(method = "initChannel(Lio/netty/channel/Channel;)V", at = @At("HEAD"))
