@@ -59,7 +59,6 @@ public enum ProxyHelper {
 
     public ClientConnection clientConnection;
     public final ChannelInitializer<Channel> channelInitializer = new ChannelInitializer<>() {
-        @Inject(method = initChannel(Lio/netty/channel/Channel;)V", at = @At("HEAD"), cancellable = true)
         protected void initChannel(Channel channel) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
             if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
