@@ -66,7 +66,7 @@ public class ProxyScreen extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
-        connectButton.active = ServerAddress.isValid(proxyField.getText()) && proxyField.getText().contains(":");
+        connectButton.active = ServerAddress.isValid(proxyField.getText()) && proxyField.getText().contains(" ");
         disconnectButton.active = ProxyHelper.INSTANCE.isConnectedToProxy();
         proxyField.render(matrices, mouseX, mouseY, delta);
         usernameField.render(matrices, mouseX, mouseY, delta);
