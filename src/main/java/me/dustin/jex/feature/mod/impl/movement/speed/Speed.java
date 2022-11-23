@@ -23,10 +23,10 @@ public class Speed extends Feature {
             .build();
     public final Property<Float> vanillaSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Vanilla Speed")
-            .value(0.6f)
-            .min(0.3f)
+            .value(0.2f)
+            .min(0.2f)
             .max(3f)
-            .inc(0.01f)
+            .inc(0.1f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.VANILLA)
             .build();
