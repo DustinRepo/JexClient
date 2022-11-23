@@ -23,7 +23,7 @@ public class Zoom extends Feature {
             .name("Zoom Level")
             .value(1f)
             .min(1)
-            .max(5)
+            .max(7)
             .value(0.1f)
             .build();
     public final Property<Integer> zoomKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -59,7 +59,7 @@ public class Zoom extends Feature {
                 this.resetFOV = false;
                 this.savedFOV = Wrapper.INSTANCE.getOptions().getFov().getValue();
             }
-            int zoomFov = (int)(30 - (6 * zoomLevelProperty.value()));
+            int zoomFov = (int)(30 - (4 * zoomLevelProperty.value()));
             if (zoomFov == 0)
                 zoomFov = 1;
             if(Wrapper.INSTANCE.getOptions().getFov().getValue() > zoomFov) {
