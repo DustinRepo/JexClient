@@ -38,7 +38,7 @@ public enum ProxyHelper {
         proxy = null;
     }
 
-    public record ClientProxy(String host, int port, SocksType socksType, String authName, String authPass){}
+    public record ClientProxy(String hostname, int port, SocksType socksType, String username, String password){}
 
     public enum SocksType {
         FOUR, FIVE;
@@ -59,7 +59,7 @@ public enum ProxyHelper {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
             if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
                 if (proxy.socksType() == ProxyHelper.SocksType.FIVE) {
-                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), proxy.authName(), proxy.authPass()));
+                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), proxy.username(), proxy.password()));
                 } else {
                     channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port())));
                 }
