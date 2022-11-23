@@ -48,7 +48,7 @@ public enum ProxyHelper {
     private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
         if (isConnectedToProxy()) {
             ProxyHelper.ClientProxy proxy = getProxy();
-            String string = "Current Proxy: " + proxy.host() + " " + proxy.port();
+            String string = "Current Proxy: " + proxy.hostname() + " " + proxy.port();
             FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), string, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(string) - 2, 22, ColorHelper.INSTANCE.getClientColor());
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
