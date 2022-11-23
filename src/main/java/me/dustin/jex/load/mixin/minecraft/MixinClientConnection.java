@@ -58,7 +58,7 @@ public abstract class MixinClientConnection {
         ProxyHelper.INSTANCE.clientConnection = clientConnection;
         Bootstrap bootstrap = new Bootstrap();
         bootstrap = bootstrap.group((EventLoopGroup)group.get());
-        bootstrap = bootstrap.handler(ProxyHelper.INSTANCE.channelInitializer);
+        bootstrap = bootstrap.handler(ProxyHelper.INSTANCE.initChannel);
         bootstrap = bootstrap.channel(channelClass);
         bootstrap.connect(address.getAddress(), address.getPort()).syncUninterruptibly();
 
