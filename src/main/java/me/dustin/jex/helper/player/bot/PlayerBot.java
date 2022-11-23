@@ -401,7 +401,7 @@ public class PlayerBot {
         ProxyHelper.INSTANCE.clientConnection = clientConnection;
         Bootstrap bootstrap = new Bootstrap();
         bootstrap = bootstrap.group((EventLoopGroup)lazy2.get());
-        bootstrap = bootstrap.handler(ProxyHelper.INSTANCE.channelInitializer);
+        bootstrap = bootstrap.handler(ProxyHelper.INSTANCE.initChannel);
         bootstrap = bootstrap.channel(class2);
         bootstrap.connect(address.getAddress(), address.getPort());
         return clientConnection;
