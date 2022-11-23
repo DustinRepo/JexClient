@@ -36,7 +36,7 @@ public class ProxyScreen extends Screen {
         String currentProxyString = "";
         if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
-            currentProxyString = proxy.host() + ":" + proxy.port();
+            currentProxyString = proxy.host() + " " + proxy.port();
         }
         this.addSelectableChild(proxyField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2 - 25, 200, 20, Text.of(currentProxyString)));
         this.addSelectableChild(usernameField = new TextFieldWidget(Wrapper.INSTANCE.getTextRenderer(), width / 2 - 100, height / 2, 200, 20, Text.of("")));
