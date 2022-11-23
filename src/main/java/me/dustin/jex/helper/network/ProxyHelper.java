@@ -60,13 +60,11 @@ public enum ProxyHelper {
     public ClientConnection clientConnection;
         protected final Channel<Channel>initChannel = new Channel<>(channel) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
-            if ProxyHelper.INSTANCE.isConnectedToProxy(); {
+             ProxyHelper.INSTANCE.isConnectedToProxy()
                 if (proxy.socksType() == ProxyHelper.SocksType.FIVE) {
                     channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), proxy.authName.isEmpty() ? null : proxy.authName, proxy.authPass.isEmpty() ? null : proxy.authPass));
                 } else {
                     channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port())));
                 }
-            }
-
-        };
+        }
 }
