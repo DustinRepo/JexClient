@@ -61,8 +61,8 @@ public enum ProxyHelper {
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
 
-    public class ClientConnectionInit {
-        public final Channel<Channel>initChannel = new Channel<>(channel) {
+    public class ProxyHelper {
+        private void connect(Channel channel, CallbackInfo cir) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
             if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
                 if (proxy.type == ProxyHelper.ProxyType.SOCKS5) {
