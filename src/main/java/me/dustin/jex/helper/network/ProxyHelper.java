@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 
 public enum ProxyHelper {
     INSTANCE;
-    private ClientProxy proxy;
+    public ClientProxy proxy;
 
     public void connectToProxy(SocksType type, String hostname, int port, String username, String password) {
         this.proxy = new ClientProxy(hostname, port, type, username, password);
