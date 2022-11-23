@@ -16,6 +16,7 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.network.*;
 import java.net.InetSocketAddress;
+import com.google.gson.annotations.SerializedName;
 
 public enum ProxyHelper {
     INSTANCE;
