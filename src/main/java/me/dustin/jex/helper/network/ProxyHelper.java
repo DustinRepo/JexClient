@@ -1,24 +1,6 @@
 package me.dustin.jex.helper.network;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.handler.proxy.Socks4ProxyHandler;
-import io.netty.handler.proxy.Socks5ProxyHandler;
-import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.google.gson.annotations.SerializedName;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import me.dustin.events.core.*;
-import me.dustin.jex.event.*;
-import me.dustin.jex.helper.math.*;
-import me.dustin.jex.helper.render.*;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-import net.minecraft.network.*;
-import java.net.InetSocketAddress;
+import *;
 
 public enum ProxyHelper {
     INSTANCE;
