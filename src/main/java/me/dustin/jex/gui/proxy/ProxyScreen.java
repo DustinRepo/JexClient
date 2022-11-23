@@ -1,5 +1,6 @@
 package me.dustin.jex.gui.proxy;
 
+import net.minecraft.client.MinecraftClient;
 import com.google.common.net.HostAndPort;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.network.ProxyHelper;
