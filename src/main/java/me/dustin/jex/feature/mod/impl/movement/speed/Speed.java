@@ -25,7 +25,7 @@ public class Speed extends Feature {
             .name("Vanilla Speed")
             .value(0.2f)
             .min(0.2f)
-            .max(3f)
+            .max(5f)
             .inc(0.1f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.VANILLA)
