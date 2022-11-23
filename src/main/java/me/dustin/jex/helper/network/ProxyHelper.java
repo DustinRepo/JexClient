@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import com.google.gson.annotations.SerializedName;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
@@ -25,9 +26,12 @@ import java.net.InetSocketAddress;
 public enum ProxyHelper {
     INSTANCE;
     private ClientProxy proxy;
+    
+    public ProxyType type = ProxyType.SOCKS5;
 
-    public void connectToProxy(SocksType type, String hostname, int port, String username, String password) {
+    public void connectToProxy(boolean isSocks4, ProxyType type, String hostname, int port, String username, String password) {
         this.proxy = new ClientProxy(hostname, port, type, username, password);
+        this.type = isSocks4 ? ProxyType.SOCKS4 : ProxyType.SOCKS5;
     }
 
     public boolean isConnectedToProxy() {
@@ -42,10 +46,10 @@ public enum ProxyHelper {
         proxy = null;
     }
 
-    public record ClientProxy(String host, int port, SocksType socksType, String authName, String authPass){}
+    public record ClientProxy(String host, int port, ProxyType proxyType, String authName, String authPass){}
 
-    public enum SocksType {
-        FOUR, FIVE;
+    public enum ProxyType {
+     SOCKS4, SOCKS5
     }
 
     @EventPointer
@@ -60,12 +64,10 @@ public enum ProxyHelper {
     public ClientConnection clientConnection;
         protected final Channel<Channel>initChannel = new Channel<>(channel) {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
-             ProxyHelper.INSTANCE.isConnectedToProxy(boolean);
-                if (proxy.socksType() == ProxyHelper.SocksType.FIVE) {
+             ProxyHelper.INSTANCE.isConnectedToProxy<boolean>();
+                if (proxy.type == ProxyHelper.ProxyType.SOCKS5) {
                     channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), proxy.authName.isEmpty() ? null : proxy.authName, proxy.authPass.isEmpty() ? null : proxy.authPass));
-                } 
-                else 
-                {
+                } else {
                     channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port())));
                 }
         };
