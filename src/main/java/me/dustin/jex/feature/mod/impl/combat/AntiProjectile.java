@@ -55,6 +55,7 @@ public class AntiProjectile extends Feature {
                 if (rotateProperty.value()) {
                     RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(bulletEntity);
                     event.setRotation(rotation);
+		    PlayerHelper.INSTANCE.setRotation(event.getRotation());
                 }
                 if (swingProperty.value()) {
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
@@ -69,6 +70,7 @@ public class AntiProjectile extends Feature {
                 if (rotateProperty.value()) {
                     RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(fireballEntity);
                     event.setRotation(rotation);
+		    PlayerHelper.INSTANCE.setRotation(event.getRotation());
                 }
                 if (swingProperty.value()) {
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
