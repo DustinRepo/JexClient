@@ -30,7 +30,7 @@ public class Spammer extends Feature {
             .name("Delay (MS)")
             .value(500L)
             .max(30000)
-            .inc(10)
+            .inc(100)
             .build();
 
     private String spamString;
