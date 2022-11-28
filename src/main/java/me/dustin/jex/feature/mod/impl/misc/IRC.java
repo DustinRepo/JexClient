@@ -40,10 +40,10 @@ public class IRC extends Feature {
             .value("132.145.154.217")
             .build();
     
-    public final Property<String> sendPortProperty = new Property.PropertyBuilder<String>(this.getClass())
+    public final Property<Integer> sendPortProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("SendPort")
             .description("The prefix used to activate the IRC chat mode.")
-            .value(6969)
+            .value("6969")
             .build();
 
     public boolean ircChatOverride;
