@@ -36,13 +36,13 @@ public class IRC extends Feature {
     
      public final Property<String> sendIpProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("SendIP")
-            .description("The prefix used to activate the IRC chat mode.")
+            .description("This pole used to send ip")
             .value("132.145.154.217")
             .build();
     
-    public final Property<Integer> sendPortProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+    public final Property<String> sendPortProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("SendPort")
-            .description("The prefix used to activate the IRC chat mode.")
+            .description("This pole used to send port.")
             .value("6969")
             .build();
 
@@ -70,7 +70,7 @@ public class IRC extends Feature {
             ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
             ircClient.setMessageConsumer(messageListener);
             ircClient.setDisconnectConsumer(disconnectListener);
-            int port = Integer.parseInt(sendPortProperty.value());
+            Integer port = Integer.parseInt(sendPortProperty.value());
             ircClient.connect(sendIpProperty.value(), port);
         }
         super.onEnable();
