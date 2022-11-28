@@ -69,7 +69,7 @@ public class CreativeDrop extends Feature {
                         Registry.ENCHANTMENT.forEach(enchantment -> {
                             itemStack.addEnchantment(enchantment, 127);
                         });
-                    NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(36, itemStack.random));
+                    NetworkHelper.INSTANCE.sendPacket(new CreativeInventoryActionC2SPacket(36, itemStack));
                     InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, 36, SlotActionType.THROW, 0);
                     slot += 1;
                 } else
