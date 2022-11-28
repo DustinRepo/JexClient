@@ -72,8 +72,10 @@ public class IRC extends Feature {
             ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
             ircClient.setMessageConsumer(messageListener);
             ircClient.setDisconnectConsumer(disconnectListener);
-            int ip = Integer.parseInt(sendIpProperty.value());
-            int port = Integer.parseInt(sendPortProperty.value());
+            int x = Integer.parseInt(sendIpProperty.value());
+            String ip = Integer.toString(x);
+            int y = Integer.parseInt(sendPortProperty.value());
+            String port = Integer.toString(y);
             ircClient.connect(ip, port);
         }
         super.onEnable();
