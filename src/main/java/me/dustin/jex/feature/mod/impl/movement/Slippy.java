@@ -19,4 +19,14 @@ public final Property<Float> friction = new Property.PropertyBuilder<Float>(this
  public Slippy() {
    super(Category.MOVEMENT, "Сhanges the block to ice for fast movement");
     }
-}
+ 
+ private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
+ if (Wrapper.INSTANCE.getBlock().getLocalPlayer().isOnGround(event.getBlockPos()) && event.getVoxelShape().isEmpty){
+  Block block;
+  block.slipperiness = friction.value();
+ }
+});
+ 
+ 
+ 
+ }
