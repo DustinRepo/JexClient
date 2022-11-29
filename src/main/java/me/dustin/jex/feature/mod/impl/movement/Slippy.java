@@ -5,6 +5,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.events.core.EventListener;
+import me.dustin.events.core.annotate.EventPointer;
 
 public class Slippy extends Feature {
 
@@ -20,7 +21,7 @@ public final Property<Float> friction = new Property.PropertyBuilder<Float>(this
  public Slippy() {
    super(Category.MOVEMENT, "Сhanges the block to ice for fast movement");
     }
- 
+ @EventPointer
  private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
  if (Wrapper.INSTANCE.getBlock().getLocalPlayer().isOnGround(event.getBlockPos()) && event.getVoxelShape().isEmpty){
   Block block;
