@@ -7,6 +7,8 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventMove;
+import me.dustin.jex.helper.misc.Wrapper;
+import net.minecraft.block.AbstractBlock;
 
 public class Slippy extends Feature {
 
@@ -25,7 +27,7 @@ public final Property<Float> friction = new Property.PropertyBuilder<Float>(this
  
  @EventPointer
  private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
- if (Wrapper.INSTANCE.getBlock().getLocalPlayer().isOnGround(event.getBlockPos())){
+ if (Wrapper.INSTANCE.getBlock().getLocalPlayer().isOnGround()){
   Block block;
   block.slipperiness = friction.value();
     }
