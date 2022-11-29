@@ -12,6 +12,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Vec3d;
+import me.dustin.jex.event.player.EventPlayerVelocity;
 
 public class Slippy extends Feature {
 
@@ -23,7 +24,7 @@ public class Slippy extends Feature {
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
 		if (Wrapper.INSTANCE.getLocalPlayer().horizontalCollision().isOnGround()) {
 			Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
-				Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX()*0.98, orig.getZ()*0.98);	
+				Wrapper.INSTANCE.getLocalPlayer().setVelocity(*0.98F, orig.getY() ,0.98F);	
 		}
 	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
