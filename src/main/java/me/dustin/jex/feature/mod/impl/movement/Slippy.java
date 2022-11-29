@@ -3,6 +3,7 @@ package me.dustin.jex.feature.mod.impl.movement;
 import net.minecraft.block.Block;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
+import me.dustin.jex.feature.mod.core.Category;
 
 public class Slippy extends Feature {
 
