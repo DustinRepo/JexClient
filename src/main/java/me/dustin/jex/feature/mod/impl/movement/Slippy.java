@@ -14,18 +14,16 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.Vec3d;
 
 public class Slippy extends Feature {
- 
- public Slippy() {
-   super(Category.MOVEMENT, "Сhanges the block to ice for fast movement");
-    }
- 
-private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-		if (Wrapper.INSTANCE.getLocalPlayer().horizontalCollision) {
+
+	public Slippy() {
+		super(Category.MOVEMENT, "Climb up walls like a spider.");
+	}
+
+	@EventPointer
+	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+		if (Wrapper.INSTANCE.getLocalPlayer().horizontalCollision().isOnGround()) {
 			Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
-    Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), 0, orig.getZ());
-				NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.Full(Wrapper.INSTANCE.getLocalPlayer().getX() + orig.getX() * 2, Wrapper.INSTANCE.getLocalPlayer().getZ() + orig.getZ() * 2, PlayerHelper.INSTANCE.getYaw(), PlayerHelper.INSTANCE.getPitch(), false));
-				NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.Full(Wrapper.INSTANCE.getLocalPlayer().getX() + orig.getX(), Wrapper.INSTANCE.getLocalPlayer().getZ() + orig.getZ(), PlayerHelper.INSTANCE.getYaw(), PlayerHelper.INSTANCE.getPitch(), true));
-			}
+				Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX()*0.98, orig.getZ()*0.98);	
 		}
 	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
