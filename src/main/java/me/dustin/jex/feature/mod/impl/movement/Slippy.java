@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.Category;
+import me.dustin.events.core.EventListener;
 
 public class Slippy extends Feature {
 
