@@ -17,7 +17,7 @@ public class Slippy extends Feature {
     }
  
  @EventPointer
- private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
+ public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
  if (Wrapper.INSTANCE.getLocalPlayer().isOnGround()){
   Block block;
   block.slipperiness = 0.98F;
