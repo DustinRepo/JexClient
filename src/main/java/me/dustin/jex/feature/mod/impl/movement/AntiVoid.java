@@ -29,7 +29,7 @@ public class AntiVoid extends Feature {
         setSuffix(modeProperty.value());
         ChunkPos chunkPos = Wrapper.INSTANCE.getPlayer().getChunkPos();
         if (modeProperty.value() == Mode.ANTICHEAT && Wrapper.INSTANCE.getPlayer().getY() <= Wrapper.INSTANCE.getWorld().getChunk(chunkPos.x, chunkPos.z).getBottomY())
-            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() + 2, Wrapper.INSTANCE.getPlayer().getZ(), true));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getPlayer().getX(), Wrapper.INSTANCE.getPlayer().getY() * 2, Wrapper.INSTANCE.getPlayer().getZ(), true));
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     @EventPointer
