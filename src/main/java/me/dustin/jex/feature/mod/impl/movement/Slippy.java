@@ -1,5 +1,8 @@
 package me.dustin.jex.feature.mod.impl.movement.speed;
+
 import net.minecraft.block.Block;
+import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 
 public class Slippy extends Feature {
 
