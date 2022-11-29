@@ -22,7 +22,7 @@ public class Slippy extends Feature {
 
 	@EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-		if (Wrapper.INSTANCE.getLocalPlayer().horizontalCollision().isOnGround()) {
+		if (Wrapper.INSTANCE.getLocalPlayer().isOnGround().horizontalCollision) {
 			Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
 				Wrapper.INSTANCE.getLocalPlayer().setVelocity(0.98F, orig.getY() ,0.98F);	
 		}
