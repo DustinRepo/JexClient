@@ -50,7 +50,7 @@ public class SpeedCrafter extends Feature {
             alerted = false;
             if (!stopWatch.hasPassed(delayProperty.value()))
                 return;
-            List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_BUILDING_BLOCKS, RecipeBookGroup.CRAFTING_DECORATION_BLOCKS, RecipeBookGroup.CRAFTING_REDSTONE, RecipeBookGroup.CRAFTING_TRANSPORTATION, RecipeBookGroup.CRAFTING_FOODSTUFFS, RecipeBookGroup.CRAFTING_TOOLS, RecipeBookGroup.CRAFTING_COMBAT, RecipeBookGroup.CRAFTING_BREWING, RecipeBookGroup.CRAFTING_MATERIALS, RecipeBookGroup.CRAFTING_MISCELLANEOUS);
+            List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_SEARCH);
             for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList) {
                 for (Recipe<?> recipe : recipeResultCollection.getRecipes(true)) {
                     if (recipe.getOutput().getItem() == craftingItem) {
