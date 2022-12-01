@@ -20,18 +20,17 @@ public class Fakelag extends Feature {
             .name("Catch When")
             .value(CatchWhen.BOTH)
             .build();
-    public final Property<Integer> chokeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+    public final Property<string> chokeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Choke MS")
-            .value(100)
-            .min(50)
-            .max(2000)
-            .inc(10)
+            .value("100")
+            .max(4)
             .build();
 
     private final ArrayList<Packet<?>> packets = new ArrayList<>();
     private final StopWatch stopWatch = new StopWatch();
     private boolean sending = false;
-
+    Integer choke = Integer.valueOf(chokeProperty.value());
+    
     public Fakelag() {
         super(Category.MISC, "Pretend to lag");
     }
@@ -44,7 +43,7 @@ public class Fakelag extends Feature {
             packets.clear();
             stopWatch.reset();
         }
-        if (!stopWatch.hasPassed(chokeProperty.value()) && shouldCatchPackets()) {
+        if (!stopWatch.hasPassed(choke) && shouldCatchPackets()) {
             packets.add(event.getPacket());
             event.cancel();
         } else {
