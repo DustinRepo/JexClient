@@ -48,13 +48,6 @@ public class CrystalAura extends Feature {
 			.max(6)
 			.inc(0.1f)
 			.build();
-	public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
-			.name("Attack Delay (MS)")
-			.value(0L)
-		        .inc(50L)
-		        .min(0L)
-			.max(2000L)
-			.build();
 	public final Property<Boolean> autoPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Auto Place")
 			.value(false)
