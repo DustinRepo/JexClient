@@ -20,7 +20,7 @@ public class Fakelag extends Feature {
             .name("Catch When")
             .value(CatchWhen.BOTH)
             .build();
-    public final Property<string> chokeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+    public final Property<String> chokeProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("Choke MS")
             .value("100")
             .max(4)
