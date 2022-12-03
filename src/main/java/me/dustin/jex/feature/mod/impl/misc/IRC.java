@@ -34,7 +34,7 @@ public class IRC extends Feature {
             .max(2)
             .build();
     
-     public final Property<char> sendIpProperty = new Property.PropertyBuilder<char>(this.getClass())
+     public final Property<String> sendIpProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("SendIP")
             .description("This pole used to send ip")
             .value("132.145.154.217")
