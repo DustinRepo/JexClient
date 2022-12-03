@@ -22,11 +22,3 @@ You can download Jex Client in the discord or in the releases tab
 
 ## Developers Please note
 If your JexClient path has any spaces or special characters in it's path, the Features, Commands, and Config Manager will not properly load. [Why?](https://github.com/google/guava/issues/2152)
-## Как 100% скомпилировать этот клиент
-1.Забудьте то что вам сказал Dustin, это нихуя не работает
-2.Слушайте меня:
-2.1-Форкните эту ветку к себе в кабинет
-2.2- Запустите Github Actions
-2.3-Сделайте изменение, ждите, если не скомпилировалось то вы где то накосячили
-2.4-Скачайте архив с клиентом,найдите там jex client, дальше обьяснять, как установить мод не нужно, сами найдете гайды в гугле.
-2.5-Profit!!
