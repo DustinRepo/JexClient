@@ -13,6 +13,9 @@ public class EventPacketReceive extends Event {
         this.mode = mode;
     }
     
+        public static class Receive extends PacketEvent {
+       private static final Receive INSTANCE = new Receive();
+            
      public static Receive get(Packet<?> packet) {
             INSTANCE.setCancelled(false);
             INSTANCE.packet = packet;
