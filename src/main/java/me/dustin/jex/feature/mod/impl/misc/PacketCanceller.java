@@ -5,6 +5,9 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.events.core.annotate.EventPointer;
 import net.minecraft.network.packet.c2s.*;
 import net.minecraft.network.packet.s2c.*;
+import me.dustin.jex.feature.property.Property;
+import me.dustin.jex.feature.mod.core.FeatureExtension;
+import net.minecraft.network.Packet;
 
 public class PacketCanceller extends Feature {
 
