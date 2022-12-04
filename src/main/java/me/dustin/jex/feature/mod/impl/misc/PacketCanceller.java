@@ -781,8 +781,6 @@ private final EventListener<EventPacketSent.EventPacketSentDirect> eventPacketSe
 
 if(advancementtab.value()) {
  AdvancementUpdateS2CPacket packet1;
-packet1 = true; 
- event.setPacket(packet1);
  event.cancel();
 }
 
