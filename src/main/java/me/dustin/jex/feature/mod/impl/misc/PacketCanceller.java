@@ -791,7 +791,7 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 .build();
 
 @EventPointer
-private final EventListener<EventPacketSent> eventPacketSenteventListener = new EventListener<>(event -> {
+private final EventListener<EventPacketSent.EventPacketSentDirect> eventPacketSenteventListener = new EventListener<>(event -> {
 
 if(advancementtab.value()) {
  AdvancementUpdateS2CPacket packet1;
@@ -1392,5 +1392,5 @@ if(worldtimeupdates2c.value()){
 WorldTimeUpdateS2CPacket packet145;
 event.cancel(packet145);
 }
-});
+}, new DirectClientPacketFilter(EventPacketSent.Mode.PRE));
 }
