@@ -799,7 +799,7 @@ event.cancel(packet2);
 
 if(bookupdate.value()){
 BookUpdateC2SPacket packet3 = new BookUpdateC2SPacket();
-event.cancel(packe3);
+event.cancel(packet3);
 }
 
 if(buttonclick.value()){
@@ -881,7 +881,7 @@ event.cancel(packet19);
 }
 if(playerinteractblock.value()){
 PlayerInteractBlockC2SPacket packet20 = new PlayerInteractBlockC2SPacket();
-event.cancel(packet120);
+event.cancel(packet20);
 }
 if(playerinteractentity.value()){
 PlayerInteractentityC2SPacket packet21 = new PlayerInteractentityC2SPacket();
