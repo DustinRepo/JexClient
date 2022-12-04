@@ -278,7 +278,7 @@ public final Property<Boolean> vehiclemove = new Property.PropertyBuilder<Boolea
 .parent(c2spackets)
 .build();
 
-//-------------------
+//--C2S-----------------
 
 public final Property<Boolean> s2cpackets = new Property.PropertyBuilder<Boolean>(this.getClass())
 .name("S2C")
@@ -778,7 +778,8 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 .build();
 
 @EventPointer
-private EventPacketSent onSendPacket(Send event) {
+private class Main1 extends EventPacketSent {
+private void onSendPacket(Send event) {
 if(boatpaddlestate.value()){
 BoatPaddleStateC2SPacket packet2;
 event.cancel();
@@ -966,6 +967,7 @@ if(vehiclemove.value()){
 VehicleMoveC2SPacket packet44;
 event.cancel();
  }
+}
 }
 //--- s2c
  private void onReceivePacket(EventPacketReceive.Receive event) {
