@@ -734,11 +734,6 @@ public final Property<Boolean> vehiclemoves2c = new Property.PropertyBuilder<Boo
 .value(true)
 .parent(s2cpackets)
 .build();
-public final Property<Boolean> vibrations2c = new Property.PropertyBuilder<Boolean>(this.getClass())
-.name("VibrationS2CPacket")
-.value(true)
-.parent(s2cpackets)
-.build();
 public final Property<Boolean> worldbordercenterchangeds2c = new Property.PropertyBuilder<Boolean>(this.getClass())
 .name("WorldBorderCenterChangedS2CPacket")
 .value(true)
@@ -1538,12 +1533,6 @@ event.cancel();
 if(vehiclemoves2c.value()){
 VehicleMoveS2CPacket packet136;
  event.setPacket(packet136);
-event.cancel();
-}
- 
-if(vibrations2c.value()){
-VibrationS2CPacket packet137;
- event.setPacket(packet137);
 event.cancel();
 }
  
