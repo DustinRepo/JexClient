@@ -1088,7 +1088,6 @@ event.cancel();
  
 if(entityequipmentupdates2c.value()){
 EntityEquipmentUpdateS2CPacket packet71;
- event.setPacket(packet71);
 event.cancel();
 }
  
@@ -1129,7 +1128,6 @@ event.cancel();
  
 if(entitytrackerupdates2c.value()){
 EntityTrackerUpdateS2CPacket packet79;
- event.setPacket(packet79);
 event.cancel();
 }
  
