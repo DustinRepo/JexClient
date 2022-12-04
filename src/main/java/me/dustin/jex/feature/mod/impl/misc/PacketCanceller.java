@@ -778,7 +778,7 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 .build();
 
 @EventPointer
-private void EventPacketSent onSendPacket(Send event) {
+private EventPacketSent onSendPacket(Send event) {
 if(boatpaddlestate.value()){
 BoatPaddleStateC2SPacket packet2;
 event.cancel();
