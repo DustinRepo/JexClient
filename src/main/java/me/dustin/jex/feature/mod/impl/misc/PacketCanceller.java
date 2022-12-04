@@ -12,6 +12,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import net.minecraft.network.packet.c2s.play.*;
 import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.network.Packet;
 import java.nio.charset.StandardCharsets;
 
 public class PacketCanceller extends Feature {
