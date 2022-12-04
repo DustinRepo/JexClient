@@ -29,13 +29,4 @@ public class EventPacketReceive extends Event {
         PRE, POST
     }
     
-       public static class Sent extends PacketEventReceive {
-        private static final Sent INSTANCE = new Sent();
-
-        public static Sent get(Packet<?> packet) {
-            INSTANCE.packet = packet;
-            return INSTANCE;
-        }
-    }
-    
 }
