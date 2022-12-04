@@ -798,7 +798,7 @@ if(advancementtab.value()) {
 }
 
 if(boatpaddlestate.value()){
-BoatPaddleStateC2SPacket packet2
+BoatPaddleStateC2SPacket packet2;
 event.cancel(packet2);
 }
 
@@ -1108,7 +1108,7 @@ EntityS2CPacket packet74;
 event.cancel(packet74);
 }
 if(entitysetheadyaws2c.value()){
-EntitySetHeadYawS2CPacket packet75);
+EntitySetHeadYawS2CPacket packet75;
 event.cancel(packet75);
 }
 if(entityspawns2c.value()){
@@ -1344,7 +1344,7 @@ UnloadChunkS2CPacket packet133;
 event.cancel(packet133);
 }
 if(unlockrecipess2c.value()){
-UnlockRecipesS2CPacket packet134);
+UnlockRecipesS2CPacket packet134;
 event.cancel(packet134);
 }
 if(updateselectedslots2c.value()){
@@ -1360,15 +1360,15 @@ VibrationS2CPacket packet137;
 event.cancel(packet137);
 }
 if(worldbordercenterchangeds2c.value()){
-WorldBorderCenterChangedS2CPacket;
+WorldBorderCenterChangedS2CPacket packet138;
 event.cancel(packet138);
 }
 if(worldborderinitializes2c.value()){
-WorldBorderInitializeS2CPacket;
+WorldBorderInitializeS2CPacket packet139;
 event.cancel(packet139);
 }
 if(worldborderinterpolatesizes2c.value()){
-WorldBorderInterpolateSizeS2CPacket;
+WorldBorderInterpolateSizeS2CPacket packet140;
 event.cancel(packet140);
 }
 if(worldbordersizechangeds2c.value()){
