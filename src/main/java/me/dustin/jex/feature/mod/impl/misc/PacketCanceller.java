@@ -784,8 +784,8 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 .parent(s2cpackets)
 .build();
 
-@eventPointer
-private final eventListener<eventPacketSent> eventPacketSenteventListener = new eventListener<>(event -> {
+@EventPointer
+private final EventListener<EventPacketSent> eventPacketSenteventListener = new eventListener<>(event -> {
 
 if(advancementtab.value()) {
  AdvancementUpdates2cPacket packet1 = new AdvancementUpdates2cPacket();
