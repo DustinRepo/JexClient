@@ -11,6 +11,10 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import net.minecraft.network.packet.c2s.play.*;
+import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
+import net.minecraft.network.listener;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.network.Packet;
 import java.nio.charset.StandardCharsets;
@@ -912,7 +916,7 @@ event.cancel();
 if(playerinteractentity.value()){
 PlayerInteractEntityC2SPacket packet21;
  event.setPacket(packet21);
-event.cancel(p);
+event.cancel();
 }
 if(playerinteractitem.value()){
 PlayerInteractItemC2SPacket packet22;
@@ -1135,7 +1139,7 @@ event.cancel();
 if(disconnects2c.value()){
 DisconnectS2CPacket packet64;
  event.setPacket(packet64);
-event.cancel(packet64);
+event.cancel();
 }
  
 if(endcombats2c.value()){
@@ -1351,7 +1355,7 @@ event.cancel();
 if(paintingspawns2c.value()) {
 PaintingSpawnS2CPacket packet100;
  event.setPacket(packet100);
-event.cancel(p);
+event.cancel();
 }
  
 if(particles2c.value()) {
@@ -1499,7 +1503,7 @@ event.cancel();
  
 if(statisticss2c.value()){
 StatisticsS2CPacket packet125;
- event.setPacket(packe125);
+ event.setPacket(packet125);
 event.cancel();
 }
  
