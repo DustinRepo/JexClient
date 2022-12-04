@@ -984,7 +984,7 @@ if(craftfailedresponses2c.value()){
 CraftFailedResponseS2CPacket packet60 = (CraftFailedResponseS2CPacket) event.cancel();
 }
 if(custompayloads2c.value()){
-CustomPayloadS2CPacket packet61 = (CustomPayloadS2CPacket)
+CustomPayloadS2CPacket packet61 = (CustomPayloadS2CPacket) event.cancel();
 }
 if(deathmessages2c.value()){
 DeathMessageS2CPacket packet62 = (DeathMessageS2CPacket) event.cancel();
@@ -1094,7 +1094,7 @@ if(openscreens2c.value()){
 OpenScreenS2CPacket packet97 = (OpenScreenS2CPacket) event.cancel();
 }
 if(openwrittenbooks2c.value()){
-OpenWrittenBookS2CPacket packet98 = (OpenWrittenBookS2CPacket event.cancel();
+OpenWrittenBookS2CPacket packet98 = (OpenWrittenBookS2CPacket) event.cancel();
 }
 if(overlaymessages2c.value()){
 OverlayMessageS2CPacket packet99 = (OverlayMessageS2CPacket) event.cancel();
