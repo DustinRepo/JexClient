@@ -49,7 +49,7 @@ public class EventPacketSent extends Event {
         }
     }
    
-         public static class Send extends PacketEvent {
+         public static class Send extends EventPacketSent {
         private static final Send INSTANCE = new Send();
 
         public static Send get(Packet<?> packet) {
