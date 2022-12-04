@@ -13,6 +13,8 @@ import me.dustin.jex.event.packet.EventPacketSent;
 import net.minecraft.network.packet.c2s.play.*;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.network.Packet;
+import me.dustin.jex.event.packet.EventPacketReceive;
+import me.dustin.jex.event.packet.EventPacketSent;
 import java.nio.charset.StandardCharsets;
 
 public class PacketCanceller extends Feature {
@@ -776,7 +778,7 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 .build();
 
 @EventPointer
-private void onSendPacket(PacketEvent.Send event) {
+private void onSendPacket(PacketEventSent.Sent event) {
 
 if(boatpaddlestate.value()){
 BoatPaddleStateC2SPacket packet2;
@@ -967,7 +969,7 @@ event.cancel();
  }
 }
 //--- s2c
- private void onReceivePacket(PacketEvent.Receive event) {
+ private void onReceivePacket(PacketEventReceive.Receive event) {
 if(advancementtab.value()) {
 AdvancementUpdateS2CPacket packet1;
 event.cancel();
