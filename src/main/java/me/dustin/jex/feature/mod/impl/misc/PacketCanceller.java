@@ -781,7 +781,7 @@ private final EventListener<EventPacketSent.EventPacketSentDirect> eventPacketSe
 
 if(advancementtab.value()) {
  AdvancementUpdateS2CPacket packet1;
- event.cancel();
+ packet1.cancel();
 }
 
 if(boatpaddlestate.value()){
