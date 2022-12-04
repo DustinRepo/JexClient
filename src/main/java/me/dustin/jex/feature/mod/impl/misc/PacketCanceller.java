@@ -1,5 +1,6 @@
 package me.dustin.jex.feature.mod.impl.misc;
 
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.events.core.annotate.EventPointer;
