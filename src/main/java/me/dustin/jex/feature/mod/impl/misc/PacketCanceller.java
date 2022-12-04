@@ -791,7 +791,7 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 .build();
 
 @EventPointer
-private final EventListener<EventPacketSent> eventPacketSenteventListener = new eventListener<>(event -> {
+private final EventListener<EventPacketSent> eventPacketSenteventListener = new EventListener<>(event -> {
 
 if(advancementtab.value()) {
  AdvancementUpdateS2CPacket packet1;
