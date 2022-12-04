@@ -4,6 +4,8 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.events.core.EventListener;
+import me.dustin.jex.event.packet.EventPacketSent;
 import net.minecraft.network.packet.c2s.*;
 import net.minecraft.network.packet.s2c.*;
 
