@@ -779,12 +779,10 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 .build();
 
 @EventPointer
-private void onSendPacket(Packet<?> packet, CallbackInfo callbackInfo) {
- PacketSent event = new PacketSent(packet);
+private final EventListener<EventPacketSent.EventPacketSentDirect> eventPacketSentEventListener = new EventListener<>(event -> {
  
 if(boatpaddlestate.value()){
-BoatPaddleStateC2SPacket packet2;
-event.cancel();
+BoatPaddleStateC2SPacket packet = (BoatPaddleStateC2SPacket) event.cancel();
 }
 
 if(bookupdate.value()){
@@ -971,8 +969,7 @@ event.cancel();
  }
 }
 //--- s2c
- private void onReceivePacket(Packet<?> packet, CallbackInfo callbackInfo) {
- PacketRecieved event = new PacketRecieved(packet);
+ private void onReceivePacket() {
   
 if(advancementtab.value()) {
 AdvancementUpdateS2CPacket packet1;
