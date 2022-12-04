@@ -418,7 +418,7 @@ public final Property<Boolean> entityequipmentupdates2c = new Property.PropertyB
 .value(true)
 .parent(s2cpackets)
 .build();
-public final Property<Boolean> entitypassengersSets2c = new Property.PropertyBuilder<Boolean>(this.getClass())
+public final Property<Boolean> entitypassengerssets2c = new Property.PropertyBuilder<Boolean>(this.getClass())
 .name("EntityPassengersSetS2CPacket")
 .value(true)
 .parent(s2cpackets)
@@ -433,7 +433,7 @@ public final Property<Boolean> entitys2c = new Property.PropertyBuilder<Boolean>
 .value(true)
 .parent(s2cpackets)
 .build();
-public final Property<Boolean> entitySetheadyaws2c = new Property.PropertyBuilder<Boolean>(this.getClass())
+public final Property<Boolean> entitysetheadyaws2c = new Property.PropertyBuilder<Boolean>(this.getClass())
 .name("EntitySetHeadYawS2CPacket")
 .value(true)
 .parent(s2cpackets)
@@ -793,7 +793,7 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 private final EventListener<EventPacketSent> eventPacketSenteventListener = new eventListener<>(event -> {
 
 if(advancementtab.value()) {
- AdvancementUpdateC2SPacket packet1;
+ AdvancementUpdateS2CPacket packet1;
  event.cancel(packet1);
 }
 
@@ -827,7 +827,7 @@ ClientCommandC2SPacket packet7;
 event.cancel(packet7);
 }
 
-if(clientcettings.value()){
+if(clientsettings.value()){
 ClientSettingsC2SPacket packet8;
 event.cancel(packet8);
 }
@@ -863,7 +863,7 @@ event.cancel(packet14);
 }
 
 if(jigsawgenerating.value()){
-Jigsaws2ceneratingC2SPacket packet15;
+JigsawGeneratingC2SPacket packet15;
 event.cancel(packet15);
 }
 
@@ -889,7 +889,7 @@ PlayerInteractBlockC2SPacket packet20;
 event.cancel(packet20);
 }
 if(playerinteractentity.value()){
-PlayerInteractentityC2SPacket packet21;
+PlayerInteractEntityC2SPacket packet21;
 event.cancel(packet21);
 }
 if(playerinteractitem.value()){
@@ -909,7 +909,7 @@ QueryBlockNbtC2SPacket packet25;
 event.cancel(packet25);
 }
 if(queryentitynbt.value()){
-QueryentityNbtC2SPacket packet26;
+QueryEntityNbtC2SPacket packet26;
 event.cancel(packet26);
 }
 if(recipebookdata.value()){
@@ -1195,23 +1195,23 @@ if(openhorsescreens2c.value()){
 OpenHorseScreenS2CPacket packet96;
 event.cancel(packet96);
 }
-if(openscreens2c.value()){
+if(openscreens2c.value()) {
 OpenScreenS2CPacket packet97;
 event.cancel(packet97);
 }
-if(openwrittenbooks2c.value()){
+if(openwrittenbooks2c.value()) {
 OpenWrittenBookS2CPacket packet98;
 event.cancel(packet98);
 }
-if(overlaymessages2c.value()){
+if(overlaymessages2c.value()) {
 OverlayMessageS2CPacket packet99;
 event.cancel(packet99);
 }
-if(paintingspawns2c.value()){
+if(paintingspawns2c.value()) {
 PaintingSpawnS2CPacket packet100;
 event.cancel(packet100);
 }
-if(particles2c.value()){
+if(particles2c.value()) {
 ParticleS2CPacket packet101;
 event.cancel(packet101);
 }
@@ -1355,7 +1355,7 @@ if(vehiclemoves2c.value()){
 VehicleMoveS2CPacket packet136;
 event.cancel(packet136);
 }
-if(wibrations2c.value()){
+if(vibrations2c.value()){
 VibrationS2CPacket packet137;
 event.cancel(packet137);
 }
