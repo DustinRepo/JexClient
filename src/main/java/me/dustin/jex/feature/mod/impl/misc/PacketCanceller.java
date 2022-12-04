@@ -775,14 +775,8 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 .parent(s2cpackets)
 .build();
 
-@SuppressWarnings("InstanceVariableMayNotBeInitialized")
 @EventPointer
-private final EventListener<EventPacketSent.EventPacketSentDirect> eventPacketSenteventListener = new EventListener<>(event -> {
-
-if(advancementtab.value()) {
- AdvancementUpdateS2CPacket packet1;
- packet1.cancel();
-}
+private void onSendPacket(PacketEvent.Send event) {
 
 if(boatpaddlestate.value()){
 BoatPaddleStateC2SPacket packet2;
@@ -970,10 +964,14 @@ event.cancel();
 if(vehiclemove.value()){
 VehicleMoveC2SPacket packet44;
 event.cancel();
+ }
 }
-
 //--- s2c
-
+ private void onReceivePacket(PacketEvent.Receive event) {
+if(advancementtab.value()) {
+AdvancementUpdateS2CPacket packet1;
+event.cancel();
+}
 if(advancementupdates2c.value()){
 AdvancementUpdateS2CPacket packet45;
 event.cancel();
@@ -1000,7 +998,6 @@ event.cancel();
 }
 if(chunkdatas2c.value()){
 ChunkDataS2CPacket packet51;
-
 event.cancel();
 }
 if(chunkdeltaupdates2c.value()){
@@ -1439,6 +1436,6 @@ event.cancel();
 if(worldtimeupdates2c.value()){
 WorldTimeUpdateS2CPacket packet145;
 event.cancel();
-}
-}, new DirectClientPacketFilter(EventPacketSent.Mode.PRE));
+  }
+ } 
 }
