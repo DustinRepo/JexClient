@@ -38,10 +38,12 @@ public class EventPacketSent extends Event {
             this.packet = packet;
             this.mode = mode;
         }
+        
         public static class Sent extends EventPacketSent {
         private static final Sent INSTANCE = new Sent();
 
         public static Sent get(Packet<?> packet) {
+            INSTANCE.setCancelled(false);
             INSTANCE.packet = packet;
             return INSTANCE;
         }
