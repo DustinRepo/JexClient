@@ -786,137 +786,113 @@ if(advancementtab.value()) {
 
 if(boatpaddlestate.value()){
 BoatPaddleStateC2SPacket packet2;
- event.setPacket(packet2);
 event.cancel();
 }
 
 if(bookupdate.value()){
 BookUpdateC2SPacket packet3;
- event.setPacket(packet3);
 event.cancel();
 }
 
 if(buttonclick.value()){
 ButtonClickC2SPacket packet4;
- event.setPacket(packet4);
 event.cancel();
 }
 
 if(chatmessage.value()){
 ChatMessageC2SPacket packet5;
- event.setPacket(packet5);
 event.cancel();
 }
 
 if(clickslot.value()){
 ClickSlotC2SPacket packet6;
- event.setPacket(packet6);
 event.cancel();
 }
 
 if(clientcommand.value()){
 ClientCommandC2SPacket packet7;
- event.setPacket(packet7);
 event.cancel();
 }
 
 if(clientsettings.value()){
 ClientSettingsC2SPacket packet8;
- event.setPacket(packet8);
 event.cancel();
 }
 
 if(clientstatus.value()){
 ClientStatusC2SPacket packet9;
- event.setPacket(packet9);
 event.cancel();
 }
 
 if(closehandledscreen.value()){
 CloseHandledScreenC2SPacket packet10;
- event.setPacket(packet10);
 event.cancel();
 }
 
 if(craftrequest.value()){
 CraftRequestC2SPacket packet11;
- event.setPacket(packet11);
 event.cancel();
 }
 
 if(creativeinventoryaction.value()){
 CreativeInventoryActionC2SPacket packet12;
- event.setPacket(packet12);
 event.cancel();
 }
 
 if(custompayload.value()){
 CustomPayloadC2SPacket packet13;
- event.setPacket(packet13);
 event.cancel();
 }
 
 if(handswing.value()){
 HandSwingC2SPacket packet14;
- event.setPacket(packet14);
 event.cancel();
 }
 
 if(jigsawgenerating.value()){
 JigsawGeneratingC2SPacket packet15;
- event.setPacket(packet15);
 event.cancel();
 }
 
 if(keepalive.value()){
 KeepAliveC2SPacket packet16;
- event.setPacket(packet16);
 event.cancel();
 }
 
 if(pickfrominventory.value()){
 PickFromInventoryC2SPacket packet17;
- event.setPacket(packet17);
 event.cancel();
 }
 if(playeraction.value()){
 PlayerActionC2SPacket packet18;
- event.setPacket(packet18);
 event.cancel();
 }
 if(playerinput.value()){
 PlayerInputC2SPacket packet19;
- event.setPacket(packet19);
 event.cancel();
 }
 if(playerinteractblock.value()){
 PlayerInteractBlockC2SPacket packet20;
- event.setPacket(packet20);
 event.cancel();
 }
 if(playerinteractentity.value()){
 PlayerInteractEntityC2SPacket packet21;
- event.setPacket(packet21);
 event.cancel();
 }
 if(playerinteractitem.value()){
 PlayerInteractItemC2SPacket packet22;
- event.setPacket(packet22);
 event.cancel();
 }
 if(playermove.value()){
 PlayerMoveC2SPacket packet23;
- event.setPacket(packet23);
 event.cancel();
 }
 if(playpong.value()){
 PlayPongC2SPacket packet24;
- event.setPacket(packet24);
 event.cancel();
 }
 if(queryblocknbt.value()){
 QueryBlockNbtC2SPacket packet25;
- event.setPacket(packet25);
 event.cancel();
 }
 if(queryentitynbt.value()){
@@ -926,32 +902,26 @@ event.cancel();
 }
 if(recipebookdata.value()){
 RecipeBookDataC2SPacket packet27;
- event.setPacket(packet27);
 event.cancel();
 }
 if(recipecategoryoptions.value()){
 RecipeCategoryOptionsC2SPacket packet28;
- event.setPacket(packet28);
 event.cancel();
 }
 if(renameitem.value()){
 RenameItemC2SPacket packet29;
- event.setPacket(packet29);
 event.cancel();
 }
 if(requestcommandcompletions.value()){
 RequestCommandCompletionsC2SPacket packet30;
- event.setPacket(packet30);
 event.cancel();
 }
 if(resourcepackstatus.value()){
 ResourcePackStatusC2SPacket packet31;
- event.setPacket(packet31);
 event.cancel();
 }
 if(selectmerchanttrade.value()){
 SelectMerchantTradeC2SPacket packet32;
- event.setPacket(packet32);
 event.cancel();
 }
 if(spectatorteleport.value()){
