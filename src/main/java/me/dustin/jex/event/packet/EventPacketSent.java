@@ -48,17 +48,7 @@ public class EventPacketSent extends Event {
             return INSTANCE;
         }
     }
-        
-        public static class Send extends EventPacketSent {
-        private static final Send INSTANCE = new Send();
-
-        public static Send get(Packet<?> packet) {
-            INSTANCE.setCancelled(false);
-            INSTANCE.packet = packet;
-            return INSTANCE;
-        }
-    }  
-        
+         
         public Packet<?> getPacket() {
             return packet;
         }
