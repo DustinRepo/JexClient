@@ -790,7 +790,8 @@ public final Property<Boolean> worldtimeupdates2c =  Property.PropertyBuilder<Bo
  private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
 
 if(advancementtab.value()) {
- AdvancementUpdates2cPacket packet1 = (AdvancementUpdates2cPacket)  event.cancel();
+ AdvancementUpdates2cPacket packet1 = (AdvancementUpdates2cPacket)  event.getPacket();
+ return null;
 }
 
 if(boatpaddlestate.value()){
