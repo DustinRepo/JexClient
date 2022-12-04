@@ -11,9 +11,6 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.packet.EventPacketSent;
 import net.minecraft.network.packet.c2s.play.*;
-import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
 import net.minecraft.network.listener;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.network.Packet;
@@ -413,11 +410,6 @@ public final Property<Boolean> entityattributess2c = new Property.PropertyBuilde
 .value(true)
 .parent(s2cpackets)
 .build();
-public final Property<Boolean> entitydestroys2c = new Property.PropertyBuilder<Boolean>(this.getClass())
-.name("EntityDestroyS2CPacket")
-.value(true)
-.parent(s2cpackets)
-.build();
 public final Property<Boolean> entityequipmentupdates2c = new Property.PropertyBuilder<Boolean>(this.getClass())
 .name("EntityEquipmentUpdateS2CPacket")
 .value(true)
@@ -530,11 +522,6 @@ public final Property<Boolean> lookats2c = new Property.PropertyBuilder<Boolean>
 .build();
 public final Property<Boolean> mapupdates2c = new Property.PropertyBuilder<Boolean>(this.getClass())
 .name("MapUpdateS2CPacket")
-.value(true)
-.parent(s2cpackets)
-.build();
-public final Property<Boolean> mobspawns2c = new Property.PropertyBuilder<Boolean>(this.getClass())
-.name("MobSpawnS2CPacket")
 .value(true)
 .parent(s2cpackets)
 .build();
@@ -1172,12 +1159,6 @@ EntityAttributesS2CPacket packet69;
 event.cancel();
 }
  
-if(entitydestroys2c.value()){
-EntityDestroyS2CPacket packet70;
- event.setPacket(packet70);
-event.cancel();
-}
- 
 if(entityequipmentupdates2c.value()){
 EntityEquipmentUpdateS2CPacket packet71;
  event.setPacket(packet71);
@@ -1316,12 +1297,6 @@ MapUpdateS2CPacket packet93;
 event.cancel();
 }
  
-if(mobspawns2c.value()){
-MobSpawnS2CPacket packet94;
- event.setPacket(packet94);
-event.cancel();
-}
- 
 if(nbtqueryresponses2c.value()){
 NbtQueryResponseS2CPacket packet95;
  event.setPacket(packet95);
@@ -1349,12 +1324,6 @@ event.cancel();
 if(overlaymessages2c.value()) {
 OverlayMessageS2CPacket packet99;
  event.setPacket(packet99);
-event.cancel();
-}
- 
-if(paintingspawns2c.value()) {
-PaintingSpawnS2CPacket packet100;
- event.setPacket(packet100);
 event.cancel();
 }
  
