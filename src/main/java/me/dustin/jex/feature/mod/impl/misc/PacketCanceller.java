@@ -775,6 +775,7 @@ public final Property<Boolean> worldtimeupdates2c = new Property.PropertyBuilder
 .parent(s2cpackets)
 .build();
 
+@SuppressWarnings("InstanceVariableMayNotBeInitialized")
 @EventPointer
 private final EventListener<EventPacketSent.EventPacketSentDirect> eventPacketSenteventListener = new EventListener<>(event -> {
 
