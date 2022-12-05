@@ -1049,7 +1049,7 @@ CraftFailedResponseS2CPacket packet60 = (CraftFailedResponseS2CPacket) event.get
 return null;
 }
 if(custompayloads2c.value()){
-CustomPayloadS2CPacket packet61 = (CustomPayloadS2CPacket)
+CustomPayloadS2CPacket packet61 = (CustomPayloadS2CPacket) event.getPacket();
 return null;
 }
 if(deathmessages2c.value()){
@@ -1197,7 +1197,7 @@ OpenScreenS2CPacket packet97 = (OpenScreenS2CPacket) event.getPacket();
 return null;
 }
 if(openwrittenbooks2c.value()){
-OpenWrittenBookS2CPacket packet98 = (OpenWrittenBookS2CPacket event.getPacket();
+OpenWrittenBookS2CPacket packet98 = (OpenWrittenBookS2CPacket) event.getPacket();
 return null;
 }
 if(overlaymessages2c.value()){
