@@ -789,7 +789,7 @@ public final Property<Boolean> worldtimeupdates2c =  Property.PropertyBuilder<Bo
 .build();
 
 @eventPointer
-private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener =  EventListener<>(event -> {
+private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
 
 if(advancementtab.value()) {
  AdvancementUpdates2cPacket packet1 = (AdvancementUpdates2cPacket)  event.getPacket();
@@ -1390,5 +1390,5 @@ if(worldtimeupdates2c.value()){
 WorldTimeUpdateS2CPacket packet145 = (WorldTimeUpdateS2CPacket) event.getPacket();
 return null;
 }
-}, new ClientPacketFilter(EventPacketSent.Mode.PRE));
+});
 }
