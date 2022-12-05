@@ -15,6 +15,6 @@ public class EventRenderOverlay extends Event {
     }
 
     public enum Overlay {
-        UNDERWATER, LAVA, IN_WALL, FIRE, VIGNETTE, PUMPKIN, PORTAL, COLD, SPYGLASS
+        UNDERWATER, LAVA, IN_WALL, FIRE, VIGNETTE, PUMPKIN, PORTAL, COLD, SPYGLASS, BOSSBAR
     }
 }
