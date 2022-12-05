@@ -15,8 +15,8 @@ public EventRenderHud(InGameHud ingamehud, MatrixStack poseStack, int tickDelta)
         this.tickDelta = tickDelta;
     }
 	
-	 public ChatHud getChatHud() {
-        return chatHud;
+	 public InGameHud getInGameHud() {
+        return ingamehud;
     }
 	
 	  public MatrixStack getPoseStack() {
