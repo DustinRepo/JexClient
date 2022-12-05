@@ -4,6 +4,7 @@ import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderCrosshair;
 import me.dustin.jex.event.render.EventRenderEffects;
 import me.dustin.jex.event.render.EventRenderBossBar;
+import net.minecraft.entity.boss.BossBar;
 import me.dustin.jex.event.render.EventRenderOverlay;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
