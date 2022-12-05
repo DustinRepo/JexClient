@@ -10,6 +10,7 @@ import me.dustin.events.core.EventListener;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.helper.misc.Wrapper;
+import me.dustin.jex.event.filters.PlayerPacketsFilter;
 
 public class PacketCanceller extends Feature {
 
@@ -787,7 +788,7 @@ public final Property<Boolean> worldtimeupdates2c =  Property.PropertyBuilder<Bo
 .build();
 
 @eventPointer
-private final EventListener<eventPacketSent> eventPacketSenteventListener =  EventListener<>(event -> {
+private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener =  EventListener<>(event -> {
 
 if(advancementtab.value()) {
  AdvancementUpdates2cPacket packet1 = (AdvancementUpdates2cPacket)  event.getPacket();
