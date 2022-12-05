@@ -64,7 +64,6 @@ public class AntiOverlay extends Feature {
         switch (event.getOverlay()) {
             case BOSSBAR -> {
                 if (bossbarProperty.value())
-                    ClientBossBar event;
                     event.cancel();
             }  
             case FIRE -> {
