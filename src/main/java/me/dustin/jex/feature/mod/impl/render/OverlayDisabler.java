@@ -8,6 +8,7 @@ import me.dustin.events.core.EventListener;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.event.render.EventRenderHud;
 import net.minecraft.client.gui.hud.ClientBossBar;
+import net.minecraft.entity.boss.BossBar;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
@@ -18,10 +19,9 @@ public static final WeakHashMap<ClientBossBar, Integer> barMap = new WeakHashMap
      public OverlayDisabler() {
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
-	
-	 private final EventListener<EventRenderHud> eventRenderHudEventListener = new EventListener<>(event -> {
-          ClientBossBar bar;
-          Integer integer = barMap.get(bar);
-          barMap.remove(bar);
-});
+public final EventListener<EventRenderHud> eventRenderHudEventListener = new EventListener<>(event -> {
+	public ClientBossBar {
+	event.cancel();
+	}
+	)};	
 }
