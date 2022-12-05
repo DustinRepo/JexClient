@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.entity.boss.BossBar;
 
 public class OverlayDisabler extends Feature {
  
@@ -32,8 +33,8 @@ public class OverlayDisabler extends Feature {
      public OverlayDisabler() {
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
-@Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void renderBossBar(BossBar bossbar, CallbackInfo info) {
+	
+    public void onRender(BossBar bossbar, CallbackInfo info) {
         if (bossbarProperty.value()) {
             info.cancel();
         }
