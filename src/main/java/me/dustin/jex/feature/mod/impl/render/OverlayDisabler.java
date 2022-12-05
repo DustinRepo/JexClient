@@ -8,6 +8,8 @@ import me.dustin.events.core.EventListener;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.dustin.jex.event.render.EventRenderHud;
 import net.minecraft.client.gui.hud.ClientBossBar;
+import java.util.HashMap;
+import java.util.WeakHashMap;
 
 public class OverlayDisabler extends Feature {
  
