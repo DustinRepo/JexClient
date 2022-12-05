@@ -4,7 +4,7 @@ import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRenderCrosshair;
 import me.dustin.jex.event.render.EventRenderEffects;
 import me.dustin.jex.event.render.EventRenderBossBar;
-import net.minecraft.entity.boss.BossBar;
+import net.minecraft.client.gui.hud.ClientBossBar;
 import me.dustin.jex.event.render.EventRenderOverlay;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,7 +34,7 @@ public class MixinInGameHud {
     }
     
 @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    public void renderBossBar(BossBar bossBar, CallbackInfo ci) {
+    public void renderBossBar(ClientBossBar bossBar, CallbackInfo ci) {
         EventRenderBossBar eventRenderBossBar = new EventRenderBossBar(bossBar).run();
         if (eventRenderBossBar.isCancelled())
             ci.cancel();
