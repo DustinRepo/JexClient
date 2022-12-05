@@ -10,6 +10,7 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
 import net.minecraft.client.render.CameraSubmersionType;
+import net.minecraft.client.gui.hud.ClientBossBar;
 
 public class AntiOverlay extends Feature {
 
@@ -63,6 +64,7 @@ public class AntiOverlay extends Feature {
         switch (event.getOverlay()) {
             case BOSSBAR -> {
                 if (bossbarProperty.value())
+                    ClientBossBar event;
                     event.cancel();
             }  
             case FIRE -> {
