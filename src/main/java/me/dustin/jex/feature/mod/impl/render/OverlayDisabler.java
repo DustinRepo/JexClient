@@ -24,10 +24,10 @@ public static final WeakHashMap<ClientBossBar, Integer> barMap = new WeakHashMap
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
 	
-	 private final EventListener<EventRenderHud> eventRenderHudEventListener = new EventListener<>(event -> {
-	 ClientBossBar bar;
-          Integer integer = barMap.get(bar);
+	 private final EventListener<EventRenderHud> eventRenderHudEventListener = new EventListener<>(event -> 
 	 if (bossbarProperty.value()) {
+          ClientBossBar bar;
+          Integer integer = barMap.get(bar);
                barMap.remove(bar);
             }  
 	   });
