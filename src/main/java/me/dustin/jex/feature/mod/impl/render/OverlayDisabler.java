@@ -27,9 +27,9 @@ public class OverlayDisabler extends Feature {
             .value(true)
             .build();
 			
-			public AntiOverlay() {
+	public OverlayDisabler() {
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
 @EventPointer
-	private final EventListener<EventRenderCrosshair> eventRenderCrosshairEventListener = new EventListener<>(event -> event.cancel());	
+	private final EventListener<EventRenderBossBar> eventRenderBossBarEventListener = new EventListener<>(event -> event.cancel());	
 }
