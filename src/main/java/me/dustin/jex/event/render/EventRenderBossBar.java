@@ -10,7 +10,7 @@ public class EventRenderBossBar extends Event {
 
     public EventRenderBossBar(MatrixStack poseStack, BossBar bossBar) {
         this.poseStack = poseStack;
-		this.bossbar = bossBar;
+		this.bossBar = bossBar;
     }
 
     public MatrixStack getPoseStack() {
