@@ -11,6 +11,7 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
+import me.dustin.jex.event.filters.ClientPacketFilter;
 
 public class PacketCanceller extends Feature {
 
@@ -1389,5 +1390,5 @@ if(worldtimeupdates2c.value()){
 WorldTimeUpdateS2CPacket packet145 = (WorldTimeUpdateS2CPacket) event.getPacket();
 return null;
 }
-});
+}, new ClientPacketFilter(EventPacketSent.Mode.PRE));
 }
