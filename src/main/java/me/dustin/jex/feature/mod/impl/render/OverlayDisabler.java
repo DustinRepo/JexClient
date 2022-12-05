@@ -12,11 +12,6 @@ import java.util.HashMap;
 import java.util.WeakHashMap;
 
 public class OverlayDisabler extends Feature {
- 
-  public final Property<Boolean> bossbarProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("BossBar")
-            .value(true)
-            .build();
 	
 public static final WeakHashMap<ClientBossBar, Integer> barMap = new WeakHashMap<>();
 			
@@ -25,10 +20,8 @@ public static final WeakHashMap<ClientBossBar, Integer> barMap = new WeakHashMap
     }
 	
 	 private final EventListener<EventRenderHud> eventRenderHudEventListener = new EventListener<>(event -> {
-	 if (bossbarProperty.value()) {
           ClientBossBar bar;
           Integer integer = barMap.get(bar);
-               barMap.remove(bar);
-            }  
-	   });
+          barMap.remove(bar);
+});
 }
