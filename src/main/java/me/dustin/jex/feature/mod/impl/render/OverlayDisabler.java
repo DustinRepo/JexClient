@@ -18,15 +18,15 @@ public class OverlayDisabler extends Feature {
             .value(true)
             .build();
 	
-public static final WeakHashMap<ClientBossBar> barMap = new WeakHashMap<>();
+public static final WeakHashMap<ClientBossBar, Integer> barMap = new WeakHashMap<>();
 			
      public OverlayDisabler() {
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
 	
 	 private final EventListener<EventRenderHud> eventRenderHudEventListener = new EventListener<>(event -> {
-	ClientBossBar bar;
-           barMap.get(bar);
+	 ClientBossBar bar;
+          Integer integer = barMap.get(bar);
 	 if (bossbarProperty.value()) {
                barMap.remove(bar);
             }  
