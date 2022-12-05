@@ -18,7 +18,8 @@ public class UIDisabler extends Feature {
     }
 @EventPointer
 	private final EventListener<EventRenderBossBar> eventRenderCrosshairEventListener = new EventListener<>(event -> {
-	if (bossBarProperty.value());
+	if (bossBarProperty.value()) {
 	event.cancel();
-	});
+     }
+  });
 }
