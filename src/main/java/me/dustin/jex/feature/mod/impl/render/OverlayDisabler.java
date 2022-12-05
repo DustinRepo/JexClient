@@ -15,13 +15,13 @@ public class OverlayDisabler extends Feature {
             .value(true)
             .build();
 			
-			public AntiOverlay() {
+     public OverlayDisabler() {
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
 	
 	 private final EventListener<EventRenderHud> eventRenderHudEventListener = new EventListener<>(event -> {
 	 ClientBossBar event;
 	 if (bossbarProperty.value()) {
-                    event.cancel();
+                event.cancel();
             }  
 	   });
