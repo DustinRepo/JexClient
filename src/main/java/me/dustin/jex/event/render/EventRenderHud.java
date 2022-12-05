@@ -9,7 +9,7 @@ import net.minecraft.client.util.math.MatrixStack;
     private final MatrixStack poseStack;
     private final int tickDelta;
 	
-	public EventRenderChatHud(InGameHud ingamehud, MatrixStack poseStack, int tickDelta) {
+	public EventRenderHud(InGameHud ingamehud, MatrixStack poseStack, int tickDelta) {
         this.ingamehud = ingamehud;
         this.poseStack = poseStack;
         this.tickDelta = tickDelta;
