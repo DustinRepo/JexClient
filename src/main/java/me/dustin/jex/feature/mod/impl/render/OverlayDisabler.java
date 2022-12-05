@@ -29,10 +29,10 @@ public class OverlayDisabler extends Feature {
             .value(true)
             .build();
 			
-			public AntiOverlay() {
+     public OverlayDisabler() {
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
-	
+@Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void renderBossBar(BossBar bossbar, CallbackInfo info) {
         if (bossbarProperty.value()) {
             info.cancel();
