@@ -36,7 +36,7 @@ public class OverlayDisabler extends Feature {
 	
     public void onRender(BossBar bossbar, CallbackInfo info) {
         if (bossbarProperty.value()) {
-            event.setCancelled(true);
+            bossbar.clear();
         }
     }
 	
