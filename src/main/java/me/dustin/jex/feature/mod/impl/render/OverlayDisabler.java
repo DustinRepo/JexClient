@@ -25,3 +25,4 @@ public class OverlayDisabler extends Feature {
                 event.cancel();
             }  
 	   });
+}
