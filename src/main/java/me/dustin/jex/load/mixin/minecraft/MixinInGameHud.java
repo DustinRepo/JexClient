@@ -32,6 +32,13 @@ public class MixinInGameHud {
             e.printStackTrace();
         }
     }
+     @Inject(method = "renderBossbar", at = @At("HEAD"), cancellable = true)
+    public void renderBossbar(MatrixStack matrixStack, CallbackInfo ci) {
+        EventRenderBossBar eventRenderBossbar = new EventRenderBossBar(matrixStack).run();
+        if (eventRenderBossbar.isCancelled())
+            ci.cancel();
+    }
+
     
     @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
     public void renderCrosshair(MatrixStack matrixStack, CallbackInfo ci) {
