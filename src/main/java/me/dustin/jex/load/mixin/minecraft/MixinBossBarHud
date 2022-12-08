@@ -12,7 +12,7 @@ import me.dustin.jex.feature.mod.core.FeatureManager;
 @Mixin(BossBarHud.class)
 public class MixinBossBarHud {
 
-	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "render", at = @At("HEAD"), cancellable = true) //
 	private void render(CallbackInfo info) {
 		if (bossbarProperty.value()) {
 			info.cancel();
