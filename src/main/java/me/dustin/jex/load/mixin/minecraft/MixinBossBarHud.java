@@ -37,4 +37,3 @@ public class MixinBossBarHud {
         return event.spacing;
     }
 }
-}
