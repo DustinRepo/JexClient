@@ -14,7 +14,7 @@ public class MixinBossBarHud {
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	private void render(CallbackInfo info) {
-		if (FeatureManager.getFeatures(UIDisabler.class).forEach(true)) {
+		if (bossbarProperty.value()) {
 			info.cancel();
 		}
 	}
