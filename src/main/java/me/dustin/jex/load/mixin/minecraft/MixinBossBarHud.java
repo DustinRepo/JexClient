@@ -23,19 +23,19 @@ public class MixinBossBarHud {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Ljava/util/Collection;iterator()Ljava/util/Iterator;"))
     public Iterator<ClientBossBar> onRender(Collection<ClientBossBar> collection) {
-        RenderBossBarEvent.BossIterator event = new EventRenderBossBar(EventRenderBossBar.BossIterator.get(collection.iterator()));
+        EventRenderBossBar.BossIterator event = EventRenderBossBar(EventRenderBossBar.BossIterator.get(collection.iterator()));
         return event.iterator;
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ClientBossBar;getName()Lnet/minecraft/text/Text;"))
     public Text onAsFormattedString(ClientBossBar clientBossBar) {
-        EventRenderBossBar.BossText event = new EventRenderBossBar(EventRenderBossBar.BossText.get(clientBossBar, clientBossBar.getName()));
+        EventRenderBossBar.BossText event = EventRenderBossBar(EventRenderBossBar.BossText.get(clientBossBar, clientBossBar.getName()));
         return event.name;
     }
 
     @ModifyConstant(method = "render", constant = @Constant(intValue = 9, ordinal = 1))
     public int modifySpacingConstant(int j) {
-        EventRenderBossBar.BossSpacing event = new EventRenderBossBar(EventRenderBossBar.BossSpacing.get(j));
+        EventRenderBossBar.BossSpacing event = EventRenderBossBar(EventRenderBossBar.BossSpacing.get(j));
         return event.spacing;
     }
 }
