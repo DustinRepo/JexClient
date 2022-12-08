@@ -8,12 +8,15 @@ import me.dustin.jex.feature.mod.impl.render.UIDisabler;
 import net.minecraft.client.gui.hud.BossBarHud;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.FeatureManager;
+import net.minecraft.client.util.math.MatrixStack;
+import me.dustin.jex.event.render.EventRenderBossBar;
 
 @Mixin(BossBarHud.class)
 public class MixinBossBarHud {
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true) //
-	private void render(CallbackInfo info) {
+	private void render(BossBarHud bossbar, CallbackInfo info) {
+	EventRenderBossBar eventRenderBossBar = new EventRenderBossBar()
 		if (bossbarProperty.value()) {
 			info.cancel();
 		}
