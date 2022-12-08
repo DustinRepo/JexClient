@@ -17,7 +17,7 @@ import java.util.Iterator;
 public class MixinBossBarHud {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void onRender(CallbackInfo info) {
-        if (Feature.get().get(UIDisabler.class).onEnable()) 
+        if (Feature.get(UIDisabler.class).onEnable()) 
             info.cancel();
     }
 }
