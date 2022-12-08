@@ -13,11 +13,3 @@ import me.dustin.jex.event.render.EventRenderBossBar;
 
 @Mixin(BossBarHud.class)
 public class MixinBossBarHud {
-
-	@Inject(method = "render", at = @At("HEAD"), cancellable = true) //
-	private void render(BossBarHud bossbar, CallbackInfo info) {
-	EventRenderBossBar eventRenderBossBar = new EventRenderBossBar()
-		if (bossbarProperty.value()) {
-			info.cancel();
-		}
-	}
