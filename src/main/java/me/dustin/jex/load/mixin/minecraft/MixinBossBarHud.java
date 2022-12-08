@@ -10,6 +10,8 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.FeatureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import me.dustin.jex.event.render.EventRenderBossBar;
+import java.util.Collection;
+import java.util.Iterator;
 
 @Mixin(BossBarHud.class)
 public class MixinBossBarHud {
