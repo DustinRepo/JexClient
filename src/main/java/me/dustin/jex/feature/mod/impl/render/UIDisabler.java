@@ -9,14 +9,14 @@ import me.dustin.jex.event.render.EventRenderBossBar;
 
 public class UIDisabler extends Feature {
  
-  public final Property<Boolean> bossbarProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+  public final Property<String> bossbarProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("BossBar")
-            .value(true)
+            .value("true")
             .build();
 	
-public final Property<Boolean> removehudProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("BossBar")
-            .value(true)
+public final Property<String> removehudProperty = new Property.PropertyBuilder<String>(this.getClass())
+            .name("RemoveHud")
+            .value("true")
             .build();
 			
 public UIDisabler() {
