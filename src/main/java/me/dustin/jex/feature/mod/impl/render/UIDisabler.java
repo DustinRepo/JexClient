@@ -17,6 +17,9 @@ public class UIDisabler extends Feature {
 			public UIDisabler() {
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
+
+public static UIDisabler INSTANCE;
+
 @EventPointer
 private final EventListener<EventRenderBossBar> eventRenderCrosshairEventListener = new EventListener<>(event -> {
 if (bossbarProperty.value()) {
