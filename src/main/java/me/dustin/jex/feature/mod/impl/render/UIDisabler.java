@@ -24,11 +24,6 @@ public UIDisabler() {
     }
 
 public static UIDisabler INSTANCE;
-
-@EventPointer
-private final EventListener<EventRenderBossBar> eventRenderCrosshairEventListener = new EventListener<>(event -> {
-if (bossbarProperty.value()) {
-	event.cancel();
-     }
-  });
+private boolean boss = Boolean.getBoolean(bossbarProperty.value())
+private boolean removehud = Boolean.getBoolean(removehudProperty.value())
 }
