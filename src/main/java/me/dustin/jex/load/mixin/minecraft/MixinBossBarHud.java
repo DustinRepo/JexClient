@@ -29,3 +29,4 @@ public class MixinBossBarHud {
             info.cancel();
         }
     }
+}
