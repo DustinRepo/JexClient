@@ -19,6 +19,13 @@ public class MixinBossBarHud {
     public void renderBossBarHud(BossBarHud bossbarhud, MatrixStack matrixStack,CallbackInfo ci) {
         EventRenderBossBar eventRenderBossBar = new EventRenderBossBar(matrixStack).run();
         if (eventRenderBossBar.isCancelled()) {
-            ci.cancel();
+            ();
+        }
+    }
+ 
+ @Inject(at=@At("HEAD"), method = "render", cancellable = true)
+    public void render(CallbackInfo info) {
+        if (UIDisabler.INSTANCE.bossbarProperty) {
+            info.cancel();
         }
     }
