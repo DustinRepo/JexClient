@@ -12,11 +12,13 @@ public class UIDisabler extends Feature {
   public final Property<String> bossbarProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("BossBar")
             .value("true")
+	    .max(5)
             .build();
 	
 public final Property<String> removehudProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("RemoveHud")
             .value("true")
+            .max(5) 	
             .build();
 			
 public UIDisabler() {
