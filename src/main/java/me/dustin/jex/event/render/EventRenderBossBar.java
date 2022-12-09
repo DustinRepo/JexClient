@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 import me.dustin.events.core.Event;
 import net.minecraft.client.util.math.MatrixStack;
 
-public class EventRenderCrosshair extends Event {
+public class EventRenderBossBar extends Event {
 
     private final MatrixStack poseStack;
 
