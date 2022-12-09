@@ -24,4 +24,5 @@ public class MixinBossBarHud {
         if (eventRenderBossBar.isCancelled()) {
             info.cancel();
         }
+    }
 }
