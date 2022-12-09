@@ -14,16 +14,15 @@ public class UIDisabler extends Feature {
             .value(true)
 	    .max(5)
             .build();
-	
-public final Property<Boolean> removehudProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("RemoveHud")
-            .value(true)
-            .max(5) 	
-            .build();
 			
 public UIDisabler() {
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
 
-public static UIDisabler INSTANCE;
+	@EventPointer
+	private final EventListener<EventRenderBossBar> eventRenderBossBarEventListener = new EventListener<>(event -> {
+          if (bossbarProperty.value()) {
+	      event.cancel();
+    }
+  }
 }
