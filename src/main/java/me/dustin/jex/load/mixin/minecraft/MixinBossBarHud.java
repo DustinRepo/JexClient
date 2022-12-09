@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BossBarHud.class)
 public class MixinBossBarHud {
- @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/BossBarHud;render(Lnet/minecraft/client/util/math/MatrixStack;)V"
+ @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/BossBarHud;render(Lnet/minecraft/client/util/math/MatrixStack;)V")
     public void renderBossBarHud(BossBarHud bossbarhud, MatrixStack matrixStack, CallbackInfo info) {
      EventRenderBossBar eventRenderBossBar = new EventRenderBossBar(bossbarhud).run();
         if (eventRenderBossBar.isCancelled()) {
