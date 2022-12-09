@@ -24,6 +24,6 @@ public UIDisabler() {
     }
 
 public static UIDisabler INSTANCE;
-public boolean bossbar = Boolean.getBoolean(bossbarProperty);
-public boolean removehud = Boolean.getBoolean(removehudProperty);
+public boolean bossbar = Boolean.toString(bossbarProperty);
+public boolean removehud = Boolean.toString(removehudProperty);
 }
