@@ -24,5 +24,5 @@ public UIDisabler() {
           if (bossbarProperty.value()) {
 	      event.cancel();
     }
-  }
+  });
 }
