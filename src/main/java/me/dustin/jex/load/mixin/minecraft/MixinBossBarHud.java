@@ -8,6 +8,7 @@ import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.client.util.math.MatrixStack;
 import me.dustin.jex.event.render.EventRenderBossBar;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.text.Text;
 import java.util.Collection;
@@ -17,15 +18,14 @@ import java.util.Iterator;
 public class MixinBossBarHud {
  @Redirect(method = "render", at = @At(value = "INVOKE", cancellable = true, target = "Lnet/minecraft/client/gui/hud/BossBarHud;render(Lnet/minecraft/client/util/math/MatrixStack;)V"))
     public void renderBossBarHud(BossBarHud bossbarhud, MatrixStack matrixStack,CallbackInfo ci) {
-        EventRenderBossBar eventRenderBossBar = new EventRenderBossBar(matrixStack).run();
-        if (eventRenderBossBar.isCancelled()) {
-            ();
+        if (UIDisabler.INSTANCE.bossbarProperty) {
+            bossbarhud.render(matrixStack);
         }
     }
  
- @Inject(at=@At("HEAD"), method = "render", cancellable = true)
+ @Inject(method = "render", at=@At("HEAD"), cancellable = true)
     public void render(CallbackInfo info) {
-        if (UIDisabler.INSTANCE.bossbarProperty) {
+        if (UIDisabler.INSTANCE.removehudProperty) {
             info.cancel();
         }
     }
