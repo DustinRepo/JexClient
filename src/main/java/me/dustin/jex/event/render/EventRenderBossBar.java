@@ -6,39 +6,31 @@ import net.minecraft.client.gui.hud.ClientBossBar;
 import net.minecraft.text.Text;
 import java.util.Iterator;
 
-public class EventRenderBossBar extends Event {
- public static class BossText {
-        private static final BossText INSTANCE = new BossText();
+package me.dustin.jex.event.render;
 
-        public ClientBossBar bossBar;
-        public Text name;
+import me.dustin.events.core.Event;
+import net.minecraft.client.util.math.MatrixStack;
 
-        public static BossText get(ClientBossBar bossBar, Text name) {
-            INSTANCE.bossBar = bossBar;
-            INSTANCE.name = name;
-            return INSTANCE;
-        }
+public class EventRenderCrosshair extends Event {
+
+    private final MatrixStack poseStack;
+
+    public EventRenderBossBar(ClientBossBar clientbossbar, MatrixStack matrixStack,BossBarHud bossbarhud) {
+        this.poseStack = poseStack;
+        this.bossbarhud = bossbarhud;
+        this.clientbossbar = clientbossbar;
     }
 
-    public static class BossSpacing {
-        private static final BossSpacing INSTANCE = new BossSpacing();
-
-        public int spacing;
-
-        public static BossSpacing get(int spacing) {
-            INSTANCE.spacing = spacing;
-            return INSTANCE;
-        }
+    public MatrixStack getPoseStack() {
+        return this.poseStack;
     }
-
-    public static class BossIterator {
-        private static final BossIterator INSTANCE = new BossIterator();
-
-        public Iterator<ClientBossBar> iterator;
-
-        public static BossIterator get(Iterator<ClientBossBar> iterator) {
-            INSTANCE.iterator = iterator;
-            return INSTANCE;
-        }
+ 
+public ClientBossBar getClientBossBar() {
+        return this.clientbossbar;
     }
+ 
+ public BossBarHud getBossBarHud() {
+        return this.bossbarhud;
+    }
+ 
 }
