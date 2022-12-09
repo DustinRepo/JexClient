@@ -13,8 +13,13 @@ public class UIDisabler extends Feature {
             .name("BossBar")
             .value(true)
             .build();
+	
+public final Property<Boolean> removehudProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("BossBar")
+            .value(true)
+            .build();
 			
-			public UIDisabler() {
+public UIDisabler() {
         super(Category.VISUAL, "Removes unnecessary interface elements");
     }
 
