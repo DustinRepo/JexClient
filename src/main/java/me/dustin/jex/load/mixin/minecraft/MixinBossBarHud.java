@@ -22,7 +22,7 @@ public class MixinBossBarHud {
     public void renderBossBarHud(BossBarHud bossbarhud) {
      EventRenderBossBar eventRenderBossBar = new EventRenderBossBar(bossbarhud).run();
         if (eventRenderBossBar.isCancelled()) {
-            bossbarhud.render(matrixStack);
+            bossbarhud.render(bossbarhud);
         }
     }
  
