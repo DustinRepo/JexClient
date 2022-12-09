@@ -11,7 +11,7 @@ public class EventRenderCrosshair extends Event {
 
     private final MatrixStack poseStack;
 
-    public EventRenderBossBar(ClientBossBar clientbossbar, MatrixStack matrixStack,BossBarHud bossbarhud) {
+    public void EventRenderBossBar(ClientBossBar clientbossbar, MatrixStack matrixStack,BossBarHud bossbarhud) {
         this.poseStack = poseStack;
         this.bossbarhud = bossbarhud;
         this.clientbossbar = clientbossbar;
