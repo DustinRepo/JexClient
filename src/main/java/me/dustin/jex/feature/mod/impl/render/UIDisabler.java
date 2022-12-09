@@ -24,6 +24,6 @@ public UIDisabler() {
     }
 
 public static UIDisabler INSTANCE;
-private boolean boss = Boolean.getBoolean(bossbarProperty.value())
+private boolean bossbar = Boolean.getBoolean(bossbarProperty.value())
 private boolean removehud = Boolean.getBoolean(removehudProperty.value())
 }
