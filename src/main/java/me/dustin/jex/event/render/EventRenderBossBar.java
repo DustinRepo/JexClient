@@ -11,18 +11,13 @@ public class EventRenderBossBar extends Event {
 
     private final MatrixStack poseStack;
 
-    public void EventRenderBossBar(ClientBossBar clientbossbar, MatrixStack matrixStack,BossBarHud bossbarhud) {
-        this.poseStack = poseStack;
+    public void EventRenderBossBar(MatrixStack matrixStack,BossBarHud bossbarhud) {
+        this.matrixStack = matrixStack;
         this.bossbarhud = bossbarhud;
-        this.clientbossbar = clientbossbar;
     }
 
     public MatrixStack getPoseStack() {
-        return this.poseStack;
-    }
- 
-public ClientBossBar getClientBossBar() {
-        return this.clientbossbar;
+        return this.matrixStack;
     }
  
  public BossBarHud getBossBarHud() {
