@@ -15,7 +15,7 @@ public class EventRenderBossBar extends Event {
     }
     
     public ClientBossBar getClientBossBar() {
-        return bossbar;
+        return clientbossbar;
     }
     
 }
