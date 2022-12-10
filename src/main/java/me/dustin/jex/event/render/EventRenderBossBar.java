@@ -8,16 +8,10 @@ import me.dustin.events.core.Event;
 
 public class EventRenderBossBar extends Event {
 
-    private final BossBarHud bossbar;
     private final ClientBossBar clientbossbar;
 
-    public EventRenderBossBar(BossBarHud bossbar, ClientBossBar clientbossbar) {
-        this.bossbar = bossbar;
+    public EventRenderBossBar(ClientBossBar clientbossbar) {
         this.clientbossbar = clientbossbar;
-    }
-
-public BossBarHud getBossBarHud() {
-        return bossbar;
     }
     
     public ClientBossBar getClientBossBar() {
