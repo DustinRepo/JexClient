@@ -10,14 +10,20 @@ import net.minecraft.client.util.math.MatrixStack;
 public class EventRenderBossBar extends Event {
 
     private final BossBarHud bossbar;
+    private final ClientBossBar clientbossbar;
      private final MatrixStack poseStack;
 
     public EventRenderBossBar(BossBarHud bossbar, MatrixStack poseStack) {
         this.bossbar = bossbar;
         this.poseStack= poseStack;
+        this.clientbossbar = clientbossbar;
     }
 
 public BossBarHud getBossBarHud() {
+        return bossbar;
+    }
+    
+    public ClientBossBar getClientBossBar() {
         return bossbar;
     }
     
