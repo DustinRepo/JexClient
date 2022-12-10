@@ -9,7 +9,6 @@ import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.client.gui.hud.ClientBossBar;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.render.EventRenderBossBar;
-import me.dustin.jex.event.render.EventRenderBoss;
 import net.minecraft.entity.boss.BossBar;
 
 public class UIDisabler extends Feature {
@@ -25,8 +24,8 @@ public UIDisabler() {
     }
 
 	@EventPointer
-	private final EventListener<EventRenderBoss> eventRenderBossEventListener = new EventListener<>(event -> {
-          if (event.getBoss() instanceof ClientBossBar && bossbarProperty.value()) {
+	private final EventListener<EventRenderBossBar> eventRenderBossEventListener = new EventListener<>(event -> {
+          if (bossbarProperty.value()) {
 	      event.cancel();
     }
   });
