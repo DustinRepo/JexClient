@@ -25,7 +25,7 @@ public UIDisabler() {
     }
 
 	@EventPointer
-	private final EventListener<EventRenderBossBar> eventRenderBossBarEventListener = new EventListener<>(event -> {
+	private final EventListener<EventRenderBoss> eventRenderBossEventListener = new EventListener<>(event -> {
           if (event.boss instanceof ClientBossBar && bossbarProperty.value()) {
 	      event.cancel();
     }
