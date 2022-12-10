@@ -13,7 +13,7 @@ public class EventRenderBossBar extends Event {
     private final ClientBossBar clientbossbar;
      private final MatrixStack poseStack;
 
-    public EventRenderBossBar(BossBarHud bossbar, MatrixStack poseStack) {
+    public EventRenderBossBar(BossBarHud bossbar, MatrixStack poseStack, ClientBossBar clientbossbar) {
         this.bossbar = bossbar;
         this.poseStack= poseStack;
         this.clientbossbar = clientbossbar;
