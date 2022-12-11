@@ -39,8 +39,8 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
 	    if (entity instanceof ArrowEntity arrowEntity) {
               if (arrowEntity.age < 75) {
             if (arrowEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
-             event.setX(event.getX() + num);	
-             event.setZ(event.getZ() + num);
+             event.setX(num.nextFloat());	
+             event.setZ(num.nextFloat());
             }
       }
 }
