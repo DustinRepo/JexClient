@@ -83,7 +83,7 @@ public class Jesus extends Feature {
         }
         if (modeProperty.value() == Mode.SOLID && (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
             Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
-            Wrapper.INSTANCE.getPlayer().setVelocity(orig.getX(), 0.11, orig.getZ());
+            Wrapper.INSTANCE.getPlayer().setVelocity(orig.getX(), 0.22, orig.getZ());
         }
         if (modeProperty.value() == Mode.SOLIDOLD && (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
             Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
