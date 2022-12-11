@@ -91,9 +91,6 @@ public class SpeedMine extends Feature {
             return;
         if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
             return;
-        for (int i = 0; i < 10; i++) {
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
-        }
         Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);
     }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
