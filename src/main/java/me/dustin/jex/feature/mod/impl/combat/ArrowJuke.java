@@ -36,13 +36,13 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
 	
     @EventPointer
     public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-         int numx = ThreadLocalRandom.current().nextInt(min, max + 1);
-	 int numz = ThreadLocalRandom.current().nextInt(min, max + 1);
+         int numx = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
+	 int numz = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
 	    if (entity instanceof ArrowEntity arrowEntity) {
               if (arrowEntity.age < 75) {
             if (arrowEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
-             event.setX(numx.nextInt()* 1);	
-             event.setZ(numz.nextInt()* 1);
+             event.setX(numx * 1);	
+             event.setZ(numz * 1);
             }
       }
 }
