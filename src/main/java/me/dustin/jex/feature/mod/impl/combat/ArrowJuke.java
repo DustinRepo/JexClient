@@ -17,6 +17,7 @@ import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.math.BlockPos;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.*;
 
 public class ArrowJuke extends Feature {
@@ -35,12 +36,13 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
 	
     @EventPointer
     public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-Random random = new Random();
+      int randomx = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
+     int randomz = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
 	    if (entity instanceof ArrowEntity arrowEntity) {
               if (arrowEntity.age < 75) {
             if (arrowEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
-             event.setX(random.nextFloat() * 1);	
-             event.setZ(random.nextFloat() * 1);
+             event.setX(randomx * 1);	
+             event.setZ(randomz * 1);
             }
       }
 }
