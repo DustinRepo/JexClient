@@ -105,7 +105,7 @@ public class Hitboxes extends Feature {
 
     @EventPointer
     private final EventListener<EventEntityHitbox> eventEntityHitboxEventListener = new EventListener<>(event -> {
-	     if (Wrapper.INSTANCE.getMinecraft().getBox() instanceof EventEntityHitbox eventEntityHitbox) {
+	     if (event.getBox() instanceof EventEntityHitbox eventEntityHitbox) {
 	    Entity entity = eventEntityHitbox.getEntity();
 	    if (isEnabled(entity)) {
         if (event.getEntity() == null || Wrapper.INSTANCE.getLocalPlayer() == null || event.getEntity().getId() == Wrapper.INSTANCE.getLocalPlayer().getId())
