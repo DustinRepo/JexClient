@@ -59,7 +59,8 @@ public class Hitboxes extends Feature {
             .name("Passive")
             .value(true)
             .build();
-			public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	
+    public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Specific Filter")
             .value(true)
             .build();
@@ -91,10 +92,12 @@ public class Hitboxes extends Feature {
 
     @EventPointer
     private final EventListener<EventEntityHitbox> eventEntityHitboxEventListener = new EventListener<>(event -> {
-        public boolean isEnabled(Entity entity) {
         if (event.getEntity() == null || Wrapper.INSTANCE.getLocalPlayer() == null || event.getEntity().getId() == Wrapper.INSTANCE.getLocalPlayer().getId())
             return;
-			if (specificFilterProperty.value()) {
+            event.setBox(event.getBox().expand(expandXProperty.value(), expandYProperty.value(), expandZProperty.value()));
+	    
+	  private void isEnabled(Entity entity) {	  
+	if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
                 return ironGolemProperty.value();
             if (entity instanceof ZombifiedPiglinEntity)
@@ -102,6 +105,7 @@ public class Hitboxes extends Feature {
             if (entity instanceof PiglinEntity)
                 return piglinProperty.value();
         }
+		  
          if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
             return passiveProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
@@ -111,7 +115,6 @@ public class Hitboxes extends Feature {
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
         return false;
-    }
-event.setBox(event.getBox().expand(expandXProperty.value(), expandYProperty.value(), expandZProperty.value()));        
+    }     
     });
 }
