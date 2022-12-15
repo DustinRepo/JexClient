@@ -9,6 +9,8 @@ import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
