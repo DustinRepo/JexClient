@@ -4,6 +4,11 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.misc.EventEntityHitbox;
 import me.dustin.jex.helper.entity.EntityHelper;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.Entity;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -64,6 +69,11 @@ public class Hitboxes extends Feature {
             .name("Specific Filter")
             .value(true)
             .build();
+	
+	public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NoLiving")
+            .value(true)
+            .build();
 			
     public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Iron Golem")
@@ -95,8 +105,9 @@ public class Hitboxes extends Feature {
         if (event.getEntity() == null || Wrapper.INSTANCE.getLocalPlayer() == null || event.getEntity().getId() == Wrapper.INSTANCE.getLocalPlayer().getId())
             return;
             event.setBox(event.getBox().expand(expandXProperty.value(), expandYProperty.value(), expandZProperty.value()));
-	    
-	  private void isEnabled(Entity entity) {	  
+});	    
+	  
+      private boolean isEnabled(Entity entity) {	  
 	if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
                 return ironGolemProperty.value();
@@ -105,7 +116,8 @@ public class Hitboxes extends Feature {
             if (entity instanceof PiglinEntity)
                 return piglinProperty.value();
         }
-		  
+	if (!(entity instanceof LivingEntity))
+            return nolivingProperty.value();	  
          if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
             return passiveProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
@@ -114,7 +126,8 @@ public class Hitboxes extends Feature {
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
+	if (entity instanceof PlayerEntity playerEntity && !FriendHelper.INSTANCE.isFriend(playerEntity))
+            return playerProperty.value();
         return false;
-    }     
-    });
+    }       
 }
