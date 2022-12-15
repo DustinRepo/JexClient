@@ -111,6 +111,7 @@ public class Hitboxes extends Feature {
             return;
             event.setBox(event.getBox().expand(expandXProperty.value(), expandYProperty.value(), expandZProperty.value()));
 	    }
+      }
 });	    
 	  
       private boolean isEnabled(Entity entity) {	  
