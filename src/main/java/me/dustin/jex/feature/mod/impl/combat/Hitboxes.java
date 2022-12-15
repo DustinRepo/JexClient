@@ -14,6 +14,7 @@ import me.dustin.jex.helper.player.FriendHelper;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
+import net.minecraft.util.math.Box;
 import me.dustin.jex.feature.mod.core.Feature;
 
 public class Hitboxes extends Feature {
