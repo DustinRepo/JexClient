@@ -105,14 +105,12 @@ public class Hitboxes extends Feature {
 
     @EventPointer
     private final EventListener<EventEntityHitbox> eventEntityHitboxEventListener = new EventListener<>(event -> {
-	     if (event instanceof EventEntityHitbox eventEntityHitbox) {
-	    Entity entity = eventEntityHitbox.getEntity();
+	    Entity entity = event.getEntity();
 	    if (isEnabled(entity)) {
         if (event.getEntity() == null || Wrapper.INSTANCE.getLocalPlayer() == null || event.getEntity().getId() == Wrapper.INSTANCE.getLocalPlayer().getId())
             return;
             event.setBox(event.getBox().expand(expandXProperty.value(), expandYProperty.value(), expandZProperty.value()));
 	    }
-      }
 });	    
 	  
       private boolean isEnabled(Entity entity) {	  
