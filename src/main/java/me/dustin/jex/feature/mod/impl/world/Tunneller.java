@@ -173,12 +173,12 @@ public class Tunneller extends Feature {
     }
 
     private Box getTunnelBox() {
-        Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - widthProperty.value() - 2.f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - widthProperty.value() - 2.f, Wrapper.INSTANCE.getPlayer().getBlockX() + widthProperty.value() - 2.f, Wrapper.INSTANCE.getPlayer().getBlockY() + heightProperty.value() - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + widthProperty.value() - 2.f);
+        Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - widthProperty.value() / 2.5f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - widthProperty.value() / 2.5f, Wrapper.INSTANCE.getPlayer().getBlockX() + widthProperty.value() / 2.5f, Wrapper.INSTANCE.getPlayer().getBlockY() + heightProperty.value() - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + widthProperty.value() / 2.5f);
         switch (direction) {
-            case NORTH -> box = box.offset(0, 0, -widthProperty.value() - 2.f);
-            case SOUTH -> box = box.offset(0, 0, widthProperty.value() - 2.f);
-            case EAST -> box = box.offset(widthProperty.value() - 2.f, 0, 0);
-            case WEST -> box = box.offset(-widthProperty.value() - 2.f, 0, 0);
+            case NORTH -> box = box.offset(0, 0, -widthProperty.value() / 2.5f);
+            case SOUTH -> box = box.offset(0, 0, widthProperty.value() / 2.5f);
+            case EAST -> box = box.offset(widthProperty.value() / 2.5f, 0, 0);
+            case WEST -> box = box.offset(-widthProperty.value() / 2.5f, 0, 0);
         }
         return box;
     }
