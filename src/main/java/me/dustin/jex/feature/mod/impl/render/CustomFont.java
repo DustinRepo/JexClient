@@ -34,6 +34,7 @@ public class CustomFont extends Feature {
     public final Property<String> fontProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("Font")
             .value("Verdana")
+            .max(30)
             .build();
 
     public CustomFont() {
