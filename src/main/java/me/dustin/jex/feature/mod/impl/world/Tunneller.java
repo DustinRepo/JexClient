@@ -38,7 +38,7 @@ public class Tunneller extends Feature {
     public final Property<Integer> widthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Width")
             .value(3)
-            .min(1)
+            .min(2)
             .max(5)
             .build();
     public final Property<Integer> heightProperty = new Property.PropertyBuilder<Integer>(this.getClass())
