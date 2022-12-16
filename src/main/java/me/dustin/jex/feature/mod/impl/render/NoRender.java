@@ -8,6 +8,7 @@ import me.dustin.jex.event.world.EventTickParticle;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
+import net.minecraft.entity.projectile.thrown.*;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -54,8 +55,58 @@ public class NoRender extends Feature {
             .parent(particlesProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
+    public final Property<Boolean> damageProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Damage")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> glowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Glow")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> totemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Totem")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> ashProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Ash")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+     public final Property<Boolean> cloudProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Cloud")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+     public final Property<Boolean> dragonbreathProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Dragon Breath")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> crackProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Crack")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> withersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Withers")
+            .value(true)
+            .build();
+     public final Property<Boolean> eggProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Egg")
+            .value(true)
+            .build(); 
+    public final Property<Boolean> snowballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Snowball")
             .value(true)
             .build();
     public final Property<Boolean> fallingBlocksProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -103,6 +154,10 @@ public class NoRender extends Feature {
             event.cancel();
         if (event.getEntity() instanceof FallingBlockEntity && fallingBlocksProperty.value())
             event.cancel();
+         if (event.getEntity() instanceof EggEntity && eggProperty.value())
+            event.cancel();
+        if (event.getEntity() instanceof SnowballEntity && snowballProperty.value())
+            event.cancel();
     });
 
 
@@ -138,6 +193,24 @@ public class NoRender extends Feature {
             event.cancel();
         }
         if (event.getParticle() instanceof BlockDustParticle && blockBreakProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof DamageParticle && damageProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof GlowParticle && glowProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof AshParticle && ashProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof TotemParticle && totemProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof DragonBreathParticle && dragonbreathProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof CrackParticle && crackProperty.value()) {
             event.cancel();
         }
     });
