@@ -75,7 +75,7 @@ public class SpeedCrafter extends Feature {
                     }
                 }
             }
-			List<RecipeResultCollection> recipeResultCollectionList2 = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.STONECutter);
+			List<RecipeResultCollection> recipeResultCollectionList2 = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.STONECUTTER);
             for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList2) {
                 for (Recipe<?> recipe : recipeResultCollection.getRecipes(true)) {
                     if (recipe.getOutput().getItem() == craftingItem) {
