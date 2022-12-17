@@ -27,6 +27,7 @@ public class SpeedCrafter extends Feature {
             .name("Delay")
             .value(0L)
             .max(500)
+            .inc(5)
             .build();
 
     public Item craftingItem;
@@ -50,7 +51,7 @@ public class SpeedCrafter extends Feature {
             alerted = false;
             if (!stopWatch.hasPassed(delayProperty.value()))
                 return;
-            List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_SEARCH, SMITHING);
+            List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_SEARCH);
             for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList) {
                 for (Recipe<?> recipe : recipeResultCollection.getRecipes(true)) {
                     if (recipe.getOutput().getItem() == craftingItem) {
