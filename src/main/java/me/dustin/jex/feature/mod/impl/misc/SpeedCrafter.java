@@ -63,6 +63,30 @@ public class SpeedCrafter extends Feature {
                     }
                 }
             }
+            List<RecipeResultCollection> recipeResultCollectionList1 = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.SMITHING);
+            for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList1) {
+                for (Recipe<?> recipe : recipeResultCollection.getRecipes(true)) {
+                    if (recipe.getOutput().getItem() == craftingItem) {
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickRecipe(craftingScreenHandler.syncId, recipe, true);
+                        InventoryHelper.INSTANCE.windowClick(craftingScreenHandler, 0, SlotActionType.QUICK_MOVE, 1);
+                        stopWatch.reset();
+                        if (delayProperty.value() > 0)
+                            return;
+                    }
+                }
+            }
+			List<RecipeResultCollection> recipeResultCollectionList2 = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.STONECutter);
+            for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList2) {
+                for (Recipe<?> recipe : recipeResultCollection.getRecipes(true)) {
+                    if (recipe.getOutput().getItem() == craftingItem) {
+                        Wrapper.INSTANCE.getClientPlayerInteractionManager().clickRecipe(craftingScreenHandler.syncId, recipe, true);
+                        InventoryHelper.INSTANCE.windowClick(craftingScreenHandler, 0, SlotActionType.QUICK_MOVE, 1);
+                        stopWatch.reset();
+                        if (delayProperty.value() > 0)
+                            return;
+                    }
+                }
+            }        
         }
         setSuffix(craftingItem == null ? "None" : craftingItem.getName().getString());
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
