@@ -7,13 +7,13 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.CropBlock;
+import net.minecraft.block.*;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
@@ -24,6 +24,27 @@ import net.minecraft.util.math.Vec3d;
 public class BonemealAura extends Feature {
     public static BonemealAura INSTANCE;
     private boolean isBonemealing;
+    
+    public final Property<Boolean> cropProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Crop")
+            .value(true)
+            .build();
+			public final Property<Boolean> cocoaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Cocoa")
+            .value(true)
+            .build();
+			public final Property<Boolean> saplingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sapling")
+            .value(true)
+            .build();
+			public final Property<Boolean> stemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Stem")
+            .value(true)
+            .build();
+			public final Property<Boolean> bambooProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bamboo")
+            .value(true)
+            .build();
 
     public BonemealAura() {
         super(Category.WORLD, "Automatically bonemeal crops around the player");
@@ -90,6 +111,7 @@ public class BonemealAura extends Feature {
                         if (age < cropBlock.getMaxAge())
                             return blockPos;
                     }
+                    
                 }
             }
         }
