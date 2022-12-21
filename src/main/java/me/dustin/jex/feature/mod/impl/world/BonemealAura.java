@@ -29,19 +29,19 @@ public class BonemealAura extends Feature {
             .name("Crop")
             .value(true)
             .build();
-			public final Property<Boolean> cocoaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+public final Property<Boolean> cocoaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Cocoa")
             .value(true)
             .build();
-			public final Property<Boolean> saplingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+public final Property<Boolean> saplingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Sapling")
             .value(true)
             .build();
-			public final Property<Boolean> stemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+public final Property<Boolean> stemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Stem")
             .value(true)
             .build();
-			public final Property<Boolean> bambooProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+public final Property<Boolean> bambooProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Bamboo")
             .value(true)
             .build();
@@ -106,12 +106,41 @@ public class BonemealAura extends Feature {
                 for (int z = -4; z < 4; z++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+              if (cropProperty.value()) {
                     if (block instanceof CropBlock cropBlock) {
                         int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
                         if (age < cropBlock.getMaxAge())
                             return blockPos;
                     }
-                    
+		}
+		if (saplingProperty.value()) {
+		if (block instanceof SaplingBlock saplingBlock) {
+                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(saplingBlock.getAgeProperty());
+                            if (age < saplingBlock.getMaxAge())
+                            return blockPos;
+                    }
+		}
+		if (stemProperty.value()) {
+		if (block instanceof StemBlock stemBlock) {
+                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(stemBlock.getAgeProperty());
+                        if (age < stemBlock.getMaxAge())
+                            return blockPos;
+                    }
+		}
+		if (cocoaProperty.value()) {
+		if (block instanceof CocoaBlock cocoaBlock) {
+                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cocoaBlock.getAgeProperty());
+                        if (age < cocoaBlock.getMaxAge())
+                            return blockPos;
+                    }
+		}
+		if (bambooProperty.value()) {
+		if (block instanceof BambooBlock bambooBlock) {
+                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(bambooBlock.getAgeProperty());
+                        if (age < bambooBlock.getMaxAge())
+                            return blockPos;
+                    }
+		}         
                 }
             }
         }
