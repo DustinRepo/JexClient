@@ -112,8 +112,8 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
                     }
 		}
 		if (otherProperty.value()) {
-	        if (block instanceof Fertilizable) {
-		Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
+	        if (block instanceof Fertilizable plant) {
+		Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(plant.asBlock());
                       return blockPos;
 		}
 		}
