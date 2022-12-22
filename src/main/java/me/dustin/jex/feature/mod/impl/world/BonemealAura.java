@@ -13,6 +13,7 @@ import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.block.*;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
@@ -24,8 +25,12 @@ import net.minecraft.util.math.Vec3d;
 public class BonemealAura extends Feature {
     public static BonemealAura INSTANCE;
     private boolean isBonemealing;
-    
-    public final Property<Boolean> cropProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	
+public final Property<Boolean> checkgrowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("CheckGrow")
+            .value(true)
+            .build(); 
+public final Property<Boolean> cropProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Crop")
             .value(true)
             .build();
@@ -105,9 +110,13 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
             for (int y = -2; y < 2; y++) {
                 for (int z = -4; z < 4; z++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
+		    BlockState state = Wrapper.INSTANCE.getLocalPlayer().getBlockState().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
-	if(!(block instanceof Fertilizable) || block instanceof GrassBlock || !((Fertilizable)block).canGrow())
+		    ClientWorld world = MC.world;
+		if (checkgrowProperty.value()) {	
+	if(!(block instanceof Fertilizable) || block instanceof GrassBlock || !((Fertilizable)block).canGrow(world, MC.world.random, pos, state))
 			return false;
+	}
               if (cropProperty.value()) {
                     if (block instanceof CropBlock cropBlock) {
                         int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
