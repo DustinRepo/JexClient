@@ -114,8 +114,9 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
 		    ClientWorld world = mc.world;
 		if (checkgrowProperty.value()) {	
-	if(!(block instanceof Fertilizable) || block instanceof GrassBlock || !((Fertilizable)block).canGrow(world, MC.world.random, blockPos, state))
-			return false;
+	 if(!(block instanceof Fertilizable)){
+			return null;
+	 }
 	}
               if (cropProperty.value()) {
                     if (block instanceof CropBlock cropBlock) {
