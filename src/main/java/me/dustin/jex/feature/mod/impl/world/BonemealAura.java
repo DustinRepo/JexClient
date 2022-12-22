@@ -41,8 +41,8 @@ public final Property<Boolean> stemProperty = new Property.PropertyBuilder<Boole
             .name("Stem")
             .value(true)
             .build();
-public final Property<Boolean> bambooProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Bamboo")
+public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Other")
             .value(true)
             .build();
 
@@ -106,6 +106,8 @@ public final Property<Boolean> bambooProperty = new Property.PropertyBuilder<Boo
                 for (int z = -4; z < 4; z++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+	if(!(block instanceof Fertilizable) || block instanceof GrassBlock || !((Fertilizable)block).canGrow())
+			return false;
               if (cropProperty.value()) {
                     if (block instanceof CropBlock cropBlock) {
                         int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
@@ -128,14 +130,12 @@ public final Property<Boolean> bambooProperty = new Property.PropertyBuilder<Boo
                             return blockPos;
                     }
 		}
-		if (bambooProperty.value()) {
-		if (block instanceof BambooBlock bambooBlock) {
-                            return blockPos;
-                    }
+		if (otherProperty.value()) {
+                      return blockPos;
 		}         
-                }
-            }
-        }
+              }
+           }
+       }
         return null;
     }
 }
