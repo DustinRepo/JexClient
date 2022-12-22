@@ -111,10 +111,12 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
                             return blockPos;
                     }
 		}
-		if (otherProperty.value()) {	
+		if (otherProperty.value()) {
+	        if (block instanceof Fertilizable) {
 		Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
                       return blockPos;
-		}		
+		}
+		}
               }
            }
        }
