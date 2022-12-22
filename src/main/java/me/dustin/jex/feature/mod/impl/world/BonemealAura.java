@@ -125,30 +125,29 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
 		}
 		if (saplingProperty.value()) {
 		if (block instanceof SaplingBlock saplingBlock) {
-		int sapling = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
-		if (sapling)
+                Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(saplingBlock);
                             return blockPos;
                     }
 		}
 		if (stemProperty.value()) {
 		if (block instanceof StemBlock stemBlock) {
-		int stem = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
-		if (stem)
+		Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock);
                         return blockPos;
                     }
 		}
 		if (cocoaProperty.value()) {
 		if (block instanceof CocoaBlock cocoaBlock) {
-		int cocoa = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
+                Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock);
 		if (cocoa)
                        return blockPos;
                     }
 		}
 		if (otherProperty.value()) {
-		int other = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
-		if (other)
+		if (block instanceof PlantBlock plantBlock) {	
+		Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(plantBlock);
                       return blockPos;
-		}         
+		}
+		}		
               }
            }
        }
