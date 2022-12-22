@@ -112,33 +112,41 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
 		if (checkgrowProperty.value()) {	
-	 if(!(block instanceof Fertilizable)){
+	 if(!(block instanceof Fertilizable) || block instanceof GrassBlock){
 			return null;
 	 }
 	}
               if (cropProperty.value()) {
-                    if (block instanceof CropBlock cropBlock) {
-                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
-                        if (age < cropBlock.getMaxAge())
+                   if (block instanceof CropBlock cropBlock) {
+                       int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
+                       if (age < cropBlock.getMaxAge())
                             return blockPos;
                     }
 		}
 		if (saplingProperty.value()) {
 		if (block instanceof SaplingBlock saplingBlock) {
+		int sapling = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
+		if (sapling)
                             return blockPos;
                     }
 		}
 		if (stemProperty.value()) {
 		if (block instanceof StemBlock stemBlock) {
-                            return blockPos;
+		int stem = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
+		if (stem)
+                        return blockPos;
                     }
 		}
 		if (cocoaProperty.value()) {
 		if (block instanceof CocoaBlock cocoaBlock) {
-                            return blockPos;
+		int cocoa = Wrapper.INSTANCE.getWorld().getBlockState(blockPos)
+		if (cocoa)
+                       return blockPos;
                     }
 		}
 		if (otherProperty.value()) {
+		int other = Wrapper.INSTANCE.getWorld().getBlockState(blockPos)
+		if (other)
                       return blockPos;
 		}         
               }
