@@ -120,8 +120,6 @@ public final Property<Boolean> bambooProperty = new Property.PropertyBuilder<Boo
 		}
 		if (stemProperty.value()) {
 		if (block instanceof StemBlock stemBlock) {
-                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(stemBlock.getAgeProperty());
-                        if (age < stemBlock.getMaxAge())
                             return blockPos;
                     }
 		}
