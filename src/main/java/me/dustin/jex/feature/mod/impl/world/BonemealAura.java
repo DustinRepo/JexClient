@@ -110,9 +110,7 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
             for (int y = -2; y < 2; y++) {
                 for (int z = -4; z < 4; z++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
-		    BlockState state = Wrapper.INSTANCE.getLocalPlayer().getBlockState(blockPos);
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
-		    ClientWorld world = mc.world;
 		if (checkgrowProperty.value()) {	
 	 if(!(block instanceof Fertilizable)){
 			return null;
