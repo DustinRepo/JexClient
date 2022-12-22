@@ -139,13 +139,13 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
 		}
 		if (cocoaProperty.value()) {
 		if (block instanceof CocoaBlock cocoaBlock) {
-		int cocoa = Wrapper.INSTANCE.getWorld().getBlockState(blockPos)
+		int cocoa = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
 		if (cocoa)
                        return blockPos;
                     }
 		}
 		if (otherProperty.value()) {
-		int other = Wrapper.INSTANCE.getWorld().getBlockState(blockPos)
+		int other = Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
 		if (other)
                       return blockPos;
 		}         
