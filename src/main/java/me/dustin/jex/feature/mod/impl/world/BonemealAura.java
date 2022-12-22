@@ -34,18 +34,6 @@ public final Property<Boolean> cropProperty = new Property.PropertyBuilder<Boole
             .name("Crop")
             .value(true)
             .build();
-public final Property<Boolean> cocoaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Cocoa")
-            .value(true)
-            .build();
-public final Property<Boolean> saplingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Sapling")
-            .value(true)
-            .build();
-public final Property<Boolean> stemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Stem")
-            .value(true)
-            .build();
 public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Other")
             .value(true)
@@ -121,25 +109,6 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
                        if (age < cropBlock.getMaxAge())
                             return blockPos;
-                    }
-		}
-		if (saplingProperty.value()) {
-		if (block instanceof SaplingBlock saplingBlock) {
-                Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(saplingBlock);
-                            return blockPos;
-                    }
-		}
-		if (stemProperty.value()) {
-		if (block instanceof StemBlock stemBlock) {
-		Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(stemBlock);
-                        return blockPos;
-                    }
-		}
-		if (cocoaProperty.value()) {
-		if (block instanceof CocoaBlock cocoaBlock) {
-                Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cocoaBlock);
-		if (cocoa)
-                       return blockPos;
                     }
 		}
 		if (otherProperty.value()) {
