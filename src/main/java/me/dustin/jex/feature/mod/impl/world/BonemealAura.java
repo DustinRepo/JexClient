@@ -112,7 +112,7 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
                     }
 		}
 		if (otherProperty.value()) {
-		if (block instanceof PlantBlock plantBlock) {	
+		if (block instanceof Block plantBlock) {	
 		Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
                       return blockPos;
 		}
