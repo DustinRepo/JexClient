@@ -18,11 +18,11 @@ public class Gravity extends Feature {
     }
 
     @EventPointer
-    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
 	boolean gravity = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
-	 Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
         if (gravity) {
-            Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), orig.getY + 0.0568000030517578, orig.getZ());
+         event.setY(event.getY() + 0.0568000030517578);
         }
-    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+        }
+    });
 }
