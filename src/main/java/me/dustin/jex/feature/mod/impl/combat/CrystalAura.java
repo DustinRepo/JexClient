@@ -79,9 +79,9 @@ public class CrystalAura extends Feature {
 	public final Property<Long> placeDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
 			.name("Place Delay")
 			.value(0L)
-		        .inc(50L)
+		        .inc(5L)
 		        .min(0L)
-			.max(2000)
+			.max(1000)
 			.parent(autoPlaceProperty)
 			.depends(parent -> (boolean) parent.value())
 			.build();
