@@ -149,8 +149,8 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
                     }
 		}
 		if (bambooProperty.value()) {
-		if (block instanceof BambooBlock bambooBlock | block instanceof BambooSaplingBlock) {
-                int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(bambooBlock.AGE());
+		if (block instanceof BambooBlock bambooBlock | block instanceof BambooSaplingBlock bamboosaplingBlock) {
+                int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(bambooBlock.AGE);
                     if (age < 1)
                       return blockPos;
                     }
