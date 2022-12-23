@@ -9,6 +9,7 @@ import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.feature.mod.core.Feature;
+import net.minecraft.util.math.Vec3d;
 
 public class Gravity extends Feature {
 
