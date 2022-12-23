@@ -78,6 +78,7 @@ public class AntiKnockback extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        this.setSuffix(percentxProperty.value() + "%", percentyProperty.value() + "%", percentzProperty.value() + "%" ); 
+        float averageof = (percentxProperty.value() + percentxProperty.value() + percentzProperty.value()) / 3.0f
+        this.setSuffix(averageof); 
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
