@@ -34,11 +34,27 @@ public final Property<Boolean> cropProperty = new Property.PropertyBuilder<Boole
             .name("Crop")
             .value(true)
             .build();
+public final Property<Boolean> cocoaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Cocoa")
+            .value(true)
+            .build();
+public final Property<Boolean> saplingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sapling")
+            .value(true)
+            .build();
+public final Property<Boolean> stemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Stem")
+            .value(true)
+            .build();
+public final Property<Boolean> bambooProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bamboo")
+            .value(true)
+            .build();
 public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Other")
             .value(true)
-            .build();
-
+            .build();	
+	
     public BonemealAura() {
         super(Category.WORLD, "Automatically bonemeal crops around the player");
         INSTANCE = this;
@@ -100,7 +116,7 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(blockPos);
 		if (checkgrowProperty.value()) {	
-	 if(!(block instanceof Fertilizable) || block instanceof GrassBlock){
+	 if(!(block instanceof Fertilizable) && block instanceof GrassBlock){
 			return null;
 	 }
 	}
@@ -114,9 +130,29 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
 		if (otherProperty.value()) {
 	        if (block instanceof Fertilizable) {
 		Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
-                 return blockPos;
+                            return blockPos;
 		}
 		}
+		if (saplingProperty.value()) {
+		if (block instanceof SaplingBlock saplingBlock) {
+                            return blockPos;
+                    }
+		}
+		if (stemProperty.value()) {
+		if (block instanceof StemBlock stemBlock) {
+                            return blockPos;
+                    }
+		}
+		if (cocoaProperty.value()) {
+		if (block instanceof CocoaBlock cocoaBlock) {
+                            return blockPos;
+                    }
+		}
+		if (bambooProperty.value()) {
+		if (block instanceof BambooBlock bambooBlock) {
+                            return blockPos;
+                    }
+		}		
               }
            }
        }
