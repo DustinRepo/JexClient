@@ -149,9 +149,7 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
                     }
 		}
 		if (bambooProperty.value()) {
-		if (block instanceof BambooBlock | block instanceof BambooSaplingBlock) {
-                boolean age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(AGE);
-                    if (age != true)
+		if (block instanceof BambooBlock || block instanceof BambooSaplingBlock) {
                       return blockPos;
                     }
 		}		
