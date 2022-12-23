@@ -134,22 +134,22 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
 		}
 		}
 		if (saplingProperty.value()) {
-		if (block instanceof SaplingBlock saplingBlock) {
+		if (block instanceof SaplingBlock) {
                             return blockPos;
                     }
 		}
 		if (stemProperty.value()) {
-		if (block instanceof StemBlock stemBlock) {
+		if (block instanceof StemBlock) {
                             return blockPos;
                     }
 		}
 		if (cocoaProperty.value()) {
-		if (block instanceof CocoaBlock cocoaBlock) {
+		if (block instanceof CocoaBlock) {
                             return blockPos;
                     }
 		}
 		if (bambooProperty.value()) {
-		if (block instanceof BambooBlock bambooBlock || block instanceof BambooSaplingBlock bambooBlock) {
+		if (block instanceof BambooBlock || block instanceof BambooSaplingBlock) {
                             return blockPos;
                     }
 		}		
