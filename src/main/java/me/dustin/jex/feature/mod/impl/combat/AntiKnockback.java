@@ -12,44 +12,72 @@ import me.dustin.jex.feature.property.Property;
 
 public class AntiKnockback extends Feature {
 
-    public final Property<Integer> percentProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Percent")
+    public final Property<Integer> percentxProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("PercentX")
             .value(0)
-            .min(-300)
-            .max(300)
+            .min(-100)
+            .max(100)
+            .inc(10)
+            .build();
+    public final Property<Integer> percentyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("PercentY")
+            .value(0)
+            .min(-100)
+            .max(100)
+            .inc(10)
+            .build();
+    public final Property<Integer> percentzProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("PercentZ")
+            .value(0)
+            .min(-100)
+            .max(100)
             .inc(10)
             .build();
 
     public AntiKnockback() {
-        super(Category.COMBAT, "Remove all knockback from the player.");
+        super(Category.COMBAT, "Changes knockback from the player.");
     }
 
     @EventPointer
     private final EventListener<EventExplosionVelocity> eventExplosionVelocityEventListener = new EventListener<>(event -> {
-        float perc = percentProperty.value() / 100.0f;
-        if (percentProperty.value() == 0)
+        float percx = percentxProperty.value() / 100.0f;
+        float percy = percentyProperty.value() / 100.0f;
+        float percz = percentzProperty.value() / 100.0f;
+        if (percentxProperty.value() == 0){
+        if (percentyProperty.value() == 0){
+        if (percentzProperty.value() == 0){
             event.cancel();
+        }
+        }
+        }
         else {
-            event.setMultX(perc);
-            event.setMultY(perc);
-            event.setMultZ(perc);
+            event.setMultX(percx);
+            event.setMultY(percy);
+            event.setMultZ(percz);
         }
     });
 
     @EventPointer
     private final EventListener<EventPlayerVelocity> eventPlayerVelocityEventListener = new EventListener<>(event -> {
-        float perc = percentProperty.value() / 100.0f;
-        if (percentProperty.value() == 0)
+        float percx = percentxProperty.value() / 100.0f;
+        float percy = percentyProperty.value() / 100.0f;
+        float percz = percentzProperty.value() / 100.0f;
+        if (percentxProperty.value() == 0) {
+        if (percentyProperty.value() == 0) {
+        if (percentzProperty.value() == 0) {
             event.cancel();
+         }
+         }
+         }
         else {
-            event.setVelocityX((int)(event.getVelocityX() * perc));
-            event.setVelocityY((int)(event.getVelocityY() * perc));
-            event.setVelocityZ((int)(event.getVelocityZ() * perc));
+            event.setVelocityX((int)(event.getVelocityX() * percx));
+            event.setVelocityY((int)(event.getVelocityY() * percy));
+            event.setVelocityZ((int)(event.getVelocityZ() * percz));
         }
     });
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        this.setSuffix(percentProperty.value() + "%");
+        this.setSuffix("X:" + percentxProperty.value() + "%", "Y:" + percentyProperty.value() + "%", "Z:" + percentzProperty.value() + "%" );
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
