@@ -9,6 +9,7 @@ import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
+import java.lang.Math;
 
 public class AntiKnockback extends Feature {
 
@@ -78,8 +79,9 @@ public class AntiKnockback extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        float averageof = (percentxProperty.value() + percentxProperty.value() + percentzProperty.value()) / 3.0f;
-        String floatString = Float.toString(averageof);
+        float averageof = (percentxProperty.value() + percentyProperty.value() + percentzProperty.value()) / 3.0f;
+        Math.round(averageof);
+        String floatString = Integer.toString(averageof);
         setSuffix(floatString); 
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
