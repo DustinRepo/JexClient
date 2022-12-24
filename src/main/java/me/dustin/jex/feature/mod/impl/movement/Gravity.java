@@ -20,8 +20,8 @@ public class Gravity extends Feature {
         @EventPointer
 	private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
 		boolean gravity = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
-		if (gravity) {
 		Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
+		if (gravity) {
 		Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX, 0.0568000030517578, orig.getZ);	
 		}
 	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
