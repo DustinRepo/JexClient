@@ -23,6 +23,5 @@ private final EventListener<EventMove> eventMoveEventListener = new EventListene
         if (gravity) {
          event.setY(event.getY() + 0.0568000030517578);
         }
-        }
-    });
+        });
 }
