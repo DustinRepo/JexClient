@@ -22,7 +22,7 @@ public class Gravity extends Feature {
 		boolean gravity = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
 		Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
 		if (gravity) {
-		Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX, 0.0568000030517578, orig.getZ);	
+		Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), 0.0568000030517578, orig.getZ());	
 		}
 	}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
