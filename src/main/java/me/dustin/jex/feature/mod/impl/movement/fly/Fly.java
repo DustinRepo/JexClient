@@ -18,6 +18,7 @@ import me.dustin.jex.feature.mod.impl.movement.fly.impl.CreativeFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.NormalFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.ThreeDFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.TightFly;
+import me.dustin.jex.feature.mod.impl.movement.fly.impl.JetpackFly;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -72,6 +73,7 @@ public class Fly extends Feature {
         new TightFly();
         new ThreeDFly();
         new CreativeFly();
+        new JetpackFly();
     }
 
     @EventPointer
@@ -147,6 +149,6 @@ public class Fly extends Feature {
     }
 
     public enum Mode {
-        NORMAL, CREATIVE, TIGHT, THREE_D
+        NORMAL, JETPACK, CREATIVE, TIGHT, THREE_D
     }
 }
