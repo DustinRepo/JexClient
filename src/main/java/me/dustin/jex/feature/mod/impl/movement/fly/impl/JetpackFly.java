@@ -9,7 +9,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 public class JetpackFly extends FeatureExtension {
 
     public JetpackFly() {
-        super(Fly.Mode.CREATIVE, Fly.class);
+        super(Fly.Mode.JETPACK, Fly.class);
     }
 
     @Override
