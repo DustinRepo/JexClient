@@ -73,7 +73,6 @@ public class Fly extends Feature {
         new TightFly();
         new ThreeDFly();
         new CreativeFly();
-        new JetpackFly();
     }
 
     @EventPointer
