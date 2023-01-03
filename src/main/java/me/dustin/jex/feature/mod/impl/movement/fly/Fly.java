@@ -73,6 +73,7 @@ public class Fly extends Feature {
         new TightFly();
         new ThreeDFly();
         new CreativeFly();
+        new JetpackFly();
     }
 
     @EventPointer
@@ -151,4 +152,3 @@ public class Fly extends Feature {
         NORMAL, JETPACK, CREATIVE, TIGHT, THREE_D
     }
 }
-//
