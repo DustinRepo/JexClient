@@ -14,7 +14,7 @@ public class JetpackFly extends FeatureExtension {
     }
 
     @Override
-    public void jet(Event event) {
+    public void pass(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
 	if (fly == null)
           fly = Feature.get(Fly.class);
