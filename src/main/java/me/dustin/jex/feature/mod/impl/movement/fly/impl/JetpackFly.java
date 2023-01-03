@@ -7,8 +7,8 @@ import me.dustin.jex.feature.mod.core.FeatureExtension;
 import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.helper.misc.Wrapper;
 
-public class JetpackFly extends Feature {
-
+public class JetpackFly extends FeatureExtension {
+ private Fly fly;
     public JetpackFly() {
         super(Fly.Mode.JETPACK, Fly.class);
     }
@@ -16,6 +16,8 @@ public class JetpackFly extends Feature {
     @Override
     public void jet(Event event) {
         if (event instanceof EventPlayerPackets eventPlayerPackets && eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
+	if (fly == null)
+          fly = Feature.get(Fly.class);
 	boolean jumping = Wrapper.INSTANCE.getOptions().jumpKey.isPressed();
         if (jumping) {
             Wrapper.INSTANCE.getLocalPlayer().jump();
