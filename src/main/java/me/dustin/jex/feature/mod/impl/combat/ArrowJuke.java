@@ -31,7 +31,7 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
         .build();
 
     public ArrowJuke() {
-        super(Category.COMBAT, "Knock away fireballs from ghasts");
+        super(Category.COMBAT, "dodges arrows-(beta feature)");
     }
 	
     @EventPointer
