@@ -34,7 +34,8 @@ public class SpeedMine extends Feature {
             .name("Break Progress")
             .description("How far into breaking a block before automatically finishing.")
             .value(0.65f)
-            .max(0.95f)
+            .min(0f)
+            .max(1f)
             .inc(0.05f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.PROGRESS)
@@ -43,7 +44,9 @@ public class SpeedMine extends Feature {
             .name("Break Cooldown")
             .description("The amount of ticks to wait between breaking blocks. Default MC is 5.")
             .value(1)
+            .min(0)
             .max(5)
+            .inc(1)
             .build();
 
     private boolean givenHaste;
