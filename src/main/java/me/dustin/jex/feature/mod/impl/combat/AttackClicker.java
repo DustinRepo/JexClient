@@ -12,7 +12,7 @@ import net.minecraft.util.Hand;
 public class AttackClicker extends Feature {
 
     public AttackClicker() {
-        super(Category.COMBAT, "Automatically click ");
+        super(Category.COMBAT, "Automatically click attack button, useful for pvp.");
     }
 
     @EventPointer
