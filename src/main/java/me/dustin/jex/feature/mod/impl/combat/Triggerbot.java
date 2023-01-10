@@ -34,6 +34,10 @@ public class Triggerbot extends Feature {
             .name("Neutral")
             .value(true)
             .build();
+    public Property<Boolean> checkpressProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("OnlyPressedButton")
+            .value(true)
+            .build();
 
     public Triggerbot() {
         super(Category.COMBAT, "Automatically attack entities you hover over");
@@ -43,9 +47,16 @@ public class Triggerbot extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof EntityHitResult entityHitResult) {
             Entity entity = entityHitResult.getEntity();
+            boolean attack = Wrapper.INSTANCE.getOptions().attackKey.isPressed();
+            if (checkpressProperty.value()) {
             if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+            }
+            }
+            else {
+            Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
+            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
