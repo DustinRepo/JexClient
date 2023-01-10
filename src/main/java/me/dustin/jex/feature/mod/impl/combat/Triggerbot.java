@@ -55,8 +55,10 @@ public class Triggerbot extends Feature {
             }
             }
             else {
-            Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
-            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
+                Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
+                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                }
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
