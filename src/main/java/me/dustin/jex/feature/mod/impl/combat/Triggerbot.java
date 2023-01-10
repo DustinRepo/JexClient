@@ -49,7 +49,7 @@ public class Triggerbot extends Feature {
             Entity entity = entityHitResult.getEntity();
             boolean attack = Wrapper.INSTANCE.getOptions().attackKey.isPressed();
             if (checkpressProperty.value()) {
-            if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
+            if (isValid(entity) && attack && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             }
