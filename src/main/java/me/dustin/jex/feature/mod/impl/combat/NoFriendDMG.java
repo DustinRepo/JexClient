@@ -9,6 +9,9 @@ import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.player.FriendHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 
 public class NoFriendDMG extends Feature {
@@ -62,15 +65,15 @@ public class NoFriendDMG extends Feature {
             event.cancel();
         }
           if (passiveProperty.value()) {
-        if (EntityHelper.INSTANCE.isNeutralMob(entity))
+        if (EntityHelper.INSTANCE.isNeutralMob(event.getEntity())
             event.cancel();
           }
             if (specificFilterProperty.value()) {
-            if (entity instanceof IronGolemEntity)
+            if (event.getEntity() instanceof IronGolemEntity)
                 return ironGolemProperty.value();
-            if (entity instanceof ZombifiedPiglinEntity)
+            if (event.getEntity instanceof ZombifiedPiglinEntity)
                 return zombiePiglinProperty.value();
-            if (entity instanceof PiglinEntity)
+            if (event.getEntity instanceof PiglinEntity)
                 return piglinProperty.value();
         }
 }
