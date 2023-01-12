@@ -65,7 +65,7 @@ public class NoFriendDMG extends Feature {
             event.cancel();
         }
           if (passiveProperty.value()) {
-        if (EntityHelper.INSTANCE.isNeutralMob(event.getEntity())
+        if (EntityHelper.INSTANCE.isNeutralMob(event.getEntity()))
             event.cancel();
           }
             if (specificFilterProperty.value()) {
