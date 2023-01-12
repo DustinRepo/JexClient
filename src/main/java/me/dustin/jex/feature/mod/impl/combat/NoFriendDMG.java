@@ -60,22 +60,28 @@ public class NoFriendDMG extends Feature {
             event.cancel();
         
         if (event.getEntity instanceof MobEntity) {
-        if (neutralProperty.value()) {
+        if (passiveProperty.value()) {
         if (EntityHelper.INSTANCE.isPassiveMob(event.getEntity()))
             event.cancel();
         }
-          if (passiveProperty.value()) {
+          if (neutralProperty.value()) {
         if (EntityHelper.INSTANCE.isNeutralMob(event.getEntity()))
             event.cancel();
           }
-            if (specificFilterProperty.value()) {
-            if (event.getEntity() instanceof IronGolemEntity)
-                return ironGolemProperty.value();
-            if (event.getEntity instanceof ZombifiedPiglinEntity)
-                return zombiePiglinProperty.value();
-            if (event.getEntity instanceof PiglinEntity)
-                return piglinProperty.value();
         }
-}
+            if (ironGolemProperty.value()) {
+            if (event.getEntity() instanceof IronGolemEntity)
+                event.cancel();
+                }
+        
+        if (zombiePiglinProperty.value()) {
+            if (event.getEntity instanceof ZombifiedPiglinEntity)
+                event.cancel();
+        }
+        
+        if (piglinProperty.value()) {
+            if (event.getEntity instanceof PiglinEntity)
+                event.cancel();
+        }
     });
 }
