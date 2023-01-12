@@ -59,6 +59,11 @@ public class Nuker extends Feature {
             .description("Don't break blocks below you, only above.")
             .value(true)
             .build();
+    public final Property<Boolean> simplemineProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("SimpleMine")
+            .description("Destroys blocks in the usual way, analogue to AutoMine")
+            .value(true)
+            .build();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
