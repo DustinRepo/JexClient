@@ -36,7 +36,7 @@ public class CustomBG extends Feature {
     public final Property<Integer> blurIntensityProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Blur Intensity")
             .value(10)
-            .min(5)
+            .min(0)
             .max(50)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.BLUR || parent.value() == Mode.BOTH)
