@@ -59,7 +59,7 @@ public class NoFriendDMG extends Feature {
         } else if (EntityHelper.INSTANCE.doesPlayerOwn(event.getEntity()))
             event.cancel();
         
-        if (event.getEntity instanceof MobEntity) {
+        if (event.getEntity() instanceof MobEntity) {
         if (passiveProperty.value()) {
         if (EntityHelper.INSTANCE.isPassiveMob(event.getEntity()))
             event.cancel();
@@ -75,12 +75,12 @@ public class NoFriendDMG extends Feature {
                 }
         
         if (zombiePiglinProperty.value()) {
-            if (event.getEntity instanceof ZombifiedPiglinEntity)
+            if (event.getEntity() instanceof ZombifiedPiglinEntity)
                 event.cancel();
         }
         
         if (piglinProperty.value()) {
-            if (event.getEntity instanceof PiglinEntity)
+            if (event.getEntity() instanceof PiglinEntity)
                 event.cancel();
         }
     });
