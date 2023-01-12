@@ -28,7 +28,7 @@ public class Spammer extends Feature {
             .build();
     public final Property<String> delayProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("Delay (MS)")
-            .value("500L")
+            .value("500")
             .max(5)
             .build();
 
