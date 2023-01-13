@@ -121,7 +121,7 @@ public class Scaffold extends Feature {
 
     private void getNearBlocks(BlockPos blockPos) {
         emptyNearBlocks.clear();
-        if (xrangeProperty.value(),zrangeProperty.value() == 0) {
+        if (xrangeProperty.value() && zrangeProperty.value() == 0) {
             BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
             if (!isReplaceable(WorldHelper.INSTANCE.getBlock(below)))
                 return;
