@@ -43,8 +43,13 @@ public class Scaffold extends Feature {
             .description("Sneak when you place a block.")
             .value(false)
             .build();
-    public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Range")
+    public final Property<Integer> xrangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("RangeX")
+            .value(0)
+            .max(4)
+            .build();
+    public final Property<Integer> zrangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("RangeZ")
             .value(0)
             .max(4)
             .build();
@@ -116,7 +121,7 @@ public class Scaffold extends Feature {
 
     private void getNearBlocks(BlockPos blockPos) {
         emptyNearBlocks.clear();
-        if (rangeProperty.value() == 0) {
+        if (xrangeProperty.value(),zrangeProperty.value() == 0) {
             BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
             if (!isReplaceable(WorldHelper.INSTANCE.getBlock(below)))
                 return;
@@ -140,8 +145,8 @@ public class Scaffold extends Feature {
             }
             return;
         }
-        for (int x = -rangeProperty.value() - 1; x < rangeProperty.value() + 1; x++) {
-            for (int z = -rangeProperty.value() - 1; z < rangeProperty.value() + 1; z++) {
+        for (int x = -xrangeProperty.value() - 1; x < xrangeProperty.value() + 1; x++) {
+            for (int z = -zrangeProperty.value() - 1; z < zrangeProperty.value() + 1; z++) {
                 BlockPos blockPos1 = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, -0.5f, 0)).add(x, 0, z);
                 if (isReplaceable(WorldHelper.INSTANCE.getBlock(blockPos1)) || goingToPlace(blockPos1)) {
                     BlockInfo blockInfo = getBlockInfo(blockPos1);
