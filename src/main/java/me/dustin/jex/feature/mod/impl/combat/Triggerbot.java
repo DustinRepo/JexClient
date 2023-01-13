@@ -35,7 +35,7 @@ public class Triggerbot extends Feature {
             .value(true)
             .build();
     public Property<Boolean> checkpressProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("OnlyPressedButton")
+            .name("When-holding-attack")
             .value(true)
             .build();
 
