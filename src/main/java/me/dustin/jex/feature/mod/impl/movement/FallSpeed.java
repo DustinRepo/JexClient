@@ -70,7 +70,6 @@ private final StopWatch stopWatch = new StopWatch();
 }
     });
         
-    @Override
     public enum Mode {
       JEX, MATIX
     }
