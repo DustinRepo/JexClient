@@ -4,8 +4,6 @@ import me.dustin.events.core.EventListener;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.feature.mod.core.Category;
-import me.dustin.jex.event.filters.PlayerPacketsFilter;
-import me.dustin.jex.event.player.EventPlayerPackets;
 import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.helper.misc.StopWatch;
