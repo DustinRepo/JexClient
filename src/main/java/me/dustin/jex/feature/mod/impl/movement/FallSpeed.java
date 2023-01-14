@@ -62,19 +62,16 @@ private final StopWatch stopWatch = new StopWatch();
         if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
             event.setY(-speedProperty.value());
         }
-	}
-	});    
-   private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-       Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
+	}  
        if (modeProperty.value() == Mode.MATIX) {
        if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
 	   if (stopWatch.hasPassed(delayProperty.value())) {
-            Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), 0.0F, orig.getZ());
+            event.setY(-speedProperty.value());
 			stopWatch.reset();
         }
     }
 }
-}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+});
         
     public enum Mode {
       JEX, MATIX
