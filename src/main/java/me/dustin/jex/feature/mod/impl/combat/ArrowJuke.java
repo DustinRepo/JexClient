@@ -29,6 +29,7 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
 public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
         .name("Delay (MS)")
         .value(50L)
+	.min(0)
         .max(1000)
         .inc(10)
         .build();
@@ -45,7 +46,6 @@ private final StopWatch stopWatch = new StopWatch();
       if (stopWatch.hasPassed(delayProperty.value())) {
           int randomx = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
           int randomz = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
-           }
 	    if (entity instanceof ArrowEntity arrowEntity) {
               if (arrowEntity.age < 75) {
             if (arrowEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
@@ -53,6 +53,7 @@ private final StopWatch stopWatch = new StopWatch();
              event.setZ(randomz);
             }
       }
+    }
 }
 }));
 }
