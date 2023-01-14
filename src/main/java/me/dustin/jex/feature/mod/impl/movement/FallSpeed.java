@@ -5,6 +5,7 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -30,6 +31,18 @@ public class FallSpeed extends Feature {
             .min(0.1f)
             .max(15)
             .inc(0.1f)
+	    .parent(modeProperty)
+	    .depends(parent -> parent.value() == Mode.JEX)
+            .build();
+	public final Property<Long> delayProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hovering Delay")
+            .description("determines how long the player will hang in the air")
+            .value(250L)
+	    .min(150L)
+	    .max(500L)
+	    .inc(10L)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.MATIX)
             .build();
 
     public FallSpeed() {
