@@ -60,15 +60,17 @@ private final StopWatch stopWatch = new StopWatch();
             event.setY(-speedProperty.value());
         }
 	}
+	});    
+   private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
        if (modeProperty.value() == Mode.MATIX) {
        if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
 	   if (stopWatch.hasPassed(delayProperty.value())) {
-            event.setY(0.0F);
+            Wrapper.INSTANCE.getLocalPlayer().setVelocity(orig.getX(), 0.0F, orig.getZ());
 			stopWatch.reset();
         }
     }
 }
-    });
+}, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
         
     public enum Mode {
       JEX, MATIX
