@@ -42,7 +42,7 @@ private final StopWatch stopWatch = new StopWatch();
 	
     @EventPointer
     public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-      if (stopWatch.hasPassed(delayProperty.value()) {
+      if (stopWatch.hasPassed(delayProperty.value())) {
           int randomx = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
           int randomz = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
            }
