@@ -6,6 +6,7 @@ import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
+import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.impl.movement.fly.Fly;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.feature.property.Property;
@@ -64,6 +65,7 @@ private final StopWatch stopWatch = new StopWatch();
 	}
 	});    
    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+       Vec3d orig = Wrapper.INSTANCE.getLocalPlayer().getVelocity();
        if (modeProperty.value() == Mode.MATIX) {
        if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
 	   if (stopWatch.hasPassed(delayProperty.value())) {
