@@ -38,7 +38,7 @@ public class FallSpeed extends Feature {
             .name("Hovering Delay")
             .description("determines how long the player will hang in the air")
             .value(250L)
-	    .min(150L)
+	    .min(0L)
 	    .max(500L)
 	    .inc(10L)
             .parent(modeProperty)
