@@ -67,6 +67,10 @@ private final StopWatch stopWatch = new StopWatch();
             event.setY(-speedProperty.value());
 			stopWatch.reset();
         }
+	else 
+	{
+	event.setY(0.0F);	
+	} 
     }
 }
 });
