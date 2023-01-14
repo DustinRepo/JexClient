@@ -12,6 +12,10 @@ import me.dustin.jex.feature.mod.impl.player.Freecam;
 
 public class FallSpeed extends Feature {
 
+    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.JEX)
+            .build();
     public final Property<Float> fallDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Fall Distance")
             .description("The distance before the speed option kicks in")
@@ -36,8 +40,22 @@ public class FallSpeed extends Feature {
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
         if (Feature.getState(Fly.class) || Feature.getState(Freecam.class))
             return;
+       if (modeProperty.value() == Mode.JEX) {
         if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
             event.setY(-speedProperty.value());
         }
+	}
+       if (modeProperty.value() == Mode.MATIX) {
+       if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
+	   if (stopWatch.hasPassed(delayProperty.value())) {
+            event.setY(0.0F);
+			stopWatch.reset();
+        }
+	  }     
     });
+        
+    @Override
+    public enum Mode {
+      JEX, MATIX
+    }
 }
