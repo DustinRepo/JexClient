@@ -51,7 +51,8 @@ public class FallSpeed extends Feature {
             event.setY(0.0F);
 			stopWatch.reset();
         }
-	  }     
+    }
+}
     });
         
     @Override
