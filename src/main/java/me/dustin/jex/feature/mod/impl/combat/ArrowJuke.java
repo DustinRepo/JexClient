@@ -54,6 +54,7 @@ private final StopWatch stopWatch = new StopWatch();
             }
       }
     }
+stopWatch.reset();
 }
 }));
 }
