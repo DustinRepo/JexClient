@@ -34,7 +34,7 @@ public class FallSpeed extends Feature {
 	    .parent(modeProperty)
 	    .depends(parent -> parent.value() == Mode.JEX)
             .build();
-	public final Property<Long> delayProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Hovering Delay")
             .description("determines how long the player will hang in the air")
             .value(250L)
@@ -44,6 +44,8 @@ public class FallSpeed extends Feature {
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.MATIX)
             .build();
+	
+private final StopWatch stopWatch = new StopWatch();
 
     public FallSpeed() {
         super(Category.MOVEMENT, "Change your fall speed");
