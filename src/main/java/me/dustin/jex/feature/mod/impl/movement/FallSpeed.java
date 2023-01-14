@@ -32,8 +32,6 @@ public class FallSpeed extends Feature {
             .min(0.1f)
             .max(15)
             .inc(0.1f)
-	    .parent(modeProperty)
-	    .depends(parent -> parent.value() == Mode.JEX)
             .build();
 	public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Hovering Delay")
