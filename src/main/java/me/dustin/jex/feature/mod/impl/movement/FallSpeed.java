@@ -66,7 +66,7 @@ if (stopWatch.hasPassed(delayProperty.value())) {
 	event.setY(0.0F);
 	}
 	}
-	else if (hoveringProperty.value() == 0) {
+	else if (hoveringProperty.value() == false) {
 	event.setY(-speedProperty.value());
 	}
     }  
