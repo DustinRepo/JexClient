@@ -26,13 +26,6 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
         .max(6f)
         .inc(0.1f)
         .build();
-public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
-        .name("Delay (MS)")
-        .value(50L)
-	.min(0)
-        .max(1000)
-        .inc(10)
-        .build();
 
     public ArrowJuke() {
         super(Category.COMBAT, "dodges arrows-(beta feature)");
