@@ -42,7 +42,7 @@ public class FallSpeed extends Feature {
 	    .max(500L)
 	    .inc(10L)
             .parent(hoveringProperty)
-            .depends(parent -> parent.value())
+            .depends(parent -> (boolean) parent.value())
             .build();
 	
 private final StopWatch stopWatch = new StopWatch();
@@ -56,7 +56,7 @@ private final StopWatch stopWatch = new StopWatch();
         if (Feature.getState(Fly.class) || Feature.getState(Freecam.class))
             return;
 	  if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
-if (hoveringProperty.value) {
+if (hoveringProperty.value()) {
 if (stopWatch.hasPassed(delayProperty.value())) {
     event.setY(-speedProperty.value());
 	stopWatch.reset();
