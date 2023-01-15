@@ -6,7 +6,6 @@ import me.dustin.jex.event.filters.PlayerPacketsFilter;
 import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.property.Property;
-import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.event.player.EventMove;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -33,9 +32,6 @@ public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(t
         .max(1000)
         .inc(10)
         .build();
-	
-private final StopWatch stopWatch = new StopWatch();
-
 
     public ArrowJuke() {
         super(Category.COMBAT, "dodges arrows-(beta feature)");
