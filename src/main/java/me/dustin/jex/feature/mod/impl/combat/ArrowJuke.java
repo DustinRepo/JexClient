@@ -12,6 +12,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.events.core.annotate.EventPointer;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.*;
