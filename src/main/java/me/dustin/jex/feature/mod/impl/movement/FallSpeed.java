@@ -66,8 +66,7 @@ if (stopWatch.hasPassed(delayProperty.value())) {
 	event.setY(0.0F);
 	}
 	}
-	else if 
-	{
+	else if () {
 	event.setY(-speedProperty.value());
 	}
     }  
