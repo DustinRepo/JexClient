@@ -14,10 +14,6 @@ import me.dustin.jex.feature.mod.impl.player.Freecam;
 
 public class FallSpeed extends Feature {
 
-    public final Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
-            .name("Mode")
-            .value(Mode.JEX)
-            .build();
     public final Property<Float> fallDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Fall Distance")
             .description("The distance before the speed option kicks in")
@@ -33,7 +29,12 @@ public class FallSpeed extends Feature {
             .max(15)
             .inc(0.1f)
             .build();
-	public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+    public final Property<Boolean> hoveringProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hovering")
+	    .description("Makes fallspeed look like antifall, taken from Matix")
+            .value(false)
+            .build();
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Hovering Delay")
             .description("determines how long the player will hang in the air")
             .value(250L)
@@ -41,7 +42,7 @@ public class FallSpeed extends Feature {
 	    .max(500L)
 	    .inc(10L)
             .parent(modeProperty)
-            .depends(parent -> parent.value() == Mode.MATIX)
+            .depends(parent -> parent.value())
             .build();
 	
 private final StopWatch stopWatch = new StopWatch();
@@ -54,26 +55,21 @@ private final StopWatch stopWatch = new StopWatch();
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
         if (Feature.getState(Fly.class) || Feature.getState(Freecam.class))
             return;
-       if (modeProperty.value() == Mode.JEX) {
-        if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
-            event.setY(-speedProperty.value());
-        }
-	}  
-       if (modeProperty.value() == Mode.MATIX) {
-       if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
-	   if (stopWatch.hasPassed(delayProperty.value())) {
-            event.setY(-speedProperty.value());
-			stopWatch.reset();
+	  if (Wrapper.INSTANCE.getLocalPlayer().fallDistance > fallDistanceProperty.value() && !Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
+if (hoveringdelayProperty.value) {
+if (stopWatch.hasPassed(delayProperty.value())) {
+    event.setY(-speedProperty.value());
+	stopWatch.reset();
         }
 	else 
 	{
-	event.setY(0.0F);	
-	} 
-    }
-}
-});
-        
-    public enum Mode {
-      JEX, MATIX
-    }
+	event.setY(0.0F);
+	}
+	}
+	else if 
+	{
+	event.setY(-speedProperty.value());
+	}
+    }  
+});        
 }
