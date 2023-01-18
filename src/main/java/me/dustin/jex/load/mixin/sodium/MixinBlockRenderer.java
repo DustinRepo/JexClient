@@ -29,7 +29,7 @@ public class MixinBlockRenderer {
             cir.setReturnValue(false);
     }
 
-    @ModifyArg(method = "renderQuad", at = @At(value = "INVOKE", target = "me/jellysquid/mods/sodium/client/render/chunk/format/ModelVertexSink.writeVertex(Lnet/minecraft/util/math/Vec3i;FFFIFFII)V"), index = 4)
+    @ModifyArg(method = "renderQuad", at = @At(value = "INVOKE"), cancellable = true)
     public int getBlockColor(int color) {
         Color col = ColorHelper.INSTANCE.getColor(color);
         int a = col.getAlpha();
