@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockOcclusionCache.class)
 public class MixinBlockOcclusionCache {
 
-    @Inject(method = "shouldDrawSide", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "shouldDrawSide", at = @At("RETURN"), cancellable = true, remap = false)
     public void shouldDrawSide1(BlockState selfState, BlockView view, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> cir) {
         EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(selfState.getBlock(), facing, pos).run();
         if (eventShouldDrawSide.isCancelled()) {
