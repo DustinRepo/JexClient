@@ -29,7 +29,7 @@ public class MixinBlockRenderer {
             cir.setReturnValue(false);
     }
 
-    @ModifyArg(method = "renderQuad", at = @At(value = "INVOKE"), cancellable = true)
+    @Inject(method = "renderQuad", at = @At(value = "HEAD"), cancellable = true)
     public int getBlockColor(int color) {
         Color col = ColorHelper.INSTANCE.getColor(color);
         int a = col.getAlpha();
