@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Block.class)
 public class MixinBlock {
 
-    @Inject(method = "shouldDrawSide", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "shouldDrawSide", at = @At("RETURN"), cancellable = true)
     private static void shouldDrawSide1(BlockState state, BlockView world, BlockPos pos, Direction side, BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
         try {
             EventShouldDrawSide eventShouldDrawSide = new EventShouldDrawSide(WorldHelper.INSTANCE.getBlock(pos), side, pos).run();
