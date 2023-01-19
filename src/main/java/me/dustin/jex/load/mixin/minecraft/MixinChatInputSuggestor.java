@@ -24,7 +24,7 @@ public abstract class MixinChatInputSuggestor implements IChatInputSuggestor {
     @Shadow @Final private TextFieldWidget textField;
     @Shadow @Nullable private ChatInputSuggestor.SuggestionWindow window;
 
-    @Inject(method = "refresh", at = @At(value = "INVOKE", target = "com/mojang/brigadier/StringReader.peek()C", remap = false))
+    @Redirect(method = "refresh", at = @At(value = "INVOKE", target = "com/mojang/brigadier/StringReader.peek()C", remap = false))
     public char refresh(StringReader stringReader) {
         String string = this.textField.getText();
         boolean isJex = string.startsWith(CommandManager.INSTANCE.getPrefix());
