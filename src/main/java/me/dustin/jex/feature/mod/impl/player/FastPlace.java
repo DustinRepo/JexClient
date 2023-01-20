@@ -15,9 +15,9 @@ public class FastPlace extends Feature {
             .name("RightClickDelay (Tick)")
             .description("The amount of ticks to wait between placing blocks. Default MC is 4.")
             .value(1)
-            .min(0)
-            .max(1)
-            .inc(0.05)
+            .min(0f)
+            .max(1f)
+            .inc(0.05f)
             .build();
 
 	public FastPlace() {
