@@ -58,15 +58,6 @@ public class Scaffold extends Feature {
             .description("Whether or not to rotate your head on the server.")
             .value(false)
             .build();
-    public final Property<Float> yawProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("HorizontalRotation")
-            .value(0.0f)
-            .min(-180f)
-            .max(180f)
-            .inc(1f)
-            .parent(rotateProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
     public final Property<Float> pitchProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("VerticalRotation")
             .value(0.1f)
@@ -194,7 +185,7 @@ public class Scaffold extends Feature {
         BlockPos lookAtPos = blockInfo.blockpos();
         if (rotateProperty.value()) {
         RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(lookAtPos.getX(), lookAtPos.getY(), lookAtPos.getZ()));
-        event.setYaw(yawProperty.value());
+        event.setYaw(rotation.getYaw());
         event.setPitch(pitchProperty.value());
             
         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
