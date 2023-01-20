@@ -22,17 +22,21 @@ public class AutoPot extends Feature {
 			.value(17)
 			.min(1)
 			.max(20)
+		        .inc(1)
 			.build();
 	public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
 			.name("Delay (MS)")
 			.value(160L)
+		        .min(0)
 			.max(1000)
 			.inc(10)
 			.build();
 	public final Property<Long> throwdelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
 			.name("Throw Delay (MS)")
 			.value(20L)
+		        .min(0)
 			.max(1000)
+		        .inc(10)
 			.build();
 
 	public boolean throwing = false;
