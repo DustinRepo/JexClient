@@ -32,8 +32,8 @@ public class AutoTotem extends Feature {
     public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Health")
             .value(10)
-            .min(5)
-            .max(17)
+            .min(1)
+            .max(19)
             .parent(activateWhenProperty)
             .depends(parent -> parent.value() == ActivateTime.LOW_HEALTH)
             .build();
