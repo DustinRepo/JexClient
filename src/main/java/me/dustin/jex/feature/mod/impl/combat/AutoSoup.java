@@ -32,6 +32,7 @@ public class AutoSoup extends Feature {
             .name("Use Delay (MS)")
             .value(20L)
             .max(1000)
+            .inc(10)
             .build();
     public boolean throwing = false;
     int savedSlot;
