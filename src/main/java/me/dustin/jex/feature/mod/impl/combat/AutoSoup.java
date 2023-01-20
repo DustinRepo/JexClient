@@ -25,12 +25,14 @@ public class AutoSoup extends Feature {
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Delay (MS)")
             .value(160L)
+            .min(0)
             .max(1000)
             .inc(10)
             .build();
     public final Property<Long> usedelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Use Delay (MS)")
             .value(20L)
+            .min(0)
             .max(1000)
             .inc(10)
             .build();
