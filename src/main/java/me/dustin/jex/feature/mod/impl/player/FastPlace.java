@@ -11,13 +11,13 @@ import me.dustin.jex.feature.mod.core.Feature;
 
 public class FastPlace extends Feature {
 	
-	public Property<Integer> delayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+	public Property<Float> delayProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("RightClickDelay (Tick)")
-            .description("The amount of ticks to wait between breaking blocks. Default MC is 5.")
+            .description("The amount of ticks to wait between placing blocks. Default MC is 4.")
             .value(1)
             .min(0)
-            .max(3)
-            .inc(1)
+            .max(1)
+            .inc(0.05)
             .build();
 
 	public FastPlace() {
