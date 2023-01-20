@@ -38,6 +38,13 @@ public class AutoPot extends Feature {
 			.max(1000)
 		        .inc(10)
 			.build();
+       public final Property<Float> pitchProperty = new Property.PropertyBuilder<Float>(this.getClass())
+                        .name("VerticalRotation")
+                        .value(0.1f)
+                        .min(-90f)
+                        .max(90f)
+                        .inc(0.1f)
+                        .build();
 
 	public boolean throwing = false;
 	int savedSlot;
@@ -52,7 +59,7 @@ public class AutoPot extends Feature {
 		this.setSuffix(getPotions() + "");
 		if (event.getMode() == EventPlayerPackets.Mode.PRE) {
 			if (throwing) {
-				event.setPitch(90);
+				event.setPitch(pitchProperty.value());
 			}
 			if (!stopWatch.hasPassed(delayProperty.value()) || throwing)
 				return;
@@ -60,14 +67,14 @@ public class AutoPot extends Feature {
 				if (getFirstPotion() < 9) {
 					throwing = true;
 
-					event.setPitch(90);
+					event.setPitch(pitchProperty.value());
 					event.setYaw(PlayerHelper.INSTANCE.getYaw());
 					savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
 					InventoryHelper.INSTANCE.setSlot(getFirstPotion(), true, true);
 					stopWatch.reset();
 				} else {
 					InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, getFirstPotion() < 9 ? getFirstPotion() + 36 : getFirstPotion(), SlotActionType.SWAP, 8);
-					event.setPitch(90);
+					event.setPitch(pitchProperty.value());
 					event.setYaw(PlayerHelper.INSTANCE.getYaw());
 					savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
 					InventoryHelper.INSTANCE.setSlot(8, true, true);
