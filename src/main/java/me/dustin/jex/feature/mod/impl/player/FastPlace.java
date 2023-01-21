@@ -14,10 +14,10 @@ public class FastPlace extends Feature {
 	public Property<Float> delayProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("RightClickDelay")
             .description("The amount of ticks to wait between placing blocks. Default MC is 4.")
-            .value(1)
+            .value(0f)
             .min(0f)
             .max(1f)
-            .inc(0.05f)
+            .inc(0.1f)
             .build();
 
 	public FastPlace() {
