@@ -130,6 +130,8 @@ public class Roaster extends Feature {
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(livingEntity) && !EntityHelper.INSTANCE.doesPlayerOwn(livingEntity))
             return passiveProperty.value();
+        if (EntityHelper.INSTANCE.isNeutralMob(livingEntity))
+            return neutralProperty.value();
         return false;
     }
 }
