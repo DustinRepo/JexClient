@@ -67,6 +67,16 @@ public class EnchantColor extends Feature{
             .parent(rainbowProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
+    public Property<Integer> stopwatchProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("ColorTimer")
+            .description("Set the time interval before the color change (MS).")
+            .value(1)
+            .min(1)
+            .max(25)
+            .inc(1)
+            .parent(rainbowProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
     private int col;
     private final StopWatch stopWatch = new StopWatch();
@@ -85,7 +95,7 @@ public class EnchantColor extends Feature{
             RenderSystem.enableBlend();
             BufferRenderer.drawWithoutShader(buffer);
             ShaderHelper.INSTANCE.getEnchantColorShader().detach();
-            if (stopWatch.hasPassed(25)) {
+            if (stopWatch.hasPassed(stopwatchProperty.value())) {
                 col+=rainbowSpeedProperty.value();
                 if (col > 270)
                     col-=270;
