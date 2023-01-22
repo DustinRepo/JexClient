@@ -60,6 +60,13 @@ public class Roaster extends Feature {
             .description("Whether or not to rotate your head on the server.")
             .value(true)
             .build();
+    public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Lockview")
+            .description("Sets the rotations client-side.")
+            .value(false)
+            .parent(rotateProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Swing")
             .value(true)
@@ -93,6 +100,9 @@ public class Roaster extends Feature {
                             if (rotateProperty.value()) {
                                 RotationVector rotations = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                                 event.setRotation(rotations);
+                            }
+                            if (lockviewProperty.value()) {
+                            PlayerHelper.INSTANCE.setRotation(event.getRotation());
                             }
                         }
                     }
