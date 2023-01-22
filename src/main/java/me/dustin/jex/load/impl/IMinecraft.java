@@ -10,7 +10,7 @@ public interface IMinecraft {
 
     void setSession(Session session);
 
-    void setRightClickDelayTimer(float timer);
+    void setRightClickDelayTimer(int timer);
 
     void setSessionService(MinecraftSessionService sessionService);
 
