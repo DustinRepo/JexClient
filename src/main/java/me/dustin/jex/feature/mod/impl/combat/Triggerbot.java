@@ -34,6 +34,10 @@ public class Triggerbot extends Feature {
             .name("Neutral")
             .value(true)
             .build();
+    public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NoLiving")
+            .value(true)
+            .build();
     public Property<Boolean> checkpressProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("When-holding-attack")
             .value(true)
@@ -65,7 +69,7 @@ public class Triggerbot extends Feature {
 
     private boolean isValid(Entity entity) {
         if (!(entity instanceof LivingEntity))
-            return false;
+            return nolivingProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
             return passivesProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
