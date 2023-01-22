@@ -53,7 +53,7 @@ public abstract class MixinMinecraft implements IMinecraft {
     }
 
     @Override
-    public void setRightClickDelayTimer(int timer) {
+    public void setRightClickDelayTimer(float timer) {
         this.itemUseCooldown = timer;
     }
 
