@@ -48,16 +48,15 @@ public final class TypeResolver {
   static {
     JAVA_VERSION = Double.parseDouble(System.getProperty("java.specification.version", "0"));
 
-    //try {
+    try {
       //final Unsafe unsafe = AccessController.doPrivileged(new PrivilegedExceptionAction<Unsafe>() {
-       // @Override
-       // public Unsafe run() throws Exception {
-        //  final Field f = Unsafe.class.getDeclaredField("theUnsafe");
-         // f.setAccessible(true);
-
-       //   return (Unsafe) f.get(null);
-       // }
-    //  });
+       @Override
+       public Unsafe run() throws Exception {
+         final Field f = Unsafe.class.getDeclaredField("theUnsafe");
+          f.setAccessible(true);
+       return (Unsafe) f.get(null);
+        }
+      });
 
       Class<?> sharedSecretsClass;
       AccessMaker accessSetter;
