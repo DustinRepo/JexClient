@@ -38,7 +38,7 @@ public abstract class MixinMinecraft implements IMinecraft {
 
     @Shadow public abstract void setScreen(@Nullable Screen screen);
 
-    @Shadow private float itemUseCooldown;
+    @Shadow private int itemUseCooldown;
 
     @Mutable
     @Shadow @Final private ProfileKeys profileKeys;
@@ -53,7 +53,7 @@ public abstract class MixinMinecraft implements IMinecraft {
     }
 
     @Override
-    public void setRightClickDelayTimer(float timer) {
+    public void setRightClickDelayTimer(int timer) {
         this.itemUseCooldown = timer;
     }
 
