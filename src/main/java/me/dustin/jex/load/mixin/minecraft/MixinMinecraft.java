@@ -38,7 +38,7 @@ public abstract class MixinMinecraft implements IMinecraft {
 
     @Shadow public abstract void setScreen(@Nullable Screen screen);
 
-    @Shadow private int itemUseCooldown;
+    @Shadow private float itemUseCooldown;
 
     @Mutable
     @Shadow @Final private ProfileKeys profileKeys;
