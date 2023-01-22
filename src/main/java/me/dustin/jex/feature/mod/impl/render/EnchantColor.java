@@ -62,7 +62,8 @@ public class EnchantColor extends Feature{
             .name("Speed")
             .value(1)
             .min(1)
-            .inc(10)
+            .max(10)
+            .inc(1)
             .parent(rainbowProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
