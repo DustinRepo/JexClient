@@ -72,7 +72,7 @@ public class EnchantColor extends Feature{
             .description("Set the time interval before the color change (MS).")
             .value(1)
             .min(1)
-            .max(50)
+            .max(75)
             .inc(1)
             .parent(rainbowProperty)
             .depends(parent -> (boolean) parent.value())
