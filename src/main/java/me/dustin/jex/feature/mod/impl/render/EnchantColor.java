@@ -35,7 +35,7 @@ public class EnchantColor extends Feature{
             .name("Saturation")
             .value(0.75f)
             .min(0.1f)
-            .inc(0.05f)
+            .inc(0.01f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == EffectMode.SHADER_RAINBOW)
             .build();
@@ -43,7 +43,7 @@ public class EnchantColor extends Feature{
             .name("Alpha")
             .value(1f)
             .min(0.1f)
-            .inc(0.05f)
+            .inc(0.01f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == EffectMode.SHADER_RAINBOW)
             .build();
@@ -72,7 +72,7 @@ public class EnchantColor extends Feature{
             .description("Set the time interval before the color change (MS).")
             .value(1)
             .min(1)
-            .max(75)
+            .max(100)
             .inc(1)
             .parent(rainbowProperty)
             .depends(parent -> (boolean) parent.value())
