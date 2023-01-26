@@ -36,7 +36,7 @@ public class SpeedMine extends Feature {
             .value(0.65f)
             .min(0f)
             .max(1f)
-            .inc(0.05f)
+            .inc(0.01f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.PROGRESS)
             .build();
