@@ -21,3 +21,6 @@ jobs:
       run: ./gradlew migrateMappings --mappings "1.19.3+build.5"
     - name: Upload Artifact
       uses: actions/download-artifact@v3
+      with:
+       name: my-artifact
+       path: remappedSrc/
