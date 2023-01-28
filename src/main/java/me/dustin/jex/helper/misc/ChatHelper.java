@@ -1,5 +1,6 @@
 package me.dustin.jex.helper.misc;
 
+import net.minecraft.network.message.DecoratedContents;
 import com.mojang.brigadier.ParseResults;
 import me.dustin.jex.JexClient;
 import me.dustin.jex.helper.network.NetworkHelper;
