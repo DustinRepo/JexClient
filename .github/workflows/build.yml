@@ -18,9 +18,10 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew migrateMappings --mappings "1.19.3+build.5"
+      run: ./gradlew build
     - name: Upload Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
-       name: my-artifact
-       path: remappedSrc/
+        name: JexClient
+        path: build/libs/
+
