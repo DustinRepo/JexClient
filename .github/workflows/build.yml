@@ -21,6 +21,3 @@ jobs:
       run: ./gradlew migrateMappings --mappings "1.19.3+build.5"
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
-      with:
-        name: JexClient
-        path: build/libs/
