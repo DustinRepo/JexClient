@@ -469,19 +469,19 @@ public class Trail extends Feature {
 			.build();
 	public Property<Boolean> itemProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Item")
-                        .parent(crumdslikeProperty)
+                        .parent(crumbslikeProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
 	public Property<Boolean> itemslimeProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("ItemSlime")
-                        .parent(crumbsProperty)
+                        .parent(crumbslikeProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
 	public Property<Boolean> itemsnowballProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("ItemSnowball")
-                        .parent(crumbsProperty)
+                        .parent(crumbslikeProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
