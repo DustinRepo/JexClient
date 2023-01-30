@@ -351,12 +351,6 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-	public Property<Boolean> barrierProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
-			.name("Barrier")
-                        .parent(otherProperty)
-                        .depends(parent -> (boolean) parent.value())
-			.value(true)
-			.build();
 	public Property<Boolean> blockProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Block")
                         .parent(otherProperty)
@@ -585,10 +579,6 @@ public class Trail extends Feature {
 	   {
 		   particles.add(ParticleTypes.WITCH);
 	   } 
-           if(barrierProperty.value()) 
-	   {
-		   particles.add(ParticleTypes.BARRIER);
-	   }
            if(blockProperty.value()) 
 	   {
 		   particles.add(ParticleTypes.BLOCK);
