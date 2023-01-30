@@ -121,8 +121,6 @@ public class Trail extends Feature {
 			.build();
     public Property<Boolean> damageProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Damage")
-                        .parent(particlesProperty)
-                        .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
     public Property<Boolean> critProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -155,8 +153,6 @@ public class Trail extends Feature {
 			.build();
 	public Property<Boolean> smokelikeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Smoke-Like")
-                        .parent(particlesProperty)
-                        .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
 	public Property<Boolean> cloudProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -203,7 +199,7 @@ public class Trail extends Feature {
 			.build();
 	public Property<Boolean> poofProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Poof")
-                        .parent(otherProperty)
+                        .parent(smokelikeProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
@@ -256,17 +252,19 @@ public class Trail extends Feature {
 			.build();
     public Property<Boolean> largesmokeProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("LargeSmoke")
-			.value(true)
-			.build();
-	public Property<Boolean> whiteashProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
-			.name("WhiteAsh")
-                        .parent(otherProperty)
+	                .parent(fireProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
 	public Property<Boolean> dustlikeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Dust-like")
 			.description("Dust-like particles")
+			.value(true)
+			.build();
+	public Property<Boolean> whiteashProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("WhiteAsh")
+                        .parent(dustlikeProperty)
+                        .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
 	public Property<Boolean> flashProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
