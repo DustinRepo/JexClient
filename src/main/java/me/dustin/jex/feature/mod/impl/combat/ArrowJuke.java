@@ -34,7 +34,9 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
     @EventPointer
     public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
           int randomx = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
+	    Thread.sleep(1000);
           int randomz = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
+	    Thread.sleep(1000);
 	    if (entity instanceof ArrowEntity arrowEntity) {
               if (arrowEntity.age < 75) {
             if (arrowEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
