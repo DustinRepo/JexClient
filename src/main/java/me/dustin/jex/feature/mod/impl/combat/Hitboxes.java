@@ -24,7 +24,7 @@ public class Hitboxes extends Feature {
             .value(0.1f)
             .min(0f)
             .max(1f)
-            .inc(0.1f)
+            .inc(0.01f)
             .build();
     
      public final Property<Float> expandYProperty = new Property.PropertyBuilder<Float>(this.getClass())
@@ -32,7 +32,7 @@ public class Hitboxes extends Feature {
             .value(0.1f)
             .min(0f)
             .max(1f)
-            .inc(0.1f)
+            .inc(0.01f)
             .build();
     
      public final Property<Float> expandZProperty = new Property.PropertyBuilder<Float>(this.getClass())
@@ -40,7 +40,7 @@ public class Hitboxes extends Feature {
             .value(0.1f)
             .min(0f)
             .max(1f)
-            .inc(0.1f)
+            .inc(0.01f)
             .build();
     
     	public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
