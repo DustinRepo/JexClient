@@ -38,28 +38,28 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> bubble = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> bubbleProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Bubble")
 			.description("Select particle to view.")
                         .parent(liquidsProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> bubbleup = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> bubbleupProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("BubbleColumnUp")
 			.description("Select particle to view.")
                         .parent(liquidsProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> bubblepop = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> bubblepopProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("BubblePop")
 			.description("Select particle to view.")
                         .parent(liquidsProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> dolphin = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> dolphinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Dolphin")
 			.description("Select particle to view.")
                         .parent(liquidsProperty)
@@ -73,14 +73,14 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> waterdrip = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> waterdripProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("WaterDrip")
 			.description("Select particle to view.")
                         .parent(liquidsProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> lavafalling = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> lavafallingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("LavaFalling")
 			.description("Select particle to view.")
                         .parent(liquidsProperty)
@@ -94,21 +94,21 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> fishing = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> fishingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Fishing")
 			.description("Select particle to view.")
                         .parent(liquidsProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> lava = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> lavaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Lava")
 			.description("Select particle to view.")
                         .parent(liquidsProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> splash  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> splashProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Splash")
 			.description("Select particle to view.")
                         .parent(liquidsProperty)
@@ -135,28 +135,28 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> crit  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> critProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Crit")
 			.description("Select particle to view.")
                         .parent(damageProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> angryvillager  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> angryvillagerProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("AngryVillager")
 			.description("Select particle to view.")
                         .parent(damageProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> enchanthit  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> enchanthitProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("EnchantHit")
 			.description("Select particle to view.")
                         .parent(damageProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> damageindicator  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> damageindicatorProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("DamageIndicator")
 			.description("Select particle to view.")
                          .parent(damageProperty)
@@ -171,42 +171,42 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> flame  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> flameProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Flame")
 			.description("Select particle to view.")
                         .parent(fireProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> smoke  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> smokeProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Smoke")
 			.description("Select particle to view.")
                         .parent(fireProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> campfirecosy  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> campfirecosyProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("CampfireCosy")
 			.description("Select particle to view.")
                         .parent(fireProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> campfiresignal  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> campfiresignalProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("CampfireSignal")
 			.description("Select particle to view.")
                         .parent(fireProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> soulfire  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> soulfireProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("SoulFire")
 			.description("Select particle to view.")
                         .parent(fireProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-    public Property<Boolean> largesmoke  = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public Property<Boolean> largesmokeProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("LargeSmoke")
 			.description("Select particle to view.")
 			.value(true)
@@ -423,12 +423,6 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-	public Property<Boolean> fallinglavaProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
-			.name("FallingLava")
-                        .parent(otherProperty)
-                        .depends(parent -> (boolean) parent.value())
-			.value(true)
-			.build();
 	public Property<Boolean> fallingnectarProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("FallingNectar")
                         .parent(otherProperty)
@@ -579,15 +573,15 @@ public class Trail extends Feature {
 	   {
 		   particles.add(ParticleTypes.SQUID_INK);
 	   }
-           if(Property.value()) 
+           if(portalProperty.value()) 
 	   {
 		   particles.add(ParticleTypes.PORTAL);
            }
-           if(Property.value()) 
+           if(reverseportalProperty.value()) 
 	   {
 		   particles.add(ParticleTypes.REVERSE_PORTAL);
 	   }
-           if(Property.value()) 
+           if(witchProperty.value()) 
 	   {
 		   particles.add(ParticleTypes.WITCH);
 	   } 
@@ -652,7 +646,7 @@ public class Trail extends Feature {
 	   {
 		   particles.add(ParticleTypes.DRIPPING_LAVA);
 	   }        
-           if(Property.value()) 
+           if(drippingobstearProperty.value()) 
 	   {
 		   particles.add(ParticleTypes.DRIPPING_OBSIDIAN_TEAR);
 	   }   
@@ -668,7 +662,7 @@ public class Trail extends Feature {
 	   {
 		   particles.add(ParticleTypes.FALLING_HONEY);
 	   }           
-           if(fallinglavaProperty.value()) 
+           if(lavafallingProperty.value()) 
 	   {
 		   particles.add(ParticleTypes.FALLING_LAVA);
 	   }
@@ -680,7 +674,7 @@ public class Trail extends Feature {
 	   {
 		   particles.add(ParticleTypes.FALLING_OBSIDIAN_TEAR);
 	   }
-           if(fallingwaterProperty.value()) 
+           if(waterfallingProperty.value()) 
 	   {
 		   particles.add(ParticleTypes.FALLING_WATER);
            }
