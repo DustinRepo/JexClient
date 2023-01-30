@@ -31,8 +31,8 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
         super(Category.COMBAT, "dodges arrows-(beta feature)");
     }
 Random random = new Random();
-int randomx = random.nextInt(0 + 1 - -1) + -1;
-int randomz = random.nextInt(0 + 1 - -1) + -1;
+int randomx = random.nextInt(1 + 1 - -1) + -1;
+int randomz = random.nextInt(1 + 1 - -1) + -1;
     @EventPointer
     public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 	    if (entity instanceof ArrowEntity arrowEntity) {
