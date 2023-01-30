@@ -29,7 +29,7 @@ public class Trail extends Feature {
 			.name("Particles")
 			.description("Select particle to view.")
 			.value(true)
-			.build()
+			.build();
         //----------------------------------------------------------------------------------------------
     public Property<Boolean> liquidsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Liquids")
@@ -41,8 +41,8 @@ public class Trail extends Feature {
     public Property<Boolean> bubble = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Bubble")
 			.description("Select particle to view.")
-            .parent(liquidsProperty)
-            .depends(parent -> (boolean) parent.value())
+                        .parent(liquidsProperty)
+                        .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
     public Property<Boolean> bubbleup = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -478,11 +478,11 @@ public class Trail extends Feature {
 			.value(true)
 			.build();
 	public Property<Boolean> sweepattackProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
-			.name("SweepAtack)
+			.name("SweepAttack")
                         .parent(otherProperty)
                         .depends(parent -> (boolean) parent.value())
-			.value(true)
-			.build();
+		        .value(true)
+		        .build();
 		
   
     private static final ArrayList<ParticleType<?>> particles = new ArrayList<>();
