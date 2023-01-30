@@ -209,7 +209,7 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-	public Property<Boolean> sqiudinkProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
+	public Property<Boolean> squidinkProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("SquidInk")
                         .parent(smokelikeProperty)
                         .depends(parent -> (boolean) parent.value())
@@ -365,7 +365,7 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
-	public Property<Boolean> FireworkProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
+	public Property<Boolean> fireworkProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Firework")
                         .parent(dustlikeProperty)
                         .depends(parent -> (boolean) parent.value())
@@ -435,6 +435,12 @@ public class Trail extends Feature {
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
 			.build();
+	public Property<Boolean> heartProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Heart")
+                        .parent(picturelikeProperty)
+                        .depends(parent -> (boolean) parent.value())
+			.value(true)
+			.build();
 	public Property<Boolean> exploselikeProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Explosionlike")
 			.value(true)
@@ -450,7 +456,13 @@ public class Trail extends Feature {
                         .parent(exploselikeProperty)
                         .depends(parent -> (boolean) parent.value())
 			.value(true)
-			.build();	
+			.build();
+	public Property<Boolean> sweepattackProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("SweepAttack")
+                        .parent(exploselikeProperty)
+                        .depends(parent -> (boolean) parent.value())
+			.value(true)
+			.build();
 	public Property<Boolean> crumbslikeProperty  = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Crumbs-like")
 			.value(true)
@@ -620,10 +632,6 @@ public class Trail extends Feature {
            if(bubblepopProperty.value()) 
 	   {
 		   particles.add(ParticleTypes.BUBBLE_POP);
-	   }
-           if(Property.value()) 
-	   {
-		   particles.add(ParticleTypes.CURRENT_DOWN);
 	   }
            if(dolphinProperty.value()) 
 	   {
