@@ -33,13 +33,6 @@ public final Property<Float> speedProperty = new Property.PropertyBuilder<Float>
         .max(6f)
         .inc(0.1f)
         .build();
-	public final Property<Integer> ageProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-        .name("Age")
-        .value(75)
-        .min(1)
-        .max(75)
-        .inc(1)
-        .build();
 	
     public ArrowJuke() {
         super(Category.COMBAT, "dodges arrows-(beta feature)");
