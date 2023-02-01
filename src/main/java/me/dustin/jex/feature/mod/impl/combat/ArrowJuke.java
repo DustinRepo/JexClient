@@ -28,10 +28,10 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
         .build();
 public final Property<Double> speedProperty = new Property.PropertyBuilder<Double>(this.getClass())
         .name("Speed")
-        .value(5f)
-        .min(1f)
-        .max(6f)
-        .inc(0.1f)
+        .value(5D)
+        .min(1D)
+        .max(6D)
+        .inc(0.1D)
         .build();
 	
     public ArrowJuke() {
