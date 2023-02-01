@@ -55,11 +55,9 @@ private void move(Vec3d vel) {
             Collections.shuffle(possibleMoveDirections); //Make the direction unpredictable
             for (Vec3d direction : possibleMoveDirections) {
                 Vec3d velocity = direction.multiply(speed);
-                if (isValid(velocity, true)) {
                     move(velocity);
                     didMove = true;
                     break;
-                }
             }
             if (didMove) break;
             speed += moveSpeed.get();
