@@ -51,6 +51,7 @@ private final List<Vec3d> possibleMoveDirections = Arrays.asList(
 
     @EventPointer
     public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+	    Vec3d vel;
 	    float speed = speedProperty.value();
 	    if (entity instanceof ArrowEntity arrowEntity) {
               if (arrowEntity.age < 75) {
@@ -58,7 +59,9 @@ private final List<Vec3d> possibleMoveDirections = Arrays.asList(
             boolean didMove = false;
             Collections.shuffle(possibleMoveDirections);
             for (Vec3d direction : possibleMoveDirections) {
+		    Vec3d vel;
                 Vec3d velocity = direction.multiply(speedProperty.value());
+		    move(vel.x, vel.y, vel.z);
                     move(velocity);
                     didMove = true;
                     break;
@@ -67,9 +70,6 @@ private final List<Vec3d> possibleMoveDirections = Arrays.asList(
             }
          }
       }
-    }
-	    private void move(Vec3d vel) {
-   move(vel.x, vel.y, vel.z);
     }
 }));
 }
