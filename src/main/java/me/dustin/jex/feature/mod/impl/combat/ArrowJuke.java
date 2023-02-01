@@ -48,10 +48,7 @@ private final List<Vec3d> possibleMoveDirections = Arrays.asList(
         new Vec3d(0, 0, -1),
         new Vec3d(-1, 0, -1)
     );
-	
-private void move(Vec3d vel) {
-   move(vel.x, vel.y, vel.z);
-    }
+
     @EventPointer
     public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 	    float speed = speedProperty.value();
@@ -65,11 +62,14 @@ private void move(Vec3d vel) {
                     move(velocity);
                     didMove = true;
                     break;
-            }
-            if (didMove) break;
+	    if (didMove) break;
             speed += speedProperty.value();
-       }
+            }
+         }
       }
+    }
+	    private void move(Vec3d vel) {
+   move(vel.x, vel.y, vel.z);
     }
 }));
 }
