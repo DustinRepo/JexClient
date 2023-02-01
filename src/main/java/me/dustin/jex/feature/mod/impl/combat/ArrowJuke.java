@@ -26,7 +26,7 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
         .max(6f)
         .inc(0.1f)
         .build();
-public final Property<Float> speedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+public final Property<Double> speedProperty = new Property.PropertyBuilder<Double>(this.getClass())
         .name("Speed")
         .value(5f)
         .min(1f)
