@@ -26,12 +26,12 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
         .max(6f)
         .inc(0.1f)
         .build();
-public final Property<Double> speedProperty = new Property.PropertyBuilder<Double>(this.getClass())
+public final Property<Float> speedProperty = new Property.PropertyBuilder<Float>(this.getClass())
         .name("Speed")
-        .value(5D)
-        .min(1D)
-        .max(6D)
-        .inc(0.1D)
+        .value(5f)
+        .min(1f)
+        .max(6f)
+        .inc(0.1f)
         .build();
 	
     public ArrowJuke() {
@@ -71,5 +71,8 @@ private final List<Vec3d> possibleMoveDirections = Arrays.asList(
 }));
 private void move(Vec3d vel) {
   move(vel.x, vel.y, vel.z);
-    }	
+    }
+private void move(double velX, double velY, double velZ) {
+      Wrapper.INSTANCE.getLocalPlayer().setVelocity(velX, velY, velZ);
+    }
 }
