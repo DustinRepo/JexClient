@@ -62,8 +62,9 @@ private final List<Vec3d> possibleMoveDirections = Arrays.asList(
                     move(velocity);
                     didMove = true;
                     break;
-	    if (didMove) break;
+	    if (didMove == true) break;
             speed += speedProperty.value();
+		    
             }
          }
       }
