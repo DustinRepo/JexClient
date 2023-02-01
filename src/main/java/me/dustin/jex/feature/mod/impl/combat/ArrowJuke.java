@@ -62,12 +62,10 @@ private final List<Vec3d> possibleMoveDirections = Arrays.asList(
 	    if (entity instanceof ArrowEntity arrowEntity) {
               if (arrowEntity.age < ageProperty.value()) {
             if (arrowEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) { 
-            boolean didMove = false;
             Collections.shuffle(possibleMoveDirections);
             for (Vec3d direction : possibleMoveDirections) {
                 Vec3d velocity = direction.multiply(speedProperty.value());
                     move(velocity);
-                    didMove = true;
 	    }    
          }
       }
