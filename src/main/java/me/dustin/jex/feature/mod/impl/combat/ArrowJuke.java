@@ -26,21 +26,45 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
         .max(6f)
         .inc(0.1f)
         .build();
-
+	
     public ArrowJuke() {
         super(Category.COMBAT, "dodges arrows-(beta feature)");
     }
-int randomx = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
-int randomz = ThreadLocalRandom.current().nextInt(-1, 1 + 1);	
+	
+private final List<Vec3d> possibleMoveDirections = Arrays.asList(
+        new Vec3d(1, 0, 1),
+        new Vec3d(0, 0, 1),
+        new Vec3d(-1, 0, 1),
+        new Vec3d(1, 0, 0),
+        new Vec3d(-1, 0, 0),
+        new Vec3d(1, 0, -1),
+        new Vec3d(0, 0, -1),
+        new Vec3d(-1, 0, -1)
+    );
+
     @EventPointer
     public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+	 boolean didMove = false;
 	    if (entity instanceof ArrowEntity arrowEntity) {
               if (arrowEntity.age < 75) {
-            if (arrowEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
-             event.setX(randomx);	
-             event.setZ(randomz);
+            if (arrowEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) { 
+            boolean didMove = false;
+            Collections.shuffle(possibleMoveDirections); //Make the direction unpredictable
+            for (Vec3d direction : possibleMoveDirections) {
+                Vec3d velocity = direction.multiply(speed);
+                if (isValid(velocity, true)) {
+                    move(velocity);
+                    didMove = true;
+                    break;
+                }
             }
+            if (didMove) break;
+            speed += moveSpeed.get();
+       }
       }
+    }
+private void move(Vec3d vel) {
+move(vel.x, vel.y, vel.z);
     }
 }));
 }
