@@ -26,6 +26,13 @@ public final Property<Float> rangeProperty = new Property.PropertyBuilder<Float>
         .max(6f)
         .inc(0.1f)
         .build();
+public final Property<Float> speedProperty = new Property.PropertyBuilder<Float>(this.getClass())
+        .name("Speed")
+        .value(5f)
+        .min(1f)
+        .max(6f)
+        .inc(0.1f)
+        .build();
 	
     public ArrowJuke() {
         super(Category.COMBAT, "dodges arrows-(beta feature)");
@@ -47,20 +54,20 @@ private void move(Vec3d vel) {
     }
     @EventPointer
     public final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-	 boolean didMove = false;
+	    float speed = speedProperty.value();
 	    if (entity instanceof ArrowEntity arrowEntity) {
               if (arrowEntity.age < 75) {
             if (arrowEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) { 
             boolean didMove = false;
-            Collections.shuffle(possibleMoveDirections); //Make the direction unpredictable
+            Collections.shuffle(possibleMoveDirections);
             for (Vec3d direction : possibleMoveDirections) {
-                Vec3d velocity = direction.multiply(speed);
+                Vec3d velocity = direction.multiply(speedProperty.value());
                     move(velocity);
                     didMove = true;
                     break;
             }
             if (didMove) break;
-            speed += moveSpeed.get();
+            speed += speedProperty.value();
        }
       }
     }
