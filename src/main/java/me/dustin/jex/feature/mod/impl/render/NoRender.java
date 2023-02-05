@@ -111,18 +111,6 @@ public class NoRender extends Feature {
             .parent(particlesProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Boolean> glowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Glow")
-            .value(true)
-            .parent(particlesProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> Property = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("ItemBillboard")
-            .value(true)
-            .parent(particlesProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
     public final Property<Boolean> lavaemberProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("LavaEmber")
             .value(true)
@@ -141,7 +129,7 @@ public class NoRender extends Feature {
             .parent(particlesProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Boolean> Property = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> splashProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Splash")
             .value(true)
             .parent(particlesProperty)
@@ -507,7 +495,7 @@ public class NoRender extends Feature {
         if (event.getParticle() instanceof SquidInkParticle && squidinkProperty.value()) {
             event.cancel();
         }
-        if (event.getParticle() instanceof BubbleColumnUpParticle || event.getParticle() instanceof WaterBubbleParticle || event.getParticle() instanceof CurrentDownParticle || event.getParticle() instanceof BubblePopParticle && Property.value()) {
+        if (event.getParticle() instanceof BubbleColumnUpParticle || event.getParticle() instanceof WaterBubbleParticle || event.getParticle() instanceof CurrentDownParticle || event.getParticle() instanceof BubblePopParticle && bubbleProperty.value()) {
             event.cancel();
         }
         if (event.getParticle() instanceof EmotionParticle && emotionProperty.value()) {
@@ -519,13 +507,10 @@ public class NoRender extends Feature {
         if (event.getParticle() instanceof GlowParticle && glowProperty.value()) {
             event.cancel();
         }
-        if (event.getParticle() instanceof ItemBillboardParticle && itembillboardProperty.value()) {
-            event.cancel();
-        }
         if (event.getParticle() instanceof LavaEmberParticle && lavaemberProperty.value()) {
             event.cancel();
         }
-        if (event.getParticle() instanceof NoteParticle && noreProperty.value()) {
+        if (event.getParticle() instanceof NoteParticle && noteProperty.value()) {
             event.cancel();
         }
         if (event.getParticle() instanceof PortalParticle && portalProperty.value()) {
