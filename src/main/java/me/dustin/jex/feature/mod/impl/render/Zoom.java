@@ -62,7 +62,7 @@ public class Zoom extends Feature {
             }
             int zoomFov = (int)(30 - (2 * zoomLevelProperty.value()));
             if (zoomFov == 0)
-                zoomFov = 2;
+                zoomFov = 30;
             if(Wrapper.INSTANCE.getOptions().getFov().getValue() > zoomFov) {
                 Wrapper.INSTANCE.getOptions().getFov().setValue(zoomFov);
                 if (mouseSmoothProperty.value())
