@@ -22,9 +22,9 @@ public class Zoom extends Feature {
     public final Property<Float> zoomLevelProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Zoom Level")
             .value(1f)
-            .min(1)
-            .max(10)
-            .value(1f)
+            .min(0f)
+            .max(10f)
+            .value(0.1f)
             .inc(1f)
             .build();
     public final Property<Integer> zoomKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
