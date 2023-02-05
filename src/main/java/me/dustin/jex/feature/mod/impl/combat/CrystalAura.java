@@ -171,9 +171,9 @@ public class CrystalAura extends Feature {
 	public BlockPos getOpenBlockPos(PlayerEntity entityPlayer) {
 		double d = 0;
 		BlockPos closest = null;
-		for (int x = -4; x < 4; x++) {
-			for (int y = -1; y < 4; y++) {
-				for (int z = -4; z < 4; z++) {
+		for (int x = -6; x < 6; x++) {
+			for (int y = -6; y < 6; y++) {
+				for (int z = -6; z < 6; z++) {
 					BlockPos pos = new BlockPos(entityPlayer.getX() + x, (int) entityPlayer.getY() - y, entityPlayer.getZ() + z);
 					EndCrystalEntity fakeCrystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), pos.getX(), pos.getY(), pos.getZ());
 
