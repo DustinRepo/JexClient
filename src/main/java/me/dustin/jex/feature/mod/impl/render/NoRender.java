@@ -87,6 +87,108 @@ public class NoRender extends Feature {
             .parent(particlesProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
+    public final Property<Boolean> endrodProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("EndRod")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> bubbleProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bubble")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> emotionProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Emotion")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> enchantglyphProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("EnchantGlyph")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> glowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Glow")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> Property = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("ItemBillboard")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> lavaemberProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("LavaEmber")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> noteProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Note")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> portalProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Portal")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> Property = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Splash")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> snowflakeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("SnowFlake")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> spellProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Spell")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> suspendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Suspend")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> sweepProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("SweepAttack")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> vibrationProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Vibration")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> flameProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Flame")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> soulProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Soul")
+            .value(true)
+            .parent(particlesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     //---------------------------------------------------------------------------------------------------
     public final Property<Boolean> entitiesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Entities")
@@ -118,6 +220,12 @@ public class NoRender extends Feature {
             .build();
     public final Property<Boolean> fallingBlocksProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Falling Blocks")
+            .value(true)
+            .parent(entitiesProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> squidinkProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("SquidInk")
             .value(true)
             .parent(entitiesProperty)
             .depends(parent -> (boolean) parent.value())
@@ -381,7 +489,7 @@ public class NoRender extends Feature {
         if (event.getParticle() instanceof GlowParticle && glowProperty.value()) {
             event.cancel();
         }
-        if (event.getParticle() instanceof AshParticle && ashProperty.value()) {
+        if (event.getParticle() instanceof AshParticle || event.getParticle() instanceof WhiteAshParticle && ashProperty.value()) {
             event.cancel();
         }
         if (event.getParticle() instanceof TotemParticle && totemProperty.value()) {
@@ -391,6 +499,60 @@ public class NoRender extends Feature {
             event.cancel();
         }
         if (event.getParticle() instanceof CrackParticle && crackProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof EndRodParticle && endrodProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof SquidInkParticle && squidinkProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof BubbleColumnUpParticle || event.getParticle() instanceof WaterBubbleParticle || event.getParticle() instanceof CurrentDownParticle || event.getParticle() instanceof BubblePopParticle && Property.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof EmotionParticle && emotionProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof EnchantGlyphParticle && enchantglyphProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof GlowParticle && glowProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof ItemBillboardParticle && itembillboardProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof LavaEmberParticle && lavaemberProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof NoteParticle && noreProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof PortalParticle && portalProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof RainSplashParticle || event.getParticle() instanceof WaterSplashParticle && splashProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof SnowflakeParticle && snowflakeProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof SpellParticle && spellProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof SuspendParticle || event.getParticle() instanceof WaterSuspendParticle && suspendProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof SweepAttackParticle && sweepProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof VibrationParticle && vibrationProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof FlameParticle && flameProperty.value()) {
+            event.cancel();
+        }
+        if (event.getParticle() instanceof SoulParticle && soulProperty.value()) {
             event.cancel();
         }
     });
