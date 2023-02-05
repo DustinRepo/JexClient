@@ -107,6 +107,8 @@ public class NoRender extends Feature {
      public final Property<Boolean> eggProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Egg")
             .value(true)
+            .parent(entitiesProperty)
+            .depends(parent -> (boolean) parent.value())
             .build(); 
     public final Property<Boolean> snowballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Snowball")
@@ -170,6 +172,8 @@ public class NoRender extends Feature {
     public final Property<Boolean> bannersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Banners")
             .value(true)
+            .parent(blocksProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> signsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Signs")
