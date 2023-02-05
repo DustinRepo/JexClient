@@ -124,8 +124,6 @@ public class NoRender extends Feature {
     public final Property<Boolean> blocksProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Blocks")
             .value(true)
-            .parent(blocksProperty)
-            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> chestsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Chests")
