@@ -329,7 +329,7 @@ public class NoRender extends Feature {
             event.cancel();
         if(event.blockEntity instanceof BeehiveBlockEntity && beehiveProperty.value())
             event.cancel();
-        if(event.blockEntity instanceof BellBlockEntity && belkProperty.value())
+        if(event.blockEntity instanceof BellBlockEntity && bellProperty.value())
             event.cancel();
         if(event.blockEntity instanceof CommandBlockBlockEntity && commandblockProperty.value())
             event.cancel();
