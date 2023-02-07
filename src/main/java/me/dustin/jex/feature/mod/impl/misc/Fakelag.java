@@ -23,7 +23,6 @@ public class Fakelag extends Feature {
     public final Property<String> chokeProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("Choke MS")
             .value("1000")
-            .min(0)
             .max(4)
             .build();
 
