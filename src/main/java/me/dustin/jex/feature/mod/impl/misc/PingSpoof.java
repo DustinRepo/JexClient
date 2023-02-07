@@ -33,6 +33,9 @@ public class PingSpoof extends Feature {
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         Long ping = Long.valueOf(pingProperty.value());
+        if (ping == null) {
+            ping = 5000;
+        }
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
             packetStopWatch.reset();
             keepAliveId = -1;
