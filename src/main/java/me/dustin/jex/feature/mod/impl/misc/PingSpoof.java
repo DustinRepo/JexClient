@@ -48,5 +48,20 @@ public class PingSpoof extends Feature {
         packetStopWatch.reset();
         event.cancel();
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, KeepAliveC2SPacket.class));
+    
+@Override
+    public void onEnable() {
+        super.onEnable();
+    }
 
+    @Override
+    public void onDisable() {
+        if (Wrapper.INSTANCE.getLocalPlayer() != null) {
+            try {
+                NetworkHelper.INSTANCE.sendPacketDirect(new KeepAliveC2SPacket(keepAliveId));
+            } catch (Exception e) {}
+              keepAliveId = -1;
+        }
+        super.onDisable();
+    }
 }
