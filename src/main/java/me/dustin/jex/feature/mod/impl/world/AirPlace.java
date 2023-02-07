@@ -30,12 +30,12 @@ public class AirPlace extends Feature {
 			.description("Allow placing inside of liquids.")
 			.value(true)
 			.build();
-	public final Property<Float> reachProperty = new Property.PropertyBuilder<Float>(this.getClass())
+	public final Property<Integer> reachProperty = new Property.PropertyBuilder<Integer>(this.getClass())
 			.name("Reach")
-			.value(4.5f)
+			.value(4)
 			.min(3)
 			.max(6)
-			.inc(0.1f)
+			.inc(1)
 			.build();
 
 	public AirPlace() {
