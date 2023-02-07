@@ -39,6 +39,9 @@ public class Fakelag extends Feature {
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         if (sending)
             return;
+        if (choke == null) {
+            return 1000;
+        }
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
             packets.clear();
             stopWatch.reset();
