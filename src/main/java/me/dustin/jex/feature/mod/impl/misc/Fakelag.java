@@ -22,7 +22,8 @@ public class Fakelag extends Feature {
             .build();
     public final Property<String> chokeProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("Choke MS")
-            .value("100")
+            .value("1000")
+            .min(1)
             .max(4)
             .build();
 
@@ -39,9 +40,6 @@ public class Fakelag extends Feature {
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
         if (sending)
             return;
-        if (chokeProperty.value() == null) {
-            chokeProperty.value(1000);
-        }
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
             packets.clear();
             stopWatch.reset();
