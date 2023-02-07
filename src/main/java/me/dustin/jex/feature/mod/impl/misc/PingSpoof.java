@@ -19,7 +19,6 @@ public class PingSpoof extends Feature {
     public final Property<String> pingProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("Ping")
             .value("5000")
-            .min(1)
             .max(5)
             .build();
 
@@ -33,12 +32,6 @@ public class PingSpoof extends Feature {
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         Integer ping = Integer.valueOf(pingProperty.value());
-        
-        if (pingProperty.value() == null) {
-         super.onDisable();
-        }
-        else
-        {
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
             packetStopWatch.reset();
             keepAliveId = -1;
@@ -46,7 +39,6 @@ public class PingSpoof extends Feature {
             NetworkHelper.INSTANCE.sendPacketDirect(new KeepAliveC2SPacket(keepAliveId));
             keepAliveId = -1;
             packetStopWatch.reset();
-        }
         }
     }, new TickFilter(EventTick.Mode.PRE));
 
