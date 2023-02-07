@@ -19,6 +19,7 @@ public class PingSpoof extends Feature {
     public final Property<String> pingProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("Ping")
             .value("5000")
+            .min(1)
             .max(5)
             .build();
 
