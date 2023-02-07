@@ -18,21 +18,21 @@ public class AntiKnockback extends Feature {
             .value(0)
             .min(-100)
             .max(100)
-            .inc(10)
+            .inc(2)
             .build();
     public final Property<Integer> percentyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("PercentY")
             .value(0)
             .min(-100)
             .max(100)
-            .inc(10)
+            .inc(2)
             .build();
     public final Property<Integer> percentzProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("PercentZ")
             .value(0)
             .min(-100)
             .max(100)
-            .inc(10)
+            .inc(2)
             .build();
 
     public AntiKnockback() {
