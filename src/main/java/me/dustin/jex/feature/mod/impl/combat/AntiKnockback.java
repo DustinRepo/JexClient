@@ -90,8 +90,8 @@ public class AntiKnockback extends Feature {
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.REVERSE)
             .build();
-    public final Property<Integer> nrpXProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("PercentX")
+    public final Property<Integer> rpXProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("RPercentX")
             .value(0)
             .parent(velocity2Property)
             .depends(parent -> (boolean) parent.value())
@@ -99,8 +99,8 @@ public class AntiKnockback extends Feature {
             .max(100)
             .inc(2)
             .build();
-    public final Property<Integer> nrpYProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("PercentY")
+    public final Property<Integer> rpYProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("RPercentY")
             .value(0)
             .parent(velocity2Property)
             .depends(parent -> (boolean) parent.value())
@@ -108,8 +108,8 @@ public class AntiKnockback extends Feature {
             .max(100)
             .inc(2)
             .build();
-    public final Property<Integer> nrpZProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("PercentZ")
+    public final Property<Integer> rpZProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("RPercentZ")
             .value(0)
             .parent(velocity2Property)
             .depends(parent -> (boolean) parent.value())
@@ -124,7 +124,7 @@ public class AntiKnockback extends Feature {
             .depends(parent -> parent.value() == Mode.REVERSE)
             .build();
     public final Property<Integer> erpXProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("ExplosionX")
+            .name("RExplosionX")
             .value(0)
             .parent(velocity3Property)
             .depends(parent -> (boolean) parent.value())
@@ -133,7 +133,7 @@ public class AntiKnockback extends Feature {
             .inc(2)
             .build();
     public final Property<Integer> erpYProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("ExplosionY")
+            .name("RExplosionY")
             .value(0)
             .parent(velocity3Property)
             .depends(parent -> (boolean) parent.value())
@@ -142,7 +142,7 @@ public class AntiKnockback extends Feature {
             .inc(2)
             .build();
     public final Property<Integer> erpZProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("ExplosionZ")
+            .name("RExplosionZ")
             .value(0)
             .parent(velocity3Property)
             .depends(parent -> (boolean) parent.value())
