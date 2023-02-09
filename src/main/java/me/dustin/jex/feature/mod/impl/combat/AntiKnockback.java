@@ -28,27 +28,27 @@ public class AntiKnockback extends Feature {
             .value(0)
             .parent(velocity0Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
+            .min(0)
             .max(100)
-            .inc(2)
+            .inc(1)
             .build();
     public final Property<Integer> npYProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("PercentY")
             .value(0)
             .parent(velocity0Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
+            .min(0)
             .max(100)
-            .inc(2)
+            .inc(1)
             .build();
     public final Property<Integer> npZProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("PercentZ")
             .value(0)
             .parent(velocity0Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
+            .min(0)
             .max(100)
-            .inc(2)
+            .inc(1)
             .build();
     public final Property<Boolean> velocity1Property = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("ExplosionVelocity")
@@ -61,61 +61,61 @@ public class AntiKnockback extends Feature {
             .value(0)
             .parent(velocity1Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
+            .min(0)
             .max(100)
-            .inc(2)
+            .inc(1)
             .build();
     public final Property<Integer> enpYProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("ExplosionY")
             .value(0)
             .parent(velocity1Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
+            .min(0)
             .max(100)
-            .inc(2)
+            .inc(1)
             .build();
     public final Property<Integer> enpZProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("ExplosionZ")
             .value(0)
             .parent(velocity1Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
+            .min(0)
             .max(100)
-            .inc(2)
+            .inc(1)
             .build();
     //-------------------------------------------------------------------------------------------------------
     public final Property<Boolean> velocity2Property = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("ReverseVelocity")
+            .name("ReversePlayerVelocity")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.REVERSE)
             .build();
     public final Property<Integer> rpXProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("RPercentX")
-            .value(0)
+            .value(-1)
             .parent(velocity2Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
-            .max(100)
-            .inc(2)
+            .min(-1)
+            .max(-100)
+            .inc(-1)
             .build();
     public final Property<Integer> rpYProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("RPercentY")
-            .value(0)
+            .value(-1)
             .parent(velocity2Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
-            .max(100)
-            .inc(2)
+            .min(-1)
+            .max(-100)
+            .inc(-1)
             .build();
     public final Property<Integer> rpZProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("RPercentZ")
-            .value(0)
+            .value(-1)
             .parent(velocity2Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
-            .max(100)
-            .inc(2)
+            .min(-1)
+            .max(-100)
+            .inc(-1)
             .build();
     public final Property<Boolean> velocity3Property = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("ReverseExplosionVelocity")
@@ -125,30 +125,30 @@ public class AntiKnockback extends Feature {
             .build();
     public final Property<Integer> erpXProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("RExplosionX")
-            .value(0)
+            .value(-1)
             .parent(velocity3Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
-            .max(100)
-            .inc(2)
+            .min(-1)
+            .max(-100)
+            .inc(-1)
             .build();
     public final Property<Integer> erpYProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("RExplosionY")
-            .value(0)
+            .value(-1)
             .parent(velocity3Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
-            .max(100)
-            .inc(2)
+            .min(-1)
+            .max(-100)
+            .inc(-1)
             .build();
     public final Property<Integer> erpZProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("RExplosionZ")
-            .value(0)
+            .value(-1)
             .parent(velocity3Property)
             .depends(parent -> (boolean) parent.value())
-            .min(-100)
-            .max(100)
-            .inc(2)
+            .min(-1)
+            .max(-100)
+            .inc(-1)
             .build();
     
 
@@ -175,7 +175,6 @@ public class AntiKnockback extends Feature {
             event.setMultZ(enpz);
         }
        }
-  //--------------------------------------------------
         if (modeProperty.value() == Mode.REVERSE){
          float erpx = erpXProperty.value() / 100.0f;
         float erpy = erpYProperty.value() / 100.0f;
@@ -193,12 +192,10 @@ public class AntiKnockback extends Feature {
             event.setMultZ(erpz);
         }   
         }
-  //---------------------------------------------------------------
     });
 
     @EventPointer
     private final EventListener<EventPlayerVelocity> eventPlayerVelocityEventListener = new EventListener<>(event -> {
- //-------------------------------------------------------------------
         if (modeProperty.value() == Mode.NORMAL) {
         float npx = npXProperty.value() / 100.0f;
         float npy = npYProperty.value() / 100.0f;
@@ -217,7 +214,6 @@ public class AntiKnockback extends Feature {
         }
             
         }
- //-----------------------------------------------------------------
       if (modeProperty.value() == Mode.REVERSE) { 
        float rpx = rpXProperty.value() / 100.0f;
         float rpy = rpYProperty.value() / 100.0f;
