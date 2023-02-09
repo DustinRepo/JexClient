@@ -97,8 +97,4 @@ public class AntiKnockback extends Feature {
             event.setVelocityZ((int)(event.getVelocityZ() * pz));
         }
     });
-        
-     public enum Mode {
-        NORMAL, REVERSE
-    }
 }
