@@ -188,9 +188,9 @@ public class AntiKnockback extends Feature {
          }
          }
         else {
-            event.setVelocityX((int)(event.getVelocityX() * erpx));
-            event.setVelocityY((int)(event.getVelocityY() * erpy));
-            event.setVelocityZ((int)(event.getVelocityZ() * erpz));
+            event.setMultX(erpx);
+            event.setMultY(erpy);
+            event.setMultZ(erpz);
         }   
         }
   //---------------------------------------------------------------
