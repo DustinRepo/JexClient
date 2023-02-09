@@ -34,7 +34,7 @@ import java.util.List;
 public class CrystalAura extends Feature {
 	public final Property<TargetMode> modeProperty = new Property.PropertyBuilder<TargetMode>(this.getClass())
 			.name("Mode")
-			.value(TargetMode.SUICIDAL)
+			.value(TargetMode.NORMAL)
 			.build();
 	public final Property<AttackMode> attackModeProperty = new Property.PropertyBuilder<AttackMode>(this.getClass())
 			.name("Explode")
@@ -223,7 +223,7 @@ public class CrystalAura extends Feature {
 		if (!hasTarget)
 			return false;
 		float damage = WorldHelper.INSTANCE.calcExplosionDamage(6, Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity.getBlockPos());
-		if (modeProperty.value() == TargetMode.RISKY)
+		if (modeProperty.value() == TargetMode.SAFE)
 			return damage <= 65;
 		return true;
 	}
@@ -236,7 +236,7 @@ public class CrystalAura extends Feature {
 	}
 
 	public enum TargetMode {
-		SUICIDAL, RISKY, SAFE
+		NORMAL, SAFE
 	}
 
 	public enum AttackMode {
