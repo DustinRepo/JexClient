@@ -35,8 +35,8 @@ public class AutoPetFeeder extends Feature {
         if (slotcat == -1)
             return;
         int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
+	    Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 		if (modeProperty.value() == TargetMode.DOG) {
-        Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
                 if (wolfEntity.getHealth() < wolfEntity.getMaxHealth()) {
                     InventoryHelper.INSTANCE.setSlot(slotdog, false, true);
@@ -44,12 +44,8 @@ public class AutoPetFeeder extends Feature {
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
             }
-			
-  
-		  });
-		}
-		if (modeProperty.value() == TargetMode.CAT) {
-Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+	}		
+if (modeProperty.value() == TargetMode.CAT) {
             if (entity instanceof CatEntity catEntity && EntityHelper.INSTANCE.doesPlayerOwn(catEntity)) {
                 if (catEntity.getHealth() < catEntity.getMaxHealth()) {
                     InventoryHelper.INSTANCE.setSlot(slotcat, false, true);
@@ -57,25 +53,24 @@ Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
             }	
-		  });
-}
-if (modeProperty.value() == TargetMode.BOTH) {
-Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+          }
+	if (modeProperty.value() == TargetMode.BOTH) {
             if (entity instanceof CatEntity catEntity && EntityHelper.INSTANCE.doesPlayerOwn(catEntity)) {
 			if (catEntity.getHealth() < catEntity.getMaxHealth()) {
                     InventoryHelper.INSTANCE.setSlot(slotcat, false, true);
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), catEntity, Hand.MAIN_HAND);
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
-			if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
+	    }
+		if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
                 if (wolfEntity.getHealth() < wolfEntity.getMaxHealth()) {
                     InventoryHelper.INSTANCE.setSlot(slotdog, false, true);
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
 	      }	
-           });
-       }	
+	}
+});
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     private int getDogFoodSlot() {
@@ -96,14 +91,13 @@ Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 	
 	private int getCatFoodSlot() {
         int cod = InventoryHelper.INSTANCE.getFromHotbar(Items.RAW_BEEF);
-        if (steak != -1)
-            return steak;
+        if (cod != -1)
+            return cod;
         int salmon = InventoryHelper.INSTANCE.getFromHotbar(Items.RAW_SALMON);
-        if (porkChop != -1)
-            return porkChop;
+        if (salmon != -1)
+            return salmon;
     }
     public enum TargetMode {
 		BOTH, DOG, CAT
 	}
-
 }
