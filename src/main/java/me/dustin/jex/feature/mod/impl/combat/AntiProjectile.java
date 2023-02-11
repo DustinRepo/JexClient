@@ -32,7 +32,7 @@ public class AntiProjectile extends Feature {
 	    .name("Fireball")
 	    .value(true)
 	    .build();
-	public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("DragonFireball")
 	    .description("Whether or not to swing fireball")
 	    .value(true)
@@ -41,7 +41,7 @@ public class AntiProjectile extends Feature {
 	    .name("ShulkerBullet")
 	    .value(true)
 	    .build();
-	 public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> skullProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("WitherSkull")
 	    .value(true)
 	    .build();
@@ -90,7 +90,7 @@ public class AntiProjectile extends Feature {
         }	  
 		if (entity instanceof WitherSkullEntity skullEntity){
 		if (skullProperty.value()){
-		if (fireballEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
+		if (skullEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
                 if (rotateProperty.value()) {
                     RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(skullEntity);
                     event.setRotation(rotation);
