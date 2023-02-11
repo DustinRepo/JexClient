@@ -34,7 +34,7 @@ import java.util.List;
 public class CrystalAura extends Feature {
 	public final Property<TargetMode> modeProperty = new Property.PropertyBuilder<TargetMode>(this.getClass())
 			.name("Mode")
-			.value(TargetMode.NORMAL)
+			.value(TargetMode.SUICIDAL)
 			.build();
 	public final Property<AttackMode> attackModeProperty = new Property.PropertyBuilder<AttackMode>(this.getClass())
 			.name("Explode")
@@ -138,7 +138,6 @@ public class CrystalAura extends Feature {
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
 						Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
-						Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 					}
 				}
 			});
@@ -146,7 +145,6 @@ public class CrystalAura extends Feature {
 			if (placePos != null) {
 				BlockHitResult blockHitResult = new BlockHitResult(new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()), Direction.UP, placePos, false);
 				Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), offhand ? Hand.OFF_HAND : Hand.MAIN_HAND, blockHitResult);
-				Wrapper.INSTANCE.getLocalPlayer().swingHand(offhand ? Hand.OFF_HAND : Hand.MAIN_HAND);
 				placePos = null;
 			}
 		}
@@ -223,6 +221,8 @@ public class CrystalAura extends Feature {
 		if (!hasTarget)
 			return false;
 		float damage = WorldHelper.INSTANCE.calcExplosionDamage(6, Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity.getBlockPos());
+		if (modeProperty.value() == TargetMode.RISKY)
+			return damage <= 65;
 		if (modeProperty.value() == TargetMode.SAFE)
 			return damage <= 65;
 		return true;
@@ -236,7 +236,7 @@ public class CrystalAura extends Feature {
 	}
 
 	public enum TargetMode {
-		NORMAL, SAFE
+		SUICIDAL, RISKY, SAFE
 	}
 
 	public enum AttackMode {
