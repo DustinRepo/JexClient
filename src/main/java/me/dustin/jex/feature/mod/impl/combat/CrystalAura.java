@@ -48,6 +48,13 @@ public class CrystalAura extends Feature {
 			.max(6)
 			.inc(0.1f)
 			.build();
+	public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+			.name("Attack Delay")
+			.value(200L)
+		        .min(0)
+			.max(2000)
+		        .inc(20)
+			.build();
 	public final Property<Boolean> autoPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Auto Place")
 			.value(false)
@@ -135,6 +142,7 @@ public class CrystalAura extends Feature {
 			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
 				if (entity instanceof EndCrystalEntity enderCrystalEntity) {
 					if (shouldAttack(enderCrystalEntity)) {
+					if (stopWatch.hasPassed(attackDelayProperty.value()))
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
 						Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
