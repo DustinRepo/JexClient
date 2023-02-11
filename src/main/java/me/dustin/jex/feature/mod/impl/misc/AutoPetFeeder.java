@@ -96,7 +96,7 @@ public int getCatFoodSlot() {
         int salmon = InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
         if (salmon != -1)
             return salmon;
-	return;
+	return InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
 }
     public enum TargetMode {
      BOTH, DOG, CAT
