@@ -16,11 +16,6 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 
 public class AutoPetFeeder extends Feature {
-    
-    public final Property<TargetMode> modeProperty = new Property.PropertyBuilder<TargetMode>(this.getClass())
-			.name("Pet")
-			.value(TargetMode.DOG)
-			.build();
 
     public AutoPetFeeder() {
         super(Category.MISC, "Automatically feed your pets to keep them at full health at all times.");
