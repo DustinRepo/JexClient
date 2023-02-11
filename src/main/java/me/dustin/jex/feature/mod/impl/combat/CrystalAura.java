@@ -140,7 +140,7 @@ public class CrystalAura extends Feature {
 					});
 				}
 			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-				if (stopWatch.hasPassed(attackDelayProperty.value())) {
+				if (stopWatch.hasPassed(attackDelayProperty.value()))
 				if (entity instanceof EndCrystalEntity enderCrystalEntity) {
 					if (shouldAttack(enderCrystalEntity)) {
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
@@ -148,7 +148,6 @@ public class CrystalAura extends Feature {
 						Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
 					}
 				  }
-			     }
 			});
 		} else {
 			if (placePos != null) {
