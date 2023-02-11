@@ -25,19 +25,26 @@ import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
 
 public class Roaster extends Feature {
-
+    
+    public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Distance")
+            .description("Sets the range of action")
+            .value(4)
+            .min(2)
+            .max(6)
+            .inc(1)
+            .build();
     public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
             .build();
     public final Property<Boolean> friendsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Player")
+            .name("Friends")
             .description("Light your friends on fire too")
             .value(false)
             .parent(playerProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-
     public final Property<Boolean> hostileProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Hostile")
             .value(true)
@@ -123,7 +130,7 @@ public class Roaster extends Feature {
     private boolean isValid(LivingEntity livingEntity) {
         if (livingEntity instanceof ClientPlayerEntity)
             return false;
-        if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(livingEntity) > 4)
+        if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(livingEntity) > distanceProperty.value())
             return false;
         if (livingEntity.isOnFire() && !onFireProperty.value())
             return false;
