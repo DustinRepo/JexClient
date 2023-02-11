@@ -10,7 +10,8 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.util.Hand;
+import net.minecraft.entity.projectile.WitherSkullEntity;
+import net.minecraft.entity.projectile.DragonFireballEntity;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.events.core.annotate.EventPointer;
 
@@ -27,14 +28,24 @@ public class AntiProjectile extends Feature {
             .name("Rotate")
             .value(true)
             .build();
-	public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("Fireball")
 	    .description("Whether or not to swing fireball")
 	    .value(true)
 	    .build();
-	public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("DragonFireball")
+	    .description("Whether or not to swing fireball")
+	    .value(true)
+	    .build();
+    public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("ShulkerBullet")
 	    .description("Whether or not to swing shulker bullet")
+	    .value(true)
+	    .build();
+	 public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("WitherSkull")
+	    .description("Whether or not to swing fireball")
 	    .value(true)
 	    .build();
 
@@ -54,7 +65,7 @@ public class AntiProjectile extends Feature {
                 }
 		 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), bulletEntity);
             }
-		}
+	  }
         }
         if (entity instanceof FireballEntity fireballEntity){
 		if (fireballProperty.value()){
@@ -66,20 +77,31 @@ public class AntiProjectile extends Feature {
                 }
 		Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), fireballEntity);
             }
-			}
+	  }
         }
-		if (entity instanceof FireballEntity fireballEntity){
-		if (fireballProperty.value()){
-		if (fireballEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
+	if (entity instanceof DragonFireballEntity dragonfireballEntity){
+		if (dfireballProperty.value()){
+		if (dragonfireballEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
                 if (rotateProperty.value()) {
-                    RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(fireballEntity);
+                    RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(dragonfireballEntity);
                     event.setRotation(rotation);
 		    PlayerHelper.INSTANCE.setRotation(event.getRotation());
                 }
-		Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), fireballEntity);
+		Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), dragonfireballEntity);
             }
-			}
-        }
-		
+	  }
+        }	  
+		if (entity instanceof WitherSkullEntity skullEntity){
+		if (skullProperty.value()){
+		if (fireballEntity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) <= rangeProperty.value()) {
+                if (rotateProperty.value()) {
+                    RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(skullEntity);
+                    event.setRotation(rotation);
+		    PlayerHelper.INSTANCE.setRotation(event.getRotation());
+                }
+		Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), skullEntity);
+            }
+	  }
+        }	
     }), new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
