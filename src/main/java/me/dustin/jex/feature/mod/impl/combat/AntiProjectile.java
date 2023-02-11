@@ -30,7 +30,6 @@ public class AntiProjectile extends Feature {
             .build();
     public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("Fireball")
-	    .description("Whether or not to swing fireball")
 	    .value(true)
 	    .build();
 	public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -40,12 +39,10 @@ public class AntiProjectile extends Feature {
 	    .build();
     public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("ShulkerBullet")
-	    .description("Whether or not to swing shulker bullet")
 	    .value(true)
 	    .build();
 	 public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("WitherSkull")
-	    .description("Whether or not to swing fireball")
 	    .value(true)
 	    .build();
 
