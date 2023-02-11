@@ -140,9 +140,9 @@ public class CrystalAura extends Feature {
 					});
 				}
 			Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
+				if (stopWatch.hasPassed(attackDelayProperty.value()))
 				if (entity instanceof EndCrystalEntity enderCrystalEntity) {
 					if (shouldAttack(enderCrystalEntity)) {
-					if (stopWatch.hasPassed(attackDelayProperty.value()))
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
 						Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
