@@ -44,7 +44,7 @@ public class KillAura extends Feature {
             .name("Reach")
             .value(3.8f)
             .min(2f)
-            .max(7f)
+            .max(6f)
             .inc(0.1f)
             .build();
     public final Property<Integer> ticksExistedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
