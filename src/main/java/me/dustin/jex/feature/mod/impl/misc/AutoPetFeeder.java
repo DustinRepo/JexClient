@@ -9,6 +9,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
+import me.dustin.jex.feature.property.Property;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.item.Items;
