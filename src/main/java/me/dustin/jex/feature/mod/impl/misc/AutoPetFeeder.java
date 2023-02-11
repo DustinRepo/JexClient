@@ -89,16 +89,16 @@ if (modeProperty.value() == TargetMode.CAT) {
         return InventoryHelper.INSTANCE.getFromHotbar(Items.COOKED_RABBIT);
     }
 	
-	private int getCatFoodSlot() {
+private int getCatFoodSlot() {
         int cod = InventoryHelper.INSTANCE.getFromHotbar(Items.COD);
         if (cod != -1)
             return cod;
-        int salm = InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
-        if (salm != -1)
-            return salm;
+        int salmon = InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
+        if (salmon != -1)
+            return salmon;
 }
 	
     public enum TargetMode {
-		BOTH, DOG, CAT
-	}
+BOTH, DOG, CAT
+   }
 }
