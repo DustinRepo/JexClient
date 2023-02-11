@@ -21,12 +21,16 @@ public class Triggerbot extends Feature {
             .name("Player")
             .value(true)
             .build();
-    public Property<Boolean> passivesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Passive")
+    public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Boss")
             .value(true)
             .build();
     public Property<Boolean> hostilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Hostile")
+            .value(true)
+            .build();
+    public Property<Boolean> passivesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Passive")
             .value(true)
             .build();
     public Property<Boolean> neutralsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -73,6 +77,8 @@ public class Triggerbot extends Feature {
             return neutralsProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostilesProperty.value();
+        if (EntityHelper.INSTANCE.isBossMob(entity))
+            return bossProperty.value();
         if (entity instanceof PlayerEntity playerEntity && !FriendHelper.INSTANCE.isFriend(playerEntity))
             return playersProperty.value();
         return false;
