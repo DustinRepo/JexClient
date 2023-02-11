@@ -93,10 +93,11 @@ if (modeProperty.value() == TargetMode.CAT) {
         int cod = InventoryHelper.INSTANCE.getFromHotbar(Items.COD);
         if (cod != -1)
             return cod;
-        int salmon = InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
-        if (salmon != -1)
-            return salmon;
-    }
+        int salm = InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
+        if (salm != -1)
+            return salm;
+}
+	
     public enum TargetMode {
 		BOTH, DOG, CAT
 	}
