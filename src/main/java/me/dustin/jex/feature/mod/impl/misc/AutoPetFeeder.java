@@ -36,25 +36,6 @@ public class AutoPetFeeder extends Feature {
             return;
         int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
 	    Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-		if (modeProperty.value() == TargetMode.DOG) {
-            if (entity instanceof WolfEntity wolfEntity && EntityHelper.INSTANCE.doesPlayerOwn(wolfEntity)) {
-                if (wolfEntity.getHealth() < wolfEntity.getMaxHealth()) {
-                    InventoryHelper.INSTANCE.setSlot(slotdog, false, true);
-                    Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
-                    InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
-                }
-            }
-	}		
-if (modeProperty.value() == TargetMode.CAT) {
-            if (entity instanceof CatEntity catEntity && EntityHelper.INSTANCE.doesPlayerOwn(catEntity)) {
-                if (catEntity.getHealth() < catEntity.getMaxHealth()) {
-                    InventoryHelper.INSTANCE.setSlot(slotcat, false, true);
-                    Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), catEntity, Hand.MAIN_HAND);
-                    InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
-                }
-            }	
-          }
-	if (modeProperty.value() == TargetMode.BOTH) {
             if (entity instanceof CatEntity catEntity && EntityHelper.INSTANCE.doesPlayerOwn(catEntity)) {
 			if (catEntity.getHealth() < catEntity.getMaxHealth()) {
                     InventoryHelper.INSTANCE.setSlot(slotcat, false, true);
@@ -69,7 +50,6 @@ if (modeProperty.value() == TargetMode.CAT) {
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
 	      }	
-	}
 });
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
@@ -96,9 +76,5 @@ public int getCatFoodSlot() {
         int salmon = InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
         if (salmon != 0)
             return salmon;
-	return InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
 }
-    public enum TargetMode {
-     BOTH, DOG, CAT
-   }
 }
