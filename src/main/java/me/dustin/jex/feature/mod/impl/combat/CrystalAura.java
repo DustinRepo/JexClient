@@ -224,7 +224,7 @@ public class CrystalAura extends Feature {
 		if (modeProperty.value() == TargetMode.RISKY)
 			return damage <= 65;
 		if (modeProperty.value() == TargetMode.SAFE)
-			return damage <= 65;
+			return damage < 20;
 		return true;
 	}
 
