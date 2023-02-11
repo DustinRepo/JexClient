@@ -57,10 +57,7 @@ public class AntiProjectile extends Feature {
                     event.setRotation(rotation);
 		    PlayerHelper.INSTANCE.setRotation(event.getRotation());
                 }
-                if (swingProperty.value()) {
-                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                }
-				Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), bulletEntity);
+		 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), bulletEntity);
             }
 		}
         }
@@ -72,10 +69,7 @@ public class AntiProjectile extends Feature {
                     event.setRotation(rotation);
 		    PlayerHelper.INSTANCE.setRotation(event.getRotation());
                 }
-                if (swingProperty.value()) {
-                    Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                }
-				Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), fireballEntity);
+		Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), fireballEntity);
             }
 			}
         }
