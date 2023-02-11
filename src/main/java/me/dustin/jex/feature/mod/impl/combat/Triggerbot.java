@@ -13,7 +13,6 @@ import me.dustin.jex.helper.player.FriendHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 
 public class Triggerbot extends Feature {
@@ -55,13 +54,11 @@ public class Triggerbot extends Feature {
             if (checkpressProperty.value()) {
             if (isValid(entity) && attack && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
-                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             }
             }
             else {
                 if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
-                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 }
             }
         }
