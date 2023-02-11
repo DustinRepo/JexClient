@@ -69,7 +69,9 @@ public int getCatFoodSlot() {
         if (cod != -1)
             return cod;
         int salmon = InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
-        if (salmon != 0)
+        if (salmon != -1)
             return salmon;
+	int eat = cod + salmon;
+	return eat;
 }
 }
