@@ -89,7 +89,7 @@ if (modeProperty.value() == TargetMode.CAT) {
         return InventoryHelper.INSTANCE.getFromHotbar(Items.COOKED_RABBIT);
     }
 	
-private void int getCatFoodSlot() {
+public int getCatFoodSlot() {
         int cod = InventoryHelper.INSTANCE.getFromHotbar(Items.COD);
         if (cod != -1)
             return cod;
