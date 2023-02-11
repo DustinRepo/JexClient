@@ -31,7 +31,7 @@ public class AutoPetFeeder extends Feature {
         int slotdog = getDogFoodSlot();
         if (slotdog == -1)
             return;
-		int slotcat = getCatFoodSlot();
+	int slotcat = getCatFoodSlot();
         if (slotcat == -1)
             return;
         int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
@@ -52,7 +52,7 @@ public class AutoPetFeeder extends Feature {
 Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof CatEntity catEntity && EntityHelper.INSTANCE.doesPlayerOwn(catEntity)) {
                 if (catEntity.getHealth() < catEntity.getMaxHealth()) {
-                    InventoryHelper.INSTANCE.setSlot(*slot*, false, true);
+                    InventoryHelper.INSTANCE.setSlot(slotcat, false, true);
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), catEntity, Hand.MAIN_HAND);
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
@@ -63,7 +63,7 @@ if (modeProperty.value() == TargetMode.BOTH) {
 Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (entity instanceof CatEntity catEntity && EntityHelper.INSTANCE.doesPlayerOwn(catEntity)) {
 			if (catEntity.getHealth() < catEntity.getMaxHealth()) {
-                    InventoryHelper.INSTANCE.setSlot(*slot*, false, true);
+                    InventoryHelper.INSTANCE.setSlot(slotcat, false, true);
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), catEntity, Hand.MAIN_HAND);
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
@@ -73,8 +73,8 @@ Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().interactEntity(Wrapper.INSTANCE.getLocalPlayer(), wolfEntity, Hand.MAIN_HAND);
                     InventoryHelper.INSTANCE.setSlot(savedSlot, false, true);
                 }
-				}	
-		  });
+	      }	
+           });
        }	
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
