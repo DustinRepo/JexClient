@@ -43,7 +43,7 @@ public class KillAura extends Feature {
     public final Property<Float> reachProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Reach")
             .value(3.8f)
-            .min(3f)
+            .min(2f)
             .max(7f)
             .inc(0.1f)
             .build();
