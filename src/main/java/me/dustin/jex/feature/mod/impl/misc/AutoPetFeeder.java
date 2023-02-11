@@ -90,10 +90,10 @@ if (modeProperty.value() == TargetMode.CAT) {
     }
 	
 	private int getCatFoodSlot() {
-        int cod = InventoryHelper.INSTANCE.getFromHotbar(Items.RAW_BEEF);
+        int cod = InventoryHelper.INSTANCE.getFromHotbar(Items.COD);
         if (cod != -1)
             return cod;
-        int salmon = InventoryHelper.INSTANCE.getFromHotbar(Items.RAW_SALMON);
+        int salmon = InventoryHelper.INSTANCE.getFromHotbar(Items.SALMON);
         if (salmon != -1)
             return salmon;
     }
