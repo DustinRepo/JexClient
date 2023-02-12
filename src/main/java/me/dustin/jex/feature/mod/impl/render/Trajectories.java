@@ -108,7 +108,7 @@ public class Trajectories extends Feature {
                         Vec3d vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, event.getPartialTicks());
                         Render3DHelper.INSTANCE.drawEntityBox(event.getPoseStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColorProperty.value().getRGB());
                     } else {
-                        Box bb1 = new Box(vec.x - 0.2f, vec.y - 0.2f, vec.z - 0.2f, vec.x + 0.2f, vec.y + 0.2f, vec.z + 0.2f);
+                        Box bb1 = new Box(vec.x - 0.1f, vec.y - 0.1f, vec.z - 0.1f, vec.x + 0.1f, vec.y + 0.1f, vec.z + 0.1f);
                         Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb1, missColorProperty.value().getRGB());
                     }
                 }
