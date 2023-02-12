@@ -37,7 +37,7 @@ public class AutoGapple extends Feature {
             .name("Health")
             .value(10)
             .min(1)
-            .max(19)
+            .max(20)
             .build();
     public final Property<Boolean> pressKeyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Press Key")
