@@ -69,7 +69,6 @@ public class Nuker extends Feature {
             new EventClickBlock(blockPos, Direction.UP, EventClickBlock.Mode.PRE).run();
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.UP));
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockPos, Direction.UP));
-            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             stopWatch.reset();
         });
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
