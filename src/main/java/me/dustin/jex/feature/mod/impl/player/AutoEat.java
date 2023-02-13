@@ -51,7 +51,7 @@ public class AutoEat extends Feature {
             .min(1)
             .max(20)
             .inc(1)
-            .parent(eatToregenProperty)
+            .parent(eatToRegenProperty)
 	    .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Integer> hungerProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -60,7 +60,7 @@ public class AutoEat extends Feature {
             .min(18)
             .max(20)
             .inc(1)
-            .parent(eatToregenProperty)
+            .parent(eatToRegenProperty)
 	    .depends(parent -> (boolean)parent.value())
             .build();
 
