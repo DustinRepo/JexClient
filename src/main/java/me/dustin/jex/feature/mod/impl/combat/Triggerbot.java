@@ -45,6 +45,10 @@ public class Triggerbot extends Feature {
             .name("When-holding-attack")
             .value(true)
             .build();
+    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
+            .build();
 
     public Triggerbot() {
         super(Category.COMBAT, "Automatically attack entities you hover over");
@@ -58,11 +62,17 @@ public class Triggerbot extends Feature {
             if (checkpressProperty.value()) {
             if (isValid(entity) && attack && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
+                if (swingProperty.value()) {
+                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                }
             }
             }
             else {
                 if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
+                  if (swingProperty.value()) {
+                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                }
                 }
             }
         }
