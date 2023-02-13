@@ -62,17 +62,15 @@ public class Triggerbot extends Feature {
             if (checkpressProperty.value()) {
             if (isValid(entity) && attack && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
-                if (swingProperty.value()) {
+                if (swingProperty.value()) 
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                }
             }
             }
             else {
                 if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
-                  if (swingProperty.value()) {
+                 if (swingProperty.value())
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
-                }
                 }
             }
         }
