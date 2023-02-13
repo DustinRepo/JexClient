@@ -52,7 +52,7 @@ public class AutoEat extends Feature {
             .max(20)
             .inc(1)
             .parent(eatToregenProperty)
-			.depends(parent -> (boolean)parent.value())
+	    .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Integer> hungerProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Hunger")
@@ -61,7 +61,7 @@ public class AutoEat extends Feature {
             .max(20)
             .inc(1)
             .parent(eatToregenProperty)
-			.depends(parent -> (boolean)parent.value())
+	    .depends(parent -> (boolean)parent.value())
             .build();
 
     private boolean wasEating;
