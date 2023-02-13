@@ -11,6 +11,7 @@ import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
@@ -117,8 +118,9 @@ public class SingleAura extends FeatureExtension {
                     PlayerHelper.INSTANCE.unblock();
                 }
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), target);
-                if (Killaura.INSTANCE.swingProperty.value())
+                if (swingProperty.value()) {
                 PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
+                }
                 if (KillAura.INSTANCE.autoBlockProperty.value() && reblock) {
                     PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
                 }
