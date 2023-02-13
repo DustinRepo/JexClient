@@ -59,6 +59,10 @@ public class CrystalAura extends Feature {
 			.name("Auto Place")
 			.value(false)
 			.build();
+	public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+                        .name("Swing")
+                        .value(true)
+                        .build();
 	public final Property<Boolean> visualizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Visualize")
 			.value(true)
