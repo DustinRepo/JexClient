@@ -117,7 +117,7 @@ public class SingleAura extends FeatureExtension {
                     PlayerHelper.INSTANCE.unblock();
                 }
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), target);
-                if (swingProperty.value())
+                if (Killaura.INSTANCE.swingProperty.value())
                 PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
                 if (KillAura.INSTANCE.autoBlockProperty.value() && reblock) {
                     PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
