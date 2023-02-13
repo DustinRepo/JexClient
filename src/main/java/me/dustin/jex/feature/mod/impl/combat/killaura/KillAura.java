@@ -148,6 +148,10 @@ public class KillAura extends Feature {
             .description("Hit whatever is between you and your target.")
             .value(false)
             .build();
+    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
+            .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
             .description("Whether or not to rotate your head on the server.")
