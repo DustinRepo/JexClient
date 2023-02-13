@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.Hand;
 
 public class Triggerbot extends Feature {
 
