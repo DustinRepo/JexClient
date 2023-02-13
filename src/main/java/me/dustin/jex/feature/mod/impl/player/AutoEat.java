@@ -145,7 +145,7 @@ public class AutoEat extends Feature {
         if (!eatToRegenProperty.value()) {
             return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger();
         } else {
-          Wrapper.INSTANCE.getLocalPlayer().getHealth() < healthProperty.value() && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() <= 18;
+          (Wrapper.INSTANCE.getLocalPlayer().getHealth() < healthProperty.value() && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() <= 18);
         }
     }
 
