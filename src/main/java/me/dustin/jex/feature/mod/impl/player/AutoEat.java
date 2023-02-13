@@ -53,9 +53,10 @@ public class AutoEat extends Feature {
             .build();
     public final Property<Integer> hungerProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Hunger")
-            .value(10)
+            .value(18)
             .min(18)
             .max(20)
+            .inc(1)
             .build();
 
     private boolean wasEating;
@@ -145,7 +146,7 @@ public class AutoEat extends Feature {
         if (!eatToRegenProperty.value()) {
             return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger();
         } else {
-          (Wrapper.INSTANCE.getLocalPlayer().getHealth() < healthProperty.value() && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() <= 18);
+          return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger() || (Wrapper.INSTANCE.getLocalPlayer().getHealth() < healthProperty.value() && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() <= hungerProperty.value());
         }
     }
 
