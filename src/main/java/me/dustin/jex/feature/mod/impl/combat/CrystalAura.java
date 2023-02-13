@@ -146,6 +146,8 @@ public class CrystalAura extends Feature {
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
 						Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
+						if (swingProperty.value()) 
+                                                Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 					}
 				  }
 			});
