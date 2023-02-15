@@ -46,7 +46,9 @@ public class AnchorAura extends Feature {
     public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Attack Delay (MS)")
             .value(200L)
+            .min(0)
             .max(2000)
+            .inc(10)
             .build();
     public final Property<Boolean> autoPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Auto Place")
