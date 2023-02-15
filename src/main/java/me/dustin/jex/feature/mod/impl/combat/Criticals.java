@@ -21,8 +21,8 @@ public class Criticals extends Feature {
             .value(true)
             .build();
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
-            .name("Break Delay")
-            .description("Delay between breaking blocks in milliseconds")
+            .name("Time Delay")
+            .description("Delay between send packets in milliseconds")
             .value(0L)
             .max(1000L)
             .inc(10L)
