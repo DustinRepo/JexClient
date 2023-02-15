@@ -102,9 +102,9 @@ public class MultiAura extends FeatureExtension {
                 }
             }
         }else {
-            if (KillAura.INSTANCE.autoBlockProperty.value())
+            if (KillAura.INSTANCE.autoBlockProperty.value()) {
                 PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
-
+            }
             boolean canSwing = KillAura.INSTANCE.canSwing();
             if (canSwing)
                 if (EntityHelper.INSTANCE.isAuraBlocking()) {
