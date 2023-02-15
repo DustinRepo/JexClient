@@ -19,6 +19,13 @@ public class Criticals extends Feature {
             .description("Only use Criticals on living entities.")
             .value(true)
             .build();
+    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Break Delay")
+            .description("Delay between breaking blocks in milliseconds")
+            .value(0L)
+            .max(1000L)
+            .inc(10L)
+            .build();
     public final Property<Boolean> extraParticlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Extra Particles")
             .description("Whether or not to add extra (fake) critical particles.")
@@ -37,6 +44,8 @@ public class Criticals extends Feature {
     public Criticals() {
         super(Category.COMBAT, "Automatically deal critical strikes when attacking.");
     }
+    
+    private final StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
@@ -53,6 +62,7 @@ public class Criticals extends Feature {
     });
 
     public void crit() {
+        if (stopWatch.hasPassed(delayProperty.value()))
         if (Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.05F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
