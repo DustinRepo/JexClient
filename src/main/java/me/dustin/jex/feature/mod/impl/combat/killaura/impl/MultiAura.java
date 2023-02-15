@@ -129,8 +129,9 @@ public class MultiAura extends FeatureExtension {
                 }
             }
             if (canSwing) {
-                if (KillAura.INSTANCE.swingProperty.value())
+                if (KillAura.INSTANCE.swingProperty.value()) {
                 PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
+                }
                 Wrapper.INSTANCE.getLocalPlayer().resetLastAttackedTicks();
             }
 
