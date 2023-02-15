@@ -63,10 +63,6 @@ public class Nuker extends Feature {
             .name("Swing")
             .value(true)
             .build();
-    public final Property<Boolean> whitelistProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Whitelist")
-            .value(true)
-            .build();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
