@@ -57,8 +57,6 @@ public class SpeedMine extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().isCreative())
-            return;
         switch (modeProperty.value()) {
             case PROGRESS, INSTANT -> {
                 if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
