@@ -20,12 +20,13 @@ public class Criticals extends Feature {
             .description("Only use Criticals on living entities.")
             .value(true)
             .build();
-    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
-            .name("Time Delay")
-            .description("Delay between send packets in milliseconds")
-            .value(0L)
-            .max(1000L)
-            .inc(10L)
+    public final Property<Float> delayProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Time Delay (S)")
+            .description("Delay between send critical packets in milliseconds")
+            .value(0)
+            .min(0)
+            .max(10)
+            .inc(0.1)
             .build();
     public final Property<Boolean> extraParticlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Extra Particles")
@@ -63,7 +64,7 @@ public class Criticals extends Feature {
     });
 
     public void crit() {
-        if (stopWatch.hasPassed(delayProperty.value()))
+        if (stopWatch.hasPassed(delayProperty.value() * 1000))
         if (Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.05F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
