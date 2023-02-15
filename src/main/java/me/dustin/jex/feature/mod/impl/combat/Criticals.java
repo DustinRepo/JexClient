@@ -22,7 +22,7 @@ public class Criticals extends Feature {
             .build();
     public final Property<Float> delayProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Time Delay (S)")
-            .description("Delay between send critical packets in milliseconds")
+            .description("Delay between send critical packets in seconds")
             .value(0)
             .min(0)
             .max(10)
