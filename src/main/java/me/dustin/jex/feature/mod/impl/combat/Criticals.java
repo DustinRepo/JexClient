@@ -48,7 +48,7 @@ public class Criticals extends Feature {
     }
     
     private final StopWatch stopWatch = new StopWatch();
-    Long delay = delayProperty.value() * 1000
+    Long delay = Long.valueOf(delayProperty.value() * 1000);
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
