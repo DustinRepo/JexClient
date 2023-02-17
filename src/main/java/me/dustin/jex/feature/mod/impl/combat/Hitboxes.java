@@ -23,24 +23,24 @@ public class Hitboxes extends Feature {
             .name("ExpandX")
             .value(0.1f)
             .min(0f)
-            .max(1f)
-            .inc(0.01f)
+            .max(2f)
+            .inc(0.02f)
             .build();
     
      public final Property<Float> expandYProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("ExpandY")
             .value(0.1f)
             .min(0f)
-            .max(1f)
-            .inc(0.01f)
+            .max(2f)
+            .inc(0.02f)
             .build();
     
      public final Property<Float> expandZProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("ExpandZ")
             .value(0.1f)
             .min(0f)
-            .max(1f)
-            .inc(0.01f)
+            .max(2f)
+            .inc(0.02f)
             .build();
     
     	public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
