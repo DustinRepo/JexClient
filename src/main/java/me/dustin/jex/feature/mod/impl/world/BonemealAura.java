@@ -25,7 +25,15 @@ import net.minecraft.util.math.Vec3d;
 public class BonemealAura extends Feature {
     public static BonemealAura INSTANCE;
     private boolean isBonemealing;
-	
+
+public final Property<Integer> radiusProperty = new Property.PropertyBuilder<integer>(this.getClass())
+            .name("GroundRadius")
+            .description("Aura work distance")
+            .value(6)
+            .min(2)
+            .max(6)
+            .inc(1)
+            .build();
 public final Property<Boolean> checkgrowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("CheckGrow")
             .value(true)
@@ -110,12 +118,12 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
     }
 
     public BlockPos getCrop() {
-        for (int x = -4; x < 4; x++) {
-            for (int y = -2; y < 2; y++) {
-                for (int z = -4; z < 4; z++) {
-                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
-                    Block block = WorldHelper.INSTANCE.getBlock(blockPos);
-		if (checkgrowProperty.value()) {	
+        for (int x = -radiusProperty.value(); x < radiusProperty.value(); x++) {
+        for (int y = -radiusProperty.value(); y < radiusProperty.value(); y++) {
+        for (int z = -radiusProperty.value(); z < radiusProperty.value(); z++) {
+            BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
+            Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+	if (checkgrowProperty.value()) {	
 	 if(!(block instanceof Fertilizable) && block instanceof GrassBlock){
 			return null;
 	 }
