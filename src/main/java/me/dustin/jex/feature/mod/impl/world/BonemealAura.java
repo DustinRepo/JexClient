@@ -26,7 +26,7 @@ public class BonemealAura extends Feature {
     public static BonemealAura INSTANCE;
     private boolean isBonemealing;
 
-public final Property<Integer> radiusProperty = new Property.PropertyBuilder<integer>(this.getClass())
+public final Property<Integer> radiusProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Radius")
             .description("Aura work distance radius")
             .value(6)
