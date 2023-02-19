@@ -190,7 +190,9 @@ public enum Render2DHelper {
             RenderSystem.enableBlend();
             drawTexture(poseStack, x, y, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 64 * renderScale, 64 * renderScale);
             drawTexture(poseStack, x, y, 8 * renderScale, 8 * renderScale, 40 * renderScale, 8 * renderScale, 8 * renderScale, 8 * renderScale, 64 * renderScale, 64 * renderScale);
-        }catch (Exception e){}
+        }catch (Exception e){
+            return null;
+        }
     }
 
 
