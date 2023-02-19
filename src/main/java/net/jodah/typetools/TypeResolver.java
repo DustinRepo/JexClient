@@ -14,7 +14,7 @@ package net.jodah.typetools;/*
  * limitations under the License.
  */
 
-import jdk.base.Unsafe;
+import java.base.Unsafe;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
