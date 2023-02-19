@@ -112,10 +112,10 @@ public class Search extends Feature {
         if (blocks == null || blocks.isEmpty())
             return;
         ArrayList<Render3DHelper.BoxStorage> boxList = new ArrayList<>();
-        for (BlockPos pos : worldBlocks.keySet()) {
+        for (Map.Entry <String, Integer> entry : worldBlocks.keySet()) {
             Block block = worldBlocks.get(pos);
             if (WorldHelper.INSTANCE.getBlock(pos) != block) {
-                worldBlocks.remove(pos);
+                entry.remove(pos);
                 continue;
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
@@ -134,11 +134,11 @@ public class Search extends Feature {
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         if (!tracersProperty.value())
             return;
-        for (BlockPos pos : worldBlocks.keySet()) {
+        for (Map.Entry <String, Integer> entry : worldBlocks.entrySet()) {
             Block block = worldBlocks.get(pos);
             if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlock(pos) != block) {
-                worldBlocks.remove(pos);
-                continue;
+                entry.remove(pos);
+                continue;  
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
             assert cameraEntity != null;
