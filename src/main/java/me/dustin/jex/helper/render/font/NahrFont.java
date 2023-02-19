@@ -242,6 +242,7 @@ public class NahrFont {
                     drawChar(matrixStack, c, x, y, newColor);
                     x += getStringWidth(Character.toString(c)) * 2.0F;
                 } catch (ArrayIndexOutOfBoundsException indexException) {
+                    return null;
                 }
             }
         BufferHelper.INSTANCE.drawWithShader(bufferBuilder, GameRenderer::getPositionTexColorShader);
