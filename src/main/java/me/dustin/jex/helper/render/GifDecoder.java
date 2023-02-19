@@ -294,7 +294,6 @@ public class GifDecoder {
       }
       status = read(in);
     } catch (IOException e) {
-      return 0;
       status = STATUS_OPEN_ERROR;
     }
 
