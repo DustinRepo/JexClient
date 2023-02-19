@@ -40,7 +40,9 @@ public enum KeyboardHelper {
                 int i = Integer.parseInt(n) - 1;
                 if (i > 2)
                     return 10000 + i;
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            return;
+            }
         }
         keyName = keyName.replace("_", ".");
         if (!keyName.startsWith("key.keyboard."))
@@ -48,7 +50,9 @@ public enum KeyboardHelper {
 
         try {
             return InputUtil.fromTranslationKey(keyName).getCode();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        return;
+        }
         return -1;
     }
 
