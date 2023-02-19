@@ -81,7 +81,9 @@ public class Fakelag extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             try {
                 packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                return void;
+            }
             packets.clear();
         }
         super.onDisable();
