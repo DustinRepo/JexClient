@@ -61,6 +61,7 @@ public class Search extends Feature {
 
     private static final ConcurrentMap<Block, Integer> blocks = Maps.newConcurrentMap();
     private static final ConcurrentMap<BlockPos, Block> worldBlocks = Maps.newConcurrentMap();
+    Blockpos pos;
 
     private Thread thread;
     private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
@@ -113,10 +114,10 @@ public class Search extends Feature {
         if (blocks == null || blocks.isEmpty())
             return;
         ArrayList<Render3DHelper.BoxStorage> boxList = new ArrayList<>();
-        for (Map.Entry <String, Integer> entry : worldBlocks.entrySet()) {
-            Block block = worldBlocks.getBlockPos();
-            if (WorldHelper.INSTANCE.getBlock(entry.getBlockPos()) != block) {
-                entry.remove(block);
+        for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
+            Block block = worldBlocks.get(pos);
+            if (WorldHelper.INSTANCE.getBlock(entry) != block) {
+                entry.remove(entry);
                 continue;
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
@@ -135,10 +136,10 @@ public class Search extends Feature {
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         if (!tracersProperty.value())
             return;
-        for (Map.Entry <String, Integer> entry : worldBlocks.entrySet()) {
-            Block block = worldBlocks.getBlockPos();
-            if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlock(entry.getBlockPos()) != block) {
-                entry.remove(block);
+        for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
+            Block block = worldBlocks.get(pos);
+            if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlock(entry) != block) {
+                entry.remove(entry);
                 continue;  
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
