@@ -46,7 +46,7 @@ public class EntityRider extends Feature {
             .value(1f)
             .min(0.1f)
             .max(2)
-            .inc(0.05f)
+            .inc(0.02f)
             .parent(horseProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
@@ -55,7 +55,7 @@ public class EntityRider extends Feature {
             .value(1f)
             .min(0.1f)
             .max(2)
-            .inc(0.05f)
+            .inc(0.02f)
             .parent(horseProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
@@ -87,7 +87,7 @@ public class EntityRider extends Feature {
             .value(1f)
             .min(0.1f)
             .max(2)
-            .inc(0.05f)
+            .inc(0.02f)
             .parent(llamaProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
@@ -96,7 +96,7 @@ public class EntityRider extends Feature {
             .value(1f)
             .min(0.1f)
             .max(2)
-            .inc(0.05f)
+            .inc(0.02f)
             .parent(llamaProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
@@ -116,7 +116,7 @@ public class EntityRider extends Feature {
             .value(1f)
             .min(0.1f)
             .max(2)
-            .inc(0.05f)
+            .inc(0.02f)
             .parent(boatProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
@@ -125,7 +125,7 @@ public class EntityRider extends Feature {
             .value(1f)
             .min(0.1f)
             .max(2)
-            .inc(0.05f)
+            .inc(0.02f)
             .parent(boatProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
