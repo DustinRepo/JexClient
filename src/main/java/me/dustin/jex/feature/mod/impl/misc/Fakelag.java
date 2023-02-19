@@ -82,7 +82,7 @@ public class Fakelag extends Feature {
             try {
                 packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
             } catch (Exception e) {
-                return void;
+                return;
             }
             packets.clear();
         }
