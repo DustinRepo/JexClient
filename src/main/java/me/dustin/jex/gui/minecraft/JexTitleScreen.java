@@ -261,7 +261,9 @@ public class JexTitleScreen extends Screen {
                     } else {
                         Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, new Identifier("assets/jex", "cape/jex_cape.png"), capeYaw, 0);
                     }
-                }catch (Exception e) {}
+                }catch (Exception e) {
+                    return null;
+                }
             } else {
                 if (CapeHelper.INSTANCE.hasCape("self")) {
                     Render2DHelper.INSTANCE.draw3DCape(matrices, 2, bottom+ 35, CapeHelper.INSTANCE.getCape("self"), capeYaw, 0);
