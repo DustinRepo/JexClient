@@ -41,7 +41,7 @@ public enum KeyboardHelper {
                 if (i > 2)
                     return 10000 + i;
             } catch (Exception e) {
-            return;
+            return null;
             }
         }
         keyName = keyName.replace("_", ".");
@@ -51,7 +51,7 @@ public enum KeyboardHelper {
         try {
             return InputUtil.fromTranslationKey(keyName).getCode();
         } catch (Exception e) {
-        return;
+        return null;
         }
         return -1;
     }
