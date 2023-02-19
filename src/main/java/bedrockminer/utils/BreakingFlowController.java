@@ -32,6 +32,7 @@ public class BreakingFlowController {
                 cachedTargetBlockList.add(targetBlock);
             }
         } else {
+            return;
         }
     }
 
