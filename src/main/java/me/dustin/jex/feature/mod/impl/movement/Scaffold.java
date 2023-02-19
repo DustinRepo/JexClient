@@ -46,12 +46,14 @@ public class Scaffold extends Feature {
     public final Property<Integer> xrangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("RangeX")
             .value(1)
-            .max(6)
+            .min(0)
+            .max(5)
             .build();
     public final Property<Integer> zrangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("RangeZ")
             .value(1)
-            .max(6)
+            .min(0)
+            .max(5)
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
