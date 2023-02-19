@@ -253,9 +253,7 @@ public class GifDecoder {
     }
     try {
       is.close();
-    } catch (IOException e) {
-      return null;
-    }
+    } catch (IOException e) {}
     return status;
   }
 
