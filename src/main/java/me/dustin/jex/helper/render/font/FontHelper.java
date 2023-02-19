@@ -109,7 +109,7 @@ public enum FontHelper {
             this.clientFont = font;
             return true;
         } catch (Exception e) {
-            return null;
+            return 0;
         }
         return false;
     }
