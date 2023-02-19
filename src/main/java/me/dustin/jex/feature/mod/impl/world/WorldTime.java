@@ -17,7 +17,9 @@ public class WorldTime extends Feature {
     public final Property<Long> timeProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Time")
             .value(6000L)
+            .min(0)
             .max(24000)
+            .inc(1000)
             .build();
 
     public WorldTime() {
