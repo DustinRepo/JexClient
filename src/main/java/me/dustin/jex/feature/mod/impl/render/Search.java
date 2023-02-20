@@ -110,7 +110,7 @@ public class Search extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
+        BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos();
         if (blocks == null || blocks.isEmpty())
             return;
         ArrayList<Render3DHelper.BoxStorage> boxList = new ArrayList<>();
@@ -134,7 +134,7 @@ public class Search extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
-        BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
+        BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos();
         if (!tracersProperty.value())
             return;
         for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
