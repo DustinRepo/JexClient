@@ -139,7 +139,7 @@ public class Search extends Feature {
             return;
         for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
             Block block = worldBlocks.get(entry);
-            if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlock(pos) != block) {
+            if (!blocks.containsValue(block) || WorldHelper.INSTANCE.getBlock(pos) != block) {
                 worldBlocks.remove(entry);
                 continue;  
             }
