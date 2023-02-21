@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.Map;
+import java.lang.NullPointerException;
 
 public class Search extends Feature {
 
@@ -134,6 +135,7 @@ public class Search extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
+        try {
         BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos();
         if (!tracersProperty.value())
             return;
@@ -143,6 +145,8 @@ public class Search extends Feature {
                 worldBlocks.remove(entry);
                 continue;  
             }
+        }
+        catch (NullPointerException e) {}
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
             assert cameraEntity != null;
             Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
