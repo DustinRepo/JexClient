@@ -115,7 +115,7 @@ public class Search extends Feature {
             return;
         ArrayList<Render3DHelper.BoxStorage> boxList = new ArrayList<>();
         for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
-            Block block = entry.getBlock(worldBlocks);
+            Block block = entry.get(worldBlocks);
             if (WorldHelper.INSTANCE.getBlock(pos) != block) {
                 worldBlocks.remove(entry);
                 continue;
@@ -138,7 +138,7 @@ public class Search extends Feature {
         if (!tracersProperty.value())
             return;
         for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
-            Block block = entry.getBlock(worldBlocks);
+            Block block = entry.get(worldBlocks);
             if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlock(pos) != block) {
                 worldBlocks.remove(entry);
                 continue;  
