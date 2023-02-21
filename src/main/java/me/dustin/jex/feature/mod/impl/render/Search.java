@@ -114,12 +114,10 @@ public class Search extends Feature {
         if (blocks == null || blocks.isEmpty())
             return;
         ArrayList<Render3DHelper.BoxStorage> boxList = new ArrayList<>();
-        for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
+        for (Map.Entry <BlockPos pos, Block> entry : worldBlocks.entrySet()) {
             Block block = entry.getBlock(worldBlocks);
-            Integer value = entry.getValue();
             if (WorldHelper.INSTANCE.getBlock(pos) != block) {
-                worldBlocks.remove(pos);
-                worldBlocks.remove(value);
+                worldBlocks.remove(entry);
                 continue;
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
@@ -142,7 +140,7 @@ public class Search extends Feature {
         for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
             Block block = entry.getBlock(worldBlocks);
             if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlock(pos) != block) {
-                worldBlocks.remove(pos);
+                worldBlocks.remove(entry);
                 continue;  
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
