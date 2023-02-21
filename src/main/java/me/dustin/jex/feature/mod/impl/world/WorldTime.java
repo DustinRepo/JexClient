@@ -19,7 +19,7 @@ public class WorldTime extends Feature {
             .value(6000L)
             .min(0)
             .max(24000)
-            .inc(1000)
+            .inc(240)
             .build();
 
     public WorldTime() {
