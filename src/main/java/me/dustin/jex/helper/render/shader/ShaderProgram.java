@@ -79,8 +79,7 @@ public abstract class ShaderProgram {
 		if (glGetProgrami(shaderProgram, GL_LINK_STATUS) == GL_FALSE) {
 			JexClient.INSTANCE.getLogger().info(this.shaderName + " Shader failed to compile!");
 			JexClient.INSTANCE.getLogger().info(glGetProgramInfoLog(shaderProgram, 2048));
-	                throw new InvalidInputException();
-			//System.exit(-1);
+			System.exit(-1);
 		}
 		// Validating here seems to break macs
 		/*
@@ -93,8 +92,7 @@ public abstract class ShaderProgram {
 		if (errorCheckValue != GL_NO_ERROR) {
 			JexClient.INSTANCE.getLogger().info(this.shaderName + " Could not create shader " + this.shaderName);
 			JexClient.INSTANCE.getLogger().info(glGetProgramInfoLog(shaderProgram, glGetProgrami(shaderProgram, GL_INFO_LOG_LENGTH)));
-			throw new InvalidInputException();
-			//System.exit(-1);
+			System.exit(-1);
 		}
 	}
 
@@ -106,8 +104,7 @@ public abstract class ShaderProgram {
 		if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == GL_FALSE) {
 			JexClient.INSTANCE.getLogger().info(this.shaderName + " Shader failed to compile!");
 			JexClient.INSTANCE.getLogger().info(glGetShaderInfoLog(shaderID, 2048));
-			throw new InvalidInputException();
-			//System.exit(-1);
+			System.exit(-1);
 		}
 		return shaderID;
 	}
