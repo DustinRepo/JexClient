@@ -40,8 +40,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
-import java.util.Map;
-import java.lang.NullPointerException;
 
 public class Search extends Feature {
 
@@ -111,14 +109,13 @@ public class Search extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos();
         if (blocks == null || blocks.isEmpty())
             return;
         ArrayList<Render3DHelper.BoxStorage> boxList = new ArrayList<>();
-        for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
-            Block block = worldBlocks.get(entry);
+        for (BlockPos pos : worldBlocks.keySet()) {
+            Block block = worldBlocks.get(pos);
             if (WorldHelper.INSTANCE.getBlock(pos) != block) {
-                worldBlocks.remove(entry);
+                worldBlocks.remove(pos);
                 continue;
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
@@ -135,17 +132,14 @@ public class Search extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
-        BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos();
-         try {
         if (!tracersProperty.value())
             return;
-        for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
-            Block block = worldBlocks.get(entry);
-            if (!blocks.containsValue(block) || WorldHelper.INSTANCE.getBlock(pos) != block) {
-                worldBlocks.remove(entry);
-                continue;  
+        for (BlockPos pos : worldBlocks.keySet()) {
+            Block block = worldBlocks.get(pos);
+            if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlock(pos) != block) {
+                worldBlocks.remove(pos);
+                continue;
             }
-        } catch (NullPointerException e) {}
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
             assert cameraEntity != null;
             Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
