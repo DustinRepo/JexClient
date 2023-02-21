@@ -117,7 +117,7 @@ public class Search extends Feature {
         for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
             Block block = entry.getBlockPos();
             if (WorldHelper.INSTANCE.getBlockPos() != block) {
-                worldBlocks.remove(block);
+                worldBlocks.remove(pos);
                 continue;
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
@@ -138,9 +138,9 @@ public class Search extends Feature {
         if (!tracersProperty.value())
             return;
         for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
-            Block block = entry.getBlockPos();
+            Block block = entry.getBlock(pos);
             if (!blocks.containsKey(block) || WorldHelper.INSTANCE.getBlockPos() != block) {
-                worldBlocks.remove(block);
+                worldBlocks.remove(pos);
                 continue;  
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
