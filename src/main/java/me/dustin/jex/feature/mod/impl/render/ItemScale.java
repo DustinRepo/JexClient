@@ -14,7 +14,7 @@ public class ItemScale extends Feature {
             .name("Right Hand")
             .value(true)
             .build();
-    public final Property<float> rightHandScaleProperty = new Property.PropertyBuilder<float>(this.getClass())
+    public final Property<Float> rightHandScaleProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("RH Scale")
             .value(1f)
             .min(0f)
