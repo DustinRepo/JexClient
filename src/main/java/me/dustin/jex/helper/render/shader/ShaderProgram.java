@@ -2,6 +2,7 @@ package me.dustin.jex.helper.render.shader;
 
 import me.dustin.jex.JexClient;
 
+import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
