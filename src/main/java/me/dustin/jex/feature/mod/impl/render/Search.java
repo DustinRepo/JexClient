@@ -114,7 +114,7 @@ public class Search extends Feature {
         if (blocks == null || blocks.isEmpty())
             return;
         ArrayList<Render3DHelper.BoxStorage> boxList = new ArrayList<>();
-        for (Map.Entry <BlockPos pos, Block> entry : worldBlocks.entrySet()) {
+        for (Map.Entry <BlockPos, Block> entry : worldBlocks.entrySet()) {
             Block block = entry.getBlock(worldBlocks);
             if (WorldHelper.INSTANCE.getBlock(pos) != block) {
                 worldBlocks.remove(entry);
