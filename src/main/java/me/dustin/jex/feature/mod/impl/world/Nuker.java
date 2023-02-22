@@ -72,8 +72,8 @@ public class Nuker extends Feature {
         ArrayList<BlockPos> positions = getPositions();
         positions.forEach(blockPos -> {
             new EventClickBlock(blockPos, Direction.UP, EventClickBlock.Mode.PRE).run();
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.DOWN));
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockPos, Direction.DOWN));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.UP));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockPos, Direction.UP));
               if (swingProperty.value()) {
             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 	      }
@@ -90,9 +90,9 @@ public class Nuker extends Feature {
         int maxY = dist;
         int minZ = -dist;
         int maxZ = dist;
-        for (int x = maxX; x > minX; x--)
-            for (int y = maxY; y > minY; y--)
-                for (int z = maxZ; z > minZ; z--) {
+        for (int x = minX; x < maxX; x++)
+            for (int y = minY; y < maxY; y++)
+                for (int z = minZ; z < maxZ; z++) {
                     BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
