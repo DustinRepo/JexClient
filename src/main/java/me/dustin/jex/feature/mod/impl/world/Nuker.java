@@ -1,3 +1,4 @@
+
 package me.dustin.jex.feature.mod.impl.world;
 
 import me.dustin.events.core.EventListener;
@@ -59,50 +60,73 @@ public class Nuker extends Feature {
             .description("Don't break blocks below you, only above.")
             .value(true)
             .build();
-    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Swing")
-            .value(true)
-            .build();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (!stopWatch.hasPassed(delayProperty.value()))
             return;
-        ArrayList<BlockPos> positions = getPositions();
-        positions.forEach(blockPos -> {
-            new EventClickBlock(blockPos, Direction.UP, EventClickBlock.Mode.PRE).run();
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.UP));
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockPos, Direction.UP));
-            if (swingProperty.value()) 
+        ArrayList<BlockPos> positions0 = getNegativePositions();
+        positions0.forEach(block0Pos -> {
+            new EventClickBlock(block0Pos, Direction.UP, EventClickBlock.Mode.PRE).run();
+            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, block0Pos, Direction.UP));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, block0Pos, Direction.UP));
+            Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+            stopWatch.reset();
+        });
+		ArrayList<BlockPos> positions1 = getPositivePositions();
+        positions1.forEach(block1Pos -> {
+            new EventClickBlock(block1Pos, Direction.UP, EventClickBlock.Mode.PRE).run();
+            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, block1Pos, Direction.UP));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, block1Pos, Direction.UP));
             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
             stopWatch.reset();
         });
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
-    public ArrayList<BlockPos> getPositions() {
-        ArrayList<BlockPos> blockPosList = new ArrayList<>();
+    public ArrayList<BlockPos> getNegativePositions() {
+        ArrayList<BlockPos> blockPosList0 = new ArrayList<>();
         int dist = distanceProperty.value() + 2;
-        int minX = -dist;
-        int maxX = dist;
+        int minX = dist;
         int minY = keepFloorProperty.value() ? 0 : -dist;
-        int maxY = dist;
-        int minZ = -dist;
-        int maxZ = dist;
-        for (int y = minY; y < maxY; y++)
-         for (int x = minX; x < maxX; x++) 
-            for (int z = minZ; z < maxZ; z++)  {
-            BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
-               Block block = WorldHelper.INSTANCE.getBlock(pos);
+        int minZ = dist;
+        for (int x = minX; x <> 0; x--)
+            for (int y = minY; y <> 0; y--)
+                for (int z = minZ; z <> 0; z--) {
+                    BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
+                    Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
                         double distance = ClientMathHelper.INSTANCE.getDistance(Vec3d.ofCenter(pos), Wrapper.INSTANCE.getPlayer().getPos().add(0, 1, 0));
                         if (distance > distanceProperty.value())
                             continue;
-                        blockPosList.add(pos);
+                        blockPosList0.add(pos);
                         if (delayProperty.value() > 0)
                             break;
                     }
                 }
-        blockPosList.sort(Comparator.comparing(o -> o.getSquaredDistance(Wrapper.INSTANCE.getPlayer().getPos())));
-        return blockPosList;
+        blockPosList0.sort(Comparator.comparing(o -> o.getSquaredDistance(Wrapper.INSTANCE.getPlayer().getPos())));
+        return blockPosList0;
+    }
+	public ArrayList<BlockPos> getPositivePositions() {
+        ArrayList<BlockPos> blockPosList1 = new ArrayList<>();
+        int dist = distanceProperty.value() + 2;
+        int maxX = dist;
+        int maxY = keepFloorProperty.value() ? 0 : dist;
+        int maxZ = dist;
+        for (int x = 0; x <> maxX; x++)
+            for (int y = 0; y <> maxY; y++)
+                for (int z =0; z <> maxZ; z++) {
+                    BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
+                    Block block = WorldHelper.INSTANCE.getBlock(pos);
+                    if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
+                        double distance = ClientMathHelper.INSTANCE.getDistance(Vec3d.ofCenter(pos), Wrapper.INSTANCE.getPlayer().getPos().add(0, 1, 0));
+                        if (distance > distanceProperty.value())
+                            continue;
+                        blockPosList1.add(pos);
+                        if (delayProperty.value() > 0)
+                            break;
+                    }
+                }
+        blockPosList1.sort(Comparator.comparing(o -> o.getSquaredDistance(Wrapper.INSTANCE.getPlayer().getPos())));
+        return blockPosList1;
     }
 }
