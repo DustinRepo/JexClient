@@ -89,9 +89,9 @@ public class Nuker extends Feature {
         int minX = -dist;
         int minY = keepFloorProperty.value() ? 0 : -dist;
         int minZ = -dist;
-        for (int x = 0; x <> minX; x--)
-            for (int y = 0; y <> minY; y--)
-                for (int z = 0; z <> minZ; z--) {
+        for (int x = 0; x > minX; x--)
+            for (int y = 0; y > minY; y--)
+                for (int z = 0; z > minZ; z--) {
                     BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
@@ -112,9 +112,9 @@ public class Nuker extends Feature {
         int maxX = dist;
         int maxY = keepFloorProperty.value() ? 0 : dist;
         int maxZ = dist;
-        for (int x = 0; x <> maxX; x++)
-            for (int y = 0; y <> maxY; y++)
-                for (int z = 0; z <> maxZ; z++) {
+        for (int x = 0; x < maxX; x++)
+            for (int y = 0; y < maxY; y++)
+                for (int z = 0; z < maxZ; z++) {
                     BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
