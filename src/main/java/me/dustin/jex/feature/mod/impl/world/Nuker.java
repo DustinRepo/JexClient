@@ -96,7 +96,7 @@ public class Nuker extends Feature {
                     BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
-                        double distance = ClientMathHelper.INSTANCE.getDistance(Vec3d.ofCenter(pos), Wrapper.INSTANCE.getPlayer().getPos().add(0, 1, 0));
+                        double distance = ClientMathHelper.INSTANCE.getDistance(Vec3d.ofCenter(pos), Wrapper.INSTANCE.getPlayer().getPos().add(0, 0, 0));
                         if (distance > distanceProperty.value())
                             continue;
                         blockPosList.add(pos);
