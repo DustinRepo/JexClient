@@ -90,9 +90,9 @@ public class Nuker extends Feature {
         int maxY = dist;
         int minZ = -dist;
         int maxZ = dist;
-	 for (int y = minY; y < maxY; y++)
-            for (int x = maxX; x > minX; x--)
-                for (int z = minZ; z < maxZ; z++) {
+	  for (int x = maxX; x > minX; x--)
+	    for (int z = minZ; z < maxZ; z++)
+                for (int y = minY; y < maxY; y++)  {
                     BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
