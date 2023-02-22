@@ -72,8 +72,8 @@ public class Nuker extends Feature {
         ArrayList<BlockPos> positions0 = getNegativePositions();
         positions0.forEach(block0Pos -> {
             new EventClickBlock(block0Pos, Direction.UP, EventClickBlock.Mode.PRE).run();
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, block0Pos, Direction.UP));
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, block0Pos, Direction.UP));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, block0Pos, Direction.DOWN));
+            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, block0Pos, Direction.DOWN));
 	    if (swingProperty.value()) {
             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 	    }
