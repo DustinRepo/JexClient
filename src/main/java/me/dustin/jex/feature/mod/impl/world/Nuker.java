@@ -86,12 +86,12 @@ public class Nuker extends Feature {
     public ArrayList<BlockPos> getNegativePositions() {
         ArrayList<BlockPos> blockPosList0 = new ArrayList<>();
         int dist = distanceProperty.value() + 2;
-        int minX = dist;
+        int minX = -dist;
         int minY = keepFloorProperty.value() ? 0 : -dist;
-        int minZ = dist;
-        for (int x = minX; x <> 0; x--)
-            for (int y = minY; y <> 0; y--)
-                for (int z = minZ; z <> 0; z--) {
+        int minZ = -dist;
+        for (int x = 0; x <> minX; x--)
+            for (int y = 0; y <> minY; y--)
+                for (int z = 0; z <> minZ; z--) {
                     BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
@@ -114,7 +114,7 @@ public class Nuker extends Feature {
         int maxZ = dist;
         for (int x = 0; x <> maxX; x++)
             for (int y = 0; y <> maxY; y++)
-                for (int z =0; z <> maxZ; z++) {
+                for (int z = 0; z <> maxZ; z++) {
                     BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
