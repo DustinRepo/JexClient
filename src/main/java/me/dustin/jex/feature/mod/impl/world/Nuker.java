@@ -60,6 +60,10 @@ public class Nuker extends Feature {
             .description("Don't break blocks below you, only above.")
             .value(true)
             .build();
+   public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
+            .build();
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
@@ -70,7 +74,9 @@ public class Nuker extends Feature {
             new EventClickBlock(block0Pos, Direction.UP, EventClickBlock.Mode.PRE).run();
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, block0Pos, Direction.UP));
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, block0Pos, Direction.UP));
+	    if (swingProperty.value()) {
             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+	    }
             stopWatch.reset();
         });
 		ArrayList<BlockPos> positions1 = getPositivePositions();
@@ -78,7 +84,9 @@ public class Nuker extends Feature {
             new EventClickBlock(block1Pos, Direction.UP, EventClickBlock.Mode.PRE).run();
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, block1Pos, Direction.UP));
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, block1Pos, Direction.UP));
+	    if (swingProperty.value()) {
             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+	    }
             stopWatch.reset();
         });
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
