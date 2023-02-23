@@ -16,24 +16,26 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.client.network.ClientPlayerEntity;
 
-@Cmd(name = "vclip", description = "Instantly teleport vertically.", alias = {"up"}, syntax = ".vclip <amount>")
-public class CommandVClip extends Command {
+@Cmd(name = "clip", description = "Instantly teleport to position/can be used as a phase.", alias = {"mv"}, syntax = ".clip <x> <y> <z>")
+public class CommandClip extends Command {
 
     @Override
     public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
-        LiteralArgumentBuilder<FabricClientCommandSource> builder = literal(this.name).then(argument("amount", FloatArgumentType.floatArg()).executes(this));
-        dispatcher.register(literal("up").redirect(dispatcher.register(builder)));
+        LiteralArgumentBuilder<FabricClientCommandSource> builder = literal(this.name).then(argument("x", FloatArgumentType.floatArg()).then(argument("y", FloatArgumentType.floatArg()).then(argument("z", FloatArgumentType.floatArg()).executes(this))));
+        dispatcher.register(literal("mv").redirect(dispatcher.register(builder)));
     }
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        float num = FloatArgumentType.getFloat(context, "amount");
-        Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + num, Wrapper.INSTANCE.getLocalPlayer().getZ());
+        float xcord = FloatArgumentType.getFloat(context, "x");
+        float ycord = FloatArgumentType.getFloat(context, "y");
+        float zcord = FloatArgumentType.getFloat(context, "z");
+        Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX() + xcord, Wrapper.INSTANCE.getLocalPlayer().getY() + ycord, Wrapper.INSTANCE.getLocalPlayer().getZ() + zcord);
         if (Wrapper.INSTANCE.getLocalPlayer().isRiding()) {
             Wrapper.INSTANCE.getLocalPlayer().getVehicle().setPos(Wrapper.INSTANCE.getLocalPlayer().getVehicle().getX(), Wrapper.INSTANCE.getLocalPlayer().getVehicle().getY() + num, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getZ());
             NetworkHelper.INSTANCE.sendPacket(new VehicleMoveC2SPacket(Wrapper.INSTANCE.getLocalPlayer().getVehicle()));
         }
-        ChatHelper.INSTANCE.addClientMessage("Vertical teleport done");
+        ChatHelper.INSTANCE.addClientMessage("Position teleport done");
         return 1;
     }
 
