@@ -32,7 +32,7 @@ public class CommandClip extends Command {
         float zcord = FloatArgumentType.getFloat(context, "z");
         Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX() + xcord, Wrapper.INSTANCE.getLocalPlayer().getY() + ycord, Wrapper.INSTANCE.getLocalPlayer().getZ() + zcord);
         if (Wrapper.INSTANCE.getLocalPlayer().isRiding()) {
-            Wrapper.INSTANCE.getLocalPlayer().getVehicle().setPos(Wrapper.INSTANCE.getLocalPlayer().getVehicle().getX(), Wrapper.INSTANCE.getLocalPlayer().getVehicle().getY() + num, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getZ());
+            Wrapper.INSTANCE.getLocalPlayer().getVehicle().setPos(Wrapper.INSTANCE.getLocalPlayer().getVehicle().getX() + xcord, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getY() + ycord, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getZ() + zcord);
             NetworkHelper.INSTANCE.sendPacket(new VehicleMoveC2SPacket(Wrapper.INSTANCE.getLocalPlayer().getVehicle()));
         }
         ChatHelper.INSTANCE.addClientMessage("Position teleport done");
