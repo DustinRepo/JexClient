@@ -28,7 +28,7 @@ public class AntiEffect extends Feature {
             .name("Weakness")
             .value(true)
             .build();
-    public final Property<Boolean> weaknessProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> slownessProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Slowness")
             .value(true)
             .build();
@@ -65,7 +65,7 @@ public class AntiEffect extends Feature {
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.NAUSEA);
         if (miningFatigueProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.MINING_FATIGUE);
-        if (wekanessProperty.value())
+        if (weaknessProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.WEAKNESS);
         if (hungerProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HUNGER);
@@ -77,5 +77,7 @@ public class AntiEffect extends Feature {
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.SLOW_FALLING);
         if (darknessProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.DARKNESS);
+        if (slownessProperty.value())
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.SLOWNESS);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
