@@ -16,8 +16,8 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.client.network.ClientPlayerEntity;
 
-@Cmd(name = "clip", description = "Instantly teleport up/can be used as a phase.", alias = {"up"}, syntax = ".vclip <height>")
-public class CommandClip extends Command {
+@Cmd(name = "vclip", description = "Instantly teleport up/can be used as a phase.", alias = {"up"}, syntax = ".vclip <Y>")
+public class CommandVClip extends Command {
 
     @Override
     public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -27,7 +27,7 @@ public class CommandClip extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        float up = FloatArgumentType.getFloat(context, "height");
+        float up = FloatArgumentType.getFloat(context, "Y");
         Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + up, Wrapper.INSTANCE.getLocalPlayer().getZ();
         if (Wrapper.INSTANCE.getLocalPlayer().isRiding()) {
             Wrapper.INSTANCE.getLocalPlayer().getVehicle().setPos(Wrapper.INSTANCE.getLocalPlayer().getVehicle().getX() + xcord, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getY() + ycord, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getZ() + zcord);
