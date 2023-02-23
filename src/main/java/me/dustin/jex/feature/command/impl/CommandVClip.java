@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
+import net.minecraft.client.network.ClientPlayerEntity;
 
 @Cmd(name = "vclip", description = "Instantly teleport vertically.", alias = {"up"}, syntax = ".vclip <amount>")
 public class CommandVClip extends Command {
@@ -27,8 +28,7 @@ public class CommandVClip extends Command {
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         float num = FloatArgumentType.getFloat(context, "amount");
-        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + num, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), -1337.0, Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
+        Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + num, Wrapper.INSTANCE.getLocalPlayer().getZ());
         if (Wrapper.INSTANCE.getLocalPlayer().isRiding()) {
             Wrapper.INSTANCE.getLocalPlayer().getVehicle().setPos(Wrapper.INSTANCE.getLocalPlayer().getVehicle().getX(), Wrapper.INSTANCE.getLocalPlayer().getVehicle().getY() + num, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getZ());
             NetworkHelper.INSTANCE.sendPacket(new VehicleMoveC2SPacket(Wrapper.INSTANCE.getLocalPlayer().getVehicle()));
