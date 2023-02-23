@@ -13,7 +13,7 @@ public enum ConnectedServerHelper {
     @EventPointer
     private final EventListener<EventConnect> eventConnectEventListener = new EventListener<>(event -> {
         this.serverAddress = event.getServerAddress();
-        this.serverPort = event.getServerAddress();
+        this.serverPort = event.getServerPort();
         
     });
 
