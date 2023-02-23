@@ -16,21 +16,19 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.client.network.ClientPlayerEntity;
 
-@Cmd(name = "clip", description = "Instantly teleport to position/can be used as a phase.", alias = {"mv"}, syntax = ".clip <x> <y> <z>")
+@Cmd(name = "clip", description = "Instantly teleport up/can be used as a phase.", alias = {"up"}, syntax = ".vclip <height>")
 public class CommandClip extends Command {
 
     @Override
     public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
-        LiteralArgumentBuilder<FabricClientCommandSource> builder = literal(this.name).then(argument("x", FloatArgumentType.floatArg()).then(argument("y", FloatArgumentType.floatArg()).then(argument("z", FloatArgumentType.floatArg()).executes(this))));
-        dispatcher.register(literal("mv").redirect(dispatcher.register(builder)));
+        LiteralArgumentBuilder<FabricClientCommandSource> builder = literal(this.name).then(argument("y", FloatArgumentType.floatArg()));
+        dispatcher.register(literal("up").redirect(dispatcher.register(builder)));
     }
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        float xcord = FloatArgumentType.getFloat(context, "x");
-        float ycord = FloatArgumentType.getFloat(context, "y");
-        float zcord = FloatArgumentType.getFloat(context, "z");
-        Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX() + xcord, Wrapper.INSTANCE.getLocalPlayer().getY() + ycord, Wrapper.INSTANCE.getLocalPlayer().getZ() + zcord);
+        float up = FloatArgumentType.getFloat(context, "height");
+        Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + up, Wrapper.INSTANCE.getLocalPlayer().getZ();
         if (Wrapper.INSTANCE.getLocalPlayer().isRiding()) {
             Wrapper.INSTANCE.getLocalPlayer().getVehicle().setPos(Wrapper.INSTANCE.getLocalPlayer().getVehicle().getX() + xcord, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getY() + ycord, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getZ() + zcord);
             NetworkHelper.INSTANCE.sendPacket(new VehicleMoveC2SPacket(Wrapper.INSTANCE.getLocalPlayer().getVehicle()));
