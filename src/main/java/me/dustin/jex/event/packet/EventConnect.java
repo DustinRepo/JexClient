@@ -6,6 +6,7 @@ import net.minecraft.client.network.ServerAddress;
 public class EventConnect extends Event {
 
     private final ServerAddress serverAddress;
+    
 
     public EventConnect(ServerAddress serverAddress) {
         this.serverAddress = serverAddress;
