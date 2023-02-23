@@ -8,19 +8,13 @@ import net.minecraft.client.network.ServerAddress;
 public enum ConnectedServerHelper {
     INSTANCE;
     private ServerAddress serverAddress;
-    private ServerPort serverPort;
 
     @EventPointer
     private final EventListener<EventConnect> eventConnectEventListener = new EventListener<>(event -> {
-        this.serverAddress = event.getServerAddress();
-        this.serverPort = event.getServerPort();
-        
+        this.serverAddress = event.getServerAddress();  
     });
 
     public ServerAddress getServerAddress() {
         return serverAddress;
-    }
-    public ServerAddress getServerPort() {
-        return serverPort;
     }
 }
