@@ -62,7 +62,7 @@ public class Crosshair extends Feature {
 			.name("Spin Speed")
 			.value(1)
 			.min(1)
-			.max(5)
+			.max(20)
 			.parent(spinProperty)
 			.depends(parent -> (boolean) parent.value())
 			.build();
