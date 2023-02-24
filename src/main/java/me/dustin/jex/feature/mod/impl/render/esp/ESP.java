@@ -135,6 +135,36 @@ public class ESP extends Feature {
             .parent(itemProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
+    public final Property<Boolean> noliveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NoLiving")
+            .value(true)
+            .build();
+    public final Property<Color> noliveColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("NoLiving Color")
+            .value(Color.WHITE)
+            .parent(itemProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> localProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("LocalPlayer")
+            .value(true)
+            .build();
+    public final Property<Color> localColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("LocalPlayer Color")
+            .value(Color.WHITE)
+            .parent(itemProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+     public final Property<Boolean> npcProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NPC")
+            .value(true)
+            .build();
+    public final Property<Color> npcColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("NPC Color")
+            .value(Color.WHITE)
+            .parent(itemProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
 
     private Mode lastMode;
 
@@ -188,11 +218,11 @@ public class ESP extends Feature {
         if (entity instanceof ItemEntity)
             return itemProperty.value();
         if (!(entity instanceof LivingEntity livingEntity))
-            return false;
+            return noliveProperty.value();
         if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
-            return false;
+            return localProperty.value();
         if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
-            return false;
+            return npcProperty.value();
         if (livingEntity instanceof PlayerEntity)
             return playerProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
@@ -209,6 +239,12 @@ public class ESP extends Feature {
     public int getColor(Entity entity) {
         if (entity instanceof ItemEntity)
             return itemColorProperty.value().getRGB();
+        if (!(entity instanceof LivingEntity livingEntity))
+            return noliveColorProperty.value().getRGB();
+        if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
+            return localColorProperty.value().getRGB();
+        if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
+            return npcColorProperty.value().getRGB();
         if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendColorProperty.value().getRGB();
         if (entity instanceof PlayerEntity) {
