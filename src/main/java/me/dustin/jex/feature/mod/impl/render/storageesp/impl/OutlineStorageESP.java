@@ -81,7 +81,7 @@ public class OutlineStorageESP extends FeatureExtension {
                         eventWorldRender.getPoseStack().translate(vec3d.x, vec3d.y, vec3d.z);
                         BlockEntityRenderer<BlockEntity> blockEntityBlockEntityRenderer = Wrapper.INSTANCE.getMinecraft().getBlockEntityRenderDispatcher().get(blockEntity);
                         if (blockEntityBlockEntityRenderer != null)
-                            blockEntityBlockEntityRenderer.render( blockEntity, eventWorldRender.getPoseStack(), outlineVertexConsumerProvider, eventWorldRender.getPartialTicks(), 0xF000F0, OverlayTexture.DEFAULT_UV);
+                            blockEntityBlockEntityRenderer.render(blockEntity, eventWorldRender.getPoseStack(), outlineVertexConsumerProvider, eventWorldRender.getPartialTicks(), 0xF000F0, OverlayTexture.DEFAULT_UV);
                         eventWorldRender.getPoseStack().pop();
                     }
                 });
