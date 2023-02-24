@@ -142,7 +142,7 @@ public class ESP extends Feature {
     public final Property<Color> noliveColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("NoLiving Color")
             .value(Color.WHITE)
-            .parent(itemProperty)
+            .parent(noliveProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> localProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -152,7 +152,7 @@ public class ESP extends Feature {
     public final Property<Color> localColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("LocalPlayer Color")
             .value(Color.WHITE)
-            .parent(itemProperty)
+            .parent(localProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
      public final Property<Boolean> npcProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -162,7 +162,7 @@ public class ESP extends Feature {
     public final Property<Color> npcColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("NPC Color")
             .value(Color.WHITE)
-            .parent(itemProperty)
+            .parent(npcProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
 
