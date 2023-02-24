@@ -68,7 +68,7 @@ public class StorageESP extends Feature {
             .description("Fade the boxes to make the storage block easier to see.")
             .value(true)
             .parent(modeProperty)
-            .depends(parent -> parent.value() == Mode.SHADER)
+            .depends(parent -> parent.value() == Mode.BOX)
             .build();
     public final Property<Integer> fadeDistanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Fade Distance")
