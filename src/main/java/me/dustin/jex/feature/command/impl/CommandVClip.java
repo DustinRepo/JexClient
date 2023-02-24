@@ -29,7 +29,7 @@ public class CommandVClip extends Command {
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
         float up = FloatArgumentType.getFloat(context, "Y");
         Wrapper.INSTANCE.getLocalPlayer().setPos(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + up, Wrapper.INSTANCE.getLocalPlayer().getZ());
-        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + num, Wrapper.INSTANCE.getLocalPlayer().getZ(), true));
+        NetworkHelper.INSTANCE.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + num, Wrapper.INSTANCE.getLocalPlayer().getZ()));
         if (Wrapper.INSTANCE.getLocalPlayer().isRiding()) {
             Wrapper.INSTANCE.getLocalPlayer().getVehicle().setPos(Wrapper.INSTANCE.getLocalPlayer().getVehicle().getX(), Wrapper.INSTANCE.getLocalPlayer().getVehicle().getY() + up, Wrapper.INSTANCE.getLocalPlayer().getVehicle().getZ());
             NetworkHelper.INSTANCE.sendPacket(new VehicleMoveC2SPacket(Wrapper.INSTANCE.getLocalPlayer().getVehicle()));
