@@ -40,6 +40,8 @@ public class Fly extends Feature {
             .min(0.1f)
             .max(5)
             .inc(0.1f)
+            .parent(glideProperty)
+            .depends(parent -> (boolean) parent.value() != Mode.JETPACK)
             .build();
     public final Property<Boolean> walkAnimationProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Walk Animation")
