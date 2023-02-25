@@ -148,6 +148,7 @@ public class KillAura extends Feature {
             .value(false)
             .parent(specificFilterProperty)
             .depends(parent -> (boolean) parent.value())
+            .build();
         public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NoLiving")
             .value(false)
