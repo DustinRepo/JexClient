@@ -26,6 +26,13 @@ public class BlockOverlay extends Feature {
             .name("Outline Color")
             .value(new Color(0, 245, 255))
             .build();
+    public final Property<Float> sizeProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Outline size")
+            .value(0.5f)
+            .min(0.1f)
+            .max(0.5f)
+            .inc(0.01f)
+            .build();
     public final Property<Boolean> progressOverlayProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Progress Overlay")
             .description("Show block breaking progress.")
@@ -42,6 +49,7 @@ public class BlockOverlay extends Feature {
             .description("Sets the color from green to red based on break progress")
             .value(true)
             .parent(overlayColorProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
 
     public BlockHitResult clickedBlock;
@@ -57,7 +65,7 @@ public class BlockOverlay extends Feature {
         Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(clickedBlock.getBlockPos());
         if (progressOverlayProperty.value() && Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() > 0 && Wrapper.INSTANCE.getClientPlayerInteractionManager().isBreakingBlock()) {
             float breakProgress = Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() / 2;
-            Box box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
+            Box box = new Box(renderPos.x + sizeProperty.value() - breakProgress, renderPos.y + sizeProperty.value() - breakProgress, renderPos.z + sizeProperty.value() - breakProgress, renderPos.x + sizeProperty.value() + breakProgress, renderPos.y + sizeProperty.value() + breakProgress, renderPos.z + sizeProperty.value() + breakProgress);
             Render3DHelper.INSTANCE.drawBoxInside(event.getPoseStack(), box, progressColorProperty.value() ? ColorHelper.INSTANCE.redGreenShift(1 - (breakProgress * 2)) : overlayColorProperty.value().getRGB());
         }
     });
