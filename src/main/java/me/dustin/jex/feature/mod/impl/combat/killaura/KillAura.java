@@ -105,6 +105,12 @@ public class KillAura extends Feature {
             .name("Player")
             .value(true)
             .build();
+    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Friends")
+            .value(true)
+            .parent(playerProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Neutral")
             .value(false)
@@ -119,14 +125,6 @@ public class KillAura extends Feature {
             .build();
     public final Property<Boolean> passiveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Passive")
-            .value(true)
-            .build();
-    public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("NoLiving")
-            .value(true)
-            .build();
-    public final Property<Boolean> deadProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Dead")
             .value(true)
             .build();
     public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -147,6 +145,17 @@ public class KillAura extends Feature {
             .build();
     public final Property<Boolean> zombiePiglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Zombie Piglin")
+            .value(false)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
+        public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NoLiving")
+            .value(false)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> deadProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Dead")
             .value(false)
             .parent(specificFilterProperty)
             .depends(parent -> (boolean) parent.value())
@@ -226,10 +235,6 @@ public class KillAura extends Feature {
             .build();
     public final Property<Boolean> sleepingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Sleeping")
-            .value(true)
-            .build();
-    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Friends")
             .value(true)
             .build();
     public final Property<Boolean> ignoreWallsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
