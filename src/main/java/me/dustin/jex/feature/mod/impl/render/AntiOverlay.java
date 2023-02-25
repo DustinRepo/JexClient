@@ -49,10 +49,6 @@ public class AntiOverlay extends Feature {
             .name("Vignette")
             .value(true)
             .build();
-    public final Property<Boolean> bossbarProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("BossBar")
-            .value(true)
-            .build();
 
     public AntiOverlay() {
         super(Category.VISUAL, "Remove overlays");
