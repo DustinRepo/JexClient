@@ -48,7 +48,7 @@ public class BlockOverlay extends Feature {
             .name("Progress Based Color")
             .description("Sets the color from green to red based on break progress")
             .value(true)
-            .parent(overlayColorProperty)
+            .parent(progressOverlayProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
 
