@@ -25,7 +25,7 @@ public class Zoom extends Feature {
             .min(0f)
             .max(10f)
             .value(0.1f)
-            .inc(1f)
+            .inc(0.1f)
             .build();
     public final Property<Integer> zoomKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Zoom Key")
