@@ -56,8 +56,8 @@ import java.util.ArrayList;
 
 public class Trajectories extends Feature {
 
-    public final Property<Float> reachProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("Reach")
+    public final Property<Float> sizeProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Box Size")
             .value(0.1f)
             .min(0.01f)
             .max(1f)
@@ -115,7 +115,7 @@ public class Trajectories extends Feature {
                         Vec3d vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, event.getPartialTicks());
                         Render3DHelper.INSTANCE.drawEntityBox(event.getPoseStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColorProperty.value().getRGB());
                     } else {
-                        Box bb1 = new Box(vec.x - 0.1f, vec.y - 0.1f, vec.z - 0.1f, vec.x + 0.1f, vec.y + 0.1f, vec.z + 0.1f);
+                        Box bb1 = new Box(vec.x - sizeProperty.value(), vec.y - sizeProperty.value(), vec.z - sizeProperty.value(), vec.x + sizeProperty.value(), vec.y + sizeProperty.value(), vec.z + sizeProperty.value());
                         Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb1, missColorProperty.value().getRGB());
                     }
                 }
