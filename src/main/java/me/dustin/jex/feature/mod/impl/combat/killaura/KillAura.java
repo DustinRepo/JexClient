@@ -121,6 +121,14 @@ public class KillAura extends Feature {
             .name("Passive")
             .value(true)
             .build();
+    public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NoLiving")
+            .value(true)
+            .build();
+    public final Property<Boolean> deadProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Dead")
+            .value(true)
+            .build();
     public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Specific Filter")
             .value(true)
@@ -214,6 +222,14 @@ public class KillAura extends Feature {
     public final Property<Boolean> invisiblesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Invisibles")
             .description("Whether or not to attack invisible entities.")
+            .value(true)
+            .build();
+    public final Property<Boolean> sleepingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sleeping")
+            .value(true)
+            .build();
+    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Friends")
             .value(true)
             .build();
     public final Property<Boolean> ignoreWallsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -311,7 +327,7 @@ public class KillAura extends Feature {
 
     public boolean isValid(Entity entity, boolean rangecheck) {
         if (!(entity instanceof LivingEntity livingEntity))
-            return false;
+            return nolivingProperty.value();
         if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
             return false;
         if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
@@ -319,7 +335,7 @@ public class KillAura extends Feature {
                 return false;
         }
         if (livingEntity.isSleeping())
-            return false;
+            return sleepingProperty.value();
         if (entity.age < ticksExistedProperty.value())
             return false;
         if (entity.hasCustomName() && !nametaggedProperty.value())
@@ -327,7 +343,7 @@ public class KillAura extends Feature {
         if (entity.isInvisible() && !invisiblesProperty.value())
             return false;
         if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
-            return false;
+            return deadProperty.value();
         boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
         if (!canSee && !ignoreWallsProperty.value())
             return false;
@@ -344,7 +360,7 @@ public class KillAura extends Feature {
         }
         if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
-                return false;
+                return friendProperty.value();
             if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmorProperty.value()) && teamCheckProperty.value())
                 return false;
             if (botCheckProperty.value() && isBot((PlayerEntity) entity))
