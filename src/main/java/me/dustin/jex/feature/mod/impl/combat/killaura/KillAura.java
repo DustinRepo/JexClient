@@ -83,7 +83,7 @@ public class KillAura extends Feature {
     public final Property<Float> bMinDistProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Min Distance")
             .value(3f)
-            .max(7)
+            .max(6f)
             .inc(0.1f)
             .parent(baritoneOverrideProperty)
             .depends(parent -> (boolean) parent.value())
