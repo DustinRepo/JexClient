@@ -21,7 +21,7 @@ public class CommandVClip extends Command {
 
     @Override
     public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
-        LiteralArgumentBuilder<FabricClientCommandSource> builder = literal(this.name).then(argument("y", FloatArgumentType.floatArg()));
+        LiteralArgumentBuilder<FabricClientCommandSource> builder = literal(this.name).then(argument("Y", FloatArgumentType.floatArg()));
         dispatcher.register(literal("up").redirect(dispatcher.register(builder)));
     }
 
