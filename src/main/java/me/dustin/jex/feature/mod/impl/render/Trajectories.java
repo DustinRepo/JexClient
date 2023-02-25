@@ -56,6 +56,13 @@ import java.util.ArrayList;
 
 public class Trajectories extends Feature {
 
+    public final Property<Float> reachProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Reach")
+            .value(0.1f)
+            .min(0.01f)
+            .max(1f)
+            .inc(0.01f)
+            .build();
     public final Property<Boolean> disableDepthProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Z-Clip")
             .value(true)
