@@ -64,7 +64,7 @@ public class BlockOverlay extends Feature {
         Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(clickedBlock.getBlockPos());
         if (progressOverlayProperty.value() && Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() > 0 && Wrapper.INSTANCE.getClientPlayerInteractionManager().isBreakingBlock()) {
             float breakProgress = Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() / 2;
-            Box box = new Box(renderPos.x + sizeProperty.value() - breakProgress, renderPos.y + sizeProperty.value() - breakProgress, renderPos.z + sizeProperty.value() - breakProgress, renderPos.x + sizeProperty.value() + breakProgress, renderPos.y + sizeProperty.value() + breakProgress, renderPos.z + sizeProperty.value() + breakProgress);
+            Box box = new Box(renderPos.x + 0.5 - breakProgress, renderPos.y + 0.5 - breakProgress, renderPos.z + 0.5 - breakProgress, renderPos.x + 0.5 + breakProgress, renderPos.y + 0.5 + breakProgress, renderPos.z + 0.5 + breakProgress);
             Render3DHelper.INSTANCE.drawBoxInside(event.getPoseStack(), box, progressColorProperty.value() ? ColorHelper.INSTANCE.redGreenShift(1 - (breakProgress * 2)) : overlayColorProperty.value().getRGB());
         }
     });
