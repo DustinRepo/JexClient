@@ -26,13 +26,6 @@ public class BlockOverlay extends Feature {
             .name("Outline Color")
             .value(new Color(0, 245, 255))
             .build();
-    public final Property<Float> sizeProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("Outline size")
-            .value(0.5f)
-            .min(0.1f)
-            .max(0.5f)
-            .inc(0.01f)
-            .build();
     public final Property<Boolean> progressOverlayProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Progress Overlay")
             .description("Show block breaking progress.")
