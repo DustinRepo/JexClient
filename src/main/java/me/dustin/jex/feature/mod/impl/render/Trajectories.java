@@ -60,7 +60,7 @@ public class Trajectories extends Feature {
             .name("Box Size")
             .value(0.1f)
             .min(0.01f)
-            .max(1f)
+            .max(0.3f)
             .inc(0.01f)
             .build();
     public final Property<Boolean> disableDepthProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
