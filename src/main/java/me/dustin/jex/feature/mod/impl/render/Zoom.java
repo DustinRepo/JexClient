@@ -16,7 +16,6 @@ public class Zoom extends Feature {
 
     public final Property<Boolean> mouseSmoothProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Mouse Smooth")
-            .description("Smooth the mouse movement while zoomed like Optifine.")
             .value(true)
             .build();
     public final Property<Float> zoomLevelProperty = new Property.PropertyBuilder<Float>(this.getClass())
