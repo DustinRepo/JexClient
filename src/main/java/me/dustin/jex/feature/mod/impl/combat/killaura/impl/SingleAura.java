@@ -89,8 +89,8 @@ public class SingleAura extends FeatureExtension {
         if (KillAura.INSTANCE.rayTraceProperty.value() && target != null) {
             savedTarget = target;
             Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reachProperty.value());
-            if (possible != null && possible instanceof LivingEntity) {
-                target = (LivingEntity) possible;
+            if (possible != null && possible instanceof Entity) {
+                target = (Entity) possible;
             }
         }
         boolean alreadyBlocking = false;
