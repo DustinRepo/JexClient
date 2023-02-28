@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public class MultiAura extends FeatureExtension {
 
-    private final ArrayList<Entity> targets = new ArrayList<>();
+    private final ArrayList<LivingEntity> targets = new ArrayList<>();
 
     public MultiAura() {
         super(KillAura.TargetMode.MULTI, KillAura.class);
@@ -70,7 +70,7 @@ public class MultiAura extends FeatureExtension {
                 doAttack();
         }
         if (event1 instanceof EventRender3D) {
-            for (LivingEntity target : targets)
+            for (Entity target : targets)
                 if (target != null && KillAura.INSTANCE.showTargetProperty.value()) {
                     Render3DHelper.INSTANCE.drawEntityBox(((EventRender3D) event1).getPoseStack(), target, ((EventRender3D) event1).getPartialTicks(), KillAura.INSTANCE.targetColorProperty.value().getRGB());
                 }
@@ -112,7 +112,7 @@ public class MultiAura extends FeatureExtension {
                     PlayerHelper.INSTANCE.unblock();
                 }
 
-            for (LivingEntity target : targets) {
+            for (Entity target : targets) {
                 if (KillAura.INSTANCE.rayTraceProperty.value() && target != null) {
                     Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reachProperty.value());
                     if (possible instanceof LivingEntity && !targets.contains(possible)) {
@@ -144,9 +144,9 @@ public class MultiAura extends FeatureExtension {
     public void getTargets() {
         targets.clear();
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if (entity instanceof LivingEntity livingEntity1) {
-                if (KillAura.INSTANCE.isValid(livingEntity1, true)) {
-                    targets.add(livingEntity1);
+            if (entity instanceof LivingEntity entity1) {
+                if (KillAura.INSTANCE.isValid(entity1, true)) {
+                    targets.add(entity1);
                 }
             }
         }
