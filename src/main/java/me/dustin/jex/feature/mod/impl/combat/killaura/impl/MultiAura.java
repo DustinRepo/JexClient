@@ -146,8 +146,9 @@ public class MultiAura extends FeatureExtension {
     public void getTargets() {
         targets.clear();
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                if (KillAura.INSTANCE.isValid(entity, true)) {
-                    targets.add(entity);
+            Entity entity1 = entity;
+                if (KillAura.INSTANCE.isValid(entity1, true)) {
+                    targets.add(entity1);
             }
         }
     }
