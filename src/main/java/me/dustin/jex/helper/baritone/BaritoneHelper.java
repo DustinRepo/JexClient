@@ -2,7 +2,7 @@ package me.dustin.jex.helper.baritone;
 
 import me.dustin.jex.feature.mod.impl.combat.killaura.KillAura;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
 public enum BaritoneHelper {
@@ -61,7 +61,7 @@ public enum BaritoneHelper {
         }
     }
 
-    public void followUntilDead(LivingEntity entity, KillAura killaura) {
+    public void followUntilDead(Entity entity, KillAura killaura) {
         if (baritoneExists())
             UnsafeBaritoneHelper.killauraTargetProcess.followUntilDead(entity, killaura);
     }
