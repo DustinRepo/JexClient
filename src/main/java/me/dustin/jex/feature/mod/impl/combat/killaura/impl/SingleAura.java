@@ -45,7 +45,7 @@ public class SingleAura extends FeatureExtension {
                     target = getClosest();
                 }
                 if (livingtarget == null || !KillAura.INSTANCE.isValid(livingtarget, true)) {
-                    livingtarget = getClosest();
+                    livingtarget = getLivingClosest();
                 }
                 KillAura.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
@@ -150,5 +150,18 @@ public class SingleAura extends FeatureExtension {
                 }
         }
         return livingEntity;
+    }
+    public LivingEntity getLivingClosest() {
+        LivingEntity livingEntity0 = null;
+        float distance0 = KillAura.INSTANCE.reachProperty.value();
+        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+            if (entity instanceof LivingEntity livingEntity1) {
+                if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) <= distance0) {
+                    livingEntity0 = livingEntity1;
+                    distance = livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
+                }
+            }
+        }
+        return livingEntity0;
     }
 }
