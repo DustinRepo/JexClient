@@ -192,7 +192,6 @@ public class KillAura extends Feature {
 	    .build();
     public final Property<Boolean> rayTraceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("RayTrace")
-            .description("Hit whatever is between you and your target.")
             .value(false)
             .build();
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
