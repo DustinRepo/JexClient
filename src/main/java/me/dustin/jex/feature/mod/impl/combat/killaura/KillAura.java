@@ -161,6 +161,34 @@ public class KillAura extends Feature {
             .parent(specificFilterProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
+    public final Property<Boolean> projectilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	        .name("Projectiles")
+            .value(true)
+	        .build();
+    public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("Fireball")
+	    .value(true)
+        .parent(projectilesProperty)
+        .depends(parent -> (boolean) parent.value())
+	    .build();
+    public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("DragonFireball")
+	    .value(true)
+        .parent(projectilesProperty)
+        .depends(parent -> (boolean) parent.value())
+	    .build();
+    public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("ShulkerBullet")
+	    .value(true)
+        .parent(projectilesProperty)
+        .depends(parent -> (boolean) parent.value())
+	    .build();
+    public final Property<Boolean> skullProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("WitherSkull")
+	    .value(true)
+        .parent(projectilesProperty)
+        .depends(parent -> (boolean) parent.value())
+	    .build();
     public final Property<Boolean> rayTraceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("RayTrace")
             .description("Hit whatever is between you and your target.")
@@ -344,10 +372,10 @@ public class KillAura extends Feature {
             return sleepingProperty.value();
         if (entity.age < ticksExistedProperty.value())
             return false;
-        if (entity.hasCustomName() && !nametaggedProperty.value())
-            return false;
-        if (entity.isInvisible() && !invisiblesProperty.value())
-            return false;
+        if (entity.hasCustomName())
+            return nametaggedProperty.value();
+        if (entity.isInvisible())
+            return invisiblesProperty.value();
         if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
             return deadProperty.value();
         boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
@@ -372,6 +400,16 @@ public class KillAura extends Feature {
             if (botCheckProperty.value() && isBot((PlayerEntity) entity))
                 return false;
             return playerProperty.value();
+        }
+        if (projectilesProperty.value()) {
+            if (entity instanceof ShulkerBulletEntity bulletEntity)
+               return bulletProperty.value();
+            if (entity instanceof FireballEntity fireballEntity)
+               return fireballProperty.value();
+            if (entity instanceof DragonFireballEntity dragonfireballEntity)
+               return dfireballProperty.value();
+            if (entity instanceof WitherSkullEntity skullEntity)
+               return skullProperty.value();
         }
         if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
