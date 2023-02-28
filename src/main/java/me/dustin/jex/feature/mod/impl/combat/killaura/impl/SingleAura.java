@@ -27,6 +27,7 @@ import me.dustin.jex.feature.mod.impl.player.AutoEat;
 public class SingleAura extends FeatureExtension {
 
     private Entity target;
+    private LivingEntity livingtarget;
 
     public SingleAura() {
         super(KillAura.TargetMode.SINGLE, KillAura.class);
@@ -42,6 +43,9 @@ public class SingleAura extends FeatureExtension {
             if (event.getMode() == EventPlayerPackets.Mode.PRE) {
                 if (target == null || !KillAura.INSTANCE.isValid(target, true)) {
                     target = getClosest();
+                }
+                if (livingtarget == null || !KillAura.INSTANCE.isValid(livingtarget, true)) {
+                    livingtarget = getClosest();
                 }
                 KillAura.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
@@ -104,6 +108,11 @@ public class SingleAura extends FeatureExtension {
             }
         }
         if (target != null && Wrapper.INSTANCE.getWorld().getEntityById(target.getId()) != null) {
+            if (BaritoneHelper.INSTANCE.baritoneExists()) {
+                if (KillAura.INSTANCE.baritoneOverrideProperty.value())
+                    if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
+                        BaritoneHelper.INSTANCE.followUntilDead(livingtarget, KillAura.INSTANCE);
+            }
             
             if (KillAura.INSTANCE.autoBlockProperty.value() && !alreadyBlocking)
                 PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
