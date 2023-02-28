@@ -372,10 +372,6 @@ public class KillAura extends Feature {
         boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
         if (!canSee && !ignoreWallsProperty.value())
             return false;
-        //TODO: fix this with 180/-180 having some issues
-        /*if (PlayerHelper.INSTANCE.getDistanceFromMouse(entity) * 2 > KillAura.INSTANCE.fov) {
-            return false;
-        }*/
         if (rangecheck) {
             float distance = reachProperty.value();
             if (!canSee)
