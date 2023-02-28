@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public class MultiAura extends FeatureExtension {
 
-    private final ArrayList<LivingEntity> targets = new ArrayList<>();
+    private final ArrayList<Entity> targets = new ArrayList<>();
 
     public MultiAura() {
         super(KillAura.TargetMode.MULTI, KillAura.class);
@@ -144,10 +144,8 @@ public class MultiAura extends FeatureExtension {
     public void getTargets() {
         targets.clear();
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if (entity instanceof LivingEntity entity1) {
-                if (KillAura.INSTANCE.isValid(entity1, true)) {
-                    targets.add(entity1);
-                }
+                if (KillAura.INSTANCE.isValid(entity, true)) {
+                    targets.add(entity);
             }
         }
     }
