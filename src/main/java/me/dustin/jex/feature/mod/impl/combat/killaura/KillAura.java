@@ -389,13 +389,13 @@ public class KillAura extends Feature {
             return playerProperty.value();
         }
         if (projectilesProperty.value()) {
-            if (entity instanceof ShulkerBulletEntity bulletEntity)
+            if (entity instanceof ShulkerBulletEntity)
                return bulletProperty.value();
-            if (entity instanceof FireballEntity fireballEntity)
+            if (entity instanceof FireballEntity)
                return fireballProperty.value();
-            if (entity instanceof DragonFireballEntity dragonfireballEntity)
+            if (entity instanceof DragonFireballEntity)
                return dfireballProperty.value();
-            if (entity instanceof WitherSkullEntity skullEntity)
+            if (entity instanceof WitherSkullEntity)
                return skullProperty.value();
         }
         if (specificFilterProperty.value()) {
