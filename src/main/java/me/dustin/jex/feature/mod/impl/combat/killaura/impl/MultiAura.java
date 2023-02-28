@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public class MultiAura extends FeatureExtension {
 
-    private final ArrayList<LivingEntity> targets = new ArrayList<>();
+    private final ArrayList<Entity> targets = new ArrayList<>();
 
     public MultiAura() {
         super(KillAura.TargetMode.MULTI, KillAura.class);
