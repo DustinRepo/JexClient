@@ -29,6 +29,7 @@ import java.util.ArrayList;
 public class MultiAura extends FeatureExtension {
 
     private final ArrayList<Entity> targets = new ArrayList<>();
+    private final ArrayList<LivingEntity> ltargets = new ArrayList<>();
 
     public MultiAura() {
         super(KillAura.TargetMode.MULTI, KillAura.class);
@@ -48,11 +49,12 @@ public class MultiAura extends FeatureExtension {
         if (event1 instanceof EventPlayerPackets event) {
             if (event.getMode() == EventPlayerPackets.Mode.PRE) {
                 getTargets();
+                getLivingTargets();
                 KillAura.INSTANCE.setHasTarget(!targets.isEmpty());
                 if (!targets.isEmpty()) {
                     if (BaritoneHelper.INSTANCE.baritoneExists()) {
                         if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
-                            BaritoneHelper.INSTANCE.followUntilDead(targets.get(0), KillAura.INSTANCE);
+                            BaritoneHelper.INSTANCE.followUntilDead(ltargets.get(0), KillAura.INSTANCE);
                     }
                     if (KillAura.INSTANCE.rotateProperty.value()) {
                         RotationVector rotationVector = new RotationVector(PlayerHelper.INSTANCE.getYaw(), 90);
@@ -149,4 +151,14 @@ public class MultiAura extends FeatureExtension {
             }
         }
     }
+public void getLivingTargets() {
+        ltargets.clear();
+        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+            if (entity instanceof LivingEntity livingEntity1) {
+                if (KillAura.INSTANCE.isValid(livingEntity1, true)) {
+                    ltargets.add(livingEntity1);
+                }
+            }
+        }
+    }   
 }
