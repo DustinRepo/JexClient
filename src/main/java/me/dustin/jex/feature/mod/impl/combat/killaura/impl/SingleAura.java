@@ -26,7 +26,7 @@ import me.dustin.jex.feature.mod.impl.player.AutoEat;
 
 public class SingleAura extends FeatureExtension {
 
-    private LivingEntity target;
+    private Entity target;
 
     public SingleAura() {
         super(KillAura.TargetMode.SINGLE, KillAura.class);
