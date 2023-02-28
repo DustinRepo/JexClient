@@ -64,7 +64,6 @@ public class KillAura extends Feature {
             .build();
     public final Property<Float> apsProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("APS")
-            .description("How many attacks per second to use with Old Combat mode")
             .value(10f)
             .min(1)
             .max(128)
@@ -74,12 +73,10 @@ public class KillAura extends Feature {
             .build();
     public final Property<Boolean> baritoneOverrideProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Baritone Override")
-            .description("Allow Killaura to override Baritone if currently pathing.")
             .value(true)
             .build();
     public final Property<Boolean> followUntilDeadProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Follow until dead")
-            .description("Follow your target until they die.")
             .value(true)
             .parent(baritoneOverrideProperty)
             .depends(parent -> (boolean) parent.value())
@@ -204,19 +201,16 @@ public class KillAura extends Feature {
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
-            .description("Whether or not to rotate your head on the server.")
             .value(true)
             .build();
     public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Lockview")
-            .description("Sets the rotations client-side.")
             .value(false)
             .parent(rotateProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> randomizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Randomize")
-            .description("Randomize where on the target you look.")
             .value(false)
             .parent(rotateProperty)
             .depends(parent -> (boolean) parent.value())
@@ -241,29 +235,24 @@ public class KillAura extends Feature {
             .build();
     public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Bot Check")
-            .description("Check whether a player is a bot before targeting.")
             .value(true)
             .build();
     public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Team Check")
-            .description("Check whether a player is on your team before targeting.")
             .value(true)
             .build();
     public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Check Armor")
-            .description("Check if you're wearing the same color armor for teams.")
             .value(true)
             .parent(teamCheckProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> nametaggedProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Nametagged")
-            .description("Whether or not to attack nametagged entities.")
             .value(true)
             .build();
     public final Property<Boolean> invisiblesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Invisibles")
-            .description("Whether or not to attack invisible entities.")
             .value(true)
             .build();
     public final Property<Boolean> sleepingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -272,7 +261,6 @@ public class KillAura extends Feature {
             .build();
     public final Property<Boolean> ignoreWallsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Ignore Walls")
-            .description("Whether or not to attack entities through wall.")
             .value(true)
             .build();
     public final Property<Boolean> showTargetProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
