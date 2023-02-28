@@ -13,6 +13,7 @@ import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -351,7 +352,7 @@ public class KillAura extends Feature {
     }
 
     public boolean isValid(Entity entity, boolean rangecheck) {
-        if (!(entity instanceof LivingEntity livingEntity))
+        if (!(entity instanceof LivingEntity livingEntity && entity instanceof ArrowEntity))
             return nolivingProperty.value();
         if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
             return false;
