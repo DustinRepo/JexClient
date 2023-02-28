@@ -26,7 +26,7 @@ import me.dustin.jex.feature.mod.impl.player.AutoEat;
 
 public class SingleAura extends FeatureExtension {
 
-    private Entity target;
+    private LivingEntity target;
 
     public SingleAura() {
         super(KillAura.TargetMode.SINGLE, KillAura.class);
@@ -136,11 +136,11 @@ public class SingleAura extends FeatureExtension {
         }
     }
 
-    public LivingEntity getClosest() {
+    public Entity getClosest() {
         LivingEntity livingEntity = null;
         float distance = KillAura.INSTANCE.reachProperty.value();
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if (entity instanceof LivingEntity livingEntity1) {
+            if (entity instanceof Entity livingEntity1) {
                 if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) <= distance) {
                     livingEntity = livingEntity1;
                     distance = livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
