@@ -157,21 +157,27 @@ public class KillAura extends Feature {
             .parent(specificFilterProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
+	public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NoLiving")
+            .value(false)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> projectilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	        .name("Projectiles")
+	    .name("Projectiles")
             .value(true)
-	        .build();
+	    .build();
     public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("Fireball")
 	    .value(true)
-        .parent(projectilesProperty)
-        .depends(parent -> (boolean) parent.value())
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
 	    .build();
     public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("DragonFireball")
 	    .value(true)
-        .parent(projectilesProperty)
-        .depends(parent -> (boolean) parent.value())
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
 	    .build();
     public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("ShulkerBullet")
@@ -347,7 +353,7 @@ public class KillAura extends Feature {
 
     public boolean isValid(Entity entity, boolean rangecheck) {
         if (!(entity instanceof LivingEntity livingEntity))
-            return false;
+            return nolivingProperty.value();
         if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
             return false;
         if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
