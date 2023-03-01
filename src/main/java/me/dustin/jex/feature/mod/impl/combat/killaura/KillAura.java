@@ -352,24 +352,7 @@ public class KillAura extends Feature {
     }
 
     public boolean isValid(Entity entity, boolean rangecheck) {
-	   if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
-            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
-                return friendProperty.value();
-            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmorProperty.value()) && teamCheckProperty.value())
-                return false;
-            if (botCheckProperty.value() && isBot((PlayerEntity) entity))
-                return false;
-            return playerProperty.value();
-        }   
-	 if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
-            return passiveProperty.value();
-        if (EntityHelper.INSTANCE.isBossMob(entity))
-            return bossProperty.value();
-        if (EntityHelper.INSTANCE.isHostileMob(entity))
-            return hostileProperty.value();
-        if (EntityHelper.INSTANCE.isNeutralMob(entity))
-            return neutralProperty.value();
-	boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
+	 boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
         if (!canSee && !ignoreWallsProperty.value())
             return false;
         if (rangecheck) {
@@ -378,6 +361,51 @@ public class KillAura extends Feature {
                 distance = 3;
             if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
                 return false;
+        }
+	if (entity.hasCustomName())
+            return nametaggedProperty.value();
+        if (entity.isInvisible())
+            return invisiblesProperty.value();
+        if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
+            return deadProperty.value();
+	if (livingEntity.isSleeping())
+               return sleepingProperty.value();
+	if (entity instanceof PersistentProjectileEntity)
+		return false;
+	if (!(entity instanceof LivingEntity livingEntity))
+		return nolivingProperty.value();
+	if (entity.age < ticksExistedProperty.value())
+            return false;
+	if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
+                return false;
+        if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
+            if (entity == Wrapper.INSTANCE.getLocalPlayer().getVehicle())
+                return false;
+        }
+	if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
+            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
+                return friendProperty.value();
+            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmorProperty.value()) && teamCheckProperty.value())
+                return false;
+            if (botCheckProperty.value() && isBot((PlayerEntity) entity))
+                return false;
+            return playerProperty.value();
+        }
+	if (EntityHelper.INSTANCE.isNeutralMob(entity))
+            return neutralProperty.value();    
+	if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
+            return passiveProperty.value();
+        if (EntityHelper.INSTANCE.isBossMob(entity))
+            return bossProperty.value();
+        if (EntityHelper.INSTANCE.isHostileMob(entity)
+	 return hostileProperty.value();
+	if (specificFilterProperty.value()) {
+            if (entity instanceof IronGolemEntity)
+                return ironGolemProperty.value();
+            if (entity instanceof ZombifiedPiglinEntity)
+                return zombiePiglinProperty.value();
+            if (entity instanceof PiglinEntity)
+                return piglinProperty.value();
         }
 	if (projectilesProperty.value()) {
             if (entity instanceof ShulkerBulletEntity)
@@ -388,34 +416,6 @@ public class KillAura extends Feature {
                return dfireballProperty.value();
             if (entity instanceof WitherSkullEntity)
                return skullProperty.value();
-        }
-	if (entity instanceof PersistentProjectileEntity)
-		return false;
-	if (!(entity instanceof LivingEntity livingEntity))
-		return nolivingProperty.value();
-	if (livingEntity.isSleeping())
-                return sleepingProperty.value();
-        if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
-                return false;
-        if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
-            if (entity == Wrapper.INSTANCE.getLocalPlayer().getVehicle())
-                return false;
-        }
-        if (entity.age < ticksExistedProperty.value())
-            return false;
-        if (entity.hasCustomName())
-            return nametaggedProperty.value();
-        if (entity.isInvisible())
-            return invisiblesProperty.value();
-        if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
-            return deadProperty.value();
-        if (specificFilterProperty.value()) {
-            if (entity instanceof IronGolemEntity)
-                return ironGolemProperty.value();
-            if (entity instanceof ZombifiedPiglinEntity)
-                return zombiePiglinProperty.value();
-            if (entity instanceof PiglinEntity)
-                return piglinProperty.value();
         }
 	 return false;
     }
