@@ -401,8 +401,6 @@ public class KillAura extends Feature {
                return dfireballProperty.value();
             if (entity instanceof WitherSkullEntity)
                return skullProperty.value();
-	    if (entity instanceof ArrowEntity)
-               return false;
         }
         if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
