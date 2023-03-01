@@ -369,7 +369,6 @@ public class KillAura extends Feature {
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
-	   return false;
 	if (projectilesProperty.value()) {
             if (entity instanceof ShulkerBulletEntity)
                return bulletProperty.value();
@@ -418,6 +417,7 @@ public class KillAura extends Feature {
             if (entity instanceof PiglinEntity)
                 return piglinProperty.value();
         }
+	 return false;
     }
 
     public boolean isBot(PlayerEntity playerEntity) {
