@@ -369,6 +369,16 @@ public class KillAura extends Feature {
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
+	boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
+        if (!canSee && !ignoreWallsProperty.value())
+            return false;
+        if (rangecheck) {
+            float distance = reachProperty.value();
+            if (!canSee)
+                distance = 3;
+            if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
+                return false;
+        }
 	if (projectilesProperty.value()) {
             if (entity instanceof ShulkerBulletEntity)
                return bulletProperty.value();
@@ -399,16 +409,6 @@ public class KillAura extends Feature {
             return invisiblesProperty.value();
         if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
             return deadProperty.value();
-        boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
-        if (!canSee && !ignoreWallsProperty.value())
-            return false;
-        if (rangecheck) {
-            float distance = reachProperty.value();
-            if (!canSee)
-                distance = 3;
-            if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
-                return false;
-        }
         if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
                 return ironGolemProperty.value();
