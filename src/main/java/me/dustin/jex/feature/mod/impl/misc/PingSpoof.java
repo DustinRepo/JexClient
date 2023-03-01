@@ -16,10 +16,12 @@ import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 
 public class PingSpoof extends Feature {
 
-    public final Property<String> pingProperty = new Property.PropertyBuilder<String>(this.getClass())
+    public final Property<Long> pingProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Ping")
-            .value("5000")
-            .max(5)
+            .value(5000L)
+            .min(1000)
+            .max(10000)
+            .inc(100)
             .build();
 
     private final StopWatch packetStopWatch = new StopWatch();
@@ -31,11 +33,10 @@ public class PingSpoof extends Feature {
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
-        Integer ping = Integer.valueOf(pingProperty.value());
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
             packetStopWatch.reset();
             keepAliveId = -1;
-        } else if (keepAliveId != -1 && packetStopWatch.hasPassed(ping)) {
+        } else if (keepAliveId != -1 && packetStopWatch.hasPassed(pingProperty.value())) {
             NetworkHelper.INSTANCE.sendPacketDirect(new KeepAliveC2SPacket(keepAliveId));
             keepAliveId = -1;
             packetStopWatch.reset();
