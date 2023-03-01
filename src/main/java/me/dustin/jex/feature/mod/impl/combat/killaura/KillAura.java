@@ -362,18 +362,18 @@ public class KillAura extends Feature {
             if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
                 return false;
         }
+	if (entity instanceof PersistentProjectileEntity)
+		return false;
+	if (!(entity instanceof LivingEntity livingEntity))
+		return nolivingProperty.value();
+	    if (livingEntity.isSleeping())
+               return sleepingProperty.value();
 	if (entity.hasCustomName())
             return nametaggedProperty.value();
         if (entity.isInvisible())
             return invisiblesProperty.value();
         if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
             return deadProperty.value();
-	if (livingEntity.isSleeping())
-               return sleepingProperty.value();
-	if (entity instanceof PersistentProjectileEntity)
-		return false;
-	if (!(entity instanceof LivingEntity livingEntity))
-		return nolivingProperty.value();
 	if (entity.age < ticksExistedProperty.value())
             return false;
 	if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
