@@ -351,19 +351,47 @@ public class KillAura extends Feature {
         return false;
     }
 
-    public boolean isValid(Entity entity, boolean rangecheck) {   
+    public boolean isValid(Entity entity, boolean rangecheck) {
+	   if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
+            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
+                return friendProperty.value();
+            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmorProperty.value()) && teamCheckProperty.value())
+                return false;
+            if (botCheckProperty.value() && isBot((PlayerEntity) entity))
+                return false;
+            return playerProperty.value();
+        }   
+	 if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
+            return passiveProperty.value();
+        if (EntityHelper.INSTANCE.isBossMob(entity))
+            return bossProperty.value();
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
+            return hostileProperty.value();
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
+            return neutralProperty.value();
+	   return false;
+	if (projectilesProperty.value()) {
+            if (entity instanceof ShulkerBulletEntity)
+               return bulletProperty.value();
+            if (entity instanceof FireballEntity)
+               return fireballProperty.value();
+            if (entity instanceof DragonFireballEntity)
+               return dfireballProperty.value();
+            if (entity instanceof WitherSkullEntity)
+               return skullProperty.value();
+        }
 	if (entity instanceof PersistentProjectileEntity)
 		return false;
 	if (!(entity instanceof LivingEntity livingEntity))
 		return nolivingProperty.value();
+	if (livingEntity.isSleeping())
+                return sleepingProperty.value();
         if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
                 return false;
         if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
             if (entity == Wrapper.INSTANCE.getLocalPlayer().getVehicle())
                 return false;
         }
-	if (livingEntity.isSleeping())
-            return sleepingProperty.value();
         if (entity.age < ticksExistedProperty.value())
             return false;
         if (entity.hasCustomName())
@@ -382,25 +410,6 @@ public class KillAura extends Feature {
             if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
                 return false;
         }
-        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
-            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
-                return friendProperty.value();
-            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmorProperty.value()) && teamCheckProperty.value())
-                return false;
-            if (botCheckProperty.value() && isBot((PlayerEntity) entity))
-                return false;
-            return playerProperty.value();
-        }
-        if (projectilesProperty.value()) {
-            if (entity instanceof ShulkerBulletEntity)
-               return bulletProperty.value();
-            if (entity instanceof FireballEntity)
-               return fireballProperty.value();
-            if (entity instanceof DragonFireballEntity)
-               return dfireballProperty.value();
-            if (entity instanceof WitherSkullEntity)
-               return skullProperty.value();
-        }
         if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
                 return ironGolemProperty.value();
@@ -409,15 +418,6 @@ public class KillAura extends Feature {
             if (entity instanceof PiglinEntity)
                 return piglinProperty.value();
         }
-        if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
-            return passiveProperty.value();
-        if (EntityHelper.INSTANCE.isBossMob(entity))
-            return bossProperty.value();
-        if (EntityHelper.INSTANCE.isHostileMob(entity))
-            return hostileProperty.value();
-        if (EntityHelper.INSTANCE.isNeutralMob(entity))
-            return neutralProperty.value();
-        return false;
     }
 
     public boolean isBot(PlayerEntity playerEntity) {
