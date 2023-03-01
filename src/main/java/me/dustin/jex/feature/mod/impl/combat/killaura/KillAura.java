@@ -151,12 +151,6 @@ public class KillAura extends Feature {
             .parent(specificFilterProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-        public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("NoLiving")
-            .value(false)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
     public final Property<Boolean> deadProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Dead")
             .value(false)
@@ -352,8 +346,8 @@ public class KillAura extends Feature {
     }
 
     public boolean isValid(Entity entity, boolean rangecheck) {
-        if (!(entity instanceof LivingEntity livingEntity && entity instanceof ArrowEntity))
-            return nolivingProperty.value();
+        if (!(entity instanceof LivingEntity livingEntity))
+            return false;
         if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
             return false;
         if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
