@@ -51,6 +51,7 @@ public final Property<Integer> chokeProperty = new Property.PropertyBuilder<Inte
             sending = true;
             packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
             packets.clear();
+            sending = false;
             stopWatch.reset();
         }
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE));
