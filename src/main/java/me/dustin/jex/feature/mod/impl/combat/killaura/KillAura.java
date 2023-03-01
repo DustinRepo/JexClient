@@ -352,10 +352,9 @@ public class KillAura extends Feature {
     }
 
     public boolean isValid(Entity entity, boolean rangecheck) {
+	LivingEntity livingEntity = entity;    
 	if (entity instanceof PersistentProjectileEntity)
 		return false;
-        if (!(entity instanceof LivingEntity livingEntity))
-            return nolivingProperty.value();
         if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
                 return false;
         if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
