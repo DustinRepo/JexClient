@@ -397,7 +397,7 @@ public class KillAura extends Feature {
             return passiveProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
             return bossProperty.value();
-        if (EntityHelper.INSTANCE.isHostileMob(entity)
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
 	 return hostileProperty.value();
 	if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
