@@ -92,28 +92,6 @@ public class Triggerbot extends Feature {
             .name("Swing")
             .value(true)
             .build();
-    public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Specific Filter")
-            .value(true)
-            .build();
-    public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Iron Golem")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> piglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Piglin")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> zombiePiglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Zombie Piglin")
-            .value(false)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
 
     public Triggerbot() {
         super(Category.COMBAT, "Automatically attack entities you hover over");
@@ -143,7 +121,7 @@ public class Triggerbot extends Feature {
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     private boolean isValid(Entity entity) {
-        if (!(entity instanceof LivingEntity))
+        if (!(entity instanceof LivingEntity livingEntity))
             return nolivingProperty.value();
          if (livingEntity.isSleeping())
             return sleepingProperty.value();
