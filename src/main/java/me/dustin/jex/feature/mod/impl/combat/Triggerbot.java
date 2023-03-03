@@ -13,13 +13,14 @@ import me.dustin.jex.helper.player.FriendHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.Hand;
 
 public class Triggerbot extends Feature {
 
-    
-   
     public Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
@@ -28,7 +29,7 @@ public class Triggerbot extends Feature {
             .name("Friends")
             .value(true)
             .parent(playersProperty)
-            .depends(parent -> (boolean) parent.value())
+            .depends(parent->(boolean)parent.value())
             .build();
     public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Boss")
@@ -54,19 +55,19 @@ public class Triggerbot extends Feature {
             .name("Iron Golem")
             .value(true)
             .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
+            .depends(parent->(boolean)parent.value())
             .build();
     public final Property<Boolean> piglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Piglin")
             .value(true)
             .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
+            .depends(parent->(boolean)parent.value())
             .build();
     public final Property<Boolean> zombiePiglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Zombie Piglin")
             .value(false)
             .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
+            .depends(parent ->(boolean)parent.value())
             .build();
     public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NoLiving")
@@ -140,7 +141,7 @@ public class Triggerbot extends Feature {
         if (entity instanceof PlayerEntity) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
                 return friendProperty.value();
-            return playerProperty.value();
+            return playersProperty.value();
         }
         if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
