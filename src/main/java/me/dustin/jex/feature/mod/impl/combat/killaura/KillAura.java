@@ -279,7 +279,6 @@ public class KillAura extends Feature {
             .parent(reachCircleProperty)
             .depends(parent-> (boolean) parent.value())
             .build();
-
     private final StopWatch stopWatch = new StopWatch();
     private TargetMode lastMode;
     private boolean hasTarget = false;
