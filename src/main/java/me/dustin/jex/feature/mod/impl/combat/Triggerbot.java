@@ -18,9 +18,17 @@ import net.minecraft.util.Hand;
 
 public class Triggerbot extends Feature {
 
+    
+   
     public Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
+            .build();
+    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Friends")
+            .value(true)
+            .parent(playersProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Boss")
@@ -38,8 +46,42 @@ public class Triggerbot extends Feature {
             .name("Neutral")
             .value(true)
             .build();
+    public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Specific Filter")
+            .value(true)
+            .build();
+    public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Iron Golem")
+            .value(true)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> piglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Piglin")
+            .value(true)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> zombiePiglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Zombie Piglin")
+            .value(false)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NoLiving")
+            .value(true)
+            .build();
+    public final Property<Boolean> nametaggedProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Nametagged")
+            .value(true)
+            .build();
+    public final Property<Boolean> invisiblesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Invisibles")
+            .value(true)
+            .build();
+    public final Property<Boolean> sleepingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sleeping")
             .value(true)
             .build();
     public Property<Boolean> checkpressProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -49,6 +91,28 @@ public class Triggerbot extends Feature {
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Swing")
             .value(true)
+            .build();
+    public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Specific Filter")
+            .value(true)
+            .build();
+    public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Iron Golem")
+            .value(true)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> piglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Piglin")
+            .value(true)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> zombiePiglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Zombie Piglin")
+            .value(false)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
 
     public Triggerbot() {
@@ -81,6 +145,12 @@ public class Triggerbot extends Feature {
     private boolean isValid(Entity entity) {
         if (!(entity instanceof LivingEntity))
             return nolivingProperty.value();
+         if (livingEntity.isSleeping())
+            return sleepingProperty.value();
+        if (entity.isInvisible())
+            return invisiblesProperty.value();
+        if (entity.hasCustomName())
+            return nametaggedProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
             return passivesProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
@@ -89,8 +159,19 @@ public class Triggerbot extends Feature {
             return hostilesProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
             return bossProperty.value();
-        if (entity instanceof PlayerEntity playerEntity && !FriendHelper.INSTANCE.isFriend(playerEntity))
-            return playersProperty.value();
+        if (entity instanceof PlayerEntity) {
+            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
+                return friendProperty.value();
+            return playerProperty.value();
+        }
+        if (specificFilterProperty.value()) {
+            if (entity instanceof IronGolemEntity)
+                return ironGolemProperty.value();
+            if (entity instanceof ZombifiedPiglinEntity)
+                return zombiePiglinProperty.value();
+            if (entity instanceof PiglinEntity)
+                return piglinProperty.value();
+        }
         return false;
     }
 }
