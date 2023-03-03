@@ -78,6 +78,18 @@ public class Roaster extends Feature {
             .name("Swing")
             .value(true)
             .build();
+    public final Property<Boolean> checksProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Checks")
+            .value(true)
+            .build();
+    public final Property<Boolean> groundProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("OutGround")
+            .value(true)
+            .build();
+    public final Property<Boolean> fireimmuneProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("FireImmune")
+            .value(true)
+            .build();
 
     private Hand hand = null;
     private BlockPos blockPos = null;
@@ -132,23 +144,23 @@ public class Roaster extends Feature {
             return false;
         if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(livingEntity) > distanceProperty.value())
             return false;
-        if (livingEntity.isOnFire() && !onFireProperty.value())
-            return false;
-        if (livingEntity.isFireImmune())
-            return false;
-        if (!livingEntity.isOnGround())
-            return false;
         if (livingEntity instanceof PlayerEntity) {
             if (FriendHelper.INSTANCE.isFriend(livingEntity.getName().getString()))
-                return friendsProperty.value();
+            return friendsProperty.value();
             return playerProperty.value();
-        }
+           }   
         if (EntityHelper.INSTANCE.isHostileMob(livingEntity))
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(livingEntity) && !EntityHelper.INSTANCE.doesPlayerOwn(livingEntity))
             return passiveProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(livingEntity))
             return neutralProperty.value();
+        if (livingEntity.isFireImmune())
+            return fireimmuneProperty.value();
+        if (livingEntity.isOnFire())
+            return onFireProperty.value();
+        if (!livingEntity.isOnGround())
+            return groundProperty.value();    
         return false;
     }
 }
