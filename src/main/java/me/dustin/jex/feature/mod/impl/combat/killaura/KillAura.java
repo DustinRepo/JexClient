@@ -1,5 +1,4 @@
 package me.dustin.jex.feature.mod.impl.combat.killaura;
-
 import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -30,13 +29,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import org.lwjgl.glfw.GLFW;
-
 import java.awt.*;
 import java.util.ArrayList;
-
 public class KillAura extends Feature {
     public static KillAura INSTANCE;
-
     public final Property<TargetMode> targetModeProperty = new Property.PropertyBuilder<TargetMode>(this.getClass())
             .name("Mode")
             .value(TargetMode.SINGLE)
@@ -286,19 +282,15 @@ public class KillAura extends Feature {
 
     private final StopWatch stopWatch = new StopWatch();
     private TargetMode lastMode;
-
     private boolean hasTarget = false;
-
     public ArrayList<PlayerEntity> touchedGround = new ArrayList<>();
     public ArrayList<PlayerEntity> swung = new ArrayList<>();
-
     public KillAura() {
         super(Category.COMBAT, "Attack entities around you.", GLFW.GLFW_KEY_R);
         INSTANCE = this;
         new SingleAura();
         new MultiAura();
     }
-
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         for(Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
@@ -350,7 +342,6 @@ public class KillAura extends Feature {
         }
         return false;
     }
-
     public boolean isValid(Entity entity, boolean rangecheck) {
 	 boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
         if (!canSee && !ignoreWallsProperty.value())
@@ -366,7 +357,7 @@ public class KillAura extends Feature {
 		return false;
 	if (!(entity instanceof LivingEntity livingEntity))
 		return nolivingProperty.value();
-	    if (livingEntity.isSleeping())
+	if (livingEntity.isSleeping())
                return sleepingProperty.value();
 	if (entity.hasCustomName())
             return nametaggedProperty.value();
@@ -419,7 +410,6 @@ public class KillAura extends Feature {
         }
 	 return false;
     }
-
     public boolean isBot(PlayerEntity playerEntity) {
         if (EntityHelper.INSTANCE.isNPC(playerEntity)) {
             return true;
@@ -427,15 +417,12 @@ public class KillAura extends Feature {
             return (!swung.contains(playerEntity) && !touchedGround.contains(playerEntity)) || playerEntity.getGameProfile().getProperties().isEmpty();
         }
     }
-
     public void setHasTarget(boolean hasTarget) {
         this.hasTarget = hasTarget;
     }
-
     public boolean hasTarget() {
         return hasTarget;
     }
-
     @Override
     public void onDisable() {
         super.onDisable();
@@ -444,13 +431,10 @@ public class KillAura extends Feature {
             BaritoneHelper.INSTANCE.disableKillauraTargetProcess();
         FeatureExtension.get(targetModeProperty.value(), this).disable();
     }
-
     public enum TargetMode {
         SINGLE, MULTI
     }
-
     public enum AttackTiming {
         PRE, POST
     }
-
 }
