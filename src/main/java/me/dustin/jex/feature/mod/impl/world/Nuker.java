@@ -42,21 +42,18 @@ public class Nuker extends Feature {
 
     public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Distance")
-            .description("The distance at which to break blocks")
             .value(4)
             .min(3)
             .max(6)
             .build();
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Break Delay")
-            .description("Delay between breaking blocks in milliseconds")
             .value(0L)
             .max(500)
             .inc(10)
             .build();
     public final Property<Boolean> keepFloorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Keep Floor")
-            .description("Don't break blocks below you, only above.")
             .value(true)
             .build();
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
