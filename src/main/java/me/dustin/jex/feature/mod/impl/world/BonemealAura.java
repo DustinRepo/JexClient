@@ -119,8 +119,8 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
 
     public BlockPos getCrop() {
         for (int x = -radiusProperty.value(); x < radiusProperty.value(); x++) {
+	for (int z = -radiusProperty.value(); z < radiusProperty.value(); z++) {	
         for (int y = -radiusProperty.value(); y < radiusProperty.value(); y++) {
-        for (int z = -radiusProperty.value(); z < radiusProperty.value(); z++) {
             BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
             Block block = WorldHelper.INSTANCE.getBlock(blockPos);
 	if (checkgrowProperty.value()) {	
