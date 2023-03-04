@@ -62,8 +62,8 @@ public class SpawnProofing extends Feature {
             return;
         stopWatch.reset();
         for (int x = -rangeProperty.value(); x < rangeProperty.value(); x++) {
-            for (int y = -rangeProperty.value(); y < rangeProperty.value(); y++) {
-                for (int z = -rangeProperty.value(); z < rangeProperty.value(); z++) {
+        for (int z = -rangeProperty.value(); z < rangeProperty.value(); z++) {
+        for (int y = -rangeProperty.value(); y < rangeProperty.value(); y++) {
                     BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (x == 0 && y == 0 && z == 0)
                         continue;
