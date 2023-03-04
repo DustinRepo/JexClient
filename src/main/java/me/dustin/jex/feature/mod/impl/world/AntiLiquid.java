@@ -65,7 +65,6 @@ public class AntiLiquid extends Feature {
             .build();
     public final Property<Boolean> illegalPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Allow Illegal Place")
-            .description("Allow placements without having a side of a block to use.")
             .value(true)
             .build();
 
