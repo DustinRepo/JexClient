@@ -42,7 +42,6 @@ public class SlimeSpawnMarker extends Feature {
             .build();
     public final Property<Color> chunkColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Chunk Color")
-            .description("Color of a marked slime chunk")
             .value(new Color(0, 255, 38))
             .build();
 
@@ -50,7 +49,7 @@ public class SlimeSpawnMarker extends Feature {
     private final File chunksFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "slimes.txt");
 
     public SlimeSpawnMarker() {
-        super(Category.WORLD, "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk. Good for finding Slime Chunks on servers without the seed.");
+        super(Category.WORLD, "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk.");
     }
 
     @EventPointer
