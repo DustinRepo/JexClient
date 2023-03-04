@@ -30,6 +30,12 @@ public class FarmAura extends Feature {
             .name("Check Age")
             .value(true)
             .build();
+    public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Distance")
+            .value(4)
+            .min(3)
+            .max(6)
+            .build();
     public final Property<Long> breakDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Break Delay (MS)")
             .value(100L)
@@ -94,9 +100,9 @@ public class FarmAura extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        for (int x = -4; x < 4; x++) {
-        for (int z = -4; z < 4; z++) {    
-            for (int y = -2; y < 2; y++) {
+        for (int x = -distanceProperty.value(); x < distanceProperty.value(); x++) {
+        for (int z = -distanceProperty.value(); z < distanceProperty.value(); z++) {    
+        for (int y = -distanceProperty.value(); y < distanceProperty.value(); y++) {
                 
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (WorldHelper.INSTANCE.isCrop(blockPos, checkAgeProperty.value())) {
@@ -128,9 +134,9 @@ public class FarmAura extends Feature {
     }
 
     public BlockPos getFarmland() {
-        for (int x = -4; x < 4; x++) {
-        for (int z = -4; z < 4; z++) {    
-            for (int y = -2; y < 2; y++) {
+        for (int x = -distanceProperty.value(); x < distanceProperty.value(); x++) {
+        for (int z = -distanceProperty.value(); z < distanceProperty.value(); z++) {    
+        for (int y = -distanceProperty.value(); y < distanceProperty.value(); y++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z).down();
                     if (WorldHelper.INSTANCE.getBlock(blockPos) == Blocks.FARMLAND && WorldHelper.INSTANCE.getBlock(blockPos.up()) == Blocks.AIR)
                         return blockPos;
@@ -141,9 +147,9 @@ public class FarmAura extends Feature {
     }
 
     public BlockPos getCrop() {
-        for (int x = -4; x < 4; x++) {
-         for (int z = -4; z < 4; z++) {   
-            for (int y = -2; y < 2; y++) {
+        for (int x = distanceProperty.value()4; x < distanceProperty.value(); x++) {
+        for (int z = -distanceProperty.value(); z < distanceProperty.value(); z++) {   
+        for (int y = -distanceProperty.value(); y <distanceProperty.value()2; y++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (WorldHelper.INSTANCE.isCrop(blockPos, checkAgeProperty.value()))
                         return blockPos;
