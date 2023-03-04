@@ -34,8 +34,8 @@ public class PingSpoof extends Feature {
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-            packetStopWatch.reset();
             keepAliveId = -1;
+            packetStopWatch.reset();
         } else if (keepAliveId != -1 && packetStopWatch.hasPassed(pingProperty.value())) {
             NetworkHelper.INSTANCE.sendPacketDirect(new KeepAliveC2SPacket(keepAliveId));
             keepAliveId = -1;
