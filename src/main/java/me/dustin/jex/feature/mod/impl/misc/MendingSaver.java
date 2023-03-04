@@ -18,7 +18,6 @@ public class MendingSaver extends Feature {
 
     public Property<Boolean> notifyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Notify")
-            .description("Whether or not to notify the player when activated.")
             .value(false)
             .build();
     public Property<Integer> itemPercentProperty = new Property.PropertyBuilder<Integer>(this.getClass())
