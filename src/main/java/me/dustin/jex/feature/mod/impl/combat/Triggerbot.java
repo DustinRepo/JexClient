@@ -81,10 +81,6 @@ public class Triggerbot extends Feature {
             .name("Invisibles")
             .value(true)
             .build();
-    public final Property<Boolean> sleepingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Sleeping")
-            .value(true)
-            .build();
     public Property<Boolean> checkpressProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("When-holding-attack")
             .value(true)
@@ -124,8 +120,6 @@ public class Triggerbot extends Feature {
     private boolean isValid(Entity entity) {
         if (!(entity instanceof LivingEntity))
             return nolivingProperty.value();
-         if (entity.isSleeping())
-            return sleepingProperty.value();
         if (entity.isInvisible())
             return invisiblesProperty.value();
         if (entity.hasCustomName())
