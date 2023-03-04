@@ -47,13 +47,13 @@ public class Scaffold extends Feature {
             .name("RangeX")
             .value(1)
             .min(0)
-            .max(5)
+            .max(6)
             .build();
     public final Property<Integer> zrangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("RangeZ")
             .value(1)
             .min(0)
-            .max(5)
+            .max(6)
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
@@ -163,8 +163,8 @@ public class Scaffold extends Feature {
             return;
         }
         }
-        for (int x = -xrangeProperty.value() - 1; x < xrangeProperty.value() + 1; x++) {
-            for (int z = -zrangeProperty.value() - 1; z < zrangeProperty.value() + 1; z++) {
+        for (int x = -xrangeProperty.value(); x < xrangeProperty.value(); x++) {
+            for (int z = -zrangeProperty.value(); z < zrangeProperty.value(); z++) {
                 BlockPos blockPos1 = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, -0.5f, 0)).add(x, 0, z);
                 if (isReplaceable(WorldHelper.INSTANCE.getBlock(blockPos1)) || goingToPlace(blockPos1)) {
                     BlockInfo blockInfo = getBlockInfo(blockPos1);
