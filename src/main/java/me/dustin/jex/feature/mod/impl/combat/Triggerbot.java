@@ -122,9 +122,9 @@ public class Triggerbot extends Feature {
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     private boolean isValid(Entity entity) {
-        if (!(entity instanceof LivingEntity livingEntity))
+        if (!(entity instanceof LivingEntity))
             return nolivingProperty.value();
-         if (livingEntity.isSleeping())
+         if (entity.isSleeping())
             return sleepingProperty.value();
         if (entity.isInvisible())
             return invisiblesProperty.value();
