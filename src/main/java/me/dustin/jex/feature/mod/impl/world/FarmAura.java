@@ -147,9 +147,9 @@ public class FarmAura extends Feature {
     }
 
     public BlockPos getCrop() {
-        for (int x = distanceProperty.value()4; x < distanceProperty.value(); x++) {
+        for (int x = distanceProperty.value(); x < distanceProperty.value(); x++) {
         for (int z = -distanceProperty.value(); z < distanceProperty.value(); z++) {   
-        for (int y = -distanceProperty.value(); y <distanceProperty.value()2; y++) {
+        for (int y = -distanceProperty.value(); y <distanceProperty.value(); y++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (WorldHelper.INSTANCE.isCrop(blockPos, checkAgeProperty.value()))
                         return blockPos;
