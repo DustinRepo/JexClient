@@ -9,6 +9,8 @@ import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventWalkOffBlock;
 
 public class ParkourR extends Feature {
+	
+private boolean walkoff = false;
 
     public ParkourR() {
         super(Category.MOVEMENT, "Recoded parkour");
@@ -16,9 +18,16 @@ public class ParkourR extends Feature {
 
     @EventPointer
     private final EventListener<EventWalkOffBlock> eventWalkOffBlockEventListener = new EventListener<>(event -> {
-	    boolean walkOff = event.cancel();
-	  if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && walkOff && PlayerHelper.INSTANCE.isMoving()) {
+	    boolean ready = getWalkOff();
+	  if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && ready && PlayerHelper.INSTANCE.isMoving()) {
             Wrapper.INSTANCE.getLocalPlayer().jump();
            }
     });
+	public boolean getWalkOff() {
+		boolean walkOff = walkoff;
+		walkoff = false;
+		event.cancel();
+		walkoff = true;
+		return walkOff;
+	}
 }
