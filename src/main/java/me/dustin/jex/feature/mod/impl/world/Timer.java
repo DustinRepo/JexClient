@@ -18,6 +18,13 @@ public class Timer extends Feature {
             .max(20f)
             .inc(0.1f)
             .build();
+    public final Property<Float> constProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Constant")
+            .value(20f)
+            .min(20f)
+            .max(100f)
+            .inc(1f)
+            .build();
 
     public Timer() {
         super(Category.WORLD, "Speed up or slow down the game");
@@ -28,7 +35,7 @@ public class Timer extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() == null && Wrapper.INSTANCE.getWorld() == null)
             this.setState(false);
         if (getState()) {
-            event.timeScale = 1000 / (20.f * speedProperty.value());
+            event.timeScale = 1000 / (constProperty.value() * speedProperty.value());
         } else {
             event.timeScale = 1000 / 20.f;
             EventManager.unregister(this);
