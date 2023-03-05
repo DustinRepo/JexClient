@@ -51,6 +51,15 @@ public class Fly extends Feature {
             .description("Attempt to bypass the server's fly check.")
             .value(true)
             .build();
+    public final Property<Float> distanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Fall Distance")
+            .value(0.5f)
+            .min(0.1f)
+            .max(10f)
+            .inc(0.1f)
+            .parent(flyCheckBypassProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> glideProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Glide")
             .value(false)
@@ -107,7 +116,7 @@ public class Fly extends Feature {
         PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
         if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {
             if (EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 2) {
-                PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.1, playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
+                PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - distanceProperty.value(), playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
                 event.setPacket(modified);
             }
         }
