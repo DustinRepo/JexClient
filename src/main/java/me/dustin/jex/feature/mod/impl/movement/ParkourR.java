@@ -8,9 +8,9 @@ import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.jex.event.player.EventWalkOffBlock;
 
-public class Parkour+ extends Feature {
+public class ParkourR extends Feature {
 
-    public Parkour+() {
+    public ParkourR() {
         super(Category.MOVEMENT, "Recoded parkour");
     }
 
