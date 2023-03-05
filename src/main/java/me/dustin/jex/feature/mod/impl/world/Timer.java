@@ -21,7 +21,7 @@ public class Timer extends Feature {
     public final Property<Float> constProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Constant")
             .value(20f)
-            .min(20f)
+            .min(1f)
             .max(100f)
             .inc(1f)
             .build();
