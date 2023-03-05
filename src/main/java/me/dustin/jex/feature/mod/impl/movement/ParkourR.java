@@ -16,7 +16,7 @@ public class ParkourR extends Feature {
 
     @EventPointer
     private final EventListener<EventWalkOffBlock> eventWalkOffBlockEventListener = new EventListener<>(event -> {
-	  if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && PlayerHelper.INSTANCE.isMoving()) {
+	  if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && event && PlayerHelper.INSTANCE.isMoving()) {
             Wrapper.INSTANCE.getLocalPlayer().jump();
            }
     });
