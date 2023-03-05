@@ -18,16 +18,12 @@ private boolean walkoff = false;
 
     @EventPointer
     private final EventListener<EventWalkOffBlock> eventWalkOffBlockEventListener = new EventListener<>(event -> {
-	    boolean ready = getWalkOff();
-	  if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && ready && PlayerHelper.INSTANCE.isMoving()) {
+         walkoff = false;
+         event.cancel();	    
+         walkoff = true;
+         boolean walkOff = walkoff;	    
+	  if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && walkOff && PlayerHelper.INSTANCE.isMoving()) {
             Wrapper.INSTANCE.getLocalPlayer().jump();
            }
     });
-	public boolean getWalkOff() {
-		boolean walkOff = walkoff;
-		walkoff = false;
-		event.cancel();
-		walkoff = true;
-		return walkOff;
-	}
 }
