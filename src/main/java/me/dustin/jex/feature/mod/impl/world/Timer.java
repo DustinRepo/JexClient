@@ -15,7 +15,7 @@ public class Timer extends Feature {
             .name("Speed")
             .value(2f)
             .min(0.1f)
-            .max(50f)
+            .max(25f)
             .inc(0.1f)
             .build();
 
