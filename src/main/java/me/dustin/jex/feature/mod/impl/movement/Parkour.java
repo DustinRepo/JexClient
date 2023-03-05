@@ -18,9 +18,8 @@ public class Parkour extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 0.5f && PlayerHelper.INSTANCE.isMoving()) {
+        if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) >= 0.5f && PlayerHelper.INSTANCE.isMoving()) {
             Wrapper.INSTANCE.getLocalPlayer().jump();
-            Wrapper.INSTANCE.getLocalPlayer().getVelocity().multiply(1.2f, 1, 1.2f);
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }
