@@ -74,9 +74,10 @@ public class Nuker extends Feature {
         ArrayList<BlockPos> blockPosList = new ArrayList<>();
         int dist = distanceProperty.value();
         int minY = keepFloorProperty.value() ? 0 : -dist;
+	    
 	  for (int x = dist; x > -dist; x--)
-	    for (int z = -dist; z < dist; z++)
-                for (int y = minY; y < dist; y++)  {
+	    for (int z = dist; z > -dist; z--)
+                for (int y = dist; y > minY; y--)  {
                     BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
