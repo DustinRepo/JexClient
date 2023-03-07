@@ -17,14 +17,15 @@ public class BowBomb extends Feature {
     public final Property<Integer> amountProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Amount")
             .value(10)
-            .min(10)
+            .min(2)
             .max(100)
-            .inc(10)
+            .inc(1)
             .build();
     public final Property<Integer> exponentialProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Exponential")
             .value(2)
-            .max(100)
+            .min(1)
+            .max(14)
             .inc(1)
             .build();
     
