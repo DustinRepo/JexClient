@@ -73,7 +73,7 @@ public class Nuker extends Feature {
     public ArrayList<BlockPos> getPositions() {
         ArrayList<BlockPos> blockPosList = new ArrayList<>();
         int dist = distanceProperty.value();
-        int maxY = keepFloorProperty.value() ? 0 : dist;  
+        int maxY = keepFloorProperty.value() ? -1 : dist;  
 	  for (int x = dist; x > -dist; x--)
           for (int z = dist; z > -dist; z--) 
 	  for (int y = maxY; y > -dist; y--){
