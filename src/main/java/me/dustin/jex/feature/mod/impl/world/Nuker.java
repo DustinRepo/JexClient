@@ -49,8 +49,8 @@ public class Nuker extends Feature {
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Break Delay")
             .value(0L)
-            .max(500)
-            .inc(10)
+            .max(1000L)
+            .inc(10L)
             .build();
     public final Property<Boolean> keepFloorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Keep Floor")
@@ -81,15 +81,10 @@ public class Nuker extends Feature {
     public ArrayList<BlockPos> getPositions() {
         ArrayList<BlockPos> blockPosList = new ArrayList<>();
         int dist = distanceProperty.value();
-        int minX = -dist;
-        int maxX = dist;
         int minY = keepFloorProperty.value() ? 0 : -dist;
-        int maxY = dist;
-        int minZ = -dist;
-        int maxZ = dist;
-	  for (int x = maxX; x > minX; x--)
-	    for (int z = minZ; z < maxZ; z++)
-                for (int y = minY; y < maxY; y++)  {
+	  for (int x = dist; x > -dist; x--)
+	    for (int z = -dist; z < dist; z++)
+                for (int y = minY; y < dist; y++)  {
                     BlockPos pos = Wrapper.INSTANCE.getPlayer().getBlockPos().add(x, y, z);
                     Block block = WorldHelper.INSTANCE.getBlock(pos);
                     if (!(block instanceof AirBlock || block instanceof FluidBlock)) {
