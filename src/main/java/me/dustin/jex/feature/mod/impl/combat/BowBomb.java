@@ -37,7 +37,7 @@ public class BowBomb extends Feature {
         ClientPlayerEntity player = Wrapper.INSTANCE.getLocalPlayer();
         if (player.getMainHandStack().getItem().equals(Items.BOW)) {
             player.networkHandler.sendPacket(new ClientCommandC2SPacket(player, ClientCommandC2SPacket.Mode.START_SPRINTING));
-            long cycles = Math.pow(amountProperty.value(), exponentialProperty.value());
+            long cycles = (long) Math.pow(amountProperty.value(), exponentialProperty.value());
             for (int i = 0; i < cycles; ++i) {
                 player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(player.getX(), player.getY() - 1.0E-9, player.getZ(), true));
                 player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(player.getX(), player.getY() + 1.0E-9, player.getZ(), false));
