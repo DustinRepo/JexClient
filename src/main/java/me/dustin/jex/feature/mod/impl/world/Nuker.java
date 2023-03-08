@@ -31,7 +31,11 @@ public class Nuker extends Feature {
     }
 
     private final StopWatch stopWatch = new StopWatch();
-
+	
+    public final Property<TargetMode> modeProperty = new Property.PropertyBuilder<TargetMode>(this.getClass())
+	   .name("Mode")
+	   .value(TargetMode.SUICIDAL)
+	   .build();
     public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Distance")
             .value(4)
@@ -73,7 +77,7 @@ public class Nuker extends Feature {
     public ArrayList<BlockPos> getPositions() {
         ArrayList<BlockPos> blockPosList = new ArrayList<>();
         int dist = distanceProperty.value();
-        int minY = keepFloorProperty.value() ? 0 : dist;  
+        int minY = keepFloorProperty.value() ? 0 : -dist;  
 	  for (int x = dist; x > -dist; x--)
           for (int z = dist; z > -dist; z--) 
 	  for (int y = dist; y >= minY; y--){
@@ -90,5 +94,5 @@ public class Nuker extends Feature {
                 }
         blockPosList.sort(Comparator.comparing(o -> o.getSquaredDistance(Wrapper.INSTANCE.getPlayer().getPos())));
         return blockPosList;
-    }
+    }	
 }
