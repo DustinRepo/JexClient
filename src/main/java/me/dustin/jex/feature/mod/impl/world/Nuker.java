@@ -32,10 +32,6 @@ public class Nuker extends Feature {
 
     private final StopWatch stopWatch = new StopWatch();
 	
-    public final Property<TargetMode> modeProperty = new Property.PropertyBuilder<TargetMode>(this.getClass())
-	   .name("Mode")
-	   .value(TargetMode.SUICIDAL)
-	   .build();
     public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Distance")
             .value(4)
