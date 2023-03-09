@@ -37,7 +37,7 @@ public class SpeedCrafter extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public SpeedCrafter() {
-        super(Category.MISC, "Automatically craft by opening a crafting table.");
+        super(Category.MISC, "");
     }
 
     @EventPointer
@@ -45,7 +45,7 @@ public class SpeedCrafter extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
             if (InventoryHelper.INSTANCE.isInventoryFull(new ItemStack(craftingItem))) {
                 if (!alerted) {
-                    ChatHelper.INSTANCE.addClientMessage("Inventory is full! Speedcrafter can not craft!");
+                    ChatHelper.INSTANCE.addClientMessage("Inventory is full!");
                     alerted = true;
                 }
                 return;
