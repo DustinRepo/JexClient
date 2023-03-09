@@ -22,7 +22,6 @@ public class Criticals extends Feature {
             .build();
     public final Property<Float> delayProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Time Delay (S)")
-            .description("Delay between send critical packets in seconds")
             .value(0f)
             .min(0f)
             .max(10f)
@@ -30,7 +29,6 @@ public class Criticals extends Feature {
             .build();
     public final Property<Boolean> extraParticlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Extra Particles")
-            .description("Whether or not to add extra (fake) critical particles.")
             .value(true)
             .build();
     public final Property<Integer> amountProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -44,7 +42,7 @@ public class Criticals extends Feature {
             .build();
 
     public Criticals() {
-        super(Category.COMBAT, "Automatically deal critical strikes when attacking.");
+        super(Category.COMBAT);
     }
     
     private final StopWatch stopWatch = new StopWatch();
