@@ -41,7 +41,6 @@ public class Jesus extends Feature {
             .build();
     public final Property<Boolean> allowJumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Jump")
-            .description("Allow jumping while on the water.")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.DOLPHIN)
@@ -49,7 +48,7 @@ public class Jesus extends Feature {
     private int ticks;
 
     public Jesus() {
-        super(Category.PLAYER, "Walk on water like Jesus.", GLFW.GLFW_KEY_J);
+        super(Category.PLAYER, "", GLFW.GLFW_KEY_J);
     }
 
     @EventPointer
