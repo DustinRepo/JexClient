@@ -93,7 +93,7 @@ public class ItemScale extends Feature {
             .build();
 
     public ItemScale() {
-        super(Category.VISUAL, "Change the scale and positioning of items in your hands");
+        super(Category.VISUAL);
     }
 
     @EventPointer
