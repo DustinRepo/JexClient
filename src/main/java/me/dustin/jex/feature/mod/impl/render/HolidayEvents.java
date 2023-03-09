@@ -27,7 +27,7 @@ public class HolidayEvents extends Feature {
             .build();
 
     public HolidayEvents() {
-        super(Category.VISUAL, "Have holiday events like christmas chests show year-round");
+        super(Category.VISUAL);
     }
 
     @EventPointer
