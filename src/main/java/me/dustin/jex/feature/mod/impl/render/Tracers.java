@@ -58,7 +58,7 @@ public class Tracers extends Feature {
             .build();
 
     public Tracers() {
-        super(Category.VISUAL, "Draw a line to entities in range.");
+        super(Category.VISUAL);
     }
 
     @EventPointer
