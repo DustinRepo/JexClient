@@ -26,14 +26,13 @@ public class ChestStealer extends Feature {
             .build();
     public final Property<Boolean> dumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Dump")
-            .description("Throw the items on the ground.")
             .value(false)
             .build();
 
     private final StopWatch stopWatch = new StopWatch();
 
     public ChestStealer() {
-        super(Category.WORLD, "Automatically steal from chests when opened.");
+        super(Category.WORLD);
     }
 
     @EventPointer
