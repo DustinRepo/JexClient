@@ -24,7 +24,7 @@ public class AutoWither extends Feature {
     private PlayerInteractBlockC2SPacket packet = null;
 
     public AutoWither() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
