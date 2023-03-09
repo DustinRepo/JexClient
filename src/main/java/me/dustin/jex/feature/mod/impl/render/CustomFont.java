@@ -38,7 +38,7 @@ public class CustomFont extends Feature {
             .build();
 
     public CustomFont() {
-        super(Category.VISUAL, "Change the font in aspects of the game. Disable then re-enable to reload fonts from folder (.minecraft/JexClient/fonts)");
+        super(Category.VISUAL);
         INSTANCE = this;
     }
 
