@@ -18,7 +18,7 @@ import org.lwjgl.glfw.GLFW;
 public class InventoryAutoClicker extends Feature {
 
     public InventoryAutoClicker() {
-        super("InvAutoClicker", Category.MISC, "Hold shift+click or ctrl+q to automatically do them.");
+        super("InvAutoClicker", Category.MISC, "shift+click-move and ctrl+q-drop ");
     }
 
     @EventPointer
