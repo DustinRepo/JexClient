@@ -37,7 +37,7 @@ public class BarrierView extends Feature {
 	private final StopWatch stopWatch = new StopWatch();
 
 	public BarrierView() {
-		super(Category.VISUAL, "See barriers as if you are in creative");
+		super(Category.VISUAL);
 	}
 
 	@EventPointer
