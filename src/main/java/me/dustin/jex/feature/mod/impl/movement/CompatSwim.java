@@ -20,7 +20,7 @@ import me.dustin.jex.feature.mod.impl.player.Jesus;
 public class CompatSwim extends Feature {
 
     public CompatSwim() {
-        super(Category.MOVEMENT, "");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer
