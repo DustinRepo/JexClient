@@ -48,7 +48,7 @@ public class NoFriendDMG extends Feature {
             .build();
 
     public NoFriendDMG() {
-        super(Category.COMBAT, "Prevent yourself from attacking your friends and pets");
+        super(Category.COMBAT);
     }
 
     @EventPointer
