@@ -29,7 +29,7 @@ public class AutoDisconnect extends Feature {
             .build();
 
     public AutoDisconnect() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
