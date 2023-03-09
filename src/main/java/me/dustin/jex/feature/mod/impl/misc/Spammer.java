@@ -22,8 +22,7 @@ import java.util.Random;
 public class Spammer extends Feature {
 
     public final Property<SpamSource> sourceProperty = new Property.PropertyBuilder<SpamSource>(this.getClass())
-            .name("Source")
-            .description("The source for the list of messages to spam.")
+            .name("SourceList")
             .value(SpamSource.SPAM_FILE)
             .build();
     public final Property<String> delayProperty = new Property.PropertyBuilder<String>(this.getClass())
