@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 public class Gravity extends Feature {
 
     public Gravity() {
-        super(Category.MOVEMENT, "Changes gravity to moon gravity.");
+        super(Category.MOVEMENT);
     }
 
         @EventPointer
