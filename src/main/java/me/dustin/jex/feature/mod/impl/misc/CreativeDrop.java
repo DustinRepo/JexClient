@@ -48,7 +48,7 @@ public class CreativeDrop extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public CreativeDrop() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
