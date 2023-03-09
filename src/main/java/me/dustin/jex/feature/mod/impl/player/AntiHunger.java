@@ -11,7 +11,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class AntiHunger extends Feature {
 
     public AntiHunger() {
-        super(Category.PLAYER, "Lose less hunger while sprinting.");
+        super(Category.PLAYER);
     }
 
     @EventPointer
