@@ -27,7 +27,7 @@ public class ThrowPearl extends Feature {
     public ThrowPearl() {
         super(Category.PLAYER);
     }
-//lol
+
     @EventPointer
     private final EventListener<EventKeyPressed> eventKeyPressedEventListener = new EventListener<>(event -> {
         if (event.getKey() == throwKeyProperty.value()) {
