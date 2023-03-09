@@ -25,7 +25,7 @@ public class DepthStrider extends Feature {
             .build();
 
     public DepthStrider() {
-        super(Category.MOVEMENT, "Move through water like you have Depth Strider boots on");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer
