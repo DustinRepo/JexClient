@@ -27,7 +27,6 @@ public class Surround extends Feature {
 
 	public Property<Boolean> autoTurnOffProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Auto Turn Off")
-			.description("Turn off after surrounding yourself")
 			.value(true)
 			.build();
 	public Property<Integer> placeDelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -38,7 +37,6 @@ public class Surround extends Feature {
 			.build();
 	public Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Rotate")
-			.description("Whether or not to rotate your head on the server.")
 			.value(true)
 			.build();
 	public Property<Color> placeColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
@@ -51,7 +49,7 @@ public class Surround extends Feature {
 	private BlockPos placingPos;
 
 	public Surround() {
-		super(Category.COMBAT, "Automatically place obsidian around your feet to defend from crystals");
+		super(Category.COMBAT);
 	}
 
 	@EventPointer
