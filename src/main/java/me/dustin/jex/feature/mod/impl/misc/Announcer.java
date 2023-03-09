@@ -41,7 +41,7 @@ public class Announcer extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public Announcer() {
-        super(Category.MISC, "Fastest way to get muted! Fully customizable with files in the Jex folder");
+        super(Category.MISC);
     }
 
     @EventPointer
