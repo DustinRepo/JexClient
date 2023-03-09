@@ -285,7 +285,7 @@ public class KillAura extends Feature {
     public ArrayList<PlayerEntity> touchedGround = new ArrayList<>();
     public ArrayList<PlayerEntity> swung = new ArrayList<>();
     public KillAura() {
-        super(Category.COMBAT, "Attack entities around you.", GLFW.GLFW_KEY_R);
+        super(Category.COMBAT, "", GLFW.GLFW_KEY_R);
         INSTANCE = this;
         new SingleAura();
         new MultiAura();
