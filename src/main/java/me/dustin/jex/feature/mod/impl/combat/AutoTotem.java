@@ -20,7 +20,6 @@ public class AutoTotem extends Feature {
 
     public final Property<ActivateTime> activateWhenProperty = new Property.PropertyBuilder<ActivateTime>(this.getClass())
             .name("When")
-            .description("When the totem should go into your offhand")
             .value(ActivateTime.ALWAYS)
             .build();
     public final Property<Boolean> replaceOffhandProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -39,14 +38,13 @@ public class AutoTotem extends Feature {
             .build();
     public final Property<Boolean> openInventoryProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Open Inventory")
-            .description("Tells the server you opened your inventory before moving the totem.")
             .value(false)
             .build();
 
     private int swappedSlot;
 
     public AutoTotem() {
-        super(Category.COMBAT, "Keep a Totem in your offhand at all times.");
+        super(Category.COMBAT);
     }
 
     @EventPointer
