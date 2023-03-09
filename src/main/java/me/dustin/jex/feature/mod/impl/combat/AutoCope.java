@@ -26,7 +26,7 @@ public class AutoCope extends Feature {
     private final ArrayList<String> messages = new ArrayList<>();
 
     public AutoCope() {
-        super(Category.COMBAT, "Automatically send messages when you die to a player. Configurable messages in .minecraft/JexClient/CopeMessages.json");
+        super(Category.COMBAT);
     }
 
     @EventPointer
