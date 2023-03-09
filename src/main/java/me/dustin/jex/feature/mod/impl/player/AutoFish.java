@@ -33,7 +33,6 @@ public class AutoFish extends Feature {
 
     public final Property<Boolean> soundProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Sound")
-            .description("Whether or not to use sound to determine when to reel the rod in.")
             .value(true)
             .build();
     public final Property<Boolean> distanceCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -52,7 +51,6 @@ public class AutoFish extends Feature {
             .build();
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Delay")
-            .description("Delay between re-casting the rod.")
             .value(750L)
             .max(2000)
             .parent(recastProperty)
@@ -74,7 +72,7 @@ public class AutoFish extends Feature {
     private boolean hasReconnected;
 
     public AutoFish() {
-        super(Category.PLAYER, "Automatically detect a fish on the hook");
+        super(Category.PLAYER);
     }
 
     @EventPointer
