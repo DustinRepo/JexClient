@@ -16,7 +16,7 @@ import net.minecraft.screen.slot.SlotActionType;
 public class AutoMend extends Feature {
 
     public AutoMend() {
-        super(Category.MISC, "Automatically hold a mending item in your offhand until it has full durability");
+        super(Category.MISC, "");
     }
 
     @EventPointer
