@@ -57,7 +57,7 @@ public class FarmAura extends Feature {
     private final StopWatch plantStopWatch = new StopWatch();
 
     public FarmAura() {
-        super(Category.WORLD, "Destroy any fully grown crops nearby");
+        super(Category.WORLD);
     }
 
     @EventPointer
