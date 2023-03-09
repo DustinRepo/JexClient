@@ -27,7 +27,6 @@ public class BucketCatch extends Feature {
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
-            .description("Whether or not to rotate your head on the server.")
             .value(false)
             .build();
 
@@ -35,7 +34,7 @@ public class BucketCatch extends Feature {
     private boolean click;
 
     public BucketCatch() {
-        super(Category.MOVEMENT, "Place a water bucket under yourself when you fall to avoid fall damage. 90% of the time, it works every time");
+        super(Category.MOVEMENT, "");
     }
 
     @EventPointer
