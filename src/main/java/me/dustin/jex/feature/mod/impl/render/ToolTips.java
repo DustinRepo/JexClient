@@ -38,17 +38,13 @@ public class ToolTips extends Feature {
 
     public final Property<Boolean> repairCostProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Repair Cost")
-            .description("Show the repair cost of items in the tooltip.")
             .value(true)
             .build();
     public final Property<Boolean> shulkerToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("ShulkerToolTip")
-            .description("Show the contents of a shulker above the tooltip")
             .value(true)
             .build();
     public final Property<Integer> inspectKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Inspect Key")
-            .description("The key you can hold to hover over items inside of the shulker box")
             .value(GLFW.GLFW_KEY_LEFT_CONTROL)
             .isKey()
             .parent(shulkerToolTipProperty)
@@ -56,27 +52,22 @@ public class ToolTips extends Feature {
             .build();
     public final Property<Boolean> mapToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("MapToolTip")
-            .description("Display the map texture above the tooltip.")
             .value(true)
             .build();
     public final Property<Boolean> stewToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("StewToolTip")
-            .description("Display the Stew's potion effect in the tooltip.")
             .value(true)
             .build();
     public final Property<Boolean> hiveToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("HiveToolTip")
-            .description("Show hive data in the tooltip.")
             .value(true)
             .build();
     public final Property<Boolean> nbtToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NBTToolTip")
-            .description("Show NBT data in the tooltip.")
             .value(true)
             .build();
     public final Property<Integer> nbtKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Show NBT Key")
-            .description("The key to press to display the NBT data.")
             .value(GLFW.GLFW_KEY_LEFT_SHIFT)
             .isKey()
             .parent(nbtToolTipProperty)
@@ -89,7 +80,7 @@ public class ToolTips extends Feature {
     private ItemStack inspectStack;
 
     public ToolTips() {
-        super(Category.VISUAL, "Show extra tooltip info including seeing inside of shulkers and viewing maps and other NBT data");
+        super(Category.VISUAL);
     }
 
     //ShulkerToolTip, also with the ability to hover over and inspect the items inside
