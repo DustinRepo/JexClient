@@ -16,7 +16,7 @@ import net.minecraft.client.gui.screen.DeathScreen;
 public class Ghost extends Feature {
 
     public Ghost() {
-        super(Category.PLAYER, "Never accept death. Relog for godmode. Only works on vanilla/fabric");
+        super(Category.PLAYER);
     }
 
     @EventPointer
