@@ -30,7 +30,7 @@ public class MassTPA extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public MassTPA() {
-        super(Category.MISC, "Send a TPA to everyone until one is accepted");
+        super(Category.MISC, "");
     }
 
     @EventPointer
