@@ -72,7 +72,7 @@ public class SpeedCrafter extends Feature {
     @Override
     public void onEnable() {
         if (craftingItem == null) {
-            ChatHelper.INSTANCE.addClientMessage("Crafting item not set!");
+            ChatHelper.INSTANCE.addClientMessage("Item not set!");
             ChatHelper.INSTANCE.addClientMessage("Hold the intended output item and use " + CommandManager.INSTANCE.getPrefix() + "sc set");
         }
         super.onEnable();
