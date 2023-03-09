@@ -38,7 +38,7 @@ public class ItemSearcher extends Feature {
     private String searchField = "";
 
     public ItemSearcher() {
-        super(Category.VISUAL, "Search for items while in a chest or your inventory");
+        super(Category.VISUAL);
     }
 
     @EventPointer
