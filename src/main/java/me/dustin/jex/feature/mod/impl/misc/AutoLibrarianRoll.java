@@ -79,7 +79,7 @@ public class AutoLibrarianRoll extends Feature {
     private static final Map<VillagerEntity, BlockPos> doneVillagers = new HashMap<>();
 
     public AutoLibrarianRoll() {
-        super(Category.MISC, "Automatically break lecterns matched to a villager until it has the trade you want");
+        super(Category.MISC);
     }
 
     @EventPointer
