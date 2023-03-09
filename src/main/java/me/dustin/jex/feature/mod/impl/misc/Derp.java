@@ -38,7 +38,7 @@ public class Derp extends Feature {
     private int yaw, pitch;
 
     public Derp() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
