@@ -51,7 +51,7 @@ public class Tunneller extends Feature {
     private Direction direction;
 
     public Tunneller() {
-        super(Category.WORLD, "Automatically dig tunnels");
+        super(Category.WORLD);
     }
 
     @EventPointer
