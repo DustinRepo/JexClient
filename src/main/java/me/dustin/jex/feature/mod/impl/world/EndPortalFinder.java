@@ -24,7 +24,7 @@ public class EndPortalFinder extends Feature {
 	private EyeOfEnderEntity trackedEye;
 
 	public EndPortalFinder() {
-		super(Category.WORLD, "Find end portals with just two eye of ender. Math from https://www.omnicalculator.com/other/end-portal-finder");
+		super(Category.WORLD);
 	}
 
 	@EventPointer
