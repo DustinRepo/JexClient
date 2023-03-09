@@ -28,7 +28,7 @@ public class LogOutSpot extends Feature {
 	private final ArrayList<FakePlayerEntity> fakePlayers = new ArrayList<>();
 
 	public LogOutSpot() {
-		super(Category.WORLD, "Shows you where players have logged out at");
+		super(Category.WORLD);
 	}
 
 	@EventPointer
