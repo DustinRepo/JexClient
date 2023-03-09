@@ -11,7 +11,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class AutoRespawn extends Feature {
 
     public AutoRespawn() {
-        super(Category.MISC, "Respawn without having to click anything.");
+        super(Category.MISC, "");
     }
 
     @EventPointer
