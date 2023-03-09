@@ -31,7 +31,7 @@ public class BowBomb extends Feature {
     
 
     public BowBomb() {
-        super(Category.COMBAT, "Bow Exploit");
+        super(Category.COMBAT);
     }
     @EventPointer
     private final EventListener<EventStopUsingItem> eventStopUsingItem = new EventListener<>(event -> {
