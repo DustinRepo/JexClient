@@ -63,9 +63,3 @@ remapJar {
 	input.set(shadowJar.archiveFile)
 	archiveName("JexClient.jar")
 }
-
-shadowJar {
-	archiveName("jex-plugin-dev.jar")
-	configurations = [project.configurations.shadow]
-	exclude("com/google/")
-}
