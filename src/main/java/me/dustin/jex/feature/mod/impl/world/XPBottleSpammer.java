@@ -29,7 +29,7 @@ public class XPBottleSpammer extends Feature {
             .build();
 
     public XPBottleSpammer() {
-        super(Category.WORLD, "Spam XP Bottles on a button press");
+        super(Category.WORLD);
     }
 
     @EventPointer
