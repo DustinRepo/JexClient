@@ -13,7 +13,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class Parkour extends Feature {
 
     public Parkour() {
-        super(Category.MOVEMENT, "Jump while on edge of block.");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer
