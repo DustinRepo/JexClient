@@ -36,7 +36,7 @@ public class AutoReconnect extends Feature {
     private ServerAddress serverAddress;
 
     public AutoReconnect() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
