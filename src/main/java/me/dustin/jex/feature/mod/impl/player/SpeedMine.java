@@ -32,7 +32,6 @@ public class SpeedMine extends Feature {
             .build();
     public Property<Float> breakProgressProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Break Progress")
-            .description("How far into breaking a block before automatically finishing.")
             .value(0.65f)
             .min(0f)
             .max(1f)
@@ -42,7 +41,6 @@ public class SpeedMine extends Feature {
             .build();
     public Property<Integer> breakCooldownProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Break Cooldown")
-            .description("The amount of ticks to wait between breaking blocks. Default MC is 5.")
             .value(1)
             .min(0)
             .max(5)
@@ -52,7 +50,7 @@ public class SpeedMine extends Feature {
     private boolean givenHaste;
 
     public SpeedMine() {
-        super(Category.PLAYER, "Break blocks faster");
+        super(Category.PLAYER);
     }
 
     @EventPointer
