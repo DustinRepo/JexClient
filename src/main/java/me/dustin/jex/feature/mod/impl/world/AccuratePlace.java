@@ -47,7 +47,7 @@ public class AccuratePlace extends Feature {
     private int index = 0;
 
     public AccuratePlace() {
-        super(Category.WORLD, "Change the direction that you place blocks");
+        super(Category.WORLD);
     }
 
     @EventPointer
