@@ -71,7 +71,7 @@ public class AutoFarm extends Feature {
     private final StopWatch sortStopWatch = new StopWatch();
 
     public AutoFarm() {
-        super(Category.WORLD, "Farm a selected area");
+        super(Category.WORLD);
     }
 
     @EventPointer
