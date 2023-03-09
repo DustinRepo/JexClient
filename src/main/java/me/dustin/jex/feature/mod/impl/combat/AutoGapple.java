@@ -30,7 +30,6 @@ public class AutoGapple extends Feature {
 
     public final Property<Boolean> eatForPotionsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Eat for Potions")
-            .description("Eat Gapples for the potion effects")
             .value(true)
             .build();
     public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -41,7 +40,6 @@ public class AutoGapple extends Feature {
             .build();
     public final Property<Boolean> pressKeyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Press Key")
-            .description("Press the right-click key while eating to give animation")
             .value(true)
             .build();
     public final Property<Boolean> takeFromInvProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -56,7 +54,6 @@ public class AutoGapple extends Feature {
             .build();
     public final Property<Boolean> putBackProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Put Back")
-            .description("Whether or not to put the gapples back in the slot they came from.")
             .value(true)
             .parent(takeFromInvProperty)
             .depends(parent -> (boolean) parent.value())
@@ -74,7 +71,7 @@ public class AutoGapple extends Feature {
     private boolean isEating;
 
     public AutoGapple() {
-        super(Category.COMBAT, "Automatically eat God Apples as needed");
+        super(Category.COMBAT);
     }
 
     @EventPointer
