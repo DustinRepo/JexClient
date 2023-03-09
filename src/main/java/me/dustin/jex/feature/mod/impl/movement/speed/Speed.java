@@ -52,7 +52,7 @@ public class Speed extends Feature {
     private Mode lastMode;
 
     public Speed() {
-        super(Category.MOVEMENT, "Sanic gotta go fast.", GLFW.GLFW_KEY_C);
+        super(Category.MOVEMENT, "", GLFW.GLFW_KEY_C);
         new StrafeSpeed();
         new VanillaSpeed();
         INSTANCE = this;
