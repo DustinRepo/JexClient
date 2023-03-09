@@ -9,7 +9,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class PortalGui extends Feature {
 
     public PortalGui() {
-        super(Category.PLAYER, "Open GUIs while in portals.");
+        super(Category.PLAYER);
     }
 
     @EventPointer
