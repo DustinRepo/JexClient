@@ -39,7 +39,7 @@ public class AntiAFK extends Feature {
     private BlockPos[] lastSpots;
 
     public AntiAFK() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
