@@ -82,7 +82,7 @@ public class EnchantColor extends Feature{
     private final StopWatch stopWatch = new StopWatch();
 
     public EnchantColor() {
-        super(Category.VISUAL, "Change the color of the enchanment glint (or make it rainbow!)");
+        super(Category.VISUAL);
     }
 
     @EventPointer
