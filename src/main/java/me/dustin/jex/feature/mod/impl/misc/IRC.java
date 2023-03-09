@@ -29,21 +29,18 @@ public class IRC extends Feature {
 
     public final Property<String> sendPrefixProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("SendPrefix")
-            .description("The prefix used to activate the IRC chat mode.")
             .value("@")
             .max(2)
             .build();
     
      public final Property<String> sendIpProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("SendIP")
-            .description("This pole used to send ip")
             .value("132.145.154.217")
             .max(50)
             .build();
     
     public final Property<String> sendPortProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("SendPort")
-            .description("This pole used to send port.")
             .value("6969")
             .max(5)
             .build();
@@ -62,7 +59,7 @@ public class IRC extends Feature {
     };
 
     public IRC() {
-        super("IRC", Category.MISC, "Connect to an IRC server to chat with other Jex users", true, true, 0);
+        super("IRC", Category.MISC, "", true, true, 0);
     }
 
 
