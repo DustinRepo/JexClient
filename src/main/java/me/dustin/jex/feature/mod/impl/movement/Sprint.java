@@ -24,7 +24,7 @@ public class Sprint extends Feature {
             .build();
 
     public Sprint() {
-        super(Category.MISC, "Automatically sprint", GLFW.GLFW_KEY_V);
+        super(Category.MISC, "", GLFW.GLFW_KEY_V);
     }
 
     @EventPointer
