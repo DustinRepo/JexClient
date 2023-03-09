@@ -54,7 +54,7 @@ public class AntiEffect extends Feature {
             .build();
 
     public AntiEffect() {
-        super(Category.PLAYER, "Remove certain negative effects from yourself.");
+        super(Category.PLAYER);
     }
 
     @EventPointer
