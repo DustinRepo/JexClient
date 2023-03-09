@@ -91,7 +91,7 @@ public class Triggerbot extends Feature {
             .build();
 
     public Triggerbot() {
-        super(Category.COMBAT, "Automatically attack entities you hover over");
+        super(Category.COMBAT);
     }
 
     @EventPointer
