@@ -29,7 +29,6 @@ public class AutoEZ extends Feature {
 
     public final Property<Long> killDetectDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Max Kill Detect Delay(MS)")
-            .description("The amount of time between attacking someone and them dying to consider it a kill.")
             .value(200L)
             .min(100)
             .max(500)
@@ -41,7 +40,7 @@ public class AutoEZ extends Feature {
     private boolean isFighting;
 
     public AutoEZ() {
-        super(Category.COMBAT, "Automatically send messages when you kill players. Configurable messages in .minecraft/JexClient/KillMessages.json");
+        super(Category.COMBAT);
     }
 
     @EventPointer
