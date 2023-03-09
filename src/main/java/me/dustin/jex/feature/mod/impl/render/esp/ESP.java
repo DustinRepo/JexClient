@@ -33,7 +33,6 @@ public class ESP extends Feature {
 
     public final Property<Integer> lineWidthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Line Width")
-            .description("Line width for shaders (in pixels)")
             .value(2)
             .min(1)
             .max(10)
@@ -42,14 +41,12 @@ public class ESP extends Feature {
             .build();
     public final Property<Boolean> glowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Glow")
-            .description("Whether or not to add a glow effect to the outline")
             .value(false)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.SHADER || parent.value() == Mode.BOX_OUTLINE)
             .build();
     public final Property<Float> glowIntensityProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Glow Intensity")
-            .description("Intensity for the glow effect")
             .value(0.5f)
             .min(0.1f)
             .max(1)
@@ -63,7 +60,6 @@ public class ESP extends Feature {
             .build();
     public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Color on Distance")
-            .description("Change the color from green (far away) to red (close).")
             .value(false)
             .parent(playerProperty)
             .depends(parent -> (boolean) parent.value())
@@ -169,7 +165,7 @@ public class ESP extends Feature {
     private Mode lastMode;
 
     public ESP() {
-        super(Category.VISUAL, "Mark entities/players through walls");
+        super(Category.VISUAL);
         new ShaderESP();
         new BoxESP();
         new OutlineBox();
