@@ -28,7 +28,7 @@ public class PingSpoof extends Feature {
     private long keepAliveId = -1;
 
     public PingSpoof() {
-        super(Category.MISC, "Spoofs your ping to be as high as possible");
+        super(Category.MISC, "");
     }
 
     @EventPointer
