@@ -39,7 +39,6 @@ public class StorageESP extends Feature {
             .build();
     public final Property<Integer> lineWidthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Line Width")
-            .description("Line width for shaders (in pixels)")
             .value(2)
             .min(1)
             .max(10)
@@ -48,14 +47,12 @@ public class StorageESP extends Feature {
             .build();
     public final Property<Boolean> glowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Glow")
-            .description("Whether or not to add a glow effect to the outline")
             .value(false)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.SHADER)
             .build();
     public final Property<Float> glowIntensityProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Glow Intensity")
-            .description("Intensity for the glow effect")
             .value(0.5f)
             .min(0.1f)
             .max(1)
@@ -65,7 +62,6 @@ public class StorageESP extends Feature {
             .build();
     public final Property<Boolean> fadeBoxesWhenCloseProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Fade When Close")
-            .description("Fade the boxes to make the storage block easier to see.")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.BOX)
@@ -197,7 +193,7 @@ public class StorageESP extends Feature {
 
     private Mode lastMode;
     public StorageESP() {
-        super(Category.VISUAL, "Show storage blocks through walls");
+        super(Category.VISUAL);
         new OutlineStorageESP();
         new BoxStorageESP();
     }
