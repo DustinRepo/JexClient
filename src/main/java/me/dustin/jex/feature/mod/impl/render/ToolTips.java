@@ -41,6 +41,7 @@ public class ToolTips extends Feature {
             .value(true)
             .build();
     public final Property<Boolean> shulkerToolTipProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("ShulkerToolTip")
             .value(true)
             .build();
     public final Property<Integer> inspectKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
