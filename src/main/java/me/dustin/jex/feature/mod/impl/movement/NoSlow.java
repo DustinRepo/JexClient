@@ -37,7 +37,7 @@ public class NoSlow extends Feature {
 			.build();
 
 	public NoSlow() {
-		super(Category.MOVEMENT, "Prevent actions from slowing you down");
+		super(Category.MOVEMENT);
 	}
 
 	@EventPointer
