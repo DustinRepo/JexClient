@@ -71,7 +71,7 @@ public class Crosshair extends Feature {
 	private final StopWatch stopWatch = new StopWatch();
 
 	public Crosshair() {
-		super(Category.VISUAL, "Draw a custom crosshair on-screen.");
+		super(Category.VISUAL);
 	}
 
 	@EventPointer
