@@ -41,7 +41,7 @@ public class AutoSoup extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public AutoSoup() {
-        super(Category.COMBAT, "Eats soup when your health gets below a certain amount.");
+        super(Category.COMBAT);
     }
 
     @EventPointer
