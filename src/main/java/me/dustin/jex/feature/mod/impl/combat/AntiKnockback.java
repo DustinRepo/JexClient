@@ -57,7 +57,7 @@ public class AntiKnockback extends Feature {
             .build();
    
     public AntiKnockback() {
-        super(Category.COMBAT, "Changes knockback from the player.");
+        super(Category.COMBAT);
     }
 
     @EventPointer
