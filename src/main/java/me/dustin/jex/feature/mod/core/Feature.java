@@ -18,7 +18,10 @@ public class Feature {
     private final boolean defaultState;
 
     private final Property<Boolean> visibleProperty;
-
+    
+    public Feature(Category category) {
+        this("", category, "", false, true, 0);
+    }
     public Feature(Category category, String description) {
         this("", category, description, false, true, 0);
     }
