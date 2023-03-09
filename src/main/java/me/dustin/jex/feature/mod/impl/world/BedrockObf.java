@@ -29,7 +29,7 @@ public class BedrockObf extends Feature {
     private Thread thread;
 
     public BedrockObf() {
-        super(Category.WORLD, "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.");
+        super(Category.WORLD);
     }
 
     @EventPointer
