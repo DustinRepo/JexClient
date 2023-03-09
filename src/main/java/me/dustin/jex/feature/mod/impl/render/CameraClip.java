@@ -9,7 +9,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class CameraClip extends Feature {
 
     public CameraClip() {
-        super(Category.VISUAL, "Remove the restriction forcing cameras close near a wall");
+        super(Category.VISUAL);
     }
 
     @EventPointer
