@@ -17,7 +17,7 @@ import net.minecraft.util.Formatting;
 public class ColoredSigns extends Feature {
 
     public ColoredSigns() {
-        super(Category.WORLD, "Color coded signs. Use & for the color code");
+        super(Category.WORLD);
     }
 
     @EventPointer
