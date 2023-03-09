@@ -40,7 +40,6 @@ public class AnchorAura extends Feature {
             .build();
     public final Property<AttackMode> attackModeProperty = new Property.PropertyBuilder<AttackMode>(this.getClass())
             .name("Explode")
-            .description("The targeting mode for anchors.")
             .value(AttackMode.ANY)
             .build();
     public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
@@ -110,7 +109,7 @@ public class AnchorAura extends Feature {
     private BlockPos placePos;
 
     public AnchorAura() {
-        super(Category.COMBAT, "Automatically place/charge/explode respawn anchors near players");
+        super(Category.COMBAT);
     }
 
     @EventPointer
