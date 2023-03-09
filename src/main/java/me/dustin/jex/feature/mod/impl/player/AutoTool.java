@@ -31,7 +31,7 @@ public class AutoTool extends Feature {
     private int savedSlot;
 
     public AutoTool() {
-        super(Category.PLAYER, "Switch to the best tool for your needs.");
+        super(Category.PLAYER);
     }
 
     @EventPointer
