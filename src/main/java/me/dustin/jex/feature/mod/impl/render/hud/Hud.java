@@ -48,11 +48,11 @@ public class Hud extends Feature {
             .parent(clientColorProperty)
             .build();
     public final Property<Boolean> collisionProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Collision")
             .value(true)
             .build();
     public final Property<Integer> constrictKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Constrict Elements Key")
-            .description("The key to bring all elements back on screen.")
             .value(GLFW.GLFW_KEY_LEFT_CONTROL)
             .isKey()
             .build();
