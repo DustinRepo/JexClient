@@ -62,7 +62,7 @@ public class Waypoints extends Feature {
 	private static final Map<Waypoint, Vec3d> waypointPositions = Maps.newHashMap();
 
 	public Waypoints() {
-		super(Category.WORLD, "Display Waypoints to mark areas.");
+		super(Category.WORLD);
 	}
 
 	public static Waypoint get(String name, String server) {
