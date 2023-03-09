@@ -23,7 +23,7 @@ public class WorldTime extends Feature {
             .build();
 
     public WorldTime() {
-        super(Category.WORLD, "Change the World time");
+        super(Category.WORLD);
     }
 
     @EventPointer
