@@ -27,7 +27,7 @@ public class OldBlocking extends Feature {
             .build();
 
     public OldBlocking() {
-        super(Category.VISUAL, "Get the pre-1.9 block animation when blocking with a shield.");
+        super(Category.VISUAL);
     }
 
     @EventPointer
