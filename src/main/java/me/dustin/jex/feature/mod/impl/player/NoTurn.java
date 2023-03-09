@@ -12,7 +12,7 @@ public class NoTurn extends Feature {
     private boolean reconnected;
 
     public NoTurn() {
-        super(Category.PLAYER, "Ignore the server telling you to look somewhere.");
+        super(Category.PLAYER);
     }
 
     @EventPointer
