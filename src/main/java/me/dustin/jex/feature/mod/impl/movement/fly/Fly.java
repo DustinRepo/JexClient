@@ -75,7 +75,7 @@ public class Fly extends Feature {
     private Mode lastMode;
 
     public Fly() {
-        super(Category.MOVEMENT,  "Fly in survival", GLFW.GLFW_KEY_F);
+        super(Category.MOVEMENT,  "", GLFW.GLFW_KEY_F);
         new NormalFly();
         new TightFly();
         new ThreeDFly();
