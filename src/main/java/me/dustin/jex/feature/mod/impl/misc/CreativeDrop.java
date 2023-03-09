@@ -31,19 +31,16 @@ public class CreativeDrop extends Feature {
             .build();
     public final Property<Integer> speedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Speed")
-            .description("The speed that you drop items at.")
             .value(1)
             .min(1)
             .max(10)
             .build();
     public final Property<Boolean> nameProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Name")
-            .description("Whether or not to name the item.")
             .value(true)
             .build();
     public final Property<Boolean> enchantProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Enchant")
-            .description("Whether or not to enchant the item.")
             .value(true)
             .build();
 
@@ -51,7 +48,7 @@ public class CreativeDrop extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public CreativeDrop() {
-        super(Category.MISC, "Drop all items from your inventory in creative.");
+        super(Category.MISC, "");
     }
 
     @EventPointer
