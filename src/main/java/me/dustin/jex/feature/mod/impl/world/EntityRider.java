@@ -131,7 +131,7 @@ public class EntityRider extends Feature {
             .build();
 
     public EntityRider() {
-        super(Category.WORLD, "Change how ridable entities work.");
+        super(Category.WORLD);
     }
 
     @EventPointer
