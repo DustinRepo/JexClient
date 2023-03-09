@@ -100,7 +100,7 @@ public class Hitboxes extends Feature {
             .build();
 
     public Hitboxes() {
-        super(Category.COMBAT, "Resize entity hitboxes to make them easier to hit");
+        super(Category.COMBAT);
     }
 
     @EventPointer
