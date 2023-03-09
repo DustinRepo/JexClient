@@ -21,7 +21,7 @@ public class AntiVoid extends Feature {
             .build();
 
     public AntiVoid() {
-        super(Category.MOVEMENT, "");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer
