@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 public class VanillaSpoof extends Feature {
 
     public VanillaSpoof() {
-        super(Category.MISC, "Tell the server you are a vanilla player");
+        super(Category.MISC);
     }
 
     @EventPointer
