@@ -37,7 +37,7 @@ public class SpeedCrafter extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public SpeedCrafter() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
