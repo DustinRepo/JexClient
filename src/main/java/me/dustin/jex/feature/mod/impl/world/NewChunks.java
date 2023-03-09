@@ -35,7 +35,7 @@ public class NewChunks extends Feature {
     private final ArrayList<Chunk> oldChunks = new ArrayList<>();
 
     public NewChunks() {
-        super(Category.WORLD, "Attempts to determine which chunks are newly generated.");
+        super(Category.WORLD);
     }
 
     @EventPointer
