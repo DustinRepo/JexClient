@@ -18,7 +18,7 @@ import net.minecraft.util.Hand;
 public class AutoPetFeeder extends Feature {
 
     public AutoPetFeeder() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
