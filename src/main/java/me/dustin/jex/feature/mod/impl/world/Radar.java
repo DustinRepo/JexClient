@@ -42,7 +42,7 @@ public class Radar extends Feature {
             .build();
 
     public Radar() {
-        super(Category.WORLD, "Draws a Radar on your HUD telling you where entities are");
+        super(Category.WORLD);
         INSTANCE = this;
     }
 
