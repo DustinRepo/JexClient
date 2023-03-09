@@ -51,7 +51,7 @@ public class AutoPot extends Feature {
 	private final StopWatch stopWatch = new StopWatch();
 
 	public AutoPot() {
-		super(Category.COMBAT, "Uses health potions when health goes below selected amount.");
+		super(Category.COMBAT);
 	}
 
 	@EventPointer
