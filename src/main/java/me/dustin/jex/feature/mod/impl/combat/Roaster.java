@@ -28,7 +28,6 @@ public class Roaster extends Feature {
     
     public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Distance")
-            .description("Sets the range of action")
             .value(4)
             .min(2)
             .max(6)
@@ -40,7 +39,6 @@ public class Roaster extends Feature {
             .build();
     public final Property<Boolean> friendsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Friends")
-            .description("Light your friends on fire too")
             .value(false)
             .parent(playerProperty)
             .depends(parent -> (boolean) parent.value())
@@ -59,17 +57,14 @@ public class Roaster extends Feature {
             .build();
     public final Property<Boolean> onFireProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("On Fire")
-            .description("Keep placing fire under them even if they are already on fire.")
             .value(false)
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
-            .description("Whether or not to rotate your head on the server.")
             .value(true)
             .build();
     public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Lockview")
-            .description("Sets the rotations client-side.")
             .value(false)
             .parent(rotateProperty)
             .depends(parent -> (boolean) parent.value())
@@ -95,7 +90,7 @@ public class Roaster extends Feature {
     private BlockPos blockPos = null;
 
     public Roaster() {
-        super(Category.COMBAT, "Roast your friends.");
+        super(Category.COMBAT);
     }
 
     @EventPointer
