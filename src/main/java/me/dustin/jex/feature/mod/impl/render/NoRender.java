@@ -177,7 +177,6 @@ public class NoRender extends Feature {
             .parent(particlesProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-    //---------------------------------------------------------------------------------------------------
     public final Property<Boolean> entitiesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Entities")
             .value(true)
@@ -218,7 +217,6 @@ public class NoRender extends Feature {
             .parent(entitiesProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-//------------------------------------------------------------------------------------------------------------------
     public final Property<Boolean> blocksProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Blocks")
             .value(true)
@@ -381,7 +379,7 @@ public class NoRender extends Feature {
             .build();    
 
     public NoRender() {
-        super(Category.VISUAL, "Don't render specific entities/blocks to improve fps");
+        super(Category.VISUAL);
     }
 
     @EventPointer
