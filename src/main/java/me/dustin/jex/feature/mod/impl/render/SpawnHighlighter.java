@@ -95,7 +95,7 @@ public class SpawnHighlighter extends Feature {
 	private final StopWatch stopWatch = new StopWatch();
 
 	public SpawnHighlighter() {
-		super(Category.VISUAL, "Show all blocks near you that mobs can spawn on.");
+		super(Category.VISUAL);
 	}
 
 	@EventPointer
