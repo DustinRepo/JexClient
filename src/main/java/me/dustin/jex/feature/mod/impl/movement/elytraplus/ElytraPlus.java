@@ -24,7 +24,6 @@ public class ElytraPlus extends Feature {
 
     public final Property<Boolean> autoElytraProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Auto Elytra")
-            .description("Automatically activate the elytra.")
             .value(true)
             .build();
     public final Property<Float> fallDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
@@ -95,7 +94,7 @@ public class ElytraPlus extends Feature {
     private Mode lastMode;
 
     public ElytraPlus() {
-        super(Category.MOVEMENT, "Change how the Elytra flies.");
+        super(Category.MOVEMENT);
         new AlwaysBoostElytraFly();
         new BoostElytraFly();
         new ECMEElytraFly();
