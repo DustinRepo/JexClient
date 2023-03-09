@@ -27,7 +27,7 @@ public class Timer extends Feature {
             .build();
 
     public Timer() {
-        super(Category.WORLD, "Speed up or slow down the game");
+        super(Category.WORLD);
     }
 
     @EventPointer
