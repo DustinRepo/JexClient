@@ -30,7 +30,7 @@ public class Trail extends Feature {
     private final Random r = new Random();
 
     public Trail() {
-        super(Category.VISUAL, "Render a configurable list of particles as a trail behind you. Use command .trail to configure");
+        super(Category.VISUAL);
     }
 
     @EventPointer
