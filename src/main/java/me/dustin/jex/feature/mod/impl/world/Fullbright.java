@@ -28,7 +28,7 @@ public class Fullbright extends Feature {
             .build();
 
     public Fullbright() {
-        super(Category.WORLD, "Goodbye, darkness. You were never my friend.");
+        super(Category.WORLD);
     }
 
     @EventPointer
