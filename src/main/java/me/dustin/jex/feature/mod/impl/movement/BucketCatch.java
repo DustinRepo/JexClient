@@ -34,7 +34,7 @@ public class BucketCatch extends Feature {
     private boolean click;
 
     public BucketCatch() {
-        super(Category.MOVEMENT, "");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer
