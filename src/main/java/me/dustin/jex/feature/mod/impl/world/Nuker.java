@@ -27,7 +27,7 @@ import java.util.Comparator;
 
 public class Nuker extends Feature {
     public Nuker() {
-        super(Category.WORLD, "Nuke the blocks around you.");
+        super(Category.WORLD, "Nuke the blocks around you");
     }
 
     private final StopWatch stopWatch = new StopWatch();
