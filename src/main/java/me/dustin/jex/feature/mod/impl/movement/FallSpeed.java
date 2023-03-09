@@ -16,7 +16,6 @@ public class FallSpeed extends Feature {
 
     public final Property<Float> fallDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Fall Distance")
-            .description("The distance before the speed option kicks in")
             .value(3f)
             .min(0)
             .max(10)
@@ -31,12 +30,10 @@ public class FallSpeed extends Feature {
             .build();
     public final Property<Boolean> hoveringProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Hovering")
-	    .description("Makes fallspeed look like antifall, taken from Matix")
             .value(false)
             .build();
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Hovering Delay")
-            .description("determines how long the player will hang in the air")
             .value(250L)
 	    .min(0L)
 	    .max(500L)
@@ -48,7 +45,7 @@ public class FallSpeed extends Feature {
 private final StopWatch stopWatch = new StopWatch();
 
     public FallSpeed() {
-        super(Category.MOVEMENT, "Change your fall speed");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer
