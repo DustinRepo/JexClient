@@ -23,11 +23,13 @@ public class MendingSaver extends Feature {
     public Property<Integer> itemPercentProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Item %")
             .value(10)
-            .max(30)
+            .min(1)
+            .max(50)
+            .inc(1)
             .build();
 
     public MendingSaver() {
-        super(Category.MISC, "Save your mending tools from breaking by putting them away automatically.");
+        super(Category.MISC, "");
     }
 
     @EventPointer
