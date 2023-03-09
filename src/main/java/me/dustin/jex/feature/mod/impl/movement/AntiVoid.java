@@ -21,7 +21,7 @@ public class AntiVoid extends Feature {
             .build();
 
     public AntiVoid() {
-        super(Category.MOVEMENT, "Prevent yourself from falling to the void");
+        super(Category.MOVEMENT, "");
     }
 
     @EventPointer
