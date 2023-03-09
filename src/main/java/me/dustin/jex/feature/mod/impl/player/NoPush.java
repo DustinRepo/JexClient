@@ -20,7 +20,7 @@ public class NoPush extends Feature {
             .build();
 
     public NoPush() {
-        super(Category.PLAYER, "Don't let others push you around.");
+        super(Category.PLAYER);
     }
 
     @EventPointer
