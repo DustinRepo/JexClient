@@ -54,7 +54,7 @@ public class CreativeDrop extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         Random random = new Random();
-        String[] names = new String[]{JexClient.INSTANCE.getBaseUrl(), "Download Jex Client to do this", "Nice FPS", "Oh look a shiny item", "Copper pants", "How do I stop dropping items?", "Can you hear me?", "Please help I am stuck in this item"};
+        String[] names = new String[]{JexClient.INSTANCE.getBaseUrl(), "https://github.com/mdenials/JexClient"};
         if (stopWatch.hasPassed(delayProperty.value()) && Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
             for (int i = 0; i < speedProperty.value(); i++) {
                 ItemStack itemStack = new ItemStack(Item.byRawId(slot));
