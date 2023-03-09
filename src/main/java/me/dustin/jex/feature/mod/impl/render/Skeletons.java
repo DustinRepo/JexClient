@@ -31,7 +31,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import java.awt.*;
 
-public class Skeletons extends Feature {//it looks cool as fuck but seriously fuck this was a massive pain in the ass
+public class Skeletons extends Feature {
 
     public final Property<Color> skeletonColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Color")
@@ -39,7 +39,7 @@ public class Skeletons extends Feature {//it looks cool as fuck but seriously fu
             .build();
 
     public Skeletons() {
-        super(Category.VISUAL, "Draw player skeletons");
+        super(Category.VISUAL);
     }
 
     @EventPointer
