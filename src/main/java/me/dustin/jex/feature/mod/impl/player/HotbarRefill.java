@@ -23,7 +23,7 @@ public class HotbarRefill extends Feature {
     private int swapSlot = -1;
 
     public HotbarRefill() {
-        super(Category.PLAYER, "Attempts to refill your hotbar when you use up an item with the same item");
+        super(Category.PLAYER);
     }
 
     @EventPointer
