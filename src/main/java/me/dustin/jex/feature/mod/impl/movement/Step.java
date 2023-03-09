@@ -35,7 +35,6 @@ public class Step extends Feature {
             .build();
     public final Property<Boolean> cancelPacketProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Cancel Packet")
-            .description("Cancels a packet every now and then.")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.PACKET)
@@ -46,7 +45,7 @@ public class Step extends Feature {
     private boolean slow;
 
     public Step() {
-        super(Category.MOVEMENT, "Step up blocks");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer
