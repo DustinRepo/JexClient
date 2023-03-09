@@ -48,7 +48,7 @@ public class CustomBG extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public CustomBG() {
-        super(Category.VISUAL, "Draws a custom background rather than the simple dark one");
+        super(Category.VISUAL);
     }
 
     @EventPointer
