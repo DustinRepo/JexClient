@@ -46,14 +46,13 @@ public class SpawnProofing extends Feature {
             .build();
     public final Property<Boolean> useGlassProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Use Glass")
-            .description("Allow glass to be used for spawn proofing.")
             .value(true)
             .build();
 
     private final StopWatch stopWatch = new StopWatch();
 
     public SpawnProofing() {
-        super(Category.WORLD, "Automatically place carpets/slabs to spawn proof around you");
+        super(Category.WORLD);
     }
 
     @EventPointer
