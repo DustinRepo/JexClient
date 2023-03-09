@@ -48,8 +48,6 @@ public class Hud extends Feature {
             .parent(clientColorProperty)
             .build();
     public final Property<Boolean> collisionProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Collision")
-            .description("Whether or not to allow the HUD elements to collide with one another.")
             .value(true)
             .build();
     public final Property<Integer> constrictKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -78,7 +76,6 @@ public class Hud extends Feature {
             .build();
     public final Property<Boolean> suffixesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Suffixes")
-            .description("Allow for suffixes to display in the ArrayList")
             .value(true)
             .parent(showArrayListProperty)
             .depends(parent -> (boolean) parent.value())
@@ -186,7 +183,6 @@ public class Hud extends Feature {
             .build();
     public final Property<Boolean> serverNameProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Server")
-            .description("Show the server IP on the HUD.")
             .value(true)
             .parent(infoProperty)
             .depends(parent -> (boolean) parent.value())
