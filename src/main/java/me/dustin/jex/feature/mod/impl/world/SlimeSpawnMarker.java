@@ -49,7 +49,7 @@ public class SlimeSpawnMarker extends Feature {
     private final File chunksFile = new File(ModFileHelper.INSTANCE.getJexDirectory(), "slimes.txt");
 
     public SlimeSpawnMarker() {
-        super(Category.WORLD, "Notify you when a slime spawns and mark the chunk it spawned in as a slime chunk.");
+        super(Category.WORLD);
     }
 
     @EventPointer
