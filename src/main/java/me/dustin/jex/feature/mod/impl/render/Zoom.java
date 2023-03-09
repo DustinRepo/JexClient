@@ -36,7 +36,7 @@ public class Zoom extends Feature {
     boolean resetFOV = true;
 
     public Zoom() {
-        super(Category.VISUAL, "Zoom in like Optifine");
+        super(Category.VISUAL);
     }
 
     @Override
