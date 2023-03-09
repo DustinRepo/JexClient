@@ -24,7 +24,7 @@ public class AutoWither extends Feature {
     private PlayerInteractBlockC2SPacket packet = null;
 
     public AutoWither() {
-        super(Category.MISC, "Automatically create withers by just placing soul sand");
+        super(Category.MISC, "");
     }
 
     @EventPointer
