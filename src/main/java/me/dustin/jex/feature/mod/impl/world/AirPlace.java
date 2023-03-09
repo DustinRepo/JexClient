@@ -39,7 +39,7 @@ public class AirPlace extends Feature {
 			.build();
 
 	public AirPlace() {
-		super(Category.WORLD, "Gives you the ability to place blocks in the air. (Anticheats usually block this)");
+		super(Category.WORLD);
 	}
 
 	@EventPointer
