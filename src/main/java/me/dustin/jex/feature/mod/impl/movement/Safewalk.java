@@ -9,7 +9,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class Safewalk extends Feature {
 
     public Safewalk() {
-        super(Category.MOVEMENT, "Prevent yourself from walking off of blocks like you're sneaking");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer
