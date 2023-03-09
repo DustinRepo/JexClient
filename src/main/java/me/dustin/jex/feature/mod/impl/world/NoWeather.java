@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 public class NoWeather extends Feature {
 
     public NoWeather() {
-        super(Category.WORLD, "Remove rain and snow");
+        super(Category.WORLD);
     }
 
     @EventPointer
