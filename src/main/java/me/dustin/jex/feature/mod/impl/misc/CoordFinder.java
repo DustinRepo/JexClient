@@ -12,7 +12,7 @@ import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 public class CoordFinder extends Feature {
 
     public CoordFinder() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
