@@ -28,7 +28,6 @@ public class BonemealAura extends Feature {
 
 public final Property<Integer> radiusProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Radius")
-            .description("Aura work distance radius")
             .value(6)
             .min(2)
             .max(6)
@@ -64,7 +63,7 @@ public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Bool
             .build();	
 	
     public BonemealAura() {
-        super(Category.WORLD, "Automatically bonemeal crops around the player");
+        super(Category.WORLD);
         INSTANCE = this;
     }
 
