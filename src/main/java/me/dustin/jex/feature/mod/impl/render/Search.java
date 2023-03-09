@@ -65,7 +65,7 @@ public class Search extends Feature {
     private final ConcurrentLinkedQueue<Chunk> chunksToUpdate = new ConcurrentLinkedQueue<>();
 
     public Search() {
-        super(Category.VISUAL, "Search for a specific block. use \".help search\"");
+        super(Category.VISUAL);
     }
 
     public static void firstLoad() {
