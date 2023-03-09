@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 public class BedrockBreaker extends Feature {
 
     public BedrockBreaker() {
-        super(Category.WORLD, "Break bedrock in survival mode using a well-known bug);
+        super(Category.WORLD);
     }
 
     @EventPointer
