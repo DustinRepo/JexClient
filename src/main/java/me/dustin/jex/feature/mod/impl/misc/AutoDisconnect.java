@@ -29,7 +29,7 @@ public class AutoDisconnect extends Feature {
             .build();
 
     public AutoDisconnect() {
-        super(Category.MISC, "Automatically disconnect when your health gets below a certain value");
+        super(Category.MISC, "");
     }
 
     @EventPointer
