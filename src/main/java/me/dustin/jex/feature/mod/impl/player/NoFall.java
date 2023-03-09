@@ -17,7 +17,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 public class NoFall extends Feature {
 
     public NoFall() {
-        super(Category.PLAYER, "Remove fall damage.");
+        super(Category.PLAYER);
     }
 
     @EventPointer
