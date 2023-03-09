@@ -62,7 +62,7 @@ public class AutoBreak extends Feature {
 	private BlockPos pos;
 
 	public AutoBreak() {
-		super(Category.WORLD, "Set a block to auto re-break when a new block is there.");
+		super(Category.WORLD);
 	}
 
 	@EventPointer
