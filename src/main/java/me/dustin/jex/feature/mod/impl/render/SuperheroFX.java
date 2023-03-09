@@ -25,7 +25,6 @@ public class SuperheroFX extends Feature{
 
     public final Property<Boolean> visibleOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Visible Only")
-            .description("Only show particles when they would be visible.")
             .value(true)
             .build();
     public final Property<Long> maxAgeProperty = new Property.PropertyBuilder<Long>(this.getClass())
@@ -52,7 +51,7 @@ public class SuperheroFX extends Feature{
     private final ArrayList<KapowParticle> particles = new ArrayList<>();
 
     public SuperheroFX() {
-        super(Category.VISUAL, "Add comic \"Pow!\" and others to the game");
+        super(Category.VISUAL);
     }
 
     @EventPointer
