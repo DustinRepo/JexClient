@@ -39,7 +39,7 @@ public class AntiHazard extends Feature {
             .build();
 
     public AntiHazard() {
-        super(Category.WORLD, "Prevent yourself from walking into hazards like cactus");
+        super(Category.WORLD);
     }
 
     @EventPointer
