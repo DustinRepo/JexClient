@@ -16,7 +16,7 @@ import net.minecraft.screen.slot.SlotActionType;
 public class AutoMend extends Feature {
 
     public AutoMend() {
-        super(Category.MISC, "");
+        super(Category.MISC);
     }
 
     @EventPointer
