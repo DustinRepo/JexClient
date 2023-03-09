@@ -33,7 +33,7 @@ public final Property<Integer> chokeProperty = new Property.PropertyBuilder<Inte
     private boolean sending = false;
     
     public Fakelag() {
-        super(Category.MISC, "Pretend to lag");
+        super(Category.MISC, "");
     }
 
     @EventPointer
