@@ -18,7 +18,7 @@ import net.minecraft.util.Hand;
 public class AutoPetFeeder extends Feature {
 
     public AutoPetFeeder() {
-        super(Category.MISC, "Automatically feed your pets to keep them at full health at all times.");
+        super(Category.MISC, "");
     }
 
     @EventPointer
