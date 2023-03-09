@@ -33,7 +33,6 @@ public class AutoEat extends Feature {
             .build();
     public final Property<Boolean> pressKeyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Press Key")
-            .description("Press the right-click key to give animations")
             .value(false)
             .build();
     public final Property<Boolean> negativeFoodsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -42,7 +41,6 @@ public class AutoEat extends Feature {
             .build();
     public final Property<Boolean> eatToRegenProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Eat To Regen")
-            .description("Eat when your food is too low to regen if you don't have full health.")
             .value(false)
             .build();
     public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -72,7 +70,7 @@ public class AutoEat extends Feature {
     private final StopWatch baritoneStopWatch = new StopWatch();
 
     public AutoEat() {
-        super(Category.PLAYER, "Eat food when hunger is low.");
+        super(Category.PLAYER);
     }
 
     @EventPointer
