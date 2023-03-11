@@ -158,7 +158,7 @@ public class Hud extends Feature {
     public final Property<Float> tabGuiWidthProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("TabGui Width")
             .value(75f)
-            .min(55)
+            .min(45)
             .max(200)
             .parent(tabGuiProperty)
             .depends(parent -> (boolean) parent.value())
