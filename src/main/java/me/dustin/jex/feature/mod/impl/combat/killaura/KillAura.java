@@ -352,7 +352,7 @@ public class KillAura extends Feature {
             if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
                 return false;
         }
-	if (entity instanceof PersistentProjectileEntity || entity instanceof ItemEntity || entity instanceof )
+	if (entity instanceof PersistentProjectileEntity || entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity)
 		return false;
 	LivingEntity livingEntity = entity;
 	if (livingEntity.isSleeping())
