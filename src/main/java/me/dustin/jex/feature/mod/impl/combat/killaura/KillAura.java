@@ -352,9 +352,18 @@ public class KillAura extends Feature {
             if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
                 return false;
         }
-	if (entity instanceof PersistentProjectileEntity || entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity)
-		return false;
-	LivingEntity livingEntity = entity;
+	 if (projectilesProperty.value()) {
+            if (entity instanceof ShulkerBulletEntity)
+               return bulletProperty.value();
+            if (entity instanceof FireballEntity)
+               return fireballProperty.value();
+            if (entity instanceof DragonFireballEntity)
+               return dfireballProperty.value();
+            if (entity instanceof WitherSkullEntity)
+               return skullProperty.value();
+        }       
+	if (!(entity instanceof LivingEntity livingEntity))
+		return nolivingProperty.value()
 	if (livingEntity.isSleeping())
                return sleepingProperty.value();
 	if (entity.hasCustomName())
@@ -395,16 +404,6 @@ public class KillAura extends Feature {
                 return zombiePiglinProperty.value();
             if (entity instanceof PiglinEntity)
                 return piglinProperty.value();
-        }
-	if (projectilesProperty.value()) {
-            if (entity instanceof ShulkerBulletEntity)
-               return bulletProperty.value();
-            if (entity instanceof FireballEntity)
-               return fireballProperty.value();
-            if (entity instanceof DragonFireballEntity)
-               return dfireballProperty.value();
-            if (entity instanceof WitherSkullEntity)
-               return skullProperty.value();
         }
 	 return false;
     }
