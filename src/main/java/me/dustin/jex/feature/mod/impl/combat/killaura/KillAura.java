@@ -363,7 +363,7 @@ public class KillAura extends Feature {
                return skullProperty.value();
         }       
 	if (!(entity instanceof LivingEntity livingEntity))
-		return nolivingProperty.value()
+		return nolivingProperty.value();
 	if (livingEntity.isSleeping())
                return sleepingProperty.value();
 	if (entity.hasCustomName())
