@@ -343,8 +343,8 @@ public class KillAura extends Feature {
     }
     public boolean isValid(Entity entity, boolean rangecheck) {
 	 boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
-        if (!canSee && !ignoreWallsProperty.value())
-            return false;
+        if (!canSee)
+            return ignoreWallsProperty.value();
         if (rangecheck) {
             float distance = reachProperty.value();
             if (!canSee)
