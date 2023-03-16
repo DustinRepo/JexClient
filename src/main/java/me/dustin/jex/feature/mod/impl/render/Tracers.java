@@ -64,10 +64,10 @@ public class Tracers extends Feature {
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (entity instanceof Entity living && isValid((Entity) entity)) {
+            if (entity instanceof Entity entity && isValid(entity)) {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
-                Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, event.getPartialTicks());
+                Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, event.getPartialTicks());
                 Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
