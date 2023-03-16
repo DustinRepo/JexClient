@@ -69,7 +69,6 @@ public class Tracers extends Feature {
     @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            Entity entity = Wrapper.INSTANCE.getWorld().getEntities();
             if (isValid(entity)) {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
@@ -118,7 +117,7 @@ public class Tracers extends Feature {
             return hostilesProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(e))
             return neutralsProperty.value();
-        if (entity instanceof ItemEntity)
+        if (e instanceof ItemEntity)
             return itemProperty.value();
         return false;
     }
