@@ -61,6 +61,10 @@ public class Tracers extends Feature {
             .name("Item")
             .value(true)
             .build();
+    public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NoLiving")
+            .value(true)
+            .build();
 
     public Tracers() {
         super(Category.VISUAL);
@@ -119,6 +123,8 @@ public class Tracers extends Feature {
             return neutralsProperty.value();
         if (e instanceof ItemEntity)
             return itemProperty.value();
+        if (!(entity instanceof LivingEntity livingEntity))
+            return nolivingProperty.value();
         return false;
     }
 }
