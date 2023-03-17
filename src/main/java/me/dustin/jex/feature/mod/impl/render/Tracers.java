@@ -123,7 +123,7 @@ public class Tracers extends Feature {
             return neutralsProperty.value();
         if (e instanceof ItemEntity)
             return itemProperty.value();
-        if (!(entity instanceof LivingEntity livingEntity))
+        if (!(e instanceof LivingEntity livingEntity))
             return nolivingProperty.value();
         return false;
     }
