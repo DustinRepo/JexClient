@@ -20,7 +20,7 @@ public class CommandCopyNBT extends Command {
         dispatcher.register(literal(this.name).executes(this).then(literal("display").executes(context -> {
             ItemStack itemStack = context.getSource().getPlayer().getMainHandStack();
             if (itemStack.getNbt() == null)
-                return;
+                return false;
             Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(itemStack.getNbt().toString().replace("\247", "\\247"));
 
             PrettyPrintTextFormatter prettyPrintTextFormatter = new PrettyPrintTextFormatter();
