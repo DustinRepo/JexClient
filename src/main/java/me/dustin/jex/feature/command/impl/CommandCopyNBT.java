@@ -40,7 +40,7 @@ public class CommandCopyNBT extends Command {
         }
         ItemStack itemStack = context.getSource().getPlayer().getMainHandStack();
         if (itemStack.getNbt() == null)
-            return;
+            return 0;
         String nbt = itemStack.getNbt().toString();
         Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(nbt.replace("\247", "\\247"));
         ChatHelper.INSTANCE.addClientMessage("NBT Copied to clipboard");
