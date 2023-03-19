@@ -19,7 +19,8 @@ public class CommandCopyNBT extends Command {
     public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).executes(this).then(literal("display").executes(context -> {
             ItemStack itemStack = context.getSource().getPlayer().getMainHandStack();
-            assert itemStack.getNbt() != null;
+            if (itemStack.getNbt() == null)
+                return;
             Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(itemStack.getNbt().toString().replace("\247", "\\247"));
 
             PrettyPrintTextFormatter prettyPrintTextFormatter = new PrettyPrintTextFormatter();
