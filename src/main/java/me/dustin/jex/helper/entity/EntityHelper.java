@@ -13,10 +13,7 @@ import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.HoglinEntity;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.entity.mob.PiglinActivity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -24,25 +21,19 @@ import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
-import net.minecraft.entity.passive.DolphinEntity;
-import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.OcelotEntity;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.passive.PolarBearEntity;
-import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.DyeableArmorItem;
@@ -84,7 +75,7 @@ public enum EntityHelper {
     public boolean isHostileMob(Entity entity) {
         if (isNeutralMob(entity))
             return isAngryAtPlayer(entity);
-        return entity instanceof HostileEntity;
+        return entity instanceof HostileEntity || entity instanceof ShulkerEntity || entity instanceof HoglinEntity || entity instanceof SlimeEntity || entity instanceof FlyingEntity;
     }
 
     public boolean isBossMob(Entity entity) {
