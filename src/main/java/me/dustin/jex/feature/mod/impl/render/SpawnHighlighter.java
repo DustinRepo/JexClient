@@ -158,7 +158,7 @@ public class SpawnHighlighter extends Feature {
 			if (WorldHelper.INSTANCE.isWaterlogged(above))
 				return false;
 		if (aboveBlock == null)
-			return;
+			return null;
 		if (!WorldHelper.INSTANCE.canMobSpawnInside(aboveState) || (checkHeightProperty.value() && !WorldHelper.INSTANCE.canMobSpawnInside(twoAboveState)))
 			return false;
 		if (checkLightProperty.value()) {
