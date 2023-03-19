@@ -59,7 +59,8 @@ public class CommandDupe extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        assert Wrapper.INSTANCE.getMinecraft().crosshairTarget != null;
+        if (Wrapper.INSTANCE.getMinecraft().crosshairTarget == null)
+            return;
         if (Wrapper.INSTANCE.getMinecraft().crosshairTarget.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult) Wrapper.INSTANCE.getMinecraft().crosshairTarget;
             if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) instanceof ShulkerBoxBlock) {
