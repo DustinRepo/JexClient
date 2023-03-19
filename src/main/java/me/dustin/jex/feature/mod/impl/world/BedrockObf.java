@@ -57,7 +57,8 @@ public class BedrockObf extends Feature {
 
         if (emptyChunk != null) {
             for (Chunk chunk : obfuscatedChunks) {
-                assert Wrapper.INSTANCE.getWorld() != null;
+                if (Wrapper.INSTANCE.getWorld() == null)
+                    return;
                 if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
                     obfuscatedChunks.remove(chunk);
             }
