@@ -113,7 +113,7 @@ public abstract class ShaderProgram {
 		try {
 			InputStream in = getClass().getResourceAsStream(fileLoc);
 			if (in == null)
-			   return false;
+			   return "InputStream is null";
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			StringBuilder sb = new StringBuilder();
 			String inString;
