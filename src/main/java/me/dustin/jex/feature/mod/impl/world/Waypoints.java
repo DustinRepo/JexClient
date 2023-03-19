@@ -140,7 +140,8 @@ public class Waypoints extends Feature {
 			}
 			Vec3d pos = new Vec3d(x, y, z);
 			Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
-			assert cameraEntity != null;
+			if (cameraEntity == null)
+			    return;
 			Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
 
 			Color color1 = ColorHelper.INSTANCE.getColor(waypoint.getColor());
