@@ -75,7 +75,8 @@ public class Tracers extends Feature {
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
             if (isValid(entity)) {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
-                assert cameraEntity != null;
+                if (cameraEntity == null)
+                    return;
                 Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, event.getPartialTicks());
                 Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
 
