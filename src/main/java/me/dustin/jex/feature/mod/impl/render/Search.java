@@ -142,15 +142,12 @@ public class Search extends Feature {
                 continue;
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
-            assert cameraEntity != null;
+            if (cameraEntity == null)
+                return;
             Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
-
             Color color1 = ColorHelper.INSTANCE.getColor(blocks.get(block));
-
             Render3DHelper.INSTANCE.setup3DRender(true);
-
             Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
-
             BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
             bufferBuilder.vertex(entityPos.x, entityPos.y, entityPos.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
