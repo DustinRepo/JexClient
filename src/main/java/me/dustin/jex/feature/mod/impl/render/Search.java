@@ -120,7 +120,7 @@ public class Search extends Feature {
             }
             Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
             if (cameraEntity != null) {
-                return;
+                return true;
             }
             if (limitRangeProperty.value() && ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), ClientMathHelper.INSTANCE.getVec(pos)) > rangeProperty.value())
                 continue;
