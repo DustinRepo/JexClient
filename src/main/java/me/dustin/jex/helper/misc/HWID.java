@@ -16,6 +16,6 @@ public enum HWID {
    }
 
     public String getHWID() {
-       return DigestUtils.md5Hex(System.getenv("JAVA_HOME"));
+       return DigestUtils.md5Hex(System.getenv("COMPUTERNAME") + System.getenv("JAVA_HOME"));
    }
 }
