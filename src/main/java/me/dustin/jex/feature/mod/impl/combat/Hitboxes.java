@@ -87,9 +87,26 @@ public class Hitboxes extends Feature {
             .value(true)
             .build();
 	
-	public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NoLiving")
             .value(false)
+            .build();
+	
+    public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bot")
+            .value(false)
+            .build();
+	
+    public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Team Check")
+            .value(true)
+            .build();
+	
+    public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Check Armor")
+            .value(true)
+            .parent(teamCheckProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
 			
     public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -148,10 +165,14 @@ public class Hitboxes extends Feature {
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
-	if (entity instanceof PlayerEntity)
-	    return playerProperty.value();
-	if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
-	    return friendsProperty.value();   
-        return false;
+        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
+            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
+                return friendProperty.value();
+            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmorProperty.value()) && teamCheckProperty.value())
+                return false;
+            if (isBot((PlayerEntity) entity))
+                return botCheckProperty.value();
+            return playerProperty.value();
+        }   
     }       
 }
