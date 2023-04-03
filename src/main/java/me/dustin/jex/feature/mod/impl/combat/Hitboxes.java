@@ -144,9 +144,9 @@ public class Hitboxes extends Feature {
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
-	if (entity instanceof PlayerEntity playerEntity)
+	if (entity instanceof PlayerEntity)
 	    return playerProperty.value();
-	if (FriendHelper.INSTANCE.isFriend(playerEntity))
+	if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
 	    return friendsProperty.value();   
         return false;
     }       
