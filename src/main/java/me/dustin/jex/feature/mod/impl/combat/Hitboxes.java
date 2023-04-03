@@ -43,8 +43,13 @@ public class Hitboxes extends Feature {
             .inc(0.02f)
             .build();
     
-    	public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
+            .value(true)
+            .build();
+	
+    public final Property<Boolean> friendsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Friends")
             .value(true)
             .build();
 			
@@ -139,8 +144,10 @@ public class Hitboxes extends Feature {
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
-	if (entity instanceof PlayerEntity playerEntity && !FriendHelper.INSTANCE.isFriend(playerEntity))
-            return playerProperty.value();
+	if (entity instanceof PlayerEntity playerEntity)
+	    return playerProperty.value();
+	if (FriendHelper.INSTANCE.isFriend(playerEntity))
+	    return friendsProperty.value();   
         return false;
     }       
 }
