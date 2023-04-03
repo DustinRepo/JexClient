@@ -236,7 +236,7 @@ public class KillAura extends Feature {
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Bot Check")
+            .name("Bot")
             .value(true)
             .build();
     public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
