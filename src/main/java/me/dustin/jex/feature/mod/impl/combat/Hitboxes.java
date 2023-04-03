@@ -51,6 +51,8 @@ public class Hitboxes extends Feature {
     public final Property<Boolean> friendsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Friends")
             .value(true)
+	    .parent(playerProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
 			
     public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -76,6 +78,8 @@ public class Hitboxes extends Feature {
     public final Property<Boolean> petProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Pet")
             .value(false)
+	    .parent(passiveProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
 	
     public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
