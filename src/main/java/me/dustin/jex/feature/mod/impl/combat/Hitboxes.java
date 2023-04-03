@@ -65,7 +65,12 @@ public class Hitboxes extends Feature {
 			
     public final Property<Boolean> passiveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Passive")
-            .value(true)
+            .value(false)
+            .build();
+	
+    public final Property<Boolean> petProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Pet")
+            .value(false)
             .build();
 	
     public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -75,7 +80,7 @@ public class Hitboxes extends Feature {
 	
 	public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NoLiving")
-            .value(true)
+            .value(false)
             .build();
 			
     public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -124,8 +129,10 @@ public class Hitboxes extends Feature {
         }
 	if (!(entity instanceof LivingEntity))
             return nolivingProperty.value();	  
-         if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
-            return passiveProperty.value();
+         if (EntityHelper.INSTANCE.isPassiveMob(entity))
+	    return passiveProperty.value();
+	  if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
+            return petProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
             return bossProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
