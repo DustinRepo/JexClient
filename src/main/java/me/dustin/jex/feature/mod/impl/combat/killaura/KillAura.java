@@ -391,8 +391,8 @@ public class KillAura extends Feature {
                 return friendProperty.value();
             if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmorProperty.value()) && teamCheckProperty.value())
                 return false;
-            if (botCheckProperty.value() && isBot((PlayerEntity) entity))
-                return false;
+            if (isBot((PlayerEntity) entity))
+                return botCheckProperty.value();
             return playerProperty.value();
         }
 	if (EntityHelper.INSTANCE.isNeutralMob(entity))
