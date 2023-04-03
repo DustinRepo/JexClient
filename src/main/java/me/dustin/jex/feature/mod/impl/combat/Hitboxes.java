@@ -143,7 +143,14 @@ public class Hitboxes extends Feature {
             event.setBox(event.getBox().expand(expandXProperty.value(), expandYProperty.value(), expandZProperty.value()));
 	    }
 });	    
-	  
+
+public boolean isBot(PlayerEntity playerEntity) {
+        if (EntityHelper.INSTANCE.isNPC(playerEntity)) {
+            return true;
+        } else {
+            return (!swung.contains(playerEntity) && !touchedGround.contains(playerEntity)) || playerEntity.getGameProfile().getProperties().isEmpty();
+        }
+    }  
       private boolean isEnabled(Entity entity) {	  
 	if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
