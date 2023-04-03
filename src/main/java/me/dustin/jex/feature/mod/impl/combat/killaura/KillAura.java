@@ -125,6 +125,12 @@ public class KillAura extends Feature {
             .name("Passive")
             .value(true)
             .build();
+    public final Property<Boolean> petProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Pet")
+            .value(false)
+	    .parent(passiveProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Specific Filter")
             .value(true)
@@ -178,8 +184,8 @@ public class KillAura extends Feature {
     public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("ShulkerBullet")
 	    .value(true)
-        .parent(projectilesProperty)
-        .depends(parent -> (boolean) parent.value())
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
 	    .build();
     public final Property<Boolean> skullProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("WitherSkull")
@@ -391,8 +397,10 @@ public class KillAura extends Feature {
         }
 	if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();    
-	if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
+	if (EntityHelper.INSTANCE.isPassiveMob(entity))
             return passiveProperty.value();
+	if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
+	    return petProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
             return bossProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
