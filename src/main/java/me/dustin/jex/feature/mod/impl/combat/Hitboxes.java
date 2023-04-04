@@ -176,8 +176,8 @@ public boolean isBot(PlayerEntity playerEntity) {
 	    return playerProperty.value();	
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
                 return friendsProperty.value();
-            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer()))
-                return teamCheckProperty.value();
+            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), teamCheckProperty.value()))
+                return false;
             if (isBot((PlayerEntity) entity))
                 return botCheckProperty.value();   
     }       
