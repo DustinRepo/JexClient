@@ -148,7 +148,7 @@ public boolean isBot(PlayerEntity playerEntity) {
         if (EntityHelper.INSTANCE.isNPC(playerEntity)) {
             return true;
         } else {
-            return (!swung.contains(playerEntity) && !touchedGround.contains(playerEntity)) || playerEntity.getGameProfile().getProperties().isEmpty();
+            return false;
         }
     }  
       private boolean isEnabled(Entity entity) {	  
