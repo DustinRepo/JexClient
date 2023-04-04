@@ -172,14 +172,13 @@ public boolean isBot(PlayerEntity playerEntity) {
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
-        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
+        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer())
+	    return playerProperty.value();	
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
                 return friendProperty.value();
-            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmorProperty.value()) && teamCheckProperty.value())
-                return false;
+            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer())
+                return teamCheckProperty.value();
             if (isBot((PlayerEntity) entity))
-                return botCheckProperty.value();
-            return playerProperty.value();
-        }   
+                return botCheckProperty.value();   
     }       
 }
