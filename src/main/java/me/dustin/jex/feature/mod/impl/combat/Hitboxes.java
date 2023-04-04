@@ -180,5 +180,6 @@ public boolean isBot(PlayerEntity playerEntity) {
                 return false;
             if (isBot((PlayerEntity) entity))
                 return botCheckProperty.value();   
-    }       
+        return false;
+   }       
 }
