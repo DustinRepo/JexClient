@@ -61,7 +61,7 @@ public abstract class MixinMinecraft implements IMinecraft {
     public void tickPre(CallbackInfo ci) {
         new EventTick(EventTick.Mode.PRE).run();
     }
-    @Inject(method = "tick", at = @At("RETURN"))
+    @Inject(method = "tick", at = @At("TAIL"))
     public void tickPost(CallbackInfo ci) {
         new EventTick(EventTick.Mode.POST).run();
     }
