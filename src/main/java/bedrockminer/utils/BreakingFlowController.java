@@ -7,7 +7,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
-//import java.util.List;
 
 public class BreakingFlowController {
     private static ArrayList<TargetBlock> cachedTargetBlockList = new ArrayList<>();
