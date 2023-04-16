@@ -18,6 +18,7 @@ public class DepthStrider extends Feature {
             .value(3)
             .min(1)
             .max(3)
+            .inc(1)
             .build();
     public final Property<Boolean> allowSprintingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Allow Sprinting")
