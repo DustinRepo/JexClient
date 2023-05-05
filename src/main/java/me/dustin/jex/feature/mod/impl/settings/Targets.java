@@ -1,3 +1,5 @@
+package me.dustin.jex.feature.mod.impl.combat;
+
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.Feature;
 
@@ -135,4 +137,10 @@ public static Targets INSTANCE;
             .name("Sleeping")
             .value(true)
             .build();
+	
+   public Targets() {
+     super(Category.SETTINGS);
+    }
+	
+	
 }
