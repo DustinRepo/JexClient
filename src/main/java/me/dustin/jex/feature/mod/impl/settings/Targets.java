@@ -1,4 +1,5 @@
 import me.dustin.jex.feature.property.Property;
+import me.dustin.jex.feature.mod.core.Feature;
 
 public class Targets extends Feature {
 public static Targets INSTANCE;
