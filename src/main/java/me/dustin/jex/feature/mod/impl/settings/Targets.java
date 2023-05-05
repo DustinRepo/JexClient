@@ -2,7 +2,6 @@ import me.dustin.jex.feature.property.Property;
 
 public class Targets extends Feature {
 public static Targets INSTANCE;
-
     public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
@@ -71,31 +70,31 @@ public static Targets INSTANCE;
             .build();
     public final Property<Boolean> projectilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("Projectiles")
-      .value(true)
+            .value(true)
 	    .build();
     public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("Fireball")
 	    .value(true)
-      .parent(projectilesProperty)
-      .depends(parent -> (boolean) parent.value())
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
 	    .build();
     public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("DragonFireball")
 	    .value(true)
-      .parent(projectilesProperty)
-      .depends(parent -> (boolean) parent.value())
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
 	    .build();
     public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("ShulkerBullet")
 	    .value(true)
-      .parent(projectilesProperty)
-      .depends(parent -> (boolean) parent.value())
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
 	    .build();
     public final Property<Boolean> skullProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 	    .name("WitherSkull")
 	    .value(true)
-        .parent(projectilesProperty)
-        .depends(parent -> (boolean) parent.value())
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
 	    .build();
     public final Property<Boolean> rayTraceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("RayTrace")
