@@ -1,7 +1,7 @@
 import me.dustin.jex.feature.property.Property;
 
-
-
+public class Targets extends Feature {
+public static Targets INSTANCE;
 
     public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
@@ -135,3 +135,4 @@ import me.dustin.jex.feature.property.Property;
             .name("Sleeping")
             .value(true)
             .build();
+}
