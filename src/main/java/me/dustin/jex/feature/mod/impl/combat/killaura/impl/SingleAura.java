@@ -21,6 +21,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 import me.dustin.jex.feature.mod.impl.combat.AutoPot;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 
@@ -123,7 +124,7 @@ public class SingleAura extends FeatureExtension {
                     PlayerHelper.INSTANCE.unblock();
                 }
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), target);
-                if (KillAura.INSTANCE.swingProperty.value()) {
+                if (Targets.INSTANCE.swingProperty.value()) {
                 PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
                 }
                 if (KillAura.INSTANCE.autoBlockProperty.value() && reblock) {
