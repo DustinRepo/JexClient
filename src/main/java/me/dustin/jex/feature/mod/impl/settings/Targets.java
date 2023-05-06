@@ -100,18 +100,6 @@ public static Targets INSTANCE;
             .parent(projectilesProperty)
             .depends(parent -> (boolean) parent.value())
 	    .build();
-    public final Property<Boolean> rayTraceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("RayTrace")
-            .value(false)
-            .build();
-    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Swing")
-            .value(true)
-            .build();
-    public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Rotate")
-            .value(true)
-            .build();
     public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Bot")
             .value(true)
@@ -119,6 +107,8 @@ public static Targets INSTANCE;
     public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Team Check")
             .value(true)
+	    .parent(botCheckProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Check Armor")
@@ -136,6 +126,10 @@ public static Targets INSTANCE;
             .build();
     public final Property<Boolean> sleepingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Sleeping")
+            .value(true)
+            .build();
+    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
             .value(true)
             .build();
 	
