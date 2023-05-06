@@ -2,6 +2,7 @@ package me.dustin.jex.feature.mod.impl.combat;
 
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.core.Category;
 
 public class Targets extends Feature {
 public static Targets INSTANCE;
