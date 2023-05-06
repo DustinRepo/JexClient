@@ -18,75 +18,12 @@ import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.Hand;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 
 public class Triggerbot extends Feature {
 
-    public Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Player")
-            .value(true)
-            .build();
-    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Friends")
-            .value(true)
-            .parent(playersProperty)
-            .depends(parent->(boolean)parent.value())
-            .build();
-    public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Boss")
-            .value(true)
-            .build();
-    public Property<Boolean> hostilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Hostile")
-            .value(true)
-            .build();
-    public Property<Boolean> passivesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Passive")
-            .value(true)
-            .build();
-    public Property<Boolean> neutralsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Neutral")
-            .value(true)
-            .build();
-    public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Specific Filter")
-            .value(true)
-            .build();
-    public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Iron Golem")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent->(boolean)parent.value())
-            .build();
-    public final Property<Boolean> piglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Piglin")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent->(boolean)parent.value())
-            .build();
-    public final Property<Boolean> zombiePiglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Zombie Piglin")
-            .value(false)
-            .parent(specificFilterProperty)
-            .depends(parent ->(boolean)parent.value())
-            .build();
-    public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("NoLiving")
-            .value(true)
-            .build();
-    public final Property<Boolean> nametaggedProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Nametagged")
-            .value(true)
-            .build();
-    public final Property<Boolean> invisiblesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Invisibles")
-            .value(true)
-            .build();
     public Property<Boolean> checkpressProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("When-holding-attack")
-            .value(true)
-            .build();
-    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Swing")
             .value(true)
             .build();
 
@@ -102,7 +39,7 @@ public class Triggerbot extends Feature {
             if (checkpressProperty.value()) {
             if (isValid(entity) && attack && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
-                if (swingProperty.value()) {
+                if (Targets.INSTANCE.swingProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 }
             }
@@ -110,7 +47,7 @@ public class Triggerbot extends Feature {
             else {
                 if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
-                 if (swingProperty.value())
+                 if (Targets.INSTANCE.swingProperty.value())
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 }
             }
@@ -119,31 +56,31 @@ public class Triggerbot extends Feature {
 
     private boolean isValid(Entity entity) {
         if (!(entity instanceof LivingEntity))
-            return nolivingProperty.value();
+            return Targets.INSTANCE.nolivingProperty.value();
         if (entity.isInvisible())
-            return invisiblesProperty.value();
+            return Targets.INSTANCE.invisiblesProperty.value();
         if (entity.hasCustomName())
-            return nametaggedProperty.value();
+            return Targets.INSTANCE.nametaggedProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
-            return passivesProperty.value();
+            return Targets.INSTANCE.passivesProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
-            return neutralsProperty.value();
+            return Targets.INSTANCE.neutralsProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
-            return hostilesProperty.value();
+            return Targets.INSTANCE.hostilesProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
-            return bossProperty.value();
+            return Targets.INSTANCE.bossProperty.value();
         if (entity instanceof PlayerEntity) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
-                return friendProperty.value();
-            return playersProperty.value();
+                return Targets.INSTANCE.friendProperty.value();
+            return Targets.INSTANCE.playersProperty.value();
         }
         if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
-                return ironGolemProperty.value();
+                return Targets.INSTANCE.ironGolemProperty.value();
             if (entity instanceof ZombifiedPiglinEntity)
-                return zombiePiglinProperty.value();
+                return Targets.INSTANCE.zombiePiglinProperty.value();
             if (entity instanceof PiglinEntity)
-                return piglinProperty.value();
+                return Targets.INSTANCE.piglinProperty.value();
         }
         return false;
     }
