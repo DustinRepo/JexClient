@@ -25,6 +25,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.AutoPot;
 import me.dustin.jex.feature.mod.impl.player.AutoEat;
 import java.util.ArrayList;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 
 public class MultiAura extends FeatureExtension {
 
@@ -131,7 +132,7 @@ public class MultiAura extends FeatureExtension {
                 }
             }
             if (canSwing) {
-                if (KillAura.INSTANCE.swingProperty.value()) {
+                if (Targets.INSTANCE.swingProperty.value()) {
                 PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
                 }
                 Wrapper.INSTANCE.getLocalPlayer().resetLastAttackedTicks();
