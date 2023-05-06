@@ -16,6 +16,12 @@ public static Targets INSTANCE;
             .parent(playerProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
+	public final Property<Boolean> localProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("LocalPlayer")
+            .value(true)
+            .parent(playerProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Neutral")
             .value(false)
@@ -128,6 +134,10 @@ public static Targets INSTANCE;
             .name("Sleeping")
             .value(true)
             .build();
+    public static Property <Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("Items")
+	    .value(false)
+	    .build();	
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Swing")
             .value(true)
