@@ -23,6 +23,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 
 public class FarmAura extends Feature {
 
@@ -48,10 +49,6 @@ public class FarmAura extends Feature {
             .max(1000)
             .inc(10)
             .build();
-    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Swing")
-            .value(true)
-            .build();
 
     private final StopWatch breakStopWatch = new StopWatch();
     private final StopWatch plantStopWatch = new StopWatch();
@@ -73,7 +70,7 @@ public class FarmAura extends Feature {
                 event.setRotation(rot);
                 Direction facing = Direction.fromRotation(-rot.getYaw());
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(crop, facing);
-                if (swingProperty.value()) {
+                if (Targets.INSTANCE.swingProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                 }
             }
