@@ -16,6 +16,7 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import net.minecraft.util.math.Box;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 
 public class Hitboxes extends Feature {
 
@@ -26,7 +27,7 @@ public class Hitboxes extends Feature {
             .max(2f)
             .inc(0.02f)
             .build();
-    
+	
      public final Property<Float> expandYProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("ExpandY")
             .value(0.1f)
@@ -34,7 +35,7 @@ public class Hitboxes extends Feature {
             .max(2f)
             .inc(0.02f)
             .build();
-    
+	
      public final Property<Float> expandZProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("ExpandZ")
             .value(0.1f)
@@ -42,94 +43,7 @@ public class Hitboxes extends Feature {
             .max(2f)
             .inc(0.02f)
             .build();
-    
-    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Player")
-            .value(true)
-            .build();
 	
-    public final Property<Boolean> friendsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Friends")
-            .value(true)
-	    .parent(playerProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-			
-    public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Neutral")
-            .value(false)
-            .build();
-			
-    public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Boss")
-            .value(true)
-            .build();
-			
-    public final Property<Boolean> hostileProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Hostile")
-            .value(true)
-            .build();
-			
-    public final Property<Boolean> passiveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Passive")
-            .value(false)
-            .build();
-	
-    public final Property<Boolean> petProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Pet")
-            .value(false)
-	    .parent(passiveProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-	
-    public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Specific Filter")
-            .value(true)
-            .build();
-	
-    public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("NoLiving")
-            .value(false)
-            .build();
-	
-    public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Bot")
-            .value(false)
-            .build();
-	
-    public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Team Check")
-            .value(true)
-            .build();
-	
-    public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Check Armor")
-            .value(true)
-            .parent(teamCheckProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-			
-    public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Iron Golem")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-			
-    public final Property<Boolean> piglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Piglin")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-			
-    public final Property<Boolean> zombiePiglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Zombie Piglin")
-            .value(false)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-
     public Hitboxes() {
         super(Category.COMBAT);
     }
@@ -154,32 +68,32 @@ public boolean isBot(PlayerEntity playerEntity) {
       private boolean isEnabled(Entity entity) {	  
 	if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
-                return ironGolemProperty.value();
+                return Targets.INSTANCE.ironGolemProperty.value();
             if (entity instanceof ZombifiedPiglinEntity)
-                return zombiePiglinProperty.value();
+                return Targets.INSTANCE.zombiePiglinProperty.value();
             if (entity instanceof PiglinEntity)
-                return piglinProperty.value();
+                return Targets.INSTANCE.piglinProperty.value();
         }
 	if (!(entity instanceof LivingEntity))
-            return nolivingProperty.value();	  
+            return Targets.INSTANCE.nolivingProperty.value();	  
          if (EntityHelper.INSTANCE.isPassiveMob(entity))
-	    return passiveProperty.value();
+	    return Targets.INSTANCE.passiveProperty.value();
 	  if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
-            return petProperty.value();
+            return Targets.INSTANCE.petProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
-            return bossProperty.value();
+            return Targets.INSTANCE.bossProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
-            return hostileProperty.value();
+            return Targets.INSTANCE.hostileProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
-            return neutralProperty.value();
+            return Targets.INSTANCE.neutralProperty.value();
         if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer())
-	    return playerProperty.value();	
+	    return Targets.INSTANCE.playerProperty.value();	
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
-                return friendsProperty.value();
-            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), teamCheckProperty.value()))
+                return Targets.INSTANCE.friendsProperty.value();
+            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), Targets.INSTANCE.teamCheckProperty.value()))
                 return false;
             if (isBot((PlayerEntity) entity))
-                return botCheckProperty.value();   
+                return Targets.INSTANCE.botCheckProperty.value();   
         return false;
    }       
 }
