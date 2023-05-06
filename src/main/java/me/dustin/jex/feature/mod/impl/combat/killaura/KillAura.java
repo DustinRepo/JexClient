@@ -8,6 +8,7 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.MultiAura;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.SingleAura;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
@@ -99,107 +100,9 @@ public class KillAura extends Feature {
             .parent(autoBlockProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Player")
-            .value(true)
-            .build();
-    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Friends")
-            .value(true)
-            .parent(playerProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Neutral")
-            .value(false)
-            .build();
-    public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Boss")
-            .value(true)
-            .build();
-    public final Property<Boolean> hostileProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Hostile")
-            .value(true)
-            .build();
-    public final Property<Boolean> passiveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Passive")
-            .value(true)
-            .build();
-    public final Property<Boolean> petProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Pet")
-            .value(false)
-	    .parent(passiveProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Specific Filter")
-            .value(true)
-            .build();
-    public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Iron Golem")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> piglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Piglin")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> zombiePiglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Zombie Piglin")
-            .value(false)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> deadProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Dead")
-            .value(false)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-	public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("NoLiving")
-            .value(false)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> projectilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("Projectiles")
-            .value(true)
-	    .build();
-    public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("Fireball")
-	    .value(true)
-            .parent(projectilesProperty)
-            .depends(parent -> (boolean) parent.value())
-	    .build();
-    public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("DragonFireball")
-	    .value(true)
-            .parent(projectilesProperty)
-            .depends(parent -> (boolean) parent.value())
-	    .build();
-    public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("ShulkerBullet")
-	    .value(true)
-            .parent(projectilesProperty)
-            .depends(parent -> (boolean) parent.value())
-	    .build();
-    public final Property<Boolean> skullProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("WitherSkull")
-	    .value(true)
-        .parent(projectilesProperty)
-        .depends(parent -> (boolean) parent.value())
-	    .build();
     public final Property<Boolean> rayTraceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("RayTrace")
             .value(false)
-            .build();
-    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Swing")
-            .value(true)
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
@@ -234,32 +137,6 @@ public class KillAura extends Feature {
             .inc(0.1f)
             .parent(randomizeProperty)
             .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Bot")
-            .value(true)
-            .build();
-    public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Team Check")
-            .value(true)
-            .build();
-    public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Check Armor")
-            .value(true)
-            .parent(teamCheckProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> nametaggedProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Nametagged")
-            .value(true)
-            .build();
-    public final Property<Boolean> invisiblesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Invisibles")
-            .value(true)
-            .build();
-    public final Property<Boolean> sleepingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Sleeping")
-            .value(true)
             .build();
     public final Property<Boolean> ignoreWallsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Ignore Walls")
@@ -358,26 +235,26 @@ public class KillAura extends Feature {
             if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
                 return false;
         }
-	 if (projectilesProperty.value()) {
+	 if (Targets.INSTANCE.projectilesProperty.value()) {
             if (entity instanceof ShulkerBulletEntity)
-               return bulletProperty.value();
+               return Targets.INSTANCE.bulletProperty.value();
             if (entity instanceof FireballEntity)
-               return fireballProperty.value();
+               return Targets.INSTANCE.fireballProperty.value();
             if (entity instanceof DragonFireballEntity)
-               return dfireballProperty.value();
+               return Targets.INSTANCE.dfireballProperty.value();
             if (entity instanceof WitherSkullEntity)
-               return skullProperty.value();
+               return Targets.INSTANCE.skullProperty.value();
         }       
 	if (!(entity instanceof LivingEntity livingEntity))
-		return nolivingProperty.value();
+		return Targets.INSTANCE.nolivingProperty.value();
 	if (livingEntity.isSleeping())
-               return sleepingProperty.value();
+               return Targets.INSTANCE.sleepingProperty.value();
 	if (entity.hasCustomName())
-            return nametaggedProperty.value();
+            return Targets.INSTANCE.nametaggedProperty.value();
         if (entity.isInvisible())
-            return invisiblesProperty.value();
+            return Targets.INSTANCE.invisiblesProperty.value();
         if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
-            return deadProperty.value();
+            return Targets.INSTANCE.deadProperty.value();
 	if (entity.age < ticksExistedProperty.value())
             return false;
 	if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
@@ -388,30 +265,30 @@ public class KillAura extends Feature {
         }
 	if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
-                return friendProperty.value();
-            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), teamCheckProperty.value()))
+                return Targets.INSTANCE.friendProperty.value();
+            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), Targets.INSTANCE.teamCheckProperty.value()))
                 return false;
             if (isBot((PlayerEntity) entity))
-                return botCheckProperty.value();
-            return playerProperty.value();
+                return Targets.INSTANCE.botCheckProperty.value();
+            return Targets.INSTANCE.playerProperty.value();
         }
 	if (EntityHelper.INSTANCE.isNeutralMob(entity))
-            return neutralProperty.value();    
+            return Targets.INSTANCE.neutralProperty.value();    
 	if (EntityHelper.INSTANCE.isPassiveMob(entity))
-            return passiveProperty.value();
+            return Targets.INSTANCE.passiveProperty.value();
 	if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
-	    return petProperty.value();
+	    return Targets.INSTANCE.petProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
-            return bossProperty.value();
+            return Targets.INSTANCE.bossProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
-	 return hostileProperty.value();
-	if (specificFilterProperty.value()) {
+	 return Targets.INSTANCE.hostileProperty.value();
+	if (Targets.INSTANCE.specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
-                return ironGolemProperty.value();
+                return Targets.INSTANCE.ironGolemProperty.value();
             if (entity instanceof ZombifiedPiglinEntity)
-                return zombiePiglinProperty.value();
+                return Targets.INSTANCE.zombiePiglinProperty.value();
             if (entity instanceof PiglinEntity)
-                return piglinProperty.value();
+                return Targets.INSTANCE.piglinProperty.value();
         }
 	 return false;
     }
