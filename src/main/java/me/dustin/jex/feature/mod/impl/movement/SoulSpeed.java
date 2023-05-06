@@ -13,7 +13,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 
-public class DepthStrider extends Feature {
+public class SoulSpeed extends Feature {
 
     public final Property<Integer> levelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Level")
