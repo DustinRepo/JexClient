@@ -119,7 +119,7 @@ public class AnchorAura extends Feature {
                 BlockPos chargedAnchor = getChargedAnchor(Wrapper.INSTANCE.getLocalPlayer());
                 if (chargedAnchor != null && shouldExplode(chargedAnchor)) {
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(chargedAnchor.getX(), chargedAnchor.getY(), chargedAnchor.getZ()), Direction.UP, chargedAnchor, false));
-                    if (swingProperty.value()) {
+                    if (Targets.INSTANCE.swingProperty.value()) {
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                     }
                     attackStopWatch.reset();
