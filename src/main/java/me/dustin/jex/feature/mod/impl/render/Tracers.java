@@ -15,6 +15,7 @@ import me.dustin.jex.helper.render.BufferHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
@@ -31,39 +32,11 @@ public class Tracers extends Feature {
             .name("Spine")
             .value(false)
             .build();
-    public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Players")
-            .value(true)
-            .build();
     public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Color on distance")
             .value(true)
             .parent(playersProperty)
             .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> bossesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Bosses")
-            .value(true)
-            .build();
-    public final Property<Boolean> hostilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Hostiles")
-            .value(true)
-            .build();
-    public final Property<Boolean> passivesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Passives")
-            .value(true)
-            .build();
-    public final Property<Boolean> neutralsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Neutrals")
-            .value(true)
-            .build();
-    public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Item")
-            .value(true)
-            .build();
-    public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("NoLiving")
-            .value(true)
             .build();
 
     public Tracers() {
@@ -113,19 +86,21 @@ public class Tracers extends Feature {
         if (e == Wrapper.INSTANCE.getLocalPlayer())
             return false;
         if (e instanceof PlayerEntity)
-            return playersProperty.value() && !EntityHelper.INSTANCE.isNPC((PlayerEntity) e);
+            return Targets.INSTANCE.playerProperty.value()
+        if (!(EntityHelper.INSTANCE.isNPC((PlayerEntity) e)))
+            return Targets.INSTANCE.botCheckProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(e))
-            return passivesProperty.value();
+            return Targets.INSTANCE.passiveProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(e))
-            return bossesProperty.value();
+            return Targets.INSTANCE.bossProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(e))
-            return hostilesProperty.value();
+            return Targets.INSTANCE.hostileProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(e))
-            return neutralsProperty.value();
+            return Targets.INSTANCE.neutralProperty.value();
         if (e instanceof ItemEntity)
-            return itemProperty.value();
+            return Targets.INSTANCE.itemProperty.value();
         if (!(e instanceof LivingEntity))
-            return nolivingProperty.value();
+            return Targets.INSTANCE.nolivingProperty.value();
         return false;
     }
 }
