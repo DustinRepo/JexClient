@@ -35,8 +35,6 @@ public class Tracers extends Feature {
     public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Color on distance")
             .value(true)
-            .parent(playersProperty)
-            .depends(parent -> (boolean) parent.value())
             .build();
 
     public Tracers() {
