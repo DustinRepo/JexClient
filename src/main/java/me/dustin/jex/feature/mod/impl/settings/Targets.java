@@ -1,4 +1,4 @@
-package me.dustin.jex.feature.mod.impl.combat;
+package me.dustin.jex.feature.mod.impl.settings;
 
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.feature.mod.core.Feature;
