@@ -62,19 +62,19 @@ public class Triggerbot extends Feature {
         if (entity.hasCustomName())
             return Targets.INSTANCE.nametaggedProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
-            return Targets.INSTANCE.passivesProperty.value();
+            return Targets.INSTANCE.passiveProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
-            return Targets.INSTANCE.neutralsProperty.value();
+            return Targets.INSTANCE.neutralProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
-            return Targets.INSTANCE.hostilesProperty.value();
+            return Targets.INSTANCE.hostileProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
             return Targets.INSTANCE.bossProperty.value();
         if (entity instanceof PlayerEntity) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
                 return Targets.INSTANCE.friendProperty.value();
-            return Targets.INSTANCE.playersProperty.value();
+            return Targets.INSTANCE.playerProperty.value();
         }
-        if (specificFilterProperty.value()) {
+        if (Targets.INSTANCE.specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
                 return Targets.INSTANCE.ironGolemProperty.value();
             if (entity instanceof ZombifiedPiglinEntity)
