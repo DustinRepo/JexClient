@@ -18,6 +18,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
@@ -58,10 +59,6 @@ public class CrystalAura extends Feature {
 			.name("Auto Place")
 			.value(false)
 			.build();
-	public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-                        .name("Swing")
-                        .value(true)
-                        .build();
 	public final Property<Boolean> visualizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Visualize")
 			.value(true)
@@ -149,7 +146,7 @@ public class CrystalAura extends Feature {
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
 						Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
-						if (swingProperty.value()) { 
+						if (Targets.INSTANCE.swingProperty.value()) { 
                                                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 						}
 					}
