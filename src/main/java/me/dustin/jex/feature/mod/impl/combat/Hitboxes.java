@@ -66,7 +66,7 @@ public boolean isBot(PlayerEntity playerEntity) {
         }
     }  
       private boolean isEnabled(Entity entity) {	  
-	if (specificFilterProperty.value()) {
+	if (Targets.INSTANCE.specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
                 return Targets.INSTANCE.ironGolemProperty.value();
             if (entity instanceof ZombifiedPiglinEntity)
@@ -89,7 +89,7 @@ public boolean isBot(PlayerEntity playerEntity) {
         if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer())
 	    return Targets.INSTANCE.playerProperty.value();	
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
-                return Targets.INSTANCE.friendsProperty.value();
+                return Targets.INSTANCE.friendProperty.value();
             if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), Targets.INSTANCE.teamCheckProperty.value()))
                 return false;
             if (isBot((PlayerEntity) entity))
