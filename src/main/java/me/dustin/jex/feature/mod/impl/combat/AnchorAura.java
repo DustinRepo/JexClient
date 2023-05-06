@@ -30,6 +30,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import me.dustin.events.core.annotate.EventPointer;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 import java.awt.*;
 
 public class AnchorAura extends Feature {
@@ -52,10 +53,6 @@ public class AnchorAura extends Feature {
     public final Property<Boolean> autoPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Auto Place")
             .value(false)
-            .build();
-    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Swing")
-            .value(true)
             .build();
     public final Property<Boolean> visualizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Visualize")
@@ -135,7 +132,7 @@ public class AnchorAura extends Feature {
                         int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         InventoryHelper.INSTANCE.setSlot(glowstone, true, true);
                         Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(anchor.getX(), anchor.getY(), anchor.getZ()), Direction.UP, anchor, false));
-                        if (swingProperty.value()) {
+                        if (Targets.INSTANCE.swingProperty.value()) {
                         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
                         }
                         InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
