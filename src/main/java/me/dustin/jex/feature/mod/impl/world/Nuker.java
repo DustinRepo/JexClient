@@ -16,6 +16,7 @@ import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.FluidBlock;
+import me.dustin.jex.feature.mod.impl.settings.Targets;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -48,10 +49,6 @@ public class Nuker extends Feature {
             .name("Keep Floor")
             .value(true)
             .build();
-    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Swing")
-            .value(true)
-            .build();
 	
 
     @EventPointer
@@ -63,7 +60,7 @@ public class Nuker extends Feature {
             new EventClickBlock(blockPos, Direction.UP, EventClickBlock.Mode.PRE).run();
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.UP));
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, blockPos, Direction.UP));
-              if (swingProperty.value()) {
+              if (Targets.INSTANCE.swingProperty.value()) {
             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 	      }
             stopWatch.reset();
