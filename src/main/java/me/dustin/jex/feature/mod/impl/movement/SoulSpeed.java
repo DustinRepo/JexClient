@@ -27,7 +27,7 @@ public class SoulSpeed extends Feature {
             .value(false)
             .build();
 
-    public DepthStrider() {
+    public SoulSpeed() {
         super(Category.MOVEMENT);
     }
 
