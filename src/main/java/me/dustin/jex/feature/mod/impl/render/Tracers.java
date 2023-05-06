@@ -86,7 +86,7 @@ public class Tracers extends Feature {
         if (e == Wrapper.INSTANCE.getLocalPlayer())
             return false;
         if (e instanceof PlayerEntity)
-            return Targets.INSTANCE.playerProperty.value()
+            return Targets.INSTANCE.playerProperty.value();
         if (!(EntityHelper.INSTANCE.isNPC((PlayerEntity) e)))
             return Targets.INSTANCE.botCheckProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(e))
