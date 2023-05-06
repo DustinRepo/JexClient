@@ -134,10 +134,10 @@ public static Targets INSTANCE;
             .name("Sleeping")
             .value(true)
             .build();
-    public static Property <Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("Items")
-	    .value(false)
-	    .build();	
+    public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Items")
+            .value(true)
+            .build();
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Swing")
             .value(true)
