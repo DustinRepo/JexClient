@@ -94,10 +94,6 @@ public class ESP extends Feature {
             .name("NoLiving Color")
             .value(Color.WHITE)
             .build();
-    public final Property<Color> localColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
-            .name("LocalPlayer Color")
-            .value(Color.WHITE)
-            .build();
     public final Property<Color> npcColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("NPC Color")
             .value(Color.WHITE)
