@@ -16,7 +16,7 @@ public static Targets INSTANCE;
             .parent(playerProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-	public final Property<Boolean> localProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	public final Property<Boolean> localpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("LocalPlayer")
             .value(true)
             .parent(playerProperty)
