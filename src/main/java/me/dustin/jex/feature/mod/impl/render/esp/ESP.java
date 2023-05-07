@@ -156,8 +156,6 @@ public class ESP extends Feature {
             return Targets.INSTANCE.itemProperty.value();
         if (!(entity instanceof LivingEntity livingEntity))
             return Targets.INSTANCE.nolivingProperty.value();
-        if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
-            return Targets.INSTANCE.localpProperty.value();
         if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
             return Targets.INSTANCE.botCheckProperty.value();
         if (livingEntity instanceof PlayerEntity)
@@ -178,8 +176,6 @@ public class ESP extends Feature {
             return itemColorProperty.value().getRGB();
         if (!(entity instanceof LivingEntity livingEntity))
             return noliveColorProperty.value().getRGB();
-        if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
-            return localColorProperty.value().getRGB();
         if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
             return npcColorProperty.value().getRGB();
         if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
