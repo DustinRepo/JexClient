@@ -72,34 +72,7 @@ public static Targets INSTANCE;
             .parent(specificFilterProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Boolean> projectilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("Projectiles")
-            .value(true)
-	    .build();
-    public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("Fireball")
-	    .value(true)
-            .parent(projectilesProperty)
-            .depends(parent -> (boolean) parent.value())
-	    .build();
-    public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("DragonFireball")
-	    .value(true)
-            .parent(projectilesProperty)
-            .depends(parent -> (boolean) parent.value())
-	    .build();
-    public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("ShulkerBullet")
-	    .value(true)
-            .parent(projectilesProperty)
-            .depends(parent -> (boolean) parent.value())
-	    .build();
-    public final Property<Boolean> skullProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-	    .name("WitherSkull")
-	    .value(true)
-            .parent(projectilesProperty)
-            .depends(parent -> (boolean) parent.value())
-	    .build();
+    
     public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Bot")
             .value(true)
