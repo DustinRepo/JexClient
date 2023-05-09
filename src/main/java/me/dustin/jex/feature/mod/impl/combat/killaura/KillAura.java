@@ -162,6 +162,34 @@ public class KillAura extends Feature {
             .parent(reachCircleProperty)
             .depends(parent-> (boolean) parent.value())
             .build();
+	public final Property<Boolean> projectilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("Projectiles")
+            .value(true)
+	    .build();
+    public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("Fireball")
+	    .value(true)
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
+	    .build();
+    public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("DragonFireball")
+	    .value(true)
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
+	    .build();
+    public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("ShulkerBullet")
+	    .value(true)
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
+	    .build();
+    public final Property<Boolean> skullProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	    .name("WitherSkull")
+	    .value(true)
+            .parent(projectilesProperty)
+            .depends(parent -> (boolean) parent.value())
+	    .build();
     private final StopWatch stopWatch = new StopWatch();
     private TargetMode lastMode;
     private boolean hasTarget = false;
@@ -235,15 +263,15 @@ public class KillAura extends Feature {
             if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
                 return false;
         }
-	 if (Targets.INSTANCE.projectilesProperty.value()) {
+	 if (projectilesProperty.value()) {
             if (entity instanceof ShulkerBulletEntity)
-               return Targets.INSTANCE.bulletProperty.value();
+               return bulletProperty.value();
             if (entity instanceof FireballEntity)
-               return Targets.INSTANCE.fireballProperty.value();
+               return fireballProperty.value();
             if (entity instanceof DragonFireballEntity)
-               return Targets.INSTANCE.dfireballProperty.value();
+               return dfireballProperty.value();
             if (entity instanceof WitherSkullEntity)
-               return Targets.INSTANCE.skullProperty.value();
+               return skullProperty.value();
         }       
 	if (!(entity instanceof LivingEntity livingEntity))
 		return Targets.INSTANCE.nolivingProperty.value();
