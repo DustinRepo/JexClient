@@ -151,13 +151,6 @@ public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boole
 	    .parent(nolivingProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
-    public final Property<Color> npcColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
-            .name("NPC Color")
-            .value(Color.WHITE)
-	    .parent(botCheckProperty)
-            .depends(parent -> (boolean)parent.value())
-            .build();
-
     private Mode lastMode;
 
     public ESP() {
