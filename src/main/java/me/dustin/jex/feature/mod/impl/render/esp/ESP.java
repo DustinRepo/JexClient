@@ -53,11 +53,7 @@ public class ESP extends Feature {
             .parent(glowProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
-	public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Color on Distance")
-            .value(false)
-            .build();
-	public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
             .build();
@@ -222,22 +218,14 @@ public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boole
             return itemColorProperty.value().getRGB();
         if (!(entity instanceof LivingEntity livingEntity))
             return noliveColorProperty.value().getRGB();
-        if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
-            return npcColorProperty.value().getRGB();
         if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendColorProperty.value().getRGB();
         if (entity instanceof PlayerEntity) {
-            if (colorOnDistanceProperty.value()) {
-                return ColorHelper.INSTANCE.redGreenShift(entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64);
-            }
             return playerColorProperty.value().getRGB();
-        }
-
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
-            if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
-                return petColorProperty.value().getRGB();
-            else
-                return passiveColorProperty.value().getRGB();
+	    return passiveColorProperty.value().getRGB();
+        if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
+	    return petColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isBossMob(entity))
             return bossColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
