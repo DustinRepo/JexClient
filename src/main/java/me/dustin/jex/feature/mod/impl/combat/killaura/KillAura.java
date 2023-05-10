@@ -59,12 +59,12 @@ public class KillAura extends Feature {
             .name("Old Combat")
             .value(false)
             .build();
-    public final Property<Long> apsProperty = new Property.PropertyBuilder<Long>(this.getClass())
+    public final Property<Integer> apsProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Delay")
-            .value(10f)
-            .min(0f)
-            .max(1000f)
-            .inc(10f)
+            .value(10)
+            .min(0)
+            .max(1000)
+            .inc(10)
             .parent(ignoreNewCombatProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
