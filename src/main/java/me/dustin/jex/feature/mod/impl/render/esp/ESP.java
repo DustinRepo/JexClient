@@ -220,7 +220,7 @@ public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boole
             return noliveColorProperty.value().getRGB();
         if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendColorProperty.value().getRGB();
-        if (entity instanceof PlayerEntity) {
+        if (entity instanceof PlayerEntity)
             return playerColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
 	    return passiveColorProperty.value().getRGB();
