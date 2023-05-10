@@ -30,14 +30,14 @@ public class Speed extends Feature {
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.VANILLA)
             .build();
-     public final Property<Long> vanillaSpeedProperty = new Property.PropertyBuilder<Long>(this.getClass())
+     public final Property<Long> spaceSpeedProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Space Speed")
             .value(110L)
             .min(110L)
             .max(15000000L)
             .inc(150000L)
             .parent(modeProperty)
-            .depends(parent -> parent.value() == SPACE)
+            .depends(parent -> parent.value() == Mode.SPACE)
             .build();
     public final Property<Float> strafeSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Strafe Speed")
