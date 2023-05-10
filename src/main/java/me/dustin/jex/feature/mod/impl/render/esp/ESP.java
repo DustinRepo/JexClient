@@ -89,44 +89,6 @@ public final Property<Boolean> petProperty = new Property.PropertyBuilder<Boolea
 	    .parent(passiveProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Specific Filter")
-            .value(true)
-            .build();
-    public final Property<Boolean> ironGolemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Iron Golem")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> piglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Piglin")
-            .value(true)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> zombiePiglinProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Zombie Piglin")
-            .value(false)
-            .parent(specificFilterProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-	public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Bot")
-            .value(true)
-            .build();
-    public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Team Check")
-            .value(true)
-	        .parent(botCheckProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Check Armor")
-            .value(true)
-            .parent(teamCheckProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
 public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NoLiving")
             .value(false)
@@ -138,61 +100,61 @@ public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boole
     public final Property<Color> playerColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Player Color")
             .value(Color.RED)
-			.parent(playerProperty)
+	    .parent(playerProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> friendColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Friend Color")
             .value(Color.BLUE)
-			.parent(friendProperty)
+	    .parent(friendProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> neutralColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Neutral Color")
             .value(Color.PINK)
-			.parent(neutralProperty)
+	    .parent(neutralProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> bossColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Boss Color")
             .value(Color.RED.darker())
-			.parent(bossProperty)
+	    .parent(bossProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> hostileColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Hostile Color")
             .value(Color.ORANGE)
-			.parent(hostileProperty)
+	    .parent(hostileProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> passiveColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Passive Color")
             .value(Color.GREEN)
-			.parent(passiveProperty)
+	    .parent(passiveProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> petColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Pets Color")
             .value(Color.BLUE)
-			.parent(petProperty)
+	    .parent(petProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> itemColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Item Color")
             .value(Color.WHITE)
-			.parent(itemProperty)
+	    .parent(itemProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> noliveColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("NoLiving Color")
             .value(Color.WHITE)
-			.parent(nolivingProperty)
+	    .parent(nolivingProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> npcColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("NPC Color")
             .value(Color.WHITE)
-			.parent(botCheckProperty)
+	    .parent(botCheckProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
 
@@ -249,8 +211,6 @@ public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boole
             return itemProperty.value();
         if (!(entity instanceof LivingEntity livingEntity))
             return nolivingProperty.value();
-        if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
-            return botCheckProperty.value();
         if (livingEntity instanceof PlayerEntity)
             return playerProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
