@@ -91,21 +91,17 @@ public class Tracers extends Feature {
     public Tracers() {
         super(Category.VISUAL);
     }
-
-    @EventPointer
+@EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (isValid(entity)) {
+            if (entity instanceof LivingEntity living || isValid((Entity) entity)) {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
-                if (cameraEntity == null)
-                    return;
-                Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, event.getPartialTicks());
+                assert cameraEntity != null;
+                Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, event.getPartialTicks());
                 Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
-
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
-
                 BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);//LINES doesn't fucking work for some reason so DEBUG_LINES yolo
                 bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
@@ -114,12 +110,10 @@ public class Tracers extends Feature {
                     bufferBuilder.vertex(vec.x, vec.y + entity.getEyeHeight(entity.getPose()), vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 }
                 BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
-
                 Render3DHelper.INSTANCE.end3DRender();
             }
         });
     });
-
     private int getColor(Entity ent) {
         if (ent instanceof PlayerEntity playerEntity && colorOnDistanceProperty.value()) {
             if (!FriendHelper.INSTANCE.isFriend(playerEntity.getName().getString())) {
@@ -128,7 +122,6 @@ public class Tracers extends Feature {
         }
         return ESP.INSTANCE.getColor(ent);
     }
-
     private boolean isValid(Entity e) {
         if (e == null)
             return false;
