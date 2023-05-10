@@ -59,12 +59,12 @@ public class KillAura extends Feature {
             .name("Old Combat")
             .value(false)
             .build();
-    public final Property<Float> apsProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("APS")
+    public final Property<Long> apsProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Delay")
             .value(10f)
-            .min(1)
-            .max(128)
-            .inc(1f)
+            .min(0f)
+            .max(1000f)
+            .inc(10f)
             .parent(ignoreNewCombatProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
@@ -99,7 +99,7 @@ public class KillAura extends Feature {
             .parent(autoBlockProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-			public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+   public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
             .build();
