@@ -16,6 +16,7 @@ import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -105,8 +106,6 @@ public class Tracers extends Feature {
         if (e == null)
             return false;
         if (e == Wrapper.INSTANCE.getLocalPlayer())
-            return false;
-        if (e.isSleeping())
             return false;
         if (e instanceof PlayerEntity)
             return playersProperty.value() && !EntityHelper.INSTANCE.isNPC((PlayerEntity) e);
