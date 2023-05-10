@@ -18,7 +18,6 @@ import me.dustin.jex.feature.mod.impl.render.esp.ESP;
 import me.dustin.jex.helper.render.shader.ShaderHelper;
 import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -31,77 +30,54 @@ public class Tracers extends Feature {
             .name("Spine")
             .value(false)
             .build();
-	public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Color on distance")
             .value(true)
-            .build();
-    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Player")
-            .value(true)
-            .build();
-    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Friends")
-            .value(true)
-            .parent(playerProperty)
+            .parent(playersProperty)
             .depends(parent -> (boolean) parent.value())
-            .build();
-	public final Property<Boolean> hostileProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Hostile")
-            .value(true)
             .build();	
-	public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Boss")
-            .value(true)
-            .build();	
-    public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Neutral")
-            .value(false)
-            .build();
-    public final Property<Boolean> passiveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Passive")
+    public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Players")
             .value(true)
             .build();
- public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Bot")
+    public final Property<Boolean> bossesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bosses")
             .value(true)
             .build();
-    public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Team Check")
+    public final Property<Boolean> hostilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hostiles")
             .value(true)
-	    .parent(botCheckProperty)
-            .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Check Armor")
+    public final Property<Boolean> passivesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Passives")
             .value(true)
-            .parent(teamCheckProperty)
-            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> neutralsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Neutrals")
+            .value(true)
             .build();
 	public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Items")
             .value(true)
             .build();
-	public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("NoLiving")
-            .value(false)
-            .build();
-    
-			
 
     public Tracers() {
-        super(Category.VISUAL);
+        super(Category.VISUAL, "Draw a line to entities in range.");
     }
-@EventPointer
+
+    @EventPointer
     private final EventListener<EventRender3D.EventRender3DNoBob> eventRender3DNoBobEventListener = new EventListener<>(event -> {
         Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-            if (entity instanceof LivingEntity living || isValid((Entity) entity)) {
+            if (isValid((Entity) entity)) {
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
-                Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(living, event.getPartialTicks());
+                Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, event.getPartialTicks());
                 Color color1 = ColorHelper.INSTANCE.getColor(getColor(entity));
+
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
                 Vec3d eyes = new Vec3d(0, 0, 1).rotateX(-(float) Math.toRadians(PlayerHelper.INSTANCE.getPitch())).rotateY(-(float) Math.toRadians(PlayerHelper.INSTANCE.getYaw()));
+
                 BufferBuilder bufferBuilder = BufferHelper.INSTANCE.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);//LINES doesn't fucking work for some reason so DEBUG_LINES yolo
                 bufferBuilder.vertex(eyes.x, eyes.y, eyes.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 bufferBuilder.vertex(vec.x, vec.y, vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
@@ -110,10 +86,12 @@ public class Tracers extends Feature {
                     bufferBuilder.vertex(vec.x, vec.y + entity.getEyeHeight(entity.getPose()), vec.z).color(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha()).next();
                 }
                 BufferHelper.INSTANCE.drawWithShader(bufferBuilder, ShaderHelper.INSTANCE.getPosColorShader());
+
                 Render3DHelper.INSTANCE.end3DRender();
             }
         });
     });
+
     private int getColor(Entity ent) {
         if (ent instanceof PlayerEntity playerEntity && colorOnDistanceProperty.value()) {
             if (!FriendHelper.INSTANCE.isFriend(playerEntity.getName().getString())) {
@@ -122,27 +100,26 @@ public class Tracers extends Feature {
         }
         return ESP.INSTANCE.getColor(ent);
     }
+
     private boolean isValid(Entity e) {
         if (e == null)
             return false;
         if (e == Wrapper.INSTANCE.getLocalPlayer())
             return false;
+        if (e.isSleeping())
+            return false;
         if (e instanceof PlayerEntity)
-            return playerProperty.value();
-        if (!(EntityHelper.INSTANCE.isNPC((PlayerEntity) e)))
-            return botCheckProperty.value();
+            return playersProperty.value() && !EntityHelper.INSTANCE.isNPC((PlayerEntity) e);
         if (EntityHelper.INSTANCE.isPassiveMob(e))
-            return passiveProperty.value();
+            return passivesProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(e))
-            return bossProperty.value();
+            return bossesProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(e))
-            return hostileProperty.value();
+            return hostilesProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(e))
-            return neutralProperty.value();
-        if (e instanceof ItemEntity)
+            return neutralsProperty.value();
+	if (entity instanceof ItemEntity)
             return itemProperty.value();
-        if (!(e instanceof LivingEntity))
-            return nolivingProperty.value();
         return false;
     }
 }
