@@ -86,6 +86,9 @@ public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Bo
             }
         });
     });
+	private int getColor(Entity ent) {
+      return ESP.INSTANCE.getColor(ent);
+    }
 	
 private boolean isValid(Entity e) {
         if (e == null)
