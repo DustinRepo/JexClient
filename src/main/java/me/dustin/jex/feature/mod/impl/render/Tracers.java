@@ -31,16 +31,10 @@ public class Tracers extends Feature {
             .name("Spine")
             .value(false)
             .build();
-    public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Color on distance")
-            .value(true)
-            .parent(playersProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();	
-    public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Players")
             .value(true)
-            .build();
+            .build();		
     public final Property<Boolean> bossesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Bosses")
             .value(true)
@@ -92,17 +86,8 @@ public class Tracers extends Feature {
             }
         });
     });
-
-    private int getColor(Entity ent) {
-        if (ent instanceof PlayerEntity playerEntity && colorOnDistanceProperty.value()) {
-            if (!FriendHelper.INSTANCE.isFriend(playerEntity.getName().getString())) {
-                return ColorHelper.INSTANCE.redGreenShift(ent.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64);
-            }
-        }
-        return ESP.INSTANCE.getColor(ent);
-    }
-
-    private boolean isValid(Entity e) {
+	
+private boolean isValid(Entity e) {
         if (e == null)
             return false;
         if (e == Wrapper.INSTANCE.getLocalPlayer())
@@ -117,7 +102,7 @@ public class Tracers extends Feature {
             return hostilesProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(e))
             return neutralsProperty.value();
-	if (entity instanceof ItemEntity)
+	if (e instanceof ItemEntity)
             return itemProperty.value();
         return false;
     }
