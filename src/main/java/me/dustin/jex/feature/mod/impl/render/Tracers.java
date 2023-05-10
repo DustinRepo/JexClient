@@ -67,7 +67,7 @@ public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Bo
                 Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
                 assert cameraEntity != null;
                 Vec3d vec = Render3DHelper.INSTANCE.getEntityRenderPosition(entity, event.getPartialTicks());
-                Color color1 = ColorHelper.INSTANCE.getColor(entity);
+                Color color1 = ColorHelper.INSTANCE.getColor(ESP.INSTANCE.getColor);
 
                 Render3DHelper.INSTANCE.setup3DRender(true);
                 RenderSystem.lineWidth(1.2f);
