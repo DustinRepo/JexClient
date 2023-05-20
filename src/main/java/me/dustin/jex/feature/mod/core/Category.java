@@ -11,7 +11,6 @@ public record Category(String name, int color) {
     public static final Category WORLD = new Category("World", new Color(74, 84, 255).getRGB());
     public static final Category VISUAL = new Category("Visual", new Color(255, 92, 252).getRGB());
     public static final Category MISC = new Category("Misc", new Color(247, 255, 65).getRGB());
-public static final Category SETTINGS = new Category("Settings", new Color(255, 255, 0).getRGB());
     
     public Category(String name, int color) {
         this.name = name;
