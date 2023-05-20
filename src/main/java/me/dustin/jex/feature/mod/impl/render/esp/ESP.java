@@ -85,6 +85,14 @@ public final Property<Boolean> petProperty = new Property.PropertyBuilder<Boolea
 	    .parent(passiveProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
+public final Property<Boolean> localProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("LocalPlayer")
+            .value(true)
+            .build();
+public final Property<Boolean> botProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bot")
+            .value(true)
+            .build();
 public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NoLiving")
             .value(false)
@@ -134,6 +142,18 @@ public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boole
             .value(Color.BLUE)
 	    .parent(petProperty)
             .depends(parent -> (boolean)parent.value())
+            .build();
+   public final Property<Color> botColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Bots Color")
+            .value(Color.BLUE)
+	    .parent(botProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+   public final Property<Color> localColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("LocalPlayer Color")
+            .value(Color.BLUE)
+	    .parent(localProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Color> itemColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Item Color")
@@ -200,8 +220,12 @@ public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boole
             return itemProperty.value();
         if (!(entity instanceof LivingEntity livingEntity))
             return nolivingProperty.value();
+	if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
+            return localProperty.value();
         if (livingEntity instanceof PlayerEntity)
             return playerProperty.value();
+	if (EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
+	    return botProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
@@ -232,6 +256,10 @@ public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boole
             return hostileColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralColorProperty.value().getRGB();
+	if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
+	    return localColorProperty.value().getRGB();
+	if (EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
+	    return botColorProperty.value().getRGB();	
         return -1;
     }
 
