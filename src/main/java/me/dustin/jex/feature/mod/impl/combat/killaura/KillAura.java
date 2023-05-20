@@ -338,7 +338,7 @@ public class KillAura extends Feature {
 
     public boolean canSwing() {
         if (ignoreNewCombatProperty.value()) {
-            if (stopWatch.hasPassed((long) (1000 / apsProperty.value()))) {
+            if (stopWatch.hasPassed(apsProperty.value())) {
                 stopWatch.reset();
                 return true;
             }
