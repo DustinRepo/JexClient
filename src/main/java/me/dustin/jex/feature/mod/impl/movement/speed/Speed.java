@@ -101,6 +101,6 @@ public class Speed extends Feature {
     }
 
     public enum Mode {
-        VANILLA, STRAFE, SPACE
+        VANILLA, STRAFE
     }
 }
