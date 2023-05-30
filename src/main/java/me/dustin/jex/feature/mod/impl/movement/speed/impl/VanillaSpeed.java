@@ -24,10 +24,10 @@ public class VanillaSpeed extends FeatureExtension {
             if ((BaritoneHelper.INSTANCE.isBaritoneRunning() || PathingHelper.INSTANCE.isPathing()) && !Wrapper.INSTANCE.getLocalPlayer().isOnGround())
                 return;
             if (PathingHelper.INSTANCE.isPathing()) {
-                eventMove.setX(eventMove.getX() * kmh);
-                eventMove.setZ(eventMove.getZ() * kmh);
+                eventMove.setX(eventMove.getX() * kmh * speed.multipleProperty.value());
+                eventMove.setZ(eventMove.getZ() * kmh * speed.multipleProperty.value());
             } else
-                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, kmh);
+                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, kmh * speed.multipleProperty.value());
         }
     }
 
