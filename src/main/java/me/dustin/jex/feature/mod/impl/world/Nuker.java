@@ -84,8 +84,6 @@ public class Nuker extends Feature {
                         if (distance > distanceProperty.value())
                             continue;
                         blockPosList.add(pos);
-                        if (delayProperty.value() > 0)
-                            break;
                     }
                 }
         blockPosList.sort(Comparator.comparing(o -> o.getSquaredDistance(Wrapper.INSTANCE.getPlayer().getPos())));
