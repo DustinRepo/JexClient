@@ -27,8 +27,8 @@ public class StrafeSpeed extends FeatureExtension {
             if (PathingHelper.INSTANCE.isPathing()) {
                 eventMove.setX(eventMove.getX() * speed.vanillaSpeedProperty.value() * kmh);
                 eventMove.setZ(eventMove.getZ() * speed.vanillaSpeedProperty.value() * kmh);
-            }else
-                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.strafeSpeedProperty.value());
+            } else
+                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.strafeSpeedProperty.value() * kmh);
         } else if (event instanceof EventPlayerPackets eventPlayerPackets) {
             Speed speed = Feature.get(Speed.class);
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
