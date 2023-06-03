@@ -50,6 +50,13 @@ public class Fly extends Feature {
             .name("Fly Check Bypass")
             .value(true)
             .build();
+    public final Property<Integer> tProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Timeout (Tick)")
+            .value(1)
+            .min(0)
+            .max(80)
+            .inc(1)
+            .build();
     public final Property<Float> distanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Fall Distance")
             .value(0.5f)
@@ -110,11 +117,11 @@ public class Fly extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
-        
+        float tick = tProperty.value() * 0.05f;
         if (!flyCheckBypassProperty.value() || Feature.getState(Freecam.class))
             return;
         PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
-        if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {
+        if (Wrapper.INSTANCE.getLocalPlayer().age >= tick) {
             if (EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 2) {
                 PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - distanceProperty.value(), playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
                 event.setPacket(modified);
