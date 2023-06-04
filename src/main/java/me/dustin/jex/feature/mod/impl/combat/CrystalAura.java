@@ -50,9 +50,9 @@ public class CrystalAura extends Feature {
 	public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
 			.name("Attack Delay")
 			.value(200L)
-		    .min(0)
+		        .min(0)
 			.max(2000)
-		    .inc(20)
+		        .inc(20)
 			.build();
 	public final Property<Boolean> autoPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Auto Place")
@@ -183,9 +183,9 @@ public class CrystalAura extends Feature {
 	public BlockPos getOpenBlockPos(PlayerEntity entityPlayer) {
 		double d = 0;
 		BlockPos closest = null;
-		for (int x = -6; x < 6; x++) {
-			for (int y = -6; y < 6; y++) {
-				for (int z = -6; z < 6; z++) {
+		for (int x = -attackDistanceProperty.value(); x < attackDistanceProperty.value(); x++) {
+			for (int y = -attackDistanceProperty.value(); y < attackDistanceProperty.value(); y++) {
+				for (int z = -attackDistanceProperty.value(); z < attackDistanceProperty.value(); z++) {
 					BlockPos pos = new BlockPos(entityPlayer.getX() + x, (int) entityPlayer.getY() - y, entityPlayer.getZ() + z);
 					EndCrystalEntity fakeCrystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), pos.getX(), pos.getY(), pos.getZ());
 
