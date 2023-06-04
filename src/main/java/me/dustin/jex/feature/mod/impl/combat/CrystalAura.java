@@ -58,6 +58,15 @@ public class CrystalAura extends Feature {
 			.name("Auto Place")
 			.value(false)
 			.build();
+	public final Property<Float> edtcProperty = new Property.PropertyBuilder<Float>(this.getClass())
+			.name("Crystal Distance to Enemy")
+			.value(5f)
+			.min(1)
+			.max(6)
+			.inc(0.1f)
+		        .parent(autoPlaceProperty)
+			.depends(parent -> (boolean) parent.value())
+			.build();
 	public final Property<Boolean> visualizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Visualize")
 			.value(true)
@@ -131,7 +140,7 @@ public class CrystalAura extends Feature {
 							BlockPos placingPos = getOpenBlockPos(entityPlayer);
 							if (placingPos != null) {
 								EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
-								if (entityPlayer.distanceTo(crystal) <= 6 && Wrapper.INSTANCE.getLocalPlayer().distanceTo(crystal) <= 6 && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldAttack(crystal)) {
+								if (entityPlayer.distanceTo(crystal) <= edtcProperty.value() && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldAttack(crystal)) {
 									RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 									event.setRotation(rotation);
 									placePos = placingPos.down();
