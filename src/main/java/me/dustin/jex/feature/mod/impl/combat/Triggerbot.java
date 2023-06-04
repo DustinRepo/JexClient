@@ -100,9 +100,8 @@ public final Property<Boolean> nametaggedProperty = new Property.PropertyBuilder
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof EntityHitResult entityHitResult) {
             Entity entity = entityHitResult.getEntity();
-            boolean attack = Wrapper.INSTANCE.getOptions().attackKey.isPressed();
             if (checkpressProperty.value()) {
-            if (isValid(entity) && attack && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
+            if (isValid(entity) && Wrapper.INSTANCE.getOptions().attackKey.isPressed() && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
                 if (swingProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
@@ -112,8 +111,9 @@ public final Property<Boolean> nametaggedProperty = new Property.PropertyBuilder
             else {
                 if (isValid(entity) && Wrapper.INSTANCE.getLocalPlayer().getAttackCooldownProgress(0) == 1) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), entity);
-                 if (swingProperty.value())
+                 if (swingProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+		 }
                 }
             }
         }
