@@ -140,7 +140,7 @@ public class CrystalAura extends Feature {
 							BlockPos placingPos = getOpenBlockPos(entityPlayer);
 							if (placingPos != null) {
 								EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
-								if (entityPlayer.distanceTo(crystal) <= edtcProperty.value() && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldAttack(crystal)) {
+								if (entityPlayer.distanceTo(crystal) <= edtcProperty.value() && Wrapper.INSTANCE.getLocalPlayer().distanceTo(crystal) <= placeDistanceProperty.value() && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldAttack(crystal)) {
 									RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 									event.setRotation(rotation);
 									placePos = placingPos.down();
