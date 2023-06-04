@@ -154,10 +154,14 @@ public class AutoFish extends Feature {
         if (dontReelProperty.value()) return;
         if (PlayerHelper.INSTANCE.mainHandStack() != null && PlayerHelper.INSTANCE.mainHandStack().getItem() == Items.FISHING_ROD) {
             PlayerHelper.INSTANCE.useItem(Hand.MAIN_HAND);
-            PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
+            if (swingProperty.value) {
+            Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
+            }
         } else if (PlayerHelper.INSTANCE.offHandStack() != null && PlayerHelper.INSTANCE.offHandStack().getItem() == Items.FISHING_ROD) {
             PlayerHelper.INSTANCE.useItem(Hand.OFF_HAND);
-            PlayerHelper.INSTANCE.swing(Hand.OFF_HAND);
+            if (swingProperty.value) {
+            Wrapper.INSTANCE.getPlayer().swingHand(Hand.OFF_HAND);
+            }
         }
     }
 
