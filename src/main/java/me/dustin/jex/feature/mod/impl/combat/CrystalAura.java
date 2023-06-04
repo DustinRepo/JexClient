@@ -198,10 +198,9 @@ public class CrystalAura extends Feature {
 						if (belowBlock == Blocks.OBSIDIAN || belowBlock == Blocks.BEDROCK) {
 							if (!shouldAttack(fakeCrystal))
 								continue;
-							double playerdist = entityPlayer.distanceTo(fakeCrystal) - (pos.getY() - entityPlayer.getY());
 							double damage = WorldHelper.INSTANCE.calcExplosionDamage(6, entityPlayer, pos);
 							double damageToMe = WorldHelper.INSTANCE.calcExplosionDamage(6, Wrapper.INSTANCE.getLocalPlayer(), pos);
-							double eff = damage - playerdist - damageToMe;
+							double eff = damage - damageToMe;
 							if (eff > d) {
 								closest = pos;
 								d = eff;
