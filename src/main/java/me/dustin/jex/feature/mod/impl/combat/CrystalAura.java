@@ -54,6 +54,10 @@ public class CrystalAura extends Feature {
 			.max(2000)
 		        .inc(20)
 			.build();
+	public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Rotate to crystal")
+			.value(false)
+			.build();
 	public final Property<Boolean> autoPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Auto Place")
 			.value(false)
@@ -128,7 +132,7 @@ public class CrystalAura extends Feature {
 		boolean offhand = Wrapper.INSTANCE.getLocalPlayer() != null && Wrapper.INSTANCE.getLocalPlayer().getOffHandStack().getItem() == Items.END_CRYSTAL;
 		if (event.getMode() == EventPlayerPackets.Mode.PRE) {
 			this.setSuffix(modeProperty.value());
-			if (placePos != null) {
+			if (placePos != null && rotateProperty.value()) {
 				RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(placePos.getX(), placePos.getY(), placePos.getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 				event.setRotation(rotation);
 			}
@@ -141,8 +145,10 @@ public class CrystalAura extends Feature {
 							if (placingPos != null) {
 								EndCrystalEntity crystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), placingPos.getX(), placingPos.getY(), placingPos.getZ());
 								if (entityPlayer.distanceTo(crystal) <= edtcProperty.value() && Wrapper.INSTANCE.getLocalPlayer().distanceTo(crystal) <= placeDistanceProperty.value() && !FriendHelper.INSTANCE.isFriend(entityPlayer.getName().getString()) && entityPlayer.getHealth() > 0 && shouldAttack(crystal)) {
+									if (rotateProperty.value()) {
 									RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(getOpenBlockPos(entityPlayer).down().getX(), getOpenBlockPos(entityPlayer).down().getY(), getOpenBlockPos(entityPlayer).down().getZ()).add(new Vec3d(0.5, 0.5, 0.5)));
 									event.setRotation(rotation);
+									}
 									placePos = placingPos.down();
 									stopWatch.reset();
 									return;
@@ -155,8 +161,10 @@ public class CrystalAura extends Feature {
 				if (stopWatch.hasPassed(attackDelayProperty.value()))
 				if (entity instanceof EndCrystalEntity enderCrystalEntity) {
 					if (shouldAttack(enderCrystalEntity)) {
+						if (rotateProperty.value()) {
 						RotationVector rotation = PlayerHelper.INSTANCE.rotateToEntity(enderCrystalEntity);
 						event.setRotation(rotation);
+						}
 						Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), enderCrystalEntity);
 						if (swingProperty.value()) { 
                                                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
