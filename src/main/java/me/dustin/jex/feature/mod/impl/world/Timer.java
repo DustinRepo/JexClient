@@ -37,7 +37,7 @@ public class Timer extends Feature {
         if (getState()) {
             event.timeScale = 1000 / (constProperty.value() * speedProperty.value());
         } else {
-            event.timeScale = 1000 / 20.f;
+            event.timeScale = 1000 / constProperty.value();
             EventManager.unregister(this);
         }
     });
