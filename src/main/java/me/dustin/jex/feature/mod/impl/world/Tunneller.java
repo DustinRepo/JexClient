@@ -79,7 +79,7 @@ public class Tunneller extends Feature {
                     }
                 } else if (WorldHelper.INSTANCE.isWaterlogged(liquidCheckSpot)){
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(liquidCheckSpot, Direction.UP);
-                    if (swingProperty.value) {
+                    if (swingProperty.value()) {
                     Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                     }
                     return;
@@ -89,7 +89,7 @@ public class Tunneller extends Feature {
         for (BlockPos blockPos : getBlocksInTunnel()) {
             if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
-                if (swingProperty.value) {
+                if (swingProperty.value()) {
                 Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
                 }
                 return;
