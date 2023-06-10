@@ -36,6 +36,10 @@ public class AirPlace extends Feature {
 			.max(6)
 			.inc(1)
 			.build();
+	public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Swing")
+			.value(true)
+			.build();
 
 	public AirPlace() {
 		super(Category.WORLD);
@@ -47,7 +51,9 @@ public class AirPlace extends Feature {
 			if (hitResult instanceof BlockHitResult blockHitResult) {
 				if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos())) && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() instanceof BlockItem) {
 					Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
+					if (swingProperty.value()) {
 					Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+					}
 					event.cancel();
 				}
 			}
