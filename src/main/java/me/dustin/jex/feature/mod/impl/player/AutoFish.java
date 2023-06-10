@@ -35,6 +35,10 @@ public class AutoFish extends Feature {
             .name("Sound")
             .value(true)
             .build();
+    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
+            .build();
     public final Property<Boolean> distanceCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Distance Check")
             .value(false)
@@ -154,12 +158,12 @@ public class AutoFish extends Feature {
         if (dontReelProperty.value()) return;
         if (PlayerHelper.INSTANCE.mainHandStack() != null && PlayerHelper.INSTANCE.mainHandStack().getItem() == Items.FISHING_ROD) {
             PlayerHelper.INSTANCE.useItem(Hand.MAIN_HAND);
-            if (swingProperty.value) {
+            if (swingProperty.value()) {
             Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
             }
         } else if (PlayerHelper.INSTANCE.offHandStack() != null && PlayerHelper.INSTANCE.offHandStack().getItem() == Items.FISHING_ROD) {
             PlayerHelper.INSTANCE.useItem(Hand.OFF_HAND);
-            if (swingProperty.value) {
+            if (swingProperty.value()) {
             Wrapper.INSTANCE.getPlayer().swingHand(Hand.OFF_HAND);
             }
         }
