@@ -28,8 +28,9 @@ public class SpeedCrafter extends Feature {
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Delay")
             .value(0L)
-            .max(500)
-            .inc(5)
+            .min(0)
+            .max(1000)
+            .inc(10)
             .build();
 
     public Item craftingItem;
