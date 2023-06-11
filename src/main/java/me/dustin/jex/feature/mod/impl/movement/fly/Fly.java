@@ -49,7 +49,7 @@ public class Fly extends Feature {
             .max(100)
             .inc(1)
             .build();
-    public final Property<Integer> hspeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+    public final Property<Integer> multipleProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Multiplier")
             .value(1)
             .min(1)
