@@ -20,7 +20,7 @@ public class VanillaSpeed extends FeatureExtension {
     public void pass(Event event) {
         if (event instanceof EventMove eventMove) {
             Speed speed = Feature.get(Speed.class);
-            double kmh = speed.vanillaSpeedProperty.value() * 0.0138;
+            double kmh = speed.vanillaSpeedProperty.value() * 0.01388888888888;
             if ((BaritoneHelper.INSTANCE.isBaritoneRunning() || PathingHelper.INSTANCE.isPathing()) && !Wrapper.INSTANCE.getLocalPlayer().isOnGround())
                 return;
             if (PathingHelper.INSTANCE.isPathing()) {
