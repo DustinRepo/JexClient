@@ -23,10 +23,10 @@ public class ThreeDFly extends FeatureExtension {
                 eventMove.setX(0);
                 eventMove.setZ(0);
             }
-            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, fly.speedProperty.value());
+            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, fly.hspeedProperty.value());
             eventMove.setY(0);
             if (PlayerHelper.INSTANCE.isMoving()) {
-                eventMove.setY((fly.speedProperty.value() / 50) * -PlayerHelper.INSTANCE.getPitch());
+                eventMove.setY((fly.vspeedProperty.value() / 50) * -PlayerHelper.INSTANCE.getPitch());
             }
         }
     }
