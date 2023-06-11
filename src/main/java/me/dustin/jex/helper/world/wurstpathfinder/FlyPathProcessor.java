@@ -21,7 +21,6 @@ import java.util.ArrayList;
 public class FlyPathProcessor extends PathProcessor
 {
 	private final boolean creativeFlying;
-	float cmp = (fly.hspeedProperty.value() + fly.vspeedProperty.value()) / 2;
 	
 	public FlyPathProcessor(ArrayList<PathPos> path, boolean creativeFlying)
 	{
@@ -108,6 +107,7 @@ public class FlyPathProcessor extends PathProcessor
 			}
 			//fix for speed going way past the point
 			if (Feature.getState(Fly.class)) {
+			float cmp = (fly.hspeedProperty.value() + fly.vspeedProperty.value()) / 2;
 				if (!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= cmp) {
 					PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
 					PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
@@ -134,6 +134,7 @@ public class FlyPathProcessor extends PathProcessor
 			// vertical movement
 		}else if(y)
 		{
+		      float cmp = (fly.hspeedProperty.value() + fly.vspeedProperty.value()) / 2;
 			PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), 0);
 			if(!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= cmp) {
 				Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
