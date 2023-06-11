@@ -139,7 +139,7 @@ public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Bool
         if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > distanceProperty.value())
             return false;
         if (entity instanceof PlayerEntity) {
-            if (FriendHelper.INSTANCE.isFriend(livingEntity.getName().getString()))
+            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendProperty.value();
             return playerProperty.value();
            }   
