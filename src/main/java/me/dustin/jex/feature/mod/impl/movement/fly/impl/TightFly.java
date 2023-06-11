@@ -20,8 +20,8 @@ public class TightFly extends FeatureExtension {
         if (event instanceof EventMove eventMove) {
             if (fly == null)
                 fly = Feature.get(Fly.class);
-            float hkmh = fly.hspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
-            float vkmh = fly.vspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
+            double hkmh = fly.hspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
+            double vkmh = fly.vspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
             if (!PlayerHelper.INSTANCE.isMoving()) {
                 eventMove.setX(0);
                 eventMove.setZ(0);
