@@ -107,8 +107,8 @@ public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Bool
             if (hand == null)
                 return;
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                if (entity instanceof LivingEntity livingEntity) {
-                    if (isValid(livingEntity)) {
+                if (entity instanceof Entity entity) {
+                    if (isValid(entity)) {
                         Block footBlock = Wrapper.INSTANCE.getWorld().getBlockState(livingEntity.getBlockPos()).getBlock();
                         if (footBlock == Blocks.AIR) {
                             blockPos = livingEntity.getBlockPos().down();
