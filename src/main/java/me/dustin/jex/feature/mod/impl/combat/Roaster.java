@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -68,7 +69,7 @@ public class Roaster extends Feature {
             .value(true)
             .build();
     public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Lockview")
+            .name("Client")
             .value(false)
             .parent(rotateProperty)
             .depends(parent -> (boolean) parent.value())
@@ -134,27 +135,27 @@ public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Bool
         }
     });
 
-    private boolean isValid(LivingEntity livingEntity) {
-        if (livingEntity instanceof ClientPlayerEntity)
+    private boolean isValid(Entity entity) {
+        if (entity instanceof ClientPlayerEntity)
             return false;
-        if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(livingEntity) > distanceProperty.value())
+        if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > distanceProperty.value())
             return false;
-        if (livingEntity instanceof PlayerEntity) {
+        if (entity instanceof PlayerEntity) {
             if (FriendHelper.INSTANCE.isFriend(livingEntity.getName().getString()))
             return friendProperty.value();
             return playerProperty.value();
            }   
-        if (EntityHelper.INSTANCE.isHostileMob(livingEntity))
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostileProperty.value();
-        if (EntityHelper.INSTANCE.isPassiveMob(livingEntity) && !EntityHelper.INSTANCE.doesPlayerOwn(livingEntity))
+        if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
             return passiveProperty.value();
-        if (EntityHelper.INSTANCE.isNeutralMob(livingEntity))
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
-        if (livingEntity.isFireImmune())
+        if (entity.isFireImmune())
             return fireimmuneProperty.value();
-        if (livingEntity.isOnFire())
+        if (entity.isOnFire())
             return onFireProperty.value();
-        if (!livingEntity.isOnGround())
+        if (!entity.isOnGround())
             return groundProperty.value();    
         return false;
     }
