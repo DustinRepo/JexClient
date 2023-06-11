@@ -24,7 +24,7 @@ public class NormalFly extends FeatureExtension {
             boolean sneaking = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
 
 
-            Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = fly.speedProperty.value();
+            Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = fly.hspeedProperty.value();
             if (!PathingHelper.INSTANCE.isPathing() || PathingHelper.INSTANCE.isThinking()) {
                 PlayerHelper.INSTANCE.setVelocityX(0);
                 PlayerHelper.INSTANCE.setVelocityZ(0);
@@ -32,9 +32,9 @@ public class NormalFly extends FeatureExtension {
             PlayerHelper.INSTANCE.setVelocityY(0);
             if (!jumping || !sneaking) {
                 if (jumping) {
-                    PlayerHelper.INSTANCE.setVelocityY(fly.speedProperty.value());
+                    PlayerHelper.INSTANCE.setVelocityY(fly.vspeedProperty.value());
                 } else if (sneaking) {
-                    PlayerHelper.INSTANCE.setVelocityY(-fly.speedProperty.value());
+                    PlayerHelper.INSTANCE.setVelocityY(-fly.vspeedProperty.value());
                 }
             }
             if (fly.glideProperty.value() && !jumping) {
