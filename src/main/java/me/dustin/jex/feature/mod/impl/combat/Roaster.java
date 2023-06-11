@@ -107,11 +107,11 @@ public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Bool
             if (hand == null)
                 return;
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                if (entity instanceof Entity entity) {
-                    if (isValid(entity)) {
-                        Block footBlock = Wrapper.INSTANCE.getWorld().getBlockState(livingEntity.getBlockPos()).getBlock();
+                if (entity instanceof Entity ent) {
+                    if (isValid(ent)) {
+                        Block footBlock = Wrapper.INSTANCE.getWorld().getBlockState(ent.getBlockPos()).getBlock();
                         if (footBlock == Blocks.AIR) {
-                            blockPos = livingEntity.getBlockPos().down();
+                            blockPos = ent.getBlockPos().down();
                             if (rotateProperty.value()) {
                                 RotationVector rotations = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                                 event.setRotation(rotations);
