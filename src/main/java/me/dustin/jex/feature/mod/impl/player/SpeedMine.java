@@ -18,6 +18,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 
 public class SpeedMine extends Feature {
+    
+    private final StopWatch stopWatch = new StopWatch();
 
     public Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
             .name("Mode")
