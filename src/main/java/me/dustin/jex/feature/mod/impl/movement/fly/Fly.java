@@ -36,14 +36,14 @@ public class Fly extends Feature {
             .value(Mode.NORMAL)
             .build();
     public final Property<Integer> hspeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Horizontal Speed")
+            .name("Horizontal Speed (km/h)")
             .value(72)
             .min(15)
             .max(100)
             .inc(1)
             .build();
     public final Property<Integer> vspeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Vertical Speed")
+            .name("Vertical Speed (km/h)")
             .value(15)
             .min(15)
             .max(100)
