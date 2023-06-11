@@ -20,6 +20,8 @@ public class TightFly extends FeatureExtension {
         if (event instanceof EventMove eventMove) {
             if (fly == null)
                 fly = Feature.get(Fly.class);
+            float hkmh = fly.hspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
+            float vkmh = fly.vspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
             if (!PlayerHelper.INSTANCE.isMoving()) {
                 eventMove.setX(0);
                 eventMove.setZ(0);
@@ -27,12 +29,12 @@ public class TightFly extends FeatureExtension {
             boolean jumping = Wrapper.INSTANCE.getOptions().jumpKey.isPressed();
             boolean sneaking = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
             eventMove.setY(0);
-            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, fly.hspeedProperty.value());
+            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, fly.hkmh);
             if (!jumping || !sneaking) {
                 if (jumping) {
-                    eventMove.setY(fly.vspeedProperty.value());
+                    eventMove.setY(vkmh);
                 } else if (sneaking) {
-                    eventMove.setY(-fly.vspeedProperty.value());
+                    eventMove.setY(-vkmh);
                 }
             }
             if (fly.glideProperty.value() && !jumping) {
