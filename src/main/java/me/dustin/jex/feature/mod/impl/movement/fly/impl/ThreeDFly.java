@@ -28,7 +28,7 @@ public class ThreeDFly extends FeatureExtension {
             PlayerHelper.INSTANCE.setMoveSpeed(eventMove, hkmh);
             eventMove.setY(0);
             if (PlayerHelper.INSTANCE.isMoving()) {
-                eventMove.setY((fly.vkmh / 50) * -PlayerHelper.INSTANCE.getPitch());
+                eventMove.setY((vkmh / 50) * -PlayerHelper.INSTANCE.getPitch());
             }
         }
     }
