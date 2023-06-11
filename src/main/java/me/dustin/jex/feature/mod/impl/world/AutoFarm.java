@@ -59,6 +59,7 @@ public class AutoFarm extends Feature {
     public final Property<Integer> sortDelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Sort Delay")
             .value(250)
+            .min(0)
             .max(1000)
             .inc(10)
             .build();
