@@ -22,8 +22,8 @@ public class NormalFly extends FeatureExtension {
                 fly = Feature.get(Fly.class);
             boolean jumping = Wrapper.INSTANCE.getOptions().jumpKey.isPressed();
             boolean sneaking = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
-            float hkmh = fly.hspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
-            float vkmh = fly.vspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
+            double hkmh = fly.hspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
+            double vkmh = fly.vspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
             Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = hkmh;
             if (!PathingHelper.INSTANCE.isPathing() || PathingHelper.INSTANCE.isThinking()) {
                 PlayerHelper.INSTANCE.setVelocityX(0);
