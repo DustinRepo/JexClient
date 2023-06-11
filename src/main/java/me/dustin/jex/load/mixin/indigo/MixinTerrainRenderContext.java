@@ -10,14 +10,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
 @Mixin(TerrainRenderContext.class)
 public class MixinTerrainRenderContext {
 
 	@Inject(at = { @At("HEAD") }, method = "tessellateBlock", cancellable = true, remap = false)
-	private void tesselateBlock(BlockState blockState, BlockPos blockPos, BakedModel model, MatrixStack matrixStack, CallbackInfoReturnable<Boolean> cir) {
+	private void tesselateBlock(BlockState blockState, BlockPos blockPos, BakedModel model, MatrixStack matrixStack, CallbackInfo<Boolean> cir) {
 		EventRenderBlock eventRenderBlock = new EventRenderBlock(blockState.getBlock()).run();
 		if (eventRenderBlock.isCancelled())
 			cir.setReturnValue(false);
