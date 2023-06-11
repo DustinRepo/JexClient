@@ -29,7 +29,7 @@ public class TightFly extends FeatureExtension {
             boolean jumping = Wrapper.INSTANCE.getOptions().jumpKey.isPressed();
             boolean sneaking = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
             eventMove.setY(0);
-            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, fly.hkmh);
+            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, hkmh);
             if (!jumping || !sneaking) {
                 if (jumping) {
                     eventMove.setY(vkmh);
