@@ -55,7 +55,7 @@ public class ChestStealer extends Feature {
     
 
     private final StopWatch stopWatch = new StopWatch();
-
+    Wrapper.INSTANCE.getMinecraft().currentScreen = scr;
     public ChestStealer() {
         super(Category.WORLD);
     }
@@ -88,7 +88,7 @@ public class ChestStealer extends Feature {
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
-    private boolean isValid(Wrapper.INSTANCE.getMinecraft().currentScreen scr) {
+    private boolean isValid(scr) {
         if (scr instanceof GenericContainerScreen)
             return chestProperty.value();
         if (scr instanceof ShulkerBoxScreen)
