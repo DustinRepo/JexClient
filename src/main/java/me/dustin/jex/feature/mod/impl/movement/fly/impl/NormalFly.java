@@ -24,7 +24,7 @@ public class NormalFly extends FeatureExtension {
             boolean sneaking = Wrapper.INSTANCE.getOptions().sneakKey.isPressed();
             double hkmh = fly.hspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
             double vkmh = fly.vspeedProperty.value() * fly.multipleProperty.value() * 0.01388888888888;
-            Wrapper.INSTANCE.getLocalPlayer().airStrafingSpeed = (float) hkmh;
+            PlayerHelper.INSTANCE.setMoveSpeed(eventMove, hkmh);
             if (!PathingHelper.INSTANCE.isPathing() || PathingHelper.INSTANCE.isThinking()) {
                 PlayerHelper.INSTANCE.setVelocityX(0);
                 PlayerHelper.INSTANCE.setVelocityZ(0);
