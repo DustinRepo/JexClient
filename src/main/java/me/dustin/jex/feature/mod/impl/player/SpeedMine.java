@@ -32,19 +32,19 @@ public class SpeedMine extends Feature {
             .max(1000)
             .inc(10)
             .parent(modeProperty)
-            .depends(parent -> parent.value() == Mode.INSTANT)
+            .depends(parent -> parent.value() == Mode.PACKET)
             .build();
     public final Property<Boolean> startpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("StartPacket")
             .value(true)
             .parent(modeProperty)
-            .depends(parent -> parent.value() == Mode.INSTANT)
+            .depends(parent -> parent.value() == Mode.PACKET)
             .build();
     public final Property<Boolean> stoppProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("StopPacket")
             .value(true)
             .parent(modeProperty)
-            .depends(parent -> parent.value() == Mode.INSTANT)
+            .depends(parent -> parent.value() == Mode.PACKET)
             .build();
     public Property<Integer> hasteLevelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Haste Level")
