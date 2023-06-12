@@ -70,6 +70,8 @@ public class Fly extends Feature {
             .min(0)
             .max(80)
             .inc(1)
+            .parent(flyCheckBypassProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Float> distanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Fall Distance")
