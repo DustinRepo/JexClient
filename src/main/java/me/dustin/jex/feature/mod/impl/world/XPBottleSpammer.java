@@ -33,7 +33,9 @@ public class XPBottleSpammer extends Feature {
     public XPBottleSpammer() {
         super(Category.WORLD);
     }
-
+    
+ private final StopWatch stopWatch = new StopWatch();
+    
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
