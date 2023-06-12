@@ -22,3 +22,5 @@ You can download Jex Client in the discord or in the releases tab
 
 ## Developers Please note
 If your JexClient path has any spaces or special characters in it's path, the Features, Commands, and Config Manager will not properly load. [Why?](https://github.com/google/guava/issues/2152)
+## Known bugs
+Crash on linux - tessellate block mixin error
