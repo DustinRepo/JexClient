@@ -88,16 +88,16 @@ public class ChestStealer extends Feature {
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
-    private boolean isValid(scr) {
-        if (scr instanceof GenericContainerScreen)
+    private boolean isValid() {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen)
             return chestProperty.value();
-        if (scr instanceof ShulkerBoxScreen)
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen)
             return shulkerProperty.value();    
-        if (scr instanceof HopperScreen)
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HopperScreen)
             return hopperProperty.value();   
-        if (scr instanceof HorseScreen)
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HorseScreen)
             return horseProperty.value();
-         if (scr instanceof BrewingStandScreen)
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof BrewingStandScreen)
             return bsProperty.value();
         return false;
    }        
