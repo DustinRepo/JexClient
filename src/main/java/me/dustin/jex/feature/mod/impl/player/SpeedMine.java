@@ -81,9 +81,10 @@ public class SpeedMine extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         switch (modeProperty.value()) {
                 case PACKET -> {
-     if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
-     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
-     givenHaste = false;               
+   float bProgress = modeProperty.value() == Mode.PROGRESS ? breakProgressProperty.value() : 0;
+   if (Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() >= bProgress) {
+   Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);                 
+              
                 }
             case PROGRESS -> {
                 
@@ -93,7 +94,6 @@ public class SpeedMine extends Feature {
                 if (Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() >= bProgress) {
                     Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);
                 }
-                
                 givenHaste = false;
             }
             case HASTE -> {
