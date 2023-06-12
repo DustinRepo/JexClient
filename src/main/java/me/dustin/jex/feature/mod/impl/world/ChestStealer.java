@@ -64,7 +64,7 @@ public class ChestStealer extends Feature {
         Wrapper.INSTANCE.getMinecraft().currentScreen = screen;
         if (!stopWatch.hasPassed(delayProperty.value()))
             return;
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen)
             return chestProperty.value()
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen)
             return shulkerProperty.value();
@@ -77,8 +77,7 @@ public class ChestStealer extends Feature {
             if (InventoryHelper.INSTANCE.isInventoryFull() && !dumpProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
                 return;
-               }
-        }
+                
             if (InventoryHelper.INSTANCE.isContainerEmpty(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler)) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
             } else {
