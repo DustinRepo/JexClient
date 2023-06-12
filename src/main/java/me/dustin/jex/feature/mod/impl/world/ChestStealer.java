@@ -10,10 +10,6 @@ import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
-import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
-import net.minecraft.client.gui.screen.ingame.HopperScreen;
-import net.minecraft.client.gui.screen.ingame.HorseScreen;
-import net.minecraft.client.gui.screen.ingame.BrewingStandScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
@@ -25,40 +21,18 @@ public class ChestStealer extends Feature {
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Delay")
             .value(50L)
+            .min(0)
             .max(1000)
             .inc(10)
             .build();
     public final Property<Boolean> dumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Dump")
-            .value(false)
-            .build();
-     public final Property<Boolean> contProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Containers")
-            .value(false)
-            .build();
-    public final Property<Boolean> chestProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Chest")
-            .value(false)
-            .build();
-    public final Property<Boolean> shulkerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Shulker")
-            .value(false)
-            .build();
-    public final Property<Boolean> hopperProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Hopper")
-            .value(false)
-            .build();
-    public final Property<Boolean> horseProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Horse")
-            .value(false)
-            .build();
-    public final Property<Boolean> bsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("BrewingStand")
+            .description("Throw the items on the ground.")
             .value(false)
             .build();
 
     private final StopWatch stopWatch = new StopWatch();
-    
+
     public ChestStealer() {
         super(Category.WORLD);
     }
@@ -67,20 +41,11 @@ public class ChestStealer extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (!stopWatch.hasPassed(delayProperty.value()))
             return;
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen)
-            return chestProperty.value();
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen)
-            return shulkerProperty.value();
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HopperScreen)
-            return hopperProperty.value();
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HorseScreen)
-            return horseProperty.value();
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof BrewingStandScreen)
-            return bsProperty.value();
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen) {
             if (InventoryHelper.INSTANCE.isInventoryFull() && !dumpProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
                 return;
-        }
+            }
             if (InventoryHelper.INSTANCE.isContainerEmpty(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler)) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
             } else {
