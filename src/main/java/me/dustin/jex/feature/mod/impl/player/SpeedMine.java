@@ -80,13 +80,20 @@ public class SpeedMine extends Feature {
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         switch (modeProperty.value()) {
-            case PROGRESS, INSTANT -> {
+                case PACKET -> {
+     if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
+     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
+     givenHaste = false;               
+                }
+            case PROGRESS -> {
+                
                 if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
                     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
                 float bProgress = modeProperty.value() == Mode.PROGRESS ? breakProgressProperty.value() : 0;
                 if (Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() >= bProgress) {
                     Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);
                 }
+                
                 givenHaste = false;
             }
             case HASTE -> {
@@ -104,7 +111,7 @@ public class SpeedMine extends Feature {
 
     @EventPointer
     private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
-        if (modeProperty.value() != Mode.INSTANT)
+        if (modeProperty.value() != Mode.PACKET)
             return;
         if (Wrapper.INSTANCE.getLocalPlayer().isCreative())
             return;
@@ -129,6 +136,6 @@ NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacke
     }
 
     public enum Mode {
-        PROGRESS, INSTANT, HASTE
+        PROGRESS, PACKET, HASTE
     }
 }
