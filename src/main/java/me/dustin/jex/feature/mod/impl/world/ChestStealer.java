@@ -65,7 +65,6 @@ public class ChestStealer extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        Wrapper.INSTANCE.getMinecraft().currentScreen = screen;
         if (!stopWatch.hasPassed(delayProperty.value()))
             return;
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen)
@@ -81,7 +80,7 @@ public class ChestStealer extends Feature {
             if (InventoryHelper.INSTANCE.isInventoryFull() && !dumpProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
                 return;
-                
+        }
             if (InventoryHelper.INSTANCE.isContainerEmpty(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler)) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
             } else {
