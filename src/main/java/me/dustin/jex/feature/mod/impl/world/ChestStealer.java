@@ -65,7 +65,7 @@ public class ChestStealer extends Feature {
         if (!stopWatch.hasPassed(delayProperty.value()))
             return;
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen)
-            return chestProperty.value()
+            return chestProperty.value();
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen)
             return shulkerProperty.value();
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HopperScreen)
