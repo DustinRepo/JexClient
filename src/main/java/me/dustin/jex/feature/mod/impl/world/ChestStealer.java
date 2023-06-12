@@ -52,10 +52,9 @@ public class ChestStealer extends Feature {
             .name("BrewingStand")
             .value(false)
             .build();
-    
 
     private final StopWatch stopWatch = new StopWatch();
-    Wrapper.INSTANCE.getMinecraft().currentScreen = scr;
+    
     public ChestStealer() {
         super(Category.WORLD);
     }
