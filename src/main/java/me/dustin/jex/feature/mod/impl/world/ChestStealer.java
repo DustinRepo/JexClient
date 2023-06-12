@@ -28,7 +28,10 @@ public class ChestStealer extends Feature {
             .build();
     public final Property<Boolean> dumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Dump")
-            .description("Throw the items on the ground.")
+            .value(false)
+            .build();
+    public final Property<Boolean> shulkerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Shulker")
             .value(false)
             .build();
 
@@ -42,7 +45,7 @@ public class ChestStealer extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (!stopWatch.hasPassed(delayProperty.value()))
             return;
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen && shulkerProperty.value()) {
             if (InventoryHelper.INSTANCE.isInventoryFull() && !dumpProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
                 return;
