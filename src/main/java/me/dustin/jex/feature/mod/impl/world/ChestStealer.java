@@ -9,7 +9,7 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
@@ -28,6 +28,31 @@ public class ChestStealer extends Feature {
             .name("Dump")
             .value(false)
             .build();
+     public final Property<Boolean> contProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Containers")
+            .value(false)
+            .build();
+    public final Property<Boolean> chestProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Chest")
+            .value(false)
+            .build();
+    public final Property<Boolean> shulkerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Shulker")
+            .value(false)
+            .build();
+    public final Property<Boolean> hopperProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hopper")
+            .value(false)
+            .build();
+    public final Property<Boolean> horseProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Horse")
+            .value(false)
+            .build();
+    public final Property<Boolean> bsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("BrewingStand")
+            .value(false)
+            .build();
+    
 
     private final StopWatch stopWatch = new StopWatch();
 
@@ -37,13 +62,15 @@ public class ChestStealer extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
+        Wrapper.INSTANCE.getMinecraft().currentScreen = screen;
         if (!stopWatch.hasPassed(delayProperty.value()))
             return;
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof HandledScreen && isValid(screen)) {
             if (InventoryHelper.INSTANCE.isInventoryFull() && !dumpProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
                 return;
-            }
+               }
+        }
             if (InventoryHelper.INSTANCE.isContainerEmpty(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler)) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
             } else {
@@ -61,4 +88,17 @@ public class ChestStealer extends Feature {
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
+    private boolean isValid(Wrapper.INSTANCE.getMinecraft().currentScreen scr) {
+        if (scr instanceof GenericContainerScreen)
+            return chestProperty.value();
+        if (scr instanceof ShulkerBoxScreen)
+            return shulkerProperty.value();    
+        if (scr instanceof HopperScreen)
+            return hopperProperty.value();   
+        if (scr instanceof HorseScreen)
+            return horseProperty.value();
+         if (scr instanceof BrewingStandScreen)
+            return bsProperty.value();
+        return false;
+   }        
 }
