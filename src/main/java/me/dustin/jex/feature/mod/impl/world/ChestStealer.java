@@ -10,6 +10,7 @@ import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
@@ -41,7 +42,7 @@ public class ChestStealer extends Feature {
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (!stopWatch.hasPassed(delayProperty.value()))
             return;
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen) {
             if (InventoryHelper.INSTANCE.isInventoryFull() && !dumpProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
                 return;
