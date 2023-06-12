@@ -88,7 +88,7 @@ public class ChestStealer extends Feature {
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
-    private boolean isValid() {
+    private boolean isValid {
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen)
             return chestProperty.value();
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen)
@@ -99,6 +99,5 @@ public class ChestStealer extends Feature {
             return horseProperty.value();
         if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof BrewingStandScreen)
             return bsProperty.value();
-        return false;
    }        
 }
