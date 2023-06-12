@@ -7,6 +7,7 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.math.vector.RotationVector;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.KeyboardHelper;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
@@ -16,11 +17,12 @@ import net.minecraft.util.Hand;
 
 public class XPBottleSpammer extends Feature {
 
-    public final Property<Integer> speedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Speed")
+    public final Property<Integer> delayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Delay")
             .value(1)
-            .min(1)
-            .max(5)
+            .min(0)
+            .max(1000)
+            .inc(10)
             .build();
     public final Property<Integer> throwKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Throw Key")
@@ -52,8 +54,9 @@ public class XPBottleSpammer extends Feature {
             if (xpBottleHotbar == -1)
                 return;
             InventoryHelper.INSTANCE.setSlot(xpBottleHotbar, false, true);
-            for (int i = 0; i < speedProperty.value(); i++)
+           if (stopWatch.hasPassed(delayProperty.value())) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
+           }
             InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
         }
     });
