@@ -84,7 +84,7 @@ public class SpeedMine extends Feature {
    float bProgress = modeProperty.value() == Mode.PROGRESS ? breakProgressProperty.value() : 0;
    if (Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() >= bProgress) {
    Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);                 
-              
+   }
                 }
             case PROGRESS -> {
                 
