@@ -87,7 +87,7 @@ public class ChestStealer extends Feature {
             }
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
-private class boolean isValid() {
+private boolean isValid() {
 if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen)
 return chestProperty.value();
 if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen)
