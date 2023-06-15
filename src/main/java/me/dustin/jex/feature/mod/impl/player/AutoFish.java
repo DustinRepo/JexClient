@@ -39,9 +39,9 @@ public class AutoFish extends Feature {
             .name("Swing")
             .value(true)
             .build();
-    public final Property<Long> bpdProperty = new Property.PropertyBuilder<Long>(this.getClass())
+    public final Property<Float> bpdProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Bobber position difference")
-            .value(750L)
+            .value(0.11)
             .min(0.01)
             .max(1)
             .inc(0.01)
