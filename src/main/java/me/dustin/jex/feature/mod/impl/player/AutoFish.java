@@ -39,6 +39,13 @@ public class AutoFish extends Feature {
             .name("Swing")
             .value(true)
             .build();
+    public final Property<Long> bpdProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Bobber position difference")
+            .value(750L)
+            .min(0.01)
+            .max(1)
+            .inc(0.01)
+            .build();
     public final Property<Boolean> distanceCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Distance Check")
             .value(false)
@@ -64,9 +71,27 @@ public class AutoFish extends Feature {
             .name("Reel on Reconnect")
             .value(true)
             .build();
+    public final Property<Float> rordProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Reel on Reconnect Delay")
+            .description("Delay between re-casting the rod.")
+            .value(750L)
+            .min(0)
+            .max(5000)
+            .inc(50)
+            .parent(reelOnReconnectProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> showIfOpenWaterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Show If OpenWater")
             .value(true)
+            .build();
+    public final Property<Integer> owsrProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("OpenWater Search radius")
+            .description("Delay between re-casting the rod.")
+            .value(2)
+            .min(2)
+            .max(6)
+            .inc(1)
             .build();
 
     private double lastY = -1;
@@ -106,7 +131,7 @@ public class AutoFish extends Feature {
             return;
         }
         if (hasReconnected) {
-            if (stopWatch1.hasPassed(5000)) {
+            if (stopWatch1.hasPassed(rordProperty.value())) {
                 reel();
                 stopWatch1.reset();
                 hasReconnected = false;
@@ -119,7 +144,7 @@ public class AutoFish extends Feature {
             if (lastY == -1)
                 lastY = hook.getY();
             double difference = Math.abs(hook.getY() - lastY);
-            if (difference > 0.11) {
+            if (difference > bpdProperty.value()) {
                 reel();
                 hasReeled = true;
                 stopWatch.reset();
@@ -204,9 +229,9 @@ public class AutoFish extends Feature {
     }
 
     private boolean isOpenOrWaterAround(BlockPos pos) {
-        for (int x = -2; x < 2; x++)
-            for (int y = -2; y < 2; y++)
-                for (int z = -2; z < 2; z++) {
+        for (int x = -owsrProperty.value(); x < owsrProperty.value(); x++)
+          for (int z = -owsrProperty.value(); z < owsrProperty.value(); z++)  
+            for (int y = -owsrProperty.value(); y < owsrProperty.value(); y++) {
                     BlockPos blockPos = pos.add(x, y, z);
                     if (WorldHelper.INSTANCE.getBlock(blockPos) != Blocks.AIR && WorldHelper.INSTANCE.getBlock(blockPos) != Blocks.WATER)
                         return false;
