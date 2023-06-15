@@ -63,7 +63,9 @@ public class AutoFish extends Feature {
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Delay")
             .value(750L)
+            .min(0)
             .max(2000)
+            .inc(20)
             .parent(recastProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
