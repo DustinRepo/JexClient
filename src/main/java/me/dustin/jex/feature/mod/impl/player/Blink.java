@@ -71,7 +71,7 @@ public class Blink extends Feature {
 
 	@Override
 	public void onEnable() {
-		stopCatching = true;
+		stopCatching = false;
 		if (Wrapper.INSTANCE.getLocalPlayer() != null) {
 			playerEntity = new FakePlayerEntity(Wrapper.INSTANCE.getWorld(), new GameProfile(UUID.randomUUID(), Wrapper.INSTANCE.getMinecraft().getSession().getUsername()));
 			playerEntity.copyFrom(Wrapper.INSTANCE.getLocalPlayer());
@@ -83,7 +83,7 @@ public class Blink extends Feature {
 
 	@Override
 	public void onDisable() {
-		stopCatching = false;
+		stopCatching = true;
 		if (!bufferPacketsProperty.value() || packets.isEmpty())
 			super.onDisable();
 		if (!bufferPacketsProperty.value())
