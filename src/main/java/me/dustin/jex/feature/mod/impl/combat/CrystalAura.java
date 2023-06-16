@@ -260,7 +260,7 @@ public class CrystalAura extends Feature {
 
 	public boolean isTarget(LivingEntity livingEntity, EndCrystalEntity enderCrystalEntity) {
 		if (livingEntity instanceof PlayerEntity && livingEntity != Wrapper.INSTANCE.getLocalPlayer()) {
-			return !FriendHelper.INSTANCE.isFriend(livingEntity.getName().getString()) && livingEntity.distanceTo(enderCrystalEntity) <= 6 && livingEntity.getHealth() > 0;
+			return !FriendHelper.INSTANCE.isFriend(livingEntity.getName().getString()) && livingEntity.distanceTo(enderCrystalEntity) <= edtcProperty.value() && livingEntity.getHealth() > 0;
 		}
 		return false;
 	}
