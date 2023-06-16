@@ -49,18 +49,6 @@ public class Aimbot extends Feature {
             .max(300)
             .inc(1)
             .build();
-    public final Property<Boolean> baritoneOverrideProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Baritone Override")
-            .description("Allow Aimbot to override Baritone if currently pathing.")
-            .value(true)
-            .build();
-    public final Property<Boolean> followUntilDeadProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Follow until dead")
-            .description("Follow your target until they die.")
-            .value(true)
-            .parent(baritoneOverrideProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
     public final Property<Float> bMinDistProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Min Distance")
             .value(3f)
@@ -191,7 +179,7 @@ public class Aimbot extends Feature {
             .depends(parent-> (boolean) parent.value())
             .build();
 			
-			 private final StopWatch stopWatch = new StopWatch();
+private final StopWatch stopWatch = new StopWatch();
     private TargetMode lastMode;
 
     private boolean hasTarget = false;
