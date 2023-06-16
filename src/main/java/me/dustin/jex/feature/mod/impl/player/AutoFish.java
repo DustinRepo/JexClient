@@ -41,10 +41,10 @@ public class AutoFish extends Feature {
             .build();
     public final Property<Float> bpdProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Bobber position difference")
-            .value(0.11)
-            .min(0.01)
-            .max(1)
-            .inc(0.01)
+            .value(0.11f)
+            .min(0.01f)
+            .max(1f)
+            .inc(0.01f)
             .build();
     public final Property<Boolean> distanceCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Distance Check")
@@ -73,10 +73,10 @@ public class AutoFish extends Feature {
             .name("Reel on Reconnect")
             .value(true)
             .build();
-    public final Property<Float> rordProperty = new Property.PropertyBuilder<Float>(this.getClass())
+    public final Property<Integer> rordProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Reel on Reconnect Delay")
             .description("Delay between re-casting the rod.")
-            .value(750L)
+            .value(5000)
             .min(0)
             .max(5000)
             .inc(50)
