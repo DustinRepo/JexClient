@@ -255,7 +255,7 @@ public class Aimbot extends Feature {
         if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
             return false;
         boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
-        if (!canSee && !ignoreWallsProperty.value())
+        if (!canSee)
             return false;
         //TODO: fix this with 180/-180 having some issues
         /*if (PlayerHelper.INSTANCE.getDistanceFromMouse(entity) * 2 > Aimbot.INSTANCE.fov) {
