@@ -33,7 +33,7 @@ public class SingleAimbot extends FeatureExtension {
     public void pass(Event event1) {
         if (Feature.get(AutoPot.class).throwing)
             return;
-        if (AutoEat.isEating || BaritoneHelper.INSTANCE.isTakingControl())
+        if (AutoEat.isEating)
             return;
         if (event1 instanceof EventPlayerPackets event) {
             if (event.getMode() == EventPlayerPackets.Mode.PRE) {
