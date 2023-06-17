@@ -49,14 +49,6 @@ public class Aimbot extends Feature {
             .max(300)
             .inc(1)
             .build();
-    public final Property<Float> bMinDistProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("Min Distance")
-            .value(3f)
-            .max(7)
-            .inc(0.1f)
-            .parent(baritoneOverrideProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
     public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
