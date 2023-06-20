@@ -61,7 +61,7 @@ public class AntiLiquid extends Feature {
             .name("Distance")
             .value(3)
             .min(1)
-            .max(5)
+            .max(6)
             .build();
     public final Property<Boolean> illegalPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Allow Illegal Place")
