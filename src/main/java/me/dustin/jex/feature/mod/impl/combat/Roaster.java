@@ -60,6 +60,10 @@ public class Roaster extends Feature {
             .name("Passive")
             .value(true)
             .build();
+    public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Item")
+            .value(false)
+            .build();
     public final Property<Boolean> onFireProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("On Fire")
             .value(false)
@@ -138,6 +142,8 @@ public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Bool
             return false;
         if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > distanceProperty.value())
             return false;
+	if (entity instanceof ItemEntity)
+            return itemProperty.value();
         if (entity instanceof PlayerEntity) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendProperty.value();
