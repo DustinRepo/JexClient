@@ -96,6 +96,15 @@ public class Aimbot extends Feature {
             .description("Whether or not to rotate your head on the server.")
             .value(true)
             .build();
+	public final Property<Integer> rotdelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Rotate Delay")
+            .value(0)
+            .min(0)
+            .max(1000)
+            .inc(10)
+            .parent(rotateProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Lockview")
             .description("Sets the rotations client-side.")
