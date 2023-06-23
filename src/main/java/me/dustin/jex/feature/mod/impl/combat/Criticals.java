@@ -20,7 +20,7 @@ public class Criticals extends Feature {
             .description("Only use Criticals on living entities.")
             .value(true)
             .build();
-    public final Property<Integer> sdelayProperty = new Property.PropertyBuilder<Float>(this.getClass())
+    public final Property<Integer> sdelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Sleep Time Delay (ms)")
             .value(0)
             .min(0)
