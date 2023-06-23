@@ -25,12 +25,12 @@ public class Criticals extends Feature {
             .description("Only use Criticals on living entities.")
             .value(true)
             .build();
-    public final Property<Integer> sdelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+    public final Property<Integer> delayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Time Delay (ms)")
             .value(0)
             .min(0)
-            .max(1000)
-            .inc(10)
+            .max(5000)
+            .inc(50)
             .build();
     public final Property<Boolean> extraParticlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Extra Particles")
@@ -67,32 +67,14 @@ public class Criticals extends Feature {
     });
 
     public void crit() {
-switch (modeProperty.value()) {
-    case WAITTIME -> {
-if (stopWatch.hasPassed(sdelayProperty.value())) {
+if (stopWatch.hasPassed(delayProperty.value())) {
         if (Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.05F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.012511F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false)); 
-        }    
+        }
          stopWatch.reset();
-    }   
     }
-    case WORKTIME -> {
-if (!stopWatch.hasPassed(sdelayProperty.value())) {
-        if (Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
-            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.05F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.012511F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false)); 
-        }    
-         stopWatch.reset();
-           }    
-        }    
-       }    
-   }
-    public enum Mode {
-    WORKTIME, WAITTIME
-    }
+       }
 }
