@@ -15,11 +15,6 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 public class Criticals extends Feature {
     
-    public Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
-            .name("Mode")
-            .value(Mode.WORKTIME)
-            .build();
-
     public final Property<Boolean> livingOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Living Only")
             .description("Only use Criticals on living entities.")
