@@ -20,12 +20,19 @@ public class Criticals extends Feature {
             .description("Only use Criticals on living entities.")
             .value(true)
             .build();
-    public final Property<Float> delayProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("Time Delay (S)")
-            .value(0f)
-            .min(0f)
-            .max(10f)
-            .inc(0.1f)
+    public final Property<Integer> sdelayProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Sleep Time Delay (ms)")
+            .value(0)
+            .min(0)
+            .max(1000)
+            .inc(10)
+            .build();
+    public final Property<Integer> wdelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Work Time Delay (ms)")
+            .value(0)
+            .min(0)
+            .max(1000)
+            .inc(10)
             .build();
     public final Property<Boolean> extraParticlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Extra Particles")
@@ -45,7 +52,8 @@ public class Criticals extends Feature {
         super(Category.COMBAT);
     }
     
-    private final StopWatch stopWatch = new StopWatch();
+    private final StopWatch sstopWatch = new StopWatch();
+    private final StopWatch wstopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
@@ -62,13 +70,16 @@ public class Criticals extends Feature {
     });
 
     public void crit() {
-        if (stopWatch.hasPassed((long) (delayProperty.value() * 1000L)))
+        if (sstopWatch.hasPassed(sdelayProperty.value())) {
+        if (!wstopWatch.hasPassed(wdelayProperty.value()) {
         if (Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.05F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.012511F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
-            stopWatch.reset();
+            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false)); 
         }
+         wstopWatch.reset();    
+        }
+         sstopWatch.reset();
     }
 }
