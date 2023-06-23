@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -138,6 +139,8 @@ public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Bool
     });
 
     private boolean isValid(Entity entity) {
+	if (entity instanceof LivingEntity)
+	    return true;
         if (entity instanceof ClientPlayerEntity)
             return false;
         if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > distanceProperty.value())
@@ -148,7 +151,9 @@ public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Bool
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendProperty.value();
             return playerProperty.value();
-           }   
+           }
+	if (EntityHelper.INSTANCE.isBossMob(entity))
+            return bossProperty.value();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostileProperty.value();
         if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
