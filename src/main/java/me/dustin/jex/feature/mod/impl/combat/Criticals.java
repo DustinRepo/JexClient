@@ -14,6 +14,11 @@ import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 
 public class Criticals extends Feature {
+    
+    public Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.WORKTIMER)
+            .build();
 
     public final Property<Boolean> livingOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Living Only")
@@ -21,14 +26,7 @@ public class Criticals extends Feature {
             .value(true)
             .build();
     public final Property<Integer> sdelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Sleep Time Delay (ms)")
-            .value(0)
-            .min(0)
-            .max(1000)
-            .inc(10)
-            .build();
-    public final Property<Integer> wdelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Work Time Delay (ms)")
+            .name("Time Delay (ms)")
             .value(0)
             .min(0)
             .max(1000)
@@ -52,8 +50,7 @@ public class Criticals extends Feature {
         super(Category.COMBAT);
     }
     
-    private final StopWatch sstopWatch = new StopWatch();
-    private final StopWatch wstopWatch = new StopWatch();
+    private final StopWatch stopWatch = new StopWatch();
 
     @EventPointer
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
@@ -70,17 +67,32 @@ public class Criticals extends Feature {
     });
 
     public void crit() {
-        if (sstopWatch.hasPassed(sdelayProperty.value())) {
-        if (!wstopWatch.hasPassed(wdelayProperty.value())) {
+switch (modeProperty.value()) {
+    case WAITTIME -> {
+if (stopWatch.hasPassed(sdelayProperty.value())) {
         if (Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.05F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.012511F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false)); 
-        }
-         wstopWatch.reset();    
-        }
-         sstopWatch.reset();
+        }    
+         stopWatch.reset();
+    }   
     }
-}
+    case WORKTIME -> {
+if (!stopWatch.hasPassed(sdelayProperty.value())) {
+        if (Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
+            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.05F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
+            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
+            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.012511F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
+            Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false)); 
+        }    
+         stopWatch.reset();
+           }    
+        }    
+       }    
+   }
+    public enum Mode {
+    WORKTIME, WAITTIME
+    }
 }
