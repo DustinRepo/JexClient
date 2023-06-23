@@ -17,7 +17,7 @@ public class Criticals extends Feature {
     
     public Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
             .name("Mode")
-            .value(Mode.WORKTIMER)
+            .value(Mode.WORKTIME)
             .build();
 
     public final Property<Boolean> livingOnlyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
