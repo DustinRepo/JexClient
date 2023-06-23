@@ -91,10 +91,12 @@ public class Aimbot extends Feature {
             .parent(specificFilterProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Rotate")
-            .description("Whether or not to rotate your head on the server.")
-            .value(true)
+    public final Property<Integer> rotdelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Rotate Delay")
+            .value(0)
+            .min(0)
+            .max(1000)
+            .inc(10)
             .build();
     public final Property<Boolean> randomizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Randomize")
