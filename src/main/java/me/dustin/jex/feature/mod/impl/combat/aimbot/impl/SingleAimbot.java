@@ -59,7 +59,8 @@ public class SingleAimbot extends FeatureExtension {
                         if (Aimbot.INSTANCE.lockviewProperty.value()) {
                             PlayerHelper.INSTANCE.setRotation(event.getRotation());
                         }
-		      }    
+		      }
+		     stopWatch.reset();
                     }
                 }
             }
