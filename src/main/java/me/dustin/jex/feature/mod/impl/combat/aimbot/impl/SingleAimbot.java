@@ -46,9 +46,7 @@ public class SingleAimbot extends FeatureExtension {
                 Aimbot.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
 		if (stopWatch.hasPassed(Aimbot.INSTANCE.rotdelProperty.value())) {
-                    if (Aimbot.INSTANCE.rotateProperty.value()) {
-                        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToEntity(target);
-			    
+                        RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToEntity(target);   
                         if (Aimbot.INSTANCE.randomizeProperty.value()) {
                             rotationVector = PlayerHelper.INSTANCE.randomRotateTo(target, Aimbot.INSTANCE.randomWidthProperty.value(), Aimbot.INSTANCE.randomHeightProperty.value());
                         }
@@ -56,10 +54,7 @@ public class SingleAimbot extends FeatureExtension {
                         event.setRotation(rotationVector);
                         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
                         Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
-                        if (Aimbot.INSTANCE.lockviewProperty.value()) {
-                            PlayerHelper.INSTANCE.setRotation(event.getRotation());
-                        }
-		      }
+                        PlayerHelper.INSTANCE.setRotation(event.getRotation());
 		     stopWatch.reset();
                     }
                 }
