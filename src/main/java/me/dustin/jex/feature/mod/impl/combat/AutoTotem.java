@@ -13,11 +13,18 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.item.Items;
+import me.dustin.jex.helper.misc.StopWatch;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import me.dustin.events.core.annotate.EventPointer;
 
 public class AutoTotem extends Feature {
 
+     public final Property<Integer> delayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Delay")
+            .value(0)
+            .max(1000)
+            .inc(10)
+            .build();
     public final Property<ActivateTime> activateWhenProperty = new Property.PropertyBuilder<ActivateTime>(this.getClass())
             .name("When")
             .value(ActivateTime.ALWAYS)
@@ -32,7 +39,7 @@ public class AutoTotem extends Feature {
             .name("Health")
             .value(10)
             .min(1)
-            .max(19)
+            .max(20)
             .parent(activateWhenProperty)
             .depends(parent -> parent.value() == ActivateTime.LOW_HEALTH)
             .build();
@@ -42,6 +49,7 @@ public class AutoTotem extends Feature {
             .build();
 
     private int swappedSlot;
+    private final StopWatch stopWatch = new StopWatch();
 
     public AutoTotem() {
         super(Category.COMBAT);
@@ -81,13 +89,14 @@ public class AutoTotem extends Feature {
     }
 
     public void moveTotem(int slot) {
-        if (openInventoryProperty.value())
-            Wrapper.INSTANCE.getMinecraft().setScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));
+        if (stopWatch.hasPassed(delayProperty.value())) {
         InventoryHelper.INSTANCE.moveToOffhand(slot);
         if (openInventoryProperty.value()) {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));    
             NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.syncId));
             Wrapper.INSTANCE.getMinecraft().setScreen(null);
         }
+      }
     }
 
     public enum ActivateTime {
