@@ -42,6 +42,12 @@ public class AnchorAura extends Feature {
             .name("Explode")
             .value(AttackMode.ANY)
             .build();
+    public final Property<Integer> explodeDistanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Explode Distance")
+            .value(5)
+            .min(2)
+            .max(6)
+            .build();
     public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Attack Delay (ms)")
             .value(200L)
@@ -103,12 +109,6 @@ public class AnchorAura extends Feature {
 	    .inc(10)
             .parent(autoPlaceProperty)
             .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Integer> explodeDistanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Explode Distance")
-            .value(5)
-            .min(2)
-            .max(6)
             .build();
 	public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Swing")
