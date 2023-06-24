@@ -43,7 +43,7 @@ public class AnchorAura extends Feature {
             .value(AttackMode.ANY)
             .build();
     public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
-            .name("Attack Delay (MS)")
+            .name("Attack Delay (ms)")
             .value(200L)
             .min(0)
             .max(1000)
@@ -77,19 +77,21 @@ public class AnchorAura extends Feature {
             .parent(visualizeProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
-    public final Property<Long> placeDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
-            .name("Place Delay")
-            .value(200L)
-            .max(2000)
-            .parent(autoPlaceProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
     public final Property<Float> placeDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Place Distance")
             .value(3.5f)
             .min(1)
             .max(6)
             .inc(0.1f)
+            .parent(autoPlaceProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Long> placeDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Place Delay")
+            .value(200L)
+	    .min(0)
+            .max(1000)
+	    .inc(10)
             .parent(autoPlaceProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
