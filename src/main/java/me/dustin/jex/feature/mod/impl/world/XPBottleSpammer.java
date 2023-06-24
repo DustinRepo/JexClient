@@ -24,6 +24,12 @@ public class XPBottleSpammer extends Feature {
             .max(1000)
             .inc(10)
             .build();
+    public final Property<Integer> speedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Speed")
+            .value(1)
+            .min(1)
+            .max(5)
+            .build();
     public final Property<Integer> throwKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Throw Key")
             .value(KeyboardHelper.INSTANCE.MIDDLE_CLICK)
@@ -57,6 +63,7 @@ public class XPBottleSpammer extends Feature {
                 return;
             InventoryHelper.INSTANCE.setSlot(xpBottleHotbar, false, true);
            if (stopWatch.hasPassed(delayProperty.value())) {
+                for (int i = 0; i < speedProperty.value(); i++)
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
            }
             InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
