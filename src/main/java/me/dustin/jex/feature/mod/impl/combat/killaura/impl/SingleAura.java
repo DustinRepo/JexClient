@@ -16,6 +16,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import me.dustin.jex.helper.misc.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Hand;
@@ -28,6 +29,7 @@ public class SingleAura extends FeatureExtension {
 
     private Entity target;
     private LivingEntity livingtarget;
+    private final StopWatch stopWatch = new StopWatch();
 
     public SingleAura() {
         super(KillAura.TargetMode.SINGLE, KillAura.class);
@@ -49,6 +51,7 @@ public class SingleAura extends FeatureExtension {
                 }
                 KillAura.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
+                    if (stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
                     if (KillAura.INSTANCE.rotateProperty.value()) {
                         RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToEntity(target);
                         if (KillAura.INSTANCE.randomizeProperty.value()) {
@@ -61,6 +64,7 @@ public class SingleAura extends FeatureExtension {
                             PlayerHelper.INSTANCE.setRotation(event.getRotation());
                         }
                     }
+                  }  
                 }
                 if ((EntityHelper.INSTANCE.isAuraBlocking()) && PlayerHelper.INSTANCE.isMoving())
                     PlayerHelper.INSTANCE.unblock();
