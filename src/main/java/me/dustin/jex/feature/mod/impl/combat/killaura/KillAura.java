@@ -239,6 +239,8 @@ public class KillAura extends Feature {
             .min(0)
             .max(1000)
             .inc(10)
+	    .parent(rotateProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Lockview")
