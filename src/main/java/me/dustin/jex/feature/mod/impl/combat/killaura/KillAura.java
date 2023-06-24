@@ -59,7 +59,7 @@ public class KillAura extends Feature {
             .name("Old Combat")
             .value(false)
             .build();
-    public final Property<Integer> apsProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+    public final Property<Integer> delayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Delay")
             .value(10)
             .min(0)
@@ -338,7 +338,7 @@ public class KillAura extends Feature {
 
     public boolean canSwing() {
         if (ignoreNewCombatProperty.value()) {
-            if (stopWatch.hasPassed(apsProperty.value())) {
+            if (stopWatch.hasPassed(delayProperty.value())) {
                 stopWatch.reset();
                 return true;
             }
