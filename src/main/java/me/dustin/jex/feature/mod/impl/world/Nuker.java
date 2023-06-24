@@ -56,9 +56,8 @@ public class Nuker extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!stopWatch.hasPassed(delayProperty.value()))
-            return;
         ArrayList<BlockPos> positions = getPositions();
+	 if (stopWatch.hasPassed(delayProperty.value())) {
         positions.forEach(blockPos -> {
             new EventClickBlock(blockPos, Direction.UP, EventClickBlock.Mode.PRE).run();
             NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.UP));
@@ -67,7 +66,8 @@ public class Nuker extends Feature {
             Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
 	      }
             stopWatch.reset();
-        });
+           });
+        }   
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 
     public ArrayList<BlockPos> getPositions() {
