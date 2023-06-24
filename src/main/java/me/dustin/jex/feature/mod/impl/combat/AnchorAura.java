@@ -204,15 +204,15 @@ public class AnchorAura extends Feature {
             for (int y = explodeDistanceProperty.value(); y < explodeDistanceProperty.value(); y++) {
                 for (int z = -explodeDistanceProperty.value(); z < explodeDistanceProperty.value(); z++) {
                     BlockPos pos = new BlockPos(entityPlayer.getX() + x, (int) entityPlayer.getY() - y, entityPlayer.getZ() + z);
-                    RespawnAnchorBlock fakeAnchor = new RespawnAnchorBlock(Wrapper.INSTANCE.getWorld(), pos.getX(), pos.getY(), pos.getZ());
-                    if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable() && entityPlayer.canSee(fakeAnchor) && Wrapper.INSTANCE.getLocalPlayer().canSee(fakeAnchor)) {
+                    EndCrystalEntity fakeCrystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+                    if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable() && entityPlayer.canSee(fakeCrystal) && Wrapper.INSTANCE.getLocalPlayer().canSee(fakeCrystal)) {
                         BlockPos below = pos.down();
                         if (!Wrapper.INSTANCE.getWorld().getBlockState(below).getMaterial().isReplaceable()) {
                             if (!isBlocking(pos, entityPlayer)) {
                                 if (onlyShowPlacementsProperty.value() && !shouldExplode(pos))
                                     continue;
-                                double playerdist = entityPlayer.distanceTo(fakeAnchor);
-                                double distToMe = Wrapper.INSTANCE.getLocalPlayer().distanceTo(fakeAnchor);
+                                double playerdist = entityPlayer.distanceTo(fakeCrystal);
+                                double distToMe = Wrapper.INSTANCE.getLocalPlayer().distanceTo(fakeCrystal);
                                 if (playerdist < edtaProperty.value() && distToMe < placeDistanceProperty.value()) {
                                     closest = pos;
                                     distance = playerdist;
