@@ -24,8 +24,8 @@ public class Criticals extends Feature {
             .name("Time Delay (ms)")
             .value(0)
             .min(0)
-            .max(5000)
-            .inc(50)
+            .max(2000)
+            .inc(20)
             .build();
     public final Property<Boolean> extraParticlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Extra Particles")
