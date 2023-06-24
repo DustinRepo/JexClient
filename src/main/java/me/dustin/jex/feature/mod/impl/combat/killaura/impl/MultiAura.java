@@ -19,6 +19,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import me.dustin.jex.helper.misc.StopWatch;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
@@ -30,6 +31,7 @@ public class MultiAura extends FeatureExtension {
 
     private final ArrayList<Entity> targets = new ArrayList<>();
     private final ArrayList<LivingEntity> ltargets = new ArrayList<>();
+    private final StopWatch stopWatch = new StopWatch();
 
     public MultiAura() {
         super(KillAura.TargetMode.MULTI, KillAura.class);
@@ -56,10 +58,12 @@ public class MultiAura extends FeatureExtension {
                         if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
                             BaritoneHelper.INSTANCE.followUntilDead(ltargets.get(0), KillAura.INSTANCE);
                     }
+                    if (stopWatch.hasPassed(Aimbot.INSTANCE.rotdelProperty.value())) {
                     if (KillAura.INSTANCE.rotateProperty.value()) {
                         RotationVector rotationVector = new RotationVector(PlayerHelper.INSTANCE.getYaw(), 90);
                         event.setRotation(rotationVector);
                     }
+                 }
                 } else {
                     if (BaritoneHelper.INSTANCE.baritoneExists())
                         if (KillAura.INSTANCE.baritoneOverrideProperty.value() && BaritoneHelper.INSTANCE.isBaritoneRunning())
