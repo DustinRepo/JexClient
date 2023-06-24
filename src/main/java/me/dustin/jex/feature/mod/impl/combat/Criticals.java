@@ -27,18 +27,12 @@ public class Criticals extends Feature {
             .max(2000)
             .inc(20)
             .build();
-    public final Property<Boolean> extraParticlesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Extra Particles")
-            .value(true)
-            .build();
     public final Property<Integer> amountProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Amount")
+            .name("Packet Amount")
             .value(5)
             .min(1)
             .max(20)
             .inc(1)
-            .parent(extraParticlesProperty)
-            .depends(parent -> (boolean) parent.value())
             .build();
 
     public Criticals() {
@@ -51,18 +45,14 @@ public class Criticals extends Feature {
     private final EventListener<EventAttackEntity> eventAttackEntityEventListener = new EventListener<>(event -> {
         if (livingOnlyProperty.value() && !(event.getEntity() instanceof LivingEntity))
             return;
-        if (extraParticlesProperty.value()) {
-            for (int i = 0; i < amountProperty.value(); i++) {
-                Wrapper.INSTANCE.getLocalPlayer().addCritParticles(event.getEntity());
-            }
-        }
-        if (Wrapper.INSTANCE.getLocalPlayer().isSprinting()) //mc recently (1.15?) made it so you can't crit while sprinting
+        if (Wrapper.INSTANCE.getLocalPlayer().isSprinting())
             NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.STOP_SPRINTING));
         crit();
     });
 
     public void crit() {
 if (stopWatch.hasPassed(delayProperty.value())) {
+    for (int i = 0; i < amountProperty.value(); i++) {
         if (Wrapper.INSTANCE.getLocalPlayer().isOnGround()) {
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY() + 0.05F, Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false));
@@ -70,6 +60,7 @@ if (stopWatch.hasPassed(delayProperty.value())) {
             Wrapper.INSTANCE.getLocalPlayer().networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(Wrapper.INSTANCE.getLocalPlayer().getX(), Wrapper.INSTANCE.getLocalPlayer().getY(), Wrapper.INSTANCE.getLocalPlayer().getZ(), false)); 
         }
          stopWatch.reset();
+    }
     }
        }
 }
