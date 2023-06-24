@@ -28,7 +28,7 @@ public class StrafeSpeed extends FeatureExtension {
                 eventMove.setX(eventMove.getX() * speed.multipleProperty.value() * kmh);
                 eventMove.setZ(eventMove.getZ() * speed.multipleProperty.value() * kmh);
             } else
-                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, kmh);
+                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, kmh * speed.multipleProperty.value());
         } else if (event instanceof EventPlayerPackets eventPlayerPackets) {
             Speed speed = Feature.get(Speed.class);
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {
