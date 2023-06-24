@@ -38,7 +38,7 @@ public class Aimbot extends Feature {
     public final Property<Float> reachProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Reach")
             .value(3.8f)
-            .min(2f)
+            .min(3f)
             .max(6f)
             .inc(0.1f)
             .build();
