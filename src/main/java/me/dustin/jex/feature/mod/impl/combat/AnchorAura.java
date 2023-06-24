@@ -198,7 +198,7 @@ public class AnchorAura extends Feature {
     });
 
     public BlockPos getOpenBlockPos(PlayerEntity entityPlayer) {
-        double distance = null;
+        double distance;
         BlockPos closest = null;
         for (int x = -explodeDistanceProperty.value(); x < explodeDistanceProperty.value(); x++) {
             for (int y = explodeDistanceProperty.value(); y < explodeDistanceProperty.value(); y++) {
