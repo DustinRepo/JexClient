@@ -233,6 +233,13 @@ public class KillAura extends Feature {
             .name("Rotate")
             .value(true)
             .build();
+    public final Property<Integer> rotdelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Rotate Delay")
+            .value(0)
+            .min(0)
+            .max(1000)
+            .inc(10)
+            .build();
     public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Lockview")
             .value(false)
