@@ -58,7 +58,7 @@ public class MultiAura extends FeatureExtension {
                         if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
                             BaritoneHelper.INSTANCE.followUntilDead(ltargets.get(0), KillAura.INSTANCE);
                     }
-                    if (stopWatch.hasPassed(Aimbot.INSTANCE.rotdelProperty.value())) {
+                    if (stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
                     if (KillAura.INSTANCE.rotateProperty.value()) {
                         RotationVector rotationVector = new RotationVector(PlayerHelper.INSTANCE.getYaw(), 90);
                         event.setRotation(rotationVector);
