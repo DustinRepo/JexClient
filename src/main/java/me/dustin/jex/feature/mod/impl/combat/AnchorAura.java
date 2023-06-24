@@ -227,7 +227,7 @@ public class AnchorAura extends Feature {
     }
 
     private BlockPos getChargedAnchor(PlayerEntity entityPlayer) {
-        double distance = null;
+        double distance;
         BlockPos closest = null;
         for (int x = -explodeDistanceProperty.value(); x < explodeDistanceProperty.value(); x++) {
             for (int y = -explodeDistanceProperty.value(); y < explodeDistanceProperty.value(); y++) {
@@ -251,7 +251,7 @@ public class AnchorAura extends Feature {
     }
 
     private BlockPos getAnchor(PlayerEntity entityPlayer) {
-        double distance = null;
+        double distance;
         BlockPos closest = null;
         for (int x = -explodeDistanceProperty.value(); x < explodeDistanceProperty.value(); x++) {
             for (int y = -explodeDistanceProperty.value(); y < explodeDistanceProperty.value(); y++) {
