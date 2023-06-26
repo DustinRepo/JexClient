@@ -51,8 +51,7 @@ public class SingleAura extends FeatureExtension {
                 }
                 KillAura.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
-                    if (KillAura.INSTANCE.rotateProperty.value()) {
-                    if (stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
+                    if (KillAura.INSTANCE.rotateProperty.value() && stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
                         RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToEntity(target);
                         if (KillAura.INSTANCE.randomizeProperty.value()) {
                             rotationVector = PlayerHelper.INSTANCE.randomRotateTo(target, KillAura.INSTANCE.randomWidthProperty.value(), KillAura.INSTANCE.randomHeightProperty.value());
@@ -63,7 +62,6 @@ public class SingleAura extends FeatureExtension {
                         if (KillAura.INSTANCE.lockviewProperty.value()) {
                             PlayerHelper.INSTANCE.setRotation(event.getRotation());
                         }
-                    }
                   }  
                 }
                 if ((EntityHelper.INSTANCE.isAuraBlocking()) && PlayerHelper.INSTANCE.isMoving())
