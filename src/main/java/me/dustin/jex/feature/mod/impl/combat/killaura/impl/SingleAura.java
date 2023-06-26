@@ -51,8 +51,8 @@ public class SingleAura extends FeatureExtension {
                 }
                 KillAura.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
-                    if (stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
                     if (KillAura.INSTANCE.rotateProperty.value()) {
+                    if (stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
                         RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToEntity(target);
                         if (KillAura.INSTANCE.randomizeProperty.value()) {
                             rotationVector = PlayerHelper.INSTANCE.randomRotateTo(target, KillAura.INSTANCE.randomWidthProperty.value(), KillAura.INSTANCE.randomHeightProperty.value());
