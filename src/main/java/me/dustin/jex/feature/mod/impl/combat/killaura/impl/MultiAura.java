@@ -61,6 +61,7 @@ public class MultiAura extends FeatureExtension {
                     if (KillAura.INSTANCE.rotateProperty.value() && stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
                         RotationVector rotationVector = new RotationVector(PlayerHelper.INSTANCE.getYaw(), 90);
                         event.setRotation(rotationVector);
+                        stopWatch.reset();
                  }
                 } else {
                     if (BaritoneHelper.INSTANCE.baritoneExists())
