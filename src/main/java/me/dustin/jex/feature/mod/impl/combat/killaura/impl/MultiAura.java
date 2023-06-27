@@ -58,11 +58,9 @@ public class MultiAura extends FeatureExtension {
                         if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
                             BaritoneHelper.INSTANCE.followUntilDead(ltargets.get(0), KillAura.INSTANCE);
                     }
-                    if (KillAura.INSTANCE.rotateProperty.value()) {
-                    if (stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
+                    if (KillAura.INSTANCE.rotateProperty.value() && stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
                         RotationVector rotationVector = new RotationVector(PlayerHelper.INSTANCE.getYaw(), 90);
                         event.setRotation(rotationVector);
-                    }
                  }
                 } else {
                     if (BaritoneHelper.INSTANCE.baritoneExists())
