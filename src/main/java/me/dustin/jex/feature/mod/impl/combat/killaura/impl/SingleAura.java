@@ -62,6 +62,7 @@ public class SingleAura extends FeatureExtension {
                         if (KillAura.INSTANCE.lockviewProperty.value()) {
                             PlayerHelper.INSTANCE.setRotation(event.getRotation());
                         }
+                        stopWatch.reset();
                   }  
                 }
                 if ((EntityHelper.INSTANCE.isAuraBlocking()) && PlayerHelper.INSTANCE.isMoving())
