@@ -26,7 +26,6 @@ public class Hitboxes extends Feature {
             .max(2f)
             .inc(0.02f)
             .build();
-	
      public final Property<Float> expandYProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("ExpandY")
             .value(0.1f)
@@ -34,7 +33,6 @@ public class Hitboxes extends Feature {
             .max(2f)
             .inc(0.02f)
             .build();
-	
      public final Property<Float> expandZProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("ExpandZ")
             .value(0.1f)
@@ -42,7 +40,7 @@ public class Hitboxes extends Feature {
             .max(2f)
             .inc(0.02f)
             .build();
-public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
             .build();
@@ -96,14 +94,14 @@ public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boo
             .parent(specificFilterProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Bot")
             .value(true)
             .build();
     public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Team Check")
             .value(true)
-	        .parent(botCheckProperty)
+	    .parent(botCheckProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -112,7 +110,7 @@ public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<B
             .parent(teamCheckProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("NoLiving")
             .value(false)
             .parent(specificFilterProperty)
