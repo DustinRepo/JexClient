@@ -16,7 +16,11 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 
 public class XPBottleSpammer extends Feature {
-
+    
+public Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
+            .name("Mode")
+            .value(Mode.DELAY)
+            .build();
     public final Property<Integer> delayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Delay")
             .value(1)
@@ -41,32 +45,45 @@ public class XPBottleSpammer extends Feature {
     }
     
  private final StopWatch stopWatch = new StopWatch();
-    
-    @EventPointer
+
+ @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         if (event.getMode() == EventPlayerPackets.Mode.PRE) {
+           int xpBottleHotbar = InventoryHelper.INSTANCE.getFromHotbar(Items.EXPERIENCE_BOTTLE); 
             if (!KeyboardHelper.INSTANCE.isPressed(throwKeyProperty.value()))
                 return;
-            int xpBottleHotbar = InventoryHelper.INSTANCE.getFromHotbar(Items.EXPERIENCE_BOTTLE);
             if (xpBottleHotbar == -1) {
                 int xpBottleInv = InventoryHelper.INSTANCE.getFromInv(Items.EXPERIENCE_BOTTLE);
                 if (xpBottleInv == -1)
                     return;
                 InventoryHelper.INSTANCE.windowClick(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler, xpBottleInv < 9 ? xpBottleInv + 36 : xpBottleInv, SlotActionType.SWAP, 8);
             }
-            event.setRotation(new RotationVector(Wrapper.INSTANCE.getLocalPlayer().getYaw(), 90));
-        } else if (event.getMode() == EventPlayerPackets.Mode.POST) {
+            event.setRotation(new RotationVector(Wrapper.INSTANCE.getLocalPlayer().getYaw(), 90)); 
+        }
+        else if (event.getMode() == EventPlayerPackets.Mode.POST) {
             if (!KeyboardHelper.INSTANCE.isPressed(throwKeyProperty.value()))
                 return;
             int xpBottleHotbar = InventoryHelper.INSTANCE.getFromHotbar(Items.EXPERIENCE_BOTTLE);
             if (xpBottleHotbar == -1)
                 return;
             InventoryHelper.INSTANCE.setSlot(xpBottleHotbar, false, true);
-           if (stopWatch.hasPassed(delayProperty.value())) {
-                for (int i = 0; i < speedProperty.value(); i++)
+            switch (modeProperty.value()) {
+            case DELAY -> {
+                if (stopWatch.hasPassed(delayProperty.value())) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
-           }
+                }
             InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
+            }
+                case CYCLE -> {
+                for (int i = 0; i < speedProperty.value(); i++) {
+                    Wrapper.INSTANCE.getClientPlayerInteractionManager().interactItem(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND);
+                }
+                InventoryHelper.INSTANCE.setSlot(InventoryHelper.INSTANCE.getInventory().selectedSlot, false, true);
+                }   
+            }    
         }
     });
+    public enum Mode {
+        DELAY, CYCLE
+    }
 }
