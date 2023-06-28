@@ -34,6 +34,15 @@ public class SpeedMine extends Feature {
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.PACKET)
             .build();
+    public Property<Integer> paProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Packet Amount")
+            .value(1)
+            .min(1)
+            .max(25)
+            .inc(1)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.PACKET)
+            .build();
     public final Property<Boolean> startpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("StartPacket")
             .value(true)
@@ -111,12 +120,14 @@ public class SpeedMine extends Feature {
         if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
             return;
         if (stopWatch.hasPassed(delayProperty.value())) {
+        for (int i = 0; i < paProperty.value(); i++) {
          if (startpProperty.value()) {    
 NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
          }
              if(stoppProperty.value()) {
 NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
          }
+     }      
 }
         Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);
     }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
