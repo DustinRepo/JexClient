@@ -50,9 +50,9 @@ public class CrystalAura extends Feature {
 	public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
 			.name("Attack Delay")
 			.value(200L)
-		        .min(0)
-			.max(2000)
-		        .inc(20)
+		        .min(0L)
+			.max(1000L)
+		        .inc(10L)
 			.build();
 	public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Rotate to crystal")
@@ -65,9 +65,9 @@ public class CrystalAura extends Feature {
 	public final Property<Long> placeDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
 			.name("Place Delay")
 			.value(0L)
-		        .inc(10L)
 		        .min(0L)
 			.max(1000)
+	                .inc(10L)
 			.parent(autoPlaceProperty)
 			.depends(parent -> (boolean) parent.value())
 			.build();
