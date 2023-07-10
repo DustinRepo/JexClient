@@ -37,6 +37,19 @@ public class AntiHazard extends Feature {
             .name("Powdered Snow")
             .value(true)
             .build();
+    public final Property<Boolean> pressurePlateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Pressure Plate")
+            .value(true)
+            .build();
+    public final Property<Boolean> pressurePlateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Pressure Plate")
+            .value(true)
+            .build();
+    public final Property<Boolean> tripWireProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Tripwire")
+            .value(true)
+            .build();
+
 
     public AntiHazard() {
         super(Category.WORLD);
@@ -62,6 +75,12 @@ public class AntiHazard extends Feature {
            event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
            event.cancel();
        } else if (event.getBlock() == Blocks.POWDER_SNOW && powderedSnowProperty.value()) {
+           event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
+           event.cancel();
+       } else if (event.getBlock() == Blocks.PRESSURE_PLATE && pressurePlateProperty.value()) {
+           event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
+           event.cancel();
+       } else if (event.getBlock() == Blocks.TRIPWIRE && tripWireProperty.value()) {
            event.setVoxelShape(VoxelShapes.cuboid(WorldHelper.SINGLE_BOX));
            event.cancel();
        }
