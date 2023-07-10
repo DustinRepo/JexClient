@@ -32,6 +32,7 @@ public class OpacityXray extends FeatureExtension {
             }
         } else if (event instanceof EventWorldRender eventWorldRender && eventWorldRender.getMode() == EventWorldRender.Mode.PRE) {
             ShaderHelper.INSTANCE.getOpacityXrayShader().setUpdateUniforms(() -> {
+                ShaderHelper.INSTANCE.getOpacityXrayShader().getUniform("ModelView").setMatrix(eventWorldRender.getPoseStack().peek().getPositionMatrix());
                 ShaderHelper.INSTANCE.getOpacityXrayShader().getUniform("Alpha").setFloat(Xray.INSTANCE.alphaProperty.value() / 100.f);
             });
         } else if (event instanceof EventBindShader eventBindShader) {
