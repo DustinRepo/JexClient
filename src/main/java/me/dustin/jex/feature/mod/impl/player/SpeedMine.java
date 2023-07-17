@@ -125,7 +125,7 @@ NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacke
          }
      }      
 }
-        Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);
+        Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(breakCooldownProperty.value());
     }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
     @Override
