@@ -33,6 +33,7 @@ public class AutoEat extends Feature {
             .build();
     public final Property<Boolean> pressKeyProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Press Key")
+            .description("Press the right-click key to give animations")
             .value(false)
             .build();
     public final Property<Boolean> negativeFoodsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -41,6 +42,7 @@ public class AutoEat extends Feature {
             .build();
     public final Property<Boolean> eatToRegenProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Eat To Regen")
+            .description("Eat when your food is too low to regen if you don't have full health.")
             .value(false)
             .build();
     public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -62,6 +64,8 @@ public class AutoEat extends Feature {
 	    .depends(parent -> (boolean)parent.value())
             .build();
 
+
+
     private boolean wasEating;
     private int savedSlot = 0;
     private int lastFood;
@@ -70,7 +74,7 @@ public class AutoEat extends Feature {
     private final StopWatch baritoneStopWatch = new StopWatch();
 
     public AutoEat() {
-        super(Category.PLAYER);
+        super(Category.PLAYER, "Eat food when hunger is low.");
     }
 
     @EventPointer
@@ -146,11 +150,13 @@ public class AutoEat extends Feature {
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, UpdateSelectedSlotC2SPacket.class, PlayerActionC2SPacket.class));
 
     private boolean needsToEat(FoodInfo foodInfo) {
-	    if (!eatToRegenProperty.value()) {
+        if (!eatToRegenProperty.value()) {
             return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger();
         } else {
             return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger() || (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= healthProperty.value() && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() <= hungerProperty.value());
+        }
     }
+
     @Override
     public void onDisable() {
         super.onDisable();
