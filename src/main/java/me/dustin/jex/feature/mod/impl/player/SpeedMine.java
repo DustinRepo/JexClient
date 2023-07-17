@@ -115,10 +115,6 @@ public class SpeedMine extends Feature {
     private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
         if (modeProperty.value() != Mode.PACKET)
             return;
-        if (Wrapper.INSTANCE.getLocalPlayer().isCreative())
-            return;
-        if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
-            return;
         if (stopWatch.hasPassed(delayProperty.value())) {
         for (int i = 0; i < paProperty.value(); i++) {
          if (startpProperty.value()) {    
