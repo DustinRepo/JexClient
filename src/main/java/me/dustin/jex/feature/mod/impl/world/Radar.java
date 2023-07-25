@@ -12,6 +12,12 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class Radar extends Feature {
     public static Radar INSTANCE;
 
+    public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Range")
+            .value(16)
+            .min(16)
+            .max(100)
+            .build();
     public final Property<Boolean> waypointsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Waypoints")
             .value(true)
