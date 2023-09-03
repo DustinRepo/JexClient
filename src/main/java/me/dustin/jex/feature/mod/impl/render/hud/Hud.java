@@ -64,6 +64,56 @@ public class Hud extends Feature {
             .name("Radar")
             .value(true)
             .build();
+    public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Range")
+            .value(16)
+            .min(16)
+            .max(100)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> waypointsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Waypoints")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Players")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> bossesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bosses")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> hostilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hostiles")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> neutralsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Neutrals")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> passivesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Passives")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> itemsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Items")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
     public final Property<WatermarkEffect> watermarkModeProperty = new Property.PropertyBuilder<WatermarkEffect>(this.getClass())
             .name("Jex Effect")
             .value(WatermarkEffect.STATIC)
@@ -270,6 +320,22 @@ public class Hud extends Feature {
     public Hud() {
         super("Hud", Category.VISUAL, "Mark entities/players through walls", true, false, 0);
         INSTANCE = this;
+    }
+    
+    public boolean isValid(Entity entity) {
+        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer())
+            return playersProperty.value();
+        if (entity instanceof ItemEntity)
+            return itemsProperty.value();
+        if (EntityHelper.INSTANCE.isBossMob(entity))
+            return bossesProperty.value();
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
+            return neutralsProperty.value();
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
+            return hostilesProperty.value();
+        if (EntityHelper.INSTANCE.isPassiveMob(entity))
+            return passivesProperty.value();
+        return false;
     }
 
     @Override
