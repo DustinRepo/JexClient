@@ -31,6 +31,7 @@ import net.minecraft.util.math.MathHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import org.lwjgl.glfw.GLFW;
+import net.minecraft.entity.Entity;
 
 import java.awt.*;
 import java.util.*;
