@@ -60,6 +60,10 @@ public class Hud extends Feature {
             .name("Watermark")
             .value(true)
             .build();
+    public final Property<Boolean> radarProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Radar")
+            .value(true)
+            .build();
     public final Property<WatermarkEffect> watermarkModeProperty = new Property.PropertyBuilder<WatermarkEffect>(this.getClass())
             .name("Jex Effect")
             .value(WatermarkEffect.STATIC)
