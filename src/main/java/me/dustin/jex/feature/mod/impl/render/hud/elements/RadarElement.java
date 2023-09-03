@@ -103,7 +103,7 @@ public class RadarElement extends HudElement{
         for (int x = -nativeImage.getWidth() / 2; x < nativeImage.getWidth() / 2; x++)
             for (int z = -nativeImage.getHeight() / 2; z < nativeImage.getHeight() / 2; z++) {
                 BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, 0, z);
-                int y = Wrapper.INSTANCE.getWorld().getChunk(blockPos.getX() / Radar.INSTANCE.rangeProperty.value(), blockPos.getZ() / Radar.INSTANCE.rangeProperty.value()).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
+                int y = Wrapper.INSTANCE.getWorld().getChunk(blockPos.getX() / Hud.INSTANCE.rangeProperty.value(), blockPos.getZ() / Hud.INSTANCE.rangeProperty.value()).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
                 Block block = WorldHelper.INSTANCE.getBlock(new BlockPos(blockPos.getX(), y, blockPos.getZ()));
                 nativeImage.setColor(x, z, block.getDefaultMapColor().color);
             }
