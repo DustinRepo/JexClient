@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
-import me.dustin.jex.feature.mod.impl.world.Radar;
+import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
