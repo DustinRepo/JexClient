@@ -48,7 +48,7 @@ public class RadarElement extends HudElement{
 
         if (Wrapper.INSTANCE.getWorld() != null)
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                if (!Radar.INSTANCE.isValid(entity))
+                if (!Hud.INSTANCE.isValid(entity))
                     continue;
                 float xPos = (float) (entity.getX() - Wrapper.INSTANCE.getLocalPlayer().getX()) + midPos + this.getX();
                 float yPos = (float) (entity.getZ() - Wrapper.INSTANCE.getLocalPlayer().getZ()) + midPos + this.getY();
@@ -56,7 +56,7 @@ public class RadarElement extends HudElement{
                     Render2DHelper.INSTANCE.fill(matrixStack, xPos, yPos, xPos + 1, yPos + 1, ESP.INSTANCE.getColor(entity));
                 }
             }
-        if (Radar.INSTANCE.waypointsProperty.value()) {
+        if (Hud.INSTANCE.waypointsProperty.value()) {
             matrixStack.push();
             float scale = 0.75f;
             matrixStack.scale(scale, scale, 1);
@@ -113,7 +113,7 @@ public class RadarElement extends HudElement{
 
     @Override
     public boolean isVisible() {
-        return getHud().watermarkProperty.value();
+        return getHud().radarProperty.value();
     }
 
     private void drawPointer(MatrixStack matrixStack) {
