@@ -113,7 +113,7 @@ public class RadarElement extends HudElement{
 
     @Override
     public boolean isVisible() {
-        return Radar.INSTANCE.getState();
+        return getHud().watermarkProperty.value();
     }
 
     private void drawPointer(MatrixStack matrixStack) {
