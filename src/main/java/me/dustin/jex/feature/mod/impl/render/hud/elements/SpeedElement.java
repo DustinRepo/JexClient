@@ -33,6 +33,7 @@ public class SpeedElement extends HudElement {
         Vec3d move = new Vec3d(Wrapper.INSTANCE.getLocalPlayer().getX() - Wrapper.INSTANCE.getLocalPlayer().prevX, 0, Wrapper.INSTANCE.getLocalPlayer().getZ() - Wrapper.INSTANCE.getLocalPlayer().prevZ).multiply(20);
         switch (getHud().distanceModeProperty.value()) {
             case BLOCKS:
+                break;
             case METER:
                 break;
             case FEET:
