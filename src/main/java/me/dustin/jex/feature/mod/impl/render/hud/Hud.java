@@ -479,7 +479,7 @@ public class Hud extends Feature {
         CLIENT_COLOR, RAINBOW, CATEGORY
     }
     public enum DistanceMode {
-        BLOCKS, FEET, MILES, M, KM
+        BLOCKS, FEET, MILES, METER, KM
     }
     public enum TimeMode {
         SECOND, TICK, MINUTE, HOUR, DAY
