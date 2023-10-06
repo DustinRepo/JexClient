@@ -40,7 +40,7 @@ public class SpeedElement extends HudElement {
                 move = move.multiply(3.281);
                 break;
             case MILES:
-                move = move.multiply(0.000621371);
+                move = move.multiply(0.00062137119223733);
                 break;
             case KM:
                 move = move.multiply(0.001);
