@@ -1,5 +1,4 @@
 package me.dustin.jex.feature.mod.impl.combat.killaura;
-
 import me.dustin.events.core.Event;
 import me.dustin.events.core.EventListener;
 import me.dustin.jex.event.player.EventPlayerPackets;
@@ -9,6 +8,11 @@ import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.MultiAura;
 import me.dustin.jex.feature.mod.impl.combat.killaura.impl.SingleAura;
+import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
+import net.minecraft.entity.projectile.DragonFireballEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -25,13 +29,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import me.dustin.events.core.annotate.EventPointer;
 import me.dustin.events.core.priority.Priority;
 import org.lwjgl.glfw.GLFW;
-
 import java.awt.*;
 import java.util.ArrayList;
-
 public class KillAura extends Feature {
     public static KillAura INSTANCE;
-
     public final Property<TargetMode> targetModeProperty = new Property.PropertyBuilder<TargetMode>(this.getClass())
             .name("Mode")
             .value(TargetMode.SINGLE)
@@ -43,7 +44,7 @@ public class KillAura extends Feature {
     public final Property<Float> reachProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Reach")
             .value(3.8f)
-            .min(3f)
+            .min(2f)
             .max(6f)
             .inc(0.1f)
             .build();
@@ -51,31 +52,28 @@ public class KillAura extends Feature {
             .name("Ticks Exsited")
             .value(50)
             .min(0)
-            .max(200)
+            .max(300)
             .inc(1)
             .build();
     public final Property<Boolean> ignoreNewCombatProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Old Combat")
             .value(false)
             .build();
-    public final Property<Float> apsProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("APS")
-            .description("How many attacks per second to use with Old Combat mode")
-            .value(10f)
-            .min(1)
-            .max(20)
-            .inc(0.1f)
+    public final Property<Integer> delayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Delay")
+            .value(10)
+            .min(0)
+            .max(1000)
+            .inc(10)
             .parent(ignoreNewCombatProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> baritoneOverrideProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Baritone Override")
-            .description("Allow Killaura to override Baritone if currently pathing.")
             .value(true)
             .build();
     public final Property<Boolean> followUntilDeadProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Follow until dead")
-            .description("Follow your target until they die.")
             .value(true)
             .parent(baritoneOverrideProperty)
             .depends(parent -> (boolean) parent.value())
@@ -83,7 +81,7 @@ public class KillAura extends Feature {
     public final Property<Float> bMinDistProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Min Distance")
             .value(3f)
-            .max(6)
+            .max(6f)
             .inc(0.1f)
             .parent(baritoneOverrideProperty)
             .depends(parent -> (boolean) parent.value())
@@ -101,9 +99,15 @@ public class KillAura extends Feature {
             .parent(autoBlockProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+   public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
+            .build();
+    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Friends")
+            .value(true)
+            .parent(playerProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Neutral")
@@ -120,6 +124,12 @@ public class KillAura extends Feature {
     public final Property<Boolean> passiveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Passive")
             .value(true)
+            .build();
+    public final Property<Boolean> petProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Pet")
+            .value(false)
+	    .parent(passiveProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> specificFilterProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Specific Filter")
@@ -143,76 +153,127 @@ public class KillAura extends Feature {
             .parent(specificFilterProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Boolean> rayTraceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("RayTrace")
-            .description("Hit whatever is between you and your target.")
+    public final Property<Boolean> deadProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Dead")
             .value(false)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Rotate")
-            .description("Whether or not to rotate your head on the server.")
+	public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NoLiving")
+            .value(false)
+            .parent(specificFilterProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> projectilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	        .name("Projectiles")
             .value(true)
-            .build();
-    public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Lockview")
-            .description("Sets the rotations client-side.")
-            .value(false)
-            .parent(rotateProperty)
+	        .build();
+    public final Property<Boolean> fireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	        .name("Fireball")
+	        .value(true)
+            .parent(projectilesProperty)
             .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Boolean> randomizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Randomize")
-            .description("Randomize where on the target you look.")
-            .value(false)
-            .parent(rotateProperty)
+	    .build();
+    public final Property<Boolean> dfireballProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	        .name("DragonFireball")
+	        .value(true)
+            .parent(projectilesProperty)
             .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Float> randomWidthProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("Random Width")
-            .value(0.5f)
-            .min(0.2f)
-            .inc(0.5f)
-            .parent(randomizeProperty)
+	        .build();
+    public final Property<Boolean> bulletProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	        .name("ShulkerBullet")
+	        .value(true)
+            .parent(projectilesProperty)
             .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Float> randomHeightProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("Random Height")
-            .value(0.5f)
-            .min(0.2f)
-            .inc(0.5f)
-            .parent(randomizeProperty)
+	        .build();
+    public final Property<Boolean> skullProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+	        .name("WitherSkull")
+	        .value(true)
+            .parent(projectilesProperty)
             .depends(parent -> (boolean) parent.value())
-            .build();
+	        .build();
     public final Property<Boolean> botCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Bot Check")
-            .description("Check whether a player is a bot before targeting.")
+            .name("Bot")
             .value(true)
             .build();
     public final Property<Boolean> teamCheckProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Team Check")
-            .description("Check whether a player is on your team before targeting.")
             .value(true)
+	        .parent(botCheckProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> checkArmorProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Check Armor")
-            .description("Check if you're wearing the same color armor for teams.")
             .value(true)
             .parent(teamCheckProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> nametaggedProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Nametagged")
-            .description("Whether or not to attack nametagged entities.")
             .value(true)
             .build();
     public final Property<Boolean> invisiblesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Invisibles")
-            .description("Whether or not to attack invisible entities.")
             .value(true)
+            .build();
+    public final Property<Boolean> sleepingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sleeping")
+            .value(true)
+            .build();
+    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
+            .build();
+    public final Property<Boolean> rayTraceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("RayTrace")
+            .value(false)
+            .build();
+    public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Rotate")
+            .value(true)
+            .build();
+    public final Property<Integer> rotdelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Rotate Delay")
+            .value(0)
+            .min(0)
+            .max(1000)
+            .inc(10)
+	    .parent(rotateProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Lockview")
+            .value(false)
+            .parent(rotateProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> randomizeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Randomize")
+            .value(false)
+            .parent(rotateProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> randomWidthProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Random Width")
+            .value(0.1f)
+            .min(-1f)
+            .max(1f)
+            .inc(0.1f)
+            .parent(randomizeProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> randomHeightProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Random Height")
+            .value(0.1f)
+            .min(-1f)
+            .max(1f)
+            .inc(0.1f)
+            .parent(randomizeProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> ignoreWallsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Ignore Walls")
-            .description("Whether or not to attack entities through wall.")
             .value(true)
             .build();
     public final Property<Boolean> showTargetProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -235,22 +296,17 @@ public class KillAura extends Feature {
             .parent(reachCircleProperty)
             .depends(parent-> (boolean) parent.value())
             .build();
-
     private final StopWatch stopWatch = new StopWatch();
     private TargetMode lastMode;
-
     private boolean hasTarget = false;
-
     public ArrayList<PlayerEntity> touchedGround = new ArrayList<>();
     public ArrayList<PlayerEntity> swung = new ArrayList<>();
-
     public KillAura() {
-        super(Category.COMBAT, "Attack entities around you.", GLFW.GLFW_KEY_R);
+        super(Category.COMBAT, "", GLFW.GLFW_KEY_R);
         INSTANCE = this;
         new SingleAura();
         new MultiAura();
     }
-
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         for(Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
@@ -291,7 +347,7 @@ public class KillAura extends Feature {
 
     public boolean canSwing() {
         if (ignoreNewCombatProperty.value()) {
-            if (stopWatch.hasPassed((long) (1000 / apsProperty.value()))) {
+            if (stopWatch.hasPassed(delayProperty.value())) {
                 stopWatch.reset();
                 return true;
             }
@@ -302,33 +358,10 @@ public class KillAura extends Feature {
         }
         return false;
     }
-
     public boolean isValid(Entity entity, boolean rangecheck) {
-        if (!(entity instanceof LivingEntity livingEntity))
-            return false;
-        if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
-            return false;
-        if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
-            if (entity == Wrapper.INSTANCE.getLocalPlayer().getVehicle())
-                return false;
-        }
-        if (livingEntity.isSleeping())
-            return false;
-        if (entity.age < ticksExistedProperty.value())
-            return false;
-        if (entity.hasCustomName() && !nametaggedProperty.value())
-            return false;
-        if (entity.isInvisible() && !invisiblesProperty.value())
-            return false;
-        if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
-            return false;
-        boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
-        if (!canSee && !ignoreWallsProperty.value())
-            return false;
-        //TODO: fix this with 180/-180 having some issues
-        /*if (PlayerHelper.INSTANCE.getDistanceFromMouse(entity) * 2 > KillAura.INSTANCE.fov) {
-            return false;
-        }*/
+	 boolean canSee = Wrapper.INSTANCE.getLocalPlayer().canSee(entity);
+        if (!canSee)
+            return ignoreWallsProperty.value();
         if (rangecheck) {
             float distance = reachProperty.value();
             if (!canSee)
@@ -336,16 +369,54 @@ public class KillAura extends Feature {
             if (entity.distanceTo(Wrapper.INSTANCE.getPlayer()) > distance)
                 return false;
         }
-        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
+	 if (projectilesProperty.value()) {
+            if (entity instanceof ShulkerBulletEntity)
+               return bulletProperty.value();
+            if (entity instanceof FireballEntity)
+               return fireballProperty.value();
+            if (entity instanceof DragonFireballEntity)
+               return dfireballProperty.value();
+            if (entity instanceof WitherSkullEntity)
+               return skullProperty.value();
+        }       
+	if (!(entity instanceof LivingEntity livingEntity))
+		return nolivingProperty.value();
+	if (livingEntity.isSleeping())
+               return sleepingProperty.value();
+	if (entity.hasCustomName())
+            return nametaggedProperty.value();
+        if (entity.isInvisible())
+            return invisiblesProperty.value();
+        if (!entity.isAlive() || (((LivingEntity) entity).getHealth() <= 0 && !Double.isNaN(((LivingEntity) entity).getHealth())))
+            return deadProperty.value();
+	if (entity.age < ticksExistedProperty.value())
+            return false;
+	if (entity == Wrapper.INSTANCE.getLocalPlayer() || entity == Freecam.playerEntity)
+                return false;
+        if (Wrapper.INSTANCE.getLocalPlayer().getVehicle() != null) {
+            if (entity == Wrapper.INSTANCE.getLocalPlayer().getVehicle())
+                return false;
+        }
+	if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer()) {
             if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
+                return friendProperty.value();
+            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), teamCheckProperty.value()))
                 return false;
-            if (EntityHelper.INSTANCE.isOnSameTeam((PlayerEntity) entity, Wrapper.INSTANCE.getLocalPlayer(), checkArmorProperty.value()) && teamCheckProperty.value())
-                return false;
-            if (botCheckProperty.value() && isBot((PlayerEntity) entity))
-                return false;
+            if (isBot((PlayerEntity) entity))
+                return botCheckProperty.value();
             return playerProperty.value();
         }
-        if (specificFilterProperty.value()) {
+	if (EntityHelper.INSTANCE.isNeutralMob(entity))
+            return neutralProperty.value();    
+	if (EntityHelper.INSTANCE.isPassiveMob(entity))
+            return passiveProperty.value();
+	if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
+	    return petProperty.value();
+        if (EntityHelper.INSTANCE.isBossMob(entity))
+            return bossProperty.value();
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
+	 return hostileProperty.value();
+	if (specificFilterProperty.value()) {
             if (entity instanceof IronGolemEntity)
                 return ironGolemProperty.value();
             if (entity instanceof ZombifiedPiglinEntity)
@@ -353,17 +424,8 @@ public class KillAura extends Feature {
             if (entity instanceof PiglinEntity)
                 return piglinProperty.value();
         }
-        if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
-            return passiveProperty.value();
-        if (EntityHelper.INSTANCE.isBossMob(entity))
-            return bossProperty.value();
-        if (EntityHelper.INSTANCE.isHostileMob(entity))
-            return hostileProperty.value();
-        if (EntityHelper.INSTANCE.isNeutralMob(entity))
-            return neutralProperty.value();
-        return false;
+	 return false;
     }
-
     public boolean isBot(PlayerEntity playerEntity) {
         if (EntityHelper.INSTANCE.isNPC(playerEntity)) {
             return true;
@@ -371,15 +433,12 @@ public class KillAura extends Feature {
             return (!swung.contains(playerEntity) && !touchedGround.contains(playerEntity)) || playerEntity.getGameProfile().getProperties().isEmpty();
         }
     }
-
     public void setHasTarget(boolean hasTarget) {
         this.hasTarget = hasTarget;
     }
-
     public boolean hasTarget() {
         return hasTarget;
     }
-
     @Override
     public void onDisable() {
         super.onDisable();
@@ -388,13 +447,11 @@ public class KillAura extends Feature {
             BaritoneHelper.INSTANCE.disableKillauraTargetProcess();
         FeatureExtension.get(targetModeProperty.value(), this).disable();
     }
-
     public enum TargetMode {
         SINGLE, MULTI
     }
-
     public enum AttackTiming {
         PRE, POST
     }
-
 }
+//lol

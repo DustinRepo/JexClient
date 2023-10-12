@@ -17,9 +17,9 @@ public class ItemScale extends Feature {
     public final Property<Float> rightHandScaleProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("RH Scale")
             .value(1f)
-            .min(0.1f)
-            .max(3)
-            .inc(0.05f)
+            .min(0f)
+            .max(1f)
+            .inc(0.01f)
             .parent(rightHandProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
@@ -28,7 +28,7 @@ public class ItemScale extends Feature {
             .value(0f)
             .min(-2)
             .max(2)
-            .inc(0.05f)
+            .inc(0.02f)
             .parent(rightHandProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
@@ -37,7 +37,7 @@ public class ItemScale extends Feature {
             .value(0f)
             .min(-2)
             .max(2)
-            .inc(0.05f)
+            .inc(0.02f)
             .parent(rightHandProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
@@ -46,7 +46,7 @@ public class ItemScale extends Feature {
             .value(0f)
             .min(-2)
             .max(2)
-            .inc(0.05f)
+            .inc(0.02f)
             .parent(rightHandProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
@@ -58,10 +58,10 @@ public class ItemScale extends Feature {
     public final Property<Float> leftHandScaleProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("LH Scale")
             .value(1f)
-            .min(0.1f)
-            .max(3)
-            .inc(0.05f)
-            .parent(rightHandProperty)
+            .min(0f)
+            .max(1)
+            .inc(0.01f)
+            .parent(leftHandProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Float> leftHandXProperty = new Property.PropertyBuilder<Float>(this.getClass())
@@ -69,8 +69,8 @@ public class ItemScale extends Feature {
             .value(0f)
             .min(-2)
             .max(2)
-            .inc(0.05f)
-            .parent(rightHandProperty)
+            .inc(0.02f)
+            .parent(leftHandProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Float> leftHandYProperty = new Property.PropertyBuilder<Float>(this.getClass())
@@ -78,8 +78,8 @@ public class ItemScale extends Feature {
             .value(0f)
             .min(-2)
             .max(2)
-            .inc(0.05f)
-            .parent(rightHandProperty)
+            .inc(0.02f)
+            .parent(leftHandProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Float> leftHandZProperty = new Property.PropertyBuilder<Float>(this.getClass())
@@ -87,13 +87,13 @@ public class ItemScale extends Feature {
             .value(0f)
             .min(-2)
             .max(2)
-            .inc(0.05f)
-            .parent(rightHandProperty)
+            .inc(0.02f)
+            .parent(leftHandProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
 
     public ItemScale() {
-        super(Category.VISUAL, "Change the scale and positioning of items in your hands");
+        super(Category.VISUAL);
     }
 
     @EventPointer

@@ -20,7 +20,7 @@ public class PingSpoof extends Feature {
             .name("Ping")
             .value(5000L)
             .min(1000)
-            .max(14500)
+            .max(10000)
             .inc(100)
             .build();
 
@@ -28,14 +28,14 @@ public class PingSpoof extends Feature {
     private long keepAliveId = -1;
 
     public PingSpoof() {
-        super(Category.MISC, "Spoofs your ping to be as high as possible");
+        super(Category.MISC, "");
     }
 
     @EventPointer
     private final EventListener<EventTick> eventTickEventListener = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getLocalPlayer() == null) {
-            packetStopWatch.reset();
             keepAliveId = -1;
+            packetStopWatch.reset();
         } else if (keepAliveId != -1 && packetStopWatch.hasPassed(pingProperty.value())) {
             NetworkHelper.INSTANCE.sendPacketDirect(new KeepAliveC2SPacket(keepAliveId));
             keepAliveId = -1;
@@ -49,5 +49,20 @@ public class PingSpoof extends Feature {
         packetStopWatch.reset();
         event.cancel();
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE, KeepAliveC2SPacket.class));
+    
+@Override
+    public void onEnable() {
+        super.onEnable();
+    }
 
+    @Override
+    public void onDisable() {
+        if (Wrapper.INSTANCE.getLocalPlayer() != null) {
+            try {
+                NetworkHelper.INSTANCE.sendPacketDirect(new KeepAliveC2SPacket(keepAliveId));
+            } catch (Exception e) {}
+              keepAliveId = -1;
+        }
+        super.onDisable();
+    }
 }

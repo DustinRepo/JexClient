@@ -17,7 +17,7 @@ import java.util.Objects;
 public class InventoryMove extends Feature {
 
     public InventoryMove() {
-        super(Category.MOVEMENT, "Move while in your inventory.");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer

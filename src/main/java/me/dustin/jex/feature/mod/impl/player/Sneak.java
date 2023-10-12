@@ -13,7 +13,7 @@ import org.lwjgl.glfw.GLFW;
 public class Sneak extends Feature {
 
     public Sneak() {
-        super(Category.PLAYER, "Sneak around to hide your nametag", GLFW.GLFW_KEY_Z);
+        super(Category.PLAYER, "", GLFW.GLFW_KEY_Z);
     }
 
     @EventPointer

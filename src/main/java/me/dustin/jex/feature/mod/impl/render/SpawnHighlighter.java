@@ -95,7 +95,7 @@ public class SpawnHighlighter extends Feature {
 	private final StopWatch stopWatch = new StopWatch();
 
 	public SpawnHighlighter() {
-		super(Category.VISUAL, "Show all blocks near you that mobs can spawn on.");
+		super(Category.VISUAL);
 	}
 
 	@EventPointer
@@ -157,7 +157,8 @@ public class SpawnHighlighter extends Feature {
 		if (checkWaterProperty.value())
 			if (WorldHelper.INSTANCE.isWaterlogged(above))
 				return false;
-		assert aboveBlock != null;
+		if (aboveBlock == null)
+			return false;
 		if (!WorldHelper.INSTANCE.canMobSpawnInside(aboveState) || (checkHeightProperty.value() && !WorldHelper.INSTANCE.canMobSpawnInside(twoAboveState)))
 			return false;
 		if (checkLightProperty.value()) {

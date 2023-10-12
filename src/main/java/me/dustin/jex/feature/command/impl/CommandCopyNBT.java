@@ -19,7 +19,8 @@ public class CommandCopyNBT extends Command {
     public void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(literal(this.name).executes(this).then(literal("display").executes(context -> {
             ItemStack itemStack = context.getSource().getPlayer().getMainHandStack();
-            assert itemStack.getNbt() != null;
+            if (itemStack.getNbt() == null)
+                return 0;
             Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(itemStack.getNbt().toString().replace("\247", "\\247"));
 
             PrettyPrintTextFormatter prettyPrintTextFormatter = new PrettyPrintTextFormatter();
@@ -38,7 +39,8 @@ public class CommandCopyNBT extends Command {
             return 0;
         }
         ItemStack itemStack = context.getSource().getPlayer().getMainHandStack();
-        assert itemStack.getNbt() != null;
+        if (itemStack.getNbt() == null)
+            return 0;
         String nbt = itemStack.getNbt().toString();
         Wrapper.INSTANCE.getMinecraft().keyboard.setClipboard(nbt.replace("\247", "\\247"));
         ChatHelper.INSTANCE.addClientMessage("NBT Copied to clipboard");

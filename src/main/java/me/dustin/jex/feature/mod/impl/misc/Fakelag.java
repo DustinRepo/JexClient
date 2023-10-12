@@ -20,20 +20,20 @@ public class Fakelag extends Feature {
             .name("Catch When")
             .value(CatchWhen.BOTH)
             .build();
-    public final Property<Integer> chokeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+public final Property<Integer> chokeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Choke MS")
             .value(100)
-            .min(50)
+            .min(20)
             .max(2000)
-            .inc(10)
+            .inc(20)
             .build();
 
     private final ArrayList<Packet<?>> packets = new ArrayList<>();
     private final StopWatch stopWatch = new StopWatch();
     private boolean sending = false;
-
+    
     public Fakelag() {
-        super(Category.MISC, "Pretend to lag");
+        super(Category.MISC);
     }
 
     @EventPointer
@@ -50,8 +50,8 @@ public class Fakelag extends Feature {
         } else {
             sending = true;
             packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
-            sending = false;
             packets.clear();
+            sending = false;
             stopWatch.reset();
         }
     }, new ClientPacketFilter(EventPacketSent.Mode.PRE));
@@ -82,7 +82,9 @@ public class Fakelag extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer() != null) {
             try {
                 packets.forEach(Wrapper.INSTANCE.getLocalPlayer().networkHandler::sendPacket);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                return;
+            }
             packets.clear();
         }
         super.onDisable();

@@ -7,6 +7,9 @@ import me.dustin.jex.event.filters.TickFilter;
 import me.dustin.jex.event.misc.EventKeyPressed;
 import me.dustin.jex.event.misc.EventMouseButton;
 import me.dustin.jex.event.misc.EventTick;
+import me.dustin.jex.helper.entity.EntityHelper;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.ItemEntity;
 import me.dustin.jex.event.render.EventRender2D;
 import me.dustin.jex.event.render.EventRender2DItem;
 import me.dustin.jex.event.render.EventRenderEffects;
@@ -31,6 +34,7 @@ import net.minecraft.util.math.MathHelper;
 import me.dustin.jex.helper.render.Render2DHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 import org.lwjgl.glfw.GLFW;
+import net.minecraft.entity.Entity;
 
 import java.awt.*;
 import java.util.*;
@@ -49,18 +53,70 @@ public class Hud extends Feature {
             .build();
     public final Property<Boolean> collisionProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Collision")
-            .description("Whether or not to allow the HUD elements to collide with one another.")
             .value(true)
             .build();
     public final Property<Integer> constrictKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Constrict Elements Key")
-            .description("The key to bring all elements back on screen.")
             .value(GLFW.GLFW_KEY_LEFT_CONTROL)
             .isKey()
             .build();
     public final Property<Boolean> watermarkProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Watermark")
             .value(true)
+            .build();
+    public final Property<Boolean> radarProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Radar")
+            .value(true)
+            .build();
+    public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Range")
+            .value(16)
+            .min(16)
+            .max(100)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> waypointsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Waypoints")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> playersProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Players")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> bossesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bosses")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> hostilesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hostiles")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> neutralsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Neutrals")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> passivesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Passives")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> itemsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Items")
+            .value(true)
+            .parent(radarProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<WatermarkEffect> watermarkModeProperty = new Property.PropertyBuilder<WatermarkEffect>(this.getClass())
             .name("Jex Effect")
@@ -78,7 +134,6 @@ public class Hud extends Feature {
             .build();
     public final Property<Boolean> suffixesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Suffixes")
-            .description("Allow for suffixes to display in the ArrayList")
             .value(true)
             .parent(showArrayListProperty)
             .depends(parent -> (boolean) parent.value())
@@ -161,7 +216,7 @@ public class Hud extends Feature {
     public final Property<Float> tabGuiWidthProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("TabGui Width")
             .value(75f)
-            .min(55)
+            .min(45)
             .max(200)
             .parent(tabGuiProperty)
             .depends(parent -> (boolean) parent.value())
@@ -186,7 +241,6 @@ public class Hud extends Feature {
             .build();
     public final Property<Boolean> serverNameProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Server")
-            .description("Show the server IP on the HUD.")
             .value(true)
             .parent(infoProperty)
             .depends(parent -> (boolean) parent.value())
@@ -270,6 +324,22 @@ public class Hud extends Feature {
     public Hud() {
         super("Hud", Category.VISUAL, "Mark entities/players through walls", true, false, 0);
         INSTANCE = this;
+    }
+    
+    public boolean isValid(Entity entity) {
+        if (entity instanceof PlayerEntity && entity != Wrapper.INSTANCE.getLocalPlayer())
+            return playersProperty.value();
+        if (entity instanceof ItemEntity)
+            return itemsProperty.value();
+        if (EntityHelper.INSTANCE.isBossMob(entity))
+            return bossesProperty.value();
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
+            return neutralsProperty.value();
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
+            return hostilesProperty.value();
+        if (EntityHelper.INSTANCE.isPassiveMob(entity))
+            return passivesProperty.value();
+        return false;
     }
 
     @Override
@@ -409,7 +479,7 @@ public class Hud extends Feature {
         CLIENT_COLOR, RAINBOW, CATEGORY
     }
     public enum DistanceMode {
-        BLOCKS, FEET, MILES, KM
+        BLOCKS, FEET, MILES, METER, KM
     }
     public enum TimeMode {
         SECOND, TICK, MINUTE, HOUR, DAY

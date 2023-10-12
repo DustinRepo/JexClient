@@ -9,47 +9,75 @@ import me.dustin.jex.event.player.EventPlayerVelocity;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.feature.property.Property;
+import java.lang.Math;
 
 public class AntiKnockback extends Feature {
 
-    public final Property<Integer> percentProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Percent")
+    public final Property<Integer> pxProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("PercentX")
             .value(0)
-            .min(-300)
-            .max(300)
-            .inc(10)
+            .min(-100)
+            .max(100)
+            .inc(2)
             .build();
-
+    public final Property<Integer> pyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("PercentY")
+            .value(0)
+            .min(-100)
+            .max(100)
+            .inc(2)
+            .build();
+    public final Property<Integer> pzProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("PercentZ")
+            .value(0)
+            .min(-100)
+            .max(100)
+            .inc(2)
+            .build();
+    public final Property<Integer> epxProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("ExplosionX")
+            .value(0)
+            .min(-100)
+            .max(100)
+            .inc(2)
+            .build();
+    public final Property<Integer> epyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("ExplosionY")
+            .value(0)
+            .min(-100)
+            .max(100)
+            .inc(2)
+            .build();
+    public final Property<Integer> epzProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("ExplosionZ")
+            .value(0)
+            .min(-100)
+            .max(100)
+            .inc(2)
+            .build();
+   
     public AntiKnockback() {
-        super(Category.COMBAT, "Remove all knockback from the player.");
+        super(Category.COMBAT);
     }
 
     @EventPointer
     private final EventListener<EventExplosionVelocity> eventExplosionVelocityEventListener = new EventListener<>(event -> {
-        float perc = percentProperty.value() / 100.0f;
-        if (percentProperty.value() == 0)
-            event.cancel();
-        else {
-            event.setMultX(perc);
-            event.setMultY(perc);
-            event.setMultZ(perc);
-        }
+        float epx = epxProperty.value() / 100.0f;
+        float epy = epyProperty.value() / 100.0f;
+        float epz = epzProperty.value() / 100.0f;
+        event.setMultX(epx);
+        event.setMultY(epy);
+        event.setMultZ(epz);
+
     });
 
     @EventPointer
     private final EventListener<EventPlayerVelocity> eventPlayerVelocityEventListener = new EventListener<>(event -> {
-        float perc = percentProperty.value() / 100.0f;
-        if (percentProperty.value() == 0)
-            event.cancel();
-        else {
-            event.setVelocityX((int)(event.getVelocityX() * perc));
-            event.setVelocityY((int)(event.getVelocityY() * perc));
-            event.setVelocityZ((int)(event.getVelocityZ() * perc));
-        }
+        float px = pxProperty.value() / 100.0f;
+        float py = pyProperty.value() / 100.0f;
+        float pz = pzProperty.value() / 100.0f;
+        event.setVelocityX((int)(event.getVelocityX() * px));
+        event.setVelocityY((int)(event.getVelocityY() * py));
+        event.setVelocityZ((int)(event.getVelocityZ() * pz));
     });
-
-    @EventPointer
-    private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        this.setSuffix(percentProperty.value() + "%");
-    }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

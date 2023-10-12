@@ -45,6 +45,26 @@ public class AutoEat extends Feature {
             .description("Eat when your food is too low to regen if you don't have full health.")
             .value(false)
             .build();
+    public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Health")
+            .value(10)
+            .min(1)
+            .max(20)
+            .inc(1)
+            .parent(eatToRegenProperty)
+	    .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Integer> hungerProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Hunger")
+            .value(18)
+            .min(18)
+            .max(20)
+            .inc(1)
+            .parent(eatToRegenProperty)
+	    .depends(parent -> (boolean)parent.value())
+            .build();
+
+
 
     private boolean wasEating;
     private int savedSlot = 0;
@@ -133,7 +153,7 @@ public class AutoEat extends Feature {
         if (!eatToRegenProperty.value()) {
             return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger();
         } else {
-            return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger() || (Wrapper.INSTANCE.getLocalPlayer().getHealth() < 20 && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() < 18);
+            return 20 - Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() >= foodInfo.item.getFoodComponent().getHunger() || (Wrapper.INSTANCE.getLocalPlayer().getHealth() <= healthProperty.value() && Wrapper.INSTANCE.getLocalPlayer().getHungerManager().getFoodLevel() <= hungerProperty.value());
         }
     }
 

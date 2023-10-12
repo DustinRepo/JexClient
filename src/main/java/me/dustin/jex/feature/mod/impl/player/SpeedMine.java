@@ -11,16 +11,49 @@ import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.feature.mod.core.Feature;
 import me.dustin.jex.helper.network.NetworkHelper;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.world.WorldHelper;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 
 public class SpeedMine extends Feature {
+    
+    private final StopWatch stopWatch = new StopWatch();
 
     public Property<Mode> modeProperty = new Property.PropertyBuilder<Mode>(this.getClass())
             .name("Mode")
             .value(Mode.PROGRESS)
+            .build();
+    public Property<Integer> delayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Delay (ms)")
+            .value(1)
+            .min(0)
+            .max(1000)
+            .inc(10)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.PACKET)
+            .build();
+    public Property<Integer> paProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Packet Amount")
+            .value(1)
+            .min(1)
+            .max(25)
+            .inc(1)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.PACKET)
+            .build();
+    public final Property<Boolean> startpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("StartPacket")
+            .value(true)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.PACKET)
+            .build();
+    public final Property<Boolean> stoppProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("StopPacket")
+            .value(true)
+            .parent(modeProperty)
+            .depends(parent -> parent.value() == Mode.PACKET)
             .build();
     public Property<Integer> hasteLevelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Haste Level")
@@ -32,39 +65,34 @@ public class SpeedMine extends Feature {
             .build();
     public Property<Float> breakProgressProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Break Progress")
-            .description("How far into breaking a block before automatically finishing.")
             .value(0.65f)
-            .max(0.95f)
-            .inc(0.05f)
+            .min(0f)
+            .max(1f)
+            .inc(0.01f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.PROGRESS)
             .build();
     public Property<Integer> breakCooldownProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Break Cooldown")
-            .description("The amount of ticks to wait between breaking blocks. Default MC is 5.")
             .value(1)
+            .min(0)
             .max(5)
+            .inc(1)
             .build();
 
     private boolean givenHaste;
 
     public SpeedMine() {
-        super(Category.PLAYER, "Break blocks faster");
+        super(Category.PLAYER);
     }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().isCreative())
-            return;
         switch (modeProperty.value()) {
-            case PROGRESS, INSTANT -> {
+            case PROGRESS, PACKET -> {
                 if (givenHaste && Wrapper.INSTANCE.getLocalPlayer().hasStatusEffect(StatusEffects.HASTE))
                     Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HASTE);
                 float bProgress = modeProperty.value() == Mode.PROGRESS ? breakProgressProperty.value() : 0;
-                if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(Wrapper.INSTANCE.getIClientPlayerInteractionManager().currentBreakingPos()))) {
-                    givenHaste = false;
-                    break;
-                }
                 if (Wrapper.INSTANCE.getIClientPlayerInteractionManager().getBlockBreakProgress() >= bProgress) {
                     Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);
                 }
@@ -85,17 +113,19 @@ public class SpeedMine extends Feature {
 
     @EventPointer
     private final EventListener<EventClickBlock> eventClickBlockEventListener = new EventListener<>(event -> {
-        if (modeProperty.value() != Mode.INSTANT)
+        if (modeProperty.value() != Mode.PACKET)
             return;
-        if (Wrapper.INSTANCE.getLocalPlayer().isCreative())
-            return;
-        if (!WorldHelper.INSTANCE.isBreakable(WorldHelper.INSTANCE.getBlock(event.getBlockPos())))
-            return;
-        for (int i = 0; i < 10; i++) {
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
-            NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
-        }
-        Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(1);
+        if (stopWatch.hasPassed(delayProperty.value())) {
+        for (int i = 0; i < paProperty.value(); i++) {
+         if (startpProperty.value()) {    
+NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
+         }
+             if(stoppProperty.value()) {
+NetworkHelper.INSTANCE.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, event.getBlockPos(), event.getFace()));
+         }
+     }      
+}
+        Wrapper.INSTANCE.getIClientPlayerInteractionManager().setBlockBreakProgress(breakCooldownProperty.value());
     }, new ClickBlockFilter(EventClickBlock.Mode.PRE));
 
     @Override
@@ -106,6 +136,6 @@ public class SpeedMine extends Feature {
     }
 
     public enum Mode {
-        PROGRESS, INSTANT, HASTE
+        PROGRESS, PACKET, HASTE
     }
 }

@@ -30,7 +30,7 @@ public class InventorySort extends Feature {
     private final StopWatch timeOutStopWatch = new StopWatch();
 
     public InventorySort() {
-        super(Category.MISC, "Sort your inventory with a middle click while it's open.");
+        super(Category.MISC, "");
     }
 
     @EventPointer

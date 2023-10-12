@@ -9,7 +9,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class NoHurtCam extends Feature {
 
 	public NoHurtCam() {
-		super(Category.VISUAL, "Remove the hurt-cam effect that bobs your view when damaged.");
+		super(Category.VISUAL);
 	}
 
 	@EventPointer

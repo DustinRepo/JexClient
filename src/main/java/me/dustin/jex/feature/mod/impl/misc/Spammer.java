@@ -22,15 +22,13 @@ import java.util.Random;
 public class Spammer extends Feature {
 
     public final Property<SpamSource> sourceProperty = new Property.PropertyBuilder<SpamSource>(this.getClass())
-            .name("Source")
-            .description("The source for the list of messages to spam.")
+            .name("SourceList")
             .value(SpamSource.SPAM_FILE)
             .build();
-    public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+    public final Property<String> delayProperty = new Property.PropertyBuilder<String>(this.getClass())
             .name("Delay (MS)")
-            .value(500L)
-            .max(30000)
-            .inc(10)
+            .value("500")
+            .max(5)
             .build();
 
     private String spamString;
@@ -48,7 +46,8 @@ public class Spammer extends Feature {
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!stopWatch.hasPassed(delayProperty.value()))
+        long delay = Long.valueOf(delayProperty.value());
+        if (!stopWatch.hasPassed(delay))
             return;
         String sentence = spamString.split("\n")[currentSpot];
         while (containsSyntax(sentence)) {

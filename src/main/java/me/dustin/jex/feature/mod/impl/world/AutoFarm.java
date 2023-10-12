@@ -59,6 +59,7 @@ public class AutoFarm extends Feature {
     public final Property<Integer> sortDelayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Sort Delay")
             .value(250)
+            .min(0)
             .max(1000)
             .inc(10)
             .build();
@@ -71,7 +72,7 @@ public class AutoFarm extends Feature {
     private final StopWatch sortStopWatch = new StopWatch();
 
     public AutoFarm() {
-        super(Category.WORLD, "Farm a selected area");
+        super(Category.WORLD);
     }
 
     @EventPointer
@@ -90,7 +91,6 @@ public class AutoFarm extends Feature {
         switch (stage) {
             case FARMING -> {
                 closest = farmArea.getClosestCrop();
-                //if no plants to farm move to next stage
                 if (closest == null) {
                     this.stage = Stage.PLANTING;
                     PathingHelper.INSTANCE.cancelPathing();
@@ -110,7 +110,6 @@ public class AutoFarm extends Feature {
                 closest = farmArea.getClosestFarmland();
                 int cropSlot = getPlantableCrop();
 
-                //if out of crops to plant or no more area to plant crops move to next stage
                 if (cropSlot == -1 || closest == null) {
                     this.stage = Stage.ITEM_PICKUP;
                     PathingHelper.INSTANCE.cancelPathing();
@@ -155,14 +154,12 @@ public class AutoFarm extends Feature {
                     stage = Stage.FARMING;
                     return;
                 }
-                //do planting check
                 closest = farmArea.getClosestFarmland();
                 int cropSlot = getPlantableCrop();
                 if (cropSlot != -1 && closest != null) {
                     this.stage = Stage.PLANTING;
                     return;
                 }
-                //do item check
                 if (getClosestItem() != null) {
                     stage = Stage.ITEM_PICKUP;
                     return;
@@ -179,17 +176,16 @@ public class AutoFarm extends Feature {
             Vec3d miningAreaVec2 = Render3DHelper.INSTANCE.getRenderPosition(new BlockPos(farmArea.getAreaBB().maxX, farmArea.getAreaBB().maxY, farmArea.getAreaBB().maxZ));
             Box miningAreaBox = new Box(miningAreaVec1.x, miningAreaVec1.y, miningAreaVec1.z, miningAreaVec2.x + 1, miningAreaVec2.y + 1, miningAreaVec2.z + 1);
             Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), miningAreaBox, 0xffffff00);
-        } else if (tempPos1 != null) {//draws yellow box on first set pos
+        } else if (tempPos1 != null) {
             Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos1);
             Box closestBox = new Box(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
             Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), closestBox, 0xffffff00);
         }
-        if (tempPos2 != null) {//draws yellow box on first set pos
+        if (tempPos2 != null) {
             Vec3d tempVec = Render3DHelper.INSTANCE.getRenderPosition(tempPos2);
             Box closestBox = new Box(tempVec.x, tempVec.y, tempVec.z, tempVec.x + 1, tempVec.y + 1, tempVec.z + 1);
             Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), closestBox, 0xffffff00);
         }
-        //draws yellow box on crosshair block
         if (farmArea == null && Wrapper.INSTANCE.getMinecraft().crosshairTarget instanceof BlockHitResult blockHitResult) {
             Vec3d hitVec = Render3DHelper.INSTANCE.getRenderPosition(blockHitResult.getBlockPos());
             Box hoverBox = new Box(hitVec.x, hitVec.y, hitVec.z, hitVec.x + 1, hitVec.y + 1, hitVec.z + 1);

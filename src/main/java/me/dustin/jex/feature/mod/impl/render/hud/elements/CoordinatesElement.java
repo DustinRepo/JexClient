@@ -21,7 +21,7 @@ public class CoordinatesElement extends HudElement{
         float longest = 0;
 
         Vec3d pos = Wrapper.INSTANCE.getLocalPlayer().getPos();
-        String coordString = String.format("XYZ\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.getX(), pos.getY(), pos.getZ());
+        String coordString = String.format("XYZ\247f: \2477%.15f\247f/\2477%.15f\247f/\2477%.15f", pos.getX(), pos.getY(), pos.getZ());
         float strLength = FontHelper.INSTANCE.getStringWidth(coordString);
         float strX = isLeftSide() ? getX() + 3 : getX() + getWidth() - strLength;
         float strY = getY() + (isTopSide() ? 2.5f : 12.5f);
@@ -32,9 +32,9 @@ public class CoordinatesElement extends HudElement{
         if (getHud().netherCoordsProperty.value()) {
             double coordScale = Wrapper.INSTANCE.getLocalPlayer().clientWorld.getDimension().coordinateScale();
             if (coordScale != 1.0D) {
-                coordString = String.format("Overworld\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.getX() * coordScale, pos.getY() * coordScale, pos.getZ() * coordScale);
+                coordString = String.format("Overworld\247f: \2477%.15f\247f/\2477%.15f\247f/\2477%.15f", pos.getX() * coordScale, pos.getY() * coordScale, pos.getZ() * coordScale);
             } else {
-                coordString = String.format("Nether\247f: \2477%.2f\247f/\2477%.2f\247f/\2477%.2f", pos.getX() / 8, pos.getY(), pos.getZ() / 8);
+                coordString = String.format("Nether\247f: \2477%.15f\247f/\2477%.15f\247f/\2477%.15f", pos.getX() / 8, pos.getY(), pos.getZ() / 8);
             }
             strLength = FontHelper.INSTANCE.getStringWidth(coordString);
             strX = isLeftSide() ? getX() + 3 : getX() + getWidth() - strLength;

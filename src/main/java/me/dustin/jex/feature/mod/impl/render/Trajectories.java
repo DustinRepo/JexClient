@@ -56,6 +56,13 @@ import java.util.ArrayList;
 
 public class Trajectories extends Feature {
 
+    public final Property<Float> sizeProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Box Size")
+            .value(0.1f)
+            .min(0.01f)
+            .max(0.3f)
+            .inc(0.01f)
+            .build();
     public final Property<Boolean> disableDepthProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Z-Clip")
             .value(true)
@@ -73,7 +80,7 @@ public class Trajectories extends Feature {
     private final ArrayList<Vec3d> positions = new ArrayList<>();
 
     public Trajectories() {
-        super(Category.VISUAL, "Show a trajectory line for things like bows and snowballs");
+        super(Category.VISUAL);
     }
 
     @EventPointer
@@ -108,7 +115,7 @@ public class Trajectories extends Feature {
                         Vec3d vec2 = Render3DHelper.INSTANCE.getEntityRenderPosition(hitEntity, event.getPartialTicks());
                         Render3DHelper.INSTANCE.drawEntityBox(event.getPoseStack(), hitEntity, vec2.x, vec2.y, vec2.z, hitColorProperty.value().getRGB());
                     } else {
-                        Box bb1 = new Box(vec.x - 0.2f, vec.y - 0.2f, vec.z - 0.2f, vec.x + 0.2f, vec.y + 0.2f, vec.z + 0.2f);
+                        Box bb1 = new Box(vec.x - sizeProperty.value(), vec.y - sizeProperty.value(), vec.z - sizeProperty.value(), vec.x + sizeProperty.value(), vec.y + sizeProperty.value(), vec.z + sizeProperty.value());
                         Render3DHelper.INSTANCE.drawBox(event.getPoseStack(), bb1, missColorProperty.value().getRGB());
                     }
                 }

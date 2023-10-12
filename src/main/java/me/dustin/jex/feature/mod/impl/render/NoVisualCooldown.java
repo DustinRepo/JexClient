@@ -9,7 +9,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class NoVisualCooldown extends Feature {
 
     public NoVisualCooldown() {
-        super(Category.VISUAL, "Removes the visual effect of your weapon lowering after attacking.");
+        super(Category.VISUAL);
     }
 
     @EventPointer

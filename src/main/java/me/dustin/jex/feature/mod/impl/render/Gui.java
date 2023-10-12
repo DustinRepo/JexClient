@@ -11,12 +11,11 @@ public class Gui extends Feature {
 
     public final Property<Boolean> noCategoriesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("No Categories")
-            .description("Display all mods on the first page rather than grouping by category.")
             .value(false)
             .build();
 
     public Gui() {
-        super(Category.VISUAL, "Opens the ClickGui.", GLFW.GLFW_KEY_RIGHT_SHIFT);
+        super(Category.VISUAL, "", GLFW.GLFW_KEY_RIGHT_SHIFT);
     }
 
     @Override

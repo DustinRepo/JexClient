@@ -39,7 +39,7 @@ public class AntiAFK extends Feature {
     private BlockPos[] lastSpots;
 
     public AntiAFK() {
-        super(Category.MISC, "Prevent yourself from being detected as AFK and potentially kicked");
+        super(Category.MISC);
     }
 
     @EventPointer

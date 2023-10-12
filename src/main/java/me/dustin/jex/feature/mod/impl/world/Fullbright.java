@@ -22,14 +22,13 @@ public class Fullbright extends Feature {
             .build();
     public final Property<Double> resetGammaProperty = new Property.PropertyBuilder<Double>(this.getClass())
             .name("Reset Gamma")
-            .description("The gamma to set the value to on disable.")
             .value(1D)
             .max(1)
             .inc(0.05f)
             .build();
 
     public Fullbright() {
-        super(Category.WORLD, "Goodbye, darkness. You were never my friend.");
+        super(Category.WORLD);
     }
 
     @EventPointer

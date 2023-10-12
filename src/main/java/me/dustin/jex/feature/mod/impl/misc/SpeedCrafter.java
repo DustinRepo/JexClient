@@ -18,6 +18,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.StonecutterScreenHandler;
+
 import net.minecraft.screen.slot.SlotActionType;
 import java.util.List;
 
@@ -26,7 +28,9 @@ public class SpeedCrafter extends Feature {
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Delay")
             .value(0L)
-            .max(500)
+            .min(0)
+            .max(1000)
+            .inc(10)
             .build();
 
     public Item craftingItem;
@@ -34,7 +38,7 @@ public class SpeedCrafter extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public SpeedCrafter() {
-        super(Category.MISC, "Automatically craft by opening a crafting table.");
+        super(Category.MISC);
     }
 
     @EventPointer
@@ -42,7 +46,7 @@ public class SpeedCrafter extends Feature {
         if (Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler instanceof CraftingScreenHandler craftingScreenHandler) {
             if (InventoryHelper.INSTANCE.isInventoryFull(new ItemStack(craftingItem))) {
                 if (!alerted) {
-                    ChatHelper.INSTANCE.addClientMessage("Inventory is full! Speedcrafter can not craft!");
+                    ChatHelper.INSTANCE.addClientMessage("Inventory is full!");
                     alerted = true;
                 }
                 return;
@@ -50,7 +54,7 @@ public class SpeedCrafter extends Feature {
             alerted = false;
             if (!stopWatch.hasPassed(delayProperty.value()))
                 return;
-            List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_BUILDING_BLOCKS);
+            List<RecipeResultCollection> recipeResultCollectionList = Wrapper.INSTANCE.getLocalPlayer().getRecipeBook().getResultsForGroup(RecipeBookGroup.CRAFTING_SEARCH);
             for (RecipeResultCollection recipeResultCollection : recipeResultCollectionList) {
                 for (Recipe<?> recipe : recipeResultCollection.getRecipes(true)) {
                     if (recipe.getOutput().getItem() == craftingItem) {
@@ -61,7 +65,7 @@ public class SpeedCrafter extends Feature {
                             return;
                     }
                 }
-            }
+            }       
         }
         setSuffix(craftingItem == null ? "None" : craftingItem.getName().getString());
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
@@ -69,7 +73,7 @@ public class SpeedCrafter extends Feature {
     @Override
     public void onEnable() {
         if (craftingItem == null) {
-            ChatHelper.INSTANCE.addClientMessage("Crafting item not set!");
+            ChatHelper.INSTANCE.addClientMessage("Item not set!");
             ChatHelper.INSTANCE.addClientMessage("Hold the intended output item and use " + CommandManager.INSTANCE.getPrefix() + "sc set");
         }
         super.onEnable();

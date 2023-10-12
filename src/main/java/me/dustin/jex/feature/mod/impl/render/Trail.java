@@ -30,7 +30,7 @@ public class Trail extends Feature {
     private final Random r = new Random();
 
     public Trail() {
-        super(Category.VISUAL, "Render a configurable list of particles as a trail behind you. Use command .trail to configure");
+        super(Category.VISUAL);
     }
 
     @EventPointer
@@ -53,9 +53,7 @@ public class Trail extends Feature {
     public void onEnable() {
         ConfigManager.INSTANCE.get(TrailsFile.class).read();
         if (particles.isEmpty()) {
-            particles.add(ParticleTypes.DRAGON_BREATH);
-            particles.add(ParticleTypes.SOUL_FIRE_FLAME);
-            particles.add(ParticleTypes.ASH);
+		   particles.add(ParticleTypes.ASH);
         }
         super.onEnable();
     }

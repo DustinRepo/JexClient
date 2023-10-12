@@ -44,7 +44,7 @@ public class CustomWidgets extends Feature {
     private final Map<ClickableWidget, Float> offsets = new HashMap<>();
 
     public CustomWidgets() {
-        super("CustomWidgets", Category.VISUAL, "Change the visuals on widgets like buttons from Minecraft", true, false, 0);
+        super("CustomWidgets", Category.VISUAL, "", true, false, 0);
     }
 
     @EventPointer

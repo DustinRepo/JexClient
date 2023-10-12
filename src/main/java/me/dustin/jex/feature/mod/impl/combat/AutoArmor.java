@@ -32,7 +32,7 @@ public class AutoArmor extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public AutoArmor() {
-        super(Category.COMBAT, "Puts on the best armor in your inventory automatically.");
+        super(Category.COMBAT);
     }
 
     @EventPointer

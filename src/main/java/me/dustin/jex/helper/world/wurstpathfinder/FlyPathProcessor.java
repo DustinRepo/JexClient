@@ -107,7 +107,8 @@ public class FlyPathProcessor extends PathProcessor
 			}
 			//fix for speed going way past the point
 			if (Feature.getState(Fly.class)) {
-				if (!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= fly.speedProperty.value()) {
+			float cmp = (fly.hspeedProperty.value() + fly.vspeedProperty.value()) / 2;
+				if (!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= cmp) {
 					PlayerHelper.INSTANCE.setVelocityX(Wrapper.INSTANCE.getPlayer(), 0);
 					PlayerHelper.INSTANCE.setVelocityZ(Wrapper.INSTANCE.getPlayer(), 0);
 					Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
@@ -126,23 +127,24 @@ public class FlyPathProcessor extends PathProcessor
 			
 			if(Wrapper.INSTANCE.getPlayer().horizontalCollision)
 				if(posVec.y > nextBox.maxY)
-					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.speedProperty.value());
+					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.vspeedProperty.value());
 				else if(posVec.y < nextBox.minY)
-					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.speedProperty.value());
+					PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.vspeedProperty.value());
 				
 			// vertical movement
 		}else if(y)
 		{
+		      float cmp = (fly.hspeedProperty.value() + fly.vspeedProperty.value()) / 2;
 			PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), 0);
-			if(!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= fly.speedProperty.value()) {
+			if(!creativeFlying && Wrapper.INSTANCE.getPlayer().getPos().distanceTo(vecInPos) <= cmp) {
 				Wrapper.INSTANCE.getPlayer().setPosition(vecInPos.x, vecInPos.y, vecInPos.z);
 				return;
 			}
 
 			if(posVec.y < nextBox.minY)
-				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.speedProperty.value());
+				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), fly.vspeedProperty.value());
 			else
-				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.speedProperty.value());
+				PlayerHelper.INSTANCE.setVelocityY(Wrapper.INSTANCE.getPlayer(), -fly.vspeedProperty.value());
 			
 			if(Wrapper.INSTANCE.getPlayer().verticalCollision) {
 				float yaw = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getPlayer(), new Vec3d(nextPos.getX() + 0.5f, nextPos.getY(), nextPos.getZ() + 0.5f)).getYaw();
@@ -160,7 +162,7 @@ public class FlyPathProcessor extends PathProcessor
 
 	public double moveSpeed() {
 		if (Speed.INSTANCE.getState()) {
-			return Feature.get(Fly.class).speedProperty.value();
+			return Feature.get(Fly.class).hspeedProperty.value();
 		}
 		return PlayerHelper.INSTANCE.getBaseMoveSpeed();
 	}

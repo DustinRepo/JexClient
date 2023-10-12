@@ -16,15 +16,15 @@ public class Zoom extends Feature {
 
     public final Property<Boolean> mouseSmoothProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Mouse Smooth")
-            .description("Smooth the mouse movement while zoomed like Optifine.")
             .value(true)
             .build();
     public final Property<Float> zoomLevelProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Zoom Level")
             .value(1f)
-            .min(1)
-            .max(5)
+            .min(0f)
+            .max(10f)
             .value(0.1f)
+            .inc(0.1f)
             .build();
     public final Property<Integer> zoomKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Zoom Key")
@@ -36,7 +36,7 @@ public class Zoom extends Feature {
     boolean resetFOV = true;
 
     public Zoom() {
-        super(Category.VISUAL, "Zoom in like Optifine");
+        super(Category.VISUAL);
     }
 
     @Override
@@ -59,9 +59,9 @@ public class Zoom extends Feature {
                 this.resetFOV = false;
                 this.savedFOV = Wrapper.INSTANCE.getOptions().getFov().getValue();
             }
-            int zoomFov = (int)(30 - (6 * zoomLevelProperty.value()));
+            int zoomFov = (int)(30 - (2 * zoomLevelProperty.value()));
             if (zoomFov == 0)
-                zoomFov = 1;
+                zoomFov = 30;
             if(Wrapper.INSTANCE.getOptions().getFov().getValue() > zoomFov) {
                 Wrapper.INSTANCE.getOptions().getFov().setValue(zoomFov);
                 if (mouseSmoothProperty.value())

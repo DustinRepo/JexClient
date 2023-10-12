@@ -18,6 +18,8 @@ import me.dustin.jex.feature.mod.impl.movement.fly.impl.CreativeFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.NormalFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.ThreeDFly;
 import me.dustin.jex.feature.mod.impl.movement.fly.impl.TightFly;
+import me.dustin.jex.feature.mod.impl.movement.fly.impl.JetpackFly;
+import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.feature.mod.impl.player.Freecam;
 import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.entity.EntityHelper;
@@ -33,22 +35,52 @@ public class Fly extends Feature {
             .name("Mode")
             .value(Mode.NORMAL)
             .build();
-    public final Property<Float> speedProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("Speed")
-            .value(0.5f)
-            .min(0.1f)
-            .max(5)
-            .inc(0.1f)
+    public final Property<Integer> hspeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Horizontal Speed (km/h)")
+            .value(72)
+            .min(15)
+            .max(100)
+            .inc(1)
+            .build();
+    public final Property<Integer> vspeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Vertical Speed (km/h)")
+            .value(15)
+            .min(15)
+            .max(100)
+            .inc(1)
+            .build();
+    public final Property<Integer> multipleProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Multiplier")
+            .value(1)
+            .min(1)
+            .max(100)
+            .inc(1)
             .build();
     public final Property<Boolean> walkAnimationProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Walk Animation")
-            .description("Show the hand-moving walk animation while flying.")
             .value(true)
             .build();
     public final Property<Boolean> flyCheckBypassProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Fly Check Bypass")
-            .description("Attempt to bypass the server's fly check.")
             .value(true)
+            .build();
+    public final Property<Integer> tProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Timeout (Tick)")
+            .value(1)
+            .min(0)
+            .max(80)
+            .inc(1)
+            .parent(flyCheckBypassProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Float> distanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("Fall Distance")
+            .value(0.5f)
+            .min(0.1f)
+            .max(10f)
+            .inc(0.1f)
+            .parent(flyCheckBypassProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> glideProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Glide")
@@ -67,11 +99,12 @@ public class Fly extends Feature {
     private Mode lastMode;
 
     public Fly() {
-        super(Category.MOVEMENT,  "Fly in survival", GLFW.GLFW_KEY_F);
+        super(Category.MOVEMENT,  "", GLFW.GLFW_KEY_F);
         new NormalFly();
         new TightFly();
         new ThreeDFly();
         new CreativeFly();
+        new JetpackFly();
     }
 
     @EventPointer
@@ -100,12 +133,13 @@ public class Fly extends Feature {
 
     @EventPointer
     private final EventListener<EventPacketSent> eventPacketSentEventListener = new EventListener<>(event -> {
+        float tick = tProperty.value() * 0.05f;
         if (!flyCheckBypassProperty.value() || Feature.getState(Freecam.class))
             return;
         PlayerMoveC2SPacket playerMoveC2SPacket = (PlayerMoveC2SPacket) event.getPacket();
-        if (Wrapper.INSTANCE.getLocalPlayer().age % 3 == 1) {
+        if (Wrapper.INSTANCE.getLocalPlayer().age >= tick) {
             if (EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 2) {
-                PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - 0.1, playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
+                PlayerMoveC2SPacket modified = new PlayerMoveC2SPacket.Full(playerMoveC2SPacket.getX(Wrapper.INSTANCE.getLocalPlayer().getX()), playerMoveC2SPacket.getY(Wrapper.INSTANCE.getLocalPlayer().getY()) - distanceProperty.value(), playerMoveC2SPacket.getZ(Wrapper.INSTANCE.getLocalPlayer().getZ()), playerMoveC2SPacket.getYaw(PlayerHelper.INSTANCE.getYaw()), playerMoveC2SPacket.getPitch(PlayerHelper.INSTANCE.getPitch()), true);
                 event.setPacket(modified);
             }
         }
@@ -147,6 +181,6 @@ public class Fly extends Feature {
     }
 
     public enum Mode {
-        NORMAL, CREATIVE, TIGHT, THREE_D
+        NORMAL, JETPACK, CREATIVE, TIGHT, THREE_D
     }
 }

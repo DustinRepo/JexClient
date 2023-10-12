@@ -20,7 +20,7 @@ import me.dustin.jex.feature.mod.impl.player.Jesus;
 public class CompatSwim extends Feature {
 
     public CompatSwim() {
-        super(Category.MOVEMENT, "Change swim speed to work on pre 1.13 servers with anticheats");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer

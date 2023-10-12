@@ -25,7 +25,7 @@ public class ThrowPearl extends Feature {
             .build();
 
     public ThrowPearl() {
-        super(Category.PLAYER, "Automatically throw ender pearl from hotbar on button press.");
+        super(Category.PLAYER);
     }
 
     @EventPointer

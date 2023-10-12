@@ -50,7 +50,7 @@ public class SpawnSphere extends Feature {
     private final ArrayList<BlockPos> outerSphere = new ArrayList<>();
 
     public SpawnSphere() {
-        super(Category.WORLD, "Show a 128 block radius sphere around an area to see all spots mobs could spawn in that radius.");
+        super(Category.WORLD);
     }
 
     @EventPointer

@@ -35,17 +35,19 @@ public class AccuratePlace extends Feature {
     public final Property<Integer> nextKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Next Key")
             .value(GLFW.GLFW_KEY_UP)
+            .isKey()
             .build();
     public final Property<Integer> lastKeyProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Last Key")
             .value(GLFW.GLFW_KEY_DOWN)
+            .isKey()
             .build();
 
     private Direction facing = Direction.DOWN;
     private int index = 0;
 
     public AccuratePlace() {
-        super(Category.WORLD, "Change the direction that you place blocks");
+        super(Category.WORLD);
     }
 
     @EventPointer

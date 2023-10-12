@@ -34,11 +34,13 @@ public class SpeedElement extends HudElement {
         switch (getHud().distanceModeProperty.value()) {
             case BLOCKS:
                 break;
+            case METER:
+                break;
             case FEET:
                 move = move.multiply(3.281);
                 break;
             case MILES:
-                move = move.multiply(0.000621371);
+                move = move.multiply(0.00062137119223733);
                 break;
             case KM:
                 move = move.multiply(0.001);
@@ -62,7 +64,7 @@ public class SpeedElement extends HudElement {
                 time *= 86400;
                 break;
         }
-        return String.format("%.2f %s/%s", (float) (Math.abs(length2D(move)) * time), WordUtils.capitalize(getHud().distanceModeProperty.value().name().toLowerCase().replace("_", " ")), WordUtils.capitalize(getHud().timeModeProperty.value().name().toLowerCase().replace("_", " ")));
+        return String.format("%.9f %s/%s", (float) (Math.abs(length2D(move)) * time), WordUtils.capitalize(getHud().distanceModeProperty.value().name().toLowerCase().replace("_", " ")), WordUtils.capitalize(getHud().timeModeProperty.value().name().toLowerCase().replace("_", " ")));
     }
 
     public double length2D(Vec3d vec3d) {

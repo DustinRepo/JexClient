@@ -33,7 +33,7 @@ public class ArmorDerp extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public ArmorDerp() {
-        super(Category.MISC, "Spam switch between armor in your inventory");
+        super(Category.MISC);
     }
 
     @EventPointer

@@ -253,8 +253,7 @@ public class GifDecoder {
     }
     try {
       is.close();
-    } catch (IOException e) {
-    }
+    } catch (IOException e) {}
     return status;
   }
 
@@ -277,6 +276,7 @@ public class GifDecoder {
     try {
       is.close();
     } catch (IOException e) {
+      return 0;
     }
     return status;
   }
@@ -463,6 +463,7 @@ public class GifDecoder {
           n += count;
         }
       } catch (IOException e) {
+        return 0;
       }
 
       if (n < blockSize) {
@@ -480,6 +481,7 @@ public class GifDecoder {
     try {
       n = in.read(c);
     } catch (IOException e) {
+      return null;
     }
     if (n < nbytes) {
       status = STATUS_FORMAT_ERROR;

@@ -18,7 +18,7 @@ public class UnfocusedFPS extends Feature {
             .build();
 
     public UnfocusedFPS() {
-        super(Category.MISC, "Limit the FPS while Minecraft isn't in focus to save resources");
+        super(Category.MISC);
         setState(true);
     }
 

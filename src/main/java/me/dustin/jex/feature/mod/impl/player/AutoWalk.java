@@ -12,7 +12,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class AutoWalk extends Feature {
 
     public AutoWalk() {
-        super(Category.PLAYER, "Automatically hold W");
+        super(Category.PLAYER);
     }
 
     @EventPointer

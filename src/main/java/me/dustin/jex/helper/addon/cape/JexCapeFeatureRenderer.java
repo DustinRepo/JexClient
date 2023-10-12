@@ -36,7 +36,11 @@ public class JexCapeFeatureRenderer extends FeatureRenderer<PlayerEntity, Player
             return;
         }
         AddonHelper.AddonResponse addonResponse = AddonHelper.INSTANCE.getResponse(uuid);
+        try {
         render(matrixStack, vertexConsumerProvider, light, playerEntity, tickDelta, CapeHelper.INSTANCE.getCape(uuid), addonResponse.enchantedcape());
+        }
+        catch (NullPointerException e) {
+        }
     }
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, PlayerEntity playerEntity, float tickDelta, Identifier texture, boolean enchanted) {
         matrixStack.push();

@@ -8,12 +8,11 @@ import java.awt.*;
 
 public class TargetHud extends Feature {
     public TargetHud() {
-        super(Category.VISUAL, "Display information on the HUD of the entity you are attacking");
+        super(Category.VISUAL);
     }
 
     public final Property<Boolean> markTargetProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Mark Target")
-            .description("Show a triangle on the target on your HUD")
             .value(true)
             .build();
     public final Property<Color> markColorProperty = new Property.PropertyBuilder<Color>(this.getClass())

@@ -41,7 +41,6 @@ public class Jesus extends Feature {
             .build();
     public final Property<Boolean> allowJumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Jump")
-            .description("Allow jumping while on the water.")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.DOLPHIN)
@@ -49,7 +48,7 @@ public class Jesus extends Feature {
     private int ticks;
 
     public Jesus() {
-        super(Category.PLAYER, "Walk on water like Jesus.", GLFW.GLFW_KEY_J);
+        super(Category.PLAYER, "", GLFW.GLFW_KEY_J);
     }
 
     @EventPointer
@@ -82,6 +81,10 @@ public class Jesus extends Feature {
             return;
         }
         if (modeProperty.value() == Mode.SOLID && (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
+            Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
+            Wrapper.INSTANCE.getPlayer().setVelocity(orig.getX(), 0.30, orig.getZ());
+        }
+        if (modeProperty.value() == Mode.SOLIDOLD && (WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) && !Wrapper.INSTANCE.getPlayer().isSneaking()) {
             Vec3d orig = Wrapper.INSTANCE.getPlayer().getVelocity();
             Wrapper.INSTANCE.getPlayer().setVelocity(orig.getX(), 0.11, orig.getZ());
         }
@@ -118,8 +121,24 @@ public class Jesus extends Feature {
     }, new SoundFilter(EventPlaySound.Mode.PRE, new Identifier("ambient.underwater.enter"), new Identifier("ambient.underwater.exit"), new Identifier("ambient.underwater.loop"), new Identifier("entity.player.swim"), new Identifier("ambient.underwater.loop"), new Identifier("ambient.underwater.loop.additions")));
 
     @EventPointer
-    private final EventListener<EventBlockCollisionShape> eventBlockCollisionShapeEventListener = new EventListener<>(event -> {
+    private final EventListener<EventBlockCollisionShape> eventBlockCollisionShape = new EventListener<>(event -> {
         if (Wrapper.INSTANCE.getPlayer() == null || Wrapper.INSTANCE.getWorld() == null || modeProperty.value() != Mode.SOLID || event.getBlockPos() == null)
+            return;
+        if (Wrapper.INSTANCE.getPlayer().isSubmergedInWater() || Wrapper.INSTANCE.getPlayer().isInLava() || (event.getBlockPos().getY() < Wrapper.INSTANCE.getPlayer().getY() + 0.5f && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) || Wrapper.INSTANCE.getPlayer().isSneaking() || Wrapper.INSTANCE.getPlayer().fallDistance > 3)
+            return;
+        if (WorldHelper.INSTANCE.isWaterlogged(event.getBlockPos()) && event.getVoxelShape().isEmpty()) {
+            FluidState fluidState = WorldHelper.INSTANCE.getFluidState(event.getBlockPos());
+            if (fluidState.getLevel() == 8) {      
+                event.setVoxelShape(VoxelShapes.fullCube());
+            } else
+                event.setVoxelShape(fluidState.getShape(Wrapper.INSTANCE.getWorld(), event.getBlockPos()));
+            event.cancel();
+        }
+    });
+    
+    @EventPointer
+    private final EventListener<EventBlockCollisionShape> eventBlockCollisionShapeEventListener = new EventListener<>(event -> {
+        if (Wrapper.INSTANCE.getPlayer() == null || Wrapper.INSTANCE.getWorld() == null || modeProperty.value() != Mode.SOLIDOLD || event.getBlockPos() == null)
             return;
         if (Wrapper.INSTANCE.getPlayer().isSubmergedInWater() || Wrapper.INSTANCE.getPlayer().isInLava() || (event.getBlockPos().getY() < Wrapper.INSTANCE.getPlayer().getY() + 0.5f && WorldHelper.INSTANCE.isInLiquid(Wrapper.INSTANCE.getPlayer())) || Wrapper.INSTANCE.getPlayer().isSneaking() || Wrapper.INSTANCE.getPlayer().fallDistance > 3)
             return;
@@ -133,7 +152,7 @@ public class Jesus extends Feature {
             event.cancel();
         }
     });
-
+    
     @EventPointer
     private final EventListener<EventMove> eventMoveEventListener = new EventListener<>(event -> {
         BaritoneHelper.INSTANCE.setAssumeJesus(true);
@@ -168,6 +187,6 @@ public class Jesus extends Feature {
     }
 
     public enum Mode {
-        SOLID, DOLPHIN, SWIM
+        SOLID, DOLPHIN, SWIM, SOLIDOLD
     }
 }

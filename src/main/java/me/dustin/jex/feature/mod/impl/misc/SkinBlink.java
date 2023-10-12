@@ -21,49 +21,42 @@ public class SkinBlink extends Feature {
             .build();
     public final Property<Boolean> headProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Head")
-            .description("Enables toggling the head cover")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.CUSTOM)
             .build();
     public final Property<Boolean> jacketProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Jacket")
-            .description("Enables toggling the jacket cover")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.CUSTOM)
             .build();
     public final Property<Boolean> capeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Cape")
-            .description("Enables toggling the cape")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.CUSTOM)
             .build();
     public final Property<Boolean> leftArmProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Left Arm")
-            .description("Enables toggling the left arm cover")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.CUSTOM)
             .build();
     public final Property<Boolean> leftLegProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Left Leg")
-            .description("Enables toggling the left leg cover")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.CUSTOM)
             .build();
     public final Property<Boolean> rightArmProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Right Arm")
-            .description("Enables toggling the right arm cover")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.CUSTOM)
             .build();
     public final Property<Boolean> rightLegProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Right Leg")
-            .description("Enables toggling the right leg cover")
             .value(true)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.CUSTOM)
@@ -81,7 +74,7 @@ public class SkinBlink extends Feature {
     private boolean toggleCustom;
 
     public SkinBlink() {
-        super(Category.MISC, "Make your skin flash your layers on and off");
+        super(Category.MISC, "");
     }
 
     @EventPointer

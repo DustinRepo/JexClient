@@ -39,19 +39,23 @@ public class Tunneller extends Feature {
             .name("Width")
             .value(3)
             .min(1)
-            .max(5)
+            .max(6)
             .build();
     public final Property<Integer> heightProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Height")
             .value(3)
             .min(1)
-            .max(5)
+            .max(6)
+            .build();
+    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
             .build();
 
     private Direction direction;
 
     public Tunneller() {
-        super(Category.WORLD, "Automatically dig tunnels");
+        super(Category.WORLD);
     }
 
     @EventPointer
@@ -75,7 +79,9 @@ public class Tunneller extends Feature {
                     }
                 } else if (WorldHelper.INSTANCE.isWaterlogged(liquidCheckSpot)){
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(liquidCheckSpot, Direction.UP);
+                    if (swingProperty.value()) {
                     Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
+                    }
                     return;
                 }
             }
@@ -83,7 +89,9 @@ public class Tunneller extends Feature {
         for (BlockPos blockPos : getBlocksInTunnel()) {
             if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(blockPos, Direction.UP);
+                if (swingProperty.value()) {
                 Wrapper.INSTANCE.getPlayer().swingHand(Hand.MAIN_HAND);
+                }
                 return;
             }
         }
@@ -175,10 +183,10 @@ public class Tunneller extends Feature {
     private Box getTunnelBox() {
         Box box = new Box(Wrapper.INSTANCE.getPlayer().getBlockX() - widthProperty.value() / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY(), Wrapper.INSTANCE.getPlayer().getBlockZ() - widthProperty.value() / 2.f, Wrapper.INSTANCE.getPlayer().getBlockX() + widthProperty.value() / 2.f, Wrapper.INSTANCE.getPlayer().getBlockY() + heightProperty.value() - 1, Wrapper.INSTANCE.getPlayer().getBlockZ() + widthProperty.value() / 2.f);
         switch (direction) {
-            case NORTH -> box = box.offset(0, 0, -widthProperty.value() / 2.f);
-            case SOUTH -> box = box.offset(0, 0, widthProperty.value() / 2.f);
-            case EAST -> box = box.offset(widthProperty.value() / 2.f, 0, 0);
-            case WEST -> box = box.offset(-widthProperty.value() / 2.f, 0, 0);
+            case NORTH -> box = box.offset(0, 0, -widthProperty.value());
+            case SOUTH -> box = box.offset(0, 0, widthProperty.value());
+            case EAST -> box = box.offset(widthProperty.value(), 0, 0);
+            case WEST -> box = box.offset(-widthProperty.value(), 0, 0);
         }
         return box;
     }

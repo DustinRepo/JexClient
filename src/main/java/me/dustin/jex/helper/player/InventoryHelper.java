@@ -169,7 +169,18 @@ public enum InventoryHelper {
         }
         return 0;
     }
-
+    
+   public int getSoulSpeedLevel() {
+        ItemStack boots = getInventory().getArmorStack(0);
+        if (boots.hasEnchantments()) {
+            Map<Enchantment, Integer> equippedEnchants = EnchantmentHelper.get(boots);
+            if (equippedEnchants.containsKey(Enchantments.SOUL_SPEED)) {
+                return equippedEnchants.get(Enchantments.SOUL_SPEED);
+            }
+        }
+        return 0;
+    } 
+    
     public boolean isContainerEmpty(ScreenHandler container) {
         int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
         for (int i = 0; i < most; i++) {

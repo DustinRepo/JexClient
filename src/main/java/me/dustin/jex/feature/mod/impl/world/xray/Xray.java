@@ -33,7 +33,6 @@ public class Xray extends Feature {
             .build();
     public Property<Integer> alphaProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Opacity")
-            .description("How opaque the blocks should be (less = less visible)")
             .value(50)
             .min(1)
             .max(100)
@@ -43,13 +42,12 @@ public class Xray extends Feature {
 
     public Property<Boolean> playerXray = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player Xray")
-            .description("See through the clothes of other players!")
             .value(false)
             .build();
     private Mode lastMode;
 
     public Xray() {
-        super(Category.WORLD, "Have 200 iq while mining. Not cheating I promise.", GLFW.GLFW_KEY_X);
+        super(Category.WORLD, "", GLFW.GLFW_KEY_X);
         INSTANCE = this;
         new NormalXray();
         new OpacityXray();

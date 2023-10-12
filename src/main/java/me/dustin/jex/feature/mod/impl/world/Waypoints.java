@@ -62,7 +62,7 @@ public class Waypoints extends Feature {
 	private static final Map<Waypoint, Vec3d> waypointPositions = Maps.newHashMap();
 
 	public Waypoints() {
-		super(Category.WORLD, "Display Waypoints to mark areas.");
+		super(Category.WORLD);
 	}
 
 	public static Waypoint get(String name, String server) {
@@ -106,7 +106,7 @@ public class Waypoints extends Feature {
 				float y = waypoint.getY();
 				float z = waypoint.getZ();
 				float distance = ClientMathHelper.INSTANCE.getDistance2D(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(x, y, z));
-				Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(x, waypoint.getY(), z));
+				Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(x, y, z));
 				if (distance < 270) {
 					Box box = new Box(renderPos.x - 0.2f, renderPos.y, renderPos.z - 0.2f, renderPos.x + 0.2f, (256 - waypoint.y), renderPos.z + 0.2f);
 					Render3DHelper.INSTANCE.drawBox(((EventRender3D) event).getPoseStack(), box, waypoint.getColor());
@@ -115,7 +115,7 @@ public class Waypoints extends Feature {
 					x = (float) Wrapper.INSTANCE.getLocalPlayer().getX() + 250 * (float) Math.cos(Math.toRadians(yaw + 90));
 					z = (float) Wrapper.INSTANCE.getLocalPlayer().getZ() + 250 * (float) Math.sin(Math.toRadians(yaw + 90));
 				}
-				Vec3d screenPos = Render2DHelper.INSTANCE.to2D(new Vec3d(x, waypoint.getY() + Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(EntityPose.STANDING), z), event.getPoseStack());
+				Vec3d screenPos = Render2DHelper.INSTANCE.to2D(new Vec3d(x, y + Wrapper.INSTANCE.getLocalPlayer().getEyeHeight(EntityPose.STANDING), z), event.getPoseStack());
 				waypointPositions.put(waypoint, screenPos);
 			}
 		}
@@ -140,7 +140,8 @@ public class Waypoints extends Feature {
 			}
 			Vec3d pos = new Vec3d(x, y, z);
 			Entity cameraEntity = Wrapper.INSTANCE.getMinecraft().getCameraEntity();
-			assert cameraEntity != null;
+			if (cameraEntity == null)
+			    return;
 			Vec3d entityPos = Render3DHelper.INSTANCE.getRenderPosition(new Vec3d(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f));
 
 			Color color1 = ColorHelper.INSTANCE.getColor(waypoint.getColor());

@@ -26,7 +26,11 @@ public class JexEarsFeatureRenderer extends FeatureRenderer<PlayerEntity, Player
             return;
         }
         AddonHelper.AddonResponse addonResponse = AddonHelper.INSTANCE.getResponse(uuid);
+        try {
         render(matrices, vertexConsumers, light, playerEntity, EarsHelper.INSTANCE.getEars(uuid), addonResponse.enchantedears());
+        }
+        catch (NullPointerException e) { 
+        }
     }
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, PlayerEntity playerEntity, Identifier texture, boolean enchanted) {

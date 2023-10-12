@@ -40,13 +40,20 @@ public class AnchorAura extends Feature {
             .build();
     public final Property<AttackMode> attackModeProperty = new Property.PropertyBuilder<AttackMode>(this.getClass())
             .name("Explode")
-            .description("The targeting mode for anchors.")
             .value(AttackMode.ANY)
             .build();
+    public final Property<Integer> explodeDistanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Explode Distance")
+            .value(5)
+            .min(2)
+            .max(6)
+            .build();
     public final Property<Long> attackDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
-            .name("Attack Delay (MS)")
+            .name("Attack Delay (ms)")
             .value(200L)
-            .max(2000)
+            .min(0)
+            .max(1000)
+            .inc(10)
             .build();
     public final Property<Boolean> autoPlaceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Auto Place")
@@ -76,13 +83,15 @@ public class AnchorAura extends Feature {
             .parent(visualizeProperty)
             .depends(parent -> (boolean)parent.value())
             .build();
-    public final Property<Long> placeDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
-            .name("Place Delay")
-            .value(200L)
-            .max(2000)
-            .parent(autoPlaceProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
+    public final Property<Float> edtaProperty = new Property.PropertyBuilder<Float>(this.getClass())
+	.name("Anchor Distance to Enemy")
+	.value(5f)
+	.min(2)
+	.max(6)
+	.inc(0.1f)
+	.parent(autoPlaceProperty)
+	.depends(parent -> (boolean) parent.value())
+	.build();
     public final Property<Float> placeDistanceProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Place Distance")
             .value(3.5f)
@@ -92,11 +101,18 @@ public class AnchorAura extends Feature {
             .parent(autoPlaceProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-    public final Property<Integer> explodeDistanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Explode Distance")
-            .value(5)
-            .min(2)
-            .max(6)
+    public final Property<Long> placeDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
+            .name("Place Delay")
+            .value(200L)
+	    .min(0)
+            .max(1000)
+	    .inc(10)
+            .parent(autoPlaceProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+	public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
             .build();
 
     private final StopWatch placeStopWatch = new StopWatch();
@@ -104,7 +120,7 @@ public class AnchorAura extends Feature {
     private BlockPos placePos;
 
     public AnchorAura() {
-        super(Category.COMBAT, "Automatically place/charge/explode respawn anchors near players");
+        super(Category.COMBAT);
     }
 
     @EventPointer
@@ -117,7 +133,9 @@ public class AnchorAura extends Feature {
                 BlockPos chargedAnchor = getChargedAnchor(Wrapper.INSTANCE.getLocalPlayer());
                 if (chargedAnchor != null && shouldExplode(chargedAnchor)) {
                     Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(chargedAnchor.getX(), chargedAnchor.getY(), chargedAnchor.getZ()), Direction.UP, chargedAnchor, false));
+                    if (swingProperty.value()) {
                     Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                    }
                     attackStopWatch.reset();
                     return;
                 }
@@ -128,7 +146,9 @@ public class AnchorAura extends Feature {
                         int savedSlot = InventoryHelper.INSTANCE.getInventory().selectedSlot;
                         InventoryHelper.INSTANCE.setSlot(glowstone, true, true);
                         Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, new BlockHitResult(new Vec3d(anchor.getX(), anchor.getY(), anchor.getZ()), Direction.UP, anchor, false));
+                        if (swingProperty.value()) {
                         Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                        }
                         InventoryHelper.INSTANCE.setSlot(savedSlot, true, true);
                         attackStopWatch.reset();
                         return;
@@ -178,14 +198,13 @@ public class AnchorAura extends Feature {
     });
 
     public BlockPos getOpenBlockPos(PlayerEntity entityPlayer) {
-        double distance = 6;
+        double distance;
         BlockPos closest = null;
-        for (int x = -4; x < 4; x++) {
-            for (int y = 0; y < 4; y++) {
-                for (int z = -4; z < 4; z++) {
+        for (int x = -explodeDistanceProperty.value(); x < explodeDistanceProperty.value(); x++) {
+            for (int y = explodeDistanceProperty.value(); y < explodeDistanceProperty.value(); y++) {
+                for (int z = -explodeDistanceProperty.value(); z < explodeDistanceProperty.value(); z++) {
                     BlockPos pos = new BlockPos(entityPlayer.getX() + x, (int) entityPlayer.getY() - y, entityPlayer.getZ() + z);
                     EndCrystalEntity fakeCrystal = new EndCrystalEntity(Wrapper.INSTANCE.getWorld(), pos.getX(), pos.getY(), pos.getZ());
-
                     if (Wrapper.INSTANCE.getWorld().getBlockState(pos).getMaterial().isReplaceable() && entityPlayer.canSee(fakeCrystal) && Wrapper.INSTANCE.getLocalPlayer().canSee(fakeCrystal)) {
                         BlockPos below = pos.down();
                         if (!Wrapper.INSTANCE.getWorld().getBlockState(below).getMaterial().isReplaceable()) {
@@ -194,7 +213,7 @@ public class AnchorAura extends Feature {
                                     continue;
                                 double playerdist = entityPlayer.distanceTo(fakeCrystal);
                                 double distToMe = Wrapper.INSTANCE.getLocalPlayer().distanceTo(fakeCrystal);
-                                if (playerdist < distance && distToMe < placeDistanceProperty.value()) {
+                                if (playerdist < edtaProperty.value() && distToMe < placeDistanceProperty.value()) {
                                     closest = pos;
                                     distance = playerdist;
                                 }
@@ -208,7 +227,7 @@ public class AnchorAura extends Feature {
     }
 
     private BlockPos getChargedAnchor(PlayerEntity entityPlayer) {
-        double distance = 6;
+        double distance;
         BlockPos closest = null;
         for (int x = -explodeDistanceProperty.value(); x < explodeDistanceProperty.value(); x++) {
             for (int y = -explodeDistanceProperty.value(); y < explodeDistanceProperty.value(); y++) {
@@ -220,7 +239,7 @@ public class AnchorAura extends Feature {
                             continue;
                         double playerdist = ClientMathHelper.INSTANCE.getDistance(entityPlayer.getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
                         double distToMe = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
-                        if (playerdist < distance && distToMe < explodeDistanceProperty.value()) {
+                        if (playerdist < edtaProperty.value() && distToMe < explodeDistanceProperty.value()) {
                             closest = pos;
                             distance = playerdist;
                         }
@@ -232,7 +251,7 @@ public class AnchorAura extends Feature {
     }
 
     private BlockPos getAnchor(PlayerEntity entityPlayer) {
-        double distance = 6;
+        double distance;
         BlockPos closest = null;
         for (int x = -explodeDistanceProperty.value(); x < explodeDistanceProperty.value(); x++) {
             for (int y = -explodeDistanceProperty.value(); y < explodeDistanceProperty.value(); y++) {
@@ -244,7 +263,7 @@ public class AnchorAura extends Feature {
                             continue;
                         double playerdist = ClientMathHelper.INSTANCE.getDistance(entityPlayer.getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
                         double distToMe = ClientMathHelper.INSTANCE.getDistance(Wrapper.INSTANCE.getLocalPlayer().getPos(), new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
-                        if (playerdist < distance && distToMe < explodeDistanceProperty.value()) {
+                        if (playerdist < edtaProperty.value() && distToMe < explodeDistanceProperty.value()) {
                             closest = pos;
                             distance = playerdist;
                         }

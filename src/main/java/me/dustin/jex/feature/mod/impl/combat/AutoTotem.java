@@ -13,14 +13,20 @@ import me.dustin.jex.helper.network.NetworkHelper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.item.Items;
+import me.dustin.jex.helper.misc.StopWatch;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import me.dustin.events.core.annotate.EventPointer;
 
 public class AutoTotem extends Feature {
 
+     public final Property<Integer> delayProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Delay")
+            .value(0)
+            .max(1000)
+            .inc(10)
+            .build();
     public final Property<ActivateTime> activateWhenProperty = new Property.PropertyBuilder<ActivateTime>(this.getClass())
             .name("When")
-            .description("When the totem should go into your offhand")
             .value(ActivateTime.ALWAYS)
             .build();
     public final Property<Boolean> replaceOffhandProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -32,21 +38,21 @@ public class AutoTotem extends Feature {
     public final Property<Integer> healthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Health")
             .value(10)
-            .min(5)
-            .max(17)
+            .min(1)
+            .max(20)
             .parent(activateWhenProperty)
             .depends(parent -> parent.value() == ActivateTime.LOW_HEALTH)
             .build();
     public final Property<Boolean> openInventoryProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Open Inventory")
-            .description("Tells the server you opened your inventory before moving the totem.")
             .value(false)
             .build();
 
     private int swappedSlot;
+    private final StopWatch stopWatch = new StopWatch();
 
     public AutoTotem() {
-        super(Category.COMBAT, "Keep a Totem in your offhand at all times.");
+        super(Category.COMBAT);
     }
 
     @EventPointer
@@ -83,13 +89,14 @@ public class AutoTotem extends Feature {
     }
 
     public void moveTotem(int slot) {
-        if (openInventoryProperty.value())
-            Wrapper.INSTANCE.getMinecraft().setScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));
+        if (stopWatch.hasPassed(delayProperty.value())) {
         InventoryHelper.INSTANCE.moveToOffhand(slot);
         if (openInventoryProperty.value()) {
+            Wrapper.INSTANCE.getMinecraft().setScreen(new InventoryScreen(Wrapper.INSTANCE.getLocalPlayer()));    
             NetworkHelper.INSTANCE.sendPacket(new CloseHandledScreenC2SPacket(Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.syncId));
             Wrapper.INSTANCE.getMinecraft().setScreen(null);
         }
+      }
     }
 
     public enum ActivateTime {

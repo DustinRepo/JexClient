@@ -86,7 +86,7 @@ public class Excavator extends Feature {
     private boolean baritoneAllowPlace;
 
     public Excavator() {
-        super(Category.WORLD, "Mine out a selected area");
+        super(Category.WORLD);
     }
 
     @EventPointer
@@ -368,9 +368,7 @@ public class Excavator extends Feature {
                 excavator.sortStopWatch.reset();
             }
             for (BlockPos blockPos : blockPosList) {
-                //able to be clicked
                 if (WorldHelper.INSTANCE.getBlockState(blockPos).getOutlineShape(Wrapper.INSTANCE.getWorld(), blockPos) != VoxelShapes.empty()) {
-                    //cheeky little workaround for being able to dig layers
                     if (Math.abs(blockPos.getY() - getHighestBlockY()) <= excavator.layerDepthProperty.value() - 1) {
                         return blockPos;
                     }

@@ -38,7 +38,7 @@ public class TunnelFinder extends Feature {
     private Thread thread;
 
     public TunnelFinder() {
-        super(Category.VISUAL, "Find tunnels in the nether that might lead to bases.");
+        super(Category.VISUAL);
     }
 
     @EventPointer

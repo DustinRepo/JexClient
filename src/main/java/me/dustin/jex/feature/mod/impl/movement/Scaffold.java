@@ -43,10 +43,31 @@ public class Scaffold extends Feature {
             .description("Sneak when you place a block.")
             .value(false)
             .build();
-    public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
-            .name("Range")
-            .value(0)
-            .max(4)
+    public final Property<Integer> xrangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("RangeX")
+            .value(1)
+            .min(0)
+            .max(6)
+            .build();
+    public final Property<Integer> zrangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("RangeZ")
+            .value(1)
+            .min(0)
+            .max(6)
+            .build();
+    public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Rotate")
+            .description("Whether or not to rotate your head on the server.")
+            .value(false)
+            .build();
+    public final Property<Float> pitchProperty = new Property.PropertyBuilder<Float>(this.getClass())
+            .name("VerticalRotation")
+            .value(0.1f)
+            .min(-90f)
+            .max(90f)
+            .inc(1f)
+            .parent(rotateProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
 
     private BlockHitResult blockHitResult;
@@ -116,7 +137,8 @@ public class Scaffold extends Feature {
 
     private void getNearBlocks(BlockPos blockPos) {
         emptyNearBlocks.clear();
-        if (rangeProperty.value() == 0) {
+        if (xrangeProperty.value() == 0) {
+        if (zrangeProperty.value() == 0) {
             BlockPos below = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().x, Wrapper.INSTANCE.getLocalPlayer().getPos().y - 0.5, Wrapper.INSTANCE.getLocalPlayer().getPos().z);
             if (!isReplaceable(WorldHelper.INSTANCE.getBlock(below)))
                 return;
@@ -140,8 +162,9 @@ public class Scaffold extends Feature {
             }
             return;
         }
-        for (int x = -rangeProperty.value() - 1; x < rangeProperty.value() + 1; x++) {
-            for (int z = -rangeProperty.value() - 1; z < rangeProperty.value() + 1; z++) {
+        }
+        for (int x = -xrangeProperty.value(); x < xrangeProperty.value(); x++) {
+            for (int z = -zrangeProperty.value(); z < zrangeProperty.value(); z++) {
                 BlockPos blockPos1 = new BlockPos(Wrapper.INSTANCE.getLocalPlayer().getPos().add(0, -0.5f, 0)).add(x, 0, z);
                 if (isReplaceable(WorldHelper.INSTANCE.getBlock(blockPos1)) || goingToPlace(blockPos1)) {
                     BlockInfo blockInfo = getBlockInfo(blockPos1);
@@ -162,13 +185,14 @@ public class Scaffold extends Feature {
             NetworkHelper.INSTANCE.sendPacket(new ClientCommandC2SPacket(Wrapper.INSTANCE.getLocalPlayer(), ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
         }
         BlockPos lookAtPos = blockInfo.blockpos();
+        if (rotateProperty.value()) {
         RotationVector rotation = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(lookAtPos.getX(), lookAtPos.getY(), lookAtPos.getZ()));
         event.setYaw(rotation.getYaw());
-        event.setPitch(80);
-
+        event.setPitch(pitchProperty.value());
+            
         Wrapper.INSTANCE.getLocalPlayer().headYaw = event.getYaw();
         Wrapper.INSTANCE.getLocalPlayer().bodyYaw = event.getYaw();
-
+        }
         blockHitResult = new BlockHitResult(new Vec3d(blockInfo.blockpos().getX(), blockInfo.blockpos().getY(), blockInfo.blockpos().getZ()), blockInfo.facing(), blockInfo.blockpos(), false);
         if (placeModeProperty.value() == PlaceTiming.PRE)
             PlayerHelper.INSTANCE.placeBlockInPos(blockInfo.blockpos(), Hand.MAIN_HAND, false);

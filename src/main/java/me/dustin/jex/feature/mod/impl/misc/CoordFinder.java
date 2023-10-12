@@ -12,7 +12,7 @@ import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 public class CoordFinder extends Feature {
 
     public CoordFinder() {
-        super(Category.MISC, "Tells you exact coordinates of Wither Spawns and End Portal Activations on vanilla servers.");
+        super(Category.MISC);
     }
 
     @EventPointer

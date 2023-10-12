@@ -11,7 +11,7 @@ import me.dustin.jex.helper.misc.Wrapper;
 public class AutoMine extends Feature {
 
     public AutoMine() {
-        super(Category.WORLD, "Automatically mine any block you hover over.");
+        super(Category.WORLD);
     }
 
     @EventPointer

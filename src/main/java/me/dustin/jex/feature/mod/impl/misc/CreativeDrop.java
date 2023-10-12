@@ -31,19 +31,16 @@ public class CreativeDrop extends Feature {
             .build();
     public final Property<Integer> speedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Speed")
-            .description("The speed that you drop items at.")
             .value(1)
             .min(1)
             .max(10)
             .build();
     public final Property<Boolean> nameProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Name")
-            .description("Whether or not to name the item.")
             .value(true)
             .build();
     public final Property<Boolean> enchantProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Enchant")
-            .description("Whether or not to enchant the item.")
             .value(true)
             .build();
 
@@ -51,13 +48,13 @@ public class CreativeDrop extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public CreativeDrop() {
-        super(Category.MISC, "Drop all items from your inventory in creative.");
+        super(Category.MISC);
     }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
         Random random = new Random();
-        String[] names = new String[]{JexClient.INSTANCE.getBaseUrl(), "Download Jex Client to do this", "Nice FPS", "Oh look a shiny item", "Copper pants", "How do I stop dropping items?", "Can you hear me?", "Please help I am stuck in this item"};
+        String[] names = new String[]{JexClient.INSTANCE.getBaseUrl(), "https://github.com/mdenials/JexClient"};
         if (stopWatch.hasPassed(delayProperty.value()) && Wrapper.INSTANCE.getLocalPlayer().isCreative()) {
             for (int i = 0; i < speedProperty.value(); i++) {
                 ItemStack itemStack = new ItemStack(Item.byRawId(slot));

@@ -12,7 +12,7 @@ import me.dustin.jex.helper.player.PlayerHelper;
 public class YawLock extends Feature {
 
     public YawLock() {
-        super(Category.MOVEMENT, "Keep your yaw locked to walk straight.");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer

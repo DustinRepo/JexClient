@@ -22,7 +22,6 @@ public class Derp extends Feature {
             .build();
     public final Property<Boolean> normalizeAnglesProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Normalize Angles")
-            .description("Keeps your angles vanilla.")
             .value(true)
             .build();
     public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
@@ -31,7 +30,6 @@ public class Derp extends Feature {
             .build();
     public final Property<Boolean> showSwingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Show Swing")
-            .description("Show your arm swinging client-side.")
             .value(true)
             .parent(swingProperty)
             .depends(parent -> (boolean) parent.value())
@@ -40,7 +38,7 @@ public class Derp extends Feature {
     private int yaw, pitch;
 
     public Derp() {
-        super(Category.MISC, "Randomly look around for other players");
+        super(Category.MISC);
     }
 
     @EventPointer

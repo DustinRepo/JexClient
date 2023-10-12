@@ -18,7 +18,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class MiddleClickFriend extends Feature {
 
     public MiddleClickFriend() {
-        super(Category.MISC, "Middle click people to add them as friends.");
+        super(Category.MISC, "");
     }
 
     @EventPointer

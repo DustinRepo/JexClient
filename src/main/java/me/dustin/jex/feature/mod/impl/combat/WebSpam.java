@@ -35,14 +35,13 @@ public class WebSpam extends Feature {
             .build();
     public final Property<Boolean> friendsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Friends")
-            .description("Whether or not to web your friends.")
             .value(false)
             .build();
 
     private final StopWatch stopWatch = new StopWatch();
 
     public WebSpam() {
-        super(Category.COMBAT, "Spam webs at players feet to slow them down");
+        super(Category.COMBAT);
     }
 
     @EventPointer

@@ -39,7 +39,7 @@ public class Crosshair extends Feature {
 	public final Property<Float> gapProperty = new Property.PropertyBuilder<Float>(this.getClass())
 			.name("Gap")
 			.value(1f)
-			.min(0)
+			.min(-1)
 			.max(20)
 			.inc(0.1f)
 			.build();
@@ -62,7 +62,7 @@ public class Crosshair extends Feature {
 			.name("Spin Speed")
 			.value(1)
 			.min(1)
-			.max(5)
+			.max(20)
 			.parent(spinProperty)
 			.depends(parent -> (boolean) parent.value())
 			.build();
@@ -71,7 +71,7 @@ public class Crosshair extends Feature {
 	private final StopWatch stopWatch = new StopWatch();
 
 	public Crosshair() {
-		super(Category.VISUAL, "Draw a custom crosshair on-screen.");
+		super(Category.VISUAL);
 	}
 
 	@EventPointer

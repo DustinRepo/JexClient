@@ -9,9 +9,9 @@ jobs:
 
     steps:
     - name: Clone repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up JDK 17
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         distribution: 'zulu'
         java-version: '17'
@@ -19,8 +19,8 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
+    - name: Upload
+      uses: actions/upload-artifact@v3
       with:
-        name: JexClient
         path: build/libs/
+

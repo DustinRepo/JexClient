@@ -22,7 +22,7 @@ public class MixinInGameHud {
 
     @Shadow @Final private static Identifier POWDER_SNOW_OUTLINE;
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;isPressed()Z"))
+    @Inject(method = "render", at = @At(value = "TAIL", target = "Lnet/minecraft/client/option/KeyBinding;isPressed()Z"))
     public void draw(MatrixStack matrixStack, float float_1, CallbackInfo ci) {
         try {
             new EventRender2D(matrixStack).run();
@@ -30,7 +30,7 @@ public class MixinInGameHud {
             e.printStackTrace();
         }
     }
-
+    
     @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
     public void renderCrosshair(MatrixStack matrixStack, CallbackInfo ci) {
         EventRenderCrosshair eventRenderCrosshair = new EventRenderCrosshair(matrixStack).run();

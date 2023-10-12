@@ -13,14 +13,13 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class Parkour extends Feature {
 
     public Parkour() {
-        super(Category.MOVEMENT, "Jump while on edge of block.");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) > 0.5f && PlayerHelper.INSTANCE.isMoving()) {
+        if (Wrapper.INSTANCE.getLocalPlayer().isOnGround() && EntityHelper.INSTANCE.distanceFromGround(Wrapper.INSTANCE.getLocalPlayer()) >= 0.5f && PlayerHelper.INSTANCE.isMoving()) {
             Wrapper.INSTANCE.getLocalPlayer().jump();
-            Wrapper.INSTANCE.getLocalPlayer().getVelocity().multiply(1.2f, 1, 1.2f);
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 
-public class ItemPhysics extends Feature {//fancier version that's not just flat items on the ground like the fabric mod
+public class ItemPhysics extends Feature {
 
     public final Property<Integer> rollSpeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Roll Spin Speed")
@@ -45,7 +45,7 @@ public class ItemPhysics extends Feature {//fancier version that's not just flat
     private final HashMap<ItemEntity, Vec3d> negValues = new HashMap<>();
 
     public ItemPhysics() {
-        super(Category.VISUAL, "Items will rotate around in the air and flop down");
+        super(Category.VISUAL);
     }
 
     @EventPointer

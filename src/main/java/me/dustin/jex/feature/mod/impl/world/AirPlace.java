@@ -27,19 +27,22 @@ public class AirPlace extends Feature {
 
 	public final Property<Boolean> liquidsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
 			.name("Liquids")
-			.description("Allow placing inside of liquids.")
 			.value(true)
 			.build();
-	public final Property<Float> reachProperty = new Property.PropertyBuilder<Float>(this.getClass())
+	public final Property<Integer> reachProperty = new Property.PropertyBuilder<Integer>(this.getClass())
 			.name("Reach")
-			.value(4.5f)
+			.value(4)
 			.min(3)
 			.max(6)
-			.inc(0.1f)
+			.inc(1)
+			.build();
+	public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+			.name("Swing")
+			.value(true)
 			.build();
 
 	public AirPlace() {
-		super(Category.WORLD, "Gives you the ability to place blocks in the air. (Anticheats usually block this)");
+		super(Category.WORLD);
 	}
 
 	@EventPointer
@@ -48,7 +51,9 @@ public class AirPlace extends Feature {
 			if (hitResult instanceof BlockHitResult blockHitResult) {
 				if (canReplaceBlock(WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos())) && Wrapper.INSTANCE.getLocalPlayer().getMainHandStack().getItem() instanceof BlockItem) {
 					Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
+					if (swingProperty.value()) {
 					Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+					}
 					event.cancel();
 				}
 			}

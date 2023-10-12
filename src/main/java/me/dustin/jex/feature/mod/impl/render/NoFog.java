@@ -10,7 +10,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class NoFog extends Feature {
 
     public NoFog() {
-        super(Category.VISUAL, "Removes all fog from the game.");
+        super(Category.VISUAL);
     }
 
     @EventPointer

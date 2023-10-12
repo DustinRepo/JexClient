@@ -59,14 +59,15 @@ public class CommandDupe extends Command {
 
     @Override
     public int run(CommandContext<FabricClientCommandSource> context) throws CommandSyntaxException {
-        assert Wrapper.INSTANCE.getMinecraft().crosshairTarget != null;
+        if (Wrapper.INSTANCE.getMinecraft().crosshairTarget == null)
+            return 0;
         if (Wrapper.INSTANCE.getMinecraft().crosshairTarget.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult) Wrapper.INSTANCE.getMinecraft().crosshairTarget;
             if (WorldHelper.INSTANCE.getBlock(blockHitResult.getBlockPos()) instanceof ShulkerBoxBlock) {
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().interactBlock(Wrapper.INSTANCE.getLocalPlayer(), Hand.MAIN_HAND, blockHitResult);
                 ChatHelper.INSTANCE.addClientMessage("Running dupe");
                 this.blockHitResult = blockHitResult;
-                this.speedmine = Feature.getState(SpeedMine.class) && Feature.get(SpeedMine.class).modeProperty.value() == SpeedMine.Mode.INSTANT;
+                this.speedmine = Feature.getState(SpeedMine.class) && Feature.get(SpeedMine.class).modeProperty.value() == SpeedMine.Mode.PACKET;
                 if (speedmine) {
                     Feature.get(SpeedMine.class).setState(false);
                 }

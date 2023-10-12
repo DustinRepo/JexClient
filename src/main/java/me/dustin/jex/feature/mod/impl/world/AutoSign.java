@@ -23,7 +23,7 @@ public class AutoSign extends Feature {
     public Text[] signText = {Text.of("     "), Text.of(""), Text.of(""), Text.of("")};
 
     public AutoSign() {
-        super(Category.WORLD, "Automatically write to signs.");
+        super(Category.WORLD);
     }
 
     @EventPointer

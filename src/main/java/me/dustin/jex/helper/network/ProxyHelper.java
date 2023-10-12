@@ -16,10 +16,11 @@ import me.dustin.jex.helper.render.Render2DHelper;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.network.*;
 import java.net.InetSocketAddress;
+import com.google.gson.annotations.SerializedName;
 
 public enum ProxyHelper {
     INSTANCE;
-    private ClientProxy proxy;
+    public ClientProxy proxy;
 
     public void connectToProxy(SocksType type, String hostname, int port, String username, String password) {
         this.proxy = new ClientProxy(hostname, port, type, username, password);
@@ -37,7 +38,7 @@ public enum ProxyHelper {
         proxy = null;
     }
 
-    public record ClientProxy(String host, int port, SocksType socksType, String authName, String authPass){}
+    public record ClientProxy(String hostname, int port, SocksType socksType, String username, String password){}
 
     public enum SocksType {
         FOUR, FIVE;
@@ -47,7 +48,7 @@ public enum ProxyHelper {
     private final EventListener<EventDrawScreen> eventDrawScreenEventListener = new EventListener<>(event -> {
         if (isConnectedToProxy()) {
             ProxyHelper.ClientProxy proxy = getProxy();
-            String string = "Current Proxy: " + proxy.host() + ":" + proxy.port();
+            String string = "Current Proxy: " + proxy.hostname() + " " + proxy.port();
             FontHelper.INSTANCE.drawWithShadow(event.getPoseStack(), string, Render2DHelper.INSTANCE.getScaledWidth() - FontHelper.INSTANCE.getStringWidth(string) - 2, 22, ColorHelper.INSTANCE.getClientColor());
         }
     }, new DrawScreenFilter(EventDrawScreen.Mode.POST, MultiplayerScreen.class));
@@ -58,9 +59,9 @@ public enum ProxyHelper {
             ProxyHelper.ClientProxy proxy = ProxyHelper.INSTANCE.getProxy();
             if (ProxyHelper.INSTANCE.isConnectedToProxy()) {
                 if (proxy.socksType() == ProxyHelper.SocksType.FIVE) {
-                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port()), proxy.authName(), proxy.authPass()));
+                    channel.pipeline().addFirst(new Socks5ProxyHandler(new InetSocketAddress(proxy.hostname(), proxy.port()), proxy.username(), proxy.password()));
                 } else {
-                    channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.host(), proxy.port())));
+                    channel.pipeline().addFirst(new Socks4ProxyHandler(new InetSocketAddress(proxy.hostname(), proxy.port())));
                 }
             }
             channel.config().setOption(ChannelOption.TCP_NODELAY, true);

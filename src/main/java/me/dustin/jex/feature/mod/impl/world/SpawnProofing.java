@@ -46,14 +46,13 @@ public class SpawnProofing extends Feature {
             .build();
     public final Property<Boolean> useGlassProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Use Glass")
-            .description("Allow glass to be used for spawn proofing.")
             .value(true)
             .build();
 
     private final StopWatch stopWatch = new StopWatch();
 
     public SpawnProofing() {
-        super(Category.WORLD, "Automatically place carpets/slabs to spawn proof around you");
+        super(Category.WORLD);
     }
 
     @EventPointer
@@ -62,8 +61,8 @@ public class SpawnProofing extends Feature {
             return;
         stopWatch.reset();
         for (int x = -rangeProperty.value(); x < rangeProperty.value(); x++) {
-            for (int y = -rangeProperty.value(); y < rangeProperty.value(); y++) {
-                for (int z = -rangeProperty.value(); z < rangeProperty.value(); z++) {
+        for (int z = -rangeProperty.value(); z < rangeProperty.value(); z++) {
+        for (int y = -rangeProperty.value(); y < rangeProperty.value(); y++) {
                     BlockPos pos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (x == 0 && y == 0 && z == 0)
                         continue;

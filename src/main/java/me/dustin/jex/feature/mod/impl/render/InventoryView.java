@@ -32,7 +32,7 @@ public class InventoryView extends Feature {
     private final Identifier SHULKER_GUI = new Identifier("textures/gui/container/shulker_box.png");
 
     public InventoryView() {
-        super(Category.VISUAL, "Show your inventory on your HUD");
+        super(Category.VISUAL);
     }
 
     @EventPointer

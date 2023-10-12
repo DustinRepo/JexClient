@@ -24,6 +24,22 @@ public class AntiEffect extends Feature {
             .name("Mining Fatigue")
             .value(true)
             .build();
+    public final Property<Boolean> weaknessProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Weakness")
+            .value(true)
+            .build();
+    public final Property<Boolean> slownessProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Slowness")
+            .value(true)
+            .build();
+    public final Property<Boolean> hungerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Hunger")
+            .value(true)
+            .build();
+    public final Property<Boolean> poisonProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Poison")
+            .value(true)
+            .build();
     public final Property<Boolean> levitationProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Levitation")
             .value(true)
@@ -38,7 +54,7 @@ public class AntiEffect extends Feature {
             .build();
 
     public AntiEffect() {
-        super(Category.PLAYER, "Remove certain negative effects from yourself.");
+        super(Category.PLAYER);
     }
 
     @EventPointer
@@ -49,11 +65,19 @@ public class AntiEffect extends Feature {
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.NAUSEA);
         if (miningFatigueProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.MINING_FATIGUE);
+        if (weaknessProperty.value())
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.WEAKNESS);
+        if (hungerProperty.value())
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.HUNGER);
+        if (poisonProperty.value())
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.POISON);
         if (levitationProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.LEVITATION);
         if (slowFallingProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.SLOW_FALLING);
         if (darknessProperty.value())
             Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.DARKNESS);
+        if (slownessProperty.value())
+            Wrapper.INSTANCE.getLocalPlayer().removeStatusEffect(StatusEffects.SLOWNESS);
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

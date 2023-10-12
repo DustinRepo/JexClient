@@ -14,6 +14,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -25,19 +27,32 @@ import net.minecraft.util.math.Vec3d;
 import me.dustin.jex.feature.mod.core.Feature;
 
 public class Roaster extends Feature {
-
-    public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    
+    public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Distance")
+            .value(4)
+            .min(2)
+            .max(6)
+            .inc(1)
+            .build();
+	public final Property<Boolean> playerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Player")
             .value(true)
             .build();
-    public final Property<Boolean> friendsProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Player")
-            .description("Light your friends on fire too")
-            .value(false)
+    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Friends")
+            .value(true)
             .parent(playerProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
-
+    public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Neutral")
+            .value(false)
+            .build();
+    public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Boss")
+            .value(true)
+            .build();
     public final Property<Boolean> hostileProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Hostile")
             .value(true)
@@ -46,21 +61,33 @@ public class Roaster extends Feature {
             .name("Passive")
             .value(true)
             .build();
-    public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Neutral")
-            .value(true)
+    public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Item")
+            .value(false)
             .build();
     public final Property<Boolean> onFireProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("On Fire")
-            .description("Keep placing fire under them even if they are already on fire.")
             .value(false)
             .build();
     public final Property<Boolean> rotateProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Rotate")
-            .description("Whether or not to rotate your head on the server.")
             .value(true)
             .build();
-    public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+    public final Property<Boolean> lockviewProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Client")
+            .value(false)
+            .parent(rotateProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public final Property<Boolean> groundProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("OutGround")
+            .value(true)
+            .build();
+    public final Property<Boolean> fireimmuneProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("FireImmune")
+            .value(true)
+            .build();
+public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Swing")
             .value(true)
             .build();
@@ -69,7 +96,7 @@ public class Roaster extends Feature {
     private BlockPos blockPos = null;
 
     public Roaster() {
-        super(Category.COMBAT, "Roast your friends.");
+        super(Category.COMBAT);
     }
 
     @EventPointer
@@ -85,18 +112,19 @@ public class Roaster extends Feature {
             if (hand == null)
                 return;
             Wrapper.INSTANCE.getWorld().getEntities().forEach(entity -> {
-                if (entity instanceof LivingEntity livingEntity) {
-                    if (isValid(livingEntity)) {
-                        Block footBlock = Wrapper.INSTANCE.getWorld().getBlockState(livingEntity.getBlockPos()).getBlock();
+                    if (isValid(entity)) {
+                        Block footBlock = Wrapper.INSTANCE.getWorld().getBlockState(entity.getBlockPos()).getBlock();
                         if (footBlock == Blocks.AIR) {
-                            blockPos = livingEntity.getBlockPos().down();
+                            blockPos = entity.getBlockPos().down();
                             if (rotateProperty.value()) {
                                 RotationVector rotations = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                                 event.setRotation(rotations);
                             }
+                            if (lockviewProperty.value()) {
+                            PlayerHelper.INSTANCE.setRotation(event.getRotation());
+                            }
                         }
                     }
-                }
             });
         } else {
             if (blockPos != null) {
@@ -110,26 +138,34 @@ public class Roaster extends Feature {
         }
     });
 
-    private boolean isValid(LivingEntity livingEntity) {
-        if (livingEntity instanceof ClientPlayerEntity)
+    private boolean isValid(Entity entity) {
+	if (entity instanceof LivingEntity)
+	    return true;
+        if (entity instanceof ClientPlayerEntity)
             return false;
-        if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(livingEntity) > 4)
+        if (Wrapper.INSTANCE.getLocalPlayer().distanceTo(entity) > distanceProperty.value())
             return false;
-        if (livingEntity.isOnFire() && !onFireProperty.value())
-            return false;
-        if (livingEntity.isFireImmune())
-            return false;
-        if (!livingEntity.isOnGround())
-            return false;
-        if (livingEntity instanceof PlayerEntity) {
-            if (FriendHelper.INSTANCE.isFriend(livingEntity.getName().getString()))
-                return friendsProperty.value();
+	if (entity instanceof ItemEntity)
+            return itemProperty.value();
+        if (entity instanceof PlayerEntity) {
+            if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
+            return friendProperty.value();
             return playerProperty.value();
-        }
-        if (EntityHelper.INSTANCE.isHostileMob(livingEntity))
+           }
+	if (EntityHelper.INSTANCE.isBossMob(entity))
+            return bossProperty.value();
+        if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostileProperty.value();
-        if (EntityHelper.INSTANCE.isPassiveMob(livingEntity) && !EntityHelper.INSTANCE.doesPlayerOwn(livingEntity))
+        if (EntityHelper.INSTANCE.isPassiveMob(entity) && !EntityHelper.INSTANCE.doesPlayerOwn(entity))
             return passiveProperty.value();
+        if (EntityHelper.INSTANCE.isNeutralMob(entity))
+            return neutralProperty.value();
+        if (entity.isFireImmune())
+            return fireimmuneProperty.value();
+        if (entity.isOnFire())
+            return onFireProperty.value();
+        if (!entity.isOnGround())
+            return groundProperty.value();    
         return false;
     }
 }

@@ -30,10 +30,8 @@ public class ESP extends Feature {
             .name("Mode")
             .value(Mode.SHADER)
             .build();
-
     public final Property<Integer> lineWidthProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Line Width")
-            .description("Line width for shaders (in pixels)")
             .value(2)
             .min(1)
             .max(10)
@@ -42,14 +40,12 @@ public class ESP extends Feature {
             .build();
     public final Property<Boolean> glowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Glow")
-            .description("Whether or not to add a glow effect to the outline")
             .value(false)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.SHADER || parent.value() == Mode.BOX_OUTLINE)
             .build();
     public final Property<Float> glowIntensityProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Glow Intensity")
-            .description("Intensity for the glow effect")
             .value(0.5f)
             .min(0.1f)
             .max(1)
@@ -61,85 +57,120 @@ public class ESP extends Feature {
             .name("Player")
             .value(true)
             .build();
-    public final Property<Boolean> colorOnDistanceProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Color on Distance")
-            .description("Change the color from green (far away) to red (close).")
-            .value(false)
-            .parent(playerProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Color> playerColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
-            .name("Player Color")
-            .value(Color.RED)
-            .parent(playerProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
-    public final Property<Color> friendColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
-            .name("Friend Color")
-            .value(Color.BLUE)
+    public final Property<Boolean> friendProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Friends")
+            .value(true)
             .parent(playerProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> neutralProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Neutral")
-            .value(true)
-            .build();
-    public final Property<Color> neutralColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
-            .name("Neutral Color")
-            .value(Color.PINK)
-            .parent(neutralProperty)
-            .depends(parent -> (boolean) parent.value())
+            .value(false)
             .build();
     public final Property<Boolean> bossProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Boss")
             .value(true)
             .build();
-    public final Property<Color> bossColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
-            .name("Boss Color")
-            .value(Color.RED.darker())
-            .parent(bossProperty)
-            .depends(parent -> (boolean) parent.value())
-            .build();
     public final Property<Boolean> hostileProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Hostile")
             .value(true)
-            .build();
-    public final Property<Color> hostileColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
-            .name("Hostile Color")
-            .value(Color.ORANGE)
-            .parent(hostileProperty)
-            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Boolean> passiveProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Passive")
             .value(true)
             .build();
+public final Property<Boolean> petProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Pet")
+            .value(false)
+	    .parent(passiveProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+public final Property<Boolean> localProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("LocalPlayer")
+            .value(true)
+            .build();
+public final Property<Boolean> botProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bot")
+            .value(true)
+            .build();
+public final Property<Boolean> nolivingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("NoLiving")
+            .value(false)
+            .build();
+public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Items")
+            .value(true)
+            .build();
+    public final Property<Color> playerColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Player Color")
+            .value(Color.RED)
+	    .parent(playerProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Color> friendColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Friend Color")
+            .value(Color.BLUE)
+	    .parent(friendProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Color> neutralColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Neutral Color")
+            .value(Color.PINK)
+	    .parent(neutralProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Color> bossColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Boss Color")
+            .value(Color.RED.darker())
+	    .parent(bossProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+    public final Property<Color> hostileColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Hostile Color")
+            .value(Color.ORANGE)
+	    .parent(hostileProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
     public final Property<Color> passiveColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Passive Color")
             .value(Color.GREEN)
-            .parent(passiveProperty)
-            .depends(parent -> (boolean) parent.value())
+	    .parent(passiveProperty)
+            .depends(parent -> (boolean)parent.value())
             .build();
     public final Property<Color> petColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Pets Color")
             .value(Color.BLUE)
-            .parent(passiveColorProperty)
+	    .parent(petProperty)
+            .depends(parent -> (boolean)parent.value())
             .build();
-    public final Property<Boolean> itemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
-            .name("Item")
-            .value(true)
+   public final Property<Color> botColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("Bots Color")
+            .value(Color.BLUE)
+	    .parent(botProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
+   public final Property<Color> localColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("LocalPlayer Color")
+            .value(Color.BLUE)
+	    .parent(localProperty)
+            .depends(parent -> (boolean) parent.value())
             .build();
     public final Property<Color> itemColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
             .name("Item Color")
             .value(Color.WHITE)
-            .parent(itemProperty)
-            .depends(parent -> (boolean) parent.value())
+	    .parent(itemProperty)
+            .depends(parent -> (boolean)parent.value())
             .build();
-
+    public final Property<Color> noliveColorProperty = new Property.PropertyBuilder<Color>(this.getClass())
+            .name("NoLiving Color")
+            .value(Color.WHITE)
+	    .parent(nolivingProperty)
+            .depends(parent -> (boolean)parent.value())
+            .build();
     private Mode lastMode;
 
     public ESP() {
-        super(Category.VISUAL, "Mark entities/players through walls");
+        super(Category.VISUAL);
         new ShaderESP();
         new BoxESP();
         new OutlineBox();
@@ -188,13 +219,13 @@ public class ESP extends Feature {
         if (entity instanceof ItemEntity)
             return itemProperty.value();
         if (!(entity instanceof LivingEntity livingEntity))
-            return false;
-        if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
-            return false;
-        if (livingEntity instanceof PlayerEntity && EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
-            return false;
+            return nolivingProperty.value();
+	if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
+            return localProperty.value();
         if (livingEntity instanceof PlayerEntity)
             return playerProperty.value();
+	if (EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
+	    return botProperty.value();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralProperty.value();
         if (EntityHelper.INSTANCE.isBossMob(entity))
@@ -209,26 +240,26 @@ public class ESP extends Feature {
     public int getColor(Entity entity) {
         if (entity instanceof ItemEntity)
             return itemColorProperty.value().getRGB();
+        if (!(entity instanceof LivingEntity livingEntity))
+            return noliveColorProperty.value().getRGB();
         if (FriendHelper.INSTANCE.isFriend(entity.getName().getString()))
             return friendColorProperty.value().getRGB();
-        if (entity instanceof PlayerEntity) {
-            if (colorOnDistanceProperty.value()) {
-                return ColorHelper.INSTANCE.redGreenShift(entity.distanceTo(Wrapper.INSTANCE.getLocalPlayer()) / 64);
-            }
+        if (entity instanceof PlayerEntity)
             return playerColorProperty.value().getRGB();
-        }
-
         if (EntityHelper.INSTANCE.isPassiveMob(entity))
-            if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
-                return petColorProperty.value().getRGB();
-            else
-                return passiveColorProperty.value().getRGB();
+	    return passiveColorProperty.value().getRGB();
+        if (EntityHelper.INSTANCE.doesPlayerOwn(entity))
+	    return petColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isBossMob(entity))
             return bossColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isHostileMob(entity))
             return hostileColorProperty.value().getRGB();
         if (EntityHelper.INSTANCE.isNeutralMob(entity))
             return neutralColorProperty.value().getRGB();
+	if (livingEntity == Wrapper.INSTANCE.getLocalPlayer())
+	    return localColorProperty.value().getRGB();
+	if (EntityHelper.INSTANCE.isNPC((PlayerEntity) livingEntity))
+	    return botColorProperty.value().getRGB();	
         return -1;
     }
 

@@ -67,6 +67,7 @@ public class EventListener<T> implements EventHook<T> {
 			}
 			this.hook.invoke(event);
 		} catch (ClassCastException e) {
+			return;
 		}
 	}
 

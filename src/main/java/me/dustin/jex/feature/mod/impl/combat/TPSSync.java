@@ -9,17 +9,17 @@ import me.dustin.jex.helper.math.TPSHelper;
 import me.dustin.jex.feature.mod.core.Feature;
 
 public class TPSSync extends Feature {
-
-    public Property<Integer> sampleSizeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+    
+        public Property<Integer> sampleSizeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Sample Size")
-            .description("The amount of ticks to store for the average.")
             .value(15)
-            .min(2)
+            .min(1)
             .max(100)
+            .inc(1)
             .build();
 
     public TPSSync() {
-        super(Category.COMBAT, "Sync attacks to server TPS to deal more damage on laggy servers.");
+        super(Category.COMBAT);
     }
 
     @EventPointer

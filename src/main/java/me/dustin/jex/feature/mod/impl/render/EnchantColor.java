@@ -35,7 +35,7 @@ public class EnchantColor extends Feature{
             .name("Saturation")
             .value(0.75f)
             .min(0.1f)
-            .inc(0.05f)
+            .inc(0.01f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == EffectMode.SHADER_RAINBOW)
             .build();
@@ -43,7 +43,7 @@ public class EnchantColor extends Feature{
             .name("Alpha")
             .value(1f)
             .min(0.1f)
-            .inc(0.05f)
+            .inc(0.01f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == EffectMode.SHADER_RAINBOW)
             .build();
@@ -62,7 +62,18 @@ public class EnchantColor extends Feature{
             .name("Speed")
             .value(1)
             .min(1)
-            .inc(10)
+            .max(20)
+            .inc(1)
+            .parent(rainbowProperty)
+            .depends(parent -> (boolean) parent.value())
+            .build();
+    public Property<Integer> stopwatchProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("ColorTimer")
+            .description("Set the time interval before the color change (MS).")
+            .value(1)
+            .min(1)
+            .max(100)
+            .inc(1)
             .parent(rainbowProperty)
             .depends(parent -> (boolean) parent.value())
             .build();
@@ -71,7 +82,7 @@ public class EnchantColor extends Feature{
     private final StopWatch stopWatch = new StopWatch();
 
     public EnchantColor() {
-        super(Category.VISUAL, "Change the color of the enchanment glint (or make it rainbow!)");
+        super(Category.VISUAL);
     }
 
     @EventPointer
@@ -84,7 +95,7 @@ public class EnchantColor extends Feature{
             RenderSystem.enableBlend();
             BufferRenderer.drawWithoutShader(buffer);
             ShaderHelper.INSTANCE.getEnchantColorShader().detach();
-            if (stopWatch.hasPassed(25)) {
+            if (stopWatch.hasPassed(stopwatchProperty.value())) {
                 col+=rainbowSpeedProperty.value();
                 if (col > 270)
                     col-=270;

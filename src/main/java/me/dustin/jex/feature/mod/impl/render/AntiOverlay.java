@@ -51,7 +51,7 @@ public class AntiOverlay extends Feature {
             .build();
 
     public AntiOverlay() {
-        super(Category.VISUAL, "Remove overlays");
+        super(Category.VISUAL);
     }
 
     @EventPointer

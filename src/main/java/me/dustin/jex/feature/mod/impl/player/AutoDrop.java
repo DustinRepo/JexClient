@@ -31,7 +31,7 @@ public class AutoDrop extends Feature {
     private final StopWatch stopWatch = new StopWatch();
 
     public AutoDrop() {
-        super(Category.PLAYER, "Automatically drop junk items from your inventory. Configurable in the Jex Options screen.");
+        super(Category.PLAYER);
         INSTANCE = this;
         items.add(Items.DIORITE);
         items.add(Items.ANDESITE);

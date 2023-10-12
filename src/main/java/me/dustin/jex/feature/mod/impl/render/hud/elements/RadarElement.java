@@ -1,7 +1,7 @@
 package me.dustin.jex.feature.mod.impl.render.hud.elements;
 
 import me.dustin.jex.feature.mod.impl.render.esp.ESP;
-import me.dustin.jex.feature.mod.impl.world.Radar;
+import me.dustin.jex.feature.mod.impl.render.hud.Hud;
 import me.dustin.jex.feature.mod.impl.world.Waypoints;
 import me.dustin.jex.helper.math.ColorHelper;
 import me.dustin.jex.helper.misc.Wrapper;
@@ -48,7 +48,7 @@ public class RadarElement extends HudElement{
 
         if (Wrapper.INSTANCE.getWorld() != null)
             for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-                if (!Radar.INSTANCE.isValid(entity))
+                if (!Hud.INSTANCE.isValid(entity))
                     continue;
                 float xPos = (float) (entity.getX() - Wrapper.INSTANCE.getLocalPlayer().getX()) + midPos + this.getX();
                 float yPos = (float) (entity.getZ() - Wrapper.INSTANCE.getLocalPlayer().getZ()) + midPos + this.getY();
@@ -56,7 +56,7 @@ public class RadarElement extends HudElement{
                     Render2DHelper.INSTANCE.fill(matrixStack, xPos, yPos, xPos + 1, yPos + 1, ESP.INSTANCE.getColor(entity));
                 }
             }
-        if (Radar.INSTANCE.waypointsProperty.value()) {
+        if (Hud.INSTANCE.waypointsProperty.value()) {
             matrixStack.push();
             float scale = 0.75f;
             matrixStack.scale(scale, scale, 1);
@@ -103,7 +103,7 @@ public class RadarElement extends HudElement{
         for (int x = -nativeImage.getWidth() / 2; x < nativeImage.getWidth() / 2; x++)
             for (int z = -nativeImage.getHeight() / 2; z < nativeImage.getHeight() / 2; z++) {
                 BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, 0, z);
-                int y = Wrapper.INSTANCE.getWorld().getChunk(blockPos.getX() / 16, blockPos.getZ() / 16).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
+                int y = Wrapper.INSTANCE.getWorld().getChunk(blockPos.getX() / Hud.INSTANCE.rangeProperty.value(), blockPos.getZ() / Hud.INSTANCE.rangeProperty.value()).sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x, z);
                 Block block = WorldHelper.INSTANCE.getBlock(new BlockPos(blockPos.getX(), y, blockPos.getZ()));
                 nativeImage.setColor(x, z, block.getDefaultMapColor().color);
             }
@@ -113,7 +113,7 @@ public class RadarElement extends HudElement{
 
     @Override
     public boolean isVisible() {
-        return Radar.INSTANCE.getState();
+        return getHud().radarProperty.value();
     }
 
     private void drawPointer(MatrixStack matrixStack) {

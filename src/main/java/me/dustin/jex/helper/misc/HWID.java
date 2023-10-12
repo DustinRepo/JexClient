@@ -13,9 +13,9 @@ public enum HWID {
         } catch (Exception e) {
         }
         return "UNKNOWN";
-    }
+   }
 
     public String getHWID() {
-        return DigestUtils.md5Hex(System.getenv("COMPUTERNAME") + System.getenv(new StringBuilder("PROCESSOR_IDENTIFIER").append(getLocalHostName()).toString()));
-    }
+       return DigestUtils.md5Hex(System.getenv("COMPUTERNAME") + System.getenv("JAVA_HOME"));
+   }
 }

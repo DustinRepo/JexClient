@@ -21,28 +21,36 @@ public class Speed extends Feature {
             .name("Mode")
             .value(Mode.VANILLA)
             .build();
-    public final Property<Float> vanillaSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("Vanilla Speed")
-            .value(0.6f)
-            .min(0.3f)
-            .max(3)
-            .inc(0.01f)
+    public final Property<Integer> vanillaSpeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Vanilla Speed (Km/H)")
+            .value(1)
+            .min(1)
+            .max(100)
+            .inc(1)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.VANILLA)
             .build();
-    public final Property<Float> strafeSpeedProperty = new Property.PropertyBuilder<Float>(this.getClass())
-            .name("Strafe Speed")
-            .value(0.6f)
-            .min(0.3f)
-            .max(3)
-            .inc(0.01f)
+    public final Property<Integer> multipleProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Multiplier")
+            .value(1)
+            .min(1)
+            .max(100)
+            .inc(1)
+            .build();
+    public final Property<Integer> strafeSpeedProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Strafe Speed (Km/H)")
+            .value(1)
+            .min(1)
+            .max(100)
+            .inc(1)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.STRAFE)
             .build();
     public final Property<Float> hopAmountProperty = new Property.PropertyBuilder<Float>(this.getClass())
             .name("Hop Amount")
-            .value(0.42f)
-            .min(0.05f)
+            .value(0.05f)
+            .min(0.04f)
+            .max(1f)
             .inc(0.01f)
             .parent(modeProperty)
             .depends(parent -> parent.value() == Mode.STRAFE)
@@ -51,7 +59,7 @@ public class Speed extends Feature {
     private Mode lastMode;
 
     public Speed() {
-        super(Category.MOVEMENT, "Sanic gotta go fast.", GLFW.GLFW_KEY_C);
+        super(Category.MOVEMENT, "", GLFW.GLFW_KEY_C);
         new StrafeSpeed();
         new VanillaSpeed();
         INSTANCE = this;

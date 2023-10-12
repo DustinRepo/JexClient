@@ -28,8 +28,13 @@ public class FarmAura extends Feature {
 
     public final Property<Boolean> checkAgeProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Check Age")
-            .description("Check to make sure the crops are fully aged.")
             .value(true)
+            .build();
+    public final Property<Integer> distanceProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Distance")
+            .value(4)
+            .min(3)
+            .max(6)
             .build();
     public final Property<Long> breakDelayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Break Delay (MS)")
@@ -43,12 +48,16 @@ public class FarmAura extends Feature {
             .max(1000)
             .inc(10)
             .build();
+	public final Property<Boolean> swingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Swing")
+            .value(true)
+            .build();
 
     private final StopWatch breakStopWatch = new StopWatch();
     private final StopWatch plantStopWatch = new StopWatch();
 
     public FarmAura() {
-        super(Category.WORLD, "Destroy any fully grown crops nearby");
+        super(Category.WORLD);
     }
 
     @EventPointer
@@ -64,7 +73,9 @@ public class FarmAura extends Feature {
                 event.setRotation(rot);
                 Direction facing = Direction.fromRotation(-rot.getYaw());
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().updateBlockBreakingProgress(crop, facing);
+                if (swingProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().swingHand(Hand.MAIN_HAND);
+                }
             }
         }
         if (plantStopWatch.hasPassed(plantDelayProperty.value())) {
@@ -79,7 +90,6 @@ public class FarmAura extends Feature {
                     cropSlot = 8;
                 }
                 InventoryHelper.INSTANCE.setSlot(cropSlot, true, true);
-
                 RotationVector rot = PlayerHelper.INSTANCE.rotateToVec(Wrapper.INSTANCE.getLocalPlayer(), Vec3d.ofCenter(farmland));
                 rot.normalize();
                 event.setRotation(rot);
@@ -90,9 +100,10 @@ public class FarmAura extends Feature {
 
     @EventPointer
     private final EventListener<EventRender3D> eventRender3DEventListener = new EventListener<>(event -> {
-        for (int x = -4; x < 4; x++) {
-            for (int y = -2; y < 2; y++) {
-                for (int z = -4; z < 4; z++) {
+        for (int x = -distanceProperty.value(); x < distanceProperty.value(); x++) {
+        for (int z = -distanceProperty.value(); z < distanceProperty.value(); z++) {    
+        for (int y = -distanceProperty.value(); y < distanceProperty.value(); y++) {
+                
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (WorldHelper.INSTANCE.isCrop(blockPos, checkAgeProperty.value())) {
                         Vec3d renderPos = Render3DHelper.INSTANCE.getRenderPosition(blockPos);
@@ -123,9 +134,9 @@ public class FarmAura extends Feature {
     }
 
     public BlockPos getFarmland() {
-        for (int x = -4; x < 4; x++) {
-            for (int y = -2; y < 2; y++) {
-                for (int z = -4; z < 4; z++) {
+        for (int x = -distanceProperty.value(); x < distanceProperty.value(); x++) {
+        for (int z = -distanceProperty.value(); z < distanceProperty.value(); z++) {    
+        for (int y = -distanceProperty.value(); y < distanceProperty.value(); y++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z).down();
                     if (WorldHelper.INSTANCE.getBlock(blockPos) == Blocks.FARMLAND && WorldHelper.INSTANCE.getBlock(blockPos.up()) == Blocks.AIR)
                         return blockPos;
@@ -136,9 +147,9 @@ public class FarmAura extends Feature {
     }
 
     public BlockPos getCrop() {
-        for (int x = -4; x < 4; x++) {
-            for (int y = -2; y < 2; y++) {
-                for (int z = -4; z < 4; z++) {
+        for (int x = distanceProperty.value(); x < distanceProperty.value(); x++) {
+        for (int z = -distanceProperty.value(); z < distanceProperty.value(); z++) {   
+        for (int y = -distanceProperty.value(); y <distanceProperty.value(); y++) {
                     BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
                     if (WorldHelper.INSTANCE.isCrop(blockPos, checkAgeProperty.value()))
                         return blockPos;

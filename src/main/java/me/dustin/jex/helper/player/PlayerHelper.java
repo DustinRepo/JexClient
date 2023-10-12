@@ -388,6 +388,29 @@ public enum PlayerHelper {
             speed += (speed * 0.3);
         return speed;
     }
+    
+    public double getSoulSandSpeed() {
+        double speed = 2.50 / 20;
+        int ssLevel = InventoryHelper.INSTANCE.getSoulSpeedLevel();
+        switch (ssLevel) {
+            case 1 -> speed = 6.06 / 20;
+            case 2 -> speed = 6.52 / 20;
+            case 3 -> speed = 6.97 / 20;
+        }
+        return speed;
+    }
+
+    public double getSoulSandSpeed(int soulSpeedLevel, boolean accountSprint) {
+        double speed = switch (soulSpeedLevel) {
+            case 1 -> 6.06 / 20;
+            case 2 -> 6.52 / 20;
+            case 3 -> 6.97 / 20;
+            default -> 2.50 / 20;
+        };
+        if ((Wrapper.INSTANCE.getLocalPlayer().isSprinting() || (Feature.getState(Sprint.class) && isMoving())) && accountSprint)
+            speed += (speed * 0.3);
+        return speed;
+    }
 
     public boolean isMoving() {
         if (Wrapper.INSTANCE.getLocalPlayer() == null)

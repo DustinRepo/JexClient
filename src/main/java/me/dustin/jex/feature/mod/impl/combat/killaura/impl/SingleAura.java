@@ -11,10 +11,12 @@ import me.dustin.jex.feature.mod.impl.world.Excavator;
 import me.dustin.jex.helper.entity.EntityHelper;
 import me.dustin.jex.helper.math.vector.RotationVector;
 import me.dustin.jex.helper.baritone.BaritoneHelper;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import me.dustin.jex.helper.misc.StopWatch;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Hand;
@@ -25,7 +27,9 @@ import me.dustin.jex.feature.mod.impl.player.AutoEat;
 
 public class SingleAura extends FeatureExtension {
 
-    private LivingEntity target;
+    private Entity target;
+    private LivingEntity livingtarget;
+    private final StopWatch stopWatch = new StopWatch();
 
     public SingleAura() {
         super(KillAura.TargetMode.SINGLE, KillAura.class);
@@ -42,9 +46,12 @@ public class SingleAura extends FeatureExtension {
                 if (target == null || !KillAura.INSTANCE.isValid(target, true)) {
                     target = getClosest();
                 }
+                if (livingtarget == null || !KillAura.INSTANCE.isValid(livingtarget, true)) {
+                    livingtarget = getLivingClosest();
+                }
                 KillAura.INSTANCE.setHasTarget(target != null);
                 if (target != null) {
-                    if (KillAura.INSTANCE.rotateProperty.value()) {
+                    if (KillAura.INSTANCE.rotateProperty.value() && stopWatch.hasPassed(KillAura.INSTANCE.rotdelProperty.value())) {
                         RotationVector rotationVector = PlayerHelper.INSTANCE.rotateToEntity(target);
                         if (KillAura.INSTANCE.randomizeProperty.value()) {
                             rotationVector = PlayerHelper.INSTANCE.randomRotateTo(target, KillAura.INSTANCE.randomWidthProperty.value(), KillAura.INSTANCE.randomHeightProperty.value());
@@ -55,7 +62,8 @@ public class SingleAura extends FeatureExtension {
                         if (KillAura.INSTANCE.lockviewProperty.value()) {
                             PlayerHelper.INSTANCE.setRotation(event.getRotation());
                         }
-                    }
+                        stopWatch.reset();
+                  }  
                 }
                 if ((EntityHelper.INSTANCE.isAuraBlocking()) && PlayerHelper.INSTANCE.isMoving())
                     PlayerHelper.INSTANCE.unblock();
@@ -84,7 +92,7 @@ public class SingleAura extends FeatureExtension {
 
     public void doAttack() {
         boolean reblock = false;
-        LivingEntity savedTarget = null;
+        Entity savedTarget = null;
         if (KillAura.INSTANCE.rayTraceProperty.value() && target != null) {
             savedTarget = target;
             Entity possible = PlayerHelper.INSTANCE.getCrosshairEntity(Wrapper.INSTANCE.getMinecraft().getTickDelta(), PlayerHelper.INSTANCE.rotateToEntity(target), KillAura.INSTANCE.reachProperty.value());
@@ -106,8 +114,9 @@ public class SingleAura extends FeatureExtension {
             if (BaritoneHelper.INSTANCE.baritoneExists()) {
                 if (KillAura.INSTANCE.baritoneOverrideProperty.value())
                     if (BaritoneHelper.INSTANCE.isBaritoneRunning() && !(Feature.getState(Excavator.class) && Feature.get(Excavator.class).isPaused()))
-                        BaritoneHelper.INSTANCE.followUntilDead(target, KillAura.INSTANCE);
+                        BaritoneHelper.INSTANCE.followUntilDead(livingtarget, KillAura.INSTANCE);
             }
+            
             if (KillAura.INSTANCE.autoBlockProperty.value() && !alreadyBlocking)
                 PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
 
@@ -117,7 +126,9 @@ public class SingleAura extends FeatureExtension {
                     PlayerHelper.INSTANCE.unblock();
                 }
                 Wrapper.INSTANCE.getClientPlayerInteractionManager().attackEntity(Wrapper.INSTANCE.getLocalPlayer(), target);
+                if (KillAura.INSTANCE.swingProperty.value()) {
                 PlayerHelper.INSTANCE.swing(Hand.MAIN_HAND);
+                }
                 if (KillAura.INSTANCE.autoBlockProperty.value() && reblock) {
                     PlayerHelper.INSTANCE.block(KillAura.INSTANCE.ignoreNewCombatProperty.value());
                 }
@@ -133,17 +144,29 @@ public class SingleAura extends FeatureExtension {
         }
     }
 
-    public LivingEntity getClosest() {
-        LivingEntity livingEntity = null;
+    public Entity getClosest() {
+        Entity livingEntity = null;
         float distance = KillAura.INSTANCE.reachProperty.value();
         for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
-            if (entity instanceof LivingEntity livingEntity1) {
-                if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) <= distance) {
-                    livingEntity = livingEntity1;
-                    distance = livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
-                }
+               Entity entity1 = entity;
+                if (KillAura.INSTANCE.isValid(entity1, true) && entity1.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) <= distance) {
+                    livingEntity = entity1;
+                    distance = entity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
             }
         }
         return livingEntity;
+    }
+    public LivingEntity getLivingClosest() {
+        LivingEntity livingEntity0 = null;
+        float distance0 = KillAura.INSTANCE.reachProperty.value();
+        for (Entity entity : Wrapper.INSTANCE.getWorld().getEntities()) {
+            if (entity instanceof LivingEntity livingEntity1) {
+                if (KillAura.INSTANCE.isValid(livingEntity1, true) && livingEntity1.distanceTo(Freecam.playerEntity != null ? Freecam.playerEntity : Wrapper.INSTANCE.getLocalPlayer()) <= distance0) {
+                    livingEntity0 = livingEntity1;
+                    distance0 = livingEntity1.distanceTo(Wrapper.INSTANCE.getLocalPlayer());
+                }
+            }
+        }
+        return livingEntity0;
     }
 }

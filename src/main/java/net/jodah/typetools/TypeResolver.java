@@ -50,12 +50,11 @@ public final class TypeResolver {
 
     try {
       final Unsafe unsafe = AccessController.doPrivileged(new PrivilegedExceptionAction<Unsafe>() {
-        @Override
-        public Unsafe run() throws Exception {
-          final Field f = Unsafe.class.getDeclaredField("theUnsafe");
+       @Override
+       public Unsafe run() throws Exception {
+         final Field f = Unsafe.class.getDeclaredField("theUnsafe");
           f.setAccessible(true);
-
-          return (Unsafe) f.get(null);
+       return (Unsafe) f.get(null);
         }
       });
 

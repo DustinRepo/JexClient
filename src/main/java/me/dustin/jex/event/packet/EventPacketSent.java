@@ -38,7 +38,7 @@ public class EventPacketSent extends Event {
             this.packet = packet;
             this.mode = mode;
         }
-
+         
         public Packet<?> getPacket() {
             return packet;
         }

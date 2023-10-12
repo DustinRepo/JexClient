@@ -31,7 +31,7 @@ public class Reach extends Feature {
     private Vec3d storedPos;
 
     public Reach() {
-        super(Category.PLAYER, "Stretch Armstrong, but nerfed.");
+        super(Category.PLAYER);
     }
 
     @EventPointer

@@ -7,13 +7,14 @@ import me.dustin.jex.event.player.EventPlayerPackets;
 import me.dustin.jex.event.render.EventRender3D;
 import me.dustin.jex.feature.mod.core.Category;
 import me.dustin.jex.feature.mod.core.Feature;
+import me.dustin.jex.feature.property.Property;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import me.dustin.jex.helper.player.PlayerHelper;
 import me.dustin.jex.helper.render.Render3DHelper;
 import me.dustin.jex.helper.world.WorldHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.CropBlock;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.block.*;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
@@ -25,8 +26,44 @@ public class BonemealAura extends Feature {
     public static BonemealAura INSTANCE;
     private boolean isBonemealing;
 
+public final Property<Integer> radiusProperty = new Property.PropertyBuilder<Integer>(this.getClass())
+            .name("Radius")
+            .value(6)
+            .min(2)
+            .max(6)
+            .inc(1)
+            .build();
+public final Property<Boolean> checkgrowProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("CheckGrow")
+            .value(true)
+            .build(); 
+public final Property<Boolean> cropProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Crop")
+            .value(true)
+            .build();
+public final Property<Boolean> cocoaProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Cocoa")
+            .value(true)
+            .build();
+public final Property<Boolean> saplingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Sapling")
+            .value(true)
+            .build();
+public final Property<Boolean> stemProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Stem")
+            .value(true)
+            .build();
+public final Property<Boolean> bambooProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Bamboo")
+            .value(true)
+            .build();
+public final Property<Boolean> otherProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Other")
+            .value(true)
+            .build();	
+	
     public BonemealAura() {
-        super(Category.WORLD, "Automatically bonemeal crops around the player");
+        super(Category.WORLD);
         INSTANCE = this;
     }
 
@@ -80,19 +117,52 @@ public class BonemealAura extends Feature {
     }
 
     public BlockPos getCrop() {
-        for (int x = -4; x < 4; x++) {
-            for (int y = -2; y < 2; y++) {
-                for (int z = -4; z < 4; z++) {
-                    BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
-                    Block block = WorldHelper.INSTANCE.getBlock(blockPos);
-                    if (block instanceof CropBlock cropBlock) {
-                        int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
-                        if (age < cropBlock.getMaxAge())
+        for (int x = -radiusProperty.value(); x < radiusProperty.value(); x++) {
+	for (int z = -radiusProperty.value(); z < radiusProperty.value(); z++) {	
+        for (int y = -radiusProperty.value(); y < radiusProperty.value(); y++) {
+            BlockPos blockPos = Wrapper.INSTANCE.getLocalPlayer().getBlockPos().add(x, y, z);
+            Block block = WorldHelper.INSTANCE.getBlock(blockPos);
+	if (checkgrowProperty.value()) {	
+	 if(!(block instanceof Fertilizable) && block instanceof GrassBlock){
+			return null;
+	 }
+	}
+              if (cropProperty.value()) {
+                   if (block instanceof CropBlock cropBlock) {
+                       int age = Wrapper.INSTANCE.getWorld().getBlockState(blockPos).get(cropBlock.getAgeProperty());
+                       if (age < cropBlock.getMaxAge())
                             return blockPos;
                     }
-                }
-            }
-        }
+		}
+		if (otherProperty.value()) {
+	        if (block instanceof Fertilizable) {
+		Wrapper.INSTANCE.getWorld().getBlockState(blockPos);
+                            return blockPos;
+		}
+		}
+		if (saplingProperty.value()) {
+		if (block instanceof SaplingBlock) {
+                            return blockPos;
+                    }
+		}
+		if (stemProperty.value()) {
+		if (block instanceof StemBlock) {
+                            return blockPos;
+                    }
+		}
+		if (cocoaProperty.value()) {
+		if (block instanceof CocoaBlock) {
+                            return blockPos;
+                    }
+		}
+		if (bambooProperty.value()) {
+		if (block instanceof BambooBlock || block instanceof BambooSaplingBlock) {
+                      return blockPos;
+                    }
+		}		
+              }
+           }
+       }
         return null;
     }
 }

@@ -15,10 +15,10 @@ public class DepthStrider extends Feature {
 
     public final Property<Integer> levelProperty = new Property.PropertyBuilder<Integer>(this.getClass())
             .name("Level")
-            .description("The level of Depth-Strider enchantment to emulate.")
             .value(3)
             .min(1)
             .max(3)
+            .inc(1)
             .build();
     public final Property<Boolean> allowSprintingProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Allow Sprinting")
@@ -26,7 +26,7 @@ public class DepthStrider extends Feature {
             .build();
 
     public DepthStrider() {
-        super(Category.MOVEMENT, "Move through water like you have Depth Strider boots on");
+        super(Category.MOVEMENT);
     }
 
     @EventPointer

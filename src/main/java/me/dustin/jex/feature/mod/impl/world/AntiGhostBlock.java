@@ -12,7 +12,7 @@ import me.dustin.jex.feature.mod.core.Feature;
 public class AntiGhostBlock extends Feature {
 
     public AntiGhostBlock() {
-        super(Category.WORLD, "Prevent the game from creating ghost blocks.");
+        super(Category.WORLD);
     }
 
     @EventPointer

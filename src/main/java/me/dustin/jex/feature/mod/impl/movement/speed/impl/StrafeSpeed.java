@@ -21,13 +21,14 @@ public class StrafeSpeed extends FeatureExtension {
     public void pass(Event event) {
         if (event instanceof EventMove eventMove) {
             Speed speed = Feature.get(Speed.class);
+            double kmh = speed.strafeSpeedProperty.value() * 0.01388888888888;
             if ((BaritoneHelper.INSTANCE.isBaritoneRunning() || PathingHelper.INSTANCE.isPathing()) && !Wrapper.INSTANCE.getLocalPlayer().isOnGround())
                 return;
             if (PathingHelper.INSTANCE.isPathing()) {
-                eventMove.setX(eventMove.getX() * speed.vanillaSpeedProperty.value());
-                eventMove.setZ(eventMove.getZ() * speed.vanillaSpeedProperty.value());
-            }else
-                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, speed.strafeSpeedProperty.value());
+                eventMove.setX(eventMove.getX() * speed.multipleProperty.value() * kmh);
+                eventMove.setZ(eventMove.getZ() * speed.multipleProperty.value() * kmh);
+            } else
+                PlayerHelper.INSTANCE.setMoveSpeed(eventMove, kmh * speed.multipleProperty.value());
         } else if (event instanceof EventPlayerPackets eventPlayerPackets) {
             Speed speed = Feature.get(Speed.class);
             if (eventPlayerPackets.getMode() == EventPlayerPackets.Mode.PRE) {

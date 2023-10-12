@@ -22,7 +22,6 @@ public class HoleESP extends Feature {
 
     public final Property<Boolean> fadeBoxProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Fade Box")
-            .description("Make the box fade from bottom to top.")
             .value(true)
             .build();
     public final Property<Integer> rangeProperty = new Property.PropertyBuilder<Integer>(this.getClass())
@@ -45,7 +44,7 @@ public class HoleESP extends Feature {
     private final ArrayList<BlockPos> holes = new ArrayList<>();
 
     public HoleESP() {
-        super(Category.VISUAL, "Automatically show holes for safe crystal-ing");
+        super(Category.VISUAL);
     }
 
     @EventPointer

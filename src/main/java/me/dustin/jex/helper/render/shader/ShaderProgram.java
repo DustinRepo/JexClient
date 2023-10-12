@@ -2,6 +2,7 @@ package me.dustin.jex.helper.render.shader;
 
 import me.dustin.jex.JexClient;
 
+import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -111,7 +112,8 @@ public abstract class ShaderProgram {
 	private String readShader(String fileLoc) {
 		try {
 			InputStream in = getClass().getResourceAsStream(fileLoc);
-			assert in != null;
+			if (in == null)
+			   return "InputStream is null";
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			StringBuilder sb = new StringBuilder();
 			String inString;

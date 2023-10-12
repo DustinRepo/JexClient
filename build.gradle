@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.11-SNAPSHOT'
+	id 'fabric-loom' version '1.1-SNAPSHOT'
 	id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
@@ -46,12 +46,7 @@ tasks.withType(JavaCompile).configureEach {
 	it.options.release = 17
 }
 
-java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
-	withSourcesJar()
-}
+java {}
 
 jar {
 	from("LICENSE") {

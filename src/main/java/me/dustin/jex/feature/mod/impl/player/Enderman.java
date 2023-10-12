@@ -27,7 +27,7 @@ public class Enderman extends Feature {
             .build();
 
     public Enderman() {
-        super(Category.PLAYER, "Select how to deal with enderman.");
+        super(Category.PLAYER);
     }
 
     @EventPointer

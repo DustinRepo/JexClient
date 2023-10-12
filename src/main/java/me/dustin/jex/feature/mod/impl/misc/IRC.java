@@ -28,10 +28,21 @@ import java.util.function.Consumer;
 public class IRC extends Feature {
 
     public final Property<String> sendPrefixProperty = new Property.PropertyBuilder<String>(this.getClass())
-            .name("Send Prefix")
-            .description("The prefix used to activate the IRC chat mode.")
+            .name("SendPrefix")
             .value("@")
             .max(2)
+            .build();
+    
+     public final Property<String> sendIpProperty = new Property.PropertyBuilder<String>(this.getClass())
+            .name("SendIP")
+            .value("132.145.154.217")
+            .max(50)
+            .build();
+    
+    public final Property<String> sendPortProperty = new Property.PropertyBuilder<String>(this.getClass())
+            .name("SendPort")
+            .value("6969")
+            .max(5)
             .build();
 
     public boolean ircChatOverride;
@@ -48,7 +59,7 @@ public class IRC extends Feature {
     };
 
     public IRC() {
-        super("IRC", Category.MISC, "Connect to an IRC server to chat with other Jex users", true, true, 0);
+        super("IRC", Category.MISC, "", true, true, 0);
     }
 
 
@@ -58,7 +69,8 @@ public class IRC extends Feature {
             ircClient = new IRCClient(Wrapper.INSTANCE.getMinecraft().getSession().getUsername());
             ircClient.setMessageConsumer(messageListener);
             ircClient.setDisconnectConsumer(disconnectListener);
-            ircClient.connect("132.145.154.217", 6969);
+            Integer port = Integer.valueOf(sendPortProperty.value());
+            ircClient.connect(sendIpProperty.value(), port);
         }
         super.onEnable();
     }

@@ -10,6 +10,7 @@ import me.dustin.jex.helper.misc.StopWatch;
 import me.dustin.jex.helper.misc.Wrapper;
 import me.dustin.jex.helper.player.InventoryHelper;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
@@ -21,26 +22,28 @@ public class ChestStealer extends Feature {
     public final Property<Long> delayProperty = new Property.PropertyBuilder<Long>(this.getClass())
             .name("Delay")
             .value(50L)
+            .min(0)
             .max(1000)
             .inc(10)
             .build();
     public final Property<Boolean> dumpProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
             .name("Dump")
-            .description("Throw the items on the ground.")
+            .value(false)
+            .build();
+    public final Property<Boolean> shulkerProperty = new Property.PropertyBuilder<Boolean>(this.getClass())
+            .name("Shulker")
             .value(false)
             .build();
 
     private final StopWatch stopWatch = new StopWatch();
 
     public ChestStealer() {
-        super(Category.WORLD, "Automatically steal from chests when opened.");
+        super(Category.WORLD);
     }
 
     @EventPointer
     private final EventListener<EventPlayerPackets> eventPlayerPacketsEventListener = new EventListener<>(event -> {
-        if (!stopWatch.hasPassed(delayProperty.value()))
-            return;
-        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen) {
+        if (Wrapper.INSTANCE.getMinecraft().currentScreen instanceof GenericContainerScreen || Wrapper.INSTANCE.getMinecraft().currentScreen instanceof ShulkerBoxScreen && shulkerProperty.value()) {
             if (InventoryHelper.INSTANCE.isInventoryFull() && !dumpProperty.value()) {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
                 return;
@@ -49,6 +52,7 @@ public class ChestStealer extends Feature {
                 Wrapper.INSTANCE.getLocalPlayer().closeHandledScreen();
             } else {
                 int most = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.size() - 36;
+                if (stopWatch.hasPassed(delayProperty.value())) {
                 for (int i = 0; i < most; i++) {
                     Slot slot = Wrapper.INSTANCE.getLocalPlayer().currentScreenHandler.slots.get(i);
                     ItemStack stack = slot.getStack();
@@ -57,9 +61,10 @@ public class ChestStealer extends Feature {
                         stopWatch.reset();
                         if (delayProperty.value() > 0)
                             return;
-                    }
-                }
-            }
+                     }
+                  }
+               }
+            } 
         }
     }, new PlayerPacketsFilter(EventPlayerPackets.Mode.PRE));
 }

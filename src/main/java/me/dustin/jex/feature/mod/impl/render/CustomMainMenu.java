@@ -35,7 +35,7 @@ public class CustomMainMenu extends Feature {
             .build();
 
     public CustomMainMenu() {
-        super("CustomMainMenu", Category.VISUAL, "The custom main menu for Jex", true, false, 0);
+        super("CustomMainMenu", Category.VISUAL, "", true, false, 0);
     }
 
     @EventPointer

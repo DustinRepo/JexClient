@@ -17,7 +17,7 @@ import net.minecraft.util.Formatting;
 public class ElytraSwap extends Feature {
 
     public ElytraSwap() {
-        super(Category.PLAYER, "Automatically swap your Elytra and your Chestplate on toggle");
+        super(Category.PLAYER);
     }
 
     @Override

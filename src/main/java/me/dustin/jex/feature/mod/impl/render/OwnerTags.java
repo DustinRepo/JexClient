@@ -31,7 +31,7 @@ public class OwnerTags extends Feature {
     private final HashMap<LivingEntity, Vec3d> positions = Maps.newHashMap();
 
     public OwnerTags() {
-        super(Category.VISUAL, "Show the names of the owners of tamed mobs");
+        super(Category.VISUAL);
     }
 
     @EventPointer

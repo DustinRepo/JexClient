@@ -29,7 +29,7 @@ public class BedrockObf extends Feature {
     private Thread thread;
 
     public BedrockObf() {
-        super(Category.WORLD, "Rearranges Bedrock at the bottom of the world and top of the Nether to avoid seed searching.");
+        super(Category.WORLD);
     }
 
     @EventPointer
@@ -57,7 +57,8 @@ public class BedrockObf extends Feature {
 
         if (emptyChunk != null) {
             for (Chunk chunk : obfuscatedChunks) {
-                assert Wrapper.INSTANCE.getWorld() != null;
+                if (Wrapper.INSTANCE.getWorld() == null)
+                    return;
                 if (!Wrapper.INSTANCE.getWorld().getChunkManager().isChunkLoaded(chunk.getPos().x, chunk.getPos().z))
                     obfuscatedChunks.remove(chunk);
             }
