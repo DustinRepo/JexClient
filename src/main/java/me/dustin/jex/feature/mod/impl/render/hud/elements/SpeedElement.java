@@ -64,7 +64,7 @@ public class SpeedElement extends HudElement {
                 time *= 86400;
                 break;
         }
-        return String.format("%.2f %s/%s", (float) (Math.abs(length2D(move)) * time), WordUtils.capitalize(getHud().distanceModeProperty.value().name().toLowerCase().replace("_", " ")), WordUtils.capitalize(getHud().timeModeProperty.value().name().toLowerCase().replace("_", " ")));
+        return String.format("%.9f %s/%s", (float) (Math.abs(length2D(move)) * time), WordUtils.capitalize(getHud().distanceModeProperty.value().name().toLowerCase().replace("_", " ")), WordUtils.capitalize(getHud().timeModeProperty.value().name().toLowerCase().replace("_", " ")));
     }
 
     public double length2D(Vec3d vec3d) {
